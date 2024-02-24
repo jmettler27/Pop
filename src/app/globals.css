@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* https://tailwindcss.com/docs/preflight */
+/* Default margins are removed */
+blockquote,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+figure,
+p,
+pre {
+    margin: 0;
+}
+
+/* Headings are unstyled */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+/* Lists are unstyled */
+ol,
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Images are block-level */
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+    display: block;
+    vertical-align: middle;
+}
+
+/* Images are constrained to the parent width */
+img,
+video {
+    max-width: 100%;
+    height: auto;
+}
+
+
+/* https://github.com/tailwindlabs/tailwindcss/issues/6979#issuecomment-1008565109 */
+/* Border styles are reset globally */
+*,
+::before,
+::after {
+    border-width: 0;
+    border-style: solid;
+    /* border-color: 'gray-200' */
+    border-color: theme('borderColor.DEFAULT', currentColor);
+
+}
+
+.bg-odd-one-out {
+    background-image: url('../../public/reichmann.png');
+    background-size: 100px 100px;
+    background-repeat: repeat;
+}
+
+.bg-odd-one-out-wrong {
+    background-image: url('../../public/quesada.png');
+    background-size: 100px 100px;
+    background-repeat: repeat;
+}
+
+.bg-odd-one-out-correct {
+    background-image: url('../../public/reichmann_sad.png');
+    background-size: 100px 100px;
+    background-repeat: repeat;
+}
+
+.bg-mcq-wrong {
+    background-image: url('../../public/mcq-wrong.png');
+    background-size: 250px 250px;
+    background-repeat: repeat;
+}
+
+
+.glow-focus {
+    text-align: center;
+    -webkit-animation: glow-focus 500ms ease-in-out infinite alternate;
+    -moz-animation: glow-focus 500ms ease-in-out infinite alternate;
+    animation: glow-focus 500ms ease-in-out infinite alternate;
+}
+
+@keyframes glow-focus {
+    from {
+        text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #0df, 0 0 40px #0df, 0 0 50px #0df, 0 0 60px #0df, 0 0 70px #0df;
+    }
+
+    to {
+        text-shadow: 0 0 20px #fff, 0 0 30px #0ff, 0 0 40px #0ff, 0 0 50px #0ff, 0 0 60px #0ff, 0 0 70px #0ff, 0 0 80px #0ff;
+    }
+}
+
+.glow-ready {
+    text-align: center;
+    -webkit-animation: glow-ready 1s ease-in-out infinite alternate;
+    -moz-animation: glow-ready 1s ease-in-out infinite alternate;
+    animation: glow-ready 1s ease-in-out infinite alternate;
+}
+
+@keyframes glow-ready {
+    from {
+        text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;
+    }
+
+    to {
+        text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6, 0 0 60px #ff4da6, 0 0 70px #ff4da6, 0 0 80px #ff4da6;
+    }
+}
+
+/* <div class="text-center animate-glow-ready">
+  <!-- content -->
+</div> */
+
+.glow-correct {
+    text-align: center;
+    -webkit-animation: glow-correct 1s ease-in-out infinite alternate;
+    -moz-animation: glow-correct 1s ease-in-out infinite alternate;
+    animation: glow-correct 1s ease-in-out infinite alternate;
+}
+
+@keyframes glow-correct {
+    from {
+        text-shadow: 0 0 10px #00b300, 0 0 20px #00b300, 0 0 30px #66ff66, 0 0 40px #66ff66, 0 0 50px #66ff66, 0 0 60px #66ff66, 0 0 70px #66ff66;
+    }
+
+    to {
+        text-shadow: 0 0 20px #00b300, 0 0 30px #66ff66, 0 0 40px #66ff66, 0 0 50px #66ff66, 0 0 60px #66ff66, 0 0 70px #66ff66, 0 0 80px #66ff66;
+    }
+}
+
+.glow-wrong {
+    text-align: center;
+    -webkit-animation: glow-wrong 1s ease-in-out infinite alternate;
+    -moz-animation: glow-wrong 1s ease-in-out infinite alternate;
+    animation: glow-wrong 1s ease-in-out infinite alternate;
+}
+
+@keyframes glow-wrong {
+    from {
+        text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff4d4d, 0 0 40px #ff4d4d, 0 0 50px #ff4d4d, 0 0 60px #ff4d4d, 0 0 70px #ff4d4d;
+    }
+
+    to {
+        text-shadow: 0 0 20px #ff0000, 0 0 30px #ff4d4d, 0 0 40px #ff4d4d, 0 0 50px #ff4d4d, 0 0 60px #ff4d4d, 0 0 70px #ff4d4d, 0 0 80px #ff4d4d;
+    }
+}
+
+
+.temp-glow {
+    animation: temporaryGlow 1s ease-in-out;
+}
+
+
+@keyframes temporaryGlow {
+    from {
+        color: rgb(253, 186, 116);
+        text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #fff, 0 0 50px #fff;
+        /* Initial glow */
+    }
+
+    to {
+        text-shadow: none;
+        /* Gradually dim the glow */
+    }
+}
