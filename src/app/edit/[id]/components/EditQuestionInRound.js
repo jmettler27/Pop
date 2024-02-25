@@ -23,6 +23,7 @@ import { removeQuestionFromRound } from '@/app/edit/[id]/lib/edit-game'
 
 export function EditQuestionCard({ roundId, questionId, questionOrder }) {
     const { id: gameId } = useParams()
+    console.log("RENDERING EditQuestionCard", roundId, questionId, questionOrder)
 
     const questionDocRef = doc(QUESTIONS_COLLECTION_REF, questionId)
     const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)

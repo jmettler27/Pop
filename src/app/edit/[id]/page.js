@@ -37,7 +37,7 @@ export default function Page({ params }) {
     const gameId = params.id
     const user = session.user
 
-    const [gameData, gameLoading, gameError] = useDocumentData(doc(GAMES_COLLECTION_REF, gameId))
+    const [gameData, gameLoading, gameError] = useDocumentDataOnce(doc(GAMES_COLLECTION_REF, gameId))
     const [organizers, organizersLoading, organizersError] = useCollectionOnce(collection(GAMES_COLLECTION_REF, gameId, 'organizers'))
 
     if (gameError || organizersError) {
@@ -182,32 +182,34 @@ export default function Page({ params }) {
 }
 
 function EditGameRounds({ }) {
-    const { id: gameId } = useParams()
+    const params = useParams()
+    console.log("Params", params)
 
-    const gameRoundsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds')
-    const [roundsCollection, roundsLoading, roundsError] = useCollection(query(gameRoundsCollectionRef, orderBy('createdAt', 'asc')))
-    if (roundsError) {
-        return <div>Error fetching rounds.</div>
-    }
-    if (roundsLoading) {
-        return <div>Loading rounds...</div>
-    }
-    if (!roundsCollection) {
-        // Button to create a new round
-        return <div>There are no rounds yet.</div>
-    }
+    const gameId = params.id
+    console.log("RENDERING EditGameRounds", gameId)
 
-    const rounds = roundsCollection.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+    const gameDocRef = doc(GAMES_COLLECTION_REF, gameId)
+    const [gameData, gameDataLoading, gameDataError] = useDocumentData(gameDocRef)
+    if (gameDataError) {
+        return <p><strong>Error: {JSON.stringify(gameDataError)}</strong></p>
+    }
+    if (gameDataLoading) {
+        return <></>
+    }
+    if (!gameData) {
+        return <></>
+    }
+    const roundIds = gameData.rounds
+    console.log("Game data", gameData)
 
     return (
         <main className='flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6'>
-            {rounds.map(round => (
-                <EditGameRoundCard key={round.id}
-                    roundId={round.id}
-                    round={round}
+            {roundIds.map(roundId => (
+                <EditGameRoundCard key={roundId}
+                    roundId={roundId}
                 />
             ))}
-            <AddNewRoundButton disabled={roundsCollection.length >= GAME_MAX_NUMBER_OF_ROUNDS} />
+            <AddNewRoundButton disabled={roundIds.length >= GAME_MAX_NUMBER_OF_ROUNDS} />
         </main>
     )
 }

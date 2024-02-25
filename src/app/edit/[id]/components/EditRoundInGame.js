@@ -3,6 +3,10 @@ import { useParams } from 'next/navigation'
 import React from 'react';
 import { useState } from 'react'
 
+import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
+import { doc } from 'firebase/firestore';
+import { useDocumentData } from 'react-firebase-hooks/firestore';
+
 import { Button } from '@mui/material';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -18,21 +22,55 @@ import { removeRoundFromGame } from '@/app/edit/[id]/lib/edit-game'
 
 import { AddQuestionToRoundButton } from '@/app/edit/[id]/components/AddNewQuestion'
 import { EditQuestionCard } from '@/app/edit/[id]/components/EditQuestionInRound';
+import clsx from 'clsx';
 
-export function EditGameRoundCard({ roundId, round }) {
+
+const editGameRoundCardNumCols = (roundType) => {
+    switch (roundType) {
+        case 'progressive_clues':
+        case 'matching':
+            return 'md:grid-cols-2'
+        case 'odd_one_out':
+        case 'enum':
+        case 'mcq':
+            return 'md:grid-cols-3'
+        default:
+            return 'md:grid-cols-4'
+    }
+}
+
+
+export function EditGameRoundCard({ roundId }) {
     // <div className='border-dashed border-4 p-2 w-[30%] h-full overflow-auto'>
+    console.log("RENDERING EditGameRoundCard", roundId)
+
+    const { id: gameId } = useParams()
+    const roundDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
+    const [roundData, roundDataLoading, roundDataError] = useDocumentData(roundDocRef)
+    if (roundDataError) {
+        return <p><strong>Error: {JSON.stringify(roundDataError)}</strong></p>
+    }
+    if (roundDataLoading) {
+        return <></>
+    }
+    if (!roundData) {
+        return <></>
+    }
+    const round = { id: roundId, ...roundData }
 
     return (
         <Card>
             <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
                 <CardTitle className='text-lg font-medium'>{questionTypeToEmoji(round.type)} <i>{round.title}</i></CardTitle>
-                <RemoveRoundFromGameButton roundId={roundId} />
+                <RemoveRoundFromGameButton roundId={round.id} />
             </CardHeader>
             <CardContent>
-                <div className='grid gap-4 md:grid-cols-4'>
+                <div className={clsx('grid', 'gap-4',
+                    editGameRoundCardNumCols(round.type),
+                )}>
                     <EditGameRoundQuestionCards round={round} />
                     <AddQuestionToRoundButton
-                        roundId={roundId}
+                        roundId={round.id}
                         roundType={round.type}
                         disabled={round.questions.length >= GAME_ROUND_MAX_NUM_QUESTIONS}
                     />
@@ -40,6 +78,16 @@ export function EditGameRoundCard({ roundId, round }) {
             </CardContent>
         </Card>
     )
+}
+
+function EditGameRoundQuestionCards({ round }) {
+    return round.questions.map((questionId, idx) => (
+        <EditQuestionCard key={questionId}
+            roundId={round.id}
+            questionId={questionId}
+            questionOrder={idx}
+        />
+    ))
 }
 
 function RemoveRoundFromGameButton({ roundId, lang = 'en' }) {
@@ -112,12 +160,3 @@ const REMOVE_ROUND_FROM_GAME_DIALOG_ACTION_VALIDATE = {
     'fr-FR': "Oui"
 }
 
-function EditGameRoundQuestionCards({ round }) {
-    return round.questions.map((questionId, idx) => (
-        <EditQuestionCard key={questionId}
-            roundId={round.id}
-            questionId={questionId}
-            questionOrder={idx}
-        />
-    ))
-}

@@ -1,8 +1,5 @@
 "use server";
 
-import { getDocDataTransaction } from '@/app/(game)/lib/utils';
-import { db } from '@/lib/firebase/firebase'
-import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF, USERS_COLLECTION_REF } from '@/lib/firebase/firestore';
 import { BLINDTEST_DEFAULT_REWARD } from '@/lib/utils/question/blindtest';
 import { EMOJI_DEFAULT_REWARD } from '@/lib/utils/question/emoji';
 import { ENUM_DEFAULT_BONUS, ENUM_DEFAULT_REWARD } from '@/lib/utils/question/enum';
@@ -12,21 +9,19 @@ import { MCQ_DEFAULT_REWARDS } from '@/lib/utils/question/mcq';
 import { OOO_DEFAULT_MISTAKE_PENALTY } from '@/lib/utils/question/odd_one_out';
 import { PROGRESSIVE_CLUES_DEFAULT_DELAY, PROGRESSIVE_CLUES_DEFAULT_MAX_TRIES } from '@/lib/utils/question/progressive_clues';
 import { isRiddle } from '@/lib/utils/question_types';
+
+import { db } from '@/lib/firebase/firebase'
+import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF, USERS_COLLECTION_REF } from '@/lib/firebase/firestore';
 import {
     doc,
     arrayUnion,
-    Timestamp,
-    writeBatch,
     runTransaction,
     collection,
     serverTimestamp,
-    where,
-    query,
-    getDocs,
-    increment,
     arrayRemove
 } from 'firebase/firestore'
 
+import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 
 /* ==================================================================================================== */
 export async function addGameRound(gameId, title, type, rewards, rewardsPerQuestion) {
@@ -101,6 +96,11 @@ const addGameRoundTransaction = async (
         scores: {},
         scoresProgress: {},
         teamScoresSequence: {}
+    });
+
+    const gameDocRef = doc(GAMES_COLLECTION_REF, gameId);
+    transaction.update(gameDocRef, {
+        rounds: arrayUnion(roundId)
     });
 }
 

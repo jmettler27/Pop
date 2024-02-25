@@ -2,7 +2,7 @@ import React from 'react';
 
 import Image from 'next/image';
 
-import { QUESTIONS_COLLECTION_REF, USERS_COLLECTION_REF } from '@/lib/firebase/firestore';
+import { USERS_COLLECTION_REF } from '@/lib/firebase/firestore';
 
 import { doc } from 'firebase/firestore';
 import { useDocumentDataOnce } from 'react-firebase-hooks/firestore';

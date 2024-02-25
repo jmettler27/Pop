@@ -13,7 +13,13 @@ import QuestionFormHeader from '@/app/submit/components/QuestionFormHeader';
 import { DEFAULT_LOCALE, localeSchema } from '@/lib/utils/locales';
 import { topicSchema } from '@/lib/utils/topics';
 import { stringSchema } from '@/lib/utils/forms';
-import { MCQ_CHOICES, MCQ_CHOICES_EXAMPLE, MCQ_CHOICE_MAX_LENGTH, MCQ_EXPLANATION_EXAMPLE, MCQ_EXPLANATION_MAX_LENGTH, MCQ_NUMBER_OF_CHOICES, MCQ_NOTE_EXAMPLE, MCQ_NOTE_MAX_LENGTH, MCQ_SOURCE_EXAMPLE, MCQ_SOURCE_MAX_LENGTH, MCQ_TITLE_EXAMPLE, MCQ_TITLE_MAX_LENGTH } from '@/lib/utils/question/mcq';
+import {
+    MCQ_CHOICES, MCQ_CHOICES_EXAMPLE, MCQ_CHOICE_MAX_LENGTH, MCQ_NUMBER_OF_CHOICES,
+    MCQ_EXPLANATION_EXAMPLE, MCQ_EXPLANATION_MAX_LENGTH,
+    MCQ_NOTE_EXAMPLE, MCQ_NOTE_MAX_LENGTH,
+    MCQ_SOURCE_EXAMPLE, MCQ_SOURCE_MAX_LENGTH,
+    MCQ_TITLE_EXAMPLE, MCQ_TITLE_MAX_LENGTH
+} from '@/lib/utils/question/mcq';
 
 import Box from '@mui/system/Box';
 
@@ -80,7 +86,7 @@ export function SubmitMCQForm({ userId, ...props }) {
                 title: '',
                 note: '',
                 explanation: '',
-                choices: Array(MCQ_CHOICES.length).fill(''),
+                choices: Array(MCQ_NUMBER_OF_CHOICES).fill(''),
                 answerIdx: -1,
                 duoIdx: -1,
                 // imageFiles: '',

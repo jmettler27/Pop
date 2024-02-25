@@ -57,6 +57,7 @@ export const createGameTransaction = async (
         status: 'build',
         title,
         type,
+        rounds: [],
     });
     const gameId = gameRef.id;
 
