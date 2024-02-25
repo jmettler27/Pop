@@ -62,7 +62,7 @@ export default function Page({ params }) {
         if (playerIds.length < game.maxPlayers) {
             redirect(`/join/${gameId}`)
         } else {
-            myRole = 'viewer'
+            myRole = 'spectator'
         }
     }
 

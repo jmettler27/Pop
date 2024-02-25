@@ -1,7 +1,7 @@
 
 import BuzzerHeadPlayer from '@/app/(game)/[id]/components/bottom-pane/question/question-active/riddle/controller/BuzzerHeadPlayer'
 
-export default function RiddleViewerController({ players }) {
+export default function RiddleSpectatorController({ players }) {
     const buzzed = players.buzzed;
 
     return (

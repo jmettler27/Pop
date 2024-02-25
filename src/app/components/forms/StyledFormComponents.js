@@ -142,8 +142,7 @@ import Chrome from '@uiw/react-color-chrome';
 export function MyColorPicker({ label, validationSchema, name, ...props }) {
     const [field, meta, helpers] = useField(name);
 
-    console.log("Field:", field)
-    console.log("Meta:", meta)
+    const formik = useFormikContext();
 
     return (
         <div className='space-y-1'>

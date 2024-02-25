@@ -62,7 +62,7 @@ function EnumQuestionAnswer({ answer }) {
     const myRole = useRoleContext()
     const user = useUserContext()
 
-    const showComplete = (game.status === 'question_end' || myRole === 'organizer') // 'player' or 'viewer'
+    const showComplete = (game.status === 'question_end' || myRole === 'organizer')
 
     const [handleClick, isSubmitting] = useAsyncAction(async (itemIdx) => {
         await handleEnumAnswerItemClick(game.id, game.currentRound, game.currentQuestion, user.id, itemIdx)

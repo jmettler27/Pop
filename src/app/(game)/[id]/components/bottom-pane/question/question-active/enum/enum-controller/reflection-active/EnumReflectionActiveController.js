@@ -30,7 +30,7 @@ export default function EnumReflectionActiveController({ question, timer }) {
         case 'player':
             return <EnumPlayerReflectionActive question={question} timer={timer} />
         default:
-            return <EnumViewerReflectionActive question={question} timer={timer} />
+            return <EnumSpectatorReflectionActive question={question} timer={timer} />
     }
 
 }
@@ -198,8 +198,8 @@ const INPUT_LABEL = {
     'fr-FR': "Mon pari"
 }
 
-/* ============================================================ Viewer ============================================================ */
-function EnumViewerReflectionActive({ question, timer }) {
+/* ============================================================ Spectator ============================================================ */
+function EnumSpectatorReflectionActive({ question, timer }) {
 
     return (
         <div className='flex flex-col h-full items-center justify-center'>

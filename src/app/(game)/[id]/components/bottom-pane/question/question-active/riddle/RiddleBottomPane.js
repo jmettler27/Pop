@@ -2,7 +2,7 @@ import { useGameContext, useRoleContext } from '@/app/(game)/contexts'
 
 import RiddlePlayerController from './controller/RiddlePlayerController'
 import RiddleOrganizerController from './controller/RiddleOrganizerController'
-import RiddleViewerController from './controller/RiddleViewerController'
+import RiddleSpectatorController from './controller/RiddleSpectatorController'
 import RiddlePlayers from './players/RiddlePlayers'
 
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
@@ -50,6 +50,6 @@ function RiddleController({ question, players }) {
         case 'organizer':
             return <RiddleOrganizerController question={question} players={players} />
         default:
-            return <RiddleViewerController players={players} />
+            return <RiddleSpectatorController players={players} />
     }
 }

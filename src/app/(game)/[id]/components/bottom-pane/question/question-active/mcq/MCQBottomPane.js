@@ -70,12 +70,12 @@ function MCQController({ gameStates }) {
         case 'player':
             return <MCQPlayerController chooserTeamId={chooserTeamId} realtime={realtime} />
         default:
-            return <MCQViewerController chooserTeamId={chooserTeamId} realtime={realtime} />
+            return <MCQSpectatorController chooserTeamId={chooserTeamId} realtime={realtime} />
     }
 
 }
 
-function MCQViewerController({ chooserTeamId, realtime }) {
+function MCQSpectatorController({ chooserTeamId, realtime }) {
     return (
         <div className='flex flex-col h-full items-center justify-center'>
             {realtime.option === null & <span className='text-4xl font-bold'><GameChooserHelperText chooserTeamId={chooserTeamId} /></span>}

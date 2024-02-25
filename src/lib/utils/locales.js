@@ -20,7 +20,7 @@ export function localeToEmoji(locale) {
 }
 
 export function prependLocaleWithEmoji(locale) {
-    return prependWithEmojiAndSpace(LOCALE_TO_EMOJI[locale], localeToTitle(locale))
+    return prependWithEmojiAndSpace(localeToEmoji(locale), localeToTitle(locale))
 }
 
 /* Validation */

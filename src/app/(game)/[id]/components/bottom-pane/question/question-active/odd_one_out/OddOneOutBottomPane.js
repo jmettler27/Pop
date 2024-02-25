@@ -54,7 +54,7 @@ function OddOneOutController({ gameStates }) {
         case 'organizer':
             return <OddOneOutOrganizerController chooserTeamId={chooserTeamId} />
         default:
-            return <OddOneOutViewerController chooserTeamId={chooserTeamId} />
+            return <OddOneOutSpectatorController chooserTeamId={chooserTeamId} />
     }
 
 }
@@ -77,7 +77,7 @@ function OddOneOutOrganizerController({ chooserTeamId }) {
     )
 }
 
-function OddOneOutViewerController({ chooserTeamId }) {
+function OddOneOutSpectatorController({ chooserTeamId }) {
     return (
         <div className='flex flex-col h-full items-center justify-center'>
             <span className='text-4xl font-bold'><GameChooserHelperText chooserTeamId={chooserTeamId} /></span>

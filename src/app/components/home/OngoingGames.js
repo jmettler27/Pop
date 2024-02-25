@@ -60,14 +60,6 @@ export default function OngoingGames({ lang = 'en' }) {
                 </div>
             </CardContent>
         </Card>
-
-        // <Grid container spacing={1}>
-        //     {sortedOngoingGames.map((game) => (
-        //         <Grid item xs={12} md={6} lg={4} key={game.id}>
-        //             <GameCard game={game} user={user} />
-        //         </Grid>
-        //     ))}
-        // </Grid>
     )
 }
 
@@ -107,11 +99,11 @@ const GameCard = ({
     } else if (playerIds.includes(user.id)) {
         myRole = 'player'
     } else {
-        myRole = 'viewer'
+        myRole = 'spectator'
     }
 
     const buttonText = () => {
-        if (myRole === 'viewer') {
+        if (myRole === 'spectator') {
             if (isFull) {
                 return 'Watch'
             }
@@ -121,7 +113,7 @@ const GameCard = ({
     }
 
     const ButtonIcon = () => {
-        if (myRole === 'viewer') {
+        if (myRole === 'spectator') {
             if (isFull) {
                 return <VisibilityIcon />
             }
@@ -131,7 +123,7 @@ const GameCard = ({
     }
 
     const buttonColor = () => {
-        if (myRole === 'viewer') {
+        if (myRole === 'spectator') {
             if (isFull) {
                 return 'warning'
             }
@@ -141,7 +133,7 @@ const GameCard = ({
     }
 
     const handleJoinClick = () => {
-        if (myRole === 'viewer' && !isFull) {
+        if (myRole === 'spectator' && !isFull) {
             router.push(`/join/${game.id}`)
         } else {
             router.push(`/${game.id}`)

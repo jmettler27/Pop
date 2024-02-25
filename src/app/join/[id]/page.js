@@ -19,7 +19,10 @@ import { useCollection, useCollectionOnce, useDocumentDataOnce } from 'react-fir
 
 import { Button, CircularProgress, IconButton } from '@mui/material';
 
-import { GAME_PARTICIPANT_NAME_MIN_LENGTH, GAME_PARTICIPANT_NAME_MAX_LENGTH, GAME_TEAM_NAME_MIN_LENGTH, GAME_TEAM_MAX_NAME_LENGTH } from '@/lib/utils/game'
+import {
+    GAME_PARTICIPANT_NAME_MIN_LENGTH, GAME_PARTICIPANT_NAME_MAX_LENGTH,
+    GAME_TEAM_NAME_MIN_LENGTH, GAME_TEAM_MAX_NAME_LENGTH
+} from '@/lib/utils/game'
 import { useAsyncAction } from '@/lib/utils/async';
 
 
@@ -135,11 +138,11 @@ export default function Page({ params }) {
             <JoinGameHeader />
             <Wizard
                 initialValues={{
-                    playerName: '',
+                    playerName: "",
                     playInTeams: null,
                     joinTeam: null,
-                    teamId: '',
-                    teamName: '',
+                    teamId: "",
+                    teamName: "",
                     teamColor: null,
                 }}
                 onSubmit={async values => await joinGame(values, user)}
@@ -154,10 +157,19 @@ export default function Page({ params }) {
                             .max(GAME_PARTICIPANT_NAME_MAX_LENGTH, `Must be ${GAME_PARTICIPANT_NAME_MAX_LENGTH} characters or less!`)
                             .required("Required."),
                         playInTeams: Yup.boolean()
-                            .required("Required."),
+                            .nonNullable("Required."),
                         joinTeam: Yup.boolean()
-                            .required("Required."),
+                            .when('playInTeams', {
+                                is: true,
+                                then: (schema) => schema.nonNullable("Required."),
+                                otherwise: (schema) => schema.nullable()
+                            }),
                         teamId: Yup.string()
+                            .when('joinTeam', {
+                                is: true,
+                                then: (schema) => schema.required("Required."),
+                                otherwise: (schema) => schema.notRequired()
+                            }),
                     })}
                 />
 
@@ -166,16 +178,24 @@ export default function Page({ params }) {
                     onSubmit={() => { }}
                     validationSchema={Yup.object({
                         teamName: Yup.string()
+                            .when(['playInTeams', 'joinTeam'], {
+                                is: (playInTeams, joinTeam) => playInTeams && !joinTeam,
+                                then: (schema) => schema.required("Required."),
+                                otherwise: (schema) => schema.notRequired()
+                            })
                             .min(GAME_TEAM_NAME_MIN_LENGTH, `Must be ${GAME_TEAM_NAME_MIN_LENGTH} characters or more!`)
-                            .max(GAME_TEAM_MAX_NAME_LENGTH, `Must be ${GAME_TEAM_MAX_NAME_LENGTH} characters or less!`)
-                            .required("Required."),
+                            .max(GAME_TEAM_MAX_NAME_LENGTH, `Must be ${GAME_TEAM_MAX_NAME_LENGTH} characters or less!`),
                         teamColor: Yup.string()
+                            .when(['playInTeams', 'joinTeam'], {
+                                is: (playInTeams, joinTeam) => playInTeams && joinTeam,
+                                then: (schema) => schema.required("Required."),
+                                otherwise: (schema) => schema.notRequired()
+                            })
                             .test(
                                 'is-hex-color',
                                 "Must be a valid hexadecimal color.",
                                 (value) => REGEX_HEX_COLOR.test(value)
                             )
-                            .required("Required."),
                     })}
                 />
 
@@ -189,9 +209,7 @@ function GeneralInfoStep({ onSubmit, validationSchema }) {
     const values = formik.values
     const errors = formik.errors
 
-    console.log("Values:", values)
-    console.log("Errors:", errors)
-
+    console.log("General info step: Values:", values, "Errors:", errors, "Validation schema:", validationSchema)
     const PlayInTeamsError = () => {
         const [_, meta] = useField('playInTeams');
         return typeof errors.playInTeams === 'string' && meta.touched && meta.error && <StyledErrorMessage>{meta.error}</StyledErrorMessage>
@@ -217,21 +235,13 @@ function GeneralInfoStep({ onSubmit, validationSchema }) {
             <div role='group' aria-labelledby="play-in-teams-radio-group" className='flex flex-row space-x-2'>
                 <label>
                     <Field type='radio' name='joinTeamPicked' value="In teams"
-                        onClick={() => {
-                            formik.setFieldValue('playInTeams', true)
-                            formik.setFieldValue('joinTeam', false)
-                        }}
+                        onClick={() => formik.setFieldValue('playInTeams', true)}
                     />
                     In teams
                 </label>
                 <label>
                     <Field type='radio' name='joinTeamPicked' value="Alone"
-                        onClick={() => {
-                            formik.setFieldValue('playInTeams', false)
-                            formik.setFieldValue('joinTeam', false)
-                            formik.setFieldValue('teamId', '')
-                            formik.setFieldValue('teamName', '')
-                        }}
+                        onClick={() => formik.setFieldValue('playInTeams', false)}
                     />
                     Alone
                 </label>
@@ -250,11 +260,6 @@ function JoinOrCreateTeam({ validationSchema }) {
     const values = formik.values
     const errors = formik.errors
 
-    const JoinTeamError = () => {
-        const [_, meta] = useField('joinTeam');
-        return typeof errors.joinTeam === 'string' && meta.touched && meta.error && <StyledErrorMessage>{meta.error}</StyledErrorMessage>
-    }
-
     const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
     const [teamsCollection, teamsLoading, teamsError] = useCollection(query(teamsCollectionRef, where('teamAllowed', '==', true)))
 
@@ -264,16 +269,11 @@ function JoinOrCreateTeam({ validationSchema }) {
     if (teamsLoading) {
         return <CircularProgress color='inherit' />
     }
-    if (!teamsCollection) {
+    if (!teamsCollection || teamsCollection.empty) {
         return <></>
     }
 
-    const teams = teamsCollection.docs.map(doc => ({ id: doc.id, ...doc }))
-
-    if (teams.length <= 0) {
-        return <></>
-    }
-
+    const teams = teamsCollection.docs.map(doc => ({ id: doc.id, ...doc.data() }))
 
     return (
         <>
@@ -294,14 +294,12 @@ function JoinOrCreateTeam({ validationSchema }) {
                     name='teamId'
                     validationSchema={validationSchema}
                     onChange={(e) => {
-                        formik.setFieldValue('teamId', e.target.value)
-                        if (e.target.value) {
-                            const team = teams.find(doc => doc.id === e.target.value)
+                        const teamId = e.target.value
+                        formik.setFieldValue('teamId', teamId)
+                        if (teamId) {
+                            const team = teams.find(doc => doc.id === teamId)
                             formik.setFieldValue('teamName', team.name)
                             formik.setFieldValue('teamColor', team.color)
-                        } else {
-                            formik.setFieldValue('teamName', '')
-                            formik.setFieldValue('teamColor', '')
                         }
                     }}
                 >
@@ -309,7 +307,6 @@ function JoinOrCreateTeam({ validationSchema }) {
                     {teams.map((doc) => <option key={doc.id} value={doc.id}>{doc.name} </option>)}
                 </MySelect>
             )}
-            <JoinTeamError />
         </>
     )
 }
@@ -317,13 +314,10 @@ function JoinOrCreateTeam({ validationSchema }) {
 function CreateTeamStep({ onSubmit, validationSchema }) {
     const formik = useFormikContext();
     const values = formik.values
+    const errors = formik.errors
 
-    const placeholder = () => {
-        if (!values.playInTeams)
-            return values.playerName
-        if (!values.joinTeam)
-            return "My team name"
-    }
+    console.log("Create team step: Values:", values, "Errors:", errors, "Validation schema:", validationSchema)
+
 
     return (
         <WizardStep
@@ -347,10 +341,9 @@ function CreateTeamStep({ onSubmit, validationSchema }) {
                         label="What is the name of your team?"
                         name='teamName'
                         type='text'
-                        placeholder={placeholder()}
+                        placeholder="My team name"
                         validationSchema={validationSchema}
                         maxLength={GAME_TEAM_MAX_NAME_LENGTH}
-                    // disabled={values.playInTeams && values.joinTeam}
                     />
 
                     <MyColorPicker label="Choose a color for your team" name='teamColor' validationSchema={validationSchema} />

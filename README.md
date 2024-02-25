@@ -2,7 +2,7 @@
 
 ![logo](./cover.png)
 
-**Pop!** is a web application built with [Next.js](https://nextjs.org/), using [React](https://reactjs.org/) for the front-end and [Firebase](https://firebase.google.com) for the back-end. The application is hosted on [Vercel](https://vercel.com/).
+***Pop!*** is a web application built with [Next.js](https://nextjs.org/), using [React](https://reactjs.org/) for the front-end and [Firebase](https://firebase.google.com) for the back-end. The application is hosted on [Vercel](https://vercel.com/).
 
 It allows authenticated users to create, organize, play and/or spectate quizz games with friends, that revolve around ***pop culture*** in general, whether it be *video games*, *movies*, *animes/mangas*, *music*, *literature*, *Internet*, etc.
 
@@ -10,7 +10,7 @@ It allows authenticated users to create, organize, play and/or spectate quizz ga
 
 The app uses [NextAuth.js](https://next-auth.js.org/) to authenticate users. The authentication session tokens, accounts and users information is stored in a [Firestore Database](https://firebase.google.com/docs/firestore). The authentication proposes the following **OAuth2** providers: [Google](https://next-auth.js.org/providers/google) and [Discord](https://next-auth.js.org/providers/discord)
 
-## Game Structure
+## Structure of a Game
 
 Each game is structured in multiple **rounds**, each consisting of various **questions** of specific types. Teams accumulate points within each round, determining their positions on a point scale. By default, the latter is set to:
 
@@ -20,77 +20,42 @@ Each game is structured in multiple **rounds**, each consisting of various **que
 
 The definition of the "best" team varies based on the round type. In most cases, it is the team with the highest point accumulation. However, in **Odd One Out** and **Matchings** rounds, the best team is the one that made the least mistakes.
 
-The game's homepage (`game home`) displays the available rounds. After each round, the team with the lowest points (or a randomly selected one if there are multiple lowest-scoring teams) chooses the next round. The initial **"chooser"** team is randomly selected at the start of the game.
-
-/*TODO: add a demo of the game home*/
-
 ### Game Roles
 
-In each game, an authenticated user can have either of three roles: `organizer`, `player` or `viewer`.
+In each game, an authenticated user can have either of three roles: `organizer`, `player` or `spectator`.
 
 #### Organizer (`organizer`)
 
-The **organizer(s)** is/are the user(s) who created the game. They can edit the game's rounds, questions, settings. During an active game, they control the game states, validate or invalidate a player's answer.
+The **organizers** are the users who created the game. They can edit the game's rounds, questions, settings. During an active game, they control the game states, validate or invalidate a player's answer.
 
 #### Player (`player`)
 
 The **players** are the users who joined the game. There are given specific controls to answer the questions, at the bottom of the screen.
 
-Players can either play alone or in teams. For code simplicity, a player playing alone is considered as a team of one player.
+Players can either play alone or in teams. To simplify the code, a solo player is considered as a team of one player.
 
-#### Viewer (`viewer`)
+#### Spectator (`spectator`)
 
-The **viewers** are the users who joined the game in an observer role. They can see the game's state and the players' scores, but they are not given any controls.
+The **spectators** are the users who joined the game in an observer role. They can see the game's state and the players' scores, but they are not given any controls.
 
 ### Scoring System
 
 There are two scoring systems for each team, displayed at the top of the screen:
 
-- **round scores**, gained within each round, and displayed while the round is ongoing.
-- **global scores**, accumulated across the entire game as rounds progress, and displayed in all other cases.
-
-### Initiating a Round (`round_start`)
-
-Upon selecting a round, an introductory page outlines the round's principles, rules, question-specific rewards, and the concluding point scale.
-
-#### Example (Player POV)
-
-![round-start](https://github.com/jmettler27/qpc/assets/56764091/95b7e17e-7fa5-4f9e-b062-9e460de7bc6b)
-
-### Completing a Question (`question_end`)
-
-At the end of each question, the answer of the question is displayed, along with the team(s) that provided the correct answer. The team(s) that provided the correct answer are rewarded with the number of points associated with the question type.
-
-Moreover, a *Continue* button appears for each player. Pressing it signals the player as `ready` for the next question. Once all players are ready, a 5-second countdown precedes the display of the next question.
-
-/*TODO: add a demo of the question_end page*
-
-### Completing a Round (`round_end`)
-
-When the last question in the round completes, a summary showcases each team's score for the round, as well as the updated global scores based on the round's outcomes.
-
-A line chart illustrates each team's score progression within the round, aiding users in visualizing the evolution of the team performance throughout the round. Similarly, another line chart displays the global score progression for each team throughout the game.
-
-#### Example (Player POV)
-
-![round-end](https://github.com/jmettler27/qpc/assets/56764091/fa803074-f1e7-462a-95a3-9859152e1a34)
-
-### Sound Effects
-
-The game features a variety of **sound effects**, stored in the Firebase Storage, which are played in response to specific events, such as:
-
-- A player providing a correct/incorrect answer
-- A player buzzing in
-- Starting/Completing a question
-- Selecting/Completing a round
-
-The organizers are provided a **soundboard** with small selection of sound effects to choose from, that they can play at any time.
-
-All users can adjust the volume of the sound effects, or mute them entirely.
+- **Round scores**, gained within each round, and displayed while the round is ongoing.
+- **Global scores**, accumulated across the entire game as rounds progress, and displayed in all other cases.
 
 ## Types of Rounds
 
-**Pop!** features 9 types of questions, each with unique rules and gameplay. In addition, a special round is available at the end of the game, which is described in the next section. It is important to note that the game is designed to be played while chatting in person or on a VoIP application such as Discord or Zoom.
+***Pop!*** features 9 types of questions, each with unique rules and gameplay. In addition, a special round is available at the end of the game, as a final step to determine the winner.
+
+⚠️ It is important to note that the game is designed to be played while chatting in-person or on a VoIP application such as Discord or Zoom.
+
+The game's homepage (`game_home`) displays the available rounds. After each round, the team with the lowest points (or a randomly selected one if there are multiple lowest-scoring teams) chooses the next round. The initial **"chooser"** team is randomly selected at the start of the game.
+
+/*TODO: add a demo of the game home*/
+
+Let us now describe each type of round.
 
 ### 💡 Progressive Clues (`progressive_clues`)
 
@@ -105,7 +70,7 @@ Once a player thinks they know the answer, they press a buzzer button. If they b
 
 <https://github.com/jmettler27/qpc/assets/56764091/c283b32e-4be6-4b1e-96f6-8ccd2dcb3a79>
 
-#### Full round (Viewer POV)
+#### Full round (Spectator POV)
 
 An example round is visible [on YouTube](https://youtu.be/JscPXeTtSIM?si=efyjvQvTZJ35Elm3&t=60) (in French).
 
@@ -119,7 +84,7 @@ Again, each player is given a buzzer button and must give an oral answer.
 
 <https://github.com/jmettler27/qpc/assets/56764091/567a3965-d652-410b-b8b5-3d24000c63eb>
 
-#### Full round (Viewer POV)
+#### Full round (Spectator POV)
 
 An example round is visible [on YouTube](https://youtu.be/JscPXeTtSIM?si=VAClN1C5dXHKo2Ho&t=3538) (in French).
 
@@ -139,7 +104,7 @@ Again, each player is given a buzzer button and must give an oral answer.
 
 <https://github.com/jmettler27/qpc/assets/56764091/d4d58b96-82da-41f0-bb3d-41c061da0898>
 
-#### Full round (Viewer POV)
+#### Full round (Spectator POV)
 
 An example round is visible [on YouTube](https://youtu.be/JscPXeTtSIM?si=fQm91tnLl5z8PU__&t=1753) (in French).
 
@@ -194,7 +159,7 @@ The trick in this type of questions lies in the fact that the teams must bet on 
 
 <https://github.com/jmettler27/qpc/assets/56764091/8f8ecfbb-ad52-4dcf-9b46-eb4a709f1598>
 
-#### Full round (Viewer POV)
+#### Full round (Spectator POV)
 
 An example round is visible [on YouTube](https://youtu.be/JscPXeTtSIM?si=JzRGfiyKHl-5fF6O&t=2108) (in French).
 
@@ -214,7 +179,7 @@ The team that selected the odd one out is at disadvantage for the next question,
 
 <https://github.com/jmettler27/qpc/assets/56764091/12bebbf1-a811-4db6-a239-95693b0eb114>
 
-#### Full round (Viewer POV)
+#### Full round (Spectator POV)
 
 An example round is visible [on YouTube](https://youtu.be/JscPXeTtSIM?si=YB09-zl5ZlZbXeje&t=1170) (in French).
 
@@ -274,9 +239,48 @@ The team with the highest score at the end of this round emerges as the winner o
 
 <https://github.com/jmettler27/qpc/assets/56764091/9788d21c-d485-4ab4-8e24-ff7d1b009ee2>
 
+### Initiating a Round (`round_start`)
+
+Upon selecting a round, an introductory page outlines the round's principles, rules, question-specific rewards, and the concluding point scale.
+
+#### Example (Player POV)
+
+![round-start](https://github.com/jmettler27/qpc/assets/56764091/95b7e17e-7fa5-4f9e-b062-9e460de7bc6b)
+
+### Completing a Question (`question_end`)
+
+At the end of each question, the answer of the question is displayed, along with the team(s) that provided the correct answer. The team(s) that provided the correct answer are rewarded with the number of points associated with the question type.
+
+Moreover, a *Continue* button appears for each player. Pressing it signals the player as `ready` for the next question. Once all players are ready, a 5-second countdown precedes the display of the next question.
+
+/*TODO: add a demo of the question_end page*
+
+### Completing a Round (`round_end`)
+
+When the last question in the round completes, a summary showcases each team's score for the round, as well as the updated global scores based on the round's outcomes.
+
+A line chart illustrates each team's score progression within the round, aiding users in visualizing the evolution of the team performance throughout the round. Similarly, another line chart displays the global score progression for each team throughout the game.
+
+#### Example (Player POV)
+
+![round-end](https://github.com/jmettler27/qpc/assets/56764091/fa803074-f1e7-462a-95a3-9859152e1a34)
+
+### Sound Effects
+
+The game features a variety of **sound effects**, stored in the Firebase Storage, which are played in response to specific events, such as:
+
+- A player providing a correct/incorrect answer
+- A player buzzing in
+- Starting/Completing a question
+- Selecting/Completing a round
+
+The organizers are provided a **soundboard** with small selection of sound effects to choose from, that they can play at any time.
+
+All users can adjust the volume of the sound effects, or mute them entirely.
+
 ## Joining a game (`/join/[gameId]`)
 
-When joining a game, a player can choose to either **play alone**, **create a new team** or **join an existing team**. If the game is full, the player will automatically become a viewer. The maximum number players allowed is decided by the organizer(s).
+When joining a game, a player can choose to either **play alone**, **create a new team** or **join an existing team**. If the game is full, the player will automatically become a spectator. The maximum number players allowed is decided by the organizer(s).
 
 Moreover, the player can choose a nickname for the game, and a color for their team, if they play one or create a new team.
 
@@ -292,7 +296,11 @@ The submission process is handled by filling a form, that is different for each 
 
 ## Creating and editing games (`/edit` and `/edit/[gameId]`)
 
-⚒️ Work in progress ⚒️
+An authenticated user can create a game (`/edit`), which gives them access to an editing dashboard (`/edit/[gameId]`) and automatically assigns them as organizer of this game. From there, they can add or remove rounds, then add or remove questions to a round, either by selecting one from the database or by creating a new question on-the-fly.
+
+When the organizer(s) think the game is ready, they can launch it, which makes it visible to all users on the site's home page.
+
+*TODO: add a demo of the game creation and editing process*
 
 ## The origins of the project
 
@@ -306,7 +314,7 @@ However, the organizers would have to manually keep track of the scores, which w
 
 This prompted me to develop a web app that would facilitate real-time quiz games, offering **complete interactivity** and addressing the issues we encountered with previous methods. My motivation was further fueled by our enjoyment of the interactive quiz game [PopSauce](https://jklm.fun/), which we occasionally played.
 
-All question types in **Pop!** are in fact implementations of the question types we used in our original quiz games. Likewise, most of the database's questions are directly sourced from our past quiz game sessions.
+All question types in ***Pop!*** are in fact implementations of the question types we used in our original quiz games. Likewise, most of the database's questions are directly sourced from our past quiz game sessions.
 
 ##  Technologies
 

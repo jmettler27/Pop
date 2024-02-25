@@ -56,7 +56,7 @@ export default function FinaleHomeThemeAvatar({ themeRealtime, isChooser }) {
                         borderRadius: '100px',
                         boxShadow: 12,
                         '&.Mui-disabled': {
-                            opacity: (myRole === 'viewer' && !themeHasEnded) ? 1 : 0.5,
+                            opacity: (myRole === 'spectator' && !themeHasEnded) ? 1 : 0.5,
                             bgcolor: themeHasEnded ? 'grey.500' : 'primary.main',
                         },
                     }}

@@ -53,7 +53,7 @@ function MatchingController({ gameStates }) {
         case 'organizer':
             return <MatchingOrganizerController chooserTeamId={chooserTeamId} />
         default:
-            return <MatchingViewerController chooserTeamId={chooserTeamId} />
+            return <MatchingSpectatorController chooserTeamId={chooserTeamId} />
     }
 
 }
@@ -87,7 +87,7 @@ function MatchingOrganizerQuestionController({ }) {
 }
 
 
-function MatchingViewerController({ chooserTeamId }) {
+function MatchingSpectatorController({ chooserTeamId }) {
     return (
         <div className='flex flex-col h-full items-center justify-center'>
             <span className='text-4xl font-bold'><GameChooserHelperText chooserTeamId={chooserTeamId} /></span>

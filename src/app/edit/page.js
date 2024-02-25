@@ -5,53 +5,30 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 
 import { MyNumberInput, MyTextInput } from '@/app/components/forms/StyledFormComponents'
-import { UploadImage } from '@/app/components/forms/UploadFile';
 import SubmitFormButton from '@/app/components/forms/SubmitFormButton';
-import SelectQuestionTopic from '@/app/submit/components/SelectQuestionTopic';
-import QuestionFormHeader from '@/app/submit/components/QuestionFormHeader';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/lib/utils/locales';
-import { topicSchema } from '@/lib/utils/topics';
 import { stringSchema } from '@/lib/utils/forms';
-import { getFileFromRef, imageFileSchema } from '@/lib/utils/files';
-import { IMAGE_ANSWER_EXAMPLE, IMAGE_ANSWER_MAX_LENGTH, IMAGE_TITLE_EXAMPLE, IMAGE_TITLE_MAX_LENGTH } from '@/lib/utils/question/image';
+import { IMAGE_TITLE_MAX_LENGTH } from '@/lib/utils/question/image';
 
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation'
-
-import { addNewQuestion } from '@/lib/firebase/firestore';
-import { updateQuestionImage } from '@/lib/firebase/storage';
-import { runTransaction, serverTimestamp } from 'firebase/firestore';
-import { handleImageFormSubmission, handleQuestionFormSubmission } from '@/app/submit/actions';
 
 import SelectLanguage from '@/app/submit/components/SelectLanguage';
 
 import { useAsyncAction } from '@/lib/utils/async';
 import { GAME_DEFAULT_TYPE, GAME_MAX_NUMBER_OF_PLAYERS, GAME_MIN_NUMBER_OF_PLAYERS, GAME_PARTICIPANT_NAME_MAX_LENGTH, GAME_TITLE_EXAMPLE, GAME_TITLE_MAX_LENGTH, gameTypeSchema } from '@/lib/utils/game';
 import SelectGameType from './components/SelectGameType';
-import { db } from '@/lib/firebase/firebase';
 import { createGame } from './[id]/lib/create-game';
 
 export default function Page({ }) {
     const { data: session } = useSession()
     const router = useRouter()
 
-    const [createNewGame, isSubmitting] = useAsyncAction(async (values, userId, fileRef) => {
-        try {
-            const { title, type, lang, maxPlayers, organizerName } = values;
-
-            const gameId = await createGame(title, type, lang, maxPlayers, organizerName, userId);
-            console.log("Game ID:", gameId)
-            // const image = getFileFromRef(fileRef);
-            // if (image) {
-            //     await updateQuestionImage(image, gameId, questionId);
-            // }
-
-            router.push('/edit/' + gameId);
-        } catch (error) {
-            console.error("There was an error creating the game:", error)
-            router.push('/')
-        }
+    const [createNewGame, isSubmitting] = useAsyncAction(async (values, userId) => {
+        const { title, type, lang, maxPlayers, organizerName } = values;
+        const gameId = await createGame(title, type, lang, maxPlayers, organizerName, userId);
+        router.push('/edit/' + gameId);
     });
 
     // Protected route
@@ -85,7 +62,14 @@ export default function Page({ }) {
                     // imageFiles: ''
 
                 }}
-                onSubmit={async values => await createNewGame(values, user.id, fileRef)}
+                onSubmit={async values => {
+                    try {
+                        await createNewGame(values, user.id)
+                    } catch (error) {
+                        console.error("There was an error creating the game:", error)
+                        router.push('/')
+                    }
+                }}
                 validationSchema={validationSchema}
             >
                 <Form>

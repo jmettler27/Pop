@@ -81,11 +81,11 @@ export function questionTypeToTitle(questionType, lang = 'en') {
     return QUESTION_TYPE_TO_TITLE[lang][questionType]
 }
 
-import { prependWithEmojiAndSpace } from '@/lib/utils/emojis';
 export function questionTypeToEmoji(questionType) {
     return QUESTION_TYPE_TO_EMOJI[questionType]
 }
 
+import { prependWithEmojiAndSpace } from '@/lib/utils/emojis';
 export function prependQuestionTypeWithEmoji(questionType, lang = 'en') {
     return prependWithEmojiAndSpace(questionTypeToEmoji(questionType), questionTypeToTitle(questionType, lang))
 }
