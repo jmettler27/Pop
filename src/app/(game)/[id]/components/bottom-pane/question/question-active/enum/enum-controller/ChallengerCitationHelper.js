@@ -41,7 +41,7 @@ export default function ChallengerCitationHelper({ }) {
 function ChallengerName({ challengerId }) {
     const { id: gameId } = useParams()
 
-    const [challengerData, challengerDataLoading, challengerDataError] = useDocumentDataOnce(doc(GAMES_COLLECTION_REF, game.id, 'players', challengerId))
+    const [challengerData, challengerDataLoading, challengerDataError] = useDocumentDataOnce(doc(GAMES_COLLECTION_REF, gameId, 'players', challengerId))
     if (challengerDataError) {
         return <p><strong>Error: {JSON.stringify(challengerDataError)}</strong></p>
     }

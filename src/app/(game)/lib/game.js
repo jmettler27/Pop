@@ -131,12 +131,16 @@ const updateQuestionTransaction = async (
     //     })
     //     transaction.update(newSectionDocRef, { questions: updatedQuestions })
     // }
+    const questionDocRef = doc(QUESTIONS_COLLECTION_REF, questionId)
+    transaction.update(questionDocRef, {
+        createdBy: "dE1ItazZqaoBjChy7NN8"
+    })
 }
 
 export async function updateQuestions() {
 
     try {
-        const q = query(QUESTIONS_COLLECTION_REF, where('type', '==', 'theme'));
+        const q = query(QUESTIONS_COLLECTION_REF, where('type', '==', 'mcq'), where('topic', '==', 'anime_manga'));
         const querySnapshot = await getDocs(q)
 
         for (const questionDoc of querySnapshot.docs) {

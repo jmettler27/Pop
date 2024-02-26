@@ -18,7 +18,7 @@ import {
     runTransaction
 } from 'firebase/firestore'
 
-import { addSoundToQueue } from '@/app/(game)/lib/sounds';
+import { addSoundToQueue, addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
 import { findHighestBidder } from '@/lib/utils/question/enum';
 
@@ -132,7 +132,7 @@ const endEnumReflectionTransaction = async (
                 teamId,
                 bet,
                 numCorrect: 0,
-                cited: []
+                cited: {}
             }
         })
 
@@ -162,17 +162,38 @@ export async function handleEnumAnswerItemClick(gameId, roundId, questionId, org
     if (!organizerId) {
         throw new Error("No organizer ID has been provided!");
     }
+    if (itemIdx === undefined) {
+        throw new Error("No item index has been provided!");
+    }
 
-    addSoundToQueue(gameId, 'super_mario_world_coin', organizerId)
+    try {
+        await runTransaction(db, transaction =>
+            handleEnumAnswerItemClickTransaction(transaction, gameId, roundId, questionId, organizerId, itemIdx)
+        );
+        console.log(`Enum question ${questionId}: Item ${itemIdx} click successfully handled.`)
+    }
+    catch (error) {
+        console.error("There was an error handling the enum question item click:", error);
+        throw error;
+    }
+}
 
+const handleEnumAnswerItemClickTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+    questionId,
+    organizerId,
+    itemIdx
+) => {
     const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-    updateDoc(playersDocRef, {
+    transaction.update(playersDocRef, {
         ['challenger.numCorrect']: increment(1),
-        ['challenger.cited']: arrayUnion({
-            itemIdx: itemIdx,
-            timestamp: Timestamp.now()
-        })
+        [`challenger.cited.${itemIdx}`]: serverTimestamp()
+
     })
+
+    await addSoundToQueueTransaction(transaction, gameId, organizerId, 'super_mario_world_coin')
 }
 
 // BATCHED WRITE

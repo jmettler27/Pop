@@ -282,7 +282,7 @@ All users can adjust the volume of the sound effects, or mute them entirely.
 
 When joining a game, a player can choose to either **play alone**, **create a new team** or **join an existing team**. If the game is full, the player will automatically become a spectator. The maximum number players allowed is decided by the organizer(s).
 
-Moreover, the player can choose a nickname for the game, and a color for their team, if they play one or create a new team.
+Moreover, the player can choose a nickname for the game, and a color for their team, if they play solo or create a new team.
 
 ## Creating and submitting questions (`/submit`)
 

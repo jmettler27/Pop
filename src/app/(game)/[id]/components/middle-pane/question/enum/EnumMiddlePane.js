@@ -62,7 +62,7 @@ function EnumQuestionAnswer({ answer }) {
     const myRole = useRoleContext()
     const user = useUserContext()
 
-    const showComplete = (game.status === 'question_end' || myRole === 'organizer')
+    const showComplete = (game.status === 'question_end' || myRole === 'organizer') // 'player' or 'viewer'
 
     const [handleClick, isSubmitting] = useAsyncAction(async (itemIdx) => {
         await handleEnumAnswerItemClick(game.id, game.currentRound, game.currentQuestion, user.id, itemIdx)
@@ -96,7 +96,8 @@ function EnumQuestionAnswer({ answer }) {
     return (
         <ul className='list-disc pl-10 h-full w-full flex flex-col flex-wrap overflow-auto items-center justify-center'>
             {answer.map((item, index) => {
-                const isCited = players.challenger?.cited.some((element) => element.itemIdx === index)
+                const isCited = players.challenger?.cited[index] !== undefined
+
                 const isSelectable = !isSubmitting && (myRole === 'organizer' && realtime.status === 'challenge_active' && timer.status === 'started') && !isCited
 
                 return (

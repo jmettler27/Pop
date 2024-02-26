@@ -41,7 +41,6 @@ export async function handleSelectRound(gameId, roundId, userId) {
         throw new Error("No user ID has been provided!")
     }
     try {
-        addSoundToQueue(gameId, 'super_mario_odyssey_moon', userId)
         await runTransaction(db, transaction =>
             selectRoundTransaction(transaction, gameId, roundId, userId)
         );
@@ -69,7 +68,7 @@ const selectRoundTransaction = async (
     ]);
 
     let prevOrder = -1
-    if (gameData.currentRound) {
+    if (gameData.currentRound !== null) {
         const prevRoundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', gameData.currentRound)
         const prevRoundData = await getDocDataTransaction(transaction, prevRoundRef)
         prevOrder = prevRoundData.order
@@ -105,7 +104,7 @@ const selectRoundTransaction = async (
     transaction.update(roundRef, {
         dateStart: serverTimestamp(),
         order: newOrder,
-        currentQuestionIdx: 0
+        ...(roundData.type !== 'finale' ? { currentQuestionIdx: 0 } : {})
     })
 
     // If the round requires an order of chooser teams (e.g. OOO, MCQ) and it is the first round, find a random order for the chooser teams
@@ -130,6 +129,8 @@ const selectRoundTransaction = async (
     transaction.update(timerRef, {
         status: 'resetted'
     })
+
+    await addSoundToQueueTransaction(transaction, gameId, userId, 'super_mario_odyssey_moon')
 
     transaction.update(gameRef, {
         currentRound: roundId,

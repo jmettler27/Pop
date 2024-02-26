@@ -61,8 +61,8 @@ export default function OrganizerSpeedDial() {
         e.preventDefault()
         switch (name) {
             case 'Share':
-                // await updateQuestion()
-                // await updateQuestions()
+                // await updateQuestion('1lmRT0S6cGU1llD0d8ya')
+                await updateQuestions()
                 break
             case 'Soundboard':
                 handleBackdropOpen()
