@@ -6,11 +6,11 @@
 
 It allows authenticated users to create, organize, play and/or spectate quizz games with friends, that revolve around ***pop culture*** in general, whether it be *video games*, *movies*, *animes/mangas*, *music*, *literature*, *Internet*, etc.
 
-## Authentication
+## 🔓 Authentication
 
 The app uses [NextAuth.js](https://next-auth.js.org/) to authenticate users. The authentication session tokens, accounts and users information is stored in a [Firestore Database](https://firebase.google.com/docs/firestore). The authentication proposes the following **OAuth2** providers: [Google](https://next-auth.js.org/providers/google) and [Discord](https://next-auth.js.org/providers/discord)
 
-## Structure of a Game
+## ℹ️ Structure of a Game
 
 Each game is structured in multiple **rounds**, each consisting of various **questions** of specific types. Teams accumulate points within each round, determining their positions on a point scale. By default, the latter is set to:
 
@@ -38,7 +38,7 @@ Players can either play alone or in teams. To simplify the code, a solo player i
 
 The **spectators** are the users who joined the game in an observer role. They can see the game's state and the players' scores, but they are not given any controls.
 
-### Scoring System
+### 💯 Scoring System
 
 There are two scoring systems for each team, displayed at the top of the screen:
 
@@ -49,7 +49,8 @@ There are two scoring systems for each team, displayed at the top of the screen:
 
 ***Pop!*** features 9 types of questions, each with unique rules and gameplay. In addition, a special round is available at the end of the game, as a final step to determine the winner.
 
-⚠️ It is important to note that the game is designed to be played while chatting in-person or on a VoIP application such as Discord or Zoom.
+> [!WARNING]
+> The game is designed to be played while chatting in-person or on a VoIP application such as Discord or Zoom.
 
 The game's homepage (`game_home`) displays the available rounds. After each round, the team with the lowest points (or a randomly selected one if there are multiple lowest-scoring teams) chooses the next round. The initial **"chooser"** team is randomly selected at the start of the game.
 
@@ -183,7 +184,7 @@ The team that selected the odd one out is at disadvantage for the next question,
 
 An example round is visible [on YouTube](https://youtu.be/JscPXeTtSIM?si=YB09-zl5ZlZbXeje&t=1170) (in French).
 
-### 💖 Matchings (`matching`)
+### 💖 Matching (`matching`)
 
 Each question consists in **2 or 3 columns of proposals** between which there exists a **unique combination (the matchings)**. The goal is to find all the correct matchings between the columns.
 
@@ -265,7 +266,7 @@ A line chart illustrates each team's score progression within the round, aiding 
 
 ![round-end](https://github.com/jmettler27/qpc/assets/56764091/fa803074-f1e7-462a-95a3-9859152e1a34)
 
-### Sound Effects
+### 🔊 Sound Effects
 
 The game features a variety of **sound effects**, stored in the Firebase Storage, which are played in response to specific events, such as:
 
@@ -294,7 +295,7 @@ The submission process is handled by filling a form, that is different for each 
 
 <https://github.com/jmettler27/qpc/assets/56764091/d1a1443a-409e-4419-a62b-e688299df7c5>
 
-## Creating and editing games (`/edit` and `/edit/[gameId]`)
+## ✍️ Creating and editing games (`/edit` and `/edit/[gameId]`)
 
 An authenticated user can create a game (`/edit`), which gives them access to an editing dashboard (`/edit/[gameId]`) and automatically assigns them as organizer of this game. From there, they can add or remove rounds, then add or remove questions to a round, either by selecting one from the database or by creating a new question on-the-fly.
 
@@ -316,7 +317,7 @@ This prompted me to develop a web app that would facilitate real-time quiz games
 
 All question types in ***Pop!*** are in fact implementations of the question types we used in our original quiz games. Likewise, most of the database's questions are directly sourced from our past quiz game sessions.
 
-##  Technologies
+## 🧰 Technologies
 
 - UI: [React.js](https://reactjs.org/)
   - Styling:
