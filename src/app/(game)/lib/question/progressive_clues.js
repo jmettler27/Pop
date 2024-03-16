@@ -98,10 +98,14 @@ const handleNextClueClickTransaction = async (
 /* ====================================================================================================== */
 
 // WRITE
-export async function initProgressiveCluesQuestionRealtime(gameId, roundId, questionId) {
-    console.log("HERE")
+export const resetProgressiveCluesRealtimeTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+    questionId
+) => {
     const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    await updateDoc(realtimeDocRef, {
+    transaction.update(realtimeDocRef, {
         currentClueIdx: -1
     })
 }

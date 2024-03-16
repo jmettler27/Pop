@@ -237,7 +237,6 @@ export async function resetMatchingQuestion(gameId, roundId, questionId) {
     // updateQuestionWinner(gameId, roundId, questionId, null)
     const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
     batch.update(realtimeDocRef, {
-        managedBy: 'YhDISaNL0SaJg2Haa765',
     })
 
     const correctMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct')
@@ -256,4 +255,31 @@ export async function resetMatchingQuestion(gameId, roundId, questionId) {
     })
 
     await batch.commit()
+}
+
+export const resetMatchingQuestionTransaction = async (transaction, gameId, roundId, questionId) => {
+    const statesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
+    transaction.update(statesDocRef, {
+        chooserIdx: 0,
+    })
+
+    // updateQuestionWinner(gameId, roundId, questionId, null)
+    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.update(realtimeDocRef, {
+    })
+
+    const correctMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct')
+    transaction.set(correctMatchesDocRef, {
+        correctMatches: [],
+    })
+
+    const partiallyCorrectMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'partially_correct')
+    transaction.set(partiallyCorrectMatchesDocRef, {
+        partiallyCorrectMatches: [],
+    })
+
+    const incorrectMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'incorrect')
+    transaction.set(incorrectMatchesDocRef, {
+        incorrectMatches: [],
+    })
 }

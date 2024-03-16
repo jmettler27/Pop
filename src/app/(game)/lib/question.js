@@ -1,16 +1,16 @@
 "use server";
 
-import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
+import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
 import { db } from '@/lib/firebase/firebase'
-import { doc, serverTimestamp, updateDoc, writeBatch, } from 'firebase/firestore'
+import { doc, runTransaction, serverTimestamp, updateDoc, writeBatch, } from 'firebase/firestore'
 
-import { getDocData } from './utils';
-import { initProgressiveCluesQuestionRealtime } from './question/progressive_clues';
-import { resetRiddleQuestion } from './question/riddle';
-import { resetEnumQuestion as resetEnumQuestion } from './question/enum';
-import { resetOddOneOutQuestion } from './question/odd_one_out';
-import { resetMCQ } from './question/mcq';
-import { resetMatchingQuestion } from './question/matching';
+import { getDocData, getDocDataTransaction } from './utils';
+import { resetProgressiveCluesRealtimeTransaction } from './question/progressive_clues';
+import { resetRiddleQuestionTransaction } from './question/riddle';
+import { resetEnumQuestionTransaction } from './question/enum';
+import { resetOddOneOutQuestionTransaction } from './question/odd_one_out';
+import { resetMCQTransaction } from './question/mcq';
+import { resetMatchingQuestionTransaction } from './question/matching';
 
 /* ==================================================================================================== */
 // READ
@@ -43,33 +43,66 @@ export async function updateQuestionWinner(gameId, roundId, questionId, playerId
 
 // Reset question
 // REFACTOR: (questionPath, questionType)
-export async function resetQuestion(gameId, roundId, questionId, questionType = null) {
-    const type = questionType ? questionType : (await getQuestionData(questionId)).type
+export async function resetQuestion(gameId, roundId, questionId) {
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+    if (!roundId) {
+        throw new Error("No round ID has been provided!");
+    }
+    if (!questionId) {
+        throw new Error("No question ID has been provided!");
+    }
+
+    try {
+        await runTransaction(db, transaction =>
+            resetQuestionTransaction(transaction, gameId, roundId, questionId)
+        )
+        console.log("Question resetted successfully.");
+    }
+    catch (error) {
+        console.error("There was an error resetting the question:", error);
+        throw error;
+    }
+}
+
+export const resetQuestionTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+    questionId
+) => {
+    const questionDocRef = doc(QUESTIONS_COLLECTION_REF, questionId)
+    const questionData = await getDocDataTransaction(transaction, questionDocRef)
+
+    const type = questionData.type
     console.log(`Resetting question ${questionId} of type ${type}...`)
 
     switch (type) {
         case 'progressive_clues':
-            initProgressiveCluesQuestionRealtime(gameId, roundId, questionId)
+            await resetProgressiveCluesRealtimeTransaction(transaction, gameId, roundId, questionId)
         case 'image':
         case 'blindtest':
         case 'emoji':
-            await resetRiddleQuestion(gameId, roundId, questionId)
+            await resetRiddleQuestionTransaction(transaction, gameId, roundId, questionId)
             break
         case 'enum':
-            await resetEnumQuestion(gameId, roundId, questionId)
+            await resetEnumQuestionTransaction(transaction, gameId, roundId, questionId)
             break
         case 'odd_one_out':
-            await resetOddOneOutQuestion(gameId, roundId, questionId)
+            await resetOddOneOutQuestionTransaction(transaction, gameId, roundId, questionId)
             break
         case 'matching':
-            await resetMatchingQuestion(gameId, roundId, questionId)
+            await resetMatchingQuestionTransaction(transaction, gameId, roundId, questionId)
             break
         case 'mcq':
-            await resetMCQ(gameId, roundId, questionId)
+            await resetMCQTransaction(transaction, gameId, roundId, questionId)
             break
     }
 }
 
+/* ==================================================================================================== */
+// End question
 export async function organizerEndQuestion(gameId, roundId, questionId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");

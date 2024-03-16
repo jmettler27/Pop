@@ -165,9 +165,26 @@ export async function resetOddOneOutQuestion(gameId, roundId, questionId) {
     const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
     batch.update(realtimeDocRef, {
         winner: null,
-        managedBy: 'YhDISaNL0SaJg2Haa765',
         selectedItems: [],
     })
 
     await batch.commit()
+}
+
+export const resetOddOneOutQuestionTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+    questionId
+) => {
+    const statesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
+    transaction.update(statesDocRef, {
+        chooserIdx: 0,
+    })
+
+    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.update(realtimeDocRef, {
+        winner: null,
+        selectedItems: [],
+    })
 }

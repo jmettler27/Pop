@@ -13,13 +13,14 @@ import {
     where,
 } from 'firebase/firestore'
 
-import { resetAllRounds } from '@/app/(game)/lib/round';
+import { resetAllRounds, resetAllRoundsTransaction } from '@/app/(game)/lib/round';
 import { getInitTeamScores, initGameScores } from '@/app/(game)/lib/scores';
 import { updateAllPlayersStatuses } from '@/app/(game)/lib/players';
 import { initGameChooser } from '@/app/(game)/lib/chooser';
 import { getDocData, getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { clearSounds } from '@/app/(game)/lib/sounds';
 import { resetTimer } from '@/app/(game)/lib/timer';
+import { shuffle } from '@/lib/utils/arrays';
 
 /* ==================================================================================================== */
 // WRITE
@@ -61,27 +62,86 @@ export async function getGameStatesData(gameId) {
 /* ==================================================================================================== */
 // TRANSACTION
 export async function resetGame(gameId) {
-    const initTeamGameScores = await getInitTeamScores(gameId)
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
 
-    await updateGameFields(gameId, {
-        status: 'game_start', // 'game_start'
+    try {
+        await runTransaction(db, transaction =>
+            resetGameTransaction(transaction, gameId)
+        )
+        console.log(`Game ${gameId} reset successfully.`);
+    }
+    catch (error) {
+        console.error("There was an error resetting the game:", error);
+        throw error;
+    }
+}
+
+const resetGameTransaction = async (
+    transaction,
+    gameId
+) => {
+    const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
+    const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
+    const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue')
+
+    const [teamsQuerySnapshot, playersQuerySnapshot, queueQuerySnapshot] = await Promise.all([
+        getDocs(query(teamsCollectionRef)),
+        getDocs(query(playersCollectionRef)),
+        getDocs(query(queueCollectionRef))
+    ])
+    const { teamIds, initTeamGameScores, initTeamGameScoresProgress } = teamsQuerySnapshot.docs.reduce((acc, teamDoc) => {
+        acc.teamIds.push(teamDoc.id);
+        acc.initTeamGameScores[teamDoc.id] = 0;
+        acc.initTeamGameScoresProgress[teamDoc.id] = {};
+        return acc;
+    }, { teamIds: [], initTeamGameScores: {}, initTeamGameScoresProgress: {} });
+
+    await resetAllRoundsTransaction(transaction, gameId)
+
+    // Reset game
+    const gameRef = doc(GAMES_COLLECTION_REF, gameId)
+    transaction.update(gameRef, {
         currentRound: null,
         currentQuestion: null,
+        dateEnd: null,
+        dateStart: null,
+        status: 'game_start',
     })
 
-    await resetTimer(gameId)
+    // Reset timer
+    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
+    transaction.update(timerDocRef, {
+        status: 'resetted',
+        duration: 5,
+        forward: false
+    })
 
-    initGameChooser(gameId)
+    // Init chooser
+    const shuffledTeamIds = shuffle(teamIds)
+    const gameStatesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
+    transaction.update(gameStatesDocRef, {
+        chooserIdx: 0,
+        chooserOrder: shuffledTeamIds
+    })
 
-    initGameScores(gameId)
+    // Init global scores
+    const gameScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'scores')
+    transaction.set(gameScoresRef, {
+        scores: initTeamGameScores,
+        scoresProgress: initTeamGameScoresProgress,
+    })
 
-    // BATCHED WRITE
-    updateAllPlayersStatuses(gameId, 'idle')
 
-    // BATCHED WRITE
-    clearSounds(gameId)
+    for (const playerDoc of playersQuerySnapshot.docs) {
+        transaction.update(playerDoc.ref, { status: 'idle' })
+    }
 
-    resetAllRounds(gameId)
+    // Clear sounds
+    for (const doc of queueQuerySnapshot.docs) {
+        transaction.delete(doc.ref)
+    }
 }
 
 

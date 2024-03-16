@@ -83,16 +83,6 @@ const initGameScoresTransaction = async (
 export async function initRoundScores(gameId, roundId) {
     const initTeamRoundScores = await getInitTeamScores(gameId)
 
-    // const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
-    // const querySnapshot = await getDocs(query(teamsCollectionRef))
-    // // Create a map of all the team ids with value 0 
-    // const initTeamRoundScoresProgress = {}
-    // const initTeamsScoresSequences = {}
-    // for (const teamDoc of querySnapshot.docs) {
-    //     initTeamRoundScoresProgress[teamDoc.id] = {}
-    //     initTeamsScoresSequences[teamDoc.id] = []
-    // }
-
     updateRoundScores(gameId, roundId, {
         scores: initTeamRoundScores,
         scoresProgress: {}, //initTeamRoundScoresProgress,

@@ -373,7 +373,6 @@ export async function resetEnumQuestion(gameId, roundId, questionId) {
     batch.set(realtimeDocRef, {
         status: 'reflection_active',
         winner: null,
-        managedBy: 'YhDISaNL0SaJg2Haa765'
     })
 
     const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
@@ -384,6 +383,26 @@ export async function resetEnumQuestion(gameId, roundId, questionId) {
     await batch.commit()
 }
 
+export const resetEnumQuestionTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+    questionId
+) => {
+    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    transaction.set(playersDocRef, {
+        bets: [],
+    })
+    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.set(realtimeDocRef, {
+        status: 'reflection_active',
+        winner: null,
+    })
+    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
+    transaction.update(timerDocRef, {
+        status: 'resetted'
+    })
+}
 
 // WRITE
 async function resetEnumBets(gameId, roundId, questionId) {

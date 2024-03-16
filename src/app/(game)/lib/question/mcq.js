@@ -234,13 +234,8 @@ export async function resetMCQ(gameId, roundId, questionId) {
 
     // updateQuestionWinner(gameId, roundId, questionId, null)
     const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-
-    // Clear the document
-    batch.set(realtimeDocRef, {
-    })
-
+    batch.set(realtimeDocRef, {})
     batch.update(realtimeDocRef, {
-        managedBy: 'YhDISaNL0SaJg2Haa765',
         playerId: null,
         teamId: null,
         option: null,
@@ -248,4 +243,21 @@ export async function resetMCQ(gameId, roundId, questionId) {
         correct: null
     })
     await batch.commit()
+}
+
+export const resetMCQTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+    questionId
+) => {
+    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.set(realtimeDocRef, {})
+    transaction.update(realtimeDocRef, {
+        playerId: null,
+        teamId: null,
+        option: null,
+        reward: null,
+        correct: null
+    })
 }

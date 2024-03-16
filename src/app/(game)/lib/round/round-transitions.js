@@ -368,10 +368,10 @@ const endRoundTransaction = async (
     // Reconstruct the missing scores for each team
     let filledRoundProgress = {}
     Object.keys(roundScores).forEach(teamId => {
-        const teamRoundProgress = currentRoundScoresProgress[teamId];
+        const teamRoundProgress = currentRoundScoresProgress[teamId] || {};
         let teamScores = {};
         for (const [idx, questionId] of questions.entries()) {
-            const scoreAtQuestion = teamRoundProgress[questionId]
+            const scoreAtQuestion = teamRoundProgress[questionId] || null;
             if (scoreAtQuestion != null) {
                 teamScores[questionId] = scoreAtQuestion;
                 continue;

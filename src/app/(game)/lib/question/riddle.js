@@ -251,7 +251,6 @@ async function initRiddleQuestionRealtime(gameId, roundId, questionId) {
 // BATCHED WRITE
 export async function resetRiddleQuestion(gameId, roundId, questionId) {
     const batch = writeBatch(db)
-    // initRiddleQuestionRealtime(gameId, roundId, questionId)
     const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
     batch.set(playersDocRef, {
         buzzed: [],
@@ -261,10 +260,27 @@ export async function resetRiddleQuestion(gameId, roundId, questionId) {
     const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
     batch.update(realtimeDocRef, {
         winner: null,
-        managedBy: 'YhDISaNL0SaJg2Haa765',
     })
 
     await batch.commit()
+}
+
+export const resetRiddleQuestionTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+    questionId
+) => {
+    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    transaction.set(playersDocRef, {
+        buzzed: [],
+        canceled: []
+    })
+
+    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.update(realtimeDocRef, {
+        winner: null,
+    })
 }
 
 export async function clearBuzzer(gameId, roundId, questionId) {

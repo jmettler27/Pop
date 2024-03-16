@@ -51,19 +51,26 @@ const startGameTransaction = async (
     const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
     const teamsQuerySnapshot = await getDocs(query(teamsCollectionRef))
 
-    const teamIds = teamsQuerySnapshot.docs.map(doc => doc.id)
+    const { teamIds, initTeamGameScores, initTeamGameScoresProgress } = teamsQuerySnapshot.docs.reduce((acc, teamDoc) => {
+        acc.teamIds.push(teamDoc.id);
+        acc.initTeamGameScores[teamDoc.id] = 0;
+        acc.initTeamGameScoresProgress[teamDoc.id] = {};
+        return acc;
+    }, { teamIds: [], initTeamGameScores: {}, initTeamGameScoresProgress: {} });
+
+
     const shuffledTeamIds = shuffle(teamIds)
     const chooserTeamId = shuffledTeamIds[0]
 
-    const initTeamGameScores = {}
-    const initTeamGameScoresProgress = {}
-    for (const teamDoc of teamsQuerySnapshot.docs) {
-        initTeamGameScores[teamDoc.id] = 0
-        initTeamGameScoresProgress[teamDoc.id] = {}
-    }
-
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
     const chooserPlayersQuerySnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', chooserTeamId)))
+
+    const gameRef = doc(GAMES_COLLECTION_REF, gameId)
+    transaction.update(gameRef, {
+        status: 'game_home',
+        dateStart: serverTimestamp(),
+    })
+
     for (const playerDoc of chooserPlayersQuerySnapshot.docs) {
         transaction.update(playerDoc.ref, {
             status: 'focus'
@@ -83,8 +90,6 @@ const startGameTransaction = async (
     })
 
     await addSoundToQueueTransaction(transaction, gameId, organizerId, 'ui-confirmation-alert-b2')
-
-    await updateGameStatusTransaction(transaction, gameId, 'game_home')
 }
 
 /* ==================================================================================================== */

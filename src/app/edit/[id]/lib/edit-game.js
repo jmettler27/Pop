@@ -350,7 +350,7 @@ const launchGameTransaction = async (
 ) => {
     const gameDocRef = doc(GAMES_COLLECTION_REF, gameId);
     transaction.update(gameDocRef, {
-        dateStart: serverTimestamp(),
+        launchedAt: serverTimestamp(),
         status: 'game_start'
     });
 }

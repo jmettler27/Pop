@@ -7,12 +7,14 @@ import {
     getDocs,
     doc,
     updateDoc,
+    runTransaction,
 } from 'firebase/firestore'
 
 import { resetQuestion } from '@/app/(game)/lib/question';
-import { initRoundScores } from '@/app/(game)/lib/scores';
+import { getInitTeamScores } from '@/app/(game)/lib/scores';
 import { getDocData } from '@/app/(game)/lib/utils';
 import { resetFinaleRound } from '@/app/(game)/lib/question/finale';
+import { db } from '@/lib/firebase/firebase';
 
 // READ
 export async function getRoundData(gameId, roundId) {
@@ -35,23 +37,42 @@ export async function updateRoundFields(gameId, roundId, fieldsToUpdate) {
 // Reset round
 // BATCHED WRITE
 export async function resetAllRounds(gameId) {
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+    try {
+        await runTransaction(db, transaction =>
+            resetAllRoundsTransaction(transaction, gameId)
+        )
+        console.log("All rounds resetted successfully.");
+    } catch (error) {
+        console.error("There was an error resetting all rounds:", error);
+        throw error;
+    }
+}
+
+export const resetAllRoundsTransaction = async (
+    transaction,
+    gameId
+) => {
     const roundsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds')
     const querySnapshot = await getDocs(query(roundsCollectionRef))
     for (const roundDoc of querySnapshot.docs) {
         if (roundDoc.data().type === 'finale') {
             // batched write
-            resetFinaleRound(gameId, roundDoc.id)
+            await resetFinaleRound(gameId, roundDoc.id)
             continue;
         }
 
         // Reset round document
-        await resetRound(gameId, roundDoc.id)
+        await resetRoundTransaction(transaction, gameId, roundDoc.id)
     }
 }
 
 // WRITE
 export async function resetRoundInfo(gameId, roundId) {
     await updateRoundFields(gameId, roundId, {
+        currentQuestionIdx: 0,
         dateEnd: null,
         dateStart: null,
         order: null,
@@ -59,25 +80,56 @@ export async function resetRoundInfo(gameId, roundId) {
 }
 
 // TRANSACTION
-async function resetRound(gameId, roundId) {
-    // WRITE
-    await resetRoundInfo(gameId, roundId)
+export async function resetRound(gameId, roundId) {
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+    if (!roundId) {
+        throw new Error("No round ID has been provided!");
+    }
 
-    // TRANSACTION
-    await initRoundScores(gameId, roundId)
-
-    // BATCHED WRITE
-    await resetAllRoundQuestions(gameId, roundId)
-
-    console.log(`Game ${gameId}, Round ${roundId} resetted`)
+    try {
+        await runTransaction(db, transaction =>
+            resetRoundTransaction(transaction, gameId, roundId)
+        )
+        console.log(`Round ${roundId} resetted successfully.`);
+    }
+    catch (error) {
+        console.error("There was an error resetting the round:", error);
+        throw error;
+    }
 }
 
-// BATCHED WRITE
-async function resetAllRoundQuestions(gameId, roundId) {
-    // Reset questions collection
+const resetRoundTransaction = async (
+    transaction,
+    gameId,
+    roundId
+) => {
     const questionsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions')
-    const querySnapshot = await getDocs(query(questionsCollectionRef))
-    for (const questionDoc of querySnapshot.docs) {
-        await resetQuestion(gameId, roundId, questionDoc.id, questionDoc.data().type)
+    const questionsQuerySnapshot = await getDocs(query(questionsCollectionRef))
+
+    const initTeamRoundScores = await getInitTeamScores(gameId)
+
+    for (const questionDoc of questionsQuerySnapshot.docs) {
+        await resetQuestion(gameId, roundId, questionDoc.id)
     }
+
+    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
+    transaction.update(roundScoresRef, {
+        scores: initTeamRoundScores,
+        scoresProgress: {},
+        teamsScoresSequences: {},
+        roundSortedTeams: [],
+        gameSortedTeams: []
+    })
+
+
+    const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
+    transaction.update(roundRef, {
+        currentQuestionIdx: 0,
+        dateEnd: null,
+        dateStart: null,
+        order: null,
+    })
+
 }
