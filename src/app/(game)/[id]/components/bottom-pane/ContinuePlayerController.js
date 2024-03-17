@@ -38,7 +38,7 @@ function ReadyButton({ myStatus, lang = 'en' }) {
     const [handlePlayerReadyClick, isSubmitting] = useAsyncAction(async () => {
         await Promise.all([
             updatePlayerStatus(gameId, user.id, 'ready'),
-            addSoundToQueue(gameId, 'pop', user.id),
+            addSoundToQueue(gameId, 'pop'),
         ])
     })
 

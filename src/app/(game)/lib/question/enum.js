@@ -18,7 +18,7 @@ import {
     runTransaction
 } from 'firebase/firestore'
 
-import { addSoundToQueue, addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
 import { findHighestBidder } from '@/lib/utils/question/enum';
 
@@ -41,7 +41,6 @@ export async function addPlayerBet(gameId, roundId, questionId, playerId, teamId
     batch.set(newSoundDocument, {
         timestamp: serverTimestamp(),
         filename: 'pop',
-        uid: playerId
     })
 
     const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
@@ -193,7 +192,7 @@ const handleEnumAnswerItemClickTransaction = async (
 
     })
 
-    await addSoundToQueueTransaction(transaction, gameId, organizerId, 'super_mario_world_coin')
+    await addSoundToQueueTransaction(transaction, gameId, 'super_mario_world_coin')
 }
 
 // BATCHED WRITE
@@ -217,7 +216,6 @@ export async function incrementChallengerNumCorrect(gameId, roundId, questionId,
     batch.set(newSoundDocument, {
         timestamp: serverTimestamp(),
         filename: 'super_mario_world_coin',
-        uid: organizerId
     })
 
     const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')

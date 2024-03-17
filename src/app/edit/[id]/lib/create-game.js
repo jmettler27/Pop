@@ -67,7 +67,7 @@ export const createGameTransaction = async (
     // Create realtime collection
     await createGameRealtimeTransaction(transaction, gameId);
 
-    await addSoundToQueueTransaction(transaction, gameId, organizerId, "level-passed");
+    await addSoundToQueueTransaction(transaction, gameId, "level-passed");
 
     return gameId;
 }

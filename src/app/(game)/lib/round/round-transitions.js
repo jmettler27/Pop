@@ -17,7 +17,7 @@ import {
 import { getNextCyclicIndex, shuffle } from '@/lib/utils/arrays';
 import { isRiddle, sortAscendingRoundScores } from '@/lib/utils/question_types';
 
-import { addSoundToQueue, addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
 import { sortScores } from '@/lib/utils/scores';
 
@@ -80,7 +80,7 @@ const selectRoundTransaction = async (
         return
     }
 
-    // await addSoundToQueueTransaction(transaction, gameId, userId, 'super_mario_odyssey_moon')
+    // await addSoundToQueueTransaction(transaction, gameId, 'super_mario_odyssey_moon')
 
     if (isRiddle(roundData.type) || roundData.type === 'enum') {
         // Set the status of every player to 'idle'
@@ -130,7 +130,7 @@ const selectRoundTransaction = async (
         status: 'resetted'
     })
 
-    await addSoundToQueueTransaction(transaction, gameId, userId, 'super_mario_odyssey_moon')
+    await addSoundToQueueTransaction(transaction, gameId, 'super_mario_odyssey_moon')
 
     transaction.update(gameRef, {
         currentRound: roundId,
@@ -211,7 +211,7 @@ const switchRoundQuestionTransaction = async (
     }
 
     if (questionData.type !== 'blindtest') {
-        await addSoundToQueueTransaction(transaction, gameId, "USER ID", 'skyrim_skill_increase')
+        await addSoundToQueueTransaction(transaction, gameId, 'skyrim_skill_increase')
     }
 
     if (questionData.type === 'odd_one_out' || questionData.type === 'matching') {
@@ -460,7 +460,7 @@ const endRoundTransaction = async (
     })
     await updateGameStatusTransaction(transaction, gameId, 'round_end')
 
-    await addSoundToQueueTransaction(transaction, gameId, "USER ID", 'level-passed')
+    await addSoundToQueueTransaction(transaction, gameId, 'level-passed')
 }
 
 
@@ -502,7 +502,6 @@ export async function startFinaleRound(gameId, roundId) {
     batch.set(newSoundDocument, {
         timestamp: serverTimestamp(),
         filename: 'ui-confirmation-alert-b2',
-        uid: 'USER ID'
     });
 
     await batch.commit()

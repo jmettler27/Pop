@@ -14,24 +14,22 @@ import {
 } from 'firebase/firestore'
 
 // WRITE
-export async function addSoundToQueue(gameId, filename, userId) {
+export async function addSoundToQueue(gameId, filename) {
     const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue')
     await addDoc(queueCollectionRef, {
         timestamp: serverTimestamp(),
         filename: filename,
-        uid: userId
     })
     console.log(`Game ${gameId} Sound ${filename} added to queue`)
 }
 
 
-export const addSoundToQueueTransaction = async (transaction, gameId, userId, filename) => {
+export const addSoundToQueueTransaction = async (transaction, gameId, filename) => {
     const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue');
     const newSoundDocument = doc(queueCollectionRef);
     transaction.set(newSoundDocument, {
         timestamp: serverTimestamp(),
         filename: filename,
-        uid: userId
     });
 };
 

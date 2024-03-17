@@ -101,7 +101,7 @@ const handleProposalClickTransaction = async (
         for (const playerDoc of querySnapshot.docs) {
             transaction.update(playerDoc.ref, { status: 'wrong' })
         }
-        await addSoundToQueueTransaction(transaction, gameId, userId, 'hysterical5')
+        await addSoundToQueueTransaction(transaction, gameId, 'hysterical5')
 
         transaction.update(realtimeDocRef, {
             dateEnd: serverTimestamp()
@@ -123,7 +123,7 @@ const handleProposalClickTransaction = async (
             for (const playerDoc of querySnapshot.docs) {
                 transaction.update(playerDoc.ref, { status: 'idle' })
             }
-            await addSoundToQueueTransaction(transaction, gameId, userId, 'Akeryo_en_susu')
+            await addSoundToQueueTransaction(transaction, gameId, 'Akeryo_en_susu')
 
             transaction.update(realtimeDocRef, {
                 dateEnd: serverTimestamp()
@@ -135,7 +135,7 @@ const handleProposalClickTransaction = async (
             for (const playerDoc of querySnapshot.docs) {
                 transaction.update(playerDoc.ref, { status: 'idle' })
             }
-            await addSoundToQueueTransaction(transaction, gameId, userId, 'Bien')
+            await addSoundToQueueTransaction(transaction, gameId, 'Bien')
         }
     }
     transaction.update(realtimeDocRef, {

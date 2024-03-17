@@ -103,7 +103,7 @@ const handleRiddleValidateAnswerClickTransaction = async (
     await updateGameStatusTransaction(transaction, gameId, 'question_end')
 
 
-    await addSoundToQueueTransaction(transaction, gameId, playerId, 'Anime wow')
+    await addSoundToQueueTransaction(transaction, gameId, 'Anime wow')
 }
 
 /* ==================================================================================================== */
@@ -168,7 +168,7 @@ const handleRiddleInvalidateAnswerClickTransaction = async (
         status: 'wrong'
     })
 
-    await addSoundToQueueTransaction(transaction, gameId, playerId, 'roblox_oof')
+    await addSoundToQueueTransaction(transaction, gameId, 'roblox_oof')
 
     // } else {
     //     /* Penalize only the player */
@@ -195,7 +195,7 @@ export async function addBuzzedPlayer(gameId, roundId, questionId, playerId) {
         buzzed: arrayUnion(playerId)
     })
 
-    addSoundToQueue(gameId, 'sfx-menu-validate', playerId)
+    addSoundToQueue(gameId, 'sfx-menu-validate')
 }
 
 // BATCHED WRITE
@@ -212,7 +212,6 @@ export async function removeBuzzedPlayer(gameId, roundId, questionId, playerId) 
     batch.set(newSoundDocument, {
         timestamp: serverTimestamp(),
         filename: 'JPP_de_lair',
-        uid: playerId
     })
 
     const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)

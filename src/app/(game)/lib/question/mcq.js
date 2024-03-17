@@ -134,7 +134,7 @@ const handleSubmitChoicePlayerTransaction = async (
         transaction.update(playerDoc.ref, { status: 'ready' })
     }
 
-    await addSoundToQueueTransaction(transaction, gameId, playerId, correct ? 'Anime wow' : 'hysterical5')
+    await addSoundToQueueTransaction(transaction, gameId, correct ? 'Anime wow' : 'hysterical5')
 
     // End the question
     await updateGameStatusTransaction(transaction, gameId, 'question_end')
@@ -222,7 +222,7 @@ const handleHideAnswerTransaction = async (
         transaction.update(playerDoc.ref, { status: 'ready' })
     }
 
-    await addSoundToQueueTransaction(transaction, gameId, playerId, correct ? 'Anime wow' : 'hysterical5')
+    await addSoundToQueueTransaction(transaction, gameId, correct ? 'Anime wow' : 'hysterical5')
 
     // End the question
     await updateGameStatusTransaction(transaction, gameId, 'question_end')

@@ -128,7 +128,7 @@ const submitMatchTransaction = async (
                 transaction.update(playerDoc.ref, { status: 'correct' })
             }
 
-            await addSoundToQueueTransaction(transaction, gameId, userId, 'Anime wow')
+            await addSoundToQueueTransaction(transaction, gameId, 'Anime wow')
 
             // Sort the UNIQUE scores according to the notion of "winner first" 
             const sortedUniqueRoundScores = sortScores(currentRoundScores, sortAscendingRoundScores('matching'));
@@ -150,7 +150,7 @@ const submitMatchTransaction = async (
         } else {
             // Case 1.1: The matching is correct but not the last one
             await switchNextChooserTransaction(transaction, gameId)
-            await addSoundToQueueTransaction(transaction, gameId, userId, 'OUI')
+            await addSoundToQueueTransaction(transaction, gameId, 'OUI')
             for (const playerDoc of playersQuerySnapshot.docs) {
                 transaction.update(playerDoc.ref, { status: 'correct' })
             }
@@ -186,7 +186,7 @@ const submitMatchTransaction = async (
         }
 
         await switchNextChooserTransaction(transaction, gameId)
-        await addSoundToQueueTransaction(transaction, gameId, userId, 'roblox_oof')
+        await addSoundToQueueTransaction(transaction, gameId, 'roblox_oof')
         for (const playerDoc of playersQuerySnapshot.docs) {
             transaction.update(playerDoc.ref, { status: 'wrong' })
         }

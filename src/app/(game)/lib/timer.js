@@ -38,7 +38,6 @@ export async function startTimer(gameId, organizerId) {
     batch.set(newSoundDocument, {
         timestamp: serverTimestamp(),
         filename: 'message-incoming',
-        uid: organizerId
     })
 
     const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')

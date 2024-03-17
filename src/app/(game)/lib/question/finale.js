@@ -217,7 +217,7 @@ const handleFinalePlayerAnswerTransaction = async (
     }
 
     if (invalidate) {
-        await addSoundToQueueTransaction(transaction, gameId, organizerId, 'black_ops_knife_stab')
+        await addSoundToQueueTransaction(transaction, gameId, 'black_ops_knife_stab')
 
         const gameScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'scores')
         transaction.update(gameScoresRef, {
@@ -312,7 +312,7 @@ const handleFinaleQuestionEndOrganizerContinueTransaction = async (
     /* Last question in section, Last section in the theme */
     // End the theme
     await endFinaleThemeTransaction(gameId, roundId, themeId, transaction)
-    await addSoundToQueueTransaction(transaction, gameId, organizerId, 'level-passed')
+    await addSoundToQueueTransaction(transaction, gameId, 'level-passed')
 }
 
 /* ==================================================================================================== */

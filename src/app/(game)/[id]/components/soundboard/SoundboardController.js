@@ -24,7 +24,7 @@ const SoundboardController = memo(function SoundboardController({ }) {
 
     const handleSelectSound = async (e) => {
         e.preventDefault()
-        addSoundToQueue(game.id, e.target.value, user.id)
+        addSoundToQueue(game.id, e.target.value)
     }
 
     return (

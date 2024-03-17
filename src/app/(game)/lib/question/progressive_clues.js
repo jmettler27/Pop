@@ -93,7 +93,7 @@ const handleNextClueClickTransaction = async (
         }
     }
 
-    await addSoundToQueueTransaction(transaction, gameId, organizerId, 'message-incoming')
+    await addSoundToQueueTransaction(transaction, gameId, 'message-incoming')
 }
 /* ====================================================================================================== */
 
