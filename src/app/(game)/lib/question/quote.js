@@ -92,7 +92,6 @@ const revealQuoteElementTransaction = async (
             playerId,
         }
     }
-    console.log("newRevealed:", newRevealed)
 
     /* Update the winner team scores */
     if (playerId) {

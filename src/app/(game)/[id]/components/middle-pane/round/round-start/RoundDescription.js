@@ -1,6 +1,7 @@
 import { mcqOptionToTitle, MCQ_OPTIONS, MCQ_OPTION_TO_ICON } from '@/lib/utils/question/mcq'
 import { OOO_ITEMS_LENGTH } from '@/lib/utils/question/odd_one_out'
 import { MATCHING_MAX_NUM_COLS, MATCHING_MIN_NUM_COLS } from '@/lib/utils/question/matching'
+import { quoteElementToEmoji } from '@/lib/utils/question/quote'
 
 export function RoundDescription({ round }) {
     switch (round.type) {
@@ -62,9 +63,16 @@ function EmojiRoundDescription({ round }) {
 
 function QuoteRoundDescription({ round }) {
     return <>
-        <p className='text-2xl text-center'>🧐 Trouvez l&apos;œuvre ainsi que le lieu/personnage/objet/... qui se cachent derrière chaque combinaison d&apos;emojis.</p>
-        <br></br>
-        <p className='text-2xl text-center'>🧩 Cette combinaison peut évoquer les <strong>idées générales</strong>, ou il peut s&apos;agir juste d&apos;un <strong>rébus</strong>, ça dépend.</p>
+        <p className='text-2xl text-center'>Chaque question consiste en</p>
+        <ul className='text-2xl list-disc pl-10'>
+            <li>{quoteElementToEmoji('quote')} Une <strong>réplique</strong></li>
+            <li>{quoteElementToEmoji('author')} La <strong>personne</strong> qui l&apos;a prononcée</li>
+            <li>{quoteElementToEmoji('source')} L&apos;<strong>œuvre</strong> dont elle est issue</li>
+        </ul>
+        <br />
+        <p className='text-2xl text-center'>🫣 <strong>Un, deux ou trois</strong> de ces éléments sont <strong>cachés</strong>: à vous de les retrouver.</p>
+        <br />
+        <p className='text-2xl text-center'>👁️ En cas de blocage, les organisateurs peuvent vous <strong>révéler un élément</strong>.</p>
     </>
 }
 

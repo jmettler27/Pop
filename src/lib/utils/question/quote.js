@@ -76,12 +76,11 @@ export function quoteElementIsRevealed(revealed, quoteElem) {
     return revealedObjIsNotEmpty
 }
 
-
-
 export function atLeastOneElementRevealed(revealed) {
-    for (let key in revealed) {
-        if (quoteElementIsRevealed(revealed, key)) {
-            return true
-        }
-    }
+    return Object.keys(revealed).some(key => quoteElementIsRevealed(revealed, key));
+}
+
+export function quotePartIsRevealed(revealed, quotePartIdx) {
+    const revealedObj = revealed['quote']
+    return !isObjectEmpty(revealedObj) && !isObjectEmpty(revealedObj[quotePartIdx])
 }

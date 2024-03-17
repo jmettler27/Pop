@@ -65,7 +65,7 @@ function QuoteRoundRules({ round }) {
         <p className='text-2xl text-center'>💡 Dès que vous avez une idée, <span className='font-bold text-red-500'>buzzez</span> en <strong>cliquant sur le bouton</strong> avec la <strong>souris</strong>.
             Vous pouvez <span className='font-bold text-blue-400'>annuler votre buzz</span> en <strong>cliquant sur le bouton &quot;Annuler&quot;</strong>.</p>
         <p className='text-2xl text-center'>🥇 Si vous êtes en tête de la file d&apos;attente (e.g., vous avez buzzé en premier) proposez votre réponse à l&apos;oral.</p>
-        {/* <p className='text-2xl text-center'>Pas besoin d&apos;être ultra précis. Si vous avez compris l&apos;idée, ça devrait aller.</p> */}
+        <p className='text-2xl text-center'>😈 Vous pouvez gagner des points <strong>même si vous ne connaissez pas tous les éléments !</strong></p>
     </>
 }
 
