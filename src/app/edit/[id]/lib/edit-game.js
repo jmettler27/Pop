@@ -1,13 +1,13 @@
 "use server";
 
-import { BLINDTEST_DEFAULT_REWARD } from '@/lib/utils/question/blindtest';
-import { EMOJI_DEFAULT_REWARD } from '@/lib/utils/question/emoji';
+import { BLINDTEST_DEFAULT_REWARD, BLINDTEST_DEFAULT_MAX_TRIES } from '@/lib/utils/question/blindtest';
+import { EMOJI_DEFAULT_REWARD, EMOJI_DEFAULT_MAX_TRIES } from '@/lib/utils/question/emoji';
 import { ENUM_DEFAULT_BONUS, ENUM_DEFAULT_REWARD } from '@/lib/utils/question/enum';
-import { IMAGE_DEFAULT_REWARD } from '@/lib/utils/question/image';
+import { IMAGE_DEFAULT_MAX_TRIES, IMAGE_DEFAULT_REWARD } from '@/lib/utils/question/image';
 import { MATCHING_DEFAULT_MISTAKE_PENALTY } from '@/lib/utils/question/matching';
 import { MCQ_DEFAULT_REWARDS } from '@/lib/utils/question/mcq';
 import { OOO_DEFAULT_MISTAKE_PENALTY } from '@/lib/utils/question/odd_one_out';
-import { PROGRESSIVE_CLUES_DEFAULT_DELAY, PROGRESSIVE_CLUES_DEFAULT_MAX_TRIES } from '@/lib/utils/question/progressive_clues';
+import { PROGRESSIVE_CLUES_DEFAULT_DELAY, PROGRESSIVE_CLUES_DEFAULT_MAX_TRIES, PROGRESSIVE_CLUES_DEFAULT_REWARD } from '@/lib/utils/question/progressive_clues';
 import { isRiddle } from '@/lib/utils/question_types';
 
 import { db } from '@/lib/firebase/firebase'
@@ -22,6 +22,7 @@ import {
 } from 'firebase/firestore'
 
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
+import { QUOTE_DEFAULT_MAX_TRIES, QUOTE_DEFAULT_REWARDS_PER_ELEMENT } from '@/lib/utils/question/quote';
 
 /* ==================================================================================================== */
 export async function addGameRound(gameId, title, type, rewards, rewardsPerQuestion) {
@@ -60,16 +61,26 @@ const addGameRoundTransaction = async (
     }
 
     if (type === 'progressive_clues') {
-        initRoundInfo.rewardsPerQuestion = 1
+        initRoundInfo.rewardsPerQuestion = PROGRESSIVE_CLUES_DEFAULT_REWARD
         initRoundInfo.invalidateTeam = false;
-        initRoundInfo.delay = PROGRESSIVE_CLUES_DEFAULT_DELAY
         initRoundInfo.maxTries = PROGRESSIVE_CLUES_DEFAULT_MAX_TRIES
+        initRoundInfo.delay = PROGRESSIVE_CLUES_DEFAULT_DELAY
     } else if (type === 'image') {
         initRoundInfo.rewardsPerQuestion = IMAGE_DEFAULT_REWARD
+        initRoundInfo.invalidateTeam = false;
+        initRoundInfo.maxTries = IMAGE_DEFAULT_MAX_TRIES
     } else if (type === 'blindtest') {
         initRoundInfo.rewardsPerQuestion = BLINDTEST_DEFAULT_REWARD
+        initRoundInfo.invalidateTeam = false;
+        initRoundInfo.maxTries = BLINDTEST_DEFAULT_MAX_TRIES
     } else if (type === 'emoji') {
         initRoundInfo.rewardsPerQuestion = EMOJI_DEFAULT_REWARD
+        initRoundInfo.invalidateTeam = false;
+        initRoundInfo.maxTries = EMOJI_DEFAULT_MAX_TRIES
+    } else if (type === 'quote') {
+        initRoundInfo.rewardsPerElement = QUOTE_DEFAULT_REWARDS_PER_ELEMENT
+        initRoundInfo.invalidateTeam = false;
+        initRoundInfo.maxTries = QUOTE_DEFAULT_MAX_TRIES
     } else if (type === 'enum') {
         initRoundInfo.rewardsPerQuestion = ENUM_DEFAULT_REWARD
         initRoundInfo.rewardsForBonus = ENUM_DEFAULT_BONUS;
@@ -164,6 +175,32 @@ const addGameQuestionTransaction = async (
             canceled: [],
         });
 
+    } else if (questionData.type === 'quote') {
+        transaction.set(questionRealtimeRef, {
+            ...commonRealtimeInfo,
+        });
+
+        const { toGuess } = questionData.details
+        const initialRevealed = toGuess.reduce((acc, elem) => {
+            acc[elem] = {}
+            return acc
+        }, {})
+        if (toGuess.includes('quote')) {
+            const { quoteParts } = questionData.details
+            initialRevealed['quote'] = quoteParts.reduce((acc, _, idx) => {
+                acc[idx] = {}
+                return acc
+            }, {})
+        }
+        transaction.update(questionRealtimeRef, {
+            revealed: initialRevealed
+        })
+
+        const questionRealtimePlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+        transaction.set(questionRealtimePlayersRef, {
+            buzzed: [],
+            canceled: []
+        })
     } else if (questionData.type === 'enum') {
         transaction.set(questionRealtimeRef, {
             ...commonRealtimeInfo,
@@ -250,6 +287,11 @@ const removeRoundFromGameTransaction = async (
 
     const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId);
     transaction.delete(roundRef);
+
+    const gameRef = doc(GAMES_COLLECTION_REF, gameId);
+    transaction.update(gameRef, {
+        rounds: arrayRemove(roundId)
+    });
 }
 
 

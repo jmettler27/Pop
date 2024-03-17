@@ -55,9 +55,9 @@ function QuoteMainContent({ question }) {
     const { quote, source, author, toGuess, quoteParts } = question.details
 
     return (
-        <div className='flex flex-col h-full w-2/3 items-center justify-center space-y-2'>
-            <blockquote className='text-3xl md:text-4xl dark:text-white'>&quot;{<DisplayedQuote toGuess={toGuess} revealed={revealed} quote={quote} quoteParts={quoteParts} />}&quot;</blockquote>
-            <h4 className='text-3xl md:text-4xl dark:text-white'>- {<DisplayedAuthor toGuess={toGuess} revealed={revealed} author={author} />}, <i>{<DisplayedSource toGuess={toGuess} revealed={revealed} source={source} />}</i></h4>
+        <div className='flex flex-col h-full w-2/3 items-center justify-center space-y-5'>
+            <blockquote className='text-3xl md:text-5xl dark:text-white'>&quot;{<DisplayedQuote toGuess={toGuess} revealed={revealed} quote={quote} quoteParts={quoteParts} />}&quot;</blockquote>
+            <h4 className='text-3xl md:text-5xl dark:text-white'>- {<DisplayedAuthor toGuess={toGuess} revealed={revealed} author={author} />}, <i>{<DisplayedSource toGuess={toGuess} revealed={revealed} source={source} />}</i></h4>
         </div>
     );
 }
@@ -138,10 +138,10 @@ const DisplayedQuote = ({ toGuess, revealed, quote, quoteParts }) => {
             const within = quote.substring(quotePart.startIdx, quotePart.endIdx + 1);
             lastIndex = quotePart.endIdx + 1;
 
-            parts.push(<span>{before}</span>);
+            parts.push(<span key={`before_${quotePartIdx}`}>{before}</span>);
 
             if (game.status === 'question_end') {
-                parts.push(<span className='text-green-500'>{within}</span>);
+                parts.push(<span key={`answer_${quotePartIdx}`} className='text-green-500'>{within}</span>);
                 return
             }
 
@@ -149,20 +149,20 @@ const DisplayedQuote = ({ toGuess, revealed, quote, quoteParts }) => {
             const hasBeenRevealed = !isObjectEmpty(revealedQuotePart)
             if (hasBeenRevealed) {
                 if (revealedQuotePart.playerId) { // Has been found by a player
-                    parts.push(<span className='text-green-500'>{within}</span>);
+                    parts.push(<span key={quotePartIdx} className='text-green-500'>{within}</span>);
                 } else { // Has been revealed by the organizer
-                    parts.push(<span className='text-blue-500'>{within}</span>);
+                    parts.push(<span key={quotePartIdx} className='text-blue-500'>{within}</span>);
                 }
             } else if (myRole === 'organizer') {
-                parts.push(<span className='text-yellow-500 pointer-events-auto cursor-pointer hover:opacity-50' onClick={() => handleQuotePartClick(quotePartIdx)} disabled={isSubmitting}>{within}</span>);
+                parts.push(<span key={quotePartIdx} className='text-yellow-500 pointer-events-auto cursor-pointer hover:opacity-50' onClick={() => handleQuotePartClick(quotePartIdx)} disabled={isSubmitting}>{within}</span>);
             } else {
                 // Replace all non-space characters of within with underscores
                 const replaced = within.replace(/\S/g, '_');
-                parts.push(<span className='text-yellow-500'>{replaced}</span>);
+                parts.push(<span key={quotePartIdx} className='text-yellow-500'>{replaced}</span>);
             }
         });
 
-        parts.push(<span>{quote.substring(lastIndex)}</span>);
+        parts.push(<span key={'lastIndex'}>{quote.substring(lastIndex)}</span>);
         return <>{parts}</>;
     }
     return <span>{quote}</span>

@@ -122,14 +122,9 @@ const revealQuoteElementTransaction = async (
     const { toGuess, quoteParts } = questionData.details
 
     const temp1 = toGuess.every(elem => newRevealed[elem] && !isObjectEmpty(newRevealed[elem]))
-    console.log("Temp1:", temp1)
-
     const newRevealedQuote = newRevealed['quote']
     const temp2 = quoteParts.every((_, idx) => newRevealedQuote[idx] && !isObjectEmpty(newRevealedQuote[idx]))
-    console.log("Temp2:", temp2)
-
     const allRevealed = temp1 && temp2
-    console.log("All revealed:", allRevealed)
 
     transaction.update(questionRealtimeRef, {
         revealed: newRevealed
@@ -297,7 +292,7 @@ const cancelQuotePlayerTransaction = async (
     // updatePlayerStatus(gameId, playerId, 'wrong')
     const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
     transaction.update(playerRef, {
-        status: 'idle'
+        status: 'wrong'
     })
 
     await addSoundToQueueTransaction(transaction, gameId, 'roblox_oof')
