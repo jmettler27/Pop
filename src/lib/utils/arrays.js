@@ -27,6 +27,10 @@ export function getRandomElement(array) {
     return array[randomIndex];
 }
 
+export function getRandomIndex(array) {
+    return Math.floor(Math.random() * array.length);
+}
+
 export function moveToHead(elem, array) {
     const index = array.indexOf(elem);
     if (index > -1) {
@@ -34,4 +38,8 @@ export function moveToHead(elem, array) {
     }
     array.unshift(elem);
     return array;
+}
+
+export function isEmpty(array) {
+    return array.length === 0;
 }

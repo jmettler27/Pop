@@ -89,7 +89,7 @@ const startGameTransaction = async (
         scoresProgress: initTeamGameScoresProgress,
     })
 
-    await addSoundToQueueTransaction(transaction, gameId, organizerId, 'ui-confirmation-alert-b2')
+    await addSoundToQueueTransaction(transaction, gameId, 'ui-confirmation-alert-b2')
 }
 
 /* ==================================================================================================== */
