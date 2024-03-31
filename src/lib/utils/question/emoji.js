@@ -12,6 +12,8 @@ export const EMOJI_ANSWER_TITLE_MAX_LENGTH = 50
 
 export const EMOJI_DEFAULT_REWARD = 1
 
+export const EMOJI_DEFAULT_MAX_TRIES = 2
+
 /* Validation  */
 import * as Yup from 'yup'
 

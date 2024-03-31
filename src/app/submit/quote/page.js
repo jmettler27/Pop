@@ -18,7 +18,7 @@ import {
     QUOTE_MAX_LENGTH, QUOTE_EXAMPLE,
     QUOTE_SOURCE_EXAMPLE, QUOTE_SOURCE_MAX_LENGTH,
     QUOTE_AUTHOR_EXAMPLE, QUOTE_AUTHOR_MAX_LENGTH,
-    QUOTE_GUESSABLE_PARTS,
+    QUOTE_ELEMENTS,
     replaceAllNonSpace, replaceSubstrings
 } from '@/lib/utils/question/quote';
 
@@ -121,10 +121,10 @@ export function SubmitQuoteQuestionForm({ userId, ...props }) {
                 validationSchema={Yup.object({
                     toGuess: Yup.array()
                         .of(Yup.string()
-                            .oneOf(QUOTE_GUESSABLE_PARTS, "Invalid guessable part.")
+                            .oneOf(QUOTE_ELEMENTS, "Invalid guessable part.")
                             .required("Required."))
                         .min(1, "You must select at least one.")
-                        .max(QUOTE_GUESSABLE_PARTS.length, `You can select at most ${QUOTE_GUESSABLE_PARTS.length}.`),
+                        .max(QUOTE_ELEMENTS.length, `You can select at most ${QUOTE_ELEMENTS.length}.`),
                     quoteParts: Yup.array()
                         .of(Yup.object({
                             startIdx: Yup.number()

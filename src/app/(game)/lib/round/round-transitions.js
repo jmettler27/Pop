@@ -82,7 +82,7 @@ const selectRoundTransaction = async (
 
     // await addSoundToQueueTransaction(transaction, gameId, 'super_mario_odyssey_moon')
 
-    if (isRiddle(roundData.type) || roundData.type === 'enum') {
+    if (isRiddle(roundData.type) || roundData.type === 'quote' || roundData.type === 'enum') {
         // Set the status of every player to 'idle'
         const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
         const querySnapshot = await getDocs(query(playersCollectionRef))

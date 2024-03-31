@@ -1,6 +1,7 @@
 import { useGameContext } from '@/app/(game)/contexts'
 
 import RiddleBottomPane from './riddle/RiddleBottomPane'
+import QuoteBottomPane from './quote/QuoteBottomPane'
 import MatchingBottomPane from './matching/MatchingBottomPane'
 import EnumBottomPane from './enum/EnumBottomPane'
 import OddOneOutBottomPane from './odd_one_out/OddOneOutBottomPane'
@@ -35,6 +36,8 @@ export default function QuestionActiveBottomPane({ }) {
         case 'blindtest':
         case 'emoji':
             return <RiddleBottomPane question={question} />
+        case 'quote':
+            return <QuoteBottomPane question={question} />
         case 'enum':
             return <EnumBottomPane question={question} />
         case 'odd_one_out':

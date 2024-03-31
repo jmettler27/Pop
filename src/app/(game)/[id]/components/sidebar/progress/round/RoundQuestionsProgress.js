@@ -265,8 +265,10 @@ function QuestionAnswerDetails({ question }) {
                 </Typography>
             )
         case 'blindtest':
-        case 'quote':
             return <BlindtestAnswerDetails question={question} />
+        case 'quote':
+            return <></>
+
         case 'odd_one_out':
             return <OddOneOutAnswerDetails question={question} />
         case 'enum':

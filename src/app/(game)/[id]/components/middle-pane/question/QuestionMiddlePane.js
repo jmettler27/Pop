@@ -7,6 +7,7 @@ import { useDocumentOnce } from 'react-firebase-hooks/firestore'
 import LoadingScreen from '@/app/components/LoadingScreen'
 
 import RiddleMiddlePane from './riddle/RiddleMiddlePane'
+import QuoteMiddlePane from './quote/QuoteMiddlePane'
 import EnumMiddlePane from './enum/EnumMiddlePane'
 import OddOneOutMiddlePane from './odd_one_out/OddOneOutMiddlePane'
 import MCQMiddlePane from './mcq/MCQMiddlePane'
@@ -33,7 +34,8 @@ export default function QuestionMiddlePane() {
         case 'emoji':
         case 'blindtest':
             return <RiddleMiddlePane question={question} />
-        // case 'quote':
+        case 'quote':
+            return <QuoteMiddlePane question={question} />
         case 'enum':
             return <EnumMiddlePane question={question} />
         case 'odd_one_out':

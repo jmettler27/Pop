@@ -11,6 +11,7 @@ import { resetEnumQuestionTransaction } from './question/enum';
 import { resetOddOneOutQuestionTransaction } from './question/odd_one_out';
 import { resetMCQTransaction } from './question/mcq';
 import { resetMatchingQuestionTransaction } from './question/matching';
+import { resetQuoteQuestionTransaction } from './question/quote';
 
 /* ==================================================================================================== */
 // READ
@@ -85,6 +86,9 @@ export const resetQuestionTransaction = async (
         case 'blindtest':
         case 'emoji':
             await resetRiddleQuestionTransaction(transaction, gameId, roundId, questionId)
+            break
+        case 'quote':
+            await resetQuoteQuestionTransaction(transaction, gameId, roundId, questionId)
             break
         case 'enum':
             await resetEnumQuestionTransaction(transaction, gameId, roundId, questionId)

@@ -58,7 +58,6 @@ export const isRiddle = (type) => {
         case 'image':
         case 'emoji':
         case 'blindtest':
-        case 'quote':
             return true;
         default:
             return false;

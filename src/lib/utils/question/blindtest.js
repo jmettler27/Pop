@@ -26,6 +26,8 @@ export const BLINDTEST_ANSWER_AUTHOR_MAX_LENGTH = 50
 
 export const BLINDTEST_DEFAULT_REWARD = 1
 
+export const BLINDTEST_DEFAULT_MAX_TRIES = 2
+
 /* Validation  */
 import * as Yup from 'yup'
 

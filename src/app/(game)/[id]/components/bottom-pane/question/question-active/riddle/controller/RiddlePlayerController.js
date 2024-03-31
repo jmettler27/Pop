@@ -42,14 +42,13 @@ export default function RiddlePlayerController({ players }) {
 
     const hasBuzzed = buzzed.includes(user.id)
     const isFirst = hasBuzzed && buzzed[0] === user.id
-    const isCanceled = player.status === 'wrong' || hasExceededMaxTries // TODO: replace "status === 'wrong'" with 
 
     return (
         <div className='flex flex-col h-full items-center justify-around'>
-            <BuzzerMessage isCanceled={isCanceled} hasExceededMaxTries={hasExceededMaxTries} round={round} myCanceledItems={myCanceledItems} isFirst={isFirst} hasBuzzed={hasBuzzed} />
+            <BuzzerMessage playerStatus={player.status} hasExceededMaxTries={hasExceededMaxTries} round={round} myCanceledItems={myCanceledItems} isFirst={isFirst} hasBuzzed={hasBuzzed} />
             <div className='flex flex-row w-full justify-center'>
-                <BuzzerButton isDisabled={hasBuzzed || isCanceled} />
-                <BuzzerResetButton isDisabled={!hasBuzzed || isCanceled} />
+                <BuzzerButton isDisabled={hasBuzzed || hasExceededMaxTries} />
+                <BuzzerResetButton isDisabled={!hasBuzzed || hasExceededMaxTries} />
             </div>
         </div>
     )
@@ -105,7 +104,7 @@ const RIDDLE_INCORRECT_ASNWER_TEXT = {
     'fr-FR': "Mauvaise réponse!"
 }
 
-function BuzzerMessage({ isCanceled, hasExceededMaxTries, round, myCanceledItems, isFirst, hasBuzzed, lang = 'en' }) {
+function BuzzerMessage({ playerStatus, hasExceededMaxTries, round, myCanceledItems, isFirst, hasBuzzed, lang = 'en' }) {
     const game = useGameContext()
     const realtimeDocRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
     const [realtime, realtimeLoading, realtimeError] = useDocumentData(realtimeDocRef)
@@ -119,7 +118,7 @@ function BuzzerMessage({ isCanceled, hasExceededMaxTries, round, myCanceledItems
         return <></>
     }
 
-    if (isCanceled) {
+    if (playerStatus === 'wrong' || hasExceededMaxTries) {
         if (hasExceededMaxTries)
             return <span className='text-3xl'>{MAX_TRIES_EXCEEDED_TEXT[lang]} ({round.maxTries})</span>
         const message = RIDDLE_INCORRECT_ASNWER_TEXT[lang]
