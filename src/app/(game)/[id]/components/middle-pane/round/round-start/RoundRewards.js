@@ -5,7 +5,7 @@ export function RoundRewards({ round }) {
         case 'finale':
             return <ThemesRoundRewards round={round} />
         default: return (
-            <div className='flex flex-col items-center justify-start space-y-4'>
+            <div className='flex flex-col items-center justify-start space-y-4 p-2'>
                 <RoundRewardsTitle round={round} />
                 <div className='flex flex-col items-center justify-start'>
                     <p className='text-2xl'>Le barème</p>

@@ -21,7 +21,7 @@ export default function RoundStartBody({ round }) {
 
             {/* Additional Remarks */}
             <div className='border-dashed border-4 p-2 w-[30%] h-full overflow-auto'>
-                <div className='flex flex-col items-center justify-start space-y-4'>
+                <div className='flex flex-col items-center justify-start space-y-4 p-2'>
                     <h1 className='text-3xl font-bold'>📜 Règles</h1>
                     <RoundRules round={round} />
                 </div>
@@ -39,7 +39,7 @@ export default function RoundStartBody({ round }) {
 function RoundGeneralInfo({ round }) {
     const numQuestions = round.questions.length
     return (
-        <div className='flex flex-col items-center justify-start'>
+        <div className='flex flex-col items-center justify-start p-2'>
             {round.type === 'finale' ?
                 <h1 className='text-3xl mb-4 font-bold'>{<FinaleNumThemes round={round} />} thèmes</h1> :
                 <h1 className='text-3xl mb-4 font-bold'>{numberToKeycapEmoji(numQuestions)} question{numQuestions > 1 && 's'}</h1>

@@ -46,7 +46,7 @@ function ImageRoundDescription({ round }) {
 
 function BlindtestRoundDescription({ round }) {
     return <>
-        <p className='text-2xl text-center'>🎧 Écoutez la musique, et devinez l&apos;œuvre dont elle est issue.</p>
+        <p className='text-2xl text-center'>🎧 Écoutez la musique ou le son, et répondez à la question.</p>
         <br></br>
         <p className='text-2xl text-center'>🎚️ Des contrôles vous permettent de <strong>régler le volume</strong> et d&apos;<strong>avancer dans la timeline</strong>.</p>
     </>
@@ -78,8 +78,10 @@ function QuoteRoundDescription({ round }) {
 
 function OddOneOutRoundDescription({ round }) {
     return <>
-        <p className='text-2xl text-center'>Une liste de <strong>{OOO_ITEMS_LENGTH} propositions</strong></p>
+        <p className='text-2xl text-center'>🔀 Une liste de <strong>{OOO_ITEMS_LENGTH} propositions</strong>, affichée dans un <strong>ordre aléatoire</strong> pour chaque participant.</p>
+        <br />
         <p className='text-2xl text-center'><span className='text-green-500'>Toutes vraies</span>, <span className='font-bold text-red-500'>sauf une!</span></p>
+        <br />
         <p className='text-2xl text-center'>Si vous connaissez l&apos;intrus, <strong>gardez-le secret</strong>... 🤫</p>
     </>
 }

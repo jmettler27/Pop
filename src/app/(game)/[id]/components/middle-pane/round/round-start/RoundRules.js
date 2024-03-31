@@ -38,7 +38,8 @@ function EmojiRoundRules({ round }) {
         <p className='text-2xl text-center'>💡 Dès que vous avez une idée, <span className='font-bold text-red-500'>buzzez</span> en <strong>cliquant sur le bouton</strong> avec la <strong>souris</strong>.
             Vous pouvez <span className='font-bold text-blue-400'>annuler votre buzz</span> en <strong>cliquant sur le bouton &quot;Annuler&quot;</strong>.</p>
         <p className='text-2xl text-center'>🥇 Si vous êtes en tête de la file d&apos;attente (e.g., vous avez buzzé en premier) proposez votre réponse à l&apos;oral.</p>
-        <p className='text-2xl text-center'>Pas besoin d&apos;être ultra précis. Si vous avez compris l&apos;idée, ça devrait aller.</p>
+        <p className='text-2xl text-center'>⚠️ Vous avez <strong>maximum {round.maxTries} essais par question</strong> !</p>
+        {/* <p className='text-2xl text-center'>Pas besoin d&apos;être ultra précis. Si vous avez compris l&apos;idée, ça devrait aller.</p> */}
     </>
 }
 
@@ -47,7 +48,8 @@ function ImageRoundRules({ round }) {
         <p className='text-2xl text-center'>💡 Dès que vous avez une idée, <span className='font-bold text-red-500'>buzzez</span> en <strong>cliquant sur le bouton</strong> avec la <strong>souris</strong>.
             Vous pouvez <span className='font-bold text-blue-400'>annuler votre buzz</span> en <strong>cliquant sur le bouton &quot;Annuler&quot;</strong>.</p>
         <p className='text-2xl text-center'>🥇 Si vous êtes en tête de la file d&apos;attente (e.g., vous avez buzzé en premier) proposez votre réponse à l&apos;oral.</p>
-        <p className='text-2xl text-center'>Pas besoin d&apos;être ultra précis. Si vous avez compris l&apos;idée, ça devrait aller.</p>
+        <p className='text-2xl text-center'>⚠️ Vous avez <strong>maximum {round.maxTries} essais par question</strong> !</p>
+        {/* <p className='text-2xl text-center'>Pas besoin d&apos;être ultra précis. Si vous avez compris l&apos;idée, ça devrait aller.</p> */}
     </>
 }
 
@@ -56,7 +58,8 @@ function BlindtestRoundRules({ round }) {
         <p className='text-2xl text-center'>💡 Dès que vous avez une idée, <span className='font-bold text-red-500'>buzzez</span> en <strong>cliquant sur le bouton</strong> avec la <strong>souris</strong>.
             Vous pouvez <span className='font-bold text-blue-400'>annuler votre buzz</span> en <strong>cliquant sur le bouton &quot;Annuler&quot;</strong>.</p>
         <p className='text-2xl text-center'>🥇 Si vous êtes en tête de la file d&apos;attente (e.g., vous avez buzzé en premier) proposez votre réponse à l&apos;oral.</p>
-        <p className='text-2xl text-center'>Pas besoin d&apos;être ultra précis. Si vous avez compris l&apos;idée, ça devrait aller.</p>
+        <p className='text-2xl text-center'>⚠️ Vous avez <strong>maximum {round.maxTries} essais par question</strong> !</p>
+        {/* <p className='text-2xl text-center'>Pas besoin d&apos;être ultra précis. Si vous avez compris l&apos;idée, ça devrait aller.</p> */}
     </>
 }
 
@@ -65,6 +68,7 @@ function QuoteRoundRules({ round }) {
         <p className='text-2xl text-center'>💡 Dès que vous avez une idée, <span className='font-bold text-red-500'>buzzez</span> en <strong>cliquant sur le bouton</strong> avec la <strong>souris</strong>.
             Vous pouvez <span className='font-bold text-blue-400'>annuler votre buzz</span> en <strong>cliquant sur le bouton &quot;Annuler&quot;</strong>.</p>
         <p className='text-2xl text-center'>🥇 Si vous êtes en tête de la file d&apos;attente (e.g., vous avez buzzé en premier) proposez votre réponse à l&apos;oral.</p>
+        <p className='text-2xl text-center'>⚠️ Vous avez <strong>maximum {round.maxTries} essais par question</strong> !</p>
         <p className='text-2xl text-center'>😈 Vous pouvez gagner des points <strong>même si vous ne connaissez pas tous les éléments !</strong></p>
     </>
 }
@@ -75,7 +79,7 @@ function OddOneOutRoundRules({ round }) {
         <p className='text-2xl text-center'>🖱️ Chaque équipe se relaie à son tour et <strong>clique sur une proposition de la liste qu&apos;elle considère juste</strong>.</p>
         <ul className='text-2xl list-disc pl-10'>
             <li>Si la proposition est <span className='text-green-500 font-bold'>vraie</span>, on passe à l&apos;équipe suivante.</li>
-            <li>Si la proposition est <span className='text-red-500 font-bold'>fausse</span>, on termine la question et l&apos;équipe gagne <strong>{round.rewardsPerQuestion} point.</strong></li>
+            <li>Si la proposition est <span className='text-red-500 font-bold'>fausse</span>, on termine la question et l&apos;équipe gagne <strong>{round.rewardsPerQuestion} point.</strong> De plus, elle devient <strong>1ère dans l&apos;ordre de passage de la question suivante</strong>.</li>
         </ul>
         <p className='text-2xl text-center'>ℹ️ Une petite <strong>explication</strong> est affichée à chaque fois.</p>
         <p className='text-2xl text-center'>L&apos;ordre de passage = {round.order > 0 ? `Le classement inversé de la manche ${round.order}` : 'Un ordre aléatoire'}.</p>

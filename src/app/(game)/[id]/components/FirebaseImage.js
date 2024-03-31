@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-export default function FirebaseImage({ url, alt }) {
+export default function FirebaseImage({ url, alt, height = '100%' }) {
 
     return (
         <Image
@@ -8,6 +8,6 @@ export default function FirebaseImage({ url, alt }) {
             alt={alt}
             width={0}
             height={0}
-            style={{ width: 'auto', height: '100%' }}
+            style={{ width: 'auto', height: height }}
         />)
 }

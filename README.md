@@ -128,8 +128,6 @@ An example round is shown [on YouTube](https://youtu.be/JscPXeTtSIM?si=ehytl5m_j
 
 ### 💬 Quote (`quote`)
 
-⚒️ Work in progress ⚒️
-
 In each question, a **quote** taken from an artwork is displayed, but with some aspects of it hidden. The goal is to reconstruct the quote by filling the missing parts. These can be a combination of:
 
 - the **author** of the quote
@@ -139,6 +137,7 @@ In each question, a **quote** taken from an artwork is displayed, but with some 
 Which aspect(s) of the quote is/are hidden is decided by the user who created the question beforehand.
 
 Again, each player is given a buzzer button and must give an oral answer.
+The trick in this type of questions is that the players must be able to reconstruct the quote as fast as possible, because the more parts of the quote are revealed, the less points the team will earn.
 
 ### 🗣️ Enumeration (`enum`)
 
