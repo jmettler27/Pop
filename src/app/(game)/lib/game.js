@@ -4,7 +4,6 @@ import { db } from '@/lib/firebase/firebase'
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore'
 import {
     collection,
-    deleteField,
     doc,
     getDocs,
     query,
@@ -13,13 +12,8 @@ import {
     where,
 } from 'firebase/firestore'
 
-import { resetAllRounds, resetAllRoundsTransaction } from '@/app/(game)/lib/round';
-import { getInitTeamScores, initGameScores } from '@/app/(game)/lib/scores';
-import { updateAllPlayersStatuses } from '@/app/(game)/lib/players';
-import { initGameChooser } from '@/app/(game)/lib/chooser';
-import { getDocData, getDocDataTransaction } from '@/app/(game)/lib/utils';
-import { clearSounds } from '@/app/(game)/lib/sounds';
-import { resetTimer } from '@/app/(game)/lib/timer';
+import { resetAllRoundsTransaction } from '@/app/(game)/lib/round';
+import { getDocData } from '@/app/(game)/lib/utils';
 import { shuffle } from '@/lib/utils/arrays';
 
 /* ==================================================================================================== */
@@ -131,6 +125,12 @@ const resetGameTransaction = async (
     transaction.set(gameScoresRef, {
         scores: initTeamGameScores,
         scoresProgress: initTeamGameScoresProgress,
+    })
+
+    const gameReadyDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready')
+    transaction.set(gameReadyDocRef, {
+        numPlayers: playersQuerySnapshot.size,
+        numReady: 0
     })
 
 

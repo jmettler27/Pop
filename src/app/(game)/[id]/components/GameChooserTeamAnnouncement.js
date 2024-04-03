@@ -6,9 +6,10 @@ import { CircularProgress } from '@mui/material'
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { collection, doc, query, where } from 'firebase/firestore'
 import { useDocumentData, useCollection } from 'react-firebase-hooks/firestore'
+import LoadingScreen from '@/app/components/LoadingScreen'
 
 
-export default function GameChooserTeamAnnouncement() {
+export default function GameChooserTeamAnnouncement({ }) {
     const game = useGameContext()
 
     const [states, statesLoading, statesError] = useDocumentData(doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'states'))
@@ -41,7 +42,7 @@ export function GameChooserHelperText({ chooserTeamId, lang = 'en' }) {
         return <p><strong>Error: {JSON.stringify(chooserPlayersError)}</strong></p>
     }
     if (chooserTeamLoading || chooserPlayersLoading) {
-        return <CircularProgress />
+        return <></>
     }
     if (!chooserTeam || !chooserPlayers) {
         return <></>

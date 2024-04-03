@@ -1,6 +1,6 @@
 "use server";
 
-import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
+import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
 import { db } from '@/lib/firebase/firebase'
 import {
     collection,
@@ -21,6 +21,7 @@ import {
 import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
 import { findHighestBidder } from '@/lib/utils/question/enum';
+import { updateTimerTransaction } from '../timer';
 
 // WRITE
 export async function updateEnumBets(gameId, roundId, questionId, fieldsToUpdate) {
@@ -123,6 +124,9 @@ const endEnumReflectionTransaction = async (
             status: 'question_end'
         })
     } else {
+        const questionDocRef = doc(QUESTIONS_COLLECTION_REF, questionId)
+        const questionData = await getDocDataTransaction(transaction, questionDocRef)
+
         // Calculate the 'challenger' of this question (the best player)
         const [playerId, teamId, bet] = findHighestBidder(playersData.bets)
         transaction.update(playersDocRef, {
@@ -142,6 +146,11 @@ const endEnumReflectionTransaction = async (
 
         transaction.update(realtimeDocRef, {
             status: 'challenge_active'
+        })
+
+        //  gameId: any, status: any, duration?: number, forward?
+        await updateTimerTransaction(transaction, gameId, {
+            duration: questionData.challengeTime
         })
     }
 }

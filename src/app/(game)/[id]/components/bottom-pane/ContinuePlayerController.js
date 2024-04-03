@@ -1,9 +1,9 @@
 import { useParams } from 'next/navigation'
 
-import { useGameContext } from '@/app/(game)/contexts'
 import { useUserContext } from '@/app/contexts'
 
 import { Button, CircularProgress } from '@mui/material'
+import HowToRegIcon from '@mui/icons-material/HowToReg'
 
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { doc } from 'firebase/firestore'
@@ -11,11 +11,10 @@ import { useDocumentData } from 'react-firebase-hooks/firestore'
 
 import LoadingScreen from '@/app/components/LoadingScreen'
 
-import HowToRegIcon from '@mui/icons-material/HowToReg'
-import { addSoundToQueue } from '@/app/(game)/lib/sounds'
-import { updatePlayerStatus } from '@/app/(game)/lib/players'
 import { getRandomElement } from '@/lib/utils/arrays'
 import { useAsyncAction } from '@/lib/utils/async'
+
+import { setPlayerReady } from '@/app/(game)/lib/question/question-transitions'
 
 export default function ContinuePlayerController({ }) {
     const { id: gameId } = useParams()
@@ -36,10 +35,7 @@ function ReadyButton({ myStatus, lang = 'en' }) {
     const user = useUserContext()
 
     const [handlePlayerReadyClick, isSubmitting] = useAsyncAction(async () => {
-        await Promise.all([
-            updatePlayerStatus(gameId, user.id, 'ready'),
-            addSoundToQueue(gameId, 'pop'),
-        ])
+        await setPlayerReady(gameId, user.id)
     })
 
     return (
@@ -94,7 +90,6 @@ const READY_BUTTON_TEXT_FR = [
     "Je suis prêt comme un chat à la chasse aux souris!",
     "Prêt à déguster les défis comme un chef étoilé de l'aventure!"
 ];
-
 
 const READY_BUTTON_TEXT = {
     'en': getRandomElement(READY_BUTTON_TEXT_EN),

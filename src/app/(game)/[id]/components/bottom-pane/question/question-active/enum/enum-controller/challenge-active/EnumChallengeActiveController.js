@@ -1,8 +1,9 @@
 
 import { useGameContext, useRoleContext } from "@/app/(game)/contexts"
 
-import Timer from '@/app/(game)/[id]/components/Timer'
-import EnumOrganizerTimerController from '@/app/(game)/[id]/components/bottom-pane/question/question-active/enum/enum-controller/EnumOrganizerTimerController'
+import Timer from '@/app/(game)/[id]/components/timer/Timer'
+import OrganizerTimerController from '@/app/(game)/[id]/components/timer/OrganizerTimerController'
+
 import ChallengerCitationHelper from '@/app/(game)/[id]/components/bottom-pane/question/question-active/enum/enum-controller/ChallengerCitationHelper'
 
 import { endEnumQuestion } from "@/app/(game)/lib/question/enum"
@@ -20,13 +21,8 @@ export default function EnumChallengeActiveController({ question, timer }) {
             <ChallengerCitationHelper />
 
             {(myRole === 'organizer') ?
-                <EnumOrganizerTimerController question={question} timer={timer} onTimerEnd={handleChallengeActive} /> :
-                <span className='text-4xl'><Timer
-                    forward={false}
-                    duration={question.details.challengeTime}
-                    status={timer.status}
-                    onTimerEnd={() => { }} />
-                </span>
+                <OrganizerTimerController question={question} timer={timer} onTimerEnd={handleChallengeActive} /> :
+                <span className='text-4xl'><Timer timer={timer} /></span>
             }
         </div>
     )

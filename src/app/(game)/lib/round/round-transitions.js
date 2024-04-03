@@ -20,6 +20,7 @@ import { isRiddle, sortAscendingRoundScores } from '@/lib/utils/question_types';
 import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
 import { sortScores } from '@/lib/utils/scores';
+import { updateTimerTransaction } from '../timer';
 
 /* ==================================================================================================== */
 /**
@@ -175,6 +176,10 @@ const switchRoundQuestionTransaction = async (
 
     const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
 
+    if (questionData.type !== 'blindtest') {
+        await addSoundToQueueTransaction(transaction, gameId, 'skyrim_skill_increase')
+    }
+
     if (questionData.type === 'mcq') {
         const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
         const gameStatesData = await getDocDataTransaction(transaction, gameStatesRef)
@@ -210,8 +215,12 @@ const switchRoundQuestionTransaction = async (
         }
     }
 
-    if (questionData.type !== 'blindtest') {
-        await addSoundToQueueTransaction(transaction, gameId, 'skyrim_skill_increase')
+    if (questionData.type === 'enum') {
+        await updateTimerTransaction(transaction, gameId, {
+            status: 'resetted',
+            duration: questionData.thinkingTime,
+            forward: false
+        })
     }
 
     if (questionData.type === 'odd_one_out' || questionData.type === 'matching') {
@@ -251,10 +260,38 @@ export async function startRoundFirstQuestion(gameId, roundId) {
  * question_end -> round_end
  */
 // TRANSACTION
-export async function handleRoundQuestionEnd(gameId, roundId, questionId, isRoundEnd) {
+export async function handleRoundQuestionEnd(gameId, roundId) {
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+    if (!roundId) {
+        throw new Error("No round ID has been provided!");
+    }
+
+    try {
+        await runTransaction(db, async (transaction) =>
+            handleRoundQuestionEndTransaction(transaction, gameId, roundId)
+        )
+    } catch (error) {
+        console.error("There was an error handling the end of the question:", error);
+        throw error;
+    }
+}
+
+
+const handleRoundQuestionEndTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+) => {
+    const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
+    const roundData = await getDocDataTransaction(transaction, roundRef)
+    const isRoundEnd = roundData.currentQuestionIdx === roundData.questions.length - 1
+
     await (isRoundEnd ?
-        endRound(gameId, roundId) : /* End of round */
-        switchRoundNextQuestion(gameId, roundId, questionId)) /* Prepare the next question */
+        endRoundTransaction(transaction, gameId, roundId) : /* End of round */
+        switchRoundNextQuestionTransaction(transaction, gameId, roundId) /* Prepare the next question */
+    )
 }
 
 /**
@@ -262,41 +299,18 @@ export async function handleRoundQuestionEnd(gameId, roundId, questionId, isRoun
  * Prepare the next question
  */
 // TRANSACTION
-async function switchRoundNextQuestion(gameId, roundId, questionId) {
+export async function switchRoundNextQuestion(gameId, roundId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
     if (!roundId) {
         throw new Error("No round ID has been provided!");
     }
-    if (!questionId) {
-        throw new Error("No question ID has been provided!");
-    }
 
     try {
-        await runTransaction(db, async (transaction) => {
-            const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-            const roundData = await getDocDataTransaction(transaction, roundRef)
-
-            await switchRoundQuestionTransaction(transaction, gameId, roundId, roundData.currentQuestionIdx + 1)
-
-            const timerRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
-            transaction.update(timerRef, {
-                status: 'resetted'
-            })
-
-            if (roundData.type !== 'mcq') {
-                // Set the status of every player to 'idle'
-                const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-                const querySnapshot = await getDocs(query(playersCollectionRef))
-                for (const playerDoc of querySnapshot.docs) {
-                    // await updatePlayerStatus(gameId, playerDoc.id, newStatus)
-                    transaction.update(playerDoc.ref, {
-                        status: 'idle'
-                    })
-                }
-            }
-        })
+        await runTransaction(db, async (transaction) =>
+            switchRoundNextQuestionTransaction(transaction, gameId, roundId)
+        )
         console.log(`Switched successfully to the next question in the round ${roundId}.`);
     } catch (error) {
         console.error("There was an error switching to the next question in the round:", error);
@@ -304,6 +318,38 @@ async function switchRoundNextQuestion(gameId, roundId, questionId) {
     }
 }
 
+const switchRoundNextQuestionTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+) => {
+    const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
+    const roundData = await getDocDataTransaction(transaction, roundRef)
+
+    await switchRoundQuestionTransaction(transaction, gameId, roundId, roundData.currentQuestionIdx + 1)
+
+    const timerRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
+    transaction.update(timerRef, {
+        status: 'resetted'
+    })
+
+    if (roundData.type !== 'mcq') {
+        // Set the status of every player to 'idle'
+        const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
+        const querySnapshot = await getDocs(query(playersCollectionRef))
+        for (const playerDoc of querySnapshot.docs) {
+            // await updatePlayerStatus(gameId, playerDoc.id, newStatus)
+            transaction.update(playerDoc.ref, {
+                status: 'idle'
+            })
+        }
+    }
+
+    const readyDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready')
+    transaction.update(readyDocRef, {
+        numReady: 0
+    })
+}
 
 
 /* ==================================================================================================== */
@@ -452,6 +498,11 @@ const endRoundTransaction = async (
     transaction.update(gameStatesRef, {
         chooserIdx: 0,
         chooserOrder: updatedChooserOrder
+    })
+
+    const readyDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready')
+    transaction.update(readyDocRef, {
+        numReady: 0
     })
 
     /* End the round */

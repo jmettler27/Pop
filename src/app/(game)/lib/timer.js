@@ -10,7 +10,6 @@ import {
     writeBatch,
 } from 'firebase/firestore'
 
-import { addSoundToQueue } from '@/app/(game)/lib/sounds';
 
 export async function updateTimerState(gameId, status, duration = 5, forward = false) {
     const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
@@ -22,13 +21,25 @@ export async function updateTimerState(gameId, status, duration = 5, forward = f
     console.log("Timer state updated:", status)
 }
 
+export const updateTimerTransaction = async (
+    transaction,
+    gameId,
+    fieldsToUpdate,
+) => {
+    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
+
+    const updateObject = { ...fieldsToUpdate }
+    transaction.update(timerDocRef, updateObject)
+    console.log("Timer updated:", fieldsToUpdate)
+}
+
 // WRITE
 export async function endTimer(gameId) {
     await updateTimerState(gameId, 'ended')
 }
 
 // WRITE
-export async function startTimer(gameId, organizerId) {
+export async function startTimer(gameId) {
     const batch = writeBatch(db)
 
     console.log("Timer started")

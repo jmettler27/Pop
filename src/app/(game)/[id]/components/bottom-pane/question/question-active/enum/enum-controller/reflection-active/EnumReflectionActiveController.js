@@ -7,8 +7,8 @@ import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { doc } from 'firebase/firestore'
 import { useDocumentDataOnce } from 'react-firebase-hooks/firestore'
 
-import Timer from '@/app/(game)/[id]/components/Timer'
-import EnumOrganizerTimerController from '@/app/(game)/[id]/components/bottom-pane/question/question-active/enum/enum-controller/EnumOrganizerTimerController'
+import Timer from '@/app/(game)/[id]/components/timer/Timer'
+import OrganizerTimerController from '@/app/(game)/[id]/components/timer/OrganizerTimerController'
 
 import { Button, DialogContentText, InputLabel, MenuItem, FormControl, Select, Dialog, DialogActions, DialogContent, DialogTitle, OutlinedInput, CircularProgress } from '@mui/material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
@@ -26,17 +26,17 @@ export default function EnumReflectionActiveController({ question, timer }) {
 
     switch (myRole) {
         case 'organizer':
-            return <EnumOrganizerReflectionActive question={question} timer={timer} />
+            return <EnumOrganizerReflectionActive timer={timer} />
         case 'player':
             return <EnumPlayerReflectionActive question={question} timer={timer} />
         default:
-            return <EnumSpectatorReflectionActive question={question} timer={timer} />
+            return <EnumSpectatorReflectionActive timer={timer} />
     }
 
 }
 
 /* ============================================================ Organizer ============================================================ */
-function EnumOrganizerReflectionActive({ question, timer }) {
+function EnumOrganizerReflectionActive({ timer }) {
     const game = useGameContext()
 
     const handleReflectionEnd = async () => {
@@ -45,9 +45,7 @@ function EnumOrganizerReflectionActive({ question, timer }) {
 
     return (
         <div className='flex flex-col h-full items-center justify-center'>
-            <EnumOrganizerTimerController
-                question={question}
-                timer={timer}
+            <OrganizerTimerController timer={timer}
                 onTimerEnd={handleReflectionEnd} />
         </div>
     )
@@ -59,18 +57,13 @@ function EnumPlayerReflectionActive({ question, timer }) {
 
     return (
         <div className='flex flex-col h-full items-center justify-center'>
-            <BetSelector question={question} status={timer.status} />
-            <span className='text-4xl'><Timer
-                forward={false}
-                duration={question.details.thinkingTime}
-                status={timer.status}
-                onTimerEnd={() => { }} />
-            </span>
+            <AddBetForm question={question} status={timer.status} />
+            <span className='text-4xl'><Timer timer={timer} /></span>
         </div>
     )
 }
 
-function BetSelector({ question, status, lang = 'en' }) {
+function AddBetForm({ question, status, lang = 'en' }) {
     const game = useGameContext()
     const user = useUserContext()
     const myTeam = useTeamContext()
@@ -199,19 +192,11 @@ const INPUT_LABEL = {
 }
 
 /* ============================================================ Spectator ============================================================ */
-function EnumSpectatorReflectionActive({ question, timer }) {
+function EnumSpectatorReflectionActive({ timer }) {
 
     return (
         <div className='flex flex-col h-full items-center justify-center'>
-            <span className='text-6xl'>
-                <Timer
-                    forward={false}
-                    duration={question.details.thinkingTime}
-                    status={timer.status}
-                    onTimerEnd={() => { }}
-                />
-            </span>
+            <span className='text-6xl'> <Timer timer={timer} /></span>
         </div>
     )
-
 }

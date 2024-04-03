@@ -1,6 +1,3 @@
-import { useUserContext } from '@/app/contexts'
-import { useGameContext } from '@/app/(game)/contexts'
-
 import { Button, ButtonGroup, Tooltip } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
@@ -8,39 +5,38 @@ import PauseIcon from '@mui/icons-material/Pause'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import SkipNextIcon from '@mui/icons-material/SkipNext'
 
-import Timer from '@/app/(game)/[id]/components/Timer'
+import Timer from '@/app/(game)/[id]/components/timer/Timer'
 
 import { resetTimer, startTimer, stopTimer, endTimer } from '@/app/(game)/lib/timer'
 import { useAsyncAction } from '@/lib/utils/async'
+import { useParams } from 'next/navigation'
 
-export default function EnumOrganizerTimerController({ question, timer, onTimerEnd }) {
-    const game = useGameContext()
-    const user = useUserContext()
+export default function OrganizerTimerController({ timer, onTimerEnd }) {
+    const { id: gameId } = useParams();
 
-    const [handleEndTimer, isEnding] = useAsyncAction(async () => {
-        await endTimer(game.id)
+    const [handleTimerEnd, isEnding] = useAsyncAction(async () => {
         await onTimerEnd()
+        await endTimer(gameId)
     })
 
     const [handleStartTimer, isStarting] = useAsyncAction(async () => {
-        await startTimer(game.id, user.id)
+        await startTimer(gameId)
     })
 
     const [handleStopTimer, isStopping] = useAsyncAction(async () => {
-        stopTimer(game.id)
+        await stopTimer(gameId)
     })
 
     const [handleResetTimer, isResetting] = useAsyncAction(async () => {
-        resetTimer(game.id)
+        await resetTimer(gameId)
     })
 
     return (
         <div className='flex flex-col items-center'>
-            <span className='text-4xl'><Timer
-                forward={false}
-                duration={question.details.thinkingTime}
-                status={timer.status}
-                onTimerEnd={handleEndTimer} />
+            <span className='text-4xl'>
+                <Timer
+                    timer={timer}
+                    onTimerEnd={handleTimerEnd} />
             </span>
 
             <ButtonGroup
@@ -51,7 +47,7 @@ export default function EnumOrganizerTimerController({ question, timer, onTimerE
                     <StopTimerButton onClick={handleStopTimer} disabled={isStopping} />
                 }
                 <ResetTimerButton onClick={handleResetTimer} disabled={timer.status === 'resetted' || isResetting} />
-                <EndTimerButton onClick={handleEndTimer} disabled={isEnding} />
+                <EndTimerButton onClick={handleTimerEnd} disabled={isEnding} />
             </ButtonGroup>
         </div>
     )

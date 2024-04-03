@@ -6,6 +6,8 @@ import GoGameHomeButton from '@/app/(game)/[id]/components/bottom-pane/GoGameHom
 import EndGameButton from '@/app/(game)/[id]/components/bottom-pane/EndGameButton'
 import { updateGameStatus } from '@/app/(game)/lib/game'
 import { useAsyncAction } from '@/lib/utils/async'
+import { useState } from 'react'
+import LoadingScreen from '@/app/components/LoadingScreen'
 
 export default function RoundEndBottomPane({ endedRound, lang = 'en' }) {
     const game = useGameContext()
