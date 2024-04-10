@@ -1,5 +1,3 @@
-![round-end](https://github.com/jmettler27/Pop/assets/56764091/474d0237-ad7c-4e51-bb6c-b300a7855e21)![round-end](https://github.com/jmettler27/Pop/assets/56764091/bfcd27af-d9b8-47d6-b250-a2923f2457c7)#  Pop! A Multi-Player Quiz Game
-
 ![logo](./cover.png)
 
 ***Pop!*** is a web application built with [Next.js](https://nextjs.org/), using [React](https://reactjs.org/) for the front-end and [Firebase](https://firebase.google.com) for the back-end. The application is hosted on [Vercel](https://vercel.com/).
