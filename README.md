@@ -1,4 +1,4 @@
-#  Pop! A Multi-Player Quiz Game
+![round-end](https://github.com/jmettler27/Pop/assets/56764091/474d0237-ad7c-4e51-bb6c-b300a7855e21)![round-end](https://github.com/jmettler27/Pop/assets/56764091/bfcd27af-d9b8-47d6-b250-a2923f2457c7)#  Pop! A Multi-Player Quiz Game
 
 ![logo](./cover.png)
 
@@ -245,7 +245,7 @@ Upon selecting a round, an introductory page outlines the round's principles, ru
 
 #### Example (Player POV)
 
-![round-start](https://github.com/jmettler27/qpc/assets/56764091/95b7e17e-7fa5-4f9e-b062-9e460de7bc6b)
+![round-start](https://github.com/jmettler27/Pop/assets/56764091/b9b16360-bc97-429b-b330-83f0b125d85f)
 
 ### Completing a Question (`question_end`)
 
@@ -263,7 +263,7 @@ A line chart illustrates each team's score progression within the round, aiding 
 
 #### Example (Player POV)
 
-![round-end](https://github.com/jmettler27/qpc/assets/56764091/fa803074-f1e7-462a-95a3-9859152e1a34)
+![round-end](https://github.com/jmettler27/Pop/assets/56764091/801f2909-a171-4df8-958f-edeb88905c0b)
 
 ### 🔊 Sound Effects
 
