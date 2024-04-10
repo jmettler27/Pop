@@ -67,7 +67,8 @@ Once a player thinks they know the answer, they press a buzzer button. If they b
 
 #### Quick demo (Player POV)
 
-https://github.com/jmettler27/Pop/assets/56764091/fc0534e4-2a55-42b4-b685-ba64bf2aea71
+https://github.com/jmettler27/Pop/assets/56764091/3980b830-a91d-48b6-9270-76cf7c1575fd
+
 
 #### Full round (Spectator POV)
 
@@ -81,7 +82,7 @@ Again, each player is given a buzzer button and must give an oral answer.
 
 #### Quick demo (Player POV)
 
-https://github.com/jmettler27/Pop/assets/56764091/d7b5a333-127c-48a2-9814-7a17a64d66de
+https://github.com/jmettler27/Pop/assets/56764091/e659cc98-c3ca-4da2-b865-86470aa2f4db
 
 #### Full round (Spectator POV)
 
@@ -101,7 +102,7 @@ Again, each player is given a buzzer button and must give an oral answer.
 
 #### Quick demo (Player POV)
 
-https://github.com/jmettler27/Pop/assets/56764091/3bdd6242-537d-4d6e-a444-384581633147
+https://github.com/jmettler27/Pop/assets/56764091/12cb7249-ff81-4d70-a47d-ffb0a370d71a
 
 #### Full round (Spectator POV)
 
@@ -155,7 +156,7 @@ The trick in this type of questions lies in the fact that the teams must bet on 
 
 #### Quick demo (Player POV)
 
-https://github.com/jmettler27/Pop/assets/56764091/12db60cf-bca2-4d49-8d91-6ba911a313b4
+https://github.com/jmettler27/Pop/assets/56764091/846bdc4b-b77e-4b85-ba44-30a64c17824d
 
 #### Full round (Spectator POV)
 
@@ -175,7 +176,7 @@ The team that selected the odd one out is at disadvantage for the next question,
 
 #### Quick demo (Player POV)
 
-https://github.com/jmettler27/Pop/assets/56764091/fdda935b-9a7e-4c39-96b6-e878f9ed718c
+https://github.com/jmettler27/Pop/assets/56764091/7ea3da09-5544-4598-b994-85181b2c35b6
 
 #### Full round (Spectator POV)
 
@@ -195,11 +196,11 @@ In each column the proposals are displayed in a random order for each user, but 
 
 #### Quick demo (Player POV, two columns)
 
-https://github.com/jmettler27/Pop/assets/56764091/275b8670-4a16-4d45-99ce-1fcd9f6e66e8
+https://github.com/jmettler27/Pop/assets/56764091/15ba1c19-8d2b-4e3d-8da0-f46dc817f810
 
 #### Quick demo (Player POV, three columns)
 
-https://github.com/jmettler27/Pop/assets/56764091/ee56c332-8a4e-4ae1-8d0f-e3c18ab95cdc
+https://github.com/jmettler27/Pop/assets/56764091/dc3d7709-f1b0-4191-bcb5-05aa20634159
 
 ### 💲4️⃣2️⃣ Multiple-Choice Questions (MCQ) (`mcq`)
 
@@ -215,15 +216,15 @@ Each option is assigned a different point value based on its difficulty; for exa
 
 #### Quick demo (Player POV, Duo)
 
-https://github.com/jmettler27/Pop/assets/56764091/2d64ce72-ddf1-4324-9ccf-9fc3e8608b52
+https://github.com/jmettler27/Pop/assets/56764091/cdc0d1ed-1fed-498f-b033-7746592d9a19
 
 #### Quick demo (Player POV, Square)
 
-https://github.com/jmettler27/Pop/assets/56764091/7d90ca9a-d25e-43f3-a2bf-f6d2e9a068eb
+https://github.com/jmettler27/Pop/assets/56764091/235e7e2a-3cdc-418c-8926-34319ae9c195
 
 #### Quick demo (Player POV, Cash)
 
-https://github.com/jmettler27/Pop/assets/56764091/0092df40-16fc-4519-ae73-e2f3df5c64a6
+https://github.com/jmettler27/Pop/assets/56764091/b5faffbb-1bdb-41cc-987b-c2b4237464e7
 
 ### 🏆 The Final Round (`finale`)
 
@@ -235,7 +236,7 @@ The team with the highest score at the end of this round emerges as the winner o
 
 #### Quick demo (Player POV)
 
-https://github.com/jmettler27/Pop/assets/56764091/1e528d3a-a6f8-4b89-bfd3-c9fdf67e5fc1
+Uploading demo-theme.mp4…
 
 ### Initiating a Round (`round_start`)
 
