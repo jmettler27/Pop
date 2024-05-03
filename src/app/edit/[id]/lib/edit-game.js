@@ -23,6 +23,7 @@ import {
 
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { QUOTE_DEFAULT_MAX_TRIES, QUOTE_DEFAULT_REWARDS_PER_ELEMENT } from '@/lib/utils/question/quote';
+import { resetGameChooserTransaction } from '@/app/(game)/lib/chooser';
 
 /* ==================================================================================================== */
 export async function addGameRound(gameId, title, type, rewards, rewardsPerQuestion) {
@@ -390,6 +391,9 @@ const launchGameTransaction = async (
     transaction,
     gameId,
 ) => {
+
+    await resetGameChooserTransaction(transaction, gameId);
+
     const gameDocRef = doc(GAMES_COLLECTION_REF, gameId);
     transaction.update(gameDocRef, {
         launchedAt: serverTimestamp(),

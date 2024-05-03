@@ -15,24 +15,28 @@ import ResetQuestionButton from '@/app/(game)/[id]/components/bottom-pane/questi
 import ClearBuzzerButton from '@/app/(game)/[id]/components/bottom-pane/question/question-active/riddle/controller/ClearBuzzerButton'
 import BuzzerHeadPlayer from '@/app/(game)/[id]/components/bottom-pane/question/question-active/riddle/controller/BuzzerHeadPlayer'
 
-import { updatePlayerStatus } from '@/app/(game)/lib/players'
-import { handleRiddleInvalidateAnswerClick, handleRiddleValidateAnswerClick } from '@/app/(game)/lib/question/riddle'
+import { handleRiddleBuzzerHeadChanged, handleRiddleInvalidateAnswerClick, handleRiddleValidateAnswerClick } from '@/app/(game)/lib/question/riddle'
 import { handleNextClueClick } from '@/app/(game)/lib/question/progressive_clues'
 import { useAsyncAction } from '@/lib/utils/async'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 export default function RiddleOrganizerController({ question, players }) {
     const game = useGameContext()
 
     /* Set the state 'focus' to the playerId which is the first element of the buzzed list */
     const buzzed = players.buzzed
+    const buzzerHead = useRef()
 
     useEffect(() => {
-        console.log('RiddleOrganizerController', game.status, buzzed)
-        if (game.status === 'question_active' && buzzed.length > 0) {
-            updatePlayerStatus(game.id, buzzed[0], 'focus')
+        if (!buzzed || buzzed.length === 0) {
+            buzzerHead.current = null
+            return
         }
-    }, [buzzed, game.status])
+        if (buzzerHead.current !== buzzed[0]) {
+            buzzerHead.current = buzzed[0]
+            handleRiddleBuzzerHeadChanged(game.id, game.currentQuestion, buzzerHead.current)
+        }
+    }, [buzzed])
 
     return (
         <div className='flex flex-col h-full w-full items-center justify-around'>

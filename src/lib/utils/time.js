@@ -14,3 +14,5 @@ export function formatSecondsToMinutesAndSeconds(seconds) {
 
     return `${minutesStr}:${secondsStr}`;
 }
+
+export const READY_COUNTDOWN_SECONDS = 5

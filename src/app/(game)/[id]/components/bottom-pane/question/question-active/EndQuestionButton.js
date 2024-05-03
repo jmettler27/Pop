@@ -3,7 +3,7 @@ import { useGameContext } from '@/app/(game)/contexts'
 import { Button } from '@mui/material'
 import SkipNextIcon from '@mui/icons-material/SkipNext'
 
-import { organizerEndQuestion } from '@/app/(game)/lib/question'
+import { endQuestion } from '@/app/(game)/lib/question'
 import { useAsyncAction } from '@/lib/utils/async'
 
 /**
@@ -14,7 +14,7 @@ export default function EndQuestionButton() {
     const game = useGameContext()
 
     const [handleEndQuestion, isEnding] = useAsyncAction(async () => {
-        await organizerEndQuestion(game.id, game.currentRound, game.currentQuestion)
+        await endQuestion(game.id, game.currentRound, game.currentQuestion)
     })
 
     return (
