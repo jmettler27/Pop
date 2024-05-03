@@ -218,7 +218,7 @@ const switchRoundQuestionTransaction = async (
     if (questionData.type === 'enum') {
         await updateTimerTransaction(transaction, gameId, {
             status: 'resetted',
-            duration: questionData.thinkingTime,
+            duration: questionData.details.thinkingTime,
             forward: false
         })
     }

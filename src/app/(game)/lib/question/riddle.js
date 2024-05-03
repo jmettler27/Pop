@@ -1,6 +1,6 @@
 "use server";
 
-import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
+import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
 import { db } from '@/lib/firebase/firebase'
 import {
     collection,
@@ -17,7 +17,50 @@ import {
 } from 'firebase/firestore'
 
 import { addSoundToQueue, addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
-import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
+import { getDocDataTransaction } from '@/app/(game)/lib/utils';
+import { updateTimerTransaction } from '../timer';
+import { DEFAULT_THINKING_TIME_SECONDS } from '@/lib/utils/question/question';
+import { endQuestion } from '../question';
+
+
+/* ==================================================================================================== */
+export async function handleRiddleBuzzerHeadChanged(gameId, questionId, playerId) {
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+
+    if (!questionId) {
+        throw new Error("No question ID has been provided!");
+    }
+    if (!playerId) {
+        throw new Error("No player ID has been provided!");
+    }
+
+    try {
+        await runTransaction(db, transaction =>
+            handleRiddleBuzzerHeadChangedTransaction(transaction, gameId, questionId, playerId)
+        );
+    } catch (error) {
+        console.error("There was an error changing the buzzer head:", error);
+        throw error;
+    }
+}
+
+const handleRiddleBuzzerHeadChangedTransaction = async (
+    transaction,
+    gameId,
+    questionId,
+    playerId
+) => {
+    const playerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
+    transaction.update(playerDocRef, {
+        status: 'focus'
+    })
+}
+
+
+
+/* ==================================================================================================== */
 
 /**
  * When the organizer validates the answer of a player
@@ -100,7 +143,7 @@ const handleRiddleValidateAnswerClickTransaction = async (
     })
 
     // Update the game status
-    await updateGameStatusTransaction(transaction, gameId, 'question_end')
+    await endQuestion(gameId, roundId, questionId)
 
 
     await addSoundToQueueTransaction(transaction, gameId, 'Anime wow')
@@ -111,7 +154,7 @@ const handleRiddleValidateAnswerClickTransaction = async (
  * When the organizer invalidates the answer of a player.
  */
 // TRANSACTION
-export async function handleRiddleInvalidateAnswerClick(gameId, roundId, questionId, playerId) {
+export async function handleRiddleInvalidateAnswerClick(gameId, roundId, questionId, playerId, questionType = null) {
     // const questionData = await getQuestionData(gameId, roundId, questionId)
     // if (questionData.type === 'progressive_clues') {
     // TRANSACTION
@@ -131,7 +174,7 @@ export async function handleRiddleInvalidateAnswerClick(gameId, roundId, questio
 
     try {
         await runTransaction(db, transaction =>
-            handleRiddleInvalidateAnswerClickTransaction(transaction, gameId, roundId, questionId, playerId)
+            handleRiddleInvalidateAnswerClickTransaction(transaction, gameId, roundId, questionId, playerId, questionType)
         );
 
         console.log(`Player ${playerId} was canceled successfully.`);
@@ -141,16 +184,17 @@ export async function handleRiddleInvalidateAnswerClick(gameId, roundId, questio
     }
 }
 
-const handleRiddleInvalidateAnswerClickTransaction = async (
+export const handleRiddleInvalidateAnswerClickTransaction = async (
     transaction,
     gameId,
     roundId,
     questionId,
-    playerId
+    playerId,
+    questionType = null
 ) => {
     const realtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
     const realtimeData = await getDocDataTransaction(transaction, realtimeRef)
-    const clueIdx = realtimeData.currentClueIdx ? realtimeData.currentClueIdx : 0;
+    const clueIdx = realtimeData.currentClueIdx || 0;
 
     const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
     transaction.update(playersDocRef, {
@@ -198,28 +242,58 @@ export async function addBuzzedPlayer(gameId, roundId, questionId, playerId) {
     addSoundToQueue(gameId, 'sfx-menu-validate')
 }
 
+/* ==================================================================================================== */
 // BATCHED WRITE
-export async function removeBuzzedPlayer(gameId, roundId, questionId, playerId) {
-    const batch = writeBatch(db)
+export async function removeBuzzedPlayer(gameId, roundId, questionId, playerId, questionType = null) {
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+    if (!roundId) {
+        throw new Error("No round ID has been provided!");
+    }
+    if (!questionId) {
+        throw new Error("No question ID has been provided!");
+    }
+    if (!playerId) {
+        throw new Error("No player ID has been provided!");
+    }
+
+    try {
+        await runTransaction(db, async transaction =>
+            await removeBuzzedPlayerTransaction(transaction, gameId, roundId, questionId, questionType)
+        );
+    } catch (error) {
+        console.error("There was an error removing the buzzed player:", error);
+        throw error;
+    }
+}
+
+const removeBuzzedPlayerTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+    questionId,
+    playerId,
+    questionType = null
+) => {
 
     const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-    batch.update(playersDocRef, {
+    transaction.update(playersDocRef, {
         buzzed: arrayRemove(playerId)
     })
 
     const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue')
     const newSoundDocument = doc(queueCollectionRef);
-    batch.set(newSoundDocument, {
+    transaction.set(newSoundDocument, {
         timestamp: serverTimestamp(),
         filename: 'JPP_de_lair',
     })
 
     const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
-    batch.update(playerRef, {
+    transaction.update(playerRef, {
         status: 'idle'
     })
 
-    await batch.commit()
 }
 
 /* ==================================================================================================== */

@@ -18,9 +18,10 @@ import {
 
 import { switchNextChooserTransaction } from '@/app/(game)/lib/chooser'
 import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
-import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
+import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 
 import { moveToHead } from '@/lib/utils/arrays';
+import { endQuestion } from '../question';
 
 export async function handleProposalClick(gameId, roundId, questionId, userId, idx) {
     if (!gameId) {
@@ -91,21 +92,11 @@ const handleProposalClickTransaction = async (
             [`scores.${teamId}`]: increment(penalty),
             scoresProgress: newProgress
         })
-        transaction.update(realtimeDocRef, {
-            winner: {
-                playerId: userId,
-                teamId
-            },
-            dateEnd: serverTimestamp()
-        })
+
         for (const playerDoc of querySnapshot.docs) {
             transaction.update(playerDoc.ref, { status: 'wrong' })
         }
         await addSoundToQueueTransaction(transaction, gameId, 'hysterical5')
-
-        transaction.update(realtimeDocRef, {
-            dateEnd: serverTimestamp()
-        })
 
         // Move the "winner" to the head of the chooser list
         const newChooserOrder = moveToHead(teamId, statesData.chooserOrder)
@@ -113,7 +104,15 @@ const handleProposalClickTransaction = async (
             chooserOrder: newChooserOrder
         })
 
-        await updateGameStatusTransaction(transaction, gameId, 'question_end')
+        transaction.update(realtimeDocRef, {
+            winner: {
+                playerId: userId,
+                teamId
+            },
+            dateEnd: serverTimestamp()
+        })
+
+        await endQuestion(gameId, roundId, questionId)
     } else {
         const realtimeData = await getDocDataTransaction(transaction, realtimeDocRef)
 
@@ -128,7 +127,7 @@ const handleProposalClickTransaction = async (
             transaction.update(realtimeDocRef, {
                 dateEnd: serverTimestamp()
             })
-            await updateGameStatusTransaction(transaction, gameId, 'question_end')
+            await endQuestion(gameId, roundId, questionId)
         } else {
             // Case 3: Was a good proposal but not the last one
             await switchNextChooserTransaction(transaction, gameId)

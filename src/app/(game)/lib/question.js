@@ -13,6 +13,10 @@ import { resetMCQTransaction } from './question/mcq';
 import { resetMatchingQuestionTransaction } from './question/matching';
 import { resetQuoteQuestionTransaction } from './question/quote';
 
+import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
+import { DEFAULT_THINKING_TIME_SECONDS } from '@/lib/utils/question/question';
+import { QUESTION_TYPES } from '@/lib/utils/question_types';
+
 /* ==================================================================================================== */
 // READ
 export async function getQuestionData(questionId) {
@@ -44,7 +48,7 @@ export async function updateQuestionWinner(gameId, roundId, questionId, playerId
 
 // Reset question
 // REFACTOR: (questionPath, questionType)
-export async function resetQuestion(gameId, roundId, questionId) {
+export async function resetQuestion(gameId, roundId, questionId, questionType = null) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -54,10 +58,13 @@ export async function resetQuestion(gameId, roundId, questionId) {
     if (!questionId) {
         throw new Error("No question ID has been provided!");
     }
+    if (questionType && !QUESTION_TYPES.includes(questionType)) {
+        throw new Error(`Invalid question type provided: ${questionType}`);
+    }
 
     try {
         await runTransaction(db, transaction =>
-            resetQuestionTransaction(transaction, gameId, roundId, questionId)
+            resetQuestionTransaction(transaction, gameId, roundId, questionId, questionType)
         )
         console.log("Question resetted successfully.");
     }
@@ -71,12 +78,10 @@ export const resetQuestionTransaction = async (
     transaction,
     gameId,
     roundId,
-    questionId
+    questionId,
+    questionType = null
 ) => {
-    const questionDocRef = doc(QUESTIONS_COLLECTION_REF, questionId)
-    const questionData = await getDocDataTransaction(transaction, questionDocRef)
-
-    const type = questionData.type
+    const type = questionType || (await getDocDataTransaction(transaction, doc(QUESTIONS_COLLECTION_REF, questionId))).type
     console.log(`Resetting question ${questionId} of type ${type}...`)
 
     switch (type) {
@@ -103,11 +108,18 @@ export const resetQuestionTransaction = async (
             await resetMCQTransaction(transaction, gameId, roundId, questionId)
             break
     }
+
+    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
+    transaction.update(timerDocRef, {
+        status: 'resetted',
+        duration: DEFAULT_THINKING_TIME_SECONDS[type],
+        forward: false
+    })
 }
 
 /* ==================================================================================================== */
 // End question
-export async function organizerEndQuestion(gameId, roundId, questionId) {
+export async function endQuestion(gameId, roundId, questionId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -117,17 +129,30 @@ export async function organizerEndQuestion(gameId, roundId, questionId) {
     if (!questionId) {
         throw new Error("No question ID has been provided!");
     }
-    const batch = writeBatch(db)
 
-    const gameDocRef = doc(GAMES_COLLECTION_REF, gameId)
-    batch.update(gameDocRef, {
-        status: 'question_end'
-    })
+    try {
+        const batch = writeBatch(db)
 
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    batch.update(realtimeDocRef, {
-        dateEnd: serverTimestamp()
-    })
+        const gameDocRef = doc(GAMES_COLLECTION_REF, gameId)
+        batch.update(gameDocRef, {
+            status: 'question_end'
+        })
 
-    await batch.commit()
+        const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+        batch.update(realtimeDocRef, {
+            dateEnd: serverTimestamp()
+        })
+
+        const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
+        batch.update(timerDocRef, {
+            status: 'resetted',
+            duration: READY_COUNTDOWN_SECONDS,
+            forward: false
+        })
+
+        await batch.commit()
+    } catch (error) {
+        console.error("There was an error ending the question:", error);
+        throw error;
+    }
 }

@@ -17,9 +17,10 @@ import {
 } from 'firebase/firestore'
 
 import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
-import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
+import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { QUOTE_ELEMENTS } from '@/lib/utils/question/quote';
 import { isObjectEmpty } from '@/lib/utils';
+import { endQuestion } from '../question';
 
 /**
  * When the organizer reveals an element from the quote (author, source, quote part)
@@ -135,7 +136,7 @@ const revealQuoteElementTransaction = async (
             dateEnd: serverTimestamp(),
         })
 
-        await updateGameStatusTransaction(transaction, gameId, 'question_end')
+        await endQuestion(gameId, roundId, questionId)
         await addSoundToQueueTransaction(transaction, gameId, 'Anime wow')
         return
     }
@@ -238,7 +239,7 @@ const validateAllQuoteElementsTransaction = async (
         dateEnd: serverTimestamp(),
     })
 
-    await updateGameStatusTransaction(transaction, gameId, 'question_end')
+    await endQuestion(gameId, roundId, questionId)
     await addSoundToQueueTransaction(transaction, gameId, 'Anime wow')
 }
 
@@ -271,7 +272,7 @@ export async function cancelQuotePlayer(gameId, roundId, questionId, playerId, w
     }
 }
 
-const cancelQuotePlayerTransaction = async (
+export const cancelQuotePlayerTransaction = async (
     transaction,
     gameId,
     roundId,

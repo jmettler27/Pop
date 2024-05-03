@@ -111,7 +111,7 @@ const resetRoundTransaction = async (
     const initTeamRoundScores = await getInitTeamScores(gameId)
 
     for (const questionDoc of questionsQuerySnapshot.docs) {
-        await resetQuestion(gameId, roundId, questionDoc.id)
+        await resetQuestion(gameId, roundId, questionDoc.id, questionDoc.data().type)
     }
 
     const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')

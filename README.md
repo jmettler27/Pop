@@ -1,5 +1,3 @@
-#  Pop! A Multi-Player Quiz Game
-
 ![logo](./cover.png)
 
 ***Pop!*** is a web application built with [Next.js](https://nextjs.org/), using [React](https://reactjs.org/) for the front-end and [Firebase](https://firebase.google.com) for the back-end. The application is hosted on [Vercel](https://vercel.com/).
@@ -69,7 +67,8 @@ Once a player thinks they know the answer, they press a buzzer button. If they b
 
 #### Quick demo (Player POV)
 
-<https://github.com/jmettler27/qpc/assets/56764091/c283b32e-4be6-4b1e-96f6-8ccd2dcb3a79>
+https://github.com/jmettler27/Pop/assets/56764091/3980b830-a91d-48b6-9270-76cf7c1575fd
+
 
 #### Full round (Spectator POV)
 
@@ -83,7 +82,7 @@ Again, each player is given a buzzer button and must give an oral answer.
 
 #### Quick demo (Player POV)
 
-<https://github.com/jmettler27/qpc/assets/56764091/567a3965-d652-410b-b8b5-3d24000c63eb>
+https://github.com/jmettler27/Pop/assets/56764091/e659cc98-c3ca-4da2-b865-86470aa2f4db
 
 #### Full round (Spectator POV)
 
@@ -103,7 +102,7 @@ Again, each player is given a buzzer button and must give an oral answer.
 
 #### Quick demo (Player POV)
 
-<https://github.com/jmettler27/qpc/assets/56764091/d4d58b96-82da-41f0-bb3d-41c061da0898>
+https://github.com/jmettler27/Pop/assets/56764091/12cb7249-ff81-4d70-a47d-ffb0a370d71a
 
 #### Full round (Spectator POV)
 
@@ -157,7 +156,7 @@ The trick in this type of questions lies in the fact that the teams must bet on 
 
 #### Quick demo (Player POV)
 
-<https://github.com/jmettler27/qpc/assets/56764091/8f8ecfbb-ad52-4dcf-9b46-eb4a709f1598>
+https://github.com/jmettler27/Pop/assets/56764091/846bdc4b-b77e-4b85-ba44-30a64c17824d
 
 #### Full round (Spectator POV)
 
@@ -177,7 +176,7 @@ The team that selected the odd one out is at disadvantage for the next question,
 
 #### Quick demo (Player POV)
 
-<https://github.com/jmettler27/qpc/assets/56764091/12bebbf1-a811-4db6-a239-95693b0eb114>
+https://github.com/jmettler27/Pop/assets/56764091/7ea3da09-5544-4598-b994-85181b2c35b6
 
 #### Full round (Spectator POV)
 
@@ -197,11 +196,11 @@ In each column the proposals are displayed in a random order for each user, but 
 
 #### Quick demo (Player POV, two columns)
 
-<https://github.com/jmettler27/qpc/assets/56764091/caa78f58-3e12-4a83-a507-102e03da0d8b>
+https://github.com/jmettler27/Pop/assets/56764091/15ba1c19-8d2b-4e3d-8da0-f46dc817f810
 
 #### Quick demo (Player POV, three columns)
 
-<https://github.com/jmettler27/qpc/assets/56764091/50260e58-f72b-4c97-bf3e-df0ca366c331>
+https://github.com/jmettler27/Pop/assets/56764091/dc3d7709-f1b0-4191-bcb5-05aa20634159
 
 ### 💲4️⃣2️⃣ Multiple-Choice Questions (MCQ) (`mcq`)
 
@@ -217,15 +216,15 @@ Each option is assigned a different point value based on its difficulty; for exa
 
 #### Quick demo (Player POV, Duo)
 
-<https://github.com/jmettler27/qpc/assets/56764091/0a613757-3b9e-419d-8526-690b81477bcf>
+https://github.com/jmettler27/Pop/assets/56764091/cdc0d1ed-1fed-498f-b033-7746592d9a19
 
 #### Quick demo (Player POV, Square)
 
-<https://github.com/jmettler27/qpc/assets/56764091/1b0da7e1-9267-4c97-9b8c-a70b5a399927>
+https://github.com/jmettler27/Pop/assets/56764091/235e7e2a-3cdc-418c-8926-34319ae9c195
 
 #### Quick demo (Player POV, Cash)
 
-<https://github.com/jmettler27/qpc/assets/56764091/e3260071-ee4a-422e-8ad2-748abfeb52c7>
+https://github.com/jmettler27/Pop/assets/56764091/b5faffbb-1bdb-41cc-987b-c2b4237464e7
 
 ### 🏆 The Final Round (`finale`)
 
@@ -237,7 +236,7 @@ The team with the highest score at the end of this round emerges as the winner o
 
 #### Quick demo (Player POV)
 
-<https://github.com/jmettler27/qpc/assets/56764091/9788d21c-d485-4ab4-8e24-ff7d1b009ee2>
+Uploading demo-theme.mp4…
 
 ### Initiating a Round (`round_start`)
 
@@ -245,7 +244,7 @@ Upon selecting a round, an introductory page outlines the round's principles, ru
 
 #### Example (Player POV)
 
-![round-start](https://github.com/jmettler27/qpc/assets/56764091/95b7e17e-7fa5-4f9e-b062-9e460de7bc6b)
+![round-start](https://github.com/jmettler27/Pop/assets/56764091/b9b16360-bc97-429b-b330-83f0b125d85f)
 
 ### Completing a Question (`question_end`)
 
@@ -263,7 +262,7 @@ A line chart illustrates each team's score progression within the round, aiding 
 
 #### Example (Player POV)
 
-![round-end](https://github.com/jmettler27/qpc/assets/56764091/fa803074-f1e7-462a-95a3-9859152e1a34)
+![round-end](https://github.com/jmettler27/Pop/assets/56764091/801f2909-a171-4df8-958f-edeb88905c0b)
 
 ### 🔊 Sound Effects
 
@@ -292,7 +291,7 @@ The submission process is handled by filling a form, that is different for each 
 
 ### Example: submitting a blindtest question
 
-<https://github.com/jmettler27/qpc/assets/56764091/d1a1443a-409e-4419-a62b-e688299df7c5>
+https://github.com/jmettler27/Pop/assets/56764091/109c2322-c102-46ad-bc08-4a12e37ae8b0
 
 ## ✍️ Creating and editing games (`/edit` and `/edit/[gameId]`)
 
