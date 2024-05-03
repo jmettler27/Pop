@@ -52,9 +52,19 @@ const handleRiddleBuzzerHeadChangedTransaction = async (
     questionId,
     playerId
 ) => {
+    const questionDocRef = doc(QUESTIONS_COLLECTION_REF, questionId)
+    const questionData = await getDocDataTransaction(transaction, questionDocRef)
+    const { type } = questionData
+
     const playerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
     transaction.update(playerDocRef, {
         status: 'focus'
+    })
+
+    await updateTimerTransaction(transaction, gameId, {
+        status: 'started',
+        duration: DEFAULT_THINKING_TIME_SECONDS[type],
+        forward: false,
     })
 }
 
@@ -196,6 +206,8 @@ export const handleRiddleInvalidateAnswerClickTransaction = async (
     const realtimeData = await getDocDataTransaction(transaction, realtimeRef)
     const clueIdx = realtimeData.currentClueIdx || 0;
 
+    const type = questionType || (await getDocDataTransaction(transaction, doc(QUESTIONS_COLLECTION_REF, questionId))).type
+
     const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
     transaction.update(playersDocRef, {
         canceled: arrayUnion({
@@ -213,6 +225,12 @@ export const handleRiddleInvalidateAnswerClickTransaction = async (
     })
 
     await addSoundToQueueTransaction(transaction, gameId, 'roblox_oof')
+
+
+    await updateTimerTransaction(transaction, gameId, {
+        status: 'resetted',
+        duration: DEFAULT_THINKING_TIME_SECONDS[type],
+    })
 
     // } else {
     //     /* Penalize only the player */
@@ -278,6 +296,12 @@ const removeBuzzedPlayerTransaction = async (
 ) => {
 
     const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    const playersData = await getDocDataTransaction(transaction, playersDocRef)
+
+    const type = questionType || (await getDocDataTransaction(transaction, doc(QUESTIONS_COLLECTION_REF, questionId))).type
+
+    const { buzzed } = playersData
+
     transaction.update(playersDocRef, {
         buzzed: arrayRemove(playerId)
     })
@@ -293,6 +317,53 @@ const removeBuzzedPlayerTransaction = async (
     transaction.update(playerRef, {
         status: 'idle'
     })
+
+
+    if (buzzed[0] === playerId) {
+        const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
+        transaction.update(timerDocRef, {
+            status: 'resetted',
+            duration: DEFAULT_THINKING_TIME_SECONDS[type],
+        })
+    }
+}
+
+/* ==================================================================================================== */
+export async function handleRiddleCountdownEnd(gameId, roundId, questionId, questionType = null) {
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+    if (!roundId) {
+        throw new Error("No round ID has been provided!");
+    }
+    if (!questionId) {
+        throw new Error("No question ID has been provided!");
+    }
+
+    try {
+        await runTransaction(db, transaction =>
+            handleRiddleCountdownEndTransaction(transaction, gameId, roundId, questionId, questionType)
+        );
+    }
+    catch (error) {
+        console.error("There was an error handling the countdown end:", error);
+        throw error;
+    }
+}
+
+export const handleRiddleCountdownEndTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+    questionId,
+    questionType = null
+) => {
+
+    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    const playersData = await getDocDataTransaction(transaction, playersDocRef)
+    const { buzzed } = playersData
+
+    await handleRiddleInvalidateAnswerClickTransaction(transaction, gameId, roundId, questionId, buzzed[0], questionType)
 
 }
 

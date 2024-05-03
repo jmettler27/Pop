@@ -25,6 +25,7 @@ import { sortScores } from '@/lib/utils/scores';
 import { sortAscendingRoundScores } from '@/lib/utils/question_types';
 import { shuffle } from '@/lib/utils/arrays';
 import { endQuestion } from '../question';
+import { DEFAULT_THINKING_TIME_SECONDS } from '@/lib/utils/question/question';
 
 export async function submitMatch(gameId, roundId, questionId, userId, edges) {
     if (!gameId) {
@@ -223,8 +224,84 @@ const submitMatchTransaction = async (
             }),
         })
     }
+
+    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
+    transaction.update(timerDocRef, {
+        status: 'resetted',
+        duration: DEFAULT_THINKING_TIME_SECONDS['matching'],
+        forward: false,
+    })
 }
 
+/* ==================================================================================================== */
+export async function handleMatchingCountdownEnd(gameId, roundId, questionId) {
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+    if (!roundId) {
+        throw new Error("No round ID has been provided!");
+    }
+    if (!questionId) {
+        throw new Error("No question ID has been provided!");
+    }
+
+    try {
+        await runTransaction(db, transaction =>
+            handleMatchingCountdownEndTransaction(transaction, gameId, roundId, questionId)
+        )
+        console.log("Matching countdown end handled successfully.");
+    }
+    catch (error) {
+        console.error("There was an error handling the matching countdown end:", error);
+        throw error;
+    }
+}
+
+export const handleMatchingCountdownEndTransaction = async (transaction, gameId, roundId, questionId) => {
+    const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
+    const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
+    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
+
+    const [gameStatesData, roundData, roundScoresData] = await Promise.all([
+        getDocDataTransaction(transaction, gameStatesRef),
+        getDocDataTransaction(transaction, roundRef),
+        getDocDataTransaction(transaction, roundScoresRef)
+    ])
+
+    const { chooserOrder, chooserIdx } = gameStatesData
+    const teamId = chooserOrder[chooserIdx]
+    const newChooserIdx = getNextCyclicIndex(chooserIdx, chooserOrder.length)
+
+    const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
+    const q = query(playersCollectionRef, where('teamId', '==', teamId))
+    const playersQuerySnapshot = await getDocs(q)
+
+    const { mistakePenalty: penalty } = roundData
+    const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
+    const newRoundProgress = {}
+    for (const tid of Object.keys(currentRoundScores)) {
+        newRoundProgress[tid] = {
+            ...currentRoundProgress[tid],
+            [questionId]: currentRoundScores[tid] + (tid === teamId) * penalty
+        }
+    }
+
+    transaction.update(roundScoresRef, {
+        [`scores.${teamId}`]: increment(penalty),
+        scoresProgress: newRoundProgress
+    })
+
+    for (const playerDoc of playersQuerySnapshot.docs) {
+        transaction.update(playerDoc.ref, { status: 'wrong' })
+    }
+
+    await addSoundToQueueTransaction(transaction, gameId, 'roblox_oof')
+
+    transaction.update(gameStatesRef, {
+        chooserIdx: newChooserIdx
+    })
+
+}
 
 /* ==================================================================================================== */
 export async function resetMatchingQuestion(gameId, roundId, questionId) {

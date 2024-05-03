@@ -6,16 +6,16 @@ import { doc, runTransaction, serverTimestamp, updateDoc, writeBatch, } from 'fi
 
 import { getDocData, getDocDataTransaction } from './utils';
 import { resetProgressiveCluesRealtimeTransaction } from './question/progressive_clues';
-import { resetRiddleQuestionTransaction } from './question/riddle';
-import { resetEnumQuestionTransaction } from './question/enum';
-import { resetOddOneOutQuestionTransaction } from './question/odd_one_out';
-import { resetMCQTransaction } from './question/mcq';
-import { resetMatchingQuestionTransaction } from './question/matching';
-import { resetQuoteQuestionTransaction } from './question/quote';
+import { handleRiddleCountdownEndTransaction, resetRiddleQuestionTransaction } from './question/riddle';
+import { endEnumQuestionTransaction, endEnumReflectionTransaction, resetEnumQuestionTransaction } from './question/enum';
+import { handleOOOCountdownEndTransaction, resetOddOneOutQuestionTransaction } from './question/odd_one_out';
+import { handleMCQCountdownEnd, resetMCQTransaction } from './question/mcq';
+import { handleMatchingCountdownEndTransaction, resetMatchingQuestionTransaction } from './question/matching';
+import { cancelQuotePlayerTransaction, resetQuoteQuestionTransaction } from './question/quote';
 
 import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/lib/utils/question/question';
-import { QUESTION_TYPES } from '@/lib/utils/question_types';
+import { QUESTION_TYPES, isRiddle } from '@/lib/utils/question_types';
 
 /* ==================================================================================================== */
 // READ
@@ -154,5 +154,68 @@ export async function endQuestion(gameId, roundId, questionId) {
     } catch (error) {
         console.error("There was an error ending the question:", error);
         throw error;
+    }
+}
+
+/* ==================================================================================================== */
+export async function handleQuestionActiveCountdownEnd(gameId, roundId, questionId, questionType = null) {
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+    if (!roundId) {
+        throw new Error("No round ID has been provided!");
+    }
+    if (!questionId) {
+        throw new Error("No question ID has been provided!");
+    }
+
+    try {
+        await runTransaction(db, transaction =>
+            handleQuestionActiveCountdownEndTransaction(transaction, gameId, roundId, questionId, questionType)
+        )
+        console.log("Question active countdown ended successfully.");
+    } catch (error) {
+        console.error("There was an error handling the question active countdown end:", error);
+        throw error;
+    }
+}
+
+const handleQuestionActiveCountdownEndTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+    questionId,
+    questionType = null
+) => {
+
+    const type = questionType || (await getDocDataTransaction(transaction, doc(QUESTIONS_COLLECTION_REF, questionId))).type
+
+    console.log(`Handling question active countdown end for question ${questionId} of type ${type}...`)
+
+    // Riddle: cancel
+    // Quote: cancel
+    // OOO +1, 5s countdown
+    // Matching: +1, 5s cooldown
+    // MCQ: end of question and 0
+
+    if (isRiddle(type)) {
+        await handleRiddleCountdownEndTransaction(transaction, gameId, roundId, questionId, type)
+    } else if (type === 'quote') {
+        await cancelQuotePlayerTransaction(transaction, gameId, roundId, questionId)
+    } else if (type === 'odd_one_out') {
+        await handleOOOCountdownEndTransaction(transaction, gameId, roundId, questionId)
+    } else if (type === 'matching') {
+        await handleMatchingCountdownEndTransaction(transaction, gameId, roundId, questionId)
+    } else if (type === 'mcq') {
+        await handleMCQCountdownEnd(transaction, gameId, roundId, questionId)
+    } else if (type === 'enum') {
+        const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
+        const questionData = await getDocDataTransaction(transaction, questionRef)
+        const { status } = questionData
+        if (status === 'reflection_active') {
+            await endEnumReflectionTransaction(transaction, gameId, roundId, questionId)
+        } else if (status === 'reflection_end') {
+            await endEnumQuestionTransaction(transaction, gameId, roundId, questionId)
+        }
     }
 }
