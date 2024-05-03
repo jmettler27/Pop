@@ -15,6 +15,7 @@ import {
 import { resetAllRoundsTransaction } from '@/app/(game)/lib/round';
 import { getDocData } from '@/app/(game)/lib/utils';
 import { shuffle } from '@/lib/utils/arrays';
+import { updateTimerTransaction } from './timer';
 
 /* ==================================================================================================== */
 // WRITE
@@ -105,8 +106,7 @@ const resetGameTransaction = async (
     })
 
     // Reset timer
-    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
-    transaction.update(timerDocRef, {
+    await updateTimerTransaction(transaction, gameId, {
         status: 'resetted',
         duration: 5,
         forward: false
