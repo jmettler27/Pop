@@ -25,8 +25,8 @@ export function GameOrganizersAvatarGroup({ gameId }) {
     return (
         <AvatarGroup max={4}>
             {organizers.map((organizer) => (
-                <Tooltip title={organizer.name} placement='top'>
-                    <Avatar key={organizer.id} src={organizer.image} alt={organizer.name} />
+                <Tooltip key={organizer.id} title={organizer.name} placement='top'>
+                    <Avatar src={organizer.image} alt={organizer.name} />
                 </Tooltip>
             ))}
         </AvatarGroup>
@@ -53,8 +53,8 @@ export function GamePlayersAvatarGroup({ gameId }) {
     return (
         <AvatarGroup max={4}>
             {players.map((player) => (
-                <Tooltip title={player.name} placement='top'>
-                    <Avatar key={player.id} src={player.image} alt={player.name} />
+                <Tooltip key={player.id} title={player.name} placement='top'>
+                    <Avatar src={player.image} alt={player.name} />
                 </Tooltip>
             ))}
         </AvatarGroup>
