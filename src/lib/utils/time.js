@@ -2,7 +2,9 @@ export function timestampToDate(timestamp, lang = 'fr-FR') {
     if (!timestamp) {
         return null;
     }
-    return new Date(timestamp.seconds * 1000)?.toLocaleDateString(lang);
+    return new Date(timestamp.seconds * 1000)?.toLocaleString(lang, {
+        year: 'numeric', month: 'long', weekday: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
 }
 
 export function formatSecondsToMinutesAndSeconds(seconds) {

@@ -7,7 +7,8 @@ import { Avatar, Button } from "@mui/material";
 import LogoutIcon from '@mui/icons-material/Logout'
 
 import OngoingGames from "@/app/components/home/OngoingGames";
-import { GamesUnderConstruction } from "./components/home/GamesUnderConstruction";
+import GamesUnderConstruction from "@/app/components/home/GamesUnderConstruction";
+import EndedGames from "@/app/components/home/EndedGames";
 
 export default function Home() {
     const { data: session } = useSession()
@@ -81,6 +82,9 @@ function UserHome({ user }) {
             {/* Games under construction */}
             <GamesUnderConstruction />
 
+
+            {/* Ended games */}
+            <EndedGames />
         </div>
     )
 }
