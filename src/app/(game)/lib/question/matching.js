@@ -24,6 +24,7 @@ import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)
 import { sortScores } from '@/lib/utils/scores';
 import { sortAscendingRoundScores } from '@/lib/utils/question_types';
 import { shuffle } from '@/lib/utils/arrays';
+import { endQuestion } from '../question';
 
 export async function submitMatch(gameId, roundId, questionId, userId, edges) {
     if (!gameId) {
@@ -145,7 +146,7 @@ const submitMatchTransaction = async (
 
 
             // End the question
-            await updateGameStatusTransaction(transaction, gameId, 'question_end')
+            await endQuestion(gameId, roundId, questionId)
 
         } else {
             // Case 1.1: The matching is correct but not the last one

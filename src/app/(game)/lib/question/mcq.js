@@ -20,6 +20,7 @@ import {
 
 import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
+import { endQuestion } from '../question';
 
 export async function handleSubmitOptionPlayer(gameId, roundId, questionId, playerId, optionIdx) {
     if (!gameId) {
@@ -137,7 +138,7 @@ const handleSubmitChoicePlayerTransaction = async (
     await addSoundToQueueTransaction(transaction, gameId, correct ? 'Anime wow' : 'hysterical5')
 
     // End the question
-    await updateGameStatusTransaction(transaction, gameId, 'question_end')
+    await endQuestion(gameId, roundId, questionId)
 }
 
 /* ====================================================================================================== */
@@ -225,7 +226,7 @@ const handleHideAnswerTransaction = async (
     await addSoundToQueueTransaction(transaction, gameId, correct ? 'Anime wow' : 'hysterical5')
 
     // End the question
-    await updateGameStatusTransaction(transaction, gameId, 'question_end')
+    await endQuestion(gameId, roundId, questionId)
 }
 
 /* ====================================================================================================== */
