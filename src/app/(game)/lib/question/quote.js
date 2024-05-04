@@ -20,7 +20,7 @@ import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { QUOTE_ELEMENTS } from '@/lib/utils/question/quote';
 import { isObjectEmpty } from '@/lib/utils';
-import { endQuestion } from '../question';
+import { endQuestionTransaction } from '../question';
 
 /**
  * When the organizer reveals an element from the quote (author, source, quote part)
@@ -94,8 +94,10 @@ const revealQuoteElementTransaction = async (
         }
     }
 
+    console.log("Player ID: ", playerId)
     /* Update the winner team scores */
     if (playerId) {
+        console.log("HERE")
         const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
         const playerData = await getDocDataTransaction(transaction, playerRef)
         const { teamId } = playerData
@@ -109,6 +111,7 @@ const revealQuoteElementTransaction = async (
                 [questionId]: currentRoundScores[tid] + (tid === teamId ? points : 0)
             }
         }
+        console.log("Points: ", points)
         transaction.update(roundScoresRef, {
             [`scores.${teamId}`]: increment(points),
             scoresProgress: newRoundProgress
@@ -125,6 +128,10 @@ const revealQuoteElementTransaction = async (
     const newRevealedQuote = newRevealed['quote']
     const temp2 = quoteParts.every((_, idx) => newRevealedQuote[idx] && !isObjectEmpty(newRevealedQuote[idx]))
     const allRevealed = temp1 && temp2
+    console.log("Temp1: ", temp1)
+    console.log("Temp2: ", temp2)
+    console.log("All Revealed: ", allRevealed)
+    console.log("New revealed: ", newRevealed)
 
     transaction.update(questionRealtimeRef, {
         revealed: newRevealed
@@ -132,12 +139,11 @@ const revealQuoteElementTransaction = async (
 
     // If all revealed
     if (allRevealed) {
+        await addSoundToQueueTransaction(transaction, gameId, 'Anime wow')
         transaction.update(questionRealtimeRef, {
             dateEnd: serverTimestamp(),
         })
-
-        await endQuestion(gameId, roundId, questionId)
-        await addSoundToQueueTransaction(transaction, gameId, 'Anime wow')
+        await endQuestionTransaction(transaction, gameId, roundId, questionId)
         return
     }
     await addSoundToQueueTransaction(transaction, gameId, playerId ? 'OUI' : 'cartoon_mystery_musical_tone_002')
@@ -239,8 +245,8 @@ const validateAllQuoteElementsTransaction = async (
         dateEnd: serverTimestamp(),
     })
 
-    await endQuestion(gameId, roundId, questionId)
     await addSoundToQueueTransaction(transaction, gameId, 'Anime wow')
+    await endQuestionTransaction(transaction, gameId, roundId, questionId)
 }
 
 

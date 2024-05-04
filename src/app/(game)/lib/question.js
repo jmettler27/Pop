@@ -131,28 +131,31 @@ export async function endQuestion(gameId, roundId, questionId) {
     }
 
     try {
-        const batch = writeBatch(db)
-
-        const gameDocRef = doc(GAMES_COLLECTION_REF, gameId)
-        batch.update(gameDocRef, {
-            status: 'question_end'
-        })
-
-        const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-        batch.update(realtimeDocRef, {
-            dateEnd: serverTimestamp()
-        })
-
-        const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
-        batch.update(timerDocRef, {
-            status: 'resetted',
-            duration: READY_COUNTDOWN_SECONDS,
-            forward: false
-        })
-
-        await batch.commit()
+        await runTransaction(db, transaction =>
+            endQuestionTransaction(transaction, gameId, roundId, questionId)
+        )
+        console.log("Question ended successfully.");
     } catch (error) {
         console.error("There was an error ending the question:", error);
         throw error;
     }
+}
+
+export const endQuestionTransaction = async (transaction, gameId, roundId, questionId) => {
+    const gameDocRef = doc(GAMES_COLLECTION_REF, gameId)
+    transaction.update(gameDocRef, {
+        status: 'question_end'
+    })
+
+    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.update(realtimeDocRef, {
+        dateEnd: serverTimestamp()
+    })
+
+    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
+    transaction.update(timerDocRef, {
+        status: 'resetted',
+        duration: READY_COUNTDOWN_SECONDS,
+        forward: false
+    })
 }

@@ -9,6 +9,7 @@ import LogoutIcon from '@mui/icons-material/Logout'
 import OngoingGames from "@/app/components/home/OngoingGames";
 import GamesUnderConstruction from "@/app/components/home/GamesUnderConstruction";
 import EndedGames from "@/app/components/home/EndedGames";
+import HomeBar from "./components/home/HomeBar";
 
 export default function Home() {
     const { data: session } = useSession()
@@ -22,10 +23,8 @@ export default function Home() {
     console.log("My id:", user.id)
 
     return (
-        <div className='flex flex-row h-screen divide-x divide-solid'>
-            {/* User sidebar */}
-            <UserSidebar user={user} />
-            {/* User home */}
+        <div>
+            <HomeBar />
             <UserHome user={user} />
         </div>
     )

@@ -20,6 +20,7 @@ export default function RiddlePlayerController({ players }) {
 
     const [player, playerLoading, playerError] = useDocumentData(doc(GAMES_COLLECTION_REF, game.id, 'players', user.id))
     const [round, roundLoading, roundError] = useDocumentData(doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound))
+    const [realtime, realtimeLoading, realtimeError] = useDocumentData(doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion))
 
     if (playerError) {
         return <p><strong>Error: </strong>{JSON.stringify(playerError)}</p>
@@ -27,27 +28,32 @@ export default function RiddlePlayerController({ players }) {
     if (roundError) {
         return <p><strong>Error: </strong>{JSON.stringify(roundError)}</p>
     }
-    if (playerLoading || roundLoading) {
+    if (realtimeError) {
+        return <p><strong>Error: </strong>{JSON.stringify(realtimeError)}</p>
+    }
+    if (playerLoading || roundLoading || realtimeLoading) {
         return <></>
     }
-    if (!player || !round) {
+    if (!player || !round || !realtime) {
         return <></>
     }
 
-    const buzzed = players.buzzed
-    const canceled = players.canceled
-
-    const myCanceledItems = canceled.filter(item => item.playerId === user.id)
-    const hasExceededMaxTries = myCanceledItems && myCanceledItems.length >= round.maxTries
+    const { buzzed, canceled } = players
 
     const hasBuzzed = buzzed.includes(user.id)
     const isFirst = hasBuzzed && buzzed[0] === user.id
 
+    const myCanceledItems = canceled.filter(item => item.playerId === user.id)
+    const hasExceededMaxTries = myCanceledItems && myCanceledItems.length >= round.maxTries
+    const remaining = remainingWaitingClues(round, hasExceededMaxTries, realtime.currentClueIdx, myCanceledItems)
+
+    console.log(hasBuzzed, hasExceededMaxTries, remaining)
+
     return (
         <div className='flex flex-col h-full items-center justify-around'>
-            <BuzzerMessage playerStatus={player.status} hasExceededMaxTries={hasExceededMaxTries} round={round} myCanceledItems={myCanceledItems} isFirst={isFirst} hasBuzzed={hasBuzzed} />
+            <BuzzerMessage playerStatus={player.status} hasExceededMaxTries={hasExceededMaxTries} round={round} myCanceledItems={myCanceledItems} isFirst={isFirst} hasBuzzed={hasBuzzed} remaining={remaining} />
             <div className='flex flex-row w-full justify-center'>
-                <BuzzerButton isDisabled={hasBuzzed || hasExceededMaxTries} />
+                <BuzzerButton isDisabled={hasBuzzed || hasExceededMaxTries || remaining > 0} />
                 <BuzzerResetButton isDisabled={!hasBuzzed || hasExceededMaxTries} />
             </div>
         </div>
@@ -104,26 +110,13 @@ const RIDDLE_INCORRECT_ASNWER_TEXT = {
     'fr-FR': "Mauvaise réponse!"
 }
 
-function BuzzerMessage({ playerStatus, hasExceededMaxTries, round, myCanceledItems, isFirst, hasBuzzed, lang = 'en' }) {
-    const game = useGameContext()
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
-    const [realtime, realtimeLoading, realtimeError] = useDocumentData(realtimeDocRef)
-    if (realtimeError) {
-        return <p><strong>Error: </strong>{JSON.stringify(realtimeError)}</p>
-    }
-    if (realtimeLoading) {
-        return <></>
-    }
-    if (!realtime) {
-        return <></>
-    }
+function BuzzerMessage({ playerStatus, hasExceededMaxTries, round, myCanceledItems, isFirst, hasBuzzed, remaining, lang = 'en' }) {
+    if (hasExceededMaxTries)
+        return <span className='text-3xl'>{MAX_TRIES_EXCEEDED_TEXT[lang]} ({round.maxTries})</span>
 
-    if (playerStatus === 'wrong' || hasExceededMaxTries) {
-        if (hasExceededMaxTries)
-            return <span className='text-3xl'>{MAX_TRIES_EXCEEDED_TEXT[lang]} ({round.maxTries})</span>
+    if (playerStatus === 'wrong') {
         const message = RIDDLE_INCORRECT_ASNWER_TEXT[lang]
         if (round.type === 'progressive_clues' && round.delay && round.delay > 0) {
-            const remaining = remainingWaitingClues(round, realtime.currentClueIdx, myCanceledItems)
             return <span className='text-3xl'>{message} {CANCELED_WARNING_TEXT[lang]} <span className='font-bold text-blue-500'>{remaining > 1 ? numRemainingClues(remaining, lang) : ONE_MORE_WAITING_CLUE_TEXT[lang]}.</span></span>
         }
         return <span className='text-3xl'>{message}</span>
@@ -141,7 +134,13 @@ function BuzzerMessage({ playerStatus, hasExceededMaxTries, round, myCanceledIte
 
 
 
-function remainingWaitingClues(round, currentClueIdx, myCanceledItems) {
+function remainingWaitingClues(round, hasExceededMaxTries, currentClueIdx, myCanceledItems) {
+    if (!round.delay)
+        return 0
+    if (myCanceledItems.length === 0)
+        return 0
+    if (hasExceededMaxTries)
+        return 1 // arbitrary positive value
     const lastCanceledClueIdx = myCanceledItems.reduce((acc, item) => {
         if (item.clueIdx > acc)
             return item.clueIdx

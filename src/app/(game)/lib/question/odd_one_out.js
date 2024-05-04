@@ -21,7 +21,7 @@ import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 
 import { moveToHead } from '@/lib/utils/arrays';
-import { endQuestion } from '../question';
+import { endQuestionTransaction } from '../question';
 
 export async function handleProposalClick(gameId, roundId, questionId, userId, idx) {
     if (!gameId) {
@@ -112,7 +112,7 @@ const handleProposalClickTransaction = async (
             dateEnd: serverTimestamp()
         })
 
-        await endQuestion(gameId, roundId, questionId)
+        await endQuestionTransaction(transaction, gameId, roundId, questionId)
     } else {
         const realtimeData = await getDocDataTransaction(transaction, realtimeDocRef)
 
@@ -127,7 +127,7 @@ const handleProposalClickTransaction = async (
             transaction.update(realtimeDocRef, {
                 dateEnd: serverTimestamp()
             })
-            await endQuestion(gameId, roundId, questionId)
+            await endQuestionTransaction(transaction, gameId, roundId, questionId)
         } else {
             // Case 3: Was a good proposal but not the last one
             await switchNextChooserTransaction(transaction, gameId)

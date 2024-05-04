@@ -52,3 +52,30 @@ export const INCORRECT_ANSWER_TEXT = {
     'en': "No!",
     'fr-FR': "Non!"
 }
+
+export const QUESTION_ELEMENT_TO_TITLE = {
+    'en': {
+        'source': "Source",
+        'author': "Author",
+    },
+    'fr-FR': {
+        'source': "Source",
+        'author': "Auteur",
+    }
+}
+
+export const QUESTION_ELEMENT_TO_EMOJI = {
+    'source': "📜",
+    'author': "🧑",
+}
+
+export function questionElementToTitle(element, lang = 'en') {
+    return QUESTION_ELEMENT_TO_TITLE[lang][element]
+}
+export function questionElementToEmoji(element) {
+    return QUESTION_ELEMENT_TO_EMOJI[element]
+}
+
+export function prependQuestionElementWithEmoji(element, lang = 'en') {
+    return questionElementToEmoji(element) + " " + questionElementToTitle(element, lang)
+}

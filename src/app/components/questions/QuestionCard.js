@@ -11,26 +11,38 @@ import { LOCALE_TO_EMOJI } from '@/lib/utils/locales';
 import { timestampToDate } from '@/lib/utils/time';
 import { prependTopicWithEmoji, topicToEmoji } from '@/lib/utils/topics';
 
-import { Divider } from '@mui/material';
+import clsx from 'clsx';
+import { MCQ_CHOICES } from '@/lib/utils/question/mcq';
+import { QUESTION_ELEMENT_TO_EMOJI } from '@/lib/utils/question/question';
+
+import { CardTitle, CardHeader, CardContent, Card, CardFooter } from '@/app/components/card'
+
+import { Divider, Tooltip } from '@mui/material';
 
 export function QuestionCard({ question }) {
 
     return (
-        <div className='relative group overflow-hidden rounded-lg' key={question.id}>
-            <div className='bg-white p-4 dark:bg-gray-950'>
-                <QuestionCardHeader question={question} />
+        <Card>
+            <CardHeader className='flex flex-row items-center justify-between' >
+                <CardTitle className='text-base md:text-lg dark:text-white'><QuestionCardTitle question={question} /></CardTitle>
+            </CardHeader >
 
-                <Divider className='my-2 bg-slate-600' />
-                <QuestionCardMainContent question={question} />
+            <CardContent>
+                <QuestionCardContent question={question} />
+            </CardContent>
 
-                <Divider className='my-2 bg-slate-600' />
+            <Divider className='my-2 bg-slate-600' />
+            <CardFooter>
                 <QuestionCardFooter question={question} />
-            </div>
-        </div>
+            </CardFooter>
+
+        </Card>
+
+
     );
 }
 
-export function QuestionCardHeader({ question, lang = 'en' }) {
+export function QuestionCardTitle({ question, lang = 'en' }) {
     switch (question.type) {
         case 'progressive_clues':
         case 'image':
@@ -38,39 +50,36 @@ export function QuestionCardHeader({ question, lang = 'en' }) {
         case 'blindtest':
         case 'enum':
         case 'odd_one_out':
-            return <h3 className='text-base md:text-lg dark:text-white'>{topicToEmoji(question.topic)} &quot;{question.details.title}&quot;</h3>
+            return <span>{topicToEmoji(question.topic)} &quot;{question.details.title}&quot;</span>
         case 'matching':
-            return <h3 className='text-base md:text-lg dark:text-white'>{topicToEmoji(question.topic)} <strong>({question.details.numCols} col)</strong> &quot;{question.details.title}&quot;</h3>
+            return <span>{topicToEmoji(question.topic)} <strong>({question.details.numCols} col)</strong> &quot;{question.details.title}&quot;</span>
         case 'quote':
-            return <h3 className='text-base md:text-lg dark:text-white'>{prependTopicWithEmoji(question.topic, lang)}</h3>
+            return <span>{prependTopicWithEmoji(question.topic, lang)}</span>
         case 'mcq':
-            return <h3 className='text-base md:text-lg dark:text-white'>{topicToEmoji(question.topic)} {question.details.source && <i>{question.details.source}:</i>} &quot;{question.details.title}&quot;</h3>
+            return <span>{topicToEmoji(question.topic)} {question.details.source && <i>{question.details.source}:</i>} &quot;{question.details.title}&quot;</span>
     }
 }
 
 
-
 function QuestionCardFooter({ question, lang = 'en' }) {
-    const createdAt = timestampToDate(question.createdAt, lang)
-
     const userRef = doc(USERS_COLLECTION_REF, question.createdBy)
     const [user, loading, error] = useDocumentDataOnce(userRef)
     if (error) {
-        return <p>Error: {error}</p>
+        return <p>Error: {JSON.stringify(error)}</p>
     }
     if (loading) {
-        return <p>Loading...</p>
+        return <p>Loading the creator...</p>
     }
     if (!user) {
         return <p>User not found</p>
     }
 
     return (
-        <p className='text-sm md:text-base dark:text-white'>{LOCALE_TO_EMOJI[question.lang]} Created by <strong>{user.name}</strong> ({createdAt})</p>
+        <p className='text-sm md:text-base dark:text-white'>{LOCALE_TO_EMOJI[question.lang]} Created by <strong>{user.name}</strong> ({timestampToDate(question.createdAt, lang)})</p>
     )
 }
 
-export function QuestionCardMainContent({ question }) {
+export function QuestionCardContent({ question }) {
     switch (question.type) {
         case 'progressive_clues':
             return <ProgressiveCluesMainContent question={question} />
@@ -112,7 +121,7 @@ const ProgressiveCluesMainContent = ({ question }) => {
                 }}
                 className='self-center'
             />
-            <h4 className='text-sm md:text-base dark:text-white'><strong>{answer.title}</strong></h4>
+            <span className='text-sm md:text-base dark:text-white'><strong>{answer.title}</strong></span>
             <ol className='list-decimal py-1 pl-5'>
                 {question.details.clues.map((clue, idx) => <li className='dark:text-white' key={idx}>{clue}</li>)}
             </ol>
@@ -137,20 +146,19 @@ const ImageMainContent = ({ question }) => {
                 }}
                 className='self-center'
             />
-            <h4 className='text-sm md:text-base dark:text-white'><strong>{answer}</strong></h4>
+            <span className='text-sm md:text-base dark:text-white'><strong>{answer}</strong></span>
         </div>
     );
 }
 
 const EmojiMainContent = ({ question }) => {
-    const answer = question.details.answer
-    // answer.image
+    const { answer: { image, title }, clue } = question.details
 
     return (
         <div className='flex flex-col w-full space-y-2'>
             <Image
-                src={answer.image}
-                alt={answer.title}
+                src={image}
+                alt={title}
                 priority={true}
                 height={0}
                 width={0}
@@ -161,19 +169,20 @@ const EmojiMainContent = ({ question }) => {
                 }}
                 className='self-center'
             />
-            <span className='text-3xl self-center'>{question.details.clue}</span>
-            <h4 className='text-sm md:text-base dark:text-white'><strong>{answer.title}</strong></h4>
+            <span className='text-3xl self-center'>{clue}</span>
+            <span className='text-sm md:text-base dark:text-white'><strong>{title}</strong></span>
         </div>
     );
 }
 
 const BlindtestMainContent = ({ question }) => {
-    const answer = question.details.answer
+    const { answer: { image, title, author, source } } = question.details
+
     return (
         <div className='flex flex-col w-full space-y-2'>
             <Image
-                src={answer.image}
-                alt={answer.source}
+                src={image}
+                alt={title}
                 priority={true}
                 height={0}
                 width={0}
@@ -184,30 +193,63 @@ const BlindtestMainContent = ({ question }) => {
                 }}
                 className='self-center'
             />
-            <h4 className='text-sm md:text-base dark:text-white'><strong><i>{answer.title}</i> - {answer.author} ({answer.source})</strong></h4>
+            <span className='text-sm md:text-base dark:text-white'><strong>{title}</strong></span>
+            {author && <span className='text-sm md:text-base dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['author']} {author}</span>}
+            {source && <span className='text-sm md:text-base dark:text-white'><i>{QUESTION_ELEMENT_TO_EMOJI['source']} {source}</i></span>}
             <audio src={question.details.audio} controls className='w-full' />
         </div>
     );
 }
 
-import { replaceAllNonSpace, replaceSubstrings } from '@/lib/utils/question/quote';
-import clsx from 'clsx';
-import { MCQ_CHOICES } from '@/lib/utils/question/mcq';
+
 
 const QuoteMainContent = ({ question }) => {
     const { quote, source, author, toGuess, quoteParts } = question.details
 
-    const displayedAuthor = toGuess.includes('author') ? <span className='text-yellow-500'>{author}</span> : author
-    const displayedSource = toGuess.includes('source') ? <span className='text-yellow-500'>{source}</span> : source
-    const displayedQuote = toGuess.includes('quote') ? replaceSubstrings(quote, '_', quoteParts) : quote
-
     return (
         <div className='flex flex-col w-full space-y-2'>
-            <blockquote className='text-sm md:text-base dark:text-white'>&quot;{displayedQuote}&quot;</blockquote>
-            <h4 className='text-sm md:text-base dark:text-white'>- {displayedAuthor}, <i>{displayedSource}</i></h4>
+            <blockquote className='text-sm md:text-base dark:text-white'>&quot;{<DisplayedQuote toGuess={toGuess} quote={quote} quoteParts={quoteParts} />}&quot;</blockquote>
+            {author && <span className='text-sm md:text-base dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['author']} {<DisplayedAuthor toGuess={toGuess} author={author} />}</span>}
+            {source && <span className='text-sm md:text-base dark:text-white'><i>{QUESTION_ELEMENT_TO_EMOJI['source']} {<DisplayedSource toGuess={toGuess} source={source} />}</i></span>}
         </div>
     );
 }
+
+const DisplayedAuthor = ({ toGuess, author }) => {
+    if (toGuess.includes('author')) {
+        return <span className='text-yellow-500'>{author}</span>
+    }
+    return <span>{author}</span>
+}
+
+const DisplayedSource = ({ toGuess, source }) => {
+    if (toGuess.includes('source')) {
+        return <span className='text-yellow-500'>{source}</span>
+    }
+    return <span>{source}</span>
+}
+
+const DisplayedQuote = ({ toGuess, quote, quoteParts }) => {
+    if (toGuess.includes('quote') && quoteParts.length > 0) {
+        let parts = []
+        let lastIndex = 0
+
+        quoteParts.forEach((quotePart, quotePartIdx) => {
+            const before = quote.substring(lastIndex, quotePart.startIdx);
+            const within = quote.substring(quotePart.startIdx, quotePart.endIdx + 1);
+            lastIndex = quotePart.endIdx + 1;
+
+            parts.push(<span key={`before_${quotePartIdx}`}>{before}</span>);
+            parts.push(<span key={quotePartIdx} className='text-yellow-500'>{within}</span>);
+        });
+
+        parts.push(<span key={'lastIndex'}>{quote.substring(lastIndex)}</span>);
+        return <>{parts}</>;
+    }
+    return <span>{quote}</span>
+}
+
+
 
 const ENUM_MAX_NUM_ELEMENTS = 10
 
@@ -240,10 +282,11 @@ const OddOneOutMainContent = ({ question }) => {
         <div className='flex flex-col w-full space-y-2'>
             <ul className='list-disc py-1 pl-5'>
                 {items.map((item, idx) => (
-                    <li key={idx}
-                        className={clsx(idx === answerIdx ? 'text-red-500' : 'dark:text-white')}
-                    >
-                        {item.title}
+
+                    <li key={idx} className={clsx(idx === answerIdx ? 'text-red-500' : 'dark:text-white', 'hover:font-bold cursor-pointer')}>
+                        <Tooltip key={idx} title={item.explanation} placement='right-start' arrow>
+                            {item.title}
+                        </Tooltip>
                     </li>
                 ))}
             </ul>

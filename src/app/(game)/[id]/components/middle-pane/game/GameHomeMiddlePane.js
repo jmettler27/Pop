@@ -13,6 +13,7 @@ import LoadingScreen from '@/app/components/LoadingScreen'
 
 import { handleSelectRound } from '@/app/(game)/lib/round/round-transitions'
 import { useAsyncAction } from '@/lib/utils/async'
+import { timestampToHour } from '@/lib/utils/time'
 
 export default function GameHomeMiddlePane({ }) {
     return (
@@ -62,7 +63,11 @@ function GameHomeRounds() {
 
     const endedRounds = rounds.filter(round => round.dateEnd !== null).map(round => round.id)
 
-    const nonFinaleRounds = rounds.filter(round => round.type !== 'finale')
+    const nonFinaleRounds = rounds.filter(round => round.type !== 'finale').sort((a, b) => {
+        if (a.order === null) return -1;
+        if (b.order === null) return 1;
+        return a.order - b.order;
+    });
     const finaleRound = rounds.find(round => round.type === 'finale')
 
     const chooserTeamId = gameStates.chooserOrder[gameStates.chooserIdx]
@@ -115,32 +120,25 @@ function GameHomeRounds() {
     )
 }
 
-function GameHomeRoundItem({ round, isDisabled, onSelectRound }) {
+function GameHomeRoundItem({ round, isDisabled, onSelectRound, locale = 'fr-FR' }) {
 
     const secondaryText = () => {
         if (!round.dateStart)
             return ''
 
-        const startTimestamp = round.dateStart.toDate()
-        const startDate = startTimestamp.toLocaleDateString('fr-FR')
-        const startTime = startTimestamp.toLocaleTimeString('fr-FR')
-
-        const now = new Date()
-        const elapsedSecs = now.getTime() / 1000 - round.dateStart.seconds
-        const elapsedMins = Math.floor(elapsedSecs / 60)
+        const startTime = timestampToHour(round.dateEnd, locale)
 
         if (!round.dateEnd) {
+            const now = new Date()
+            const elapsedSecs = now.getTime() / 1000 - round.dateStart.seconds
+            const elapsedMins = Math.floor(elapsedSecs / 60)
             return `Commencée à ${startTime} (y a ${elapsedMins} min)`
         }
 
-        const endTimestamp = round.dateEnd.toDate()
-        const endDate = endTimestamp.toLocaleDateString('fr-FR')
-        const endTime = endTimestamp.toLocaleTimeString('fr-FR')
-
-        // Calculate the time elapsed between round.dateEnd and round.dateStart and put it in the secondary text
+        const endTime = timestampToHour(round.dateEnd, locale)
         const durationSecs = round.dateEnd.seconds - round.dateStart.seconds
         const durationMins = Math.floor(durationSecs / 60)
-        return `Finito à ${endTime} (${durationMins} min)`
+        return `Manche terminée à ${endTime} (${durationMins} min)`
     }
 
     return (

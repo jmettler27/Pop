@@ -118,7 +118,7 @@ const roundEndToGameHomeTransaction = async (
     transaction,
     gameId,
 ) => {
-    await addSoundToQueueTransaction(transaction, gameId, 'GAME', 'ui-confirmation-alert-b2')
+    await addSoundToQueueTransaction(transaction, gameId, 'ui-confirmation-alert-b2')
 
     await updateGameStatusTransaction(transaction, gameId, 'game_home')
 }

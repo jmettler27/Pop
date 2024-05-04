@@ -20,7 +20,7 @@ import { addSoundToQueue, addSoundToQueueTransaction } from '@/app/(game)/lib/so
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { updateTimerTransaction } from '../timer';
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/lib/utils/question/question';
-import { endQuestion } from '../question';
+import { endQuestionTransaction } from '../question';
 
 
 /* ==================================================================================================== */
@@ -143,7 +143,7 @@ const handleRiddleValidateAnswerClickTransaction = async (
     })
 
     // Update the game status
-    await endQuestion(gameId, roundId, questionId)
+    await endQuestionTransaction(transaction, gameId, roundId, questionId)
 
 
     await addSoundToQueueTransaction(transaction, gameId, 'Anime wow')
@@ -260,7 +260,7 @@ export async function removeBuzzedPlayer(gameId, roundId, questionId, playerId, 
 
     try {
         await runTransaction(db, async transaction =>
-            await removeBuzzedPlayerTransaction(transaction, gameId, roundId, questionId, questionType)
+            await removeBuzzedPlayerTransaction(transaction, gameId, roundId, questionId, playerId, questionType)
         );
     } catch (error) {
         console.error("There was an error removing the buzzed player:", error);
