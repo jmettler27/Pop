@@ -53,7 +53,7 @@ function QuoteRoundRewardsTitle({ round }) {
 }
 
 function OddOneOutRoundRewardsTitle({ round }) {
-    return <h1 className='text-3xl'><span className='font-bold'>{round.rewardsPerQuestion} point</span> par intrus trouvé</h1>
+    return <h1 className='text-3xl'><span className='font-bold'>{round.mistakePenalty} point</span> par intrus trouvé</h1>
 }
 
 function MatchingRoundRewardsTitle({ round }) {

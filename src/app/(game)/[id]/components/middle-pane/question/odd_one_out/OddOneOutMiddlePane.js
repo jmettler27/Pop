@@ -44,7 +44,7 @@ function OddOneOutQuestionHeader({ question }) {
     return (
         <div className='flex flex-row items-center justify-center space-x-1'>
             <QuestionTypeIcon questionType={question.type} fontSize={40} />
-            <h1 className='text-4xl'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong>: {question.details.title}</h1>
+            <h1 className='2xl:text-4xl'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong>: {question.details.title}</h1>
         </div>
     )
 }

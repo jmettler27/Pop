@@ -79,7 +79,7 @@ function OddOneOutRoundRules({ round }) {
         <p className='text-2xl text-center'>🖱️ Chaque équipe se relaie à son tour et <strong>clique sur une proposition de la liste qu&apos;elle considère juste</strong>.</p>
         <ul className='text-2xl list-disc pl-10'>
             <li>Si la proposition est <span className='text-green-500 font-bold'>vraie</span>, on passe à l&apos;équipe suivante.</li>
-            <li>Si la proposition est <span className='text-red-500 font-bold'>fausse</span>, on termine la question et l&apos;équipe gagne <strong>{round.rewardsPerQuestion} point.</strong> De plus, elle devient <strong>1ère dans l&apos;ordre de passage de la question suivante</strong>.</li>
+            <li>Si la proposition est <span className='text-red-500 font-bold'>fausse</span>, on termine la question et l&apos;équipe gagne <strong>{round.mistakePenalty} point.</strong> De plus, elle devient <strong>1ère dans l&apos;ordre de passage de la question suivante</strong>.</li>
         </ul>
         <p className='text-2xl text-center'>ℹ️ Une petite <strong>explication</strong> est affichée à chaque fois.</p>
         <p className='text-2xl text-center'>L&apos;ordre de passage = {round.order > 0 ? `Le classement inversé de la manche ${round.order}` : 'Un ordre aléatoire'}.</p>
@@ -106,7 +106,7 @@ function MatchingRoundRules({ round }) {
         <p className='text-2xl text-center'>🖱️ Chaque équipe se relaie à son tour et <strong>clique sur les noeuds (ou plus simplement les propositions elles-mêmes)</strong> du lien qu&apos;elle considère juste, <span className='font-bold underline'>de gauche à droite</span>.</p>
         <ul className='text-2xl list-disc pl-10'>
             <li>Si le lien est <span className='text-green-500 font-bold'>juste</span>, on passe à l&apos;équipe suivante.</li>
-            <li>Si le lien est <span className='text-red-500 font-bold'>faux</span>, l&apos;équipe &quot;gagne&quot; <strong>{round.rewardsPerQuestion} point.</strong></li>
+            <li>Si le lien est <span className='text-red-500 font-bold'>faux</span>, l&apos;équipe gagne <strong>{round.mistakePenalty} point.</strong></li>
         </ul>
         <p className='text-2xl text-center'>⚠️ <strong>Dans tous les cas, le lien est dessiné !</strong></p>
         <p className='text-2xl text-center'>L&apos;ordre de passage = {round.order > 0 ? `Le classement inversé de la manche ${round.order}` : 'Un ordre aléatoire'}.</p>

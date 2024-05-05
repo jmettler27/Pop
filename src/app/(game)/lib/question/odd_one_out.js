@@ -75,7 +75,7 @@ const handleProposalClickTransaction = async (
     if (idx === questionData.details.answerIdx) {
         const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
         const roundData = await getDocDataTransaction(transaction, roundRef)
-        const { rewardsPerQuestion: penalty } = roundData
+        const { mistakePenalty: penalty } = roundData
 
         const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
         const roundScoresData = await getDocDataTransaction(transaction, roundScoresRef)

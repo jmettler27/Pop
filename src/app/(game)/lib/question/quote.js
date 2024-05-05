@@ -186,12 +186,14 @@ const validateAllQuoteElementsTransaction = async (
     const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
     const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
     const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
 
-    const [questionData, roundData, roundScoresData, questionRealtimeData] = await Promise.all([
+    const [questionData, roundData, roundScoresData, questionRealtimeData, playerData] = await Promise.all([
         getDocDataTransaction(transaction, questionRef),
         getDocDataTransaction(transaction, roundRef),
         getDocDataTransaction(transaction, roundScoresRef),
         getDocDataTransaction(transaction, questionRealtimeRef),
+        getDocDataTransaction(transaction, playerRef)
     ])
 
     const { revealed } = questionRealtimeData
@@ -217,18 +219,19 @@ const validateAllQuoteElementsTransaction = async (
     }
 
     /* Update the winner team scores */
-    const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
-    const playerData = await getDocDataTransaction(transaction, playerRef)
     const { teamId } = playerData
+
     const { rewardsPerElement: points } = roundData
-    const totalPoints = points * (toGuess.length + quoteParts.length - 1)
+    const multiplier = toGuess.length + (toGuess.includes('quote') ? quoteParts.length - 1 : 0);
+    const totalPoints = points * multiplier;
+
     const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
     const newRoundProgress = {}
     for (const tid of Object.keys(currentRoundScores)) {
         // Add an entry whose key is questionId and value is currentRoundScores[tid
         newRoundProgress[tid] = {
             ...currentRoundProgress[tid],
-            [questionId]: currentRoundScores[tid] + (tid === teamId ? totalPoints : 0)
+            [questionId]: currentRoundScores[tid] + (tid === teamId) * totalPoints
         }
     }
     transaction.update(roundScoresRef, {
