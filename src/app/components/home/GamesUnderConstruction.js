@@ -1,11 +1,25 @@
 import React from 'react';
 
 import { GAMES_COLLECTION_REF } from "@/lib/firebase/firestore"
-import { collection, query, where } from "firebase/firestore"
+import { and, collection, query, where } from "firebase/firestore"
 import { useCollection, useCollectionOnce } from "react-firebase-hooks/firestore"
 
-export function GamesUnderConstruction({ lang = 'en' }) {
-    const [gamesUnderConstructionCollection, loading, error] = useCollection(query(GAMES_COLLECTION_REF, where('status', '==', 'build')))
+import { gameTypeToEmoji } from '@/lib/utils/game';
+import { localeToEmoji } from '@/lib/utils/locales';
+
+import { useSession } from 'next-auth/react';
+
+import { Skeleton } from '@mui/material';
+import LoadingScreen from '../LoadingScreen';
+import { CardTitle, CardHeader, CardContent, Card } from '@/app/components/card'
+import EditGameButton from './EditGameButton';
+
+
+
+
+export default function GamesUnderConstruction({ lang = 'en' }) {
+    const [gamesUnderConstructionCollection, loading, error] = useCollection(query(GAMES_COLLECTION_REF,
+        and(where('status', '==', 'build'), where('dateEnd', '==', null))))
     if (error) {
         return <p><strong>Error: {JSON.stringify(error)}</strong></p>
     }
@@ -17,19 +31,20 @@ export function GamesUnderConstruction({ lang = 'en' }) {
         return <div>There are no games under construction yet.</div>
     }
 
-    const gamesUnderConstruction = gamesUnderConstructionCollection.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-
+    const sortedGames = gamesUnderConstructionCollection.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .sort((a, b) => b.dateEnd - a.dateEnd)
 
     return (
         <Card>
             <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
-                <CardTitle className='text-2xl'>🛠️ {GAMES_UNDER_CONSTRUCTION_CARD_TITLE[lang]} ({gamesUnderConstruction.length})</CardTitle>
+                <CardTitle className='text-2xl'>🛠️ {GAMES_UNDER_CONSTRUCTION_CARD_TITLE[lang]} ({sortedGames.length})</CardTitle>
                 {/* <RemoveRoundFromGameButton roundId={roundId} /> */}
             </CardHeader>
 
             <CardContent>
                 <div className='grid gap-4 md:grid-cols-4'>
-                    {gamesUnderConstruction.map(game => (
+                    {sortedGames.map(game => (
                         <GameUnderConstructionCard key={game.id} game={game} />
                     ))}
                 </div>
@@ -43,13 +58,6 @@ const GAMES_UNDER_CONSTRUCTION_CARD_TITLE = {
     'fr-FR': 'Parties en travaux',
 }
 
-
-
-import { CardTitle, CardHeader, CardContent, Card } from '@/app/components/card'
-import { gameTypeToEmoji } from '@/lib/utils/game';
-import { localeToEmoji } from '@/lib/utils/locales';
-import { useSession } from 'next-auth/react';
-import { IconButton, Skeleton } from '@mui/material';
 
 export function GameUnderConstructionCard({ game, lang = 'en' }) {
     const { data: session } = useSession()
@@ -83,16 +91,3 @@ export function GameUnderConstructionCard({ game, lang = 'en' }) {
     )
 }
 
-import EditIcon from '@mui/icons-material/Edit';
-import LoadingScreen from '../LoadingScreen';
-
-function EditGameButton({ gameId }) {
-    return (
-        <IconButton
-            color='warning'
-            href={'/edit/' + gameId}
-        >
-            <EditIcon />
-        </IconButton>
-    )
-}

@@ -1,8 +1,19 @@
-export function timestampToDate(timestamp, lang = 'fr-FR') {
+export function timestampToDate(timestamp, locale = 'fr-FR') {
     if (!timestamp) {
         return null;
     }
-    return new Date(timestamp.seconds * 1000)?.toLocaleDateString(lang);
+    return new Date(timestamp.seconds * 1000)?.toLocaleString(locale, {
+        year: 'numeric', month: 'long', weekday: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+}
+
+export function timestampToHour(timestamp, locale = 'fr-FR') {
+    if (!timestamp) {
+        return null;
+    }
+    return new Date(timestamp.seconds * 1000)?.toLocaleString(locale, {
+        hour: '2-digit', minute: '2-digit'
+    });
 }
 
 export function formatSecondsToMinutesAndSeconds(seconds) {

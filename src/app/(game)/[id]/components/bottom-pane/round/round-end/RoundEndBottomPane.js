@@ -1,20 +1,23 @@
 
-import { useGameContext, useRoleContext } from '@/app/(game)/contexts'
+import { useRoleContext } from '@/app/(game)/contexts'
 
 import GameChooserTeamAnnouncement from '@/app/(game)/[id]/components/GameChooserTeamAnnouncement'
 import GoGameHomeButton from '@/app/(game)/[id]/components/bottom-pane/GoGameHomeButton'
 import EndGameButton from '@/app/(game)/[id]/components/bottom-pane/EndGameButton'
-import { updateGameStatus } from '@/app/(game)/lib/game'
+import { roundEndToGameHome } from '@/app/(game)/lib/transitions'
+
 import { useAsyncAction } from '@/lib/utils/async'
 import { useState } from 'react'
 import LoadingScreen from '@/app/components/LoadingScreen'
 
+import { useParams } from 'next/navigation'
+
 export default function RoundEndBottomPane({ endedRound, lang = 'en' }) {
-    const game = useGameContext()
+    const { id: gameId } = useParams()
     const myRole = useRoleContext()
 
     const [handleClick, isHandling] = useAsyncAction(async () => {
-        await updateGameStatus(game.id, 'game_home')
+        await roundEndToGameHome(gameId)
     })
 
     return (

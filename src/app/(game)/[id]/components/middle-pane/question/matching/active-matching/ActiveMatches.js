@@ -37,6 +37,7 @@ export default function ActiveMatches({ answer, nodePositions, numCols }) {
                     <UserMatches
                         edges={edges}
                         setEdges={setEdges}
+                        setNewEdgeSource={setNewEdgeSource}
                         nodePositions={nodePositions}
                     />
 
@@ -143,6 +144,17 @@ function ActiveMatchingQuestionNodes({ answer, nodePositions, numCols, edges, se
             console.log("The selected node is not the first one in the in-progress match")
             const sourceNode = getNode(newEdgeSource, nodePositions)
 
+
+            if (targetNode.col === sourceNode.col) {
+                console.log("The user has selected a node that is in the same column as the source node and the source node is in the leftmost column")
+                setNewEdgeSource(targetNode.id)
+                if (edges.length > 0) {
+                    const lastEdge = edges[edges.length - 1]
+                    setEdges((edges) => edges.slice(0, -1))
+                    addNewEdge({ from: lastEdge.from, to: targetNode.id });
+                }
+            }
+
             // The user has selected a node that is not in the directly adjacent right-hand column
             // if (sourceNode.col === targetNode.col || Math.abs(targetNode.col - sourceNode.col) > 1) {
             if (targetNode.col !== sourceNode.col + 1) {
@@ -191,11 +203,15 @@ function ActiveMatchingQuestionNodes({ answer, nodePositions, numCols, edges, se
     )
 }
 
-function UserMatches({ nodePositions, edges, setEdges }) {
+function UserMatches({ nodePositions, edges, setEdges, setNewEdgeSource }) {
     console.log("USER MATCHES RENDERED")
 
-    const removeEdgeByIndex = (edgeIdx) => {
-        setEdges([...edges.slice(0, edgeIdx), ...edges.slice(edgeIdx + 1)])
+    const handleClickEdge = (edgeIdx) => {
+        if (edgeIdx === edges.length - 1) {
+            const lastEdge = edges[edges.length - 1]
+            setNewEdgeSource(lastEdge.from)
+            setEdges((edges) => edges.slice(0, -1))
+        }
     }
 
     return edges.map((edge, idx) => (
@@ -205,7 +221,7 @@ function UserMatches({ nodePositions, edges, setEdges }) {
             sourceId={edge.from}
             targetId={edge.to}
             nodePositions={nodePositions}
-            onClick={() => removeEdgeByIndex(idx)}
+            onClick={() => handleClickEdge(idx)}
         />
     ))
 }

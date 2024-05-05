@@ -22,7 +22,7 @@ import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
 import { findHighestBidder } from '@/lib/utils/question/enum';
 import { updateTimerTransaction } from '../timer';
-import { endQuestion } from '../question';
+import { endQuestionTransaction } from '../question';
 
 // WRITE
 export async function updateEnumBets(gameId, roundId, questionId, fieldsToUpdate) {
@@ -364,7 +364,7 @@ export const endEnumQuestionTransaction = async (
         dateEnd: serverTimestamp()
     })
 
-    await endQuestion(gameId, roundId, questionId)
+    await endQuestionTransaction(transaction, gameId, roundId, questionId)
 }
 
 /* ============================================================================================================ */

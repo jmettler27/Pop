@@ -20,6 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../card'
 
 import { gameTypeToEmoji } from '@/lib/utils/game'
 import { localeToEmoji } from '@/lib/utils/locales'
+import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from './GameAvatars'
 
 export default function OngoingGames({ lang = 'en' }) {
     const [games, gamesLoading, gamesError] = useCollection(query(GAMES_COLLECTION_REF,
@@ -148,10 +149,16 @@ const GameCard = ({
 
             <CardContent>
                 {/* Organizers */}
-                <GameOrganizersAvatarGroup gameId={game.id} />
+                <Box className='flex flex-row items-center justify-between pb-2'>
+                    <Typography variant="subtitle1">Organizers</Typography>
+                    <GameOrganizersAvatarGroup gameId={game.id} />
+                </Box>
 
                 {/* Players */}
-                <GamePlayersAvatarGroup gameId={game.id} max={4} />
+                <Box className='flex flex-row items-center justify-between pb-2'>
+                    <Typography variant="subtitle1">Players</Typography>
+                    <GamePlayersAvatarGroup gameId={game.id} max={4} />
+                </Box>
 
                 <Divider className='my-2 bg-slate-600' />
 
@@ -167,95 +174,6 @@ const GameCard = ({
                 </JoinGameButton>
             </CardContent>
         </Card>
-
-        // <GameCardRoot>
-        //     <GameCardColumn container direction='column' justifyContent='space-between'>
-        //         <Grid item container spacing={1}>
-        //             {/* Game logo */}
-        //             <GameCardLogo className='self-center' variant={'rounded'} src={game.image} />
-
-        //             <Grid item>
-        //                 {/* Game title */}
-        //                 <Typography variant='subtitle1' color='textPrimary'>{game.title}</Typography>
-        //                 {/* Game organizers */}
-        //                 <Typography variant='caption' color='textSecondary'>{`Organizers: ${arrayToCommaSeparatedString(organizers.docs.map(doc => doc.data().name))}`}</Typography>
-        //             </Grid>
-
-        //             <Grid item>
-        //                 {/* Game occupancy */}
-        //                 <Typography variant='caption' color='textSecondary'>{playerIds.length}/{game.maxPlayers}</Typography>
-        //             </Grid>
-        //         </Grid>
-
-
-        //         <Grid item container alignItems='center' justifyContent='space-between'>
-        //             {/* Players */}
-        //             <GamePlayersAvatarGroup gameId={game.id} max={4} />
-
-        //             {/* Join button */}
-        //             <JoinGameButton
-        //                 variant='outlined'
-        //                 color={buttonColor()}
-        //                 endIcon={<ButtonIcon />}
-        //                 onClick={handleJoinClick}
-        //             >
-        //                 {buttonText()}
-        //             </JoinGameButton>
-        //         </Grid>
-        //     </GameCardColumn>
-        // </GameCardRoot>
-    )
-}
-
-
-function GameOrganizersAvatarGroup({ gameId }) {
-    const organizersRef = collection(GAMES_COLLECTION_REF, gameId, 'organizers')
-    const [organizersCollection, organizersLoading, organizersError] = useCollectionOnce(query(organizersRef))
-
-    if (organizersError) {
-        return <p><strong>Error: {JSON.stringify(organizersError)}</strong></p>
-    }
-    if (organizersLoading) {
-        return <Skeleton variant='rounded' width={210} height={60} />
-    }
-    if (!organizersCollection) {
-        return <></>
-    }
-
-    const organizers = organizersCollection.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-
-    return (
-        <AvatarGroup max={4}>
-            {organizers.map((organizer) => (
-                <Avatar key={organizer.id} src={organizer.image} alt={organizer.name} />
-            ))}
-        </AvatarGroup>
-    )
-}
-
-
-function GamePlayersAvatarGroup({ gameId }) {
-    const playersRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const [playersCollection, playersLoading, playersError] = useCollectionOnce(query(playersRef))
-
-    if (playersError) {
-        return <p><strong>Error: {JSON.stringify(playersError)}</strong></p>
-    }
-    if (playersLoading) {
-        return <Skeleton variant='rounded' width={210} height={60} />
-    }
-    if (!playersCollection) {
-        return <></>
-    }
-
-    const players = playersCollection.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-
-    return (
-        <AvatarGroup max={4}>
-            {players.map((player) => (
-                <Avatar key={player.id} src={player.image} alt={player.name} />
-            ))}
-        </AvatarGroup>
     )
 }
 

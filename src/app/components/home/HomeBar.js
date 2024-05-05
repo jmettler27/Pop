@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -11,15 +12,20 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
-import { useSession } from 'next-auth/react';
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
+
+import { useSession, signOut } from "next-auth/react"
+import { redirect, useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const pages = ['Games', 'Create a new game', 'Submit a question', 'About'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 export function HomeBar() {
     const { data: session } = useSession()
-    const user = session.user
+    const { user } = session
+
+    const router = useRouter()
 
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -39,11 +45,17 @@ export function HomeBar() {
         setAnchorElUser(null);
     };
 
+    const handleSelectSetting = (setting) => {
+        if (setting === 'Logout') {
+            signOut()
+        }
+    }
+
     return (
-        <AppBar position="static">
+        <AppBar position="static" color='warning' enableColorOnDark>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+                    <SportsEsportsIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
                     <Typography
                         variant="h6"
                         noWrap
@@ -98,7 +110,7 @@ export function HomeBar() {
                             ))}
                         </Menu>
                     </Box>
-                    <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+                    <SportsEsportsIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
                     <Typography
                         variant="h5"
                         noWrap
@@ -152,7 +164,7 @@ export function HomeBar() {
                             onClose={handleCloseUserMenu}
                         >
                             {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                                <MenuItem key={setting} onClick={() => handleSelectSetting(setting)}>
                                     <Typography textAlign="center">{setting}</Typography>
                                 </MenuItem>
                             ))}

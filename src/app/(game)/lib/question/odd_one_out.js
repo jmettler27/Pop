@@ -18,10 +18,11 @@ import {
 
 import { switchNextChooserTransaction } from '@/app/(game)/lib/chooser'
 import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
-import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
+import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 
 import { getNextCyclicIndex, moveToHead } from '@/lib/utils/arrays';
-import { endQuestion } from '../question';
+import { moveToHead } from '@/lib/utils/arrays';
+import { endQuestionTransaction } from '@/app/(game)/lib/question';
 
 export async function handleProposalClick(gameId, roundId, questionId, userId, idx) {
     if (!gameId) {
@@ -75,7 +76,7 @@ const handleProposalClickTransaction = async (
     if (idx === questionData.details.answerIdx) {
         const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
         const roundData = await getDocDataTransaction(transaction, roundRef)
-        const { rewardsPerQuestion: penalty } = roundData
+        const { mistakePenalty: penalty } = roundData
 
         const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
         const roundScoresData = await getDocDataTransaction(transaction, roundScoresRef)
@@ -112,7 +113,7 @@ const handleProposalClickTransaction = async (
             dateEnd: serverTimestamp()
         })
 
-        await endQuestion(gameId, roundId, questionId)
+        await endQuestionTransaction(transaction, gameId, roundId, questionId)
     } else {
         const realtimeData = await getDocDataTransaction(transaction, realtimeDocRef)
 
@@ -127,7 +128,7 @@ const handleProposalClickTransaction = async (
             transaction.update(realtimeDocRef, {
                 dateEnd: serverTimestamp()
             })
-            await endQuestion(gameId, roundId, questionId)
+            await endQuestionTransaction(transaction, gameId, roundId, questionId)
         } else {
             // Case 3: Was a good proposal but not the last one
             await switchNextChooserTransaction(transaction, gameId)

@@ -20,7 +20,7 @@ import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { QUOTE_ELEMENTS } from '@/lib/utils/question/quote';
 import { isObjectEmpty } from '@/lib/utils';
-import { endQuestion } from '../question';
+import { endQuestionTransaction } from '../question';
 
 /**
  * When the organizer reveals an element from the quote (author, source, quote part)
@@ -94,8 +94,10 @@ const revealQuoteElementTransaction = async (
         }
     }
 
+    console.log("Player ID: ", playerId)
     /* Update the winner team scores */
     if (playerId) {
+        console.log("HERE")
         const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
         const playerData = await getDocDataTransaction(transaction, playerRef)
         const { teamId } = playerData
@@ -109,6 +111,7 @@ const revealQuoteElementTransaction = async (
                 [questionId]: currentRoundScores[tid] + (tid === teamId ? points : 0)
             }
         }
+        console.log("Points: ", points)
         transaction.update(roundScoresRef, {
             [`scores.${teamId}`]: increment(points),
             scoresProgress: newRoundProgress
@@ -125,6 +128,10 @@ const revealQuoteElementTransaction = async (
     const newRevealedQuote = newRevealed['quote']
     const temp2 = quoteParts.every((_, idx) => newRevealedQuote[idx] && !isObjectEmpty(newRevealedQuote[idx]))
     const allRevealed = temp1 && temp2
+    console.log("Temp1: ", temp1)
+    console.log("Temp2: ", temp2)
+    console.log("All Revealed: ", allRevealed)
+    console.log("New revealed: ", newRevealed)
 
     transaction.update(questionRealtimeRef, {
         revealed: newRevealed
@@ -132,12 +139,11 @@ const revealQuoteElementTransaction = async (
 
     // If all revealed
     if (allRevealed) {
+        await addSoundToQueueTransaction(transaction, gameId, 'Anime wow')
         transaction.update(questionRealtimeRef, {
             dateEnd: serverTimestamp(),
         })
-
-        await endQuestion(gameId, roundId, questionId)
-        await addSoundToQueueTransaction(transaction, gameId, 'Anime wow')
+        await endQuestionTransaction(transaction, gameId, roundId, questionId)
         return
     }
     await addSoundToQueueTransaction(transaction, gameId, playerId ? 'OUI' : 'cartoon_mystery_musical_tone_002')
@@ -180,12 +186,14 @@ const validateAllQuoteElementsTransaction = async (
     const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
     const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
     const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
 
-    const [questionData, roundData, roundScoresData, questionRealtimeData] = await Promise.all([
+    const [questionData, roundData, roundScoresData, questionRealtimeData, playerData] = await Promise.all([
         getDocDataTransaction(transaction, questionRef),
         getDocDataTransaction(transaction, roundRef),
         getDocDataTransaction(transaction, roundScoresRef),
         getDocDataTransaction(transaction, questionRealtimeRef),
+        getDocDataTransaction(transaction, playerRef)
     ])
 
     const { revealed } = questionRealtimeData
@@ -211,18 +219,19 @@ const validateAllQuoteElementsTransaction = async (
     }
 
     /* Update the winner team scores */
-    const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
-    const playerData = await getDocDataTransaction(transaction, playerRef)
     const { teamId } = playerData
+
     const { rewardsPerElement: points } = roundData
-    const totalPoints = points * (toGuess.length + quoteParts.length - 1)
+    const multiplier = toGuess.length + (toGuess.includes('quote') ? quoteParts.length - 1 : 0);
+    const totalPoints = points * multiplier;
+
     const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
     const newRoundProgress = {}
     for (const tid of Object.keys(currentRoundScores)) {
         // Add an entry whose key is questionId and value is currentRoundScores[tid
         newRoundProgress[tid] = {
             ...currentRoundProgress[tid],
-            [questionId]: currentRoundScores[tid] + (tid === teamId ? totalPoints : 0)
+            [questionId]: currentRoundScores[tid] + (tid === teamId) * totalPoints
         }
     }
     transaction.update(roundScoresRef, {
@@ -239,8 +248,8 @@ const validateAllQuoteElementsTransaction = async (
         dateEnd: serverTimestamp(),
     })
 
-    await endQuestion(gameId, roundId, questionId)
     await addSoundToQueueTransaction(transaction, gameId, 'Anime wow')
+    await endQuestionTransaction(transaction, gameId, roundId, questionId)
 }
 
 

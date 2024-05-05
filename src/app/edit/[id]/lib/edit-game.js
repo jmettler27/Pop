@@ -86,7 +86,7 @@ const addGameRoundTransaction = async (
         initRoundInfo.rewardsPerQuestion = ENUM_DEFAULT_REWARD
         initRoundInfo.rewardsForBonus = ENUM_DEFAULT_BONUS;
     } else if (type === 'odd_one_out') {
-        initRoundInfo.rewardsPerQuestion = OOO_DEFAULT_MISTAKE_PENALTY
+        initRoundInfo.mistakePenalty = OOO_DEFAULT_MISTAKE_PENALTY
     } else if (type === 'matching') {
         initRoundInfo.mistakePenalty = MATCHING_DEFAULT_MISTAKE_PENALTY
     } else if (type === 'mcq') {

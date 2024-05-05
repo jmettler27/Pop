@@ -33,6 +33,7 @@ const editGameRoundCardNumCols = (roundType) => {
         case 'odd_one_out':
         case 'enum':
         case 'mcq':
+        case 'quote':
             return 'md:grid-cols-3'
         default:
             return 'md:grid-cols-4'
@@ -61,7 +62,7 @@ export function EditGameRoundCard({ roundId }) {
     return (
         <Card>
             <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
-                <CardTitle className='text-lg font-medium'>{questionTypeToEmoji(round.type)} <i>{round.title}</i></CardTitle>
+                <CardTitle className='text-2xl'>{questionTypeToEmoji(round.type)} <i>{round.title}</i></CardTitle>
                 <RemoveRoundFromGameButton roundId={round.id} />
             </CardHeader>
             <CardContent>

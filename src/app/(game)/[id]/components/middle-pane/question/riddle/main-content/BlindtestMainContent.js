@@ -11,6 +11,7 @@ import FastRewindIcon from '@mui/icons-material/FastRewind';
 import FastForwardIcon from '@mui/icons-material/FastForward';
 
 import FirebaseImage from '@/app/(game)/[id]/components/FirebaseImage';
+import { QUESTION_ELEMENT_TO_EMOJI } from '@/lib/utils/question/question';
 
 
 export default function BlindtestMainContent({ question, showComplete }) {
@@ -18,7 +19,7 @@ export default function BlindtestMainContent({ question, showComplete }) {
 
     return <>
         {game.status === 'question_active' && <ActiveBlindtestMainContent question={question} showComplete={showComplete} />}
-        {game.status === 'question_end' && <BlindtestAnswerImage question={question} />}
+        {game.status === 'question_end' && <EndedBlindtestMainContent question={question} />}
     </>
 }
 
@@ -233,11 +234,19 @@ function ActiveBlindtestMainContent({ question, showComplete }) {
     );
 }
 
-function BlindtestAnswerImage({ question }) {
-    const answer = question.details.answer
+function EndedBlindtestMainContent({ question }) {
+    const { answer: { image, title, author, source } } = question.details
+
     return (
-        <Box className='flex items-center justify-center w-2/3 h-2/3'>
-            <FirebaseImage url={answer.image} alt={answer.source || ''} />
+        <Box className='flex flex-row items-center justify-center space-x-8 w-2/3 h-2/3'>
+            <Box className='flex flex-col h-full w-1/2 items-end justify-end'>
+                <FirebaseImage url={image} alt={source || ''} />
+            </Box>
+            <Box className='flex flex-col h-full w-1/2 justify-center items-start space-y-2'>
+                <span className='2xl:text-4xl text-green-500'><strong>{title}</strong></span>
+                {author && <span className='2xl:text-4xl text-green-500'>{QUESTION_ELEMENT_TO_EMOJI['author']} {author}</span>}
+                {source && <span className='2xl:text-4xl text-green-500'>{QUESTION_ELEMENT_TO_EMOJI['source']} <i>{source}</i></span>}
+            </Box>
         </Box>
     )
 }

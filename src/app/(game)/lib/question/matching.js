@@ -20,12 +20,13 @@ import { switchNextChooserTransaction } from '@/app/(game)/lib/chooser'
 import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 
 import { findMostFrequentValueAndIndices } from '@/lib/utils/question/matching';
-import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
+import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { sortScores } from '@/lib/utils/scores';
 import { sortAscendingRoundScores } from '@/lib/utils/question_types';
 import { shuffle } from '@/lib/utils/arrays';
-import { endQuestion } from '../question';
+
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/lib/utils/question/question';
+import { endQuestionTransaction } from '@/app/(game)/lib/question';
 
 export async function submitMatch(gameId, roundId, questionId, userId, edges) {
     if (!gameId) {
@@ -147,7 +148,7 @@ const submitMatchTransaction = async (
 
 
             // End the question
-            await endQuestion(gameId, roundId, questionId)
+            await endQuestionTransaction(transaction, gameId, roundId, questionId)
 
         } else {
             // Case 1.1: The matching is correct but not the last one
