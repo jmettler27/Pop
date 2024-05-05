@@ -21,7 +21,6 @@ import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 
 import { getNextCyclicIndex, moveToHead } from '@/lib/utils/arrays';
-import { moveToHead } from '@/lib/utils/arrays';
 import { endQuestionTransaction } from '@/app/(game)/lib/question';
 
 export async function handleProposalClick(gameId, roundId, questionId, userId, idx) {
@@ -75,13 +74,15 @@ const handleProposalClickTransaction = async (
     // Case 1: Is the odd proposal => The first player to find the odd 'wins'
     if (idx === questionData.details.answerIdx) {
         const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-        const roundData = await getDocDataTransaction(transaction, roundRef)
-        const { mistakePenalty: penalty } = roundData
-
         const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
-        const roundScoresData = await getDocDataTransaction(transaction, roundScoresRef)
-        const { scores: currentScores, scoresProgress: currentProgress } = roundScoresData
 
+        const [roundData, roundScoresData] = await Promise.all([
+            getDocDataTransaction(transaction, roundRef),
+            getDocDataTransaction(transaction, roundScoresRef)
+        ])
+
+        const { mistakePenalty: penalty } = roundData
+        const { scores: currentScores, scoresProgress: currentProgress } = roundScoresData
         const newProgress = {}
         for (const tid of Object.keys(currentScores)) {
             newProgress[tid] = {
