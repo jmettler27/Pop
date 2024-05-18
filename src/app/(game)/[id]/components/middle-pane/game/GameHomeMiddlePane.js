@@ -120,6 +120,8 @@ function GameHomeRounds() {
     )
 }
 
+import NewReleasesIcon from '@mui/icons-material/NewReleases';
+
 function GameHomeRoundItem({ round, isDisabled, onSelectRound, locale = 'fr-FR' }) {
 
     const secondaryText = () => {
@@ -179,6 +181,8 @@ function GameHomeRoundItem({ round, isDisabled, onSelectRound, locale = 'fr-FR' 
                     className: 'text-lg'
                 }}
             />
+
+            {(round.type === 'matching' || round.type == 'quote') && <NewReleasesIcon color='warning' fontSize='large' />}
         </ListItemButton>
     )
 }

@@ -17,11 +17,12 @@ import {
 } from 'firebase/firestore'
 
 import { switchNextChooserTransaction } from '@/app/(game)/lib/chooser'
-import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { addSoundToQueueTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 
 import { getNextCyclicIndex, moveToHead } from '@/lib/utils/arrays';
 import { endQuestionTransaction } from '@/app/(game)/lib/question';
+import { updateTimerStateTransaction } from '../timer';
 
 export async function handleProposalClick(gameId, roundId, questionId, userId, idx) {
     if (!gameId) {
@@ -137,6 +138,7 @@ const handleProposalClickTransaction = async (
                 transaction.update(playerDoc.ref, { status: 'idle' })
             }
             await addSoundToQueueTransaction(transaction, gameId, 'Bien')
+            await updateTimerStateTransaction(transaction, gameId, 'started')
         }
     }
     transaction.update(realtimeDocRef, {
@@ -195,7 +197,7 @@ export const handleOOOCountdownEndTransaction = async (
     const q = query(playersCollectionRef, where('teamId', '==', teamId))
     const playersQuerySnapshot = await getDocs(q)
 
-    const { rewardsPerQuestion: penalty } = roundData
+    const { mistakePenalty: penalty } = roundData
     const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
     const newRoundProgress = {}
     for (const tid of Object.keys(currentRoundScores)) {
@@ -214,12 +216,12 @@ export const handleOOOCountdownEndTransaction = async (
         transaction.update(playerDoc.ref, { status: 'wrong' })
     }
 
-    await addSoundToQueueTransaction(transaction, gameId, 'roblox_oof')
-
     transaction.update(gameStatesRef, {
         chooserIdx: newChooserIdx
     })
 
+    await addWrongAnswerSoundToQueueTransaction(transaction, gameId)
+    await updateTimerStateTransaction(transaction, gameId, 'resetted')
 }
 
 /* ==================================================================================================== */

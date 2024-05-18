@@ -46,3 +46,17 @@ export async function clearSounds(gameId) {
 
     await batch.commit()
 }
+
+
+
+const WRONG_ANSWER_SOUNDS = [
+    "roblox_oof",
+    "oof",
+    "terraria_male_damage"
+]
+
+import { getRandomElement } from '@/lib/utils/arrays';
+
+export const addWrongAnswerSoundToQueueTransaction = async (transaction, gameId) => {
+    await addSoundToQueueTransaction(transaction, gameId, getRandomElement(WRONG_ANSWER_SOUNDS))
+}

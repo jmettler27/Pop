@@ -6,7 +6,6 @@ import { CircularProgress } from '@mui/material'
 import { useParams } from 'next/navigation'
 
 export default function TeamScore({ teamId }) {
-    console.log(`RENDERING TeamScore ${teamId}`)
     const { id: gameId } = useParams()
 
     const [game, gameLoading, gameError] = useDocumentData(doc(GAMES_COLLECTION_REF, gameId))
@@ -50,12 +49,10 @@ function TeamGameScore({ teamId }) {
         return <></>
     }
 
-    return <span className='text-2xl'>{(gameScores.scores && Object.keys(gameScores.scores).includes(teamId)) && gameScores.scores[teamId]}</span>
+    return <span className='2xl:text-3xl'>{(gameScores.scores && Object.keys(gameScores.scores).includes(teamId)) && gameScores.scores[teamId]}</span>
 }
 
 function TeamRoundScore({ teamId, roundId }) {
-    console.log(`RENDERING TeamRoundScore ${teamId}`)
-
     const { id: gameId } = useParams()
 
     const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
@@ -70,5 +67,5 @@ function TeamRoundScore({ teamId, roundId }) {
         return <></>
     }
 
-    return <span className='text-2xl'>{(roundScores.scores && Object.keys(roundScores.scores).includes(teamId)) && roundScores.scores[teamId]}</span>
+    return <span className='2xl:text-3xl'>{(roundScores.scores && Object.keys(roundScores.scores).includes(teamId)) && roundScores.scores[teamId]}</span>
 }

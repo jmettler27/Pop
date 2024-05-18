@@ -11,16 +11,6 @@ import {
 } from 'firebase/firestore'
 
 
-export async function updateTimerState(gameId, status, duration = 5, forward = false) {
-    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
-    await updateDoc(timerDocRef, {
-        status,
-        duration,
-        forward
-    })
-    console.log("Timer state updated:", status)
-}
-
 export const updateTimerTransaction = async (
     transaction,
     gameId,
@@ -28,9 +18,27 @@ export const updateTimerTransaction = async (
 ) => {
     const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
 
-    const updateObject = { ...fieldsToUpdate }
+    const updateObject = { ...fieldsToUpdate, timestamp: serverTimestamp() }
     transaction.update(timerDocRef, updateObject)
     console.log("Timer updated:", fieldsToUpdate)
+}
+
+
+export async function updateTimerState(gameId, status) {
+    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
+    await updateDoc(timerDocRef, {
+        status,
+        timestamp: serverTimestamp()
+    })
+    console.log("Timer state updated:", status)
+}
+
+export const updateTimerStateTransaction = async (
+    transaction,
+    gameId,
+    status,
+) => {
+    await updateTimerTransaction(transaction, gameId, { status })
 }
 
 // WRITE
@@ -42,8 +50,6 @@ export async function endTimer(gameId) {
 export async function startTimer(gameId) {
     const batch = writeBatch(db)
 
-    console.log("Timer started")
-
     const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue')
     const newSoundDocument = doc(queueCollectionRef);
     batch.set(newSoundDocument, {
@@ -53,10 +59,12 @@ export async function startTimer(gameId) {
 
     const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
     batch.update(timerDocRef, {
-        status: 'started'
+        status: 'started',
+        timestamp: serverTimestamp()
     })
 
     await batch.commit()
+    console.log("Timer started")
 }
 
 // WRITE

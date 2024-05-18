@@ -15,6 +15,8 @@ export const QUOTE_ELEMENTS = ['source', 'author', 'quote']
 export const QUOTE_DEFAULT_REWARDS_PER_ELEMENT = 1
 export const QUOTE_DEFAULT_MAX_TRIES = 2
 
+export const QUOTE_THINKING_TIME = 15
+
 export function replaceAllNonSpace(str, c) {
     return str.replace(/[^ ]/g, c);
 }

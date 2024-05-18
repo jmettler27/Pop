@@ -11,7 +11,7 @@ import LoadingScreen from '@/app/components/LoadingScreen'
 
 import { QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { doc } from 'firebase/firestore'
-import { useDocumentData, useDocumentDataOnce, useDocumentOnce } from 'react-firebase-hooks/firestore'
+import { useDocumentOnce } from 'react-firebase-hooks/firestore'
 
 export default function QuestionActiveBottomPane({ }) {
     const game = useGameContext();

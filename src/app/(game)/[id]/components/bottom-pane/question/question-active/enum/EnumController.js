@@ -35,7 +35,7 @@ export default function EnumController({ question }) {
         case 'reflection_active':
             return <EnumReflectionActiveController question={question} timer={timer} />
         case 'challenge_active':
-            return <EnumChallengeActiveController question={question} timer={timer} />
+            return <EnumChallengeActiveController />
     }
 
 }

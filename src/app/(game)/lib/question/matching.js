@@ -17,16 +17,16 @@ import {
 } from 'firebase/firestore'
 
 import { switchNextChooserTransaction } from '@/app/(game)/lib/chooser'
-import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { addSoundToQueueTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 
 import { findMostFrequentValueAndIndices } from '@/lib/utils/question/matching';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { sortScores } from '@/lib/utils/scores';
 import { sortAscendingRoundScores } from '@/lib/utils/question_types';
-import { shuffle } from '@/lib/utils/arrays';
+import { getNextCyclicIndex, shuffle } from '@/lib/utils/arrays';
 
-import { DEFAULT_THINKING_TIME_SECONDS } from '@/lib/utils/question/question';
 import { endQuestionTransaction } from '@/app/(game)/lib/question';
+import { updateTimerStateTransaction } from '../timer';
 
 export async function submitMatch(gameId, roundId, questionId, userId, edges) {
     if (!gameId) {
@@ -189,7 +189,7 @@ const submitMatchTransaction = async (
         }
 
         await switchNextChooserTransaction(transaction, gameId)
-        await addSoundToQueueTransaction(transaction, gameId, 'roblox_oof')
+        await addWrongAnswerSoundToQueueTransaction(transaction, gameId)
         for (const playerDoc of playersQuerySnapshot.docs) {
             transaction.update(playerDoc.ref, { status: 'wrong' })
         }
@@ -226,12 +226,7 @@ const submitMatchTransaction = async (
         })
     }
 
-    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
-    transaction.update(timerDocRef, {
-        status: 'resetted',
-        duration: DEFAULT_THINKING_TIME_SECONDS['matching'],
-        forward: false,
-    })
+    await updateTimerStateTransaction(transaction, gameId, 'resetted')
 }
 
 /* ==================================================================================================== */
@@ -296,12 +291,12 @@ export const handleMatchingCountdownEndTransaction = async (transaction, gameId,
         transaction.update(playerDoc.ref, { status: 'wrong' })
     }
 
-    await addSoundToQueueTransaction(transaction, gameId, 'roblox_oof')
-
     transaction.update(gameStatesRef, {
         chooserIdx: newChooserIdx
     })
 
+    await addWrongAnswerSoundToQueueTransaction(transaction, gameId)
+    await updateTimerStateTransaction(transaction, gameId, 'resetted')
 }
 
 /* ==================================================================================================== */

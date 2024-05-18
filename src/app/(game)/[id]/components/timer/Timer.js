@@ -1,34 +1,37 @@
 import { useState, useRef, useEffect } from 'react'
-import { useRoleContext } from "@/app/(game)/contexts"
 
 import clsx from 'clsx'
 
-export default function Timer({ timer, onTimerEnd = () => { } }) {
-    const myRole = useRoleContext()
+const INTERVAL_MS = 10
+const CRITICAL_MS = 5000
 
+export default function Timer({ timer, serverTimeOffset, onTimerEnd = () => { } }) {
     const statusRef = useRef(null)
 
-    const startSecond = timer.forward ? 0 : timer.duration
-    const endSecond = timer.forward ? timer.duration : 0
+    const startMillisecond = timer.forward ? 0 : (timer.duration * 1000)
+    const endMillisecond = timer.forward ? (timer.duration * 1000) : 0
 
-    const [seconds, setSeconds] = useState(startSecond)
+    const [milliseconds, setMilliSeconds] = useState(startMillisecond)
     const timerId = useRef()
 
     const startTimer = () => {
+        console.log("startTimer", Date.now())
         timerId.current = setInterval(() => {
-            setSeconds(seconds => (timer.forward) ? seconds + 1 : seconds - 1)
-        }, 1000)
+            const elapsedTimeMs = Date.now() - timer.timestamp.toMillis() - serverTimeOffset
+            const timeLeftMs = milliseconds - elapsedTimeMs
+            setMilliSeconds(() => (timer.forward) ? elapsedTimeMs : timeLeftMs)
+        }, INTERVAL_MS)
     }
 
     const stopTimer = () => {
         clearInterval(timerId.current)
-        timerId.current = startSecond
+        timerId.current = startMillisecond
     }
 
     const resetTimer = () => {
         stopTimer()
-        if (seconds) {
-            setSeconds(startSecond)
+        if (milliseconds) {
+            setMilliSeconds(startMillisecond)
         }
     }
 
@@ -49,22 +52,23 @@ export default function Timer({ timer, onTimerEnd = () => { } }) {
     }, [timer.status])
 
 
-    if ((timer.forward && seconds >= endSecond) || (!timer.forward && seconds <= endSecond)) {
+    if ((timer.forward && milliseconds >= endMillisecond) || (!timer.forward && milliseconds <= endMillisecond)) {
         stopTimer()
-        onTimerEnd(myRole)
+        onTimerEnd()
     }
 
-    const isCritical = Math.abs(seconds - endSecond) <= 5
+    const isCritical = Math.abs(milliseconds - endMillisecond) <= CRITICAL_MS
 
     return (
         <span
             className={clsx(
                 isCritical && 'text-red-500',
-                statusRef.current === 'resetted' && 'text-yellow-500',
-                statusRef.current === 'stopped' && 'opacity-50',
+                timer.status === 'resetted' && 'text-yellow-500',
+                timer.status === 'stopped' && 'opacity-50',
             )}
         >
-            {seconds}
+            {/* {milliseconds <= endMillisecond ? '0.00' : `${Math.floor(milliseconds / 1000)}.${(milliseconds % 1000).toString().padStart(2, '0')}`} */}
+            {milliseconds <= endMillisecond ? '0' : Math.round(milliseconds / 1000)}
         </span>
     )
 }

@@ -11,11 +11,12 @@ import { endEnumQuestionTransaction, endEnumReflectionTransaction, resetEnumQues
 import { handleOOOCountdownEndTransaction, resetOddOneOutQuestionTransaction } from './question/odd_one_out';
 import { handleMCQCountdownEnd, resetMCQTransaction } from './question/mcq';
 import { handleMatchingCountdownEndTransaction, resetMatchingQuestionTransaction } from './question/matching';
-import { cancelQuotePlayerTransaction, resetQuoteQuestionTransaction } from './question/quote';
+import { handleQuoteCountdownEndTransaction, resetQuoteQuestionTransaction } from './question/quote';
 
 import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/lib/utils/question/question';
 import { QUESTION_TYPES, isRiddle } from '@/lib/utils/question_types';
+import { updateTimerTransaction } from './timer';
 
 /* ==================================================================================================== */
 // READ
@@ -48,7 +49,7 @@ export async function updateQuestionWinner(gameId, roundId, questionId, playerId
 
 // Reset question
 // REFACTOR: (questionPath, questionType)
-export async function resetQuestion(gameId, roundId, questionId, questionType = null) {
+export async function resetQuestion(gameId, roundId, questionId, questionType = null, alone = false) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -64,7 +65,7 @@ export async function resetQuestion(gameId, roundId, questionId, questionType = 
 
     try {
         await runTransaction(db, transaction =>
-            resetQuestionTransaction(transaction, gameId, roundId, questionId, questionType)
+            resetQuestionTransaction(transaction, gameId, roundId, questionId, questionType, alone)
         )
         console.log("Question resetted successfully.");
     }
@@ -79,7 +80,8 @@ export const resetQuestionTransaction = async (
     gameId,
     roundId,
     questionId,
-    questionType = null
+    questionType = null,
+    alone = false
 ) => {
     const type = questionType || (await getDocDataTransaction(transaction, doc(QUESTIONS_COLLECTION_REF, questionId))).type
     console.log(`Resetting question ${questionId} of type ${type}...`)
@@ -109,12 +111,13 @@ export const resetQuestionTransaction = async (
             break
     }
 
-    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
-    transaction.update(timerDocRef, {
-        status: 'resetted',
-        duration: DEFAULT_THINKING_TIME_SECONDS[type],
-        forward: false
-    })
+    if (alone) {
+        await updateTimerTransaction(transaction, gameId, {
+            status: 'resetted',
+            duration: DEFAULT_THINKING_TIME_SECONDS[type],
+            forward: false
+        })
+    }
 }
 
 /* ==================================================================================================== */
@@ -152,11 +155,10 @@ export const endQuestionTransaction = async (transaction, gameId, roundId, quest
         dateEnd: serverTimestamp()
     })
 
-    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
-    transaction.update(timerDocRef, {
+    await updateTimerTransaction(transaction, gameId, {
         status: 'resetted',
         duration: READY_COUNTDOWN_SECONDS,
-        forward: false
+        authorized: false
     })
 }
 
@@ -196,16 +198,10 @@ const handleQuestionActiveCountdownEndTransaction = async (
 
     console.log(`Handling question active countdown end for question ${questionId} of type ${type}...`)
 
-    // Riddle: cancel
-    // Quote: cancel
-    // OOO +1, 5s countdown
-    // Matching: +1, 5s cooldown
-    // MCQ: end of question and 0
-
     if (isRiddle(type)) {
         await handleRiddleCountdownEndTransaction(transaction, gameId, roundId, questionId, type)
     } else if (type === 'quote') {
-        await cancelQuotePlayerTransaction(transaction, gameId, roundId, questionId)
+        await handleQuoteCountdownEndTransaction(transaction, gameId, roundId, questionId)
     } else if (type === 'odd_one_out') {
         await handleOOOCountdownEndTransaction(transaction, gameId, roundId, questionId)
     } else if (type === 'matching') {
@@ -222,4 +218,5 @@ const handleQuestionActiveCountdownEndTransaction = async (
             await endEnumQuestionTransaction(transaction, gameId, roundId, questionId)
         }
     }
+    // await updateTimerStateTransaction(transaction, gameId, 'resetted')
 }

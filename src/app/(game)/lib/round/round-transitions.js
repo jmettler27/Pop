@@ -11,25 +11,24 @@ import {
     serverTimestamp,
     runTransaction,
     limit,
-    writeBatch,
 } from 'firebase/firestore'
 
 import { getNextCyclicIndex, shuffle } from '@/lib/utils/arrays';
 import { isRiddle, sortAscendingRoundScores } from '@/lib/utils/question_types';
-
-import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
-import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
 import { sortScores } from '@/lib/utils/scores';
-import { updateTimerTransaction } from '../timer';
+import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
+import { DEFAULT_THINKING_TIME_SECONDS } from '@/lib/utils/question/question';
+
+import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
+import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { updateTimerStateTransaction, updateTimerTransaction } from '@/app/(game)/lib/timer';
+
 
 /* ==================================================================================================== */
 /**
  * game_home -> round_start
  * Switch to the round that has been selected by the chooser
  * 
- */
-// TRANSACTION
-/**
  */
 export async function handleSelectRound(gameId, roundId, userId) {
     if (!gameId) {
@@ -126,9 +125,10 @@ const selectRoundTransaction = async (
         chooserIdx: 0,
     })
 
-    const timerRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
-    transaction.update(timerRef, {
-        status: 'resetted'
+    await updateTimerTransaction(transaction, gameId, {
+        status: 'resetted',
+        duration: READY_COUNTDOWN_SECONDS,
+        authorized: false
     })
 
     await addSoundToQueueTransaction(transaction, gameId, 'super_mario_odyssey_moon')
@@ -160,6 +160,7 @@ async function switchRoundQuestion(gameId, roundId, questionOrder) {
         throw error;
     }
 }
+
 const switchRoundQuestionTransaction = async (
     transaction,
     gameId,
@@ -172,13 +173,21 @@ const switchRoundQuestionTransaction = async (
 
     const questionId = roundData.questions[questionOrder]
     const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
-    const questionData = await getDocDataTransaction(transaction, questionRef)
-
     const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+
+    const [questionData, realtimeData] = await Promise.all([
+        getDocDataTransaction(transaction, questionRef),
+        getDocDataTransaction(transaction, realtimeDocRef)
+    ])
+
+    const { managedBy } = realtimeData
+
 
     if (questionData.type !== 'blindtest') {
         await addSoundToQueueTransaction(transaction, gameId, 'skyrim_skill_increase')
     }
+
+    const defaultThinkingTime = DEFAULT_THINKING_TIME_SECONDS[questionData.type]
 
     if (questionData.type === 'mcq') {
         const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
@@ -213,21 +222,26 @@ const switchRoundQuestionTransaction = async (
                 teamId: chooserTeamId,
             })
         }
-    }
 
-    if (questionData.type === 'enum') {
-        await updateTimerTransaction(transaction, gameId, {
-            status: 'resetted',
-            duration: questionData.details.thinkingTime,
-            forward: false
-        })
+        await updateTimerTransaction(transaction, gameId, { status: 'resetted', managedBy, duration: defaultThinkingTime })
     }
-
-    if (questionData.type === 'odd_one_out' || questionData.type === 'matching') {
+    else if (questionData.type === 'enum') {
+        await updateTimerTransaction(transaction, gameId, { status: 'resetted', managedBy, duration: questionData.details.thinkingTime })
+    }
+    else if (questionData.type === 'odd_one_out' || questionData.type === 'matching') {
         const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
         transaction.update(gameStatesRef, {
             chooserIdx: 0
         })
+        if (questionData.type === 'matching') {
+            await updateTimerTransaction(transaction, gameId, { status: 'resetted', managedBy, duration: defaultThinkingTime * (questionData.details.numCols - 1) })
+        } else {
+            await updateTimerTransaction(transaction, gameId, { status: 'resetted', managedBy, duration: defaultThinkingTime })
+        }
+    }
+    else {
+        await updateTimerTransaction(transaction, gameId, { status: 'resetted', managedBy, duration: defaultThinkingTime })
+
     }
 
     transaction.update(realtimeDocRef, {
@@ -243,15 +257,52 @@ const switchRoundQuestionTransaction = async (
         currentQuestion: questionId,
         status: 'question_active'
     })
+
+    const readyRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready')
+    transaction.update(readyRef, {
+        numReady: 0
+    })
 }
 
 /* ==================================================================================================== */
 /**
  * round_start -> question_active
  */
-// TRANSACTION
-export async function startRoundFirstQuestion(gameId, roundId) {
-    await switchRoundQuestion(gameId, roundId, 0)
+export async function startRound(gameId, roundId) {
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+    if (!roundId) {
+        throw new Error("No round ID has been provided!");
+    }
+
+    try {
+        await runTransaction(db, async (transaction) =>
+            startRoundTransaction(transaction, gameId, roundId)
+        )
+        console.log("Round successfully started.");
+
+    } catch (error) {
+        console.error("There was an error starting the round:", error);
+        throw error;
+    }
+}
+
+
+const startRoundTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+) => {
+    console.log(gameId, roundId)
+
+    const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
+    const roundData = await getDocDataTransaction(transaction, roundRef)
+
+    await (roundData.type === 'finale' ?
+        startFinaleRoundTransaction(transaction, gameId, roundId) :
+        switchRoundQuestionTransaction(transaction, gameId, roundId, 0)
+    )
 }
 
 /* ==================================================================================================== */
@@ -259,7 +310,6 @@ export async function startRoundFirstQuestion(gameId, roundId) {
  * question_end -> question_active or
  * question_end -> round_end
  */
-// TRANSACTION
 export async function handleRoundQuestionEnd(gameId, roundId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -292,13 +342,13 @@ const handleRoundQuestionEndTransaction = async (
         endRoundTransaction(transaction, gameId, roundId) : /* End of round */
         switchRoundNextQuestionTransaction(transaction, gameId, roundId) /* Prepare the next question */
     )
+    await updateTimerStateTransaction(transaction, gameId, 'resetted')
 }
 
 /**
  * question_end -> question_active
  * Prepare the next question
  */
-// TRANSACTION
 export async function switchRoundNextQuestion(gameId, roundId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -328,27 +378,16 @@ const switchRoundNextQuestionTransaction = async (
 
     await switchRoundQuestionTransaction(transaction, gameId, roundId, roundData.currentQuestionIdx + 1)
 
-    const timerRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
-    transaction.update(timerRef, {
-        status: 'resetted'
-    })
-
     if (roundData.type !== 'mcq') {
         // Set the status of every player to 'idle'
         const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
         const querySnapshot = await getDocs(query(playersCollectionRef))
         for (const playerDoc of querySnapshot.docs) {
-            // await updatePlayerStatus(gameId, playerDoc.id, newStatus)
             transaction.update(playerDoc.ref, {
                 status: 'idle'
             })
         }
     }
-
-    const readyDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready')
-    transaction.update(readyDocRef, {
-        numReady: 0
-    })
 }
 
 
@@ -467,10 +506,7 @@ const endRoundTransaction = async (
     }
 
     /* =================================== WRITES =================================== */
-    const timerRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
-    transaction.update(timerRef, {
-        status: 'resetted'
-    })
+    await updateTimerStateTransaction(transaction, gameId, 'resetted')
 
     transaction.update(roundScoresRef, {
         roundSortedTeams,
@@ -535,25 +571,38 @@ function calculateRankDifferences(prevRankings, newRankings) {
  */
 // BATCHED WRITE
 export async function startFinaleRound(gameId, roundId) {
-    const batch = writeBatch(db)
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+    if (!roundId) {
+        throw new Error("No round ID has been provided!");
+    }
+
+    try {
+        await runTransaction(db, async (transaction) =>
+            startFinaleRoundTransaction(transaction, gameId, roundId)
+        )
+        console.log("Finale round successfully started.");
+    }
+
+    catch (error) {
+        console.error("There was an error starting the finale round:", error);
+        throw error;
+    }
+}
+
+const startFinaleRoundTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+) => {
 
     const finaleRoundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-    batch.update(finaleRoundRef, {
+    transaction.update(finaleRoundRef, {
         dateStart: serverTimestamp(),
         status: 'finale_home'
     })
 
-    const gameRef = doc(GAMES_COLLECTION_REF, gameId)
-    batch.update(gameRef, {
-        status: 'finale'
-    })
-
-    const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue')
-    const newSoundDocument = doc(queueCollectionRef);
-    batch.set(newSoundDocument, {
-        timestamp: serverTimestamp(),
-        filename: 'ui-confirmation-alert-b2',
-    });
-
-    await batch.commit()
+    await updateGameStatusTransaction(transaction, gameId, 'finale_home')
+    await addSoundToQueueTransaction(transaction, gameId, 'ui-confirmation-alert-b2')
 }

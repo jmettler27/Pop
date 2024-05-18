@@ -7,63 +7,38 @@ import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { doc } from 'firebase/firestore'
 import { useDocumentDataOnce } from 'react-firebase-hooks/firestore'
 
-import Timer from '@/app/(game)/[id]/components/timer/Timer'
-import OrganizerTimerController from '@/app/(game)/[id]/components/timer/OrganizerTimerController'
+import { Button, DialogContentText, InputLabel, MenuItem, FormControl, Select, Dialog, DialogActions, DialogContent, DialogTitle, CircularProgress } from '@mui/material'
 
-import { Button, DialogContentText, InputLabel, MenuItem, FormControl, Select, Dialog, DialogActions, DialogContent, DialogTitle, OutlinedInput, CircularProgress } from '@mui/material'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import CancelIcon from '@mui/icons-material/Cancel'
-
-import { addPlayerBet, endEnumReflection } from '@/app/(game)/lib/question/enum'
+import { addPlayerBet } from '@/app/(game)/lib/question/enum'
 
 import { range } from '@/lib/utils/arrays'
 import { DIALOG_ACTION_CANCEL, DIALOG_ACTION_VALIDATE, DIALOG_TITLE, DIALOG_WARNING } from '@/lib/utils/dialogs'
 
 import { useAsyncAction } from '@/lib/utils/async'
 
-export default function EnumReflectionActiveController({ question, timer }) {
+export default function EnumReflectionActiveController({ question, timer, lang = 'en' }) {
     const myRole = useRoleContext()
 
     switch (myRole) {
-        case 'organizer':
-            return <EnumOrganizerReflectionActive timer={timer} />
         case 'player':
-            return <EnumPlayerReflectionActive question={question} timer={timer} />
+            return <EnumPlayerReflectionActive question={question} timer={timer} lang={lang} />
         default:
-            return <EnumSpectatorReflectionActive timer={timer} />
+            return <EnumSpectatorReflectionActive timer={timer} lang={lang} />
     }
 
 }
-
-/* ============================================================ Organizer ============================================================ */
-function EnumOrganizerReflectionActive({ timer }) {
-    const game = useGameContext()
-
-    const handleReflectionEnd = async () => {
-        await endEnumReflection(game.id, game.currentRound, game.currentQuestion)
-    }
-
-    return (
-        <div className='flex flex-col h-full items-center justify-center'>
-            <OrganizerTimerController timer={timer}
-                onTimerEnd={handleReflectionEnd} />
-        </div>
-    )
-}
-
 
 /* ============================================================ Player ============================================================ */
-function EnumPlayerReflectionActive({ question, timer }) {
+function EnumPlayerReflectionActive({ question, timer, lang }) {
 
     return (
         <div className='flex flex-col h-full items-center justify-center'>
-            <AddBetForm question={question} status={timer.status} />
-            <span className='text-4xl'><Timer timer={timer} /></span>
+            <AddBetForm question={question} status={timer.status} lang={lang} />
         </div>
     )
 }
 
-function AddBetForm({ question, status, lang = 'en' }) {
+function AddBetForm({ question, status, lang }) {
     const game = useGameContext()
     const user = useUserContext()
     const myTeam = useTeamContext()
@@ -121,14 +96,14 @@ function AddBetForm({ question, status, lang = 'en' }) {
                     id='enum-bet-selector-input-label'
                     sx={{ color: 'inherit' }}
                 >
-                    {INPUT_LABEL[lang]}
+                    {BET_INPUT_LABEL[lang]}
                 </InputLabel>
 
                 <Select
                     id='enum-bet-selector-select'
                     labelId='enum-bet-selector-select-label'
                     value={myBet}
-                    label={INPUT_LABEL[lang]}
+                    label={BET_INPUT_LABEL[lang]}
                     onChange={handleSelectorChange}
                     autoWidth
                     sx={{
@@ -186,17 +161,22 @@ function AddBetForm({ question, status, lang = 'en' }) {
 }
 
 
-const INPUT_LABEL = {
+const BET_INPUT_LABEL = {
     'en': "My bet",
     'fr-FR': "Mon pari"
 }
 
 /* ============================================================ Spectator ============================================================ */
-function EnumSpectatorReflectionActive({ timer }) {
+function EnumSpectatorReflectionActive({ timer, lang }) {
 
     return (
         <div className='flex flex-col h-full items-center justify-center'>
-            <span className='text-6xl'> <Timer timer={timer} /></span>
+            {timer.status === 'started' && <span className='2xl:text-3xl'>{ENUM_REFLECTION_ACTIVE_HEADER[lang]}</span>}
         </div>
     )
+}
+
+const ENUM_REFLECTION_ACTIVE_HEADER = {
+    'en': 'Waiting for players to bet...',
+    'fr-FR': 'En attente des paris...',
 }

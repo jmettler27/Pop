@@ -19,12 +19,13 @@ import { handleRiddleBuzzerHeadChanged, handleRiddleInvalidateAnswerClick, handl
 import { handleNextClueClick } from '@/app/(game)/lib/question/progressive_clues'
 import { useAsyncAction } from '@/lib/utils/async'
 import { useEffect, useRef } from 'react'
+import { useParams } from 'next/navigation'
 
 export default function RiddleOrganizerController({ question, players }) {
-    const game = useGameContext()
+    const { id: gameId } = useParams()
 
     /* Set the state 'focus' to the playerId which is the first element of the buzzed list */
-    const buzzed = players.buzzed
+    const { buzzed } = players
     const buzzerHead = useRef()
 
     useEffect(() => {
@@ -34,7 +35,7 @@ export default function RiddleOrganizerController({ question, players }) {
         }
         if (buzzerHead.current !== buzzed[0]) {
             buzzerHead.current = buzzed[0]
-            handleRiddleBuzzerHeadChanged(game.id, game.currentQuestion, buzzerHead.current)
+            handleRiddleBuzzerHeadChanged(gameId, buzzerHead.current)
         }
     }, [buzzed])
 
@@ -50,7 +51,6 @@ export default function RiddleOrganizerController({ question, players }) {
 
 function RiddleOrganizerAnswerController({ buzzed }) {
     const game = useGameContext()
-    const user = useUserContext()
 
     const buzzedIsEmpty = buzzed.length === 0
 
@@ -95,6 +95,17 @@ function RiddleOrganizerAnswerController({ buzzed }) {
     </>
 }
 
+function RiddleOrganizerQuestionController({ question }) {
+    return (
+        <div className='flex flex-row w-full justify-end'>
+            {/* Next clue */}
+            {question.type === 'progressive_clues' && <NextClueButton question={question} />}
+            <ResetQuestionButton />
+            <EndQuestionButton />
+            <ClearBuzzerButton />
+        </div>
+    )
+}
 
 /**
  * Go to the next clue 
@@ -104,10 +115,9 @@ function RiddleOrganizerAnswerController({ buzzed }) {
  */
 function NextClueButton({ question }) {
     const game = useGameContext()
-    const user = useUserContext()
 
     const [handleClick, isLoadingNextClue] = useAsyncAction(async () => {
-        await handleNextClueClick(game.id, game.currentRound, game.currentQuestion, user.id)
+        await handleNextClueClick(game.id, game.currentRound, game.currentQuestion)
     })
 
     const realtimeRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
@@ -129,17 +139,5 @@ function NextClueButton({ question }) {
         >
             Next clue
         </Button>
-    )
-}
-
-function RiddleOrganizerQuestionController({ question }) {
-    return (
-        <div className='flex flex-row w-full justify-end'>
-            {/* Next clue */}
-            {question.type === 'progressive_clues' && <NextClueButton question={question} />}
-            <ResetQuestionButton />
-            <EndQuestionButton />
-            <ClearBuzzerButton />
-        </div>
     )
 }

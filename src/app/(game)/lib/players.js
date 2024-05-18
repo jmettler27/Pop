@@ -15,14 +15,10 @@ import {
 
 import { getDocData } from '@/app/(game)/lib/utils';
 
-// READ
 export async function getPlayerData(gameId, playerId) {
     return getDocData('games', gameId, 'players', playerId);
 }
 
-
-
-// WRITE
 async function updatePlayerFields(gameId, playerId, fieldsToUpdate) {
     const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
     const updateObject = { ...fieldsToUpdate }
@@ -32,46 +28,42 @@ async function updatePlayerFields(gameId, playerId, fieldsToUpdate) {
 }
 
 
-// WRITE
-async function updateTeamFields(gameId, teamId, fieldsToUpdate) {
-    const teamRef = doc(GAMES_COLLECTION_REF, gameId, 'teams', teamId)
-    const updateObject = { ...fieldsToUpdate }
-
-    await updateDoc(teamRef, updateObject)
-    console.log(`Game ${gameId}, Team ${teamId}:`, fieldsToUpdate)
-}
-
-
 /* ==================================================================================================== */
-// WRITE
-export async function updatePlayerStatus(gameId, playerId, newStatus) {
-    await updatePlayerFields(gameId, playerId, { status: newStatus })
+export async function updatePlayerStatus(gameId, playerId, status) {
+    await updatePlayerFields(gameId, playerId, { status })
 }
 
-// BATCHED WRITE
-export async function updateAllPlayersStatuses(gameId, newStatus) {
+export const updatePlayerStatusTransaction = async (
+    transaction,
+    gameId,
+    playerId,
+    status
+) => {
+    const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
+    transaction.update(playerRef, { status })
+}
+
+
+export async function updateAllPlayersStatuses(gameId, status) {
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
     const q = query(playersCollectionRef)
     const querySnapshot = await getDocs(q)
 
     const batch = writeBatch(db)
     for (const playerDoc of querySnapshot.docs) {
-        // updatePlayerStatus(gameId, playerDoc.id, newStatus)
-        batch.update(playerDoc.ref, { status: newStatus })
+        batch.update(playerDoc.ref, { status })
     }
     await batch.commit()
 }
 
-// BATCHED WRITE
-export async function updateTeamStatus(gameId, teamId, newStatus) {
+export async function updateTeamStatus(gameId, teamId, status) {
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
     const q = query(playersCollectionRef, where('teamId', '==', teamId))
     const querySnapshot = await getDocs(q)
 
     const batch = writeBatch(db)
     for (const playerDoc of querySnapshot.docs) {
-        // await updatePlayerStatus(gameId, playerDoc.id, newStatus)
-        batch.update(playerDoc.ref, { status: newStatus })
+        batch.update(playerDoc.ref, { status })
     }
     await batch.commit()
 }

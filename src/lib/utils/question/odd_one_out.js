@@ -57,3 +57,5 @@ import { range, shuffle } from '../arrays';
 export function generateShuffledIndices(numItems) {
     return shuffle(range(numItems));
 }
+
+export const OOO_THINKING_TIME = 5

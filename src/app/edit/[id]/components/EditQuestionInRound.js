@@ -8,17 +8,16 @@ import { doc } from 'firebase/firestore';
 import { useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/firestore'
 
 
-import { Button, Divider } from '@mui/material';
+import { Avatar, Button, Divider } from '@mui/material';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import { CardTitle, CardHeader, CardContent, Card } from '@/app/components/card'
+import { CardTitle, CardHeader, CardContent, Card, CardFooter } from '@/app/components/card'
 import { QuestionCardTitle, QuestionCardContent } from '@/app/components/questions/QuestionCard';
 
 import { useAsyncAction } from '@/lib/utils/async'
 import { DIALOG_ACTION_CANCEL, DIALOG_WARNING } from '@/lib/utils/dialogs'
 import { removeQuestionFromRound } from '@/app/edit/[id]/lib/edit-game'
-import { prependTopicWithEmoji, topicToEmoji } from '@/lib/utils/topics';
 
 
 
@@ -55,10 +54,38 @@ export function EditQuestionCard({ roundId, questionId, questionOrder }) {
             <CardContent className='flex flex-col justify-center items-center w-full'>
                 <QuestionCardContent question={questionData} />
             </CardContent>
+
+            <Divider className='my-2 bg-slate-600' />
+            <CardFooter>
+                <EditQuestionCardFooter realtimeData={realtimeData} />
+            </CardFooter>
+
         </Card>
     );
 }
 
+function EditQuestionCardFooter({ realtimeData, lang = 'en' }) {
+    const { id: gameId } = useParams()
+
+    const organizerRef = doc(GAMES_COLLECTION_REF, gameId, 'organizers', realtimeData.managedBy)
+    const [organizer, loading, error] = useDocumentDataOnce(organizerRef)
+    if (error) {
+        return <p>Error: {JSON.stringify(error)}</p>
+    }
+    if (loading) {
+        return <p>Loading the creator...</p>
+    }
+    if (!organizer) {
+        return <p>User not found</p>
+    }
+
+    return (
+        <div className='flex flex-row w-full space-x-2 items-center'>
+            <Avatar src={organizer.image} variant='rounded' sx={{ width: 30, height: 30 }} />
+            <span>Manager: <strong>{organizer.name}</strong></span>
+        </div>
+    )
+}
 
 
 

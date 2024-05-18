@@ -1,14 +1,22 @@
 import { getRandomElement } from "../arrays";
+import { BLINDTEST_THINKING_TIME } from "./blindtest";
+import { EMOJI_THINKING_TIME } from "./emoji";
+import { IMAGE_THINKING_TIME } from "./image";
+import { MATCHING_THINKING_TIME } from "./matching";
+import { MCQ_THINKING_TIME } from "./mcq";
+import { OOO_THINKING_TIME } from "./odd_one_out";
+import { PROGRESSIVE_CLUES_THINKING_TIME } from "./progressive_clues";
+import { QUOTE_THINKING_TIME } from "./quote";
 
 export const DEFAULT_THINKING_TIME_SECONDS = {
-    'progressive_clues': 10,
-    'blindtest': 10,
-    'emoji': 10,
-    'image': 10,
-    'quote': 10,
-    'mcq': 20,
-    'matching': 20,
-    'odd_one_out': 15,
+    'progressive_clues': PROGRESSIVE_CLUES_THINKING_TIME,
+    'blindtest': BLINDTEST_THINKING_TIME,
+    'emoji': EMOJI_THINKING_TIME,
+    'image': IMAGE_THINKING_TIME,
+    'quote': QUOTE_THINKING_TIME,
+    'mcq': MCQ_THINKING_TIME,
+    'matching': MATCHING_THINKING_TIME,
+    'odd_one_out': OOO_THINKING_TIME,
     'finale': 20,
     'enum': 60
 }

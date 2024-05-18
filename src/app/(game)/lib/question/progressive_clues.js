@@ -4,10 +4,8 @@ import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
 import { db } from '@/lib/firebase/firebase'
 import {
     doc,
-    setDoc,
     increment,
     runTransaction,
-    updateDoc,
 } from 'firebase/firestore'
 
 import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
@@ -16,7 +14,7 @@ import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 
 /* ====================================================================================================== */
 // TRANSACTION
-export async function handleNextClueClick(gameId, roundId, questionId, organizerId) {
+export async function handleNextClueClick(gameId, roundId, questionId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -29,7 +27,7 @@ export async function handleNextClueClick(gameId, roundId, questionId, organizer
 
     try {
         await runTransaction(db, transaction =>
-            handleNextClueClickTransaction(transaction, gameId, roundId, questionId, organizerId)
+            handleNextClueClickTransaction(transaction, gameId, roundId, questionId)
         )
         console.log("Next clue click handled successfully.");
 
@@ -44,7 +42,6 @@ const handleNextClueClickTransaction = async (
     gameId,
     roundId,
     questionId,
-    organizerId
 ) => {
     const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
     const realtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)

@@ -13,9 +13,11 @@ import {
 } from 'firebase/firestore'
 
 import { resetAllRoundsTransaction } from '@/app/(game)/lib/round';
-import { getDocData } from '@/app/(game)/lib/utils';
-import { shuffle } from '@/lib/utils/arrays';
+import { getDocData, getDocDataTransaction } from '@/app/(game)/lib/utils';
+import { getRandomElement, shuffle } from '@/lib/utils/arrays';
 import { updateTimerTransaction } from './timer';
+import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
+import { addSoundToQueueTransaction } from './sounds';
 
 /* ==================================================================================================== */
 // WRITE
@@ -80,11 +82,13 @@ const resetGameTransaction = async (
     const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
     const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue')
+    const organizersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'organizers')
 
-    const [teamsQuerySnapshot, playersQuerySnapshot, queueQuerySnapshot] = await Promise.all([
+    const [teamsQuerySnapshot, playersQuerySnapshot, queueQuerySnapshot, organizersQuerySnapshot] = await Promise.all([
         getDocs(query(teamsCollectionRef)),
         getDocs(query(playersCollectionRef)),
-        getDocs(query(queueCollectionRef))
+        getDocs(query(queueCollectionRef)),
+        getDocs(query(organizersCollectionRef))
     ])
     const { teamIds, initTeamGameScores, initTeamGameScoresProgress } = teamsQuerySnapshot.docs.reduce((acc, teamDoc) => {
         acc.teamIds.push(teamDoc.id);
@@ -106,10 +110,13 @@ const resetGameTransaction = async (
     })
 
     // Reset timer
+    const managerId = getRandomElement(organizersQuerySnapshot.docs).id
     await updateTimerTransaction(transaction, gameId, {
         status: 'resetted',
-        duration: 5,
-        forward: false
+        duration: READY_COUNTDOWN_SECONDS,
+        forward: false,
+        authorized: false,
+        managedBy: managerId,
     })
 
     // Init chooser
@@ -144,6 +151,39 @@ const resetGameTransaction = async (
     }
 }
 
+export async function switchAuthorizePlayers(gameId, authorized = null) {
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+
+    try {
+        await runTransaction(db, transaction =>
+            switchAuthorizePlayersTransaction(transaction, gameId, authorized)
+        )
+    }
+    catch (error) {
+        console.error("There was an error authorizing the players:", error);
+        throw error;
+    }
+}
+
+export const switchAuthorizePlayersTransaction = async (
+    transaction,
+    gameId,
+    authorized = null
+) => {
+    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
+
+    let newVal = authorized
+    if (authorized === null) {
+        const timerData = await getDocDataTransaction(transaction, timerDocRef)
+        newVal = !timerData.authorized
+    }
+
+    updateTimerTransaction(transaction, gameId, { authorized: newVal })
+    if (newVal === true)
+        addSoundToQueueTransaction(transaction, gameId, 'minecraft_button_plate')
+}
 
 /* ==================================================================================================== */
 export async function updateQuestion(questionId) {

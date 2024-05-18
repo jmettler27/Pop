@@ -1,57 +1,90 @@
 import { useGameContext, useRoleContext } from '@/app/(game)/contexts'
 
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
-import { collection, doc, onSnapshot, query } from 'firebase/firestore'
-import { useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/firestore'
+import { doc } from 'firebase/firestore'
+import { useDocumentDataOnce } from 'react-firebase-hooks/firestore'
 
-import ContinuePlayerController from '@/app/(game)/[id]/components/bottom-pane/ContinuePlayerController'
-import QuestionEndCountdown from './QuestionEndCountdown'
-import QuestionEndWait from './QuestionEndWait'
-import QuestionEndOrganizerController from './QuestionEndOrganizerController'
+import ReadyPlayerController from '@/app/(game)/[id]/components/bottom-pane/ReadyPlayerController';
 
 
 export default function QuestionEndBottomPane({ }) {
     const game = useGameContext();
 
-    const [ready, readyLoading, readyError] = useDocumentData(doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'ready'))
     const [round, roundLoading, roundError] = useDocumentDataOnce(doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound))
-
-    if (readyError) {
-        return <p><strong>Error: {JSON.stringify(readyError)}</strong></p>
-    }
     if (roundError) {
         return <p><strong>Error: {JSON.stringify(roundError)}</strong></p>
     }
-    if (readyLoading || roundLoading) {
+    if (roundLoading) {
         return <></>
     }
-    if (!ready || !round) {
+    if (!round) {
         return <></>
     }
 
-    const allReady = ready.numReady === ready.numPlayers
-    const isRoundEnd = round.currentQuestionIdx === round.questions.length - 1
+    const isLastQuestion = round.currentQuestionIdx === round.questions.length - 1
+
+    return <QuestionEndController isLastQuestion={isLastQuestion} />
+}
+
+function QuestionEndController({ isLastQuestion }) {
+    const myRole = useRoleContext();
 
     return (
         <div className='flex flex-col h-full items-center justify-center space-y-5'>
-            {allReady ?
-                <QuestionEndCountdown isRoundEnd={isRoundEnd} /> :
-                <QuestionEndWait isRoundEnd={isRoundEnd} />
-            }
-            <QuestionEndController isRoundEnd={isRoundEnd} />
+            <ReadyPlayerController isLastQuestion={isLastQuestion} />
+            {myRole === 'organizer' && <QuestionEndOrganizerController isLastQuestion={isLastQuestion} />}
         </div>
     )
 }
 
-function QuestionEndController({ isRoundEnd }) {
-    const myRole = useRoleContext();
+import { useAsyncAction } from '@/lib/utils/async'
 
-    switch (myRole) {
-        case 'organizer':
-            return <QuestionEndOrganizerController isRoundEnd={isRoundEnd} />
-        case 'player':
-            return <ContinuePlayerController />
-        default:
-            return <></>
-    }
+import { handleRoundQuestionEnd } from '@/app/(game)/lib/round/round-transitions';
+
+import { Button } from '@mui/material'
+import FastForwardIcon from '@mui/icons-material/FastForward'
+import ScoreboardIcon from '@mui/icons-material/Scoreboard'
+import AuthorizePlayersSwitch from '../../AuthorizePlayersSwitch'
+
+
+function QuestionEndOrganizerController({ isLastQuestion, lang = 'en' }) {
+    return (
+        <div className='flex flex-col items-center justify-center h-full w-full'>
+            <QuestionEndOrganizerButton isLastQuestion={isLastQuestion} lang={lang} />
+            <AuthorizePlayersSwitch lang={lang} />
+        </div>
+    )
+}
+
+function QuestionEndOrganizerButton({ isLastQuestion, lang = 'en' }) {
+    const game = useGameContext()
+
+    const [handleContinueClick, isEnding] = useAsyncAction(async () => {
+        await handleRoundQuestionEnd(game.id, game.currentRound, game.currentQuestion)
+    })
+
+    return (
+        <Button
+            className='rounded-full'
+            color='secondary'
+            size='large'
+            variant='outlined'
+            onClick={handleContinueClick}
+            disabled={isEnding}
+            startIcon={isLastQuestion ? <ScoreboardIcon /> : <FastForwardIcon />}
+        >
+            {isLastQuestion ? QUESTION_END_ORGANIZER_ROUND_END_TEXT[lang] : QUESTION_END_ORGANIZER_NEXT_QUESTION_TEXT[lang]}
+        </Button>
+    )
+}
+
+
+const QUESTION_END_ORGANIZER_ROUND_END_TEXT = {
+    'en': "End the round",
+    'fr-FR': "Terminer la manche"
+}
+
+const QUESTION_END_ORGANIZER_NEXT_QUESTION_TEXT = {
+    'en': "Switch directly to the next question",
+    'fr-FR': "Passer directement à la prochaine question"
 }

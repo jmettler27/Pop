@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useGameContext } from '@/app/(game)/contexts'
 
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
@@ -15,25 +15,32 @@ import ClearBuzzerButton from '@/app/(game)/[id]/components/bottom-pane/question
 import BuzzerHeadPlayer from '@/app/(game)/[id]/components/bottom-pane/question/question-active/riddle/controller/BuzzerHeadPlayer'
 import RevealQuoteElementButton from './RevealQuoteElement'
 
-import { updatePlayerStatus } from '@/app/(game)/lib/players'
 import { cancelQuotePlayer, validateAllQuoteElements } from '@/app/(game)/lib/question/quote'
 
 import { useAsyncAction } from '@/lib/utils/async'
 import { atLeastOneElementRevealed } from '@/lib/utils/question/quote'
 import { isEmpty } from '@/lib/utils/arrays'
+import { handleRiddleBuzzerHeadChanged } from '@/app/(game)/lib/question/riddle'
+import { useParams } from 'next/navigation'
 
 
 export default function QuoteOrganizerController({ question, players }) {
-    const game = useGameContext()
+    const { id: gameId } = useParams()
 
     /* Set the state 'focus' to the playerId which is the first element of the buzzed list */
-    const buzzed = players.buzzed
+    const { buzzed } = players
+    const buzzerHead = useRef()
 
     useEffect(() => {
-        if (game.status === 'question_active' && buzzed.length > 0) {
-            updatePlayerStatus(game.id, buzzed[0], 'focus')
+        if (!buzzed || buzzed.length === 0) {
+            buzzerHead.current = null
+            return
         }
-    }, [buzzed, game.status])
+        if (buzzerHead.current !== buzzed[0]) {
+            buzzerHead.current = buzzed[0]
+            handleRiddleBuzzerHeadChanged(gameId, buzzerHead.current)
+        }
+    }, [buzzed])
 
     return (
         <div className='flex flex-col h-full w-full items-center justify-around'>

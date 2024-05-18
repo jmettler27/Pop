@@ -11,12 +11,12 @@ import { resetTimer, startTimer, stopTimer, endTimer } from '@/app/(game)/lib/ti
 import { useAsyncAction } from '@/lib/utils/async'
 import { useParams } from 'next/navigation'
 
-export default function OrganizerTimerController({ timer, onTimerEnd }) {
+export default function OrganizerTimerController({ timer, serverTimeOffset, onTimerEnd }) {
     const { id: gameId } = useParams();
 
     const [handleTimerEnd, isEnding] = useAsyncAction(async () => {
         await onTimerEnd()
-        await endTimer(gameId)
+        // await endTimer(gameId)
     })
 
     const [handleStartTimer, isStarting] = useAsyncAction(async () => {
@@ -36,7 +36,8 @@ export default function OrganizerTimerController({ timer, onTimerEnd }) {
             <span className='text-4xl'>
                 <Timer
                     timer={timer}
-                    onTimerEnd={handleTimerEnd} />
+                    serverTimeOffset={serverTimeOffset}
+                    onTimerEnd={onTimerEnd} />
             </span>
 
             <ButtonGroup

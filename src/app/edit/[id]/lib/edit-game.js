@@ -297,7 +297,7 @@ const removeRoundFromGameTransaction = async (
 
 
 /* ==================================================================================================== */
-export async function removeQuestionFromRound(gameId, roundId, questionId) {
+export async function removeQuestionFromRound(gameId, roundId, questionId, questionType = null) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -309,7 +309,7 @@ export async function removeQuestionFromRound(gameId, roundId, questionId) {
     }
     try {
         await runTransaction(db, transaction =>
-            removeQuestionFromRoundTransaction(transaction, gameId, roundId, questionId)
+            removeQuestionFromRoundTransaction(transaction, gameId, roundId, questionId, questionType)
         )
         console.log(`Game ${gameId}, Round ${roundId}: Realtime info of ${questionId} removed successfully.`);
     } catch (error) {
@@ -323,15 +323,33 @@ const removeQuestionFromRoundTransaction = async (
     gameId,
     roundId,
     questionId,
+    questionType = null
 ) => {
+    const type = questionType || (await getDocDataTransaction(transaction, doc(QUESTIONS_COLLECTION_REF, questionId))).type;
+
+    if (isRiddle(type) || type === 'quote') {
+        const questionRealtimePlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players');
+        transaction.delete(questionRealtimePlayersRef);
+    }
+
+    if (type === 'matching') {
+        const correctMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct');
+        transaction.delete(correctMatchesDocRef);
+
+        const incorrectMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'incorrect');
+        transaction.delete(incorrectMatchesDocRef);
+
+        const partiallyCorrectMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'partially_correct');
+        transaction.delete(partiallyCorrectMatchesDocRef);
+    }
+
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId);
+    transaction.delete(questionRealtimeRef);
 
     const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId);
     transaction.update(roundRef, {
         questions: arrayRemove(questionId)
     });
-
-    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId);
-    transaction.delete(questionRealtimeRef);
 }
 
 /* ==================================================================================================== */

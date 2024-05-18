@@ -18,8 +18,8 @@ import {
     writeBatch
 } from 'firebase/firestore'
 
-import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
-import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
+import { addSoundToQueueTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { endQuestionTransaction } from '../question';
 
 export async function handleSubmitOptionPlayer(gameId, roundId, questionId, playerId, optionIdx) {
@@ -296,7 +296,7 @@ export const handleMCQCountdownEndTransaction = async (
         transaction.update(playerDoc.ref, { status: 'ready' })
     }
 
-    await addSoundToQueueTransaction(transaction, gameId, 'roblox_oof')
+    await addWrongAnswerSoundToQueueTransaction(transaction, gameId)
 
     // End the question
     await endQuestion(gameId, roundId, questionId)
