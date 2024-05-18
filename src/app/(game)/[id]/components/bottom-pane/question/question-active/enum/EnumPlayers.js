@@ -1,13 +1,13 @@
 import { useGameContext } from '@/app/(game)/contexts'
 
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
-import { doc, collection } from 'firebase/firestore'
-import { useDocumentData, useCollectionData, useCollection, useCollectionOnce } from 'react-firebase-hooks/firestore'
+import { doc } from 'firebase/firestore'
+import { useDocumentData } from 'react-firebase-hooks/firestore'
 
 import PlayerName from '@/app/(game)/[id]/components/PlayerName'
 import { rankingToEmoji } from '@/lib/utils/emojis'
 
-export default function EnumPlayers() {
+export default function EnumPlayers({ lang = 'en' }) {
     const game = useGameContext()
 
     const [players, playersLoading, playersError] = useDocumentData(doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'players'))
@@ -28,7 +28,7 @@ export default function EnumPlayers() {
         <div className='flex flex-row h-full w-full'>
             {bets.length > 0 && (
                 <div className='flex flex-col h-full w-full justify-start p-2'>
-                    <h2 className='font-bold'>Challengers</h2>
+                    <h2 className='font-bold'>{BETS_HEADER[lang]}</h2>
                     <ol className='overflow-auto'>
                         {bets.map((bet, index) => {
                             return (
@@ -42,4 +42,9 @@ export default function EnumPlayers() {
             )}
         </div>
     )
+}
+
+const BETS_HEADER = {
+    'en': 'Bets',
+    'fr-FR': 'Paris',
 }

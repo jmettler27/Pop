@@ -71,3 +71,6 @@ export const MCQ_NOTE_MAX_LENGTH = 50;
 
 export const MCQ_EXPLANATION_EXAMPLE = "101 is an allusion to Neo's destiny as the One. 101 is also the number usually attributed to a course or manual for beginners in a particular field (in this case it represents the beginning of Neo's path to hacker enlightenment). It can also be seen as an allusion to the Room 101 of George Orwell's novel 'Nineteen Eighty-Four'. It is a torture chamber in the 'Ministry of Love' in which a prisoner is subjected to his or her own worst nightmare, fear or phobia."
 export const MCQ_EXPLANATION_MAX_LENGTH = 500;
+
+
+export const MCQ_THINKING_TIME = 20;

@@ -60,12 +60,11 @@ function EnumQuestionObjective({ question, lang = 'en' }) {
 function EnumQuestionAnswer({ answer }) {
     const game = useGameContext()
     const myRole = useRoleContext()
-    const user = useUserContext()
 
     const showComplete = (game.status === 'question_end' || myRole === 'organizer') // 'player' or 'viewer'
 
     const [handleClick, isSubmitting] = useAsyncAction(async (itemIdx) => {
-        await handleEnumAnswerItemClick(game.id, game.currentRound, game.currentQuestion, user.id, itemIdx)
+        await handleEnumAnswerItemClick(game.id, game.currentRound, game.currentQuestion, itemIdx)
     })
 
     const timerRef = doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'timer')

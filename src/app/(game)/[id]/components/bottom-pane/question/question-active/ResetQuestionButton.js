@@ -17,7 +17,7 @@ export default function ResetQuestionButton({ }) {
     const [handleResetQuestion, isResetting] = useAsyncAction(async () => {
         await Promise.all([
             updateAllPlayersStatuses(game.id, 'idle'),
-            resetQuestion(game.id, game.currentRound, game.currentQuestion)
+            resetQuestion(game.id, game.currentRound, game.currentQuestion, null, true)
         ]);
     })
 

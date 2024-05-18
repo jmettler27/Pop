@@ -16,11 +16,13 @@ import {
     writeBatch
 } from 'firebase/firestore'
 
-import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { addSoundToQueueTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { QUOTE_ELEMENTS } from '@/lib/utils/question/quote';
 import { isObjectEmpty } from '@/lib/utils';
 import { endQuestionTransaction } from '../question';
+import { updateTimerStateTransaction } from '../timer';
+import { updatePlayerStatusTransaction } from '../players';
 
 /**
  * When the organizer reveals an element from the quote (author, source, quote part)
@@ -94,10 +96,8 @@ const revealQuoteElementTransaction = async (
         }
     }
 
-    console.log("Player ID: ", playerId)
     /* Update the winner team scores */
     if (playerId) {
-        console.log("HERE")
         const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
         const playerData = await getDocDataTransaction(transaction, playerRef)
         const { teamId } = playerData
@@ -128,10 +128,6 @@ const revealQuoteElementTransaction = async (
     const newRevealedQuote = newRevealed['quote']
     const temp2 = quoteParts.every((_, idx) => newRevealedQuote[idx] && !isObjectEmpty(newRevealedQuote[idx]))
     const allRevealed = temp1 && temp2
-    console.log("Temp1: ", temp1)
-    console.log("Temp2: ", temp2)
-    console.log("All Revealed: ", allRevealed)
-    console.log("New revealed: ", newRevealed)
 
     transaction.update(questionRealtimeRef, {
         revealed: newRevealed
@@ -290,6 +286,7 @@ export const cancelQuotePlayerTransaction = async (
     wholeTeam = false
 ) => {
     const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+
     transaction.update(playersDocRef, {
         canceled: arrayUnion({
             playerId,
@@ -298,13 +295,51 @@ export const cancelQuotePlayerTransaction = async (
         buzzed: arrayRemove(playerId)
     })
 
-    // updatePlayerStatus(gameId, playerId, 'wrong')
-    const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
-    transaction.update(playerRef, {
-        status: 'wrong'
-    })
+    await Promise.all([
+        updatePlayerStatusTransaction(transaction, gameId, playerId, 'wrong'),
+        addWrongAnswerSoundToQueueTransaction(transaction, gameId),
+        updateTimerStateTransaction(transaction, gameId, 'resetted')
+    ])
+}
 
-    await addSoundToQueueTransaction(transaction, gameId, 'roblox_oof')
+
+/* ==================================================================================================== */
+export async function handleQuoteCountdownEnd(gameId, roundId, questionId) {
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+    if (!roundId) {
+        throw new Error("No round ID has been provided!");
+    }
+    if (!questionId) {
+        throw new Error("No question ID has been provided!");
+    }
+
+    try {
+        await runTransaction(db, transaction =>
+            handleQuoteCountdownEndTransaction(transaction, gameId, roundId, questionId)
+        )
+        console.log("Quote countdown end handled successfully.");
+    } catch (error) {
+        console.error("There was an error handling the quote countdown end:", error);
+        throw error;
+    }
+}
+
+export const handleQuoteCountdownEndTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+    questionId
+) => {
+
+    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    const { buzzed } = await getDocDataTransaction(transaction, playersDocRef)
+
+    if (buzzed.length === 0)
+        await updateTimerStateTransaction(transaction, gameId, 'resetted')
+    else
+        await cancelQuotePlayerTransaction(transaction, gameId, roundId, questionId, buzzed[0])
 }
 
 /* ==================================================================================================== */

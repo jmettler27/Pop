@@ -21,8 +21,9 @@ import {
 import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
 import { findHighestBidder } from '@/lib/utils/question/enum';
-import { updateTimerTransaction } from '../timer';
+import { updateTimerStateTransaction, updateTimerTransaction } from '../timer';
 import { endQuestionTransaction } from '../question';
+import { updatePlayerStatusTransaction } from '../players';
 
 // WRITE
 export async function updateEnumBets(gameId, roundId, questionId, fieldsToUpdate) {
@@ -140,16 +141,12 @@ export const endEnumReflectionTransaction = async (
             }
         })
 
-        const challengerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
-        transaction.update(challengerDocRef, {
-            status: 'focus'
-        })
+        await updatePlayerStatusTransaction(transaction, gameId, playerId, 'focus')
 
         transaction.update(realtimeDocRef, {
             status: 'challenge_active'
         })
 
-        //  gameId: any, status: any, duration?: number, forward?
         await updateTimerTransaction(transaction, gameId, {
             duration: questionData.challengeTime
         })
@@ -158,7 +155,7 @@ export const endEnumReflectionTransaction = async (
 
 /* ============================================================================================================ */
 // BATCHED WRITE
-export async function handleEnumAnswerItemClick(gameId, roundId, questionId, organizerId, itemIdx) {
+export async function handleEnumAnswerItemClick(gameId, roundId, questionId, itemIdx) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -168,16 +165,13 @@ export async function handleEnumAnswerItemClick(gameId, roundId, questionId, org
     if (!questionId) {
         throw new Error("No question ID has been provided!");
     }
-    if (!organizerId) {
-        throw new Error("No organizer ID has been provided!");
-    }
     if (itemIdx === undefined) {
         throw new Error("No item index has been provided!");
     }
 
     try {
         await runTransaction(db, transaction =>
-            handleEnumAnswerItemClickTransaction(transaction, gameId, roundId, questionId, organizerId, itemIdx)
+            handleEnumAnswerItemClickTransaction(transaction, gameId, roundId, questionId, itemIdx)
         );
         console.log(`Enum question ${questionId}: Item ${itemIdx} click successfully handled.`)
     }
@@ -192,7 +186,6 @@ const handleEnumAnswerItemClickTransaction = async (
     gameId,
     roundId,
     questionId,
-    organizerId,
     itemIdx
 ) => {
     const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
@@ -385,7 +378,8 @@ export async function resetEnumQuestion(gameId, roundId, questionId) {
 
     const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
     batch.update(timerDocRef, {
-        status: 'resetted'
+        status: 'resetted',
+        timestamp: serverTimestamp()
     })
 
     await batch.commit()
@@ -406,10 +400,7 @@ export const resetEnumQuestionTransaction = async (
         status: 'reflection_active',
         winner: null,
     })
-    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
-    transaction.update(timerDocRef, {
-        status: 'resetted'
-    })
+
 }
 
 // WRITE

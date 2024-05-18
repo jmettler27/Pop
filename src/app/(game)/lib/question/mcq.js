@@ -18,8 +18,8 @@ import {
     writeBatch
 } from 'firebase/firestore'
 
-import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
-import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
+import { addSoundToQueueTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { endQuestionTransaction } from '../question';
 
 export async function handleSubmitOptionPlayer(gameId, roundId, questionId, playerId, optionIdx) {
@@ -227,6 +227,80 @@ const handleHideAnswerTransaction = async (
 
     // End the question
     await endQuestionTransaction(transaction, gameId, roundId, questionId)
+}
+
+/* ====================================================================================================== */
+export async function handleMCQCountdownEnd(gameId, roundId, questionId) {
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+    if (!roundId) {
+        throw new Error("No round ID has been provided!");
+    }
+    if (!questionId) {
+        throw new Error("No question ID has been provided!");
+    }
+
+    try {
+        await runTransaction(db, transaction =>
+            handleMCQCountdownEndTransaction(transaction, gameId, roundId, questionId)
+        )
+        console.log("MCQ countdown ended successfully.")
+    } catch (error) {
+        console.error("There was an error handling the MCQ countdown end:", error);
+        throw error;
+    }
+}
+
+export const handleMCQCountdownEndTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+    questionId
+) => {
+    const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
+    const q = query(playersCollectionRef, where('teamId', '==', teamId))
+    const querySnapshot = await getDocs(q)
+
+    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
+
+    const roundScoresData = await getDocDataTransaction(transaction, roundScoresRef)
+
+    const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
+
+    const correct = false
+    const reward = 0
+    transaction.update(realtimeDocRef, {
+        playerId,
+        choiceIdx,
+        reward,
+        correct,
+        dateEnd: serverTimestamp()
+    })
+
+    const newRoundProgress = {}
+    const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
+    const teamsQuerySnapshot = await getDocs(query(teamsCollectionRef))
+    for (const teamDoc of teamsQuerySnapshot.docs) {
+        newRoundProgress[teamDoc.id] = {
+            ...currentRoundProgress[teamDoc.id],
+            [questionId]: currentRoundScores[teamDoc.id]
+        }
+    }
+    transaction.update(roundScoresRef, {
+        scoresProgress: newRoundProgress
+    })
+
+    for (const playerDoc of querySnapshot.docs) {
+        transaction.update(playerDoc.ref, { status: 'ready' })
+    }
+
+    await addWrongAnswerSoundToQueueTransaction(transaction, gameId)
+
+    // End the question
+    await endQuestion(gameId, roundId, questionId)
+
 }
 
 /* ====================================================================================================== */

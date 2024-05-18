@@ -32,7 +32,7 @@ export const MATCHING_ANSWER_EXAMPLE_3 = [
 
 
 export const MATCHING_MIN_NUM_COLS = 2;
-export const MATCHING_MAX_NUM_COLS = 4;
+export const MATCHING_MAX_NUM_COLS = 3;
 
 export const MATCHING_MIN_NUM_ROWS = 5;
 export const MATCHING_MAX_NUM_ROWS = 10;
@@ -41,6 +41,8 @@ export const MATCHING_ITEM_MAX_LENGTH = 30;
 
 export const MATCHING_DEFAULT_MISTAKE_PENALTY = 1;
 
+
+export const MATCHING_THINKING_TIME = 40
 
 /* In-game logic */
 export function shuffleMatching(numCols, numRows) {

@@ -17,11 +17,12 @@ import {
 } from 'firebase/firestore'
 
 import { switchNextChooserTransaction } from '@/app/(game)/lib/chooser'
-import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { addSoundToQueueTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 
-import { moveToHead } from '@/lib/utils/arrays';
-import { endQuestionTransaction } from '../question';
+import { getNextCyclicIndex, moveToHead } from '@/lib/utils/arrays';
+import { endQuestionTransaction } from '@/app/(game)/lib/question';
+import { updateTimerStateTransaction } from '../timer';
 
 export async function handleProposalClick(gameId, roundId, questionId, userId, idx) {
     if (!gameId) {
@@ -74,13 +75,15 @@ const handleProposalClickTransaction = async (
     // Case 1: Is the odd proposal => The first player to find the odd 'wins'
     if (idx === questionData.details.answerIdx) {
         const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-        const roundData = await getDocDataTransaction(transaction, roundRef)
-        const { mistakePenalty: penalty } = roundData
-
         const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
-        const roundScoresData = await getDocDataTransaction(transaction, roundScoresRef)
-        const { scores: currentScores, scoresProgress: currentProgress } = roundScoresData
 
+        const [roundData, roundScoresData] = await Promise.all([
+            getDocDataTransaction(transaction, roundRef),
+            getDocDataTransaction(transaction, roundScoresRef)
+        ])
+
+        const { mistakePenalty: penalty } = roundData
+        const { scores: currentScores, scoresProgress: currentProgress } = roundScoresData
         const newProgress = {}
         for (const tid of Object.keys(currentScores)) {
             newProgress[tid] = {
@@ -135,6 +138,7 @@ const handleProposalClickTransaction = async (
                 transaction.update(playerDoc.ref, { status: 'idle' })
             }
             await addSoundToQueueTransaction(transaction, gameId, 'Bien')
+            await updateTimerStateTransaction(transaction, gameId, 'started')
         }
     }
     transaction.update(realtimeDocRef, {
@@ -146,6 +150,79 @@ const handleProposalClickTransaction = async (
     })
 }
 
+/* ==================================================================================================== */
+export async function handleOOOCountdownEnd(gameId, roundId, questionId) {
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+    if (!roundId) {
+        throw new Error("No round ID has been provided!");
+    }
+    if (!questionId) {
+        throw new Error("No question ID has been provided!");
+    }
+
+    try {
+        await runTransaction(db, transaction =>
+            handleOOOCountdownEndTransaction(transaction, gameId, roundId, questionId)
+        )
+        console.log("Odd one out countdown end handled successfully.");
+    } catch (error) {
+        console.error("There was an error handling the odd one out countdown end:", error);
+        throw error;
+    }
+}
+
+export const handleOOOCountdownEndTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+    questionId
+) => {
+    const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
+    const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
+    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
+
+    const [gameStatesData, roundData, roundScoresData] = await Promise.all([
+        getDocDataTransaction(transaction, gameStatesRef),
+        getDocDataTransaction(transaction, roundRef),
+        getDocDataTransaction(transaction, roundScoresRef)
+    ])
+
+    const { chooserOrder, chooserIdx } = gameStatesData
+    const teamId = chooserOrder[chooserIdx]
+    const newChooserIdx = getNextCyclicIndex(chooserIdx, chooserOrder.length)
+
+    const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
+    const q = query(playersCollectionRef, where('teamId', '==', teamId))
+    const playersQuerySnapshot = await getDocs(q)
+
+    const { mistakePenalty: penalty } = roundData
+    const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
+    const newRoundProgress = {}
+    for (const tid of Object.keys(currentRoundScores)) {
+        newRoundProgress[tid] = {
+            ...currentRoundProgress[tid],
+            [questionId]: currentRoundScores[tid] + (tid === teamId) * penalty
+        }
+    }
+
+    transaction.update(roundScoresRef, {
+        [`scores.${teamId}`]: increment(penalty),
+        scoresProgress: newRoundProgress
+    })
+
+    for (const playerDoc of playersQuerySnapshot.docs) {
+        transaction.update(playerDoc.ref, { status: 'wrong' })
+    }
+
+    transaction.update(gameStatesRef, {
+        chooserIdx: newChooserIdx
+    })
+
+    await addWrongAnswerSoundToQueueTransaction(transaction, gameId)
+    await updateTimerStateTransaction(transaction, gameId, 'resetted')
+}
 
 /* ==================================================================================================== */
 // BATCHED WRITE

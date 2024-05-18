@@ -2,60 +2,75 @@
 import { useGameContext, useRoleContext } from '@/app/(game)/contexts'
 
 import { Button } from '@mui/material'
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import StartIcon from '@mui/icons-material/Start';
-import { startFinaleRound, startRoundFirstQuestion } from '@/app/(game)/lib/round/round-transitions';
+
+import { startRound } from '@/app/(game)/lib/round/round-transitions';
 import { useAsyncAction } from '@/lib/utils/async';
+import TimerPane from '../../../timer/TimerPane';
+import AuthorizePlayersSwitch from '../../AuthorizePlayersSwitch';
+import ReadyPlayerController from '@/app/(game)/[id]/components/bottom-pane/ReadyPlayerController';
 
-export default function RoundStartBottomPane({ startedRound }) {
-    const myRole = useRoleContext()
-
-    const SelectedRoundStartBottomPane = () => {
-        switch (myRole) {
-            case 'organizer':
-                return <RoundStartBottomPaneOrganizer startedRound={startedRound} />
-            case 'player':
-                return <RoundStartBottomPanePlayer />
-            default:
-                return <></>
-        }
-    }
-
+export default function RoundStartBottomPane({ }) {
     return (
-        <div className='flex flex-col h-full justify-around items-center'>
-            <SelectedRoundStartBottomPane />
+        <div className='flex flex-row h-full items-center justify-center divide-x divide-solid'>
+
+            <div className='flex flex-col h-full w-1/5 items-center justify-center'>
+                <TimerPane />
+            </div>
+
+            <div className='flex flex-col h-full w-4/5  items-center justify-center'>
+                <RoundStartController />
+            </div>
         </div>
     )
 }
 
-function RoundStartBottomPaneOrganizer({ startedRound }) {
+
+function RoundStartController({ }) {
+    const myRole = useRoleContext()
+
+    return (
+        <div className='flex flex-col h-full items-center justify-center space-y-5'>
+            <ReadyPlayerController />
+            {myRole === 'organizer' && <RoundStartOrganizerController />}
+        </div>
+    )
+}
+
+function RoundStartOrganizerController({ lang = 'en' }) {
+    return (
+        <div className='flex flex-col items-center justify-center h-full w-full'>
+            <RoundStartOrganizerButton lang={lang} />
+            <AuthorizePlayersSwitch lang={lang} />
+        </div>
+    )
+}
+
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+
+
+function RoundStartOrganizerButton({ lang = 'en' }) {
     const game = useGameContext()
 
     const [handleContinueClick, isHandling] = useAsyncAction(async () => {
-        if (startedRound.type !== 'finale')
-            await startRoundFirstQuestion(game.id, game.currentRound)
-        else
-            await startFinaleRound(game.id, game.currentRound)
+        await startRound(game.id, game.currentRound)
     })
 
     return (
-        <div className='h-full flex flex-col justify-center items-center'>
-            <Button
-                variant='contained'
-                size='large'
-                onClick={handleContinueClick}
-                disabled={isHandling}
-                endIcon={<StartIcon />}
-            >
-                Begin Round
-            </Button>
-        </div>
+        <Button
+            className='rounded-full'
+            size='large'
+            variant='contained'
+            onClick={handleContinueClick}
+            disabled={isHandling}
+            startIcon={<ArrowForwardIosIcon />}
+        >
+            {ROUND_START_ORGANIZER_BUTTON_TEXT[lang]}
+        </Button>
     )
-
 }
 
 
-function RoundStartBottomPanePlayer() {
-
-
+const ROUND_START_ORGANIZER_BUTTON_TEXT = {
+    'en': "Launch the first question",
+    'fr-FR': "Lancer la première question"
 }

@@ -1,9 +1,11 @@
 "use server";
 
 import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { updateTimerTransaction } from '@/app/(game)/lib/timer';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { db } from '@/lib/firebase/firebase';
 import { GAMES_COLLECTION_REF, USERS_COLLECTION_REF } from '@/lib/firebase/firestore'
+import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
 import {
     doc,
     arrayUnion,
@@ -106,13 +108,13 @@ const createGameRealtimeTransaction = async (
         chooserOrder: null,
     })
 
-    const realtimeTimerRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer');
-    transaction.set(realtimeTimerRef, {
-        duration: 5,
+    await updateTimerTransaction(transaction, gameId, {
+        duration: READY_COUNTDOWN_SECONDS,
         forward: false,
-        startAt: null,
         status: 'resetted'
-    })
+
+    });
+
     console.log("Realtime collections created successfully.")
 }
 

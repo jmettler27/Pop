@@ -14,6 +14,9 @@ export const EMOJI_DEFAULT_REWARD = 1
 
 export const EMOJI_DEFAULT_MAX_TRIES = 2
 
+export const EMOJI_THINKING_TIME = 10
+
+
 /* Validation  */
 import * as Yup from 'yup'
 

@@ -27,7 +27,7 @@ export default function RoundBottomPane() {
 
     switch (game.status) {
         case 'round_start':
-            return <RoundStartBottomPane startedRound={round} />
+            return <RoundStartBottomPane />
         case 'round_end':
             return <RoundEndBottomPane endedRound={round} />
     }

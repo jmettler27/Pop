@@ -17,14 +17,16 @@ import {
 } from 'firebase/firestore'
 
 import { switchNextChooserTransaction } from '@/app/(game)/lib/chooser'
-import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { addSoundToQueueTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 
 import { findMostFrequentValueAndIndices } from '@/lib/utils/question/matching';
-import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
+import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { sortScores } from '@/lib/utils/scores';
 import { sortAscendingRoundScores } from '@/lib/utils/question_types';
-import { shuffle } from '@/lib/utils/arrays';
-import { endQuestionTransaction } from '../question';
+import { getNextCyclicIndex, shuffle } from '@/lib/utils/arrays';
+
+import { endQuestionTransaction } from '@/app/(game)/lib/question';
+import { updateTimerStateTransaction } from '../timer';
 
 export async function submitMatch(gameId, roundId, questionId, userId, edges) {
     if (!gameId) {
@@ -187,7 +189,7 @@ const submitMatchTransaction = async (
         }
 
         await switchNextChooserTransaction(transaction, gameId)
-        await addSoundToQueueTransaction(transaction, gameId, 'roblox_oof')
+        await addWrongAnswerSoundToQueueTransaction(transaction, gameId)
         for (const playerDoc of playersQuerySnapshot.docs) {
             transaction.update(playerDoc.ref, { status: 'wrong' })
         }
@@ -223,8 +225,79 @@ const submitMatchTransaction = async (
             }),
         })
     }
+
+    await updateTimerStateTransaction(transaction, gameId, 'resetted')
 }
 
+/* ==================================================================================================== */
+export async function handleMatchingCountdownEnd(gameId, roundId, questionId) {
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+    if (!roundId) {
+        throw new Error("No round ID has been provided!");
+    }
+    if (!questionId) {
+        throw new Error("No question ID has been provided!");
+    }
+
+    try {
+        await runTransaction(db, transaction =>
+            handleMatchingCountdownEndTransaction(transaction, gameId, roundId, questionId)
+        )
+        console.log("Matching countdown end handled successfully.");
+    }
+    catch (error) {
+        console.error("There was an error handling the matching countdown end:", error);
+        throw error;
+    }
+}
+
+export const handleMatchingCountdownEndTransaction = async (transaction, gameId, roundId, questionId) => {
+    const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
+    const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
+    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
+
+    const [gameStatesData, roundData, roundScoresData] = await Promise.all([
+        getDocDataTransaction(transaction, gameStatesRef),
+        getDocDataTransaction(transaction, roundRef),
+        getDocDataTransaction(transaction, roundScoresRef)
+    ])
+
+    const { chooserOrder, chooserIdx } = gameStatesData
+    const teamId = chooserOrder[chooserIdx]
+    const newChooserIdx = getNextCyclicIndex(chooserIdx, chooserOrder.length)
+
+    const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
+    const q = query(playersCollectionRef, where('teamId', '==', teamId))
+    const playersQuerySnapshot = await getDocs(q)
+
+    const { mistakePenalty: penalty } = roundData
+    const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
+    const newRoundProgress = {}
+    for (const tid of Object.keys(currentRoundScores)) {
+        newRoundProgress[tid] = {
+            ...currentRoundProgress[tid],
+            [questionId]: currentRoundScores[tid] + (tid === teamId) * penalty
+        }
+    }
+
+    transaction.update(roundScoresRef, {
+        [`scores.${teamId}`]: increment(penalty),
+        scoresProgress: newRoundProgress
+    })
+
+    for (const playerDoc of playersQuerySnapshot.docs) {
+        transaction.update(playerDoc.ref, { status: 'wrong' })
+    }
+
+    transaction.update(gameStatesRef, {
+        chooserIdx: newChooserIdx
+    })
+
+    await addWrongAnswerSoundToQueueTransaction(transaction, gameId)
+    await updateTimerStateTransaction(transaction, gameId, 'resetted')
+}
 
 /* ==================================================================================================== */
 export async function resetMatchingQuestion(gameId, roundId, questionId) {

@@ -22,6 +22,8 @@ export default function TopPane({ }) {
         return <></>
     }
 
+    console.log("TOP PANE RENDERED")
+
     const teams = teamsCollection.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
     return (
         <div className='flex flex-row h-full justify-center space-x-9 items-center'>
@@ -32,8 +34,6 @@ export default function TopPane({ }) {
 
 
 function TeamItem({ team }) {
-    console.log(`RENDERING TeamItem ${team.id}`)
-
     return (
         <div className='flex flex-col h-[90%] items-center justify-around'>
             {/* Team name */}
@@ -61,7 +61,6 @@ const TeamName = ({ team }) =>
 function TeamPlayersInfo({ teamId }) {
     const { id: gameId } = useParams()
 
-    console.log(`RENDERING TeamPlayersInfo ${teamId}`)
     const [playersCollection, playersLoading, playersError] = useCollection(query(collection(GAMES_COLLECTION_REF, gameId, 'players'), where('teamId', '==', teamId)))
     if (playersError) {
         return <p><strong>Error: {JSON.stringify(playersError)}</strong></p>
