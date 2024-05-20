@@ -5,7 +5,7 @@ import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
 import { collection } from 'firebase/firestore'
 import { useCollectionOnce } from 'react-firebase-hooks/firestore'
 
-export default function RiddlePlayers({ players, lang = 'en' }) {
+export default function RiddlePlayers({ players, lang = 'fr-FR' }) {
     const { id: gameId } = useParams()
 
     const [gamePlayers, gamePlayersLoading, gamePlayersError] = useCollectionOnce(collection(GAMES_COLLECTION_REF, gameId, 'players'))

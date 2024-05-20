@@ -34,14 +34,14 @@ export const MCQ_DEFAULT_REWARDS = {
     'duo': 2
 }
 
-export function mcqOptionToTitle(option, lang = 'en') {
+export function mcqOptionToTitle(option, lang = 'fr-FR') {
     return MCQ_OPTION_TO_TITLE[lang][option]
 }
 export function mcqOptionToEmoji(option) {
     return MCQ_OPTION_TO_EMOJI[option]
 }
 
-export function prependMCQOptionWithEmoji(option, lang = 'en') {
+export function prependMCQOptionWithEmoji(option, lang = 'fr-FR') {
     return mcqOptionToEmoji(option) + " " + mcqOptionToTitle(option, lang)
 }
 

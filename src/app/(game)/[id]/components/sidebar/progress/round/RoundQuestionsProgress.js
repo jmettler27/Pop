@@ -302,7 +302,7 @@ function OddOneOutAnswerDetails({ question }) {
     )
 }
 
-function EnumAnswerDetails({ question, lang = 'en' }) {
+function EnumAnswerDetails({ question, lang = 'fr-FR' }) {
     return (
         <Typography>
             {ENUM_ANSWER_DETAILS_NUM_ANSWERS[lang]}: <span className='text-yellow-300'>{!question.details.maxIsKnown && ">="} <span className='font-bold'>{question.details.answer.length}</span></span>
@@ -328,7 +328,7 @@ function MatchingAnswerDetails({ question }) {
 }
 
 /* ============================================================================================ */
-function QuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = 'en' }) {
+function QuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = 'fr-FR' }) {
     switch (question.type) {
         case 'enum':
             return <EnumQuestionWinner winnerTeam={winnerTeam} winnerPlayer={winnerPlayer} question={question} game={game} />
@@ -346,7 +346,7 @@ function QuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = 'en' 
     }
 }
 
-function EnumQuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = 'en' }) {
+function EnumQuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = 'fr-FR' }) {
     return <></>
     // const playersDocRef = doc(GAMES_COLLECTION_REF, gameIdds', roundId, 'questions', question.id, 'realtime', 'players')
     // const [players, playersLoading, playersError] = useDocumentDataOnce(playersDocRef)

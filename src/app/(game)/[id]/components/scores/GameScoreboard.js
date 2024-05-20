@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 
 import { HEAD_RANKING_TEXT, HEAD_SCORE_TEXT, HEAD_TEAM_TEXT } from './scoreboardUtils'
 
-export default function GameScoreboard({ roundScores, teams, lang = 'en' }) {
+export default function GameScoreboard({ roundScores, teams, lang = 'fr-FR' }) {
     const gameSortedTeams = roundScores.gameSortedTeams
     const rankingDiffs = roundScores.rankingDiffs
 

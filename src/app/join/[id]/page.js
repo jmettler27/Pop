@@ -26,7 +26,7 @@ import {
 import { useAsyncAction } from '@/lib/utils/async';
 
 
-function JoinGameHeader({ }) {
+function JoinGameHeader({ lang = 'fr-FR' }) {
     const { id: gameId } = useParams()
 
     const [game, gameLoading, gameError] = useDocumentDataOnce(doc(GAMES_COLLECTION_REF, gameId))
@@ -34,9 +34,14 @@ function JoinGameHeader({ }) {
     return (
         <>
             {gameError && <p><strong>Error: {JSON.stringify(teamsError)}</strong></p>}
-            {!gameLoading && game && <h1>Join a game: {game.title}</h1>}
+            {!gameLoading && game && <h1>{JOIN_GAME_HEADER[lang]}: <i>{game.title}</i></h1>}
         </>
     )
+}
+
+const JOIN_GAME_HEADER = {
+    'en': 'Join a game',
+    'fr-FR': 'Rejoindre une partie',
 }
 
 const REGEX_HEX_COLOR = /^#[0-9A-F]{6}$/i
@@ -204,7 +209,7 @@ export default function Page({ params }) {
     );
 }
 
-function GeneralInfoStep({ onSubmit, validationSchema }) {
+function GeneralInfoStep({ onSubmit, validationSchema, lang = 'fr-FR' }) {
     const formik = useFormikContext();
     const values = formik.values
     const errors = formik.errors
@@ -221,29 +226,29 @@ function GeneralInfoStep({ onSubmit, validationSchema }) {
             validationSchema={validationSchema}
         >
             <MyTextInput
-                label="What is your nickname?"
+                label={PLAYER_NAME_INPUT_LABEL[lang]}
                 name='playerName'
                 type='text'
-                placeholder="My nickname"
+                placeholder={PLAYER_NAME_INPUT_PLACEHOLDER[lang]}
                 validationSchema={validationSchema}
                 maxLength={GAME_PARTICIPANT_NAME_MAX_LENGTH}
             />
 
             <br />
             <br />
-            <span>Do you want to play in teams or alone? {values.playInTeams !== null && <strong>{values.playInTeams ? "In teams" : "Alone"}</strong>}</span>
+            <span>{TEAMS_OR_ALONE_LABEL[lang]} {values.playInTeams !== null && <strong>{values.playInTeams ? IN_TEAMS[lang] : ALONE[lang]}</strong>}</span>
             <div role='group' aria-labelledby="play-in-teams-radio-group" className='flex flex-row space-x-2'>
                 <label>
                     <Field type='radio' name='joinTeamPicked' value="In teams"
                         onClick={() => formik.setFieldValue('playInTeams', true)}
                     />
-                    In teams
+                    {IN_TEAMS[lang]}
                 </label>
                 <label>
                     <Field type='radio' name='joinTeamPicked' value="Alone"
                         onClick={() => formik.setFieldValue('playInTeams', false)}
                     />
-                    Alone
+                    {ALONE[lang]}
                 </label>
             </div>
             <PlayInTeamsError />
@@ -253,7 +258,33 @@ function GeneralInfoStep({ onSubmit, validationSchema }) {
     )
 }
 
-function JoinOrCreateTeam({ validationSchema }) {
+const PLAYER_NAME_INPUT_LABEL = {
+    'en': 'Choose a nickname',
+    'fr-FR': 'Choisis un pseudo',
+}
+
+const PLAYER_NAME_INPUT_PLACEHOLDER = {
+    'en': 'My nickname',
+    'fr-FR': 'Mon pseudo',
+}
+
+const TEAMS_OR_ALONE_LABEL = {
+    'en': 'Do you want to play in teams or alone?',
+    'fr-FR': 'Veux-tu jouer en équipe ou en solo?',
+}
+
+const IN_TEAMS = {
+    'en': 'In teams',
+    'fr-FR': 'En équipe',
+}
+
+const ALONE = {
+    'en': 'Alone',
+    'fr-FR': 'Solo',
+}
+
+
+function JoinOrCreateTeam({ validationSchema, lang = 'fr-FR' }) {
     const { id: gameId } = useParams()
 
     const formik = useFormikContext();
@@ -280,17 +311,17 @@ function JoinOrCreateTeam({ validationSchema }) {
             <br />
             <br />
             <MyRadioGroup
-                label="Do you want to join an existing team or create a new one?"
+                label={JOIN_OR_CREATE_TEAM_LABEL[lang]}
                 name='joinTeam'
-                trueText="Join a team"
-                falseText="Create a new team"
+                trueText={JOIN_TEAM[lang]}
+                falseText={CREATE_TEAM[lang]}
                 validationSchema={validationSchema}
 
             />
 
             {values.joinTeam && teams.length > 0 && (
                 <MySelect
-                    label="What team do you want to join?"
+                    label={SELECT_TEAM_LABEL[lang]}
                     name='teamId'
                     validationSchema={validationSchema}
                     onChange={(e) => {
@@ -303,7 +334,7 @@ function JoinOrCreateTeam({ validationSchema }) {
                         }
                     }}
                 >
-                    <option value="">Select a team</option>
+                    <option value="">{SELECT_TEAM_FIRST_OPTION[lang]}</option>
                     {teams.map((doc) => <option key={doc.id} value={doc.id}>{doc.name} </option>)}
                 </MySelect>
             )}
@@ -311,7 +342,34 @@ function JoinOrCreateTeam({ validationSchema }) {
     )
 }
 
-function CreateTeamStep({ onSubmit, validationSchema }) {
+const JOIN_OR_CREATE_TEAM_LABEL = {
+    'en': 'Do you want to join an existing team or create a new one?',
+    'fr-FR': 'Veux-tu rejoindre une équipe existante ou en créer une nouvelle?',
+}
+
+const JOIN_TEAM = {
+    'en': 'Join a team',
+    'fr-FR': 'Rejoindre une équipe',
+}
+
+const CREATE_TEAM = {
+    'en': 'Create a team',
+    'fr-FR': 'Créer une équipe',
+}
+
+const SELECT_TEAM_LABEL = {
+    'en': 'What team do you want to join?',
+    'fr-FR': 'Quelle équipe veux-tu rejoindre?',
+}
+
+const SELECT_TEAM_FIRST_OPTION = {
+    'en': 'Select a team',
+    'fr-FR': 'Sélectionne une équipe',
+}
+
+
+
+function CreateTeamStep({ onSubmit, validationSchema, lang = 'fr-FR' }) {
     const formik = useFormikContext();
     const values = formik.values
     const errors = formik.errors
@@ -331,24 +389,44 @@ function CreateTeamStep({ onSubmit, validationSchema }) {
 
             {/* Player that joins an existing team */}
             {values.playInTeams === true && values.joinTeam === true && (
-                <p>You can now join the game.</p>
+                <p>{CAN_JOIN_GAME[lang]}</p>
             )}
 
             {/* Player that creates a new team */}
             {values.playInTeams === true && values.joinTeam === false && (
                 <>
                     <MyTextInput
-                        label="What is the name of your team?"
+                        label={TEAM_NAME_INPUT_LABEL[lang]}
                         name='teamName'
                         type='text'
-                        placeholder="My team name"
+                        placeholder={TEAM_NAME_INPUT_PLACEHOLDER[lang]}
                         validationSchema={validationSchema}
                         maxLength={GAME_TEAM_MAX_NAME_LENGTH}
                     />
 
-                    <MyColorPicker label="Choose a color for your team" name='teamColor' validationSchema={validationSchema} />
+                    <MyColorPicker label={TEAM_COLOR_PICKER_LABEL[lang]} name='teamColor' validationSchema={validationSchema} />
                 </>
             )}
         </WizardStep>
     )
+}
+
+const TEAM_NAME_INPUT_LABEL = {
+    'en': "Choose a team name",
+    'fr-FR': "Choisis un nom d'équipe",
+}
+
+const TEAM_NAME_INPUT_PLACEHOLDER = {
+    'en': "My team name",
+    'fr-FR': "Mon nom d'équipe",
+}
+
+const TEAM_COLOR_PICKER_LABEL = {
+    'en': "Choose a color for your team",
+    'fr-FR': "Choisis une couleur pour ton équipe",
+}
+
+const CAN_JOIN_GAME = {
+    'en': 'You can now join the game.',
+    'fr-FR': 'Tu peux maintenant rejoindre la partie.',
 }

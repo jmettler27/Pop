@@ -7,7 +7,7 @@ import { useDocumentData } from 'react-firebase-hooks/firestore'
 import PlayerName from '@/app/(game)/[id]/components/PlayerName'
 import { rankingToEmoji } from '@/lib/utils/emojis'
 
-export default function EnumPlayers({ lang = 'en' }) {
+export default function EnumPlayers({ lang = 'fr-FR' }) {
     const game = useGameContext()
 
     const [players, playersLoading, playersError] = useDocumentData(doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'players'))

@@ -1,7 +1,7 @@
 import { MySelect } from '@/app/components/forms/StyledFormComponents'
 import { QUESTION_TYPES, prependQuestionTypeWithEmoji } from '@/lib/utils/question_types'
 
-export default function SelectRoundType({ validationSchema, lang = 'en', name = 'type' }) {
+export default function SelectRoundType({ validationSchema, lang = 'fr-FR', name = 'type' }) {
     return (
         <MySelect
             label={LABEL[lang]}

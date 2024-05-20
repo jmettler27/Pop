@@ -20,9 +20,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '../card'
 
 import { gameTypeToEmoji } from '@/lib/utils/game'
 import { localeToEmoji } from '@/lib/utils/locales'
-import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from './GameAvatars'
+import { GameOrganizersCardContent, GamePlayersCardContent } from './GameCardContent'
 
-export default function OngoingGames({ lang = 'en' }) {
+export default function OngoingGames({ lang = 'fr-FR' }) {
     const [games, gamesLoading, gamesError] = useCollection(query(GAMES_COLLECTION_REF,
         or(where('status', '==', 'game_start'),
             where('status', '==', 'game_home'),
@@ -71,6 +71,7 @@ const ONGOING_GAMES_CARD_TITLE = {
 
 const GameCard = ({
     game,
+    lang = 'fr-FR',
 }) => {
     const router = useRouter()
     const { data: session } = useSession()
@@ -106,11 +107,11 @@ const GameCard = ({
     const buttonText = () => {
         if (myRole === 'spectator') {
             if (isFull) {
-                return 'Watch'
+                return WATCH_GAME[lang]
             }
-            return 'Join'
+            return JOIN_GAME[lang]
         }
-        return 'Continue'
+        return CONTINUE_GAME[lang]
     }
 
     const ButtonIcon = () => {
@@ -148,17 +149,9 @@ const GameCard = ({
             </CardHeader>
 
             <CardContent>
-                {/* Organizers */}
-                <Box className='flex flex-row items-center justify-between pb-2'>
-                    <Typography variant="subtitle1">Organizers</Typography>
-                    <GameOrganizersAvatarGroup gameId={game.id} />
-                </Box>
+                <GameOrganizersCardContent gameId={game.id} lang={lang} />
 
-                {/* Players */}
-                <Box className='flex flex-row items-center justify-between pb-2'>
-                    <Typography variant="subtitle1">Players</Typography>
-                    <GamePlayersAvatarGroup gameId={game.id} max={4} />
-                </Box>
+                <GamePlayersCardContent gameId={game.id} lang={lang} />
 
                 <Divider className='my-2 bg-slate-600' />
 
@@ -182,3 +175,19 @@ const JoinGameButton = styled(Button)(({ theme }) => ({
         textTransform: 'none !important',
     },
 }))
+
+const WATCH_GAME = {
+    'en': 'Watch',
+    'fr-FR': 'Regarder',
+}
+
+const JOIN_GAME = {
+    'en': 'Join',
+    'fr-FR': 'Rejoindre',
+}
+
+const CONTINUE_GAME = {
+    'en': 'Continue',
+    'fr-FR': 'Continuer',
+}
+

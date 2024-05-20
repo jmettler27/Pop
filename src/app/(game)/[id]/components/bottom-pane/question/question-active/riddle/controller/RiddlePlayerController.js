@@ -110,7 +110,7 @@ const RIDDLE_INCORRECT_ASNWER_TEXT = {
     'fr-FR': "Mauvaise réponse!"
 }
 
-function BuzzerMessage({ playerStatus, hasExceededMaxTries, round, myCanceledItems, isFirst, hasBuzzed, remaining, lang = 'en' }) {
+function BuzzerMessage({ playerStatus, hasExceededMaxTries, round, myCanceledItems, isFirst, hasBuzzed, remaining, lang = 'fr-FR' }) {
     if (hasExceededMaxTries)
         return <span className='text-3xl'>{MAX_TRIES_EXCEEDED_TEXT[lang]} ({round.maxTries})</span>
 

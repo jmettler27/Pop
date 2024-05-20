@@ -47,7 +47,7 @@ import ScoreboardIcon from '@mui/icons-material/Scoreboard'
 import AuthorizePlayersSwitch from '../../AuthorizePlayersSwitch'
 
 
-function QuestionEndOrganizerController({ isLastQuestion, lang = 'en' }) {
+function QuestionEndOrganizerController({ isLastQuestion, lang = 'fr-FR' }) {
     return (
         <div className='flex flex-col items-center justify-center h-full w-full'>
             <QuestionEndOrganizerButton isLastQuestion={isLastQuestion} lang={lang} />
@@ -56,7 +56,7 @@ function QuestionEndOrganizerController({ isLastQuestion, lang = 'en' }) {
     )
 }
 
-function QuestionEndOrganizerButton({ isLastQuestion, lang = 'en' }) {
+function QuestionEndOrganizerButton({ isLastQuestion, lang = 'fr-FR' }) {
     const game = useGameContext()
 
     const [handleContinueClick, isEnding] = useAsyncAction(async () => {
@@ -68,7 +68,7 @@ function QuestionEndOrganizerButton({ isLastQuestion, lang = 'en' }) {
             className='rounded-full'
             color='secondary'
             size='large'
-            variant='outlined'
+            variant='contained'
             onClick={handleContinueClick}
             disabled={isEnding}
             startIcon={isLastQuestion ? <ScoreboardIcon /> : <FastForwardIcon />}

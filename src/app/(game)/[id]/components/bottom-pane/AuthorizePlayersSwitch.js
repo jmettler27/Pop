@@ -9,7 +9,7 @@ import { switchAuthorizePlayers } from '@/app/(game)/lib/game'
 import { doc } from 'firebase/firestore'
 
 
-export default function AuthorizePlayersSwitch({ lang = 'en' }) {
+export default function AuthorizePlayersSwitch({ lang = 'fr-FR' }) {
     const { id: gameId } = useParams()
 
     const [handleAuthorizePlayers, isAuthorizing] = useAsyncAction(async () => {
@@ -41,6 +41,6 @@ export default function AuthorizePlayersSwitch({ lang = 'en' }) {
 }
 
 const AUTHORIZE_PLAYERS_SWITCH_LABEL = {
-    en: 'Authorize players',
-    fr: 'Autoriser les joueurs'
+    'en': 'Authorize players',
+    'fr-FR': 'Autoriser les joueurs'
 }

@@ -33,7 +33,7 @@ export default function FinaleRoundProgress({ game, round }) {
 /**
  * Sidebar visible in the finale round home screen
  */
-function FinaleRoundHomeProgress({ round, lang = 'en' }) {
+function FinaleRoundHomeProgress({ round, lang = 'fr-FR' }) {
     const { id: gameId } = useParams()
 
     const themeRealtimesCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds', round.id, 'themes')
@@ -107,7 +107,7 @@ function FinaleRoundHomeProgress({ round, lang = 'en' }) {
 /**
  * Sidebar visible in a finale round theme
  */
-function FinaleRoundThemeProgress({ round, lang = 'en' }) {
+function FinaleRoundThemeProgress({ round, lang = 'fr-FR' }) {
     const { id: gameId } = useParams()
     const themeId = round.currentTheme
 
@@ -199,7 +199,7 @@ function FinaleRoundThemeProgress({ round, lang = 'en' }) {
 }
 
 
-function ThemeSectionAccordion({ themeId, sectionId, sectionOrder, hasEnded, isCurrent, hasNotStarted, onAccordionChange, expanded, sectionRealtime, currentSectionRealtime, playerTeam, lang = 'en' }) {
+function ThemeSectionAccordion({ themeId, sectionId, sectionOrder, hasEnded, isCurrent, hasNotStarted, onAccordionChange, expanded, sectionRealtime, currentSectionRealtime, playerTeam, lang = 'fr-FR' }) {
     const myRole = useRoleContext()
 
     const showComplete = myRole === 'organizer' || hasEnded || isCurrent
@@ -277,7 +277,7 @@ function ThemeSectionAccordion({ themeId, sectionId, sectionOrder, hasEnded, isC
 
 }
 
-function SectionSummary({ themeId, sectionId, sectionOrder, showComplete, isCurrent, lang = 'en' }) {
+function SectionSummary({ themeId, sectionId, sectionOrder, showComplete, isCurrent, lang = 'fr-FR' }) {
     const sectionRef = doc(QUESTIONS_COLLECTION_REF, themeId, 'sections', sectionId)
     const [section, sectionLoading, sectionError] = useDocumentDataOnce(sectionRef)
     if (sectionError) {
@@ -299,7 +299,7 @@ function SectionSummary({ themeId, sectionId, sectionOrder, showComplete, isCurr
     )
 }
 
-function SectionDetails({ sectionRealtime, sectionIsCurrent, sectionHasEnded, currentSectionRealtime, lang = 'en' }) {
+function SectionDetails({ sectionRealtime, sectionIsCurrent, sectionHasEnded, currentSectionRealtime, lang = 'fr-FR' }) {
     const { currentQuestionIdx } = currentSectionRealtime
 
     return (

@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import { rankingToEmoji } from '@/lib/utils/emojis';
 import { HEAD_RANKING_TEXT, HEAD_REWARD_TEXT, HEAD_SCORE_TEXT, HEAD_TEAM_TEXT } from './scoreboardUtils';
 
-export default function RoundScoreboard({ roundScores, teams, lang = 'en' }) {
+export default function RoundScoreboard({ roundScores, teams, lang = 'fr-FR' }) {
     const roundSortedTeams = roundScores.roundSortedTeams
 
     return (

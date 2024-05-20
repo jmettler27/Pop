@@ -15,18 +15,16 @@ import WarningIcon from '@mui/icons-material/Warning';
 
 import { Backdrop } from '@mui/material'
 import SoundboardController from '../soundboard/SoundboardController'
-import GameRestartDialog from './GameRestartDialog'
 
 
 import { endGame } from '@/app/(game)/lib/transitions'
 import { resetGame, updateGameStatus, updateQuestion, updateQuestions } from '@/app/(game)/lib/game'
-import { createGame } from '@/app/edit/[id]/lib/create-game'
-import { addGameRound } from '@/app/edit/[id]/lib/edit-game'
+import { useParams } from 'next/navigation'
 
 const StyledSpeedDial = styled(SpeedDial)(({ theme }) => ({
     position: 'absolute',
-    bottom: theme.spacing(2),
-    left: theme.spacing(2),
+    bottom: 16,
+    right: 16,
 }))
 
 
@@ -41,7 +39,7 @@ const actions = [
 
 
 export default function OrganizerSpeedDial() {
-    const game = useGameContext()
+    const { id: gameId } = useParams()
 
     const direction = 'up'
 
@@ -69,13 +67,13 @@ export default function OrganizerSpeedDial() {
                 setComponent(<SoundboardController />)
                 break
             case 'Home':
-                updateGameStatus(game.id, 'game_home')
+                updateGameStatus(gameId, 'game_home')
                 break
             case 'Reset game':
-                resetGame(game.id)
+                resetGame(gameId)
                 break
             case 'End game':
-                endGame(game.id)
+                endGame(gameId)
                 break
         }
     }
@@ -103,7 +101,7 @@ export default function OrganizerSpeedDial() {
                         key={action.name}
                         icon={action.icon}
                         tooltipTitle={action.name}
-                        tooltipPlacement='right'
+                        tooltipPlacement='left'
                         tooltipOpen
                         onClick={(e) => handleClick(e, action.name)}
                     />

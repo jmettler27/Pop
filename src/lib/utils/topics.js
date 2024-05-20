@@ -52,7 +52,7 @@ export const topicSchema = () => Yup.string()
 
 
 /* Utility functions */
-export function topicToTitle(topic, lang = 'en') {
+export function topicToTitle(topic, lang = 'fr-FR') {
     return TOPIC_TO_TITLE[lang][topic]
 }
 
@@ -60,11 +60,11 @@ export function topicToEmoji(topic) {
     return TOPIC_TO_EMOJI[topic]
 }
 
-export function prependTopicWithEmoji(topic, lang = 'en') {
+export function prependTopicWithEmoji(topic, lang = 'fr-FR') {
     return topicToEmoji(topic) + " " + topicToTitle(topic, lang)
 }
 
-export function allTopicsToTitle(lang = 'en', withEmoji = true) {
+export function allTopicsToTitle(lang = 'fr-FR', withEmoji = true) {
     return Object.keys(TOPIC_TO_TITLE[lang]).map(topic => {
         return [topic, withEmoji ? prependTopicWithEmoji(topic, lang) : topicToTitle(topic, lang)]
     })

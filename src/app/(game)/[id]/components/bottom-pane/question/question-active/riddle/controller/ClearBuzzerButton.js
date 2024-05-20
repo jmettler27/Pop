@@ -10,7 +10,7 @@ import { useAsyncAction } from '@/lib/utils/async'
  * End the question
  * @returns 
  */
-export default function ClearBuzzerButton() {
+export default function ClearBuzzerButton({ lang = 'fr-FR' }) {
     const game = useGameContext()
 
     const [handleClick, isClearing] = useAsyncAction(async () => {
@@ -25,7 +25,12 @@ export default function ClearBuzzerButton() {
             onClick={handleClick}
             disabled={isClearing}
         >
-            Clear buzzer
+            {CLEAR_BUZZER_BUTTON_LABEL[lang]}
         </Button>
     )
+}
+
+const CLEAR_BUZZER_BUTTON_LABEL = {
+    'en': 'Clear buzzer',
+    'fr-FR': 'Effacer le buzzer'
 }

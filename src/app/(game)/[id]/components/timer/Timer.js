@@ -7,6 +7,8 @@ const CRITICAL_MS = 5000
 
 export default function Timer({ timer, serverTimeOffset, onTimerEnd = () => { } }) {
     const statusRef = useRef(null)
+    const durationRef = useRef(null)
+    const timestampRef = useRef(null)
 
     const startMillisecond = timer.forward ? 0 : (timer.duration * 1000)
     const endMillisecond = timer.forward ? (timer.duration * 1000) : 0
@@ -30,15 +32,15 @@ export default function Timer({ timer, serverTimeOffset, onTimerEnd = () => { } 
 
     const resetTimer = () => {
         stopTimer()
-        if (milliseconds) {
-            setMilliSeconds(startMillisecond)
-        }
+        setMilliSeconds(startMillisecond)
     }
 
     useEffect(() => {
-        if (statusRef.current === timer.status)
+        if (statusRef.current === timer.status && durationRef.current === timer.duration && timestampRef.current === timer.timestamp)
             return
         statusRef.current = timer.status
+        durationRef.current = timer.duration
+        timestampRef.current = timer.timestamp
         if (statusRef.current === 'started') {
             startTimer()
         }
@@ -49,7 +51,7 @@ export default function Timer({ timer, serverTimeOffset, onTimerEnd = () => { } 
             resetTimer()
         }
 
-    }, [timer.status])
+    }, [timer.status, timer.duration, timer.timestamp])
 
 
     if ((timer.forward && milliseconds >= endMillisecond) || (!timer.forward && milliseconds <= endMillisecond)) {
@@ -63,7 +65,7 @@ export default function Timer({ timer, serverTimeOffset, onTimerEnd = () => { } 
         <span
             className={clsx(
                 isCritical && 'text-red-500',
-                timer.status === 'resetted' && 'text-yellow-500',
+                timer.status === 'resetted' && 'opacity-50 text-yellow-500',
                 timer.status === 'stopped' && 'opacity-50',
             )}
         >

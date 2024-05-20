@@ -8,7 +8,7 @@ import { DIALOG_ACTION_CANCEL } from "@/lib/utils/dialogs";
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { launchGame } from "@/app/edit/[id]/lib/edit-game";
 
-export function LaunchGameButton({ lang = 'en' }) {
+export function LaunchGameButton({ lang = 'fr-FR' }) {
     const { id: gameId } = useParams()
 
     const router = useRouter()

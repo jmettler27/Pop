@@ -36,7 +36,7 @@ function RoundStartController({ }) {
     )
 }
 
-function RoundStartOrganizerController({ lang = 'en' }) {
+function RoundStartOrganizerController({ lang = 'fr-FR' }) {
     return (
         <div className='flex flex-col items-center justify-center h-full w-full'>
             <RoundStartOrganizerButton lang={lang} />
@@ -48,7 +48,7 @@ function RoundStartOrganizerController({ lang = 'en' }) {
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 
-function RoundStartOrganizerButton({ lang = 'en' }) {
+function RoundStartOrganizerButton({ lang = 'fr-FR' }) {
     const game = useGameContext()
 
     const [handleContinueClick, isHandling] = useAsyncAction(async () => {
@@ -60,6 +60,7 @@ function RoundStartOrganizerButton({ lang = 'en' }) {
             className='rounded-full'
             size='large'
             variant='contained'
+            color='secondary'
             onClick={handleContinueClick}
             disabled={isHandling}
             startIcon={<ArrowForwardIosIcon />}

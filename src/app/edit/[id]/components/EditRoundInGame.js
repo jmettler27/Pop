@@ -91,7 +91,7 @@ function EditGameRoundQuestionCards({ round }) {
     ))
 }
 
-function RemoveRoundFromGameButton({ roundId, lang = 'en' }) {
+function RemoveRoundFromGameButton({ roundId, lang = 'fr-FR' }) {
     const { id: gameId } = useParams()
 
     const [dialogOpen, setDialogOpen] = useState(false)

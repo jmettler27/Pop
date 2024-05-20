@@ -21,7 +21,7 @@ import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 
-export default function RevealQuoteElementButton({ buzzed, question, revealed }) {
+export default function RevealQuoteElementButton({ buzzed, question, revealed, lang = 'fr-FR' }) {
     const buzzedIsEmpty = isEmpty(buzzed)
 
     const { toGuess, quoteParts } = question.details
@@ -40,7 +40,6 @@ export default function RevealQuoteElementButton({ buzzed, question, revealed })
     const onDialogClose = () => {
         setDialogOpen(false)
         handleMenuClose()
-        // Snackbar message 
     }
 
     const handleRevealButtonClick = (event) => {
@@ -60,7 +59,7 @@ export default function RevealQuoteElementButton({ buzzed, question, revealed })
                 onClick={handleRevealButtonClick}
                 disabled={!buzzedIsEmpty}
             >
-                Reveal
+                {REVEAL_BUTTON_LABEL[lang]}
             </Button>
 
             <Menu
@@ -78,7 +77,7 @@ export default function RevealQuoteElementButton({ buzzed, question, revealed })
                     aria-labelledby="nested-list-subheader"
                     subheader={
                         <ListSubheader component="div" id="nested-list-subheader">
-                            Reveal an element of the quote
+                            {REVEAL_LIST_HEADER[lang]}
                         </ListSubheader>
                     }
                 >
@@ -113,6 +112,17 @@ export default function RevealQuoteElementButton({ buzzed, question, revealed })
         </>
     )
 }
+
+const REVEAL_BUTTON_LABEL = {
+    'en': 'Reveal',
+    'fr-FR': 'Révéler'
+}
+
+const REVEAL_LIST_HEADER = {
+    'en': 'Reveal an element of the quote',
+    'fr-FR': 'Révéler un élément de la réplique'
+}
+
 
 function AuthorListItemButton({ revealed, author, onClick }) {
 
@@ -183,7 +193,7 @@ function QuoteListItemButton({ revealed, quote, quoteParts, setQuotePartIdx, han
     )
 }
 
-function RevealQuoteElementDialog({ question, quoteElem, quoteParts, quotePartIdx, dialogOpen, onDialogClose }) {
+function RevealQuoteElementDialog({ question, quoteElem, quoteParts, quotePartIdx, dialogOpen, onDialogClose, lang = 'fr-FR' }) {
     const game = useGameContext()
 
     const [handleRevealQuoteElement, isRevealing] = useAsyncAction(async () => {
@@ -206,10 +216,10 @@ function RevealQuoteElementDialog({ question, quoteElem, quoteParts, quotePartId
             open={dialogOpen}
             onClose={onDialogClose}
         >
-            <DialogTitle>Reveal an element of the quote: {quoteElementToTitle(quoteElem)}</DialogTitle>
+            <DialogTitle>{REVEAL_LIST_HEADER[lang]}: {quoteElementToTitle(quoteElem)}</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    Are you sure you want to reveal <strong>&quot;{elementToRevealText()}&quot;</strong>?
+                    {REVEAL_QUOTE_ELEMENT_DIALOG_CONTENT_TEXT[lang]} <strong>&quot;{elementToRevealText()}&quot;</strong>?
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
@@ -220,7 +230,7 @@ function RevealQuoteElementDialog({ question, quoteElem, quoteParts, quotePartId
                     onClick={handleRevealQuoteElement}
                     disabled={isRevealing}
                 >
-                    Yes
+                    {DIALOG_YES_BUTTON_LABEL[lang]}
                 </Button>
 
                 <Button
@@ -230,10 +240,24 @@ function RevealQuoteElementDialog({ question, quoteElem, quoteParts, quotePartId
                     onClick={onDialogClose}
                     autoFocus
                 >
-                    No
+                    {DIALOG_NO_BUTTON_LABEL[lang]}
                 </Button>
             </DialogActions>
         </Dialog>
     )
 }
 
+const REVEAL_QUOTE_ELEMENT_DIALOG_CONTENT_TEXT = {
+    'en': "Are you sure you want to reveal",
+    'fr-FR': "Es-tu sûr de vouloir révéler"
+}
+
+const DIALOG_YES_BUTTON_LABEL = {
+    'en': 'Yes',
+    'fr-FR': 'Oui'
+}
+
+const DIALOG_NO_BUTTON_LABEL = {
+    'en': 'No',
+    'fr-FR': 'Non'
+}

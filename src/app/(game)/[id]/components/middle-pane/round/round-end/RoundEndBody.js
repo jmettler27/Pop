@@ -11,7 +11,7 @@ import GameScoresChart from '@/app/(game)/[id]/components/scores/GameScoresChart
 
 import LoadingScreen from '@/app/components/LoadingScreen'
 
-export default function RoundEndBody({ currentRound, lang = 'en' }) {
+export default function RoundEndBody({ currentRound, lang = 'fr-FR' }) {
     const { id: gameId } = useParams()
 
     const teamsRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
@@ -39,7 +39,7 @@ export default function RoundEndBody({ currentRound, lang = 'en' }) {
             {/* Round statistics */}
             <div className='flex flex-col h-1/2 w-full items-center justify-center'>
                 <div className='flex flex-col h-[10%] w-full items-center justify-center'>
-                    <h1 className='text-2xl text-yellow-300'>{ROUND_STATS_HEADER_TEXT[lang]}</h1>
+                    <h1 className='2xl:text-3xl text-yellow-300'>{ROUND_STATS_HEADER_TEXT[lang]}</h1>
                 </div>
                 <div className='flex flex-row h-[90%] w-full items-center justify-center'>
                     <div className='flex flex-col h-full w-2/3 items-center justify-center'>
@@ -52,7 +52,7 @@ export default function RoundEndBody({ currentRound, lang = 'en' }) {
             </div>
             {/* Game statistics */}
             <div className='flex flex-col h-1/2 w-full items-center justify-center'>
-                <h1 className='text-2xl text-yellow-300'>{GAME_STATS_HEADER_TEXT[lang]}</h1>
+                <h1 className='2xl:text-3xl text-yellow-300'>{GAME_STATS_HEADER_TEXT[lang]}</h1>
                 <div className='flex flex-row h-[90%] w-full items-center justify-center'>
                     <div className='flex flex-col h-11/12 w-2/3 items-center justify-center'>
                         <GameScoreboard roundScores={roundScores} teams={teams} />

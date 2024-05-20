@@ -48,7 +48,7 @@ function EnumQuestionIndication({ indication }) {
     )
 }
 
-function EnumQuestionObjective({ question, lang = 'en' }) {
+function EnumQuestionObjective({ question, lang = 'fr-FR' }) {
     switch (lang) {
         case 'en':
             return <span className='text-3xl text-yellow-300'>There are {question.details.maxIsKnown ? "exactly" : "at least"} <strong>{question.details.answer.length}</strong> answers</span>

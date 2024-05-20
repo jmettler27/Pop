@@ -17,7 +17,7 @@ import EditGameButton from './EditGameButton';
 
 
 
-export default function GamesUnderConstruction({ lang = 'en' }) {
+export default function GamesUnderConstruction({ lang = 'fr-FR' }) {
     const [gamesUnderConstructionCollection, loading, error] = useCollection(query(GAMES_COLLECTION_REF,
         and(where('status', '==', 'build'), where('dateEnd', '==', null))))
     if (error) {
@@ -59,7 +59,7 @@ const GAMES_UNDER_CONSTRUCTION_CARD_TITLE = {
 }
 
 
-export function GameUnderConstructionCard({ game, lang = 'en' }) {
+export function GameUnderConstructionCard({ game, lang = 'fr-FR' }) {
     const { data: session } = useSession()
     const user = session.user
 

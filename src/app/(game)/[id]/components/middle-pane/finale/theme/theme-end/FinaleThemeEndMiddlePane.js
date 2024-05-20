@@ -21,7 +21,7 @@ export default function FinaleThemeEndMiddlePane({ theme, themeRealtime }) {
 
 }
 
-function ThemeTitle({ theme, themeRealtime, lang = 'en' }) {
+function ThemeTitle({ theme, themeRealtime, lang = 'fr-FR' }) {
     return <h1 className='text-4xl font-bold'>{THEME_END_TEXT[lang]} {themeRealtime.order + 1} ({theme.details.title})</h1>
 }
 
@@ -30,7 +30,7 @@ const THEME_END_TEXT = {
     'fr-FR': "Fin du thème"
 }
 
-function ThemeScores({ themeId, lang = 'en' }) {
+function ThemeScores({ themeId, lang = 'fr-FR' }) {
     const game = useGameContext()
 
     const [sectionRealtimes, sectionRealtimesLoading, sectionRealtimesError] = useCollectionData(collection(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'themes', themeId, 'sections'))

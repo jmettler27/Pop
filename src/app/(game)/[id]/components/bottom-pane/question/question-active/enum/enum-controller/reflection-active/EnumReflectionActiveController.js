@@ -16,7 +16,7 @@ import { DIALOG_ACTION_CANCEL, DIALOG_ACTION_VALIDATE, DIALOG_TITLE, DIALOG_WARN
 
 import { useAsyncAction } from '@/lib/utils/async'
 
-export default function EnumReflectionActiveController({ question, timer, lang = 'en' }) {
+export default function EnumReflectionActiveController({ question, timer, lang = 'fr-FR' }) {
     const myRole = useRoleContext()
 
     switch (myRole) {

@@ -2,7 +2,7 @@ import { MySelect } from '@/app/components/forms/StyledFormComponents'
 
 import { allTopicsToTitle } from '@/lib/utils/topics';
 
-export default function SelectQuestionTopic({ validationSchema, lang = 'en', name = 'topic' }) {
+export default function SelectQuestionTopic({ validationSchema, lang = 'fr-FR', name = 'topic' }) {
     return (
         <MySelect
             label={LABEL[lang]}

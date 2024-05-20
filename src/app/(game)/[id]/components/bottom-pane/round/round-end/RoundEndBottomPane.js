@@ -12,7 +12,7 @@ import LoadingScreen from '@/app/components/LoadingScreen'
 
 import { useParams } from 'next/navigation'
 
-export default function RoundEndBottomPane({ endedRound, lang = 'en' }) {
+export default function RoundEndBottomPane({ endedRound, lang = 'fr-FR' }) {
     const { id: gameId } = useParams()
     const myRole = useRoleContext()
 

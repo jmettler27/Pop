@@ -27,7 +27,7 @@ export default function GameChooserTeamAnnouncement({ }) {
     return chooserTeamId && <GameChooserHelperText chooserTeamId={chooserTeamId} />
 }
 
-export function GameChooserHelperText({ chooserTeamId, lang = 'en' }) {
+export function GameChooserHelperText({ chooserTeamId, lang = 'fr-FR' }) {
     const game = useGameContext()
     const myTeam = useTeamContext()
     const myRole = useRoleContext()

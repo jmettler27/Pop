@@ -8,7 +8,7 @@ import { useDocumentData } from 'react-firebase-hooks/firestore';
 import PlayerName, { WinnerName } from '@/app/(game)/[id]/components/PlayerName'
 import { getRandomElement } from '@/lib/utils/arrays';
 
-export default function RiddleAnswer({ question, lang = 'en' }) {
+export default function RiddleAnswer({ question, lang = 'fr-FR' }) {
 
     return (
         <div className='flex flex-col h-full items-center justify-center'>
@@ -33,7 +33,7 @@ function RiddleAnswerText({ question }) {
 
 }
 
-function RiddleWinnerInfo({ lang = 'en' }) {
+function RiddleWinnerInfo({ lang = 'fr-FR' }) {
     const game = useGameContext()
     const [realtime, realtimeLoading, realtimeError] = useDocumentData(doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion))
 

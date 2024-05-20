@@ -146,12 +146,12 @@ export async function endQuestion(gameId, roundId, questionId) {
 
 export const endQuestionTransaction = async (transaction, gameId, roundId, questionId) => {
     const gameDocRef = doc(GAMES_COLLECTION_REF, gameId)
-    transaction.update(gameDocRef, {
+    await transaction.update(gameDocRef, {
         status: 'question_end'
     })
 
     const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    transaction.update(realtimeDocRef, {
+    await transaction.update(realtimeDocRef, {
         dateEnd: serverTimestamp()
     })
 

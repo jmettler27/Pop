@@ -240,6 +240,7 @@ const switchRoundQuestionTransaction = async (
         }
     }
     else {
+        console.log("HERE")
         await updateTimerTransaction(transaction, gameId, { status: 'resetted', managedBy, duration: defaultThinkingTime })
 
     }
@@ -342,7 +343,6 @@ const handleRoundQuestionEndTransaction = async (
         endRoundTransaction(transaction, gameId, roundId) : /* End of round */
         switchRoundNextQuestionTransaction(transaction, gameId, roundId) /* Prepare the next question */
     )
-    await updateTimerStateTransaction(transaction, gameId, 'resetted')
 }
 
 /**
@@ -506,8 +506,6 @@ const endRoundTransaction = async (
     }
 
     /* =================================== WRITES =================================== */
-    await updateTimerStateTransaction(transaction, gameId, 'resetted')
-
     transaction.update(roundScoresRef, {
         roundSortedTeams,
         gameSortedTeams,
@@ -548,6 +546,8 @@ const endRoundTransaction = async (
     await updateGameStatusTransaction(transaction, gameId, 'round_end')
 
     await addSoundToQueueTransaction(transaction, gameId, 'level-passed')
+
+    await updateTimerStateTransaction(transaction, gameId, 'resetted')
 }
 
 

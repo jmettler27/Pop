@@ -64,7 +64,7 @@ export function EditQuestionCard({ roundId, questionId, questionOrder }) {
     );
 }
 
-function EditQuestionCardFooter({ realtimeData, lang = 'en' }) {
+function EditQuestionCardFooter({ realtimeData, lang = 'fr-FR' }) {
     const { id: gameId } = useParams()
 
     const organizerRef = doc(GAMES_COLLECTION_REF, gameId, 'organizers', realtimeData.managedBy)
@@ -89,7 +89,7 @@ function EditQuestionCardFooter({ realtimeData, lang = 'en' }) {
 
 
 
-function RemoveQuestionFromRoundButton({ roundId, questionId, lang = 'en' }) {
+function RemoveQuestionFromRoundButton({ roundId, questionId, lang = 'fr-FR' }) {
     const { id: gameId } = useParams()
 
     const [dialogOpen, setDialogOpen] = useState(false)

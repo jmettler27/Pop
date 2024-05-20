@@ -1,6 +1,7 @@
 import { getRandomElement } from "../arrays";
 import { BLINDTEST_THINKING_TIME } from "./blindtest";
 import { EMOJI_THINKING_TIME } from "./emoji";
+import { ENUM_MIN_THINKING_SECONDS } from "./enum";
 import { IMAGE_THINKING_TIME } from "./image";
 import { MATCHING_THINKING_TIME } from "./matching";
 import { MCQ_THINKING_TIME } from "./mcq";
@@ -18,7 +19,7 @@ export const DEFAULT_THINKING_TIME_SECONDS = {
     'matching': MATCHING_THINKING_TIME,
     'odd_one_out': OOO_THINKING_TIME,
     'finale': 20,
-    'enum': 60
+    'enum': ENUM_MIN_THINKING_SECONDS
 }
 
 
@@ -77,13 +78,13 @@ export const QUESTION_ELEMENT_TO_EMOJI = {
     'author': "🧑",
 }
 
-export function questionElementToTitle(element, lang = 'en') {
+export function questionElementToTitle(element, lang = 'fr-FR') {
     return QUESTION_ELEMENT_TO_TITLE[lang][element]
 }
 export function questionElementToEmoji(element) {
     return QUESTION_ELEMENT_TO_EMOJI[element]
 }
 
-export function prependQuestionElementWithEmoji(element, lang = 'en') {
+export function prependQuestionElementWithEmoji(element, lang = 'fr-FR') {
     return questionElementToEmoji(element) + " " + questionElementToTitle(element, lang)
 }

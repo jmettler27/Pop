@@ -134,6 +134,7 @@ export const startGameTransaction = async (
     })
 
     await addSoundToQueueTransaction(transaction, gameId, 'ui-confirmation-alert-b2')
+
     await updateTimerStateTransaction(transaction, gameId, 'resetted')
 }
 

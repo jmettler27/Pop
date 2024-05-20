@@ -35,12 +35,12 @@ export default function RoundProgressTabPanel({ game }) {
     )
 }
 
-const RoundProgressHeader = memo(function RoundProgressHeader({ roundType, roundOrder, roundTitle, lang = 'en' }) {
+const RoundProgressHeader = memo(function RoundProgressHeader({ roundType, roundOrder, roundTitle, lang = 'fr-FR' }) {
     console.log("RENDERED RoundProgressHeader")
     return (
         <div className='flex flex-row items-center w-full justify-center space-x-1 mt-1'>
             <RoundTypeIcon roundType={roundType} fontSize={20} />
-            <span className='text-xl'><strong>{ROUND_HEADER_TEXT[lang]} {roundOrder + 1}</strong>: {roundTitle}</span>
+            <span className='text-xl'><strong>{ROUND_HEADER_TEXT[lang]} {roundOrder + 1}</strong>: <i>{roundTitle}</i></span>
         </div>
     )
 });

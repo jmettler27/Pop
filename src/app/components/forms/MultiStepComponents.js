@@ -15,7 +15,7 @@ import SubmitFormButton from './SubmitFormButton';
 // incomplete data. A snapshot of form state is used as initialValues after each
 // transition. Each page has an optional submit handler, and the top-level
 // submit is called when the final page is submitted.
-export const Wizard = ({ children, initialValues, onSubmit, isSubmitting }) => {
+export const Wizard = ({ children, initialValues, onSubmit, isSubmitting, lang = 'fr-FR' }) => {
     const [stepNumber, setStepNumber] = useState(0);
     const steps = React.Children.toArray(children);
     const [snapshot, setSnapshot] = useState(initialValues);
@@ -56,7 +56,7 @@ export const Wizard = ({ children, initialValues, onSubmit, isSubmitting }) => {
             {formik => (
                 <Form>
                     <p>
-                        Step {stepNumber + 1} of {totalSteps}
+                        {STEP_TEXT[lang]} {stepNumber + 1}/{totalSteps}
                     </p>
                     {step}
                     <div className='flex'>
@@ -75,10 +75,15 @@ export const Wizard = ({ children, initialValues, onSubmit, isSubmitting }) => {
     );
 };
 
+const STEP_TEXT = {
+    'en': 'Step',
+    'fr-FR': 'Étape',
+}
+
 export const WizardStep = ({ children }) => children;
 
 
-function PreviousStepButton({ onClick }) {
+function PreviousStepButton({ onClick, lang = 'fr-FR' }) {
     return (
         <Button
             // size='large'
@@ -87,12 +92,18 @@ function PreviousStepButton({ onClick }) {
             variant='outlined'
             startIcon={<ArrowBackIcon />}
         >
-            Previous step
+            {PREVIOUS_STEP_BUTTON_LABEL[lang]}
         </Button>
     )
 }
 
-function NextStepButton({ disabled }) {
+const PREVIOUS_STEP_BUTTON_LABEL = {
+    'en': 'Previous step',
+    'fr-FR': 'Étape précédente',
+}
+
+
+function NextStepButton({ disabled, lang = 'fr-FR' }) {
     return (
         <Button
             // size='large'
@@ -102,9 +113,14 @@ function NextStepButton({ disabled }) {
             variant='outlined'
             endIcon={<ArrowForwardIcon />}
         >
-            Next step
+            {NEXT_STEP_BUTTON_LABEL[lang]}
         </Button>
     )
+}
+
+const NEXT_STEP_BUTTON_LABEL = {
+    'en': 'Next step',
+    'fr-FR': 'Étape suivante',
 }
 
 // function SubmitFormButton({ disabled }) {

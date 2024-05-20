@@ -10,7 +10,7 @@ import { doc } from 'firebase/firestore'
 import { useDocumentData } from 'react-firebase-hooks/firestore'
 
 
-export default function ReadyPlayerController({ isLastQuestion, lang = 'en' }) {
+export default function ReadyPlayerController({ isLastQuestion, lang = 'fr-FR' }) {
     const { id: gameId } = useParams()
     const myRole = useRoleContext();
 
@@ -35,7 +35,7 @@ export default function ReadyPlayerController({ isLastQuestion, lang = 'en' }) {
     )
 }
 
-function ReadyPlayerHeader({ isLastQuestion, lang = 'en' }) {
+function ReadyPlayerHeader({ isLastQuestion, lang = 'fr-FR' }) {
     const game = useGameContext();
     const myRole = useRoleContext();
 
@@ -56,7 +56,7 @@ function ReadyPlayerHeader({ isLastQuestion, lang = 'en' }) {
     }
 }
 
-function ReadyPlayerHeaderSpectator({ lang = 'en' }) {
+function ReadyPlayerHeaderSpectator({ lang = 'fr-FR' }) {
     const { id: gameId } = useParams()
     const readyDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready')
     const [ready, readyLoading, readyError] = useDocumentData(readyDocRef)
@@ -119,7 +119,7 @@ import { useAsyncAction } from '@/lib/utils/async'
 import { setPlayerReady } from '@/app/(game)/lib/transitions'
 import { useUserContext } from '@/app/contexts'
 
-export function ReadyPlayerButton({ lang = 'en' }) {
+export function ReadyPlayerButton({ lang = 'fr-FR' }) {
     const { id: gameId } = useParams()
     const user = useUserContext()
 

@@ -128,7 +128,7 @@ function SearchQuestionDialog({ roundId, questionType, onDialogClose }) {
     )
 }
 
-function AddExistingQuestionToRoundDialog({ validationDialogOpen, setValidationDialogOpen, roundId, questionSelectionModel, setSelectedQuestionModel, onDialogClose, lang = 'en' }) {
+function AddExistingQuestionToRoundDialog({ validationDialogOpen, setValidationDialogOpen, roundId, questionSelectionModel, setSelectedQuestionModel, onDialogClose, lang = 'fr-FR' }) {
     const { id: gameId } = useParams()
     const { data: session } = useSession()
 

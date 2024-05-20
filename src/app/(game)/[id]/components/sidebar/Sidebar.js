@@ -11,8 +11,13 @@ import HomeIcon from '@mui/icons-material/Home';
 
 import SoundboardAudioPlayer from '@/app/(game)/[id]/components/soundboard/SoundboardAudioPlayer';
 import ProgressTabPanel from '@/app/(game)/[id]/components/sidebar/progress/ProgressTabPanel'
+import { useRoleContext } from '@/app/(game)/contexts';
 
-export default function Sidebar({ lang = 'en' }) {
+import OrganizerSpeedDial from '../speed-dial/OrganizerSpeedDial';
+
+export default function Sidebar({ lang = 'fr-FR' }) {
+    const myRole = useRoleContext()
+
     const [value, setValue] = useState(0);
 
     const handleChange = (event, newValue) => {
@@ -54,6 +59,9 @@ export default function Sidebar({ lang = 'en' }) {
             {/* <CustomTabPanel value={value} index={1}>
                 <p>Scoreboard</p>
             </CustomTabPanel> */}
+
+            {myRole === 'organizer' && <OrganizerSpeedDial />}
+
         </Box>
     );
 }

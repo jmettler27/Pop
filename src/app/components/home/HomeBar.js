@@ -18,10 +18,16 @@ import { useSession, signOut } from "next-auth/react"
 import { redirect, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-const pages = ['Games', 'Create a new game', 'Submit a question', 'About'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = {
+    'en': ['Games', 'Create a new game', 'Submit a question', 'About'],
+    'fr-FR': ['Parties', 'Créer une partie', 'Soumettre une question', 'À propos'],
+}
+const settings = {
+    'en': ['Profile', 'Account', 'Dashboard', 'Logout'],
+    'fr-FR': ['Profil', 'Compte', 'Tableau de bord', 'Déconnexion'],
+}
 
-export function HomeBar() {
+export function HomeBar({ lang = 'fr-FR' }) {
     const { data: session } = useSession()
     const { user } = session
 
@@ -103,7 +109,7 @@ export function HomeBar() {
                                 display: { xs: 'block', md: 'none' },
                             }}
                         >
-                            {pages.map((page) => (
+                            {pages[lang].map((page) => (
                                 <MenuItem key={page} onClick={handleCloseNavMenu}>
                                     <Typography textAlign="center">{page}</Typography>
                                 </MenuItem>
@@ -130,7 +136,7 @@ export function HomeBar() {
                         LOGO
                     </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        {pages.map((page) => (
+                        {pages[lang].map((page) => (
                             <Button
                                 key={page}
                                 onClick={handleCloseNavMenu}
@@ -163,7 +169,7 @@ export function HomeBar() {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            {settings.map((setting) => (
+                            {settings[lang].map((setting) => (
                                 <MenuItem key={setting} onClick={() => handleSelectSetting(setting)}>
                                     <Typography textAlign="center">{setting}</Typography>
                                 </MenuItem>

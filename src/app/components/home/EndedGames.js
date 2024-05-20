@@ -16,8 +16,9 @@ import { CardTitle, CardHeader, CardContent, Card } from '@/app/components/card'
 import EditGameButton from './EditGameButton';
 import LoadingScreen from '../LoadingScreen';
 import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from './GameAvatars';
+import { GameOrganizersCardContent, GamePlayersCardContent } from './GameCardContent';
 
-export default function EndedGames({ lang = 'en' }) {
+export default function EndedGames({ lang = 'fr-FR' }) {
     const [endedGamesCollection, loading, error] = useCollection(query(GAMES_COLLECTION_REF, where('dateEnd', '!=', null)))
     if (error) {
         return <p><strong>Error: {JSON.stringify(error)}</strong></p>
@@ -57,7 +58,7 @@ const ENDED_GAMES_CARD_TITLE = {
     'fr-FR': 'Parties terminées',
 }
 
-export function EndedGameCard({ game, lang = 'en' }) {
+export function EndedGameCard({ game, lang = 'fr-FR' }) {
     const { data: session } = useSession()
     const user = session.user
 
@@ -96,17 +97,11 @@ export function EndedGameCard({ game, lang = 'en' }) {
                 <CardTitle className='text-lg font-medium'>{gameTypeToEmoji(game.type)} {localeToEmoji(game.lang)} <i>{game.title}</i></CardTitle>
                 {isOrganizer && <EditGameButton gameId={game.id} />}
             </CardHeader>
-            <CardContent>
-                <Box className='flex flex-row items-center justify-between pb-2'>
-                    <Typography variant="subtitle1">Organizers</Typography>
-                    <GameOrganizersAvatarGroup gameId={game.id} />
-                </Box>
 
-                {/* Players */}
-                <Box className='flex flex-row items-center justify-between pb-2'>
-                    <Typography variant="subtitle1">Players</Typography>
-                    <GamePlayersAvatarGroup gameId={game.id} max={4} />
-                </Box>
+            <CardContent>
+                <GameOrganizersCardContent gameId={game.id} lang={lang} />
+
+                <GamePlayersCardContent gameId={game.id} lang={lang} />
 
                 <Divider className='my-2 bg-slate-600' />
 

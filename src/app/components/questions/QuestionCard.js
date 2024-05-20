@@ -42,7 +42,7 @@ export function QuestionCard({ question }) {
     );
 }
 
-export function QuestionCardTitle({ question, lang = 'en' }) {
+export function QuestionCardTitle({ question, lang = 'fr-FR' }) {
     switch (question.type) {
         case 'progressive_clues':
         case 'image':
@@ -61,7 +61,7 @@ export function QuestionCardTitle({ question, lang = 'en' }) {
 }
 
 
-function QuestionCardFooter({ question, lang = 'en' }) {
+function QuestionCardFooter({ question, lang = 'fr-FR' }) {
     const userRef = doc(USERS_COLLECTION_REF, question.createdBy)
     const [user, loading, error] = useDocumentDataOnce(userRef)
     if (error) {

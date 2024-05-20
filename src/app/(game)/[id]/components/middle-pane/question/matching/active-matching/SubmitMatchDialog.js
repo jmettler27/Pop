@@ -6,12 +6,15 @@ import { edgesToString } from '@/lib/utils/question/matching';
 import { submitMatch } from '@/app/(game)/lib/question/matching';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import CancelIcon from '@mui/icons-material/Cancel'
+
 import { matchIsComplete } from '../gridUtils';
 import { DIALOG_ACTION_CANCEL, DIALOG_ACTION_VALIDATE, DIALOG_TITLE } from '@/lib/utils/dialogs';
 
 import { useAsyncAction } from '@/lib/utils/async';
 
-export default function SubmitMatchDialog({ edges, setEdges, numCols, setNewEdgeSource, answer, lang = 'en' }) {
+export default function SubmitMatchDialog({ edges, setEdges, numCols, setNewEdgeSource, answer, lang = 'fr-FR' }) {
     const user = useUserContext()
     const game = useGameContext()
 
@@ -57,6 +60,7 @@ export default function SubmitMatchDialog({ edges, setEdges, numCols, setNewEdge
                 <Button
                     variant='contained'
                     color='primary'
+                    startIcon={<CheckCircleIcon />}
                     onClick={handleMatchValidate}
                     disabled={isSubmitting}
                 >
@@ -66,6 +70,7 @@ export default function SubmitMatchDialog({ edges, setEdges, numCols, setNewEdge
                 <Button
                     variant='outlined'
                     color='error'
+                    startIcon={<CancelIcon />}
                     onClick={handleMatchCancel}
                 >
                     {DIALOG_ACTION_CANCEL[lang]}

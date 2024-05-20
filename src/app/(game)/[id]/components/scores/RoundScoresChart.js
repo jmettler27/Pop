@@ -48,7 +48,7 @@ export const options = (lang) => {
 };
 
 
-export default function RoundScoresChart({ round, teams, roundScores, lang = 'en' }) {
+export default function RoundScoresChart({ round, teams, roundScores, lang = 'fr-FR' }) {
     const labels = ["", ...round.questions.map((_question, idx) => `Q${idx + 1}`)]
 
     const datasets = teams.map((team) => ({

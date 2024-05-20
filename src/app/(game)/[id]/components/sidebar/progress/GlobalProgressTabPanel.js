@@ -26,12 +26,10 @@ export default function GlobalProgressTabPanel({ game }) {
 }
 
 const GameRoundsProgressHeader = memo(function GameRoundsProgressHeader({ gameTitle }) {
-    console.log("RENDERED GameRoundsProgressHeader")
-    return <h1 className='text-xl font-bold mt-1'>{gameTitle}</h1>
+    return <h1 className='text-xl font-bold mt-1 italic'>{gameTitle}</h1>
 });
 
 const GameRoundsProgress = memo(function GameRoundsProgress({ gameId }) {
-    console.log("RENDERED GameRoundsProgress")
 
     const roundsRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds')
     const startedRoundsQuery = query(roundsRef, where('order', '!=', null), orderBy('order', 'asc'))
@@ -71,8 +69,7 @@ const GameRoundsProgress = memo(function GameRoundsProgress({ gameId }) {
     )
 })
 
-function RoundAccordion({ gameId, round, teams, hasEnded, isCurrent, lang = 'en' }) {
-    console.log(`RENDERED ROUND ACCORDION ${round.id}`)
+function RoundAccordion({ gameId, round, teams, hasEnded, isCurrent, lang = 'fr-FR' }) {
     const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', round.id, 'realtime', 'scores')
     const [roundScores, roundScoresLoading, roundScoresError] = useDocumentDataOnce(roundScoresRef)
 
@@ -125,7 +122,7 @@ function RoundAccordion({ gameId, round, teams, hasEnded, isCurrent, lang = 'en'
                     <Typography className={clsx(
                         (isCurrent && !hasEnded) && 'text-orange-300',
                     )}>
-                        <span className='font-bold'>{ROUND_HEADER_TEXT[lang]} {round.order + 1}</span>: {round.title}
+                        <span className='text-xl'><strong>{ROUND_HEADER_TEXT[lang]} {round.order + 1}</strong>: <i>{round.title}</i></span>
                     </Typography>
                 </div>
             </AccordionSummary>
@@ -137,11 +134,10 @@ function RoundAccordion({ gameId, round, teams, hasEnded, isCurrent, lang = 'en'
                             .slice(0, round.rewards.length)
                             .map((item, idx) => {
                                 const teamNames = teams.filter((team) => item.teams.includes(team.id)).map((team) => team.name)
-                                // Transform list of team names into a comma-separated string
                                 const teamNamesString = teamNames.slice(0, teamNames.length).join(', ')
                                 return (
-                                    <li key={idx} className={clsx(idx === 0 && 'font-bold', 'text-sm')}>
-                                        {rankingToEmoji(idx)} {teamNamesString} ({item.score} pts)
+                                    <li key={idx} className={clsx(idx === 0 && 'font-bold', 'text-lg')}>
+                                        {rankingToEmoji(idx)} {teamNamesString} ({item.score} pt{item.score > 1 && 's'})
                                     </li>
                                 )
                             })}

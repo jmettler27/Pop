@@ -113,7 +113,7 @@ function RiddleOrganizerQuestionController({ question }) {
  * @param {*} question 
  * @returns 
  */
-function NextClueButton({ question }) {
+function NextClueButton({ question, lang = 'fr-FR' }) {
     const game = useGameContext()
 
     const [handleClick, isLoadingNextClue] = useAsyncAction(async () => {
@@ -137,7 +137,12 @@ function NextClueButton({ question }) {
             disabled={isLastClue || isLoadingNextClue}
             startIcon={<ArrowDownwardIcon />}
         >
-            Next clue
+            {NEXT_CLUE[lang]}
         </Button>
     )
+}
+
+const NEXT_CLUE = {
+    'en': 'Next clue',
+    'fr-FR': 'Prochain indice',
 }

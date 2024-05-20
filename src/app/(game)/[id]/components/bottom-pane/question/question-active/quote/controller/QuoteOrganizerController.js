@@ -89,7 +89,7 @@ function QuoteOrganizerAnswerController({ buzzed, question }) {
     )
 }
 
-function ValidateAllQuoteElementsButton({ buzzed, revealed }) {
+function ValidateAllQuoteElementsButton({ buzzed, revealed, lang = 'fr-FR' }) {
     const game = useGameContext()
 
     const atLeastOneRevealed = atLeastOneElementRevealed(revealed)
@@ -106,14 +106,19 @@ function ValidateAllQuoteElementsButton({ buzzed, revealed }) {
             onClick={handleValidateAll}
             disabled={atLeastOneRevealed || buzzedIsEmpty || isValidating}
         >
-            Validate all
+            {VALIDATE_ALL_QUOTE_ELEMENTS[lang]}
         </Button>
 
     )
 }
 
+const VALIDATE_ALL_QUOTE_ELEMENTS = {
+    'en': "Validate all",
+    'fr-FR': "Tout valider"
+}
 
-function CancelQuoteElementButton({ buzzed }) {
+
+function CancelQuoteElementButton({ buzzed, lang = 'fr-FR' }) {
     const game = useGameContext()
 
     const buzzedIsEmpty = isEmpty(buzzed)
@@ -130,11 +135,16 @@ function CancelQuoteElementButton({ buzzed }) {
                 onClick={handleCancelQuote}
                 disabled={buzzedIsEmpty || isCanceling}
             >
-                Cancel
+                {CANCEL_QUOTE_ELEMENT[lang]}
             </Button>
         </>
 
     )
+}
+
+const CANCEL_QUOTE_ELEMENT = {
+    'en': "Cancel",
+    'fr-FR': "Invalider"
 }
 
 

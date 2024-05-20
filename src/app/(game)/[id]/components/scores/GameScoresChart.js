@@ -54,7 +54,7 @@ export const options = (lang) => {
 }
 
 
-export default function GameScoresChart({ currentRoundOrder, teams, lang = 'en' }) {
+export default function GameScoresChart({ currentRoundOrder, teams, lang = 'fr-FR' }) {
     const { id: gameId } = useParams()
 
     const roundsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds')

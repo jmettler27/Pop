@@ -73,9 +73,9 @@ export default function Page({ }) {
                 validationSchema={validationSchema}
             >
                 <Form>
-                    <SelectLanguage labels={GAME_LANGUAGE_SELECTOR_LABELS} lang='en' name='lang' validationSchema={validationSchema} />
+                    <SelectLanguage labels={GAME_LANGUAGE_SELECTOR_LABELS} lang='fr-FR' name='lang' validationSchema={validationSchema} />
 
-                    <SelectGameType lang='en' name='type' validationSchema={validationSchema} />
+                    <SelectGameType lang='fr-FR' name='type' validationSchema={validationSchema} />
 
                     <MyTextInput
                         label="Give a title to the game"

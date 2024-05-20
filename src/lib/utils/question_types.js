@@ -76,7 +76,7 @@ export const sortAscendingRoundScores = (roundType) => {
 
 
 /* TITLE */
-export function questionTypeToTitle(questionType, lang = 'en') {
+export function questionTypeToTitle(questionType, lang = 'fr-FR') {
     return QUESTION_TYPE_TO_TITLE[lang][questionType]
 }
 
@@ -85,7 +85,7 @@ export function questionTypeToEmoji(questionType) {
 }
 
 import { prependWithEmojiAndSpace } from '@/lib/utils/emojis';
-export function prependQuestionTypeWithEmoji(questionType, lang = 'en') {
+export function prependQuestionTypeWithEmoji(questionType, lang = 'fr-FR') {
     return prependWithEmojiAndSpace(questionTypeToEmoji(questionType), questionTypeToTitle(questionType, lang))
 }
 

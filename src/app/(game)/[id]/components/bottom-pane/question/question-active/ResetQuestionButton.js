@@ -11,7 +11,7 @@ import { useAsyncAction } from '@/lib/utils/async'
  * Reset the question
  * @returns 
  */
-export default function ResetQuestionButton({ }) {
+export default function ResetQuestionButton({ lang = 'fr-FR' }) {
     const game = useGameContext()
 
     const [handleResetQuestion, isResetting] = useAsyncAction(async () => {
@@ -29,7 +29,12 @@ export default function ResetQuestionButton({ }) {
             onClick={handleResetQuestion}
             disabled={isResetting}
         >
-            Reset question
+            {RESET_QUESTION_BUTTON_LABEL[lang]}
         </Button>
     )
+}
+
+const RESET_QUESTION_BUTTON_LABEL = {
+    'en': 'Reset question',
+    'fr-FR': 'Réinitialiser la question'
 }

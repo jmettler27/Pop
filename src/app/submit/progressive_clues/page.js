@@ -164,9 +164,9 @@ function GeneralInfoStep({ onSubmit, validationSchema }) {
             validationSchema={validationSchema}
         >
 
-            <SelectLanguage lang='en' name='lang' validationSchema={validationSchema} />
+            <SelectLanguage lang='fr-FR' name='lang' validationSchema={validationSchema} />
 
-            <SelectQuestionTopic lang='en' name='topic' validationSchema={validationSchema} />
+            <SelectQuestionTopic lang='fr-FR' name='topic' validationSchema={validationSchema} />
 
             <MyTextInput
                 label="What is the question?"

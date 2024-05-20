@@ -41,7 +41,7 @@ export default function FinaleThemeActiveMiddlePane({ theme, themeRealtime }) {
 }
 
 
-function SectionTitle({ section, themeRealtime, lang = 'en' }) {
+function SectionTitle({ section, themeRealtime, lang = 'fr-FR' }) {
     return <h1 className='text-4xl'><span className='font-bold'>{THEME_SECTION_TEXT[lang]} {themeRealtime.currentSectionIdx + 1}</span>{section.title && `: ${section.title}`}</h1>
 }
 

@@ -10,7 +10,7 @@ import { useAsyncAction } from '@/lib/utils/async'
  * End the question
  * @returns 
  */
-export default function EndQuestionButton() {
+export default function EndQuestionButton({ lang = 'fr-FR' }) {
     const game = useGameContext()
 
     const [handleEndQuestion, isEnding] = useAsyncAction(async () => {
@@ -25,7 +25,12 @@ export default function EndQuestionButton() {
             onClick={handleEndQuestion}
             disabled={isEnding}
         >
-            End question
+            {END_QUESTION_BUTTON_LABEL[lang]}
         </Button>
     )
+}
+
+const END_QUESTION_BUTTON_LABEL = {
+    'en': 'End question',
+    'fr-FR': 'Terminer la question'
 }

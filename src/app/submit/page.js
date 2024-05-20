@@ -30,7 +30,7 @@ import questionPic from '../../../public/mcq-correct.png'
 
 import { questionTypeToTitle } from '@/lib/utils/question_types';
 
-function QuestionTypeComponent({ questionType, lang = 'en' }) {
+function QuestionTypeComponent({ questionType, lang = 'fr-FR' }) {
     return (
         <div className="relative group overflow-hidden rounded-lg">
             <QuestionTypeIcon questionType={questionType} fontSize={40} />

@@ -23,7 +23,7 @@ import { SERVER_TIME_OFFSET_REF } from "@/lib/firebase/database"
 export default function TimerPane() {
     return (
         <div className='flex flex-col items-center'>
-            <TimerHeader lang='en' />
+            <TimerHeader lang='fr-FR' />
             <TimerController />
         </div>
     )
@@ -93,7 +93,7 @@ function TimerController({ }) {
         case 'organizer':
             return <OrganizerTimerController timer={timer} serverTimeOffset={serverTimeOffset} onTimerEnd={() => handleTimerEnd(timer)} />
         default:
-            return <span className='2xl:text-3xl'><Timer timer={timer} serverTimeOffset={serverTimeOffset} /></span>
+            return <span className='2xl:text-4xl'><Timer timer={timer} serverTimeOffset={serverTimeOffset} /></span>
     }
 }
 
@@ -143,7 +143,7 @@ function QuestionEndTimerHeader({ lang }) {
 
     const isRoundEnd = round.currentQuestionIdx === round.questions.length - 1
 
-    return <span className='2xl:text-3xl'>{isRoundEnd ? QUESTION_END_COUNTDOWN_ROUND_END_TEXT[lang] : QUESTION_END_COUNTDOWN_NEXT_QUESTION_TEXT[lang]}</span>
+    return <span className='2xl:text-2xl'>{isRoundEnd ? QUESTION_END_COUNTDOWN_ROUND_END_TEXT[lang] : QUESTION_END_COUNTDOWN_NEXT_QUESTION_TEXT[lang]}</span>
 }
 
 

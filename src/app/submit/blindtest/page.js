@@ -130,9 +130,9 @@ export function SubmitBlindtestQuestionForm({ userId, ...props }) {
             }}
         >
             <Form>
-                <SelectLanguage lang='en' name='lang' validationSchema={validationSchema} />
+                <SelectLanguage lang='fr-FR' name='lang' validationSchema={validationSchema} />
 
-                <SelectQuestionTopic lang='en' name='topic' validationSchema={validationSchema} />
+                <SelectQuestionTopic lang='fr-FR' name='topic' validationSchema={validationSchema} />
 
                 <MySelect
                     label="What kind of blindtest is this?"

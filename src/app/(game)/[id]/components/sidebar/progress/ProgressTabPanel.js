@@ -32,7 +32,7 @@ export default function ProgressTabPanel({ }) {
     return <ProgressTabPanelMainContent game={game} />
 }
 
-function ProgressTabPanelMainContent({ game, lang = 'en' }) {
+function ProgressTabPanelMainContent({ game, lang = 'fr-FR' }) {
     const [value, setValue] = useState(0)
 
     useEffect(() => {

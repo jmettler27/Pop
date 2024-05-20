@@ -15,7 +15,7 @@ export const QUOTE_ELEMENTS = ['source', 'author', 'quote']
 export const QUOTE_DEFAULT_REWARDS_PER_ELEMENT = 1
 export const QUOTE_DEFAULT_MAX_TRIES = 2
 
-export const QUOTE_THINKING_TIME = 15
+export const QUOTE_THINKING_TIME = 20
 
 export function replaceAllNonSpace(str, c) {
     return str.replace(/[^ ]/g, c);
@@ -56,14 +56,14 @@ export const QUOTE_ELEMENT_TO_EMOJI = {
     'quote': "💬"
 }
 
-export function quoteElementToTitle(element, lang = 'en') {
+export function quoteElementToTitle(element, lang = 'fr-FR') {
     return QUOTE_ELEMENT_TO_TITLE[lang][element]
 }
 export function quoteElementToEmoji(element) {
     return QUOTE_ELEMENT_TO_EMOJI[element]
 }
 
-export function prependQuoteElementWithEmoji(element, lang = 'en') {
+export function prependQuoteElementWithEmoji(element, lang = 'fr-FR') {
     return quoteElementToEmoji(element) + " " + quoteElementToTitle(element, lang)
 }
 

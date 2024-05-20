@@ -7,7 +7,7 @@ import { collection } from 'firebase/firestore'
 import { useCollection } from 'react-firebase-hooks/firestore'
 
 
-export default function GameChooserOrder({ gameStates, lang = 'en' }) {
+export default function GameChooserOrder({ gameStates, lang = 'fr-FR' }) {
     const game = useGameContext()
 
     const [teams, teamsLoading, teamsError] = useCollection(collection(GAMES_COLLECTION_REF, game.id, 'teams'))

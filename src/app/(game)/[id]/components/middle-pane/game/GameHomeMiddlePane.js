@@ -63,11 +63,17 @@ function GameHomeRounds() {
 
     const endedRounds = rounds.filter(round => round.dateEnd !== null).map(round => round.id)
 
-    const nonFinaleRounds = rounds.filter(round => round.type !== 'finale').sort((a, b) => {
-        if (a.order === null) return -1;
-        if (b.order === null) return 1;
-        return a.order - b.order;
-    });
+    const nonFinaleRounds = rounds.filter(round => round.type !== 'finale')
+    const activeNonFinaleRounds = nonFinaleRounds.filter(round => round.order === null).sort((a, b) => {
+        if (a.title < b.title) return -1
+        if (a.title > b.title) return 1
+        return 0
+    })
+    console.log(activeNonFinaleRounds)
+
+    const endedNonFinaleRounds = nonFinaleRounds.filter(round => round.order !== null).sort((a, b) => a.order - b.order)
+
+
     const finaleRound = rounds.find(round => round.type === 'finale')
 
     const chooserTeamId = gameStates.chooserOrder[gameStates.chooserIdx]
@@ -92,17 +98,35 @@ function GameHomeRounds() {
                 className='rounded-lg w-1/3'
                 sx={{ bgcolor: 'background.paper' }}
             >
-                {nonFinaleRounds.map((round, idx) => (
+                {activeNonFinaleRounds.map((round, idx) => (
                     <div key={round.id}>
                         <GameHomeRoundItem
                             round={round}
                             isDisabled={isHandling || roundIsDisabled(round.id)}
                             onSelectRound={() => handleSelect(round.id)}
                         />
-                        {(idx < nonFinaleRounds.length - 1) && <Divider variant='inset' component='li' />}
+                        {(idx < activeNonFinaleRounds.length - 1) && <Divider variant='inset' component='li' />}
                     </div>
                 ))}
             </List>
+
+            {endedNonFinaleRounds.length > 0 && (
+                <List
+                    className='rounded-lg w-1/3'
+                    sx={{ bgcolor: 'background.paper' }}
+                >
+                    {endedNonFinaleRounds.map((round, idx) => (
+                        <div key={round.id}>
+                            <GameHomeRoundItem
+                                round={round}
+                                isDisabled={isHandling || roundIsDisabled(round.id)}
+                                onSelectRound={() => handleSelect(round.id)}
+                            />
+                            {(idx < endedNonFinaleRounds.length - 1) && <Divider variant='inset' component='li' />}
+                        </div>
+                    ))}
+                </List>
+            )}
 
             <List
                 className='rounded-full w-1/8'
