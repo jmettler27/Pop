@@ -1,7 +1,7 @@
 "use server";
 
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import {
     getDoc,
     doc,
@@ -28,7 +28,7 @@ export const updateGameStatusTransaction = async (transaction, gameId, status) =
 // Get document data
 export async function getDocData(...docPath) {
     try {
-        const docRef = doc(db, ...docPath);
+        const docRef = doc(firestore, ...docPath);
         const docSnapshot = await getDoc(docRef);
         return docSnapshot.data();
     } catch (error) {

@@ -1,7 +1,7 @@
 "use server";
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import {
     doc,
     arrayUnion,
@@ -46,7 +46,7 @@ export async function submitMatch(gameId, roundId, questionId, userId, edges) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             submitMatchTransaction(transaction, gameId, roundId, questionId, userId, edges)
         )
         console.log("Matching submission handled successfully.");
@@ -241,7 +241,7 @@ export async function handleMatchingCountdownEnd(gameId, roundId, questionId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             handleMatchingCountdownEndTransaction(transaction, gameId, roundId, questionId)
         )
         console.log("Matching countdown end handled successfully.");
@@ -300,7 +300,7 @@ export const handleMatchingCountdownEndTransaction = async (transaction, gameId,
 
 /* ==================================================================================================== */
 export async function resetMatchingQuestion(gameId, roundId, questionId) {
-    const batch = writeBatch(db)
+    const batch = writeBatch(firestore)
 
     const statesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
     batch.update(statesDocRef, {

@@ -3,7 +3,7 @@
 import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { updateTimerTransaction } from '@/app/(game)/lib/timer';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
-import { db } from '@/lib/firebase/firebase';
+import { firestore } from '@/lib/firebase/firebase';
 import { GAMES_COLLECTION_REF, USERS_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
 import {
@@ -24,7 +24,7 @@ import {
 /* ==================================================================================================== */
 export async function createGame(title, type, lang, maxPlayers, organizerName, organizerId) {
     try {
-        const gameId = await runTransaction(db, transaction =>
+        const gameId = await runTransaction(firestore, transaction =>
             createGameTransaction(transaction, title, type, lang, maxPlayers, organizerName, organizerId)
         )
         console.log(`Game ${gameId} created successfully.`)

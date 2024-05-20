@@ -1,7 +1,7 @@
 "use server";
 
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import {
     collection,
     doc,
@@ -48,7 +48,7 @@ export async function endTimer(gameId) {
 
 // WRITE
 export async function startTimer(gameId) {
-    const batch = writeBatch(db)
+    const batch = writeBatch(firestore)
 
     const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue')
     const newSoundDocument = doc(queueCollectionRef);

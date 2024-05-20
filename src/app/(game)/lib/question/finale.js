@@ -1,7 +1,7 @@
 "use server";
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import {
     collection,
     query,
@@ -63,7 +63,7 @@ export async function startFinaleTheme(gameId, roundId, nextThemeId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             startFinaleThemeTransaction(transaction, gameId, roundId, nextThemeId)
         );
         console.log("Finale theme successfully started.");
@@ -156,7 +156,7 @@ export async function handleFinalePlayerAnswer(gameId, roundId, themeId, invalid
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             handleFinalePlayerAnswerTransaction(transaction, gameId, roundId, themeId, invalidate, organizerId)
         );
         console.log("Finale player answer successfully handled.");
@@ -251,7 +251,7 @@ export async function handleFinaleQuestionEndOrganizerContinue(gameId, roundId, 
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             handleFinaleQuestionEndOrganizerContinueTransaction(transaction, gameId, roundId, themeId, sectionId, isLastQuestionInSection, isLastSectionInTheme, organizerId)
         );
         console.log("Finale question_end successfully handled.");
@@ -332,7 +332,7 @@ export async function switchFinaleThemeNextSection(gameId, roundId, themeId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             switchFinaleThemeNextSectionTransaction(transaction, gameId, roundId, themeId)
         );
         console.log("Finale theme next section successfully switched.");
@@ -389,7 +389,7 @@ export async function endFinaleTheme(gameId, roundId, themeId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             endFinaleThemeTransaction(gameId, roundId, themeId, transaction)
         );
         console.log("Finale theme successfully ended.");

@@ -1,7 +1,7 @@
 "use server";
 
 import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase/firebase";
+import { firestore } from "@/lib/firebase/firebase";
 import { updateQuestionImage, uploadQuestionImage } from '@/lib/firebase/storage';
 import { addNewQuestion } from "@/lib/firebase/firestore";
 

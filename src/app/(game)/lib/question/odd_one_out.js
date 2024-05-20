@@ -1,7 +1,7 @@
 "use server";
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import {
     doc,
     arrayUnion,
@@ -39,7 +39,7 @@ export async function handleProposalClick(gameId, roundId, questionId, userId, i
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             handleProposalClickTransaction(transaction, gameId, roundId, questionId, userId, idx)
         )
         console.log("Proposal click handled successfully.");
@@ -163,7 +163,7 @@ export async function handleOOOCountdownEnd(gameId, roundId, questionId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             handleOOOCountdownEndTransaction(transaction, gameId, roundId, questionId)
         )
         console.log("Odd one out countdown end handled successfully.");
@@ -227,7 +227,7 @@ export const handleOOOCountdownEndTransaction = async (
 /* ==================================================================================================== */
 // BATCHED WRITE
 export async function resetOddOneOutQuestion(gameId, roundId, questionId) {
-    const batch = writeBatch(db)
+    const batch = writeBatch(firestore)
 
     // updateGameStates(gameId, {
     //     chooserIdx: 0,

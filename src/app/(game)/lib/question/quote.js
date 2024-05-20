@@ -1,7 +1,7 @@
 "use server";
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import {
     collection,
     doc,
@@ -47,7 +47,7 @@ export async function revealQuoteElement(gameId, roundId, questionId, quoteElem,
 
     try {
         // transaction
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             revealQuoteElementTransaction(transaction, gameId, roundId, questionId, quoteElem, quotePartIdx, wholeTeam)
         );
     } catch (error) {
@@ -161,7 +161,7 @@ export async function validateAllQuoteElements(gameId, roundId, questionId, play
     }
     try {
         // transaction
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             validateAllQuoteElementsTransaction(transaction, gameId, roundId, questionId, playerId)
         );
     } catch (error) {
@@ -266,7 +266,7 @@ export async function cancelQuotePlayer(gameId, roundId, questionId, playerId, w
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             cancelQuotePlayerTransaction(transaction, gameId, roundId, questionId, playerId, wholeTeam)
         );
 
@@ -316,7 +316,7 @@ export async function handleQuoteCountdownEnd(gameId, roundId, questionId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             handleQuoteCountdownEndTransaction(transaction, gameId, roundId, questionId)
         )
         console.log("Quote countdown end handled successfully.");

@@ -28,7 +28,7 @@ export default function ReadyPlayerController({ isLastQuestion, lang = 'fr-FR' }
     return (
         timer.authorized && (
             <div className='flex flex-col items-center justify-center space-y-5'>
-                <ReadyPlayerHeader isLastQuestion={isLastQuestion} />
+                {(myRole === 'player' || myRole === 'spectator') && <ReadyPlayerHeader isLastQuestion={isLastQuestion} />}
                 {myRole === 'player' && <ReadyPlayerButton lang={lang} />}
             </div>
         )
@@ -39,26 +39,7 @@ function ReadyPlayerHeader({ isLastQuestion, lang = 'fr-FR' }) {
     const game = useGameContext();
     const myRole = useRoleContext();
 
-    switch (myRole) {
-        case 'organizer':
-            return <></>
-        case 'player':
-            switch (game.status) {
-                case 'game_start':
-                    return <span className='2xl:text-4xl'>{READY_PLAYER_HEADER_START[lang]} <strong>{READY_PLAYER_HEADER_GAME_START[lang]}</strong>? 🥸</span>
-                case 'round_start':
-                    return <span className='2xl:text-4xl'>{READY_PLAYER_HEADER_START[lang]} <strong>{READY_PLAYER_HEADER_ROUND_START[lang]}</strong>? 🥸</span>
-                case 'question_end':
-                    return <span className='2xl:text-4xl'>{READY_PLAYER_HEADER_START[lang]} <strong>{isLastQuestion ? READY_PLAYER_HEADER_QUESTION_END_LAST[lang] : READY_PLAYER_HEADER_QUESTION_END[lang]}</strong>? 🥸</span>
-            }
-        default:
-            return <ReadyPlayerHeaderSpectator lang={lang} />
-    }
-}
-
-function ReadyPlayerHeaderSpectator({ lang = 'fr-FR' }) {
-    const { id: gameId } = useParams()
-    const readyDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready')
+    const readyDocRef = doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'ready')
     const [ready, readyLoading, readyError] = useDocumentData(readyDocRef)
     if (readyError) {
         return <p><strong>Error: {JSON.stringify(readyError)}</strong></p>
@@ -73,10 +54,23 @@ function ReadyPlayerHeaderSpectator({ lang = 'fr-FR' }) {
     const { numReady, numPlayers } = ready
 
     if (numReady === numPlayers) {
-        return <span className='2xl:text-4xl font-bold'>Letzgo! 🚀</span>
+        return <span className='2xl:text-4xl'>Letzgo! 🚀</span>
     }
-    return <span className='2xl:text-4xl'>{WAITING_FOR_PLAYERS_TEXT[lang]} ({numReady}/{numPlayers})</span>
 
+    if (myRole === 'player') {
+        switch (game.status) {
+            case 'game_start':
+                return <span className='2xl:text-4xl'>{READY_PLAYER_HEADER_START[lang]} <strong>{READY_PLAYER_HEADER_GAME_START[lang]}</strong>? 🥸</span>
+            case 'round_start':
+                return <span className='2xl:text-4xl'>{READY_PLAYER_HEADER_START[lang]} <strong>{READY_PLAYER_HEADER_ROUND_START[lang]}</strong>? 🥸</span>
+            case 'question_end':
+                return <span className='2xl:text-4xl'>{READY_PLAYER_HEADER_START[lang]} <strong>{isLastQuestion ? READY_PLAYER_HEADER_QUESTION_END_LAST[lang] : READY_PLAYER_HEADER_QUESTION_END[lang]}</strong>? 🥸</span>
+        }
+    }
+
+    if (myRole === 'spectator') {
+        return <span className='2xl:text-4xl'>{WAITING_FOR_PLAYERS_TEXT[lang]} ({numReady}/{numPlayers})</span>
+    }
 }
 
 

@@ -6,7 +6,7 @@ import { RoundTypeIcon } from '@/lib/utils/question_types'
 import RoundStartBody from '@/app/(game)/[id]/components/middle-pane/round/round-start/RoundStartBody'
 import RoundEndBody from '@/app/(game)/[id]/components/middle-pane/round/round-end/RoundEndBody'
 
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import { doc } from 'firebase/firestore'
 import { useDocument } from 'react-firebase-hooks/firestore'
 import { ROUND_HEADER_TEXT } from '@/lib/utils/round'

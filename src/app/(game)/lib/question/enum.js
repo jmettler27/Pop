@@ -1,7 +1,7 @@
 "use server";
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import {
     collection,
     query,
@@ -37,7 +37,7 @@ export async function updateEnumBets(gameId, roundId, questionId, fieldsToUpdate
 /* ============================================================================================================ */
 // BATCHED WRITE
 export async function addPlayerBet(gameId, roundId, questionId, playerId, teamId, bet) {
-    const batch = writeBatch(db)
+    const batch = writeBatch(firestore)
 
     const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue')
     const newSoundDocument = doc(queueCollectionRef);
@@ -93,7 +93,7 @@ export async function endEnumReflection(gameId, roundId, questionId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             endEnumReflectionTransaction(transaction, gameId, roundId, questionId)
         );
         console.log(`Question ${questionId} ended successfully.`)
@@ -170,7 +170,7 @@ export async function handleEnumAnswerItemClick(gameId, roundId, questionId, ite
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             handleEnumAnswerItemClickTransaction(transaction, gameId, roundId, questionId, itemIdx)
         );
         console.log(`Enum question ${questionId}: Item ${itemIdx} click successfully handled.`)
@@ -212,7 +212,7 @@ export async function incrementChallengerNumCorrect(gameId, roundId, questionId,
     if (!organizerId) {
         throw new Error("No organizer ID has been provided!");
     }
-    const batch = writeBatch(db)
+    const batch = writeBatch(firestore)
 
     const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue')
     const newSoundDocument = doc(queueCollectionRef);
@@ -247,7 +247,7 @@ export async function endEnumQuestion(gameId, roundId, questionId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             endEnumQuestionTransaction(transaction, gameId, roundId, questionId)
         );
         console.log(`Question ${questionId} ended successfully.`)
@@ -363,7 +363,7 @@ export const endEnumQuestionTransaction = async (
 /* ============================================================================================================ */
 // BATCHED WRITE
 export async function resetEnumQuestion(gameId, roundId, questionId) {
-    const batch = writeBatch(db)
+    const batch = writeBatch(firestore)
 
     const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
     batch.set(playersDocRef, {

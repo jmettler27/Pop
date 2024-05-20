@@ -3,7 +3,7 @@
 import { MCQ_CHOICES, MCQ_OPTIONS } from '@/lib/utils/question/mcq';
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import {
     collection,
     query,
@@ -70,7 +70,7 @@ export async function handleSubmitChoicePlayer(gameId, roundId, questionId, play
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             handleSubmitChoicePlayerTransaction(transaction, gameId, roundId, questionId, playerId, teamId, choiceIdx)
         )
         console.log("Option submitted successfully!")
@@ -160,7 +160,7 @@ export async function handleHideAnswer(gameId, roundId, questionId, playerId, te
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             handleHideAnswerTransaction(transaction, gameId, roundId, questionId, playerId, teamId, correct)
         )
         console.log("Option submitted successfully!")
@@ -242,7 +242,7 @@ export async function handleMCQCountdownEnd(gameId, roundId, questionId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             handleMCQCountdownEndTransaction(transaction, gameId, roundId, questionId)
         )
         console.log("MCQ countdown ended successfully.")
@@ -305,7 +305,7 @@ export const handleMCQCountdownEndTransaction = async (
 
 /* ====================================================================================================== */
 export async function resetMCQ(gameId, roundId, questionId) {
-    const batch = writeBatch(db)
+    const batch = writeBatch(firestore)
 
     // updateQuestionWinner(gameId, roundId, questionId, null)
     const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)

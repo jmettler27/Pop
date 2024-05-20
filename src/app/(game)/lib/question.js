@@ -1,7 +1,7 @@
 "use server";
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import { doc, runTransaction, serverTimestamp, updateDoc } from 'firebase/firestore'
 
 import { getDocData, getDocDataTransaction } from './utils';
@@ -64,7 +64,7 @@ export async function resetQuestion(gameId, roundId, questionId, questionType = 
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             resetQuestionTransaction(transaction, gameId, roundId, questionId, questionType, alone)
         )
         console.log("Question resetted successfully.");
@@ -111,6 +111,12 @@ export const resetQuestionTransaction = async (
             break
     }
 
+    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    await transaction.update(realtimeDocRef, {
+        dateStart: null,
+        dateEnd: null,
+    })
+
     if (alone) {
         await updateTimerTransaction(transaction, gameId, {
             status: 'resetted',
@@ -134,7 +140,7 @@ export async function endQuestion(gameId, roundId, questionId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             endQuestionTransaction(transaction, gameId, roundId, questionId)
         )
         console.log("Question ended successfully.");
@@ -176,7 +182,7 @@ export async function handleQuestionActiveCountdownEnd(gameId, roundId, question
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             handleQuestionActiveCountdownEndTransaction(transaction, gameId, roundId, questionId, questionType)
         )
         console.log("Question active countdown ended successfully.");

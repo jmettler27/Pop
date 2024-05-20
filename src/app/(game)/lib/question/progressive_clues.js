@@ -1,7 +1,7 @@
 "use server";
 
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import {
     doc,
     increment,
@@ -26,7 +26,7 @@ export async function handleNextClueClick(gameId, roundId, questionId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             handleNextClueClickTransaction(transaction, gameId, roundId, questionId)
         )
         console.log("Next clue click handled successfully.");

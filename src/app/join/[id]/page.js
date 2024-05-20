@@ -12,7 +12,7 @@ import { Wizard, WizardStep } from '@/app/components/forms/MultiStepComponents';
 import LoadingScreen from '@/app/components/LoadingScreen';
 import GameErrorScreen from '@/app/(game)/[id]/components/GameErrorScreen';
 
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
 import { addDoc, collection, doc, query, setDoc, where, serverTimestamp, runTransaction } from 'firebase/firestore'
 import { useCollection, useCollectionOnce, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
@@ -58,7 +58,7 @@ export default function Page({ params, lang = 'fr-FR' }) {
             const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
             let teamId = values.teamId
 
-            await runTransaction(db, async (transaction) => {
+            await runTransaction(firestore, async (transaction) => {
                 if (!values.playInTeams) {
                     /* Single player */
                     const teamDocRef = doc(teamsCollectionRef);

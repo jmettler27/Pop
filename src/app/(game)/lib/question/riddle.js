@@ -1,7 +1,7 @@
 "use server";
 
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import {
     doc,
     updateDoc,
@@ -31,7 +31,7 @@ export async function handleRiddleBuzzerHeadChanged(gameId, playerId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             handleRiddleBuzzerHeadChangedTransaction(transaction, gameId, playerId)
         );
     } catch (error) {
@@ -73,7 +73,7 @@ export async function handleRiddleValidateAnswerClick(gameId, roundId, questionI
 
     try {
         // transaction
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             handleRiddleValidateAnswerClickTransaction(transaction, gameId, roundId, questionId, playerId, wholeTeam)
         );
     } catch (error) {
@@ -163,7 +163,7 @@ export async function handleRiddleInvalidateAnswerClick(gameId, roundId, questio
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             handleRiddleInvalidateAnswerClickTransaction(transaction, gameId, roundId, questionId, playerId, questionType)
         );
 
@@ -246,7 +246,7 @@ export async function addBuzzedPlayer(gameId, roundId, questionId, playerId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             addBuzzedPlayerTransaction(transaction, gameId, roundId, questionId, playerId)
         );
         console.log(`Player ${playerId} has buzzed successfully.`)
@@ -287,7 +287,7 @@ export async function removeBuzzedPlayer(gameId, roundId, questionId, playerId, 
     }
 
     try {
-        await runTransaction(db, async transaction =>
+        await runTransaction(firestore, async transaction =>
             await removeBuzzedPlayerTransaction(transaction, gameId, roundId, questionId, playerId, questionType)
         );
     } catch (error) {
@@ -337,7 +337,7 @@ export async function handleRiddleCountdownEnd(gameId, roundId, questionId, ques
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             handleRiddleCountdownEndTransaction(transaction, gameId, roundId, questionId, questionType)
         );
     }
@@ -368,7 +368,7 @@ export const handleRiddleCountdownEndTransaction = async (
 /* ==================================================================================================== */
 // BATCHED WRITE
 export async function resetRiddleQuestion(gameId, roundId, questionId) {
-    const batch = writeBatch(db)
+    const batch = writeBatch(firestore)
     const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
     batch.set(playersDocRef, {
         buzzed: [],
@@ -413,7 +413,7 @@ export async function clearBuzzer(gameId, roundId, questionId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             clearBuzzerTransaction(transaction, gameId, roundId, questionId)
         );
     }

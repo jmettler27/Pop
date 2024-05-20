@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import {
     collection,
     query,
@@ -31,7 +31,7 @@ export async function setPlayerReady(gameId, playerId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             setPlayerReadyTransaction(transaction, gameId, playerId)
         )
     } catch (error) {
@@ -79,7 +79,7 @@ export async function startGame(gameId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             startGameTransaction(transaction, gameId)
         );
         console.log("Succesfully switched to game_home.");
@@ -154,7 +154,7 @@ export async function roundEndToGameHome(gameId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             roundEndToGameHomeTransaction(transaction, gameId)
         );
         console.log("Succesfully switched to game_home.");

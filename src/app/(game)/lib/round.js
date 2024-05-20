@@ -14,7 +14,7 @@ import { resetQuestion } from '@/app/(game)/lib/question';
 import { getInitTeamScores } from '@/app/(game)/lib/scores';
 import { getDocData } from '@/app/(game)/lib/utils';
 import { resetFinaleRound } from '@/app/(game)/lib/question/finale';
-import { db } from '@/lib/firebase/firebase';
+import { firestore } from '@/lib/firebase/firebase';
 
 // READ
 export async function getRoundData(gameId, roundId) {
@@ -41,7 +41,7 @@ export async function resetAllRounds(gameId) {
         throw new Error("No game ID has been provided!");
     }
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             resetAllRoundsTransaction(transaction, gameId)
         )
         console.log("All rounds resetted successfully.");
@@ -89,7 +89,7 @@ export async function resetRound(gameId, roundId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             resetRoundTransaction(transaction, gameId, roundId)
         )
         console.log(`Round ${roundId} resetted successfully.`);

@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import {
     collection,
     query,
@@ -48,7 +48,7 @@ export async function initGameScores(gameId) {
         throw new Error("No game ID has been provided!");
     }
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             initGameScoresTransaction(transaction, gameId)
         )
     }
@@ -127,7 +127,7 @@ async function addTeamRoundQuestionScore(gameId, roundId, questionId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             addTeamRoundQuestionScoreTransaction(transaction, gameId, roundId, questionId)
         );
     } catch (error) {

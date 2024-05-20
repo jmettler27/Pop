@@ -2,7 +2,7 @@
 "use server";
 
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import {
     collection,
     query,
@@ -49,7 +49,7 @@ export async function updateAllPlayersStatuses(gameId, status) {
     const q = query(playersCollectionRef)
     const querySnapshot = await getDocs(q)
 
-    const batch = writeBatch(db)
+    const batch = writeBatch(firestore)
     for (const playerDoc of querySnapshot.docs) {
         batch.update(playerDoc.ref, { status })
     }
@@ -61,7 +61,7 @@ export async function updateTeamStatus(gameId, teamId, status) {
     const q = query(playersCollectionRef, where('teamId', '==', teamId))
     const querySnapshot = await getDocs(q)
 
-    const batch = writeBatch(db)
+    const batch = writeBatch(firestore)
     for (const playerDoc of querySnapshot.docs) {
         batch.update(playerDoc.ref, { status })
     }

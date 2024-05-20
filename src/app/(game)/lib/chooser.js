@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import { collection, doc, getDocs, query, runTransaction } from 'firebase/firestore'
 
 import { updateGameStates } from '@/app/(game)/lib/game';
@@ -15,7 +15,7 @@ export async function initGameChooser(gameId) {
         throw new Error("No game ID has been provided!");
     }
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             resetGameChooserTransaction(transaction, gameId)
         )
     }
@@ -51,7 +51,7 @@ export async function switchNextChooser(gameId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             switchNextChooserTransaction(transaction, gameId)
         )
     } catch (error) {

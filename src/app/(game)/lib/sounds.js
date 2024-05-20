@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
 import {
     collection,
@@ -38,7 +38,7 @@ export async function clearSounds(gameId) {
     const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue')
     const querySnapshot = await getDocs(query(queueCollectionRef))
 
-    const batch = writeBatch(db)
+    const batch = writeBatch(firestore)
     for (const doc of querySnapshot.docs) {
         // await deleteDoc(doc.ref)
         batch.delete(doc.ref)

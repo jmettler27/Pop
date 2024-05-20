@@ -12,11 +12,11 @@ import {
     where,
     addDoc,
 } from "firebase/firestore";
-import { db } from "./firebase";
+import { firestore } from "./firebase";
 
-export const USERS_COLLECTION_REF = collection(db, 'users')
-export const QUESTIONS_COLLECTION_REF = collection(db, 'questions')
-export const GAMES_COLLECTION_REF = collection(db, 'games')
+export const USERS_COLLECTION_REF = collection(firestore, 'users')
+export const QUESTIONS_COLLECTION_REF = collection(firestore, 'questions')
+export const GAMES_COLLECTION_REF = collection(firestore, 'games')
 
 
 function applyQuestionQueryFilters(q, { lang, topic, type, keyword, sort, approved = true }) {

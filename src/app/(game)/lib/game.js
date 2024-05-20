@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore'
 import {
     collection,
@@ -64,7 +64,7 @@ export async function resetGame(gameId) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             resetGameTransaction(transaction, gameId)
         )
         console.log(`Game ${gameId} reset successfully.`);
@@ -157,7 +157,7 @@ export async function switchAuthorizePlayers(gameId, authorized = null) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             switchAuthorizePlayersTransaction(transaction, gameId, authorized)
         )
     }
@@ -189,7 +189,7 @@ export const switchAuthorizePlayersTransaction = async (
 export async function updateQuestion(questionId) {
     // const metadataFieldNames = ['type', 'topic', 'lang', 'createdAt', 'createdBy', 'approved']
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             updateQuestionTransaction(transaction, questionId)
         )
         console.log("Matching submission handled successfully.");
@@ -244,7 +244,7 @@ export async function updateQuestions() {
         const querySnapshot = await getDocs(q)
 
         for (const questionDoc of querySnapshot.docs) {
-            await runTransaction(db, transaction =>
+            await runTransaction(firestore, transaction =>
                 updateQuestionTransaction(transaction, questionDoc.id)
             )
             // console.log(questionDoc.id)

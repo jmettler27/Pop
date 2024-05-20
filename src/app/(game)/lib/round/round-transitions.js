@@ -1,7 +1,7 @@
 "use server";
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import {
     collection,
     query,
@@ -41,7 +41,7 @@ export async function handleSelectRound(gameId, roundId, userId) {
         throw new Error("No user ID has been provided!")
     }
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             selectRoundTransaction(transaction, gameId, roundId, userId)
         );
         console.log("Round successfully started.");
@@ -151,7 +151,7 @@ async function switchRoundQuestion(gameId, roundId, questionOrder) {
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             switchRoundQuestionTransaction(transaction, gameId, roundId, questionOrder)
         );
         console.log(`Switched successfully to question ${questionOrder} in the round ${roundId}.`);
@@ -286,7 +286,7 @@ export async function startRound(gameId, roundId) {
     }
 
     try {
-        await runTransaction(db, async (transaction) =>
+        await runTransaction(firestore, async (transaction) =>
             startRoundTransaction(transaction, gameId, roundId)
         )
         console.log("Round successfully started.");
@@ -328,7 +328,7 @@ export async function handleRoundQuestionEnd(gameId, roundId) {
     }
 
     try {
-        await runTransaction(db, async (transaction) =>
+        await runTransaction(firestore, async (transaction) =>
             handleRoundQuestionEndTransaction(transaction, gameId, roundId)
         )
     } catch (error) {
@@ -366,7 +366,7 @@ export async function switchRoundNextQuestion(gameId, roundId) {
     }
 
     try {
-        await runTransaction(db, async (transaction) =>
+        await runTransaction(firestore, async (transaction) =>
             switchRoundNextQuestionTransaction(transaction, gameId, roundId)
         )
         console.log(`Switched successfully to the next question in the round ${roundId}.`);
@@ -414,7 +414,7 @@ export async function endRound(gameId, roundId) {
     }
     try {
         // TRANSACTION
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             endRoundTransaction(transaction, gameId, roundId)
         );
         console.log("Round successfully ended.");
@@ -587,7 +587,7 @@ export async function startFinaleRound(gameId, roundId) {
     }
 
     try {
-        await runTransaction(db, async (transaction) =>
+        await runTransaction(firestore, async (transaction) =>
             startFinaleRoundTransaction(transaction, gameId, roundId)
         )
         console.log("Finale round successfully started.");

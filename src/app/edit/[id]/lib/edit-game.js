@@ -10,7 +10,7 @@ import { OOO_DEFAULT_MISTAKE_PENALTY } from '@/lib/utils/question/odd_one_out';
 import { PROGRESSIVE_CLUES_DEFAULT_DELAY, PROGRESSIVE_CLUES_DEFAULT_MAX_TRIES, PROGRESSIVE_CLUES_DEFAULT_REWARD } from '@/lib/utils/question/progressive_clues';
 import { isRiddle } from '@/lib/utils/question_types';
 
-import { db } from '@/lib/firebase/firebase'
+import { firestore } from '@/lib/firebase/firebase'
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF, USERS_COLLECTION_REF } from '@/lib/firebase/firestore';
 import {
     doc,
@@ -32,7 +32,7 @@ export async function addGameRound(gameId, title, type, rewards, rewardsPerQuest
     }
 
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             addGameRoundTransaction(transaction, gameId, title, type, rewards, rewardsPerQuestion)
         )
         console.log(`Game ${gameId}: Round created successfully.`);
@@ -131,7 +131,7 @@ export async function addGameQuestion(gameId, roundId, questionId, managerId) {
         throw new Error("No manager ID has been provided!");
     }
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             addGameQuestionTransaction(transaction, gameId, roundId, questionId, managerId)
         )
         console.log(`Game ${gameId}, Round ${roundId}: Realtime info of ${questionId} added successfully.`);
@@ -269,7 +269,7 @@ export async function removeRoundFromGame(gameId, roundId) {
         throw new Error("No round ID has been provided!");
     }
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             removeRoundFromGameTransaction(transaction, gameId, roundId)
         )
         console.log(`Game ${gameId}: Realtime info of ${roundId} removed successfully.`);
@@ -307,7 +307,7 @@ export async function removeQuestionFromRound(gameId, roundId, questionId, quest
         throw new Error("No question ID has been provided!");
     }
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             removeQuestionFromRoundTransaction(transaction, gameId, roundId, questionId, questionType)
         )
         console.log(`Game ${gameId}, Round ${roundId}: Realtime info of ${questionId} removed successfully.`);
@@ -360,7 +360,7 @@ export async function addGameOrganizer(gameId, organizerId) {
         throw new Error("No organizer ID has been provided!");
     }
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             addGameOrganizerTransaction(transaction, gameId, organizerId)
         )
         console.log(`Game ${gameId}: Organizer ${organizerId} added successfully.`);
@@ -394,7 +394,7 @@ export async function launchGame(gameId) {
         throw new Error("No game ID has been provided!");
     }
     try {
-        await runTransaction(db, transaction =>
+        await runTransaction(firestore, transaction =>
             launchGameTransaction(transaction, gameId)
         )
         console.log(`Game ${gameId}: Launched successfully.`);
