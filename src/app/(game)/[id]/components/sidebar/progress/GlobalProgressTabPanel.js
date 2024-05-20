@@ -54,7 +54,7 @@ const GameRoundsProgress = memo(function GameRoundsProgress({ gameId }) {
     const teams = teamsCollection.docs.map(doc => ({ id: doc.id, ...doc.data() }))
 
     return (
-        <div className='w-full mt-4 px-2'>
+        <div className='w-full mt-4 px-2 space-y-2'>
             {startedRounds.map((round, idx) => (
                 <RoundAccordion
                     key={idx}

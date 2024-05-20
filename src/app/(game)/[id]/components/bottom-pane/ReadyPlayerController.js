@@ -45,11 +45,11 @@ function ReadyPlayerHeader({ isLastQuestion, lang = 'fr-FR' }) {
         case 'player':
             switch (game.status) {
                 case 'game_start':
-                    return <span className='2xl:text-3xl'>{READY_PLAYER_HEADER_START[lang]} <strong>{READY_PLAYER_HEADER_GAME_START[lang]}</strong>? 🥸</span>
+                    return <span className='2xl:text-4xl'>{READY_PLAYER_HEADER_START[lang]} <strong>{READY_PLAYER_HEADER_GAME_START[lang]}</strong>? 🥸</span>
                 case 'round_start':
-                    return <span className='2xl:text-3xl'>{READY_PLAYER_HEADER_START[lang]} <strong>{READY_PLAYER_HEADER_ROUND_START[lang]}</strong>? 🥸</span>
+                    return <span className='2xl:text-4xl'>{READY_PLAYER_HEADER_START[lang]} <strong>{READY_PLAYER_HEADER_ROUND_START[lang]}</strong>? 🥸</span>
                 case 'question_end':
-                    return <span className='2xl:text-3xl'>{READY_PLAYER_HEADER_START[lang]} <strong>{isLastQuestion ? READY_PLAYER_HEADER_QUESTION_END_LAST[lang] : READY_PLAYER_HEADER_QUESTION_END[lang]}</strong>? 🥸</span>
+                    return <span className='2xl:text-4xl'>{READY_PLAYER_HEADER_START[lang]} <strong>{isLastQuestion ? READY_PLAYER_HEADER_QUESTION_END_LAST[lang] : READY_PLAYER_HEADER_QUESTION_END[lang]}</strong>? 🥸</span>
             }
         default:
             return <ReadyPlayerHeaderSpectator lang={lang} />
@@ -72,7 +72,10 @@ function ReadyPlayerHeaderSpectator({ lang = 'fr-FR' }) {
 
     const { numReady, numPlayers } = ready
 
-    return <span className='2xl:text-3xl'>{WAITING_FOR_PLAYERS_TEXT[lang]} ({numReady}/{numPlayers})</span>
+    if (numReady === numPlayers) {
+        return <span className='2xl:text-4xl font-bold'>Letzgo! 🚀</span>
+    }
+    return <span className='2xl:text-4xl'>{WAITING_FOR_PLAYERS_TEXT[lang]} ({numReady}/{numPlayers})</span>
 
 }
 

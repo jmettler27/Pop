@@ -6,7 +6,7 @@ import SendIcon from '@mui/icons-material/Send';
 
 
 
-export default function SubmitFormButton({ isSubmitting, text = DEFAULT_SUBMIT_BUTTON_TEXT['fr-FR'] }) {
+export default function SubmitFormButton({ isSubmitting, label }) {
     {/* https://mui.com/material-ui/react-button/#loading-button */ }
 
     const formik = useFormikContext();
@@ -20,12 +20,7 @@ export default function SubmitFormButton({ isSubmitting, text = DEFAULT_SUBMIT_B
             disabled={isSubmitting || formik.isSubmitting}
             type='submit'
         >
-            {text}
+            {label}
         </Button>
     )
-}
-
-const DEFAULT_SUBMIT_BUTTON_TEXT = {
-    'en': 'Submit',
-    'fr-FR': 'Envoyer',
 }

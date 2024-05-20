@@ -94,21 +94,24 @@ function GameHomeRounds() {
     /* Rounds */
     return (
         <>
-            <List
-                className='rounded-lg w-1/3'
-                sx={{ bgcolor: 'background.paper' }}
-            >
-                {activeNonFinaleRounds.map((round, idx) => (
-                    <div key={round.id}>
-                        <GameHomeRoundItem
-                            round={round}
-                            isDisabled={isHandling || roundIsDisabled(round.id)}
-                            onSelectRound={() => handleSelect(round.id)}
-                        />
-                        {(idx < activeNonFinaleRounds.length - 1) && <Divider variant='inset' component='li' />}
-                    </div>
-                ))}
-            </List>
+            {activeNonFinaleRounds.length > 0 && (
+
+                <List
+                    className='rounded-lg w-1/3'
+                    sx={{ bgcolor: 'background.paper' }}
+                >
+                    {activeNonFinaleRounds.map((round, idx) => (
+                        <div key={round.id}>
+                            <GameHomeRoundItem
+                                round={round}
+                                isDisabled={isHandling || roundIsDisabled(round.id)}
+                                onSelectRound={() => handleSelect(round.id)}
+                            />
+                            {(idx < activeNonFinaleRounds.length - 1) && <Divider variant='inset' component='li' />}
+                        </div>
+                    ))}
+                </List>
+            )}
 
             {endedNonFinaleRounds.length > 0 && (
                 <List

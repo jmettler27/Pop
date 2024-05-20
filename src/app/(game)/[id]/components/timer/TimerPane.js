@@ -22,7 +22,7 @@ import { SERVER_TIME_OFFSET_REF } from "@/lib/firebase/database"
 
 export default function TimerPane() {
     return (
-        <div className='flex flex-col items-center'>
+        <div className='flex flex-col items-center justify-center space-y-2'>
             <TimerHeader lang='fr-FR' />
             <TimerController />
         </div>
@@ -93,7 +93,7 @@ function TimerController({ }) {
         case 'organizer':
             return <OrganizerTimerController timer={timer} serverTimeOffset={serverTimeOffset} onTimerEnd={() => handleTimerEnd(timer)} />
         default:
-            return <span className='2xl:text-4xl'><Timer timer={timer} serverTimeOffset={serverTimeOffset} /></span>
+            return <span className='2xl:text-4xl'>⌛ <Timer timer={timer} serverTimeOffset={serverTimeOffset} /></span>
     }
 }
 

@@ -27,12 +27,12 @@ export default function GameStartMiddlePane({ }) {
     return (
         <div className='flex flex-col h-full items-center justify-center'>
             <div className='flex flex-col h-1/6 items-center justify-center overflow-auto'>
-                <h1 className='text-6xl font-bold text-yellow-300'>{game.title}</h1>
+                <h1 className='2xl:text-6xl font-bold text-yellow-300 italic'>{game.title}</h1>
             </div>
             <div className='flex flex-col h-5/6 w-full items-center justify-center space-y-4 overflow-auto'>
-                <span className='text-3xl'>Ce programme à but humoristique et <strong>interactif</strong> vous est présenté par</span>
+                <span className='2xl:text-3xl'>Ce programme à but humoristique et <strong>interactif</strong> vous est présenté par</span>
 
-                <Stack direction='row' spacing={3} >
+                <Stack direction='row' spacing={3} className='h-1/3' >
                     {organizers.map((organizer) => <OrganizerItem key={organizer.id} organizer={organizer} />)}
                 </Stack>
             </div>
@@ -42,23 +42,13 @@ export default function GameStartMiddlePane({ }) {
 
 function OrganizerItem({ organizer }) {
     return (
-        <div className='flex flex-col items-center justify-center'>
-            {/* Player name */}
-            <span className='text-2xl'>{organizer.name}</span>
-            {/* Player avatar */}
-            <div className='flex flex-col justify-center items-center'>
-                <OrganizerAvatar organizer={organizer} />
-            </div>
+        <div className='flex flex-col items-center justify-center space-y-2'>
+            <span className='2xl:text-3xl font-bold'>{organizer.name}</span>
+            <Avatar
+                alt={organizer.name}
+                src={organizer.image}
+                sx={{ width: 'auto', height: '50%' }}
+            />
         </div>
-    )
-}
-
-function OrganizerAvatar({ organizer }) {
-    return (
-        <Avatar
-            alt={organizer.name}
-            src={organizer.image}
-            sx={{ width: '80%', height: 'auto' }}
-        />
     )
 }

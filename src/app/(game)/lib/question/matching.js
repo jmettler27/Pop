@@ -307,11 +307,6 @@ export async function resetMatchingQuestion(gameId, roundId, questionId) {
         chooserIdx: 0,
     })
 
-    // updateQuestionWinner(gameId, roundId, questionId, null)
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    batch.update(realtimeDocRef, {
-    })
-
     const correctMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct')
     batch.set(correctMatchesDocRef, {
         correctMatches: [],
@@ -334,11 +329,6 @@ export const resetMatchingQuestionTransaction = async (transaction, gameId, roun
     const statesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
     transaction.update(statesDocRef, {
         chooserIdx: 0,
-    })
-
-    // updateQuestionWinner(gameId, roundId, questionId, null)
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    transaction.update(realtimeDocRef, {
     })
 
     const correctMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct')

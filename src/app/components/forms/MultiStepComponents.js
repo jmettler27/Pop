@@ -15,7 +15,7 @@ import SubmitFormButton from './SubmitFormButton';
 // incomplete data. A snapshot of form state is used as initialValues after each
 // transition. Each page has an optional submit handler, and the top-level
 // submit is called when the final page is submitted.
-export const Wizard = ({ children, initialValues, onSubmit, isSubmitting, lang = 'fr-FR' }) => {
+export const Wizard = ({ children, initialValues, onSubmit, isSubmitting, submitButtonLabel = DEFAULT_SUBMIT_BUTTON_TEXT['fr-FR'], lang = 'fr-FR' }) => {
     const [stepNumber, setStepNumber] = useState(0);
     const steps = React.Children.toArray(children);
     const [snapshot, setSnapshot] = useState(initialValues);
@@ -64,7 +64,7 @@ export const Wizard = ({ children, initialValues, onSubmit, isSubmitting, lang =
                             <PreviousStepButton onClick={() => previous(formik.values)} />
                         }
                         {isLastStep ?
-                            <SubmitFormButton isSubmitting={isSubmitting} /> :
+                            <SubmitFormButton isSubmitting={isSubmitting} label={submitButtonLabel} /> :
                             <NextStepButton disabled={formik.isSubmitting} />
                         }
                     </div>
@@ -74,6 +74,11 @@ export const Wizard = ({ children, initialValues, onSubmit, isSubmitting, lang =
         </Formik>
     );
 };
+
+const DEFAULT_SUBMIT_BUTTON_TEXT = {
+    'en': 'Submit',
+    'fr-FR': 'Envoyer',
+}
 
 const STEP_TEXT = {
     'en': 'Step',

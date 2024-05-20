@@ -46,7 +46,7 @@ const JOIN_GAME_HEADER = {
 
 const REGEX_HEX_COLOR = /^#[0-9A-F]{6}$/i
 
-export default function Page({ params }) {
+export default function Page({ params, lang = 'fr-FR' }) {
     const { data: session } = useSession()
 
     const gameId = params.id
@@ -152,6 +152,7 @@ export default function Page({ params }) {
                 }}
                 onSubmit={async values => await joinGame(values, user)}
                 isSubmitting={isJoining}
+                submitButtonLabel={SUBMIT_FORM_BUTTON_LABEL[lang]}
             >
                 {/* Step 1: General info */}
                 <GeneralInfoStep
@@ -207,6 +208,11 @@ export default function Page({ params }) {
             </Wizard>
         </>
     );
+}
+
+const SUBMIT_FORM_BUTTON_LABEL = {
+    'en': "Join the game",
+    'fr-FR': "Rejoindre la partie",
 }
 
 function GeneralInfoStep({ onSubmit, validationSchema, lang = 'fr-FR' }) {
@@ -335,12 +341,40 @@ function JoinOrCreateTeam({ validationSchema, lang = 'fr-FR' }) {
                     }}
                 >
                     <option value="">{SELECT_TEAM_FIRST_OPTION[lang]}</option>
-                    {teams.map((doc) => <option key={doc.id} value={doc.id}>{doc.name} </option>)}
+                    {teams.map((doc) => <SelectTeamOption key={doc.id} teamDoc={doc} />)}
                 </MySelect>
             )}
         </>
     )
 }
+
+function SelectTeamOption({ teamDoc }) {
+    const { id: gameId } = useParams()
+
+    const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
+    const [playersCollection, playersLoading, playersError] = useCollection(query(playersCollectionRef, where('teamId', '==', teamDoc.id)))
+    if (playersError) {
+        return <p><strong>Error: {JSON.stringify(playersError)}</strong></p>
+    }
+    if (playersLoading) {
+        return <option value={teamDoc.id}>&quot;{teamDoc.name}&quot; (loading players...)</option>
+
+    }
+    if (!playersCollection) {
+        return (
+            <option value={teamDoc.id}>&quot;{teamDoc.name}&quot;</option>
+        )
+    }
+
+    const playerNames = playersCollection.docs.map(doc => doc.data().name)
+    const playerNamesString = playerNames.join(', ')
+
+    return (
+        <option value={teamDoc.id}>&quot;{teamDoc.name}&quot; ({playerNamesString})</option>
+    )
+
+}
+
 
 const JOIN_OR_CREATE_TEAM_LABEL = {
     'en': 'Do you want to join an existing team or create a new one?',

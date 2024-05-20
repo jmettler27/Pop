@@ -200,6 +200,11 @@ function ProposalItem({ item, onProposalClick, onAccordionChange, selectedItem, 
             divider={!isLast}
             onClick={onProposalClick}
             disabled={isSubmitting || itemIsDisabled()}
+            sx={{
+                '&.Mui-disabled': {
+                    opacity: 1.0
+                }
+            }}
         >
             <ListItemText
                 sx={{ color: 'text.primary' }}
