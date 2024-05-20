@@ -56,22 +56,14 @@ const handleNextClueClickTransaction = async (
     // If there is a buzzed player, update his status to idle
     const buzzed = playersData.buzzed
     if (buzzed && buzzed.length > 0) {
-        // updatePlayerStatus(gameId, buzzed[0], 'idle')
         const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', buzzed[0])
         transaction.update(playerRef, {
             status: 'idle'
         })
-        // Clear the buzzed
-        // resetBuzzedPlayers(gameId, roundId, questionId)
         transaction.update(playersDocRef, {
             buzzed: []
         })
     }
-
-    // Increment the currentClueIdx
-    // updateClueFields(gameId, roundId, questionId, {
-    //     currentClueIdx: increment(1),
-    // })
     transaction.update(realtimeRef, {
         currentClueIdx: increment(1),
     })
@@ -81,7 +73,6 @@ const handleNextClueClickTransaction = async (
     if (canceled) {
         for (const item of canceled) {
             if (item.clueIdx === (realtimeData.currentClueIdx + 1) - roundData.delay) {
-                // await updatePlayerStatus(gameId, item.playerId, 'idle')
                 const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', item.playerId)
                 transaction.update(playerRef, {
                     status: 'idle'

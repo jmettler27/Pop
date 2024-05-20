@@ -146,7 +146,6 @@ const submitMatchTransaction = async (
                 chooserOrder: updatedChooserOrder,
             })
 
-
             // End the question
             await endQuestionTransaction(transaction, gameId, roundId, questionId)
 

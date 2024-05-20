@@ -225,9 +225,6 @@ const switchRoundQuestionTransaction = async (
 
         await updateTimerTransaction(transaction, gameId, { status: 'resetted', managedBy, duration: defaultThinkingTime })
     }
-    else if (questionData.type === 'enum') {
-        await updateTimerTransaction(transaction, gameId, { status: 'resetted', managedBy, duration: questionData.details.thinkingTime })
-    }
     else if (questionData.type === 'odd_one_out' || questionData.type === 'matching') {
         const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
         transaction.update(gameStatesRef, {
@@ -240,9 +237,20 @@ const switchRoundQuestionTransaction = async (
         }
     }
     else {
-        console.log("HERE")
-        await updateTimerTransaction(transaction, gameId, { status: 'resetted', managedBy, duration: defaultThinkingTime })
+        if (questionData.type === 'enum') {
+            await updateTimerTransaction(transaction, gameId, { status: 'resetted', managedBy, duration: questionData.details.thinkingTime })
+        }
+        else {
+            await updateTimerTransaction(transaction, gameId, { status: 'resetted', managedBy, duration: defaultThinkingTime })
+        }
 
+        const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
+        const playersQuerySnapshot = await getDocs(query(playersCollectionRef))
+        for (const playerDoc of playersQuerySnapshot.docs) {
+            transaction.update(playerDoc.ref, {
+                status: 'idle'
+            })
+        }
     }
 
     transaction.update(realtimeDocRef, {

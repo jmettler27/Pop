@@ -107,7 +107,6 @@ const addGameRoundTransaction = async (
         roundSortedTeams: [],
         scores: {},
         scoresProgress: {},
-        teamScoresSequence: {}
     });
 
     const gameDocRef = doc(GAMES_COLLECTION_REF, gameId);

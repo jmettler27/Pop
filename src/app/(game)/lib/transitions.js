@@ -56,7 +56,8 @@ const setPlayerReadyTransaction = async (
         numReady: newNumReady
     })
 
-    await addSoundToQueueTransaction(transaction, gameId, 'pop')
+    const num = Math.floor(Math.random() * 50)
+    await addSoundToQueueTransaction(transaction, gameId, num === 0 ? 'fart_perfecter' : 'pop')
 
     if (newNumReady === numPlayers) {
         await updateTimerTransaction(transaction, gameId, {
@@ -108,6 +109,7 @@ export const startGameTransaction = async (
 
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
     const chooserPlayersQuerySnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', chooserTeamId)))
+    const otherPlayersQuerySnapshot = await getDocs(query(playersCollectionRef, where('teamId', '!=', chooserTeamId)))
 
     const gameRef = doc(GAMES_COLLECTION_REF, gameId)
     transaction.update(gameRef, {
@@ -118,6 +120,12 @@ export const startGameTransaction = async (
     for (const playerDoc of chooserPlayersQuerySnapshot.docs) {
         transaction.update(playerDoc.ref, {
             status: 'focus'
+        })
+    }
+
+    for (const playerDoc of otherPlayersQuerySnapshot.docs) {
+        transaction.update(playerDoc.ref, {
+            status: 'idle'
         })
     }
 

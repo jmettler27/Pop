@@ -138,7 +138,7 @@ const handleProposalClickTransaction = async (
                 transaction.update(playerDoc.ref, { status: 'idle' })
             }
             await addSoundToQueueTransaction(transaction, gameId, 'Bien')
-            await updateTimerStateTransaction(transaction, gameId, 'started')
+            await updateTimerStateTransaction(transaction, gameId, 'resetted')
         }
     }
     transaction.update(realtimeDocRef, {
