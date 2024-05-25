@@ -57,6 +57,19 @@ export function HomeBar({ lang = 'fr-FR' }) {
         }
     }
 
+    const handleSelectPage = (idx) => {
+        console.log(idx)
+        if (idx === 1) {
+            router.push('/edit')
+        }
+        if (idx === 2) {
+            router.push('/submit')
+        }
+        // if (idx === 3) {
+        //     router.push('/about')
+        // }
+    }
+
     return (
         <AppBar position="static" color='warning' enableColorOnDark>
             <Container maxWidth="xl">
@@ -80,7 +93,7 @@ export function HomeBar({ lang = 'fr-FR' }) {
                         Pop!
                     </Typography>
 
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                    {/* <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
                         <IconButton
                             size="large"
                             aria-label="account of current user"
@@ -109,13 +122,13 @@ export function HomeBar({ lang = 'fr-FR' }) {
                                 display: { xs: 'block', md: 'none' },
                             }}
                         >
-                            {pages[lang].map((page) => (
-                                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                            {pages[lang].map((page, idx) => (
+                                <MenuItem key={page} onClick={() => handleSelectPage(idx)}>
                                     <Typography textAlign="center">{page}</Typography>
                                 </MenuItem>
                             ))}
                         </Menu>
-                    </Box>
+                    </Box> */}
                     <SportsEsportsIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
                     <Typography
                         variant="h5"
@@ -136,10 +149,10 @@ export function HomeBar({ lang = 'fr-FR' }) {
                         LOGO
                     </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        {pages[lang].map((page) => (
+                        {pages[lang].map((page, idx) => (
                             <Button
                                 key={page}
-                                onClick={handleCloseNavMenu}
+                                onClick={() => handleSelectPage(idx)}
                                 sx={{ my: 2, color: 'white', display: 'block' }}
                             >
                                 {page}

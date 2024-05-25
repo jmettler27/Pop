@@ -61,7 +61,7 @@ export default function Page({ params }) {
     const game = { id: gameId, ...gameData }
 
     return (
-        <div className='h-screen min-h-screen flex flex-row divide-x divide-solid'>
+        <div className='h-screen flex flex-row divide-x divide-solid'>
 
             {/* Left bar */}
             <div className='flex flex-col h-full w-1/6 bg-gray-100/40 lg:block dark:bg-gray-800/40 gap-2'>
