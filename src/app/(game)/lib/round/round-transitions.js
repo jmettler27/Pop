@@ -126,7 +126,7 @@ const selectRoundTransaction = async (
     })
 
     await updateTimerTransaction(transaction, gameId, {
-        status: 'resetted',
+        status: 'reset',
         duration: READY_COUNTDOWN_SECONDS,
         authorized: false
     })
@@ -223,7 +223,7 @@ const switchRoundQuestionTransaction = async (
             })
         }
 
-        await updateTimerTransaction(transaction, gameId, { status: 'resetted', managedBy, duration: defaultThinkingTime })
+        await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: defaultThinkingTime })
     }
     else if (questionData.type === 'odd_one_out' || questionData.type === 'matching') {
         const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
@@ -231,17 +231,17 @@ const switchRoundQuestionTransaction = async (
             chooserIdx: 0
         })
         if (questionData.type === 'matching') {
-            await updateTimerTransaction(transaction, gameId, { status: 'resetted', managedBy, duration: defaultThinkingTime * (questionData.details.numCols - 1) })
+            await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: defaultThinkingTime * (questionData.details.numCols - 1) })
         } else {
-            await updateTimerTransaction(transaction, gameId, { status: 'resetted', managedBy, duration: defaultThinkingTime })
+            await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: defaultThinkingTime })
         }
     }
     else {
         if (questionData.type === 'enum') {
-            await updateTimerTransaction(transaction, gameId, { status: 'resetted', managedBy, duration: questionData.details.thinkingTime })
+            await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: questionData.details.thinkingTime })
         }
         else {
-            await updateTimerTransaction(transaction, gameId, { status: 'resetted', managedBy, duration: defaultThinkingTime })
+            await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: defaultThinkingTime })
         }
 
         const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
@@ -555,7 +555,7 @@ const endRoundTransaction = async (
 
     await addSoundToQueueTransaction(transaction, gameId, 'level-passed')
 
-    await updateTimerStateTransaction(transaction, gameId, 'resetted')
+    await updateTimerStateTransaction(transaction, gameId, 'reset')
 }
 
 

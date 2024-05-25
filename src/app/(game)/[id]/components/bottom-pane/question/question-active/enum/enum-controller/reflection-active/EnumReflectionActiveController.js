@@ -66,7 +66,7 @@ function AddBetForm({ question, status, lang }) {
     }
 
     const hasBet = players.bets.some(bet => bet.playerId == user.id)
-    const selectorDisabled = ((status !== 'started') || hasValidated || hasBet);
+    const selectorDisabled = ((status !== 'start') || hasValidated || hasBet);
 
     const handleSelectorChange = (event) => {
         setDialogOpen(true)
@@ -171,7 +171,7 @@ function EnumSpectatorReflectionActive({ timer, lang }) {
 
     return (
         <div className='flex flex-col h-full items-center justify-center'>
-            {timer.status === 'started' && <span className='2xl:text-3xl'>{ENUM_REFLECTION_ACTIVE_HEADER[lang]}</span>}
+            {timer.status === 'start' && <span className='2xl:text-3xl'>{ENUM_REFLECTION_ACTIVE_HEADER[lang]}</span>}
         </div>
     )
 }

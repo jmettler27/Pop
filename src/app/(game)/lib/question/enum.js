@@ -378,7 +378,7 @@ export async function resetEnumQuestion(gameId, roundId, questionId) {
 
     const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
     batch.update(timerDocRef, {
-        status: 'resetted',
+        status: 'reset',
         timestamp: serverTimestamp()
     })
 

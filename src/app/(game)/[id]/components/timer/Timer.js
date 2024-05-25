@@ -35,28 +35,35 @@ export default function Timer({ timer, serverTimeOffset, onTimerEnd = () => { } 
         setMilliSeconds(startMillisecond)
     }
 
+    const endTimer = () => {
+        stopTimer()
+        onTimerEnd()
+    }
+
     useEffect(() => {
         if (statusRef.current === timer.status && durationRef.current === timer.duration && timestampRef.current === timer.timestamp)
             return
         statusRef.current = timer.status
         durationRef.current = timer.duration
         timestampRef.current = timer.timestamp
-        if (statusRef.current === 'started') {
+        if (statusRef.current === 'start') {
             startTimer()
         }
-        if (statusRef.current === 'stopped') {
+        if (statusRef.current === 'stop') {
             stopTimer()
         }
-        if (statusRef.current === 'resetted') {
+        if (statusRef.current === 'reset') {
             resetTimer()
+        }
+        if (statusRef.current === 'end') {
+            endTimer()
         }
 
     }, [timer.status, timer.duration, timer.timestamp])
 
 
     if ((timer.forward && milliseconds >= endMillisecond) || (!timer.forward && milliseconds <= endMillisecond)) {
-        stopTimer()
-        onTimerEnd()
+        endTimer()
     }
 
     const isCritical = Math.abs(milliseconds - endMillisecond) <= CRITICAL_MS
@@ -65,12 +72,12 @@ export default function Timer({ timer, serverTimeOffset, onTimerEnd = () => { } 
         <span
             className={clsx(
                 isCritical && 'text-red-500',
-                timer.status === 'resetted' && 'opacity-50 text-yellow-500',
-                timer.status === 'stopped' && 'opacity-50',
+                timer.status === 'reset' && 'opacity-50 text-yellow-500',
+                timer.status === 'stop' && 'opacity-50',
             )}
         >
             {/* {milliseconds <= endMillisecond ? '0.00' : `${Math.floor(milliseconds / 1000)}.${(milliseconds % 1000).toString().padStart(2, '0')}`} */}
-            {milliseconds <= endMillisecond ? '0' : Math.round(milliseconds / 1000)}
+            {milliseconds <= endMillisecond ? '0' : Math.ceil(milliseconds / 1000)}
         </span>
     )
 }

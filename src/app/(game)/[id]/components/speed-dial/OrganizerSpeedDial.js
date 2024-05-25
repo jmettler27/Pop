@@ -1,7 +1,5 @@
 import * as React from 'react'
 
-import { useGameContext } from '@/app/(game)/contexts'
-
 import { styled } from '@mui/material/styles'
 import SpeedDial, { SpeedDialProps } from '@mui/material/SpeedDial'
 import SpeedDialIcon from '@mui/material/SpeedDialIcon'
@@ -12,14 +10,15 @@ import LibraryMusicIcon from '@mui/icons-material/LibraryMusic'
 import HomeIcon from '@mui/icons-material/Home'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import WarningIcon from '@mui/icons-material/Warning';
+import EditIcon from '@mui/icons-material/Edit';
 
 import { Backdrop } from '@mui/material'
 import SoundboardController from '../soundboard/SoundboardController'
 
 
 import { endGame } from '@/app/(game)/lib/transitions'
-import { resetGame, updateGameStatus, updateQuestion, updateQuestions } from '@/app/(game)/lib/game'
-import { useParams } from 'next/navigation'
+import { resetGame, updateGameStatus, resumeEditing, updateQuestion, updateQuestions } from '@/app/(game)/lib/game'
+import { useParams, useRouter } from 'next/navigation'
 
 const StyledSpeedDial = styled(SpeedDial)(({ theme }) => ({
     position: 'absolute',
@@ -33,7 +32,8 @@ const actions = [
     { icon: <LibraryMusicIcon />, name: 'Soundboard' },
     { icon: <HomeIcon />, name: 'Home' },
     { icon: <RestartAltIcon />, name: 'Reset game' },
-    { icon: <WarningIcon />, name: 'End game' }
+    { icon: <EditIcon />, name: 'Resume editing' },
+    { icon: <WarningIcon />, name: 'End game' },
 
 ]
 
@@ -42,6 +42,7 @@ export default function OrganizerSpeedDial() {
     const { id: gameId } = useParams()
 
     const direction = 'up'
+    const router = useRouter()
 
     const [component, setComponent] = React.useState(<></>)
     const [backdropOpen, setBackdropOpen] = React.useState(false)
@@ -74,6 +75,10 @@ export default function OrganizerSpeedDial() {
                 break
             case 'End game':
                 endGame(gameId)
+                break
+            case 'Resume editing':
+                await resumeEditing(gameId)
+                router.push(`/{gameId}/edit`)
                 break
         }
     }

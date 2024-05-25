@@ -111,7 +111,7 @@ const createGameRealtimeTransaction = async (
     await updateTimerTransaction(transaction, gameId, {
         duration: READY_COUNTDOWN_SECONDS,
         forward: false,
-        status: 'resetted'
+        status: 'reset'
 
     });
 

@@ -67,7 +67,7 @@ export async function resetQuestion(gameId, roundId, questionId, questionType = 
         await runTransaction(firestore, transaction =>
             resetQuestionTransaction(transaction, gameId, roundId, questionId, questionType, alone)
         )
-        console.log("Question resetted successfully.");
+        console.log("Question reset successfully.");
     }
     catch (error) {
         console.error("There was an error resetting the question:", error);
@@ -119,7 +119,7 @@ export const resetQuestionTransaction = async (
 
     if (alone) {
         await updateTimerTransaction(transaction, gameId, {
-            status: 'resetted',
+            status: 'reset',
             duration: DEFAULT_THINKING_TIME_SECONDS[type],
             forward: false
         })
@@ -162,7 +162,7 @@ export const endQuestionTransaction = async (transaction, gameId, roundId, quest
     })
 
     await updateTimerTransaction(transaction, gameId, {
-        status: 'resetted',
+        status: 'reset',
         duration: READY_COUNTDOWN_SECONDS,
         authorized: false
     })
@@ -224,5 +224,5 @@ const handleQuestionActiveCountdownEndTransaction = async (
             await endEnumQuestionTransaction(transaction, gameId, roundId, questionId)
         }
     }
-    // await updateTimerStateTransaction(transaction, gameId, 'resetted')
+    // await updateTimerStateTransaction(transaction, gameId, 'reset')
 }

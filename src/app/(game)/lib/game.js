@@ -13,7 +13,7 @@ import {
 } from 'firebase/firestore'
 
 import { resetAllRoundsTransaction } from '@/app/(game)/lib/round';
-import { getDocData, getDocDataTransaction } from '@/app/(game)/lib/utils';
+import { getDocData, getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
 import { getRandomElement, shuffle } from '@/lib/utils/arrays';
 import { updateTimerTransaction } from './timer';
 import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
@@ -113,7 +113,7 @@ const resetGameTransaction = async (
     // const managerId = getRandomElement(organizersQuerySnapshot.docs).id
     const managerId = organizersQuerySnapshot.docs[0].id
     await updateTimerTransaction(transaction, gameId, {
-        status: 'resetted',
+        status: 'reset',
         duration: READY_COUNTDOWN_SECONDS,
         forward: false,
         authorized: false,
@@ -184,6 +184,30 @@ export const switchAuthorizePlayersTransaction = async (
     updateTimerTransaction(transaction, gameId, { authorized: newVal })
     if (newVal === true)
         addSoundToQueueTransaction(transaction, gameId, 'minecraft_button_plate')
+}
+
+export async function resumeEditing(gameId) {
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+
+    try {
+        await runTransaction(firestore, transaction =>
+            resumeEditingTransaction(transaction, gameId)
+        )
+    }
+    catch (error) {
+        console.error("There was an error returning to editing the game:", error);
+        throw error;
+    }
+}
+
+const resumeEditingTransaction = async (
+    transaction,
+    gameId
+) => {
+    await resetGameTransaction(transaction, gameId)
+    await updateGameStatusTransaction(transaction, gameId, 'build')
 }
 
 /* ==================================================================================================== */

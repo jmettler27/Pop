@@ -61,7 +61,7 @@ const setPlayerReadyTransaction = async (
 
     if (newNumReady === numPlayers) {
         await updateTimerTransaction(transaction, gameId, {
-            status: 'started',
+            status: 'start',
             duration: READY_COUNTDOWN_SECONDS,
             forward: false
         })
@@ -148,7 +148,7 @@ export const startGameTransaction = async (
 
     await addSoundToQueueTransaction(transaction, gameId, 'ui-confirmation-alert-b2')
 
-    await updateTimerStateTransaction(transaction, gameId, 'resetted')
+    await updateTimerStateTransaction(transaction, gameId, 'reset')
 }
 
 /* ==================================================================================================== */

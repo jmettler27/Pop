@@ -97,7 +97,7 @@ function EnumQuestionAnswer({ answer }) {
             {answer.map((item, index) => {
                 const isCited = players.challenger?.cited[index] !== undefined
 
-                const isSelectable = !isSubmitting && (myRole === 'organizer' && realtime.status === 'challenge_active' && timer.status === 'started') && !isCited
+                const isSelectable = !isSubmitting && (myRole === 'organizer' && realtime.status === 'challenge_active' && timer.status === 'start') && !isCited
 
                 return (
                     <li key={index}

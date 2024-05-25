@@ -44,7 +44,7 @@ export async function resetAllRounds(gameId) {
         await runTransaction(firestore, transaction =>
             resetAllRoundsTransaction(transaction, gameId)
         )
-        console.log("All rounds resetted successfully.");
+        console.log("All rounds reset successfully.");
     } catch (error) {
         console.error("There was an error resetting all rounds:", error);
         throw error;
@@ -92,7 +92,7 @@ export async function resetRound(gameId, roundId) {
         await runTransaction(firestore, transaction =>
             resetRoundTransaction(transaction, gameId, roundId)
         )
-        console.log(`Round ${roundId} resetted successfully.`);
+        console.log(`Round ${roundId} reset successfully.`);
     }
     catch (error) {
         console.error("There was an error resetting the round:", error);

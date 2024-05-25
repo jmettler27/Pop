@@ -43,7 +43,7 @@ export const updateTimerStateTransaction = async (
 
 // WRITE
 export async function endTimer(gameId) {
-    await updateTimerState(gameId, 'ended')
+    await updateTimerState(gameId, 'end')
 }
 
 // WRITE
@@ -59,7 +59,7 @@ export async function startTimer(gameId) {
 
     const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
     batch.update(timerDocRef, {
-        status: 'started',
+        status: 'start',
         timestamp: serverTimestamp()
     })
 
@@ -69,10 +69,10 @@ export async function startTimer(gameId) {
 
 // WRITE
 export async function stopTimer(gameId) {
-    await updateTimerState(gameId, 'stopped')
+    await updateTimerState(gameId, 'stop')
 }
 
 // WRITE
 export async function resetTimer(gameId) {
-    await updateTimerState(gameId, 'resetted')
+    await updateTimerState(gameId, 'reset')
 }

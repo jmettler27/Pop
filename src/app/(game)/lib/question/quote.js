@@ -298,7 +298,7 @@ export const cancelQuotePlayerTransaction = async (
     await Promise.all([
         updatePlayerStatusTransaction(transaction, gameId, playerId, 'wrong'),
         addWrongAnswerSoundToQueueTransaction(transaction, gameId),
-        updateTimerStateTransaction(transaction, gameId, 'resetted')
+        updateTimerStateTransaction(transaction, gameId, 'reset')
     ])
 }
 
@@ -337,7 +337,7 @@ export const handleQuoteCountdownEndTransaction = async (
     const { buzzed } = await getDocDataTransaction(transaction, playersDocRef)
 
     if (buzzed.length === 0)
-        await updateTimerStateTransaction(transaction, gameId, 'resetted')
+        await updateTimerStateTransaction(transaction, gameId, 'reset')
     else
         await cancelQuotePlayerTransaction(transaction, gameId, roundId, questionId, buzzed[0])
 }

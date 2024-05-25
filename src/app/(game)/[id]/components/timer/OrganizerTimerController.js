@@ -43,11 +43,11 @@ export default function OrganizerTimerController({ timer, serverTimeOffset, onTi
             <ButtonGroup
                 variant='contained'
             >
-                {(timer.status === 'resetted' || timer.status === 'stopped' || timer.status === 'ended') ?
+                {(timer.status === 'reset' || timer.status === 'stop' || timer.status === 'end') ?
                     <StartTimerButton onClick={handleStartTimer} disabled={isStarting} /> :
                     <StopTimerButton onClick={handleStopTimer} disabled={isStopping} />
                 }
-                <ResetTimerButton onClick={handleResetTimer} disabled={timer.status === 'resetted' || isResetting} />
+                <ResetTimerButton onClick={handleResetTimer} disabled={timer.status === 'reset' || isResetting} />
                 <EndTimerButton onClick={handleTimerEnd} disabled={isEnding} />
             </ButtonGroup>
         </div>

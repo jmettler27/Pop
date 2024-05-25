@@ -32,7 +32,7 @@ export default function ValidateChallengerCitationButton() {
         return <></>
     }
 
-    const isClickable = timer.status === 'started'
+    const isClickable = timer.status === 'start'
 
     return (
         <Tooltip

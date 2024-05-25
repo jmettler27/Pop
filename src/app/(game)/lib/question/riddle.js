@@ -46,7 +46,7 @@ const handleRiddleBuzzerHeadChangedTransaction = async (
     playerId
 ) => {
     await updatePlayerStatusTransaction(transaction, gameId, playerId, 'focus')
-    await updateTimerStateTransaction(transaction, gameId, 'started')
+    await updateTimerStateTransaction(transaction, gameId, 'start')
 }
 
 
@@ -200,7 +200,7 @@ export const handleRiddleInvalidateAnswerClickTransaction = async (
     await Promise.all([
         updatePlayerStatusTransaction(transaction, gameId, playerId, 'wrong'),
         addWrongAnswerSoundToQueueTransaction(transaction, gameId),
-        updateTimerStateTransaction(transaction, gameId, 'resetted')
+        updateTimerStateTransaction(transaction, gameId, 'reset')
     ])
 
     // } else {
@@ -320,7 +320,7 @@ const removeBuzzedPlayerTransaction = async (
     await addSoundToQueueTransaction(transaction, gameId, 'JPP_de_lair')
 
     if (buzzed[0] === playerId) {
-        await updateTimerStateTransaction(transaction, gameId, 'resetted')
+        await updateTimerStateTransaction(transaction, gameId, 'reset')
     }
 }
 
@@ -360,7 +360,7 @@ export const handleRiddleCountdownEndTransaction = async (
     const { buzzed } = playersData
 
     if (buzzed.length === 0)
-        await updateTimerStateTransaction(transaction, gameId, 'resetted')
+        await updateTimerStateTransaction(transaction, gameId, 'reset')
     else
         await handleRiddleInvalidateAnswerClickTransaction(transaction, gameId, roundId, questionId, buzzed[0], questionType)
 }
@@ -441,7 +441,7 @@ const clearBuzzerTransaction = async (
         buzzed: []
     })
 
-    await updateTimerStateTransaction(transaction, gameId, 'resetted')
+    await updateTimerStateTransaction(transaction, gameId, 'reset')
 
     await addSoundToQueueTransaction(transaction, gameId, 'robinet_desert')
 
