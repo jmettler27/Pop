@@ -19,7 +19,7 @@ import {
 import { switchNextChooserTransaction } from '@/app/(game)/lib/chooser'
 import { addSoundToQueueTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 
-import { findMostFrequentValueAndIndices } from '@/lib/utils/question/matching';
+import { findMostFrequentValueAndIndices, generateNewMatch } from '@/lib/utils/question/matching';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { sortScores } from '@/lib/utils/scores';
 import { sortAscendingRoundScores } from '@/lib/utils/question_types';
@@ -28,7 +28,7 @@ import { getNextCyclicIndex, shuffle } from '@/lib/utils/arrays';
 import { endQuestionTransaction } from '@/app/(game)/lib/question';
 import { updateTimerStateTransaction } from '../timer';
 
-export async function submitMatch(gameId, roundId, questionId, userId, edges) {
+export async function submitMatch(gameId, roundId, questionId, userId, edges, match) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -41,13 +41,13 @@ export async function submitMatch(gameId, roundId, questionId, userId, edges) {
     if (!userId) {
         throw new Error("No user ID has been provided!");
     }
-    if (!edges || edges.length === 0) {
-        throw new Error("No edges have been provided!");
+    if ((!edges || edges.length === 0) && (!match || match.length === 0)) {
+        throw new Error("No edges nor rows have been provided!");
     }
 
     try {
         await runTransaction(firestore, transaction =>
-            submitMatchTransaction(transaction, gameId, roundId, questionId, userId, edges)
+            submitMatchTransaction(transaction, gameId, roundId, questionId, userId, edges, match)
         )
         console.log("Matching submission handled successfully.");
     } catch (error) {
@@ -62,7 +62,8 @@ const submitMatchTransaction = async (
     roundId,
     questionId,
     userId,
-    edges
+    edges = null,
+    match = null
 ) => {
     const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
     const gameStatesData = await getDocDataTransaction(transaction, gameStatesRef)
@@ -76,7 +77,7 @@ const submitMatchTransaction = async (
     const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
 
     // edges is an array of numCols objects of the form {from: origRow0_col0, to: origRow1_col1}
-    const rows = edges.flatMap((edge, idx) => {
+    const rows = match || edges.flatMap((edge, idx) => {
         const fromNumericPart = parseInt(edge.from.match(/\d+/)[0]);
         const toNumericPart = parseInt(edge.to.match(/\d+/)[0]);
         return (idx === 0) ?
@@ -252,50 +253,25 @@ export async function handleMatchingCountdownEnd(gameId, roundId, questionId) {
     }
 }
 
-export const handleMatchingCountdownEndTransaction = async (transaction, gameId, roundId, questionId) => {
-    const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
-    const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
 
-    const [gameStatesData, roundData, roundScoresData] = await Promise.all([
-        getDocDataTransaction(transaction, gameStatesRef),
-        getDocDataTransaction(transaction, roundRef),
-        getDocDataTransaction(transaction, roundScoresRef)
+export const handleMatchingCountdownEndTransaction = async (transaction, gameId, roundId, questionId) => {
+    const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
+    const correctRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct')
+    const incorrectRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'incorrect')
+
+    const [questionData, correctData, incorrectData] = await Promise.all([
+        getDocDataTransaction(transaction, questionRef),
+        getDocDataTransaction(transaction, correctRef),
+        getDocDataTransaction(transaction, incorrectRef),
     ])
 
-    const { chooserOrder, chooserIdx } = gameStatesData
-    const teamId = chooserOrder[chooserIdx]
-    const newChooserIdx = getNextCyclicIndex(chooserIdx, chooserOrder.length)
+    const { numCols, numRows } = questionData.details
 
-    const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const q = query(playersCollectionRef, where('teamId', '==', teamId))
-    const playersQuerySnapshot = await getDocs(q)
+    const correctMatchIndices = correctData.correctMatches.map(obj => obj.matchIdx)
+    const incorrectMatches = incorrectData.incorrectMatches.map(obj => obj.match)
+    const randomMatch = generateNewMatch(numRows, numCols, incorrectMatches, correctMatchIndices);
 
-    const { mistakePenalty: penalty } = roundData
-    const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
-    const newRoundProgress = {}
-    for (const tid of Object.keys(currentRoundScores)) {
-        newRoundProgress[tid] = {
-            ...currentRoundProgress[tid],
-            [questionId]: currentRoundScores[tid] + (tid === teamId) * penalty
-        }
-    }
-
-    transaction.update(roundScoresRef, {
-        [`scores.${teamId}`]: increment(penalty),
-        scoresProgress: newRoundProgress
-    })
-
-    for (const playerDoc of playersQuerySnapshot.docs) {
-        transaction.update(playerDoc.ref, { status: 'wrong' })
-    }
-
-    transaction.update(gameStatesRef, {
-        chooserIdx: newChooserIdx
-    })
-
-    await addWrongAnswerSoundToQueueTransaction(transaction, gameId)
-    await updateTimerStateTransaction(transaction, gameId, 'resetted')
+    await submitMatchTransaction(transaction, gameId, roundId, questionId, 'system', null, randomMatch)
 }
 
 /* ==================================================================================================== */

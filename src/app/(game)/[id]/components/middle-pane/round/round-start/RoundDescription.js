@@ -32,15 +32,15 @@ export function RoundDescription({ round }) {
 
 function ProgressiveCluesRoundDescription({ round }) {
     return <>
-        <p className='text-2xl text-center'><strong>🕵️‍♂️ Plusieurs indices</strong> par question, de plus en plus évidents.</p>
+        <p className='text-2xl text-center'>🕵️‍♂️ Une <strong>liste d&apos;indices</strong> vous est dévoilée progressivement...</p>
         <br></br>
-        <p className='text-2xl text-center'>🧠 <strong>Fouillez dans votre mémoire</strong> et devinez l&apos;œuvre/la personne/... qui se cachent derrière.</p>
+        <p className='text-2xl text-center'>🧠 <strong>Fouillez dans votre mémoire</strong> et devinez l&apos;œuvre/la personne/... qui se cache derrière ces indices.</p>
     </>
 }
 
 function ImageRoundDescription({ round }) {
     return <>
-        <p className='text-2xl text-center'>🧐 Trouvez l&apos;œuvre ainsi que le lieu/personnage/objet/... qui se cachent derrière chaque image.</p>
+        <p className='text-2xl text-center'>🧐 Trouvez l&apos;œuvre ou le lieu/personnage/objet/... qui se cache derrière chaque image.</p>
     </>
 }
 
@@ -54,7 +54,7 @@ function BlindtestRoundDescription({ round }) {
 
 function EmojiRoundDescription({ round }) {
     return <>
-        <p className='text-2xl text-center'>🧐 Devinez l&apos;œuvre ainsi que le lieu/personnage/objet/... qui se cachent derrière chaque combinaison d&apos;emojis.</p>
+        <p className='text-2xl text-center'>🧐 Trouvez l&apos;œuvre ou le lieu/personnage/objet/... qui se cache derrière chaque combinaison d&apos;emojis.</p>
         <br></br>
         <p className='text-2xl text-center'>🧩 Cette combinaison peut évoquer les <strong>idées générales</strong>, ou il peut s&apos;agir juste d&apos;un <strong>rébus</strong>, ça dépend.</p>
     </>

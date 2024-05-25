@@ -52,6 +52,27 @@ export function shuffleMatching(numCols, numRows) {
     )
 }
 
+export function randomMatch(numCols, numRows) {
+    return Array.from({ length: numCols }, () => Math.floor(Math.random() * numRows));
+}
+
+export function generateNewMatch(numRows, numCols, incorrectMatches, correctMatchIndices) {
+    // Convert to a Set for efficient lookup
+    const incorrectMatchesSet = new Set(incorrectMatches.map(match => match.join(',')));
+    const correctMatchIndicesSet = new Set(correctMatchIndices);
+
+    let newMatch;
+
+    do {
+        newMatch = randomMatch(numCols, numRows);
+    } while (
+        newMatch.some(index => correctMatchIndicesSet.has(index)) ||
+        incorrectMatchesSet.has(newMatch.join(',')));
+
+    return newMatch;
+}
+
+
 // From a JS array of 3 elements, I want to calculate the largest sub-sequence of same values and return
 //-  the array of indices of those values
 // - The value itself

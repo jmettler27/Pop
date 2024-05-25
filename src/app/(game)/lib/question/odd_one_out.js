@@ -23,6 +23,7 @@ import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { getNextCyclicIndex, moveToHead } from '@/lib/utils/arrays';
 import { endQuestionTransaction } from '@/app/(game)/lib/question';
 import { updateTimerStateTransaction } from '../timer';
+import { OOO_ITEMS_LENGTH } from '@/lib/utils/question/odd_one_out';
 
 export async function handleProposalClick(gameId, roundId, questionId, userId, idx) {
     if (!gameId) {
@@ -64,7 +65,8 @@ const handleProposalClickTransaction = async (
         getDocDataTransaction(transaction, statesDocRef)
     ])
 
-    const teamId = statesData.chooserOrder[statesData.chooserIdx]
+    const { chooserOrder, chooserIdx } = statesData
+    const teamId = chooserOrder[chooserIdx]
 
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
     const q = query(playersCollectionRef, where('teamId', '==', teamId))
@@ -99,10 +101,10 @@ const handleProposalClickTransaction = async (
         for (const playerDoc of querySnapshot.docs) {
             transaction.update(playerDoc.ref, { status: 'wrong' })
         }
-        await addSoundToQueueTransaction(transaction, gameId, 'hysterical5')
+        addSoundToQueueTransaction(transaction, gameId, 'hysterical5')
 
         // Move the "winner" to the head of the chooser list
-        const newChooserOrder = moveToHead(teamId, statesData.chooserOrder)
+        const newChooserOrder = moveToHead(teamId, chooserOrder)
         transaction.update(statesDocRef, {
             chooserOrder: newChooserOrder
         })
@@ -111,8 +113,7 @@ const handleProposalClickTransaction = async (
             winner: {
                 playerId: userId,
                 teamId
-            },
-            dateEnd: serverTimestamp()
+            }
         })
 
         await endQuestionTransaction(transaction, gameId, roundId, questionId)
@@ -127,9 +128,6 @@ const handleProposalClickTransaction = async (
             }
             await addSoundToQueueTransaction(transaction, gameId, 'Akeryo_en_susu')
 
-            transaction.update(realtimeDocRef, {
-                dateEnd: serverTimestamp()
-            })
             await endQuestionTransaction(transaction, gameId, roundId, questionId)
         } else {
             // Case 3: Was a good proposal but not the last one
@@ -179,49 +177,21 @@ export const handleOOOCountdownEndTransaction = async (
     roundId,
     questionId
 ) => {
-    const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
-    const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
+    const realtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    const realtimeData = await getDocDataTransaction(transaction, realtimeRef)
 
-    const [gameStatesData, roundData, roundScoresData] = await Promise.all([
-        getDocDataTransaction(transaction, gameStatesRef),
-        getDocDataTransaction(transaction, roundRef),
-        getDocDataTransaction(transaction, roundScoresRef)
-    ])
+    const { selectedItems } = realtimeData
+    const selectedIdxsSet = new Set(selectedItems.map(item => item.idx));
 
-    const { chooserOrder, chooserIdx } = gameStatesData
-    const teamId = chooserOrder[chooserIdx]
-    const newChooserIdx = getNextCyclicIndex(chooserIdx, chooserOrder.length)
-
-    const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const q = query(playersCollectionRef, where('teamId', '==', teamId))
-    const playersQuerySnapshot = await getDocs(q)
-
-    const { mistakePenalty: penalty } = roundData
-    const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
-    const newRoundProgress = {}
-    for (const tid of Object.keys(currentRoundScores)) {
-        newRoundProgress[tid] = {
-            ...currentRoundProgress[tid],
-            [questionId]: currentRoundScores[tid] + (tid === teamId) * penalty
+    const remainingItems = [];
+    for (let i = 0; i < OOO_ITEMS_LENGTH; i++) {
+        if (!selectedIdxsSet.has(i)) {
+            remainingItems.push(i);
         }
     }
 
-    transaction.update(roundScoresRef, {
-        [`scores.${teamId}`]: increment(penalty),
-        scoresProgress: newRoundProgress
-    })
-
-    for (const playerDoc of playersQuerySnapshot.docs) {
-        transaction.update(playerDoc.ref, { status: 'wrong' })
-    }
-
-    transaction.update(gameStatesRef, {
-        chooserIdx: newChooserIdx
-    })
-
-    await addWrongAnswerSoundToQueueTransaction(transaction, gameId)
-    await updateTimerStateTransaction(transaction, gameId, 'resetted')
+    const randomIdx = remainingItems[Math.floor(Math.random() * remainingItems.length)];
+    await handleProposalClickTransaction(transaction, gameId, roundId, questionId, 'system', randomIdx)
 }
 
 /* ==================================================================================================== */
