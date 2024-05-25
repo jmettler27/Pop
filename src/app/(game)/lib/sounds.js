@@ -52,7 +52,8 @@ export async function clearSounds(gameId) {
 const WRONG_ANSWER_SOUNDS = [
     "roblox_oof",
     "oof",
-    "terraria_male_damage"
+    "terraria_male_damage",
+    "itai"
 ]
 
 import { getRandomElement } from '@/lib/utils/arrays';

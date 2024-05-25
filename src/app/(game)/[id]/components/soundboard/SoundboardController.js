@@ -1,17 +1,14 @@
 
 import { memo, useState, useEffect } from 'react'
-import { useGameContext } from '@/app/(game)/contexts'
-import { useUserContext } from '@/app/contexts'
 
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material'
 
 import { addSoundToQueue } from '@/app/(game)/lib/sounds'
 import { loadSounds } from '@/lib/utils/sounds'
+import { useParams } from 'next/navigation'
 
 const SoundboardController = memo(function SoundboardController({ }) {
-    // console.log("RENDERING SoundboardController")
-    const game = useGameContext()
-    const user = useUserContext()
+    const { id: gameId } = useParams()
 
     const [sounds, setSounds] = useState({})
     useEffect(() => {
@@ -24,7 +21,7 @@ const SoundboardController = memo(function SoundboardController({ }) {
 
     const handleSelectSound = async (e) => {
         e.preventDefault()
-        addSoundToQueue(game.id, e.target.value)
+        addSoundToQueue(gameId, e.target.value)
     }
 
     return (

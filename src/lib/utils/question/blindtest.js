@@ -3,11 +3,11 @@ export const BLINDTEST_TYPES = ['song', 'sound']
 
 export const BLINDTEST_TYPE_TO_TITLE = {
     'en': {
-        'song': 'Song',
+        'song': 'Music',
         'sound': 'Sound'
     },
     'fr-FR': {
-        'song': 'Chanson',
+        'song': 'Musique',
         'sound': 'Son'
     }
 }

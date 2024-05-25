@@ -141,6 +141,11 @@ export const startGameTransaction = async (
         scoresProgress: initTeamGameScoresProgress,
     })
 
+    const readyRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready')
+    transaction.update(readyRef, {
+        numReady: 0,
+    })
+
     await addSoundToQueueTransaction(transaction, gameId, 'ui-confirmation-alert-b2')
 
     await updateTimerStateTransaction(transaction, gameId, 'resetted')

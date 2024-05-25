@@ -110,7 +110,8 @@ const resetGameTransaction = async (
     })
 
     // Reset timer
-    const managerId = getRandomElement(organizersQuerySnapshot.docs).id
+    // const managerId = getRandomElement(organizersQuerySnapshot.docs).id
+    const managerId = organizersQuerySnapshot.docs[0].id
     await updateTimerTransaction(transaction, gameId, {
         status: 'resetted',
         duration: READY_COUNTDOWN_SECONDS,

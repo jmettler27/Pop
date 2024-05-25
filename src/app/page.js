@@ -23,10 +23,10 @@ export default function Home() {
     console.log("My id:", user.id)
 
     return (
-        <div>
+        <>
             <HomeBar />
             <UserHome user={user} />
-        </div>
+        </>
     )
 }
 

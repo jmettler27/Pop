@@ -35,17 +35,20 @@ function TimerController({ }) {
     const game = useGameContext();
     const myRole = useRoleContext();
 
-    const hasExecuted = useRef(false)
     const lastExecuted = useRef(null)
 
     const handleTimerEnd = async (timer) => {
-        console.log("Has executed:", hasExecuted.current)
         console.log("Last executed:", lastExecuted.current?.toLocaleString())
-        if ((hasExecuted.current && ((Date.now() - lastExecuted.current) <= 1000)) || (timer.managedBy !== user.id)) {
+        if (lastExecuted.current && ((Date.now() - lastExecuted.current) <= 1000)) {
+            console.log("HANDLE TIMER END: RETURN")
             return
         }
-        console.log("EXECUTING TIMER END")
-        hasExecuted.current = true
+        if (timer.managedBy !== user.id) {
+            console.log("HANDLE TIMER END: NOT MANAGED BY ME")
+            return
+        }
+
+        console.log("HANDLE TIMER END: EXECUTING")
         lastExecuted.current = Date.now()
 
         switch (game.status) {

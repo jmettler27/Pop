@@ -75,17 +75,17 @@ export function LaunchGameButton({ lang = 'fr-FR' }) {
 
 const LAUNCH_GAME_TITLE = {
     'en': "Launch game",
-    'fr-FR': "Démarrer la partie",
+    'fr-FR': "Lancer la partie",
 }
 
 const LAUNCH_GAME_DIALOG_TITLE = {
     'en': "Are you sure you want to launch this game?",
-    'fr-FR': "Êtes-vous sûr de vouloir démarrer cette partie?",
+    'fr-FR': "Êtes-vous sûr de vouloir lancer cette partie?",
 }
 
 const LAUNCH_GAME_DIALOG_WARNING = {
     'en': "The game will be publicly accessible for all users.",
-    'fr-FR': "La partie sera publiquement accessible pour tous les utilisateurs.",
+    'fr-FR': "La partie sera visible par tous les utilisateurs.",
 }
 
 const LAUNCH_GAME_DIALOG_ACTION_VALIDATE = {

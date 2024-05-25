@@ -198,13 +198,13 @@ function RoundQuestionAccordion({ game, roundId, questionId, order, hasEnded, is
                 }}
             >
                 <Typography sx={{ color: summaryColor() }}>
-                    <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong></span>
+                    <QuestionTitle question={question} order={order} />
                 </Typography>
             </AccordionSummary>
 
             {showComplete && (
                 <AccordionDetails>
-                    <QuestionTitle question={question} />
+                    <QuestionContent question={question} />
                     <QuestionAnswerDetails question={question} />
                     <QuestionWinner question={question} winnerPlayer={winnerPlayer} winnerTeam={winnerTeam} game={game} />
                 </AccordionDetails>
@@ -214,18 +214,30 @@ function RoundQuestionAccordion({ game, roundId, questionId, order, hasEnded, is
 }
 
 /* ============================================================================================ */
-function QuestionTitle({ question }) {
+function QuestionTitle({ question, order, lang = 'fr-FR' }) {
     switch (question.type) {
         case 'progressive_clues':
         case 'emoji':
         case 'image':
-            return (
-                <Typography>
-                    <strong>{question.details.title}</strong>
-                </Typography >
-            )
+            return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong>: {question.details.title}</span>
         case 'blindtest':
-            return <BlindtestTitle question={question} />
+            return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1} ({BLINDTEST_TYPE_TO_TITLE[lang][question.details.subtype]})</strong>: {question.details.title}</span>
+        // return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1} ({BLINDTEST_TYPE_TO_TITLE[lang][question.details.subtype]})</strong></span>
+        default:
+            return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong></span>
+    }
+}
+
+
+
+/* ============================================================================================ */
+function QuestionContent({ question }) {
+    switch (question.type) {
+        case 'progressive_clues':
+        case 'emoji':
+        case 'image':
+        case 'blindtest':
+            return <></>
         case 'mcq':
             return <MCQTitle question={question} />
         default:
@@ -237,13 +249,13 @@ function QuestionTitle({ question }) {
     }
 }
 
-function BlindtestTitle({ question }) {
-    return (
-        <Typography>
-            <strong>{BLINDTEST_TYPE_TO_TITLE['en'][question.details.subtype]}</strong>: {question.details.title}
-        </Typography>
-    )
-}
+// function BlindtestTitle({ question }) {
+//     return (
+//         <Typography>
+//             <strong>{BLINDTEST_TYPE_TO_TITLE['en'][question.details.subtype]}</strong>: {question.details.title}
+//         </Typography>
+//     )
+// }
 
 function MCQTitle({ question }) {
     return (
