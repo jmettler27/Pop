@@ -1,11 +1,11 @@
 import { useParams } from 'next/navigation'
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react'
 
-import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
-import { doc } from 'firebase/firestore';
-import { useDocumentData } from 'react-firebase-hooks/firestore';
+import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
+import { collection, doc, getDoc } from 'firebase/firestore';
+import { useCollectionData, useDocumentData } from 'react-firebase-hooks/firestore';
 
 import { Button } from '@mui/material';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material'
@@ -23,6 +23,7 @@ import { removeRoundFromGame } from '@/app/edit/[id]/lib/edit-game'
 import { AddQuestionToRoundButton } from '@/app/edit/[id]/components/AddNewQuestion'
 import { EditQuestionCard } from '@/app/edit/[id]/components/EditQuestionInRound';
 import clsx from 'clsx';
+import { topicToEmoji } from '@/lib/utils/topics';
 
 
 const editGameRoundCardNumCols = (roundType) => {
@@ -43,7 +44,6 @@ const editGameRoundCardNumCols = (roundType) => {
 
 export function EditGameRoundCard({ roundId }) {
     // <div className='border-dashed border-4 p-2 w-[30%] h-full overflow-auto'>
-    console.log("RENDERING EditGameRoundCard", roundId)
 
     const { id: gameId } = useParams()
     const roundDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
@@ -62,7 +62,7 @@ export function EditGameRoundCard({ roundId }) {
     return (
         <Card>
             <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
-                <CardTitle className='text-2xl'>{questionTypeToEmoji(round.type)} <i>{round.title}</i></CardTitle>
+                <CardTitle className='text-2xl'>{questionTypeToEmoji(round.type)} <i>{round.title}</i> <RoundTopicDistribution round={round} /></CardTitle>
                 <RemoveRoundFromGameButton roundId={round.id} />
             </CardHeader>
             <CardContent>
@@ -80,6 +80,51 @@ export function EditGameRoundCard({ roundId }) {
         </Card>
     )
 }
+
+const fetchTopics = async (questionIds) => {
+    const promises = questionIds.map(id => getDoc(doc(QUESTIONS_COLLECTION_REF, id)));
+    const documents = await Promise.all(promises);
+    return documents.map(doc => doc.data().topic);
+};
+
+
+function RoundTopicDistribution({ round }) {
+    const { questions: ids } = round
+
+    const [topics, setTopics] = useState([])
+
+
+    useEffect(() => {
+        fetchTopics(ids).then(topics => {
+
+            const topicDistribution = topics.reduce((acc, topic) => {
+                acc[topic] = acc[topic] ? acc[topic] + 1 : 1
+                return acc
+            }, {})
+
+            // Sort alphabetically by the keys
+            const sortedTopics = Object.keys(topicDistribution).sort().reduce((acc, key) => {
+                acc[key] = topicDistribution[key]
+                return acc
+            }, {})
+
+            setTopics(sortedTopics)
+
+        },
+            error => {
+                console.error("Error fetching topics", error)
+            }
+        )
+    }, [ids])
+
+    return (
+        <span className='text-xl'>
+            ({Object.entries(topics).map(([topic, count]) => `${topicToEmoji(topic)}x${count}`).join(', ')})
+        </span>
+    )
+
+}
+
 
 function EditGameRoundQuestionCards({ round }) {
     return round.questions.map((questionId, idx) => (

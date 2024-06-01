@@ -81,7 +81,7 @@ export default function Page({ params }) {
                     <nav className='grid items-start px-4 text-sm font-medium'>
                         <Link
                             className='flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50'
-                            href='#'>
+                            href='/'>
                             <HomeIcon className='h-6 w-6' />
                             Home
                         </Link>
@@ -183,7 +183,6 @@ export default function Page({ params }) {
 
 function EditGameRounds({ }) {
     const params = useParams()
-    console.log("Params", params)
 
     const gameId = params.id
     console.log("RENDERING EditGameRounds", gameId)
@@ -200,7 +199,6 @@ function EditGameRounds({ }) {
         return <></>
     }
     const roundIds = gameData.rounds
-    console.log("Game data", gameData)
 
     return (
         <main className='flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6'>

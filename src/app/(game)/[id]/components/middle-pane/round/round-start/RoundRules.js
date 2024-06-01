@@ -92,7 +92,7 @@ function QuoteRoundRules({ round }) {
         <p className='text-2xl text-center'>💡 Dès que vous avez une idée, <span className='font-bold text-red-500'>buzzez</span> en <strong>cliquant sur &quot;Buzz&quot;</strong>.
             Vous pouvez <span className='font-bold text-blue-400'>annuler votre buzz</span> en <strong>cliquant sur &quot;Annuler&quot;</strong>.</p>
         <p className='text-2xl text-center'>🥇 Si vous êtes en tête de la file d&apos;attente, proposez votre réponse à l&apos;oral.</p>
-        <p className='text-2xl text-center'>⏳ Vous avez <u><strong>{QUOTE_THINKING_TIME} secondes</strong></u> pour répondre, faute de quoi votre essai sera invalidé.</p>
+        <p className='text-2xl text-center'>⏳ Vous avez <u><strong>{QUOTE_THINKING_TIME} secondes</strong></u> pour répondre, faute de quoi votre essai sera invalidé !</p>
         <p className='text-2xl text-center'>⚠️ Vous disposez de <strong>{round.maxTries} essais par question</strong>.</p>
         <p className='text-2xl text-center'>😈 Vous pouvez gagner des points <strong>même si vous ne connaissez pas tous les éléments !</strong></p>
     </>
@@ -107,7 +107,7 @@ function OddOneOutRoundRules({ round }) {
             <li>Si la proposition est <span className='text-red-500 font-bold'>fausse</span>, on termine la question et l&apos;équipe obtient <strong>{round.mistakePenalty} point de pénalité.</strong> De plus, elle devient <strong>1ère dans l&apos;ordre de passage de la question suivante</strong>.</li>
         </ul>
         <p className='text-2xl text-center'>ℹ️ Une petite <strong>explication</strong> est affichée à chaque fois.</p>
-        <p className='text-2xl text-center'>⏳ Vous avez <u><strong>{OOO_THINKING_TIME} secondes</strong></u> pour vous décider, faute de quoi <strong>une proposition sera choisie aléatoirement dans la liste</strong>.</p>
+        <p className='text-2xl text-center'>⏳ Vous avez <u><strong>{OOO_THINKING_TIME} secondes</strong></u> pour vous décider, faute de quoi <strong>une proposition sera choisie aléatoirement dans la liste !</strong></p>
         <p className='text-2xl text-center'>L&apos;ordre de passage = {round.order > 0 ? `Le classement inversé de la manche ${round.order}` : 'Un ordre aléatoire'}.</p>
     </>
 }
@@ -135,7 +135,7 @@ function MatchingRoundRules({ round }) {
             <li>Si le lien est <span className='text-red-500 font-bold'>faux</span>, l&apos;équipe obtient <strong>{round.mistakePenalty} point de pénalité.</strong></li>
         </ul>
         <p className='text-2xl text-center'>⚠️ <strong>Dans tous les cas, le lien est dessiné !</strong></p>
-        <p className='text-2xl text-center'>⏳ Vous avez <u><strong>entre {MATCHING_THINKING_TIME * (MATCHING_MIN_NUM_COLS - 1)} et {MATCHING_THINKING_TIME * (MATCHING_MAX_NUM_COLS - 1)} secondes</strong></u> pour vous décider, faute de quoi <strong>un lien aléatoire sera dessiné</strong>.</p>
+        <p className='text-2xl text-center'>⏳ Vous avez <u><strong>entre {MATCHING_THINKING_TIME * (MATCHING_MIN_NUM_COLS - 1)} et {MATCHING_THINKING_TIME * (MATCHING_MAX_NUM_COLS - 1)} secondes</strong></u> pour vous décider, faute de quoi <strong>un lien aléatoire sera dessiné !</strong></p>
         <p className='text-2xl text-center'>L&apos;ordre de passage = {round.order > 0 ? `Le classement inversé de la manche ${round.order}` : 'Un ordre aléatoire'}.</p>
     </>
 }

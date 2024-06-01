@@ -82,29 +82,29 @@ function QuestionCardFooter({ question, lang = 'fr-FR' }) {
 export function QuestionCardContent({ question }) {
     switch (question.type) {
         case 'progressive_clues':
-            return <ProgressiveCluesMainContent question={question} />
+            return <ProgressiveCluesCardMainContent question={question} />
         case 'image':
-            return <ImageMainContent question={question} />
+            return <ImageCardMainContent question={question} />
         case 'emoji':
-            return <EmojiMainContent question={question} />
+            return <EmojiCardMainContent question={question} />
         case 'blindtest':
-            return <BlindtestMainContent question={question} />
+            return <BlindtestCardMainContent question={question} />
         case 'quote':
-            return <QuoteMainContent question={question} />
+            return <QuoteCardMainContent question={question} />
         case 'enum':
-            return <EnumMainContent question={question} />
+            return <EnumCardMainContent question={question} />
         case 'odd_one_out':
-            return <OddOneOutMainContent question={question} />
+            return <OOOCardMainContent question={question} />
         case 'matching':
-            return <MatchingMainContent question={question} />
+            return <MatchingCardMainContent question={question} />
         case 'mcq':
-            return <MCQMainContent question={question} />
+            return <MCQCardMainContent question={question} />
         default:
             return <></>
     }
 }
 
-const ProgressiveCluesMainContent = ({ question }) => {
+const ProgressiveCluesCardMainContent = ({ question }) => {
     const answer = question.details.answer
     return (
         <div className='flex flex-col w-full space-y-2'>
@@ -129,7 +129,7 @@ const ProgressiveCluesMainContent = ({ question }) => {
     );
 }
 
-const ImageMainContent = ({ question }) => {
+const ImageCardMainContent = ({ question }) => {
     const answer = question.details.answer
     return (
         <div className='flex flex-col w-full space-y-2'>
@@ -151,7 +151,7 @@ const ImageMainContent = ({ question }) => {
     );
 }
 
-const EmojiMainContent = ({ question }) => {
+const EmojiCardMainContent = ({ question }) => {
     const { answer: { image, title }, clue } = question.details
 
     return (
@@ -175,7 +175,7 @@ const EmojiMainContent = ({ question }) => {
     );
 }
 
-const BlindtestMainContent = ({ question }) => {
+const BlindtestCardMainContent = ({ question }) => {
     const { answer: { image, title, author, source } } = question.details
 
     return (
@@ -203,7 +203,7 @@ const BlindtestMainContent = ({ question }) => {
 
 
 
-const QuoteMainContent = ({ question }) => {
+const QuoteCardMainContent = ({ question }) => {
     const { quote, source, author, toGuess, quoteParts } = question.details
 
     return (
@@ -253,7 +253,7 @@ const DisplayedQuote = ({ toGuess, quote, quoteParts }) => {
 
 const ENUM_MAX_NUM_ELEMENTS = 10
 
-const EnumMainContent = ({ question }) => {
+const EnumCardMainContent = ({ question }) => {
     const { note, maxIsKnown, thinkingTime, challengeTime, answer } = question.details
     const totalNumElements = answer.length
 
@@ -275,17 +275,16 @@ const EnumMainContent = ({ question }) => {
     );
 }
 
-const OddOneOutMainContent = ({ question }) => {
+const OOOCardMainContent = ({ question }) => {
     const { items, answerIdx } = question.details
 
     return (
         <div className='flex flex-col w-full space-y-2'>
             <ul className='list-disc py-1 pl-5'>
                 {items.map((item, idx) => (
-
                     <li key={idx} className={clsx(idx === answerIdx ? 'text-red-500' : 'dark:text-white', 'hover:font-bold cursor-pointer')}>
                         <Tooltip key={idx} title={item.explanation} placement='right-start' arrow>
-                            {item.title}
+                            <span>{item.title}</span>
                         </Tooltip>
                     </li>
                 ))}
@@ -295,7 +294,7 @@ const OddOneOutMainContent = ({ question }) => {
 
 }
 
-const MatchingMainContent = ({ question }) => {
+const MatchingCardMainContent = ({ question }) => {
     const { answer, numCols } = question.details
 
     return (
@@ -314,7 +313,7 @@ const MatchingMainContent = ({ question }) => {
     );
 }
 
-const MCQMainContent = ({ question }) => {
+const MCQCardMainContent = ({ question }) => {
     const { source, note, explanation, choices, answerIdx, duoIdx } = question.details
 
     return (

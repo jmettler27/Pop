@@ -4,8 +4,6 @@ import { ROUND_HEADER_TEXT } from '@/lib/utils/round'
 
 export default function FinaleHomeMiddlePane({ round }) {
 
-    console.log(round)
-
     return (
         <div className='flex flex-col h-full w-full items-center justify-center'>
             <div className='flex h-[10%] w-full items-center justify-center'>

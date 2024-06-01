@@ -69,7 +69,6 @@ function GameHomeRounds() {
         if (a.title > b.title) return 1
         return 0
     })
-    console.log(activeNonFinaleRounds)
 
     const endedNonFinaleRounds = nonFinaleRounds.filter(round => round.order !== null).sort((a, b) => a.order - b.order)
 

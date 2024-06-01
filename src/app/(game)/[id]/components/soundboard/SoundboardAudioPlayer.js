@@ -15,14 +15,11 @@ import { loadSounds } from '@/lib/utils/sounds'
 const initVolume = 0.4
 
 const SoundboardAudioPlayer = memo(function SoundboardAudioPlayer({ }) {
-    console.log("RENDERING SoundboardAudioPlayer")
-
     const { id: gameId } = useParams()
     const [sounds, setSounds] = useState(null)
     const [volume, setVolume] = useState(initVolume)
 
     const newestSoundIdRef = useRef(null)
-    console.log("Newest sound id: ", newestSoundIdRef.current)
 
     useEffect(() => {
         const loadSoundsData = async () => {
@@ -33,12 +30,10 @@ const SoundboardAudioPlayer = memo(function SoundboardAudioPlayer({ }) {
     }, [])
 
     useEffect(() => {
-        console.log("RERENDER USE EFFECT")
         if (sounds && Object.keys(sounds).length > 0) {
             const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue')
             const q = query(queueCollectionRef)
             const unsubscribe = onSnapshot(q, snapshot => {
-                console.log("==============================================================")
                 snapshot.docChanges().forEach(change => {
                     if (change.type === "added") {
                         const newSound = { ...change.doc.data(), id: change.doc.id }
