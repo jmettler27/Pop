@@ -32,19 +32,27 @@ export default function OddOneOutMiddlePane({ question }) {
 
     return (
         <div className='flex flex-col h-full items-center'>
-            <div className='h-[10%] flex flex-col items-center justify-center'>
+            <div className='h-[15%] w-full flex flex-col items-center justify-center'>
                 <OddOneOutQuestionHeader question={question} />
             </div>
-            <OddOneOutMainContent question={question} randomization={randomMapping} />
+            <div className={clsx(
+                'h-[85%] w-full flex flex-col items-center justify-center',
+                // (game.status === 'question_end') ? (realtime.winner ? 'bg-odd-one-out-wrong' : 'bg-odd-one-out-correct') : 'bg-odd-one-out'
+            )}>
+                <OddOneOutMainContent question={question} randomization={randomMapping} />
+            </div>
         </div>
     )
 }
 
 function OddOneOutQuestionHeader({ question }) {
     return (
-        <div className='flex flex-row items-center justify-center space-x-1'>
-            <QuestionTypeIcon questionType={question.type} fontSize={40} />
-            <h1 className='2xl:text-5xl'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong>: {question.details.title}</h1>
+        <div className='flex flex-col items-center justify-center space-y-2'>
+            <div className='flex flex-row items-center justify-center space-x-1'>
+                <QuestionTypeIcon questionType={question.type} fontSize={50} />
+                <h1 className='2xl:text-5xl'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong></h1>
+            </div>
+            <h2 className='2xl:text-5xl'>{question.details.title}</h2>
         </div>
     )
 }
@@ -71,14 +79,7 @@ function OddOneOutMainContent({ question, randomization }) {
 
     const isChooser = gameStates.chooserOrder[gameStates.chooserIdx] === myTeam
 
-    return (
-        <div className={clsx(
-            'h-[90%] w-full flex flex-col items-center justify-center',
-            // (game.status === 'question_end') ? (realtime.winner ? 'bg-odd-one-out-wrong' : 'bg-odd-one-out-correct') : 'bg-odd-one-out'
-        )}>
-            <OddOneOutProposals question={question} randomization={randomization} selectedItems={realtime.selectedItems} isChooser={isChooser} />
-        </div>
-    )
+    return <OddOneOutProposals question={question} randomization={randomization} selectedItems={realtime.selectedItems} isChooser={isChooser} />
 }
 
 function OddOneOutProposals({ question, randomization, selectedItems, isChooser }) {

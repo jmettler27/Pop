@@ -15,7 +15,7 @@ export default function EmojiMainContent({ question }) {
 
 
 function ActiveEmojiMainContent({ question }) {
-    return <span className='2xl:text-9xl'>{question.details.clue}</span>
+    return <span className='text-9xl'>{question.details.clue}</span>
 }
 
 function EndedEmojiMainContent({ question }) {
@@ -27,8 +27,8 @@ function EndedEmojiMainContent({ question }) {
                 <FirebaseImage url={image} alt={title} />
             </Box>
             <Box className='flex flex-col h-3/4 max-w-1/2 items-start justify-center space-y-2'>
-                <span className='2xl:text-7xl'>{clue}</span>
-                <span className='2xl:text-4xl text-green-500'><strong>{title}</strong></span>
+                <span className='text-7xl'>{clue}</span>
+                <span className='text-4xl text-green-500'><strong>{title}</strong></span>
             </Box>
         </Box>
     )

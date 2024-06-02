@@ -21,10 +21,10 @@ export default function RiddleMiddlePane({ question }) {
             'flex flex-col h-full items-center',
             // question.type === 'progressive_clues' && 'bg-progressive-clues',
         )}>
-            <div className='flex h-[10%]'>
+            <div className='flex h-[15%]'>
                 <RiddleQuestionHeader question={question} />
             </div>
-            <div className='flex h-[80%] w-full items-center justify-center'>
+            <div className='flex h-[75%] w-full items-center justify-center'>
                 <RiddleMainContent question={question} showComplete={showAnswer} />
             </div>
             <div className='flex h-[10%]'>
@@ -37,9 +37,12 @@ export default function RiddleMiddlePane({ question }) {
 
 function RiddleQuestionHeader({ question }) {
     return (
-        <div className='flex flex-row items-center justify-center '>
-            <QuestionTypeIcon questionType={question.type} fontSize={50} />
-            <h1 className='2xl:text-5xl'>{question.type === 'blindtest' && blindtestTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong>: {question.details.title}</h1>
+        <div className='flex flex-col items-center justify-center space-y-2'>
+            <div className='flex flex-row items-center justify-center space-x-1'>
+                <QuestionTypeIcon questionType={question.type} fontSize={50} />
+                <h1 className='2xl:text-5xl'>{question.type === 'blindtest' && blindtestTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong></h1>
+            </div>
+            <h2 className='2xl:text-5xl'>{question.details.title}</h2>
         </div>
     )
 }
