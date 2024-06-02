@@ -81,7 +81,7 @@ export function GameUnderConstructionCard({ game, lang = 'fr-FR' }) {
     return (
         <Card>
             <CardHeader className='flex flex-row items-center justify-around pb-2'>
-                <CardTitle className='2xl:text-lg font-medium'>{gameTypeToEmoji(game.type)} {localeToEmoji(game.lang)} <i>{game.title}</i></CardTitle>
+                <CardTitle className='text-lg font-medium'>{gameTypeToEmoji(game.type)} {localeToEmoji(game.lang)} <i>{game.title}</i></CardTitle>
                 {isOrganizer && <EditGameButton gameId={game.id} />}
             </CardHeader>
             <CardContent>

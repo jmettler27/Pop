@@ -45,8 +45,8 @@ export function EditQuestionCard({ roundId, questionId, questionOrder }) {
     return (
         <Card>
             <CardHeader className='flex flex-row items-center justify-between'>
-                {/* <span className='2xl:text-base md:text-lg dark:text-white'>#{questionOrder + 1}</span> */}
-                <CardTitle className='2xl:text-base md:text-lg dark:text-white'><QuestionCardTitle question={questionData} /></CardTitle>
+                {/* <span className='text-base md:text-lg dark:text-white'>#{questionOrder + 1}</span> */}
+                <CardTitle className='text-base md:text-lg dark:text-white'><QuestionCardTitle question={questionData} /></CardTitle>
                 <RemoveQuestionFromRoundButton roundId={roundId} questionId={questionId} />
             </CardHeader>
 

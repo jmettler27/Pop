@@ -139,7 +139,7 @@ function MCQChoices({ question, realtime }) {
                         <ListItemText
                             primary={`${MCQ_CHOICES[idx]}. ${choice}`}
                             primaryTypographyProps={{
-                                className: clsx('text-2xl')
+                                className: '2xl:text-2xl'
                             }}
                         />
                     </ListItemButton>
@@ -211,7 +211,7 @@ function MCQAnswerChoices({ question, realtime }) {
                 >
                     <ListItemText
                         primary={`${MCQ_CHOICES[idx]}. ${choice}`}
-                        primaryTypographyProps={{ className: clsx('text-2xl', getTextColor(idx)) }}
+                        primaryTypographyProps={{ className: clsx('2xl:text-2xl', getTextColor(idx)) }}
                     />
                     {getListItemIcon(idx)}
                 </ListItemButton>

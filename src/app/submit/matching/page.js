@@ -215,7 +215,7 @@ function EnterMatchesStep({ onSubmit }) {
                         {matches.length > 0 &&
                             matches.map((match, row) => (
                                 <Box key={row} component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: '500px' }}>
-                                    <span className='2xl:text-lg'>Match #{row + 1}</span>
+                                    <span className='text-lg'>Match #{row + 1}</span>
 
                                     <IconButton
                                         color='error'

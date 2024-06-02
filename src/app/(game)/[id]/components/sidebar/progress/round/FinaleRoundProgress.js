@@ -175,7 +175,7 @@ function FinaleRoundThemeProgress({ round, lang = 'fr-FR' }) {
 
     return (
         <>
-            <h2 className='2xl:text-lg'>{topicToEmoji(theme.topic)} <strong>{THEME_TEXT[lang]} {themeRealtime.order + 1}</strong>: {theme.details.title}</h2>
+            <h2 className='text-lg'>{topicToEmoji(theme.topic)} <strong>{THEME_TEXT[lang]} {themeRealtime.order + 1}</strong>: {theme.details.title}</h2>
 
             <div className='w-full m-1 px-2'>
                 {sortedSectionRealtimes.map((sectionRealtime, idx) => (
@@ -294,7 +294,7 @@ function SectionSummary({ themeId, sectionId, sectionOrder, showComplete, isCurr
         <Typography className={clsx(
             isCurrent && 'text-orange-300',
         )}>
-            <span className='2xl:text-lg'><strong>{THEME_SECTION_TEXT[lang]} {sectionOrder + 1}</strong>: {section.title && `${(showComplete || isCurrent) ? section.title : '???'}`}</span>
+            <span className='text-lg'><strong>{THEME_SECTION_TEXT[lang]} {sectionOrder + 1}</strong>: {section.title && `${(showComplete || isCurrent) ? section.title : '???'}`}</span>
         </Typography>
     )
 }

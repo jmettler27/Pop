@@ -200,7 +200,7 @@ function GameHomeRoundItem({ round, isDisabled, onSelectRound, locale = 'fr-FR' 
                 }}
                 primary={round.title}
                 primaryTypographyProps={{
-                    className: 'text-2xl'
+                    className: '2xl:text-2xl'
                 }}
                 secondary={secondaryText()}
                 secondaryTypographyProps={{

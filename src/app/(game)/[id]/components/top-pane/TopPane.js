@@ -98,7 +98,7 @@ function PlayerItem({ player }) {
 
 function PlayerName({ player }) {
     return (
-        <span className={clsx('text-xl', playerNameGlowColor(player.status), playerNameColor(player.status))}>
+        <span className={clsx('2xl:text-xl', playerNameGlowColor(player.status), playerNameColor(player.status))}>
             {player.name}
         </span>
     )

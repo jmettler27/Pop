@@ -37,8 +37,8 @@ function ProgressiveCluesRoundRules({ round }) {
             Vous pouvez <span className='font-bold text-blue-400'>annuler votre buzz</span> en <strong>cliquant sur &quot;Annuler&quot;</strong>.</p>
         <p className='2xl:text-2xl text-center'>🥇 Si vous êtes en tête de la file d&apos;attente, proposez votre réponse à l&apos;oral.</p>
         <ul className='2xl:text-2xl list-disc pl-10'>
-            <li>Si votre réponse est <span className='2xl:text-green-500 font-bold'>correcte</span>, vous gagnez <strong>{round.rewardsPerQuestion} point</strong> et la question se termine.</li>
-            <li>Si votre réponse est <span className='2xl:text-red-500 font-bold'>incorrecte</span>, votre essai est invalidé et on passe au prochain joueur dans la file d&apos;attente, s&apos;il y en a un. De plus, <strong>votre buzzer est désactivé jusqu&apos;à l&apos;indice i + {round.delay}</strong>.</li>
+            <li>Si votre réponse est <span className='text-green-500 font-bold'>correcte</span>, vous gagnez <strong>{round.rewardsPerQuestion} point</strong> et la question se termine.</li>
+            <li>Si votre réponse est <span className='text-red-500 font-bold'>incorrecte</span>, votre essai est invalidé et on passe au prochain joueur dans la file d&apos;attente, s&apos;il y en a un. De plus, <strong>votre buzzer est désactivé jusqu&apos;à l&apos;indice i + {round.delay}</strong>.</li>
         </ul>
         <p className='2xl:text-2xl text-center'>⏳ Vous avez <u><strong>{PROGRESSIVE_CLUES_THINKING_TIME} secondes</strong></u> pour répondre, faute de quoi votre essai sera invalidé !</p>
         <p className='2xl:text-2xl text-center'>⚠️ Vous disposez de <strong>{round.maxTries} essais par question</strong>.</p>
@@ -51,8 +51,8 @@ function EmojiRoundRules({ round }) {
             Vous pouvez <span className='font-bold text-blue-400'>annuler votre buzz</span> en <strong>cliquant sur &quot;Annuler&quot;</strong>.</p>
         <p className='2xl:text-2xl text-center'>🥇 Si vous êtes en tête de la file d&apos;attente, proposez votre réponse à l&apos;oral.</p>
         <ul className='2xl:text-2xl list-disc pl-10'>
-            <li>Si votre réponse est <span className='2xl:text-green-500 font-bold'>correcte</span>, vous gagnez <strong>{round.rewardsPerQuestion} point</strong> et la question se termine.</li>
-            <li>Si votre réponse est <span className='2xl:text-red-500 font-bold'>incorrecte</span>, votre essai est invalidé et on passe au prochain joueur dans la file d&apos;attente, s&apos;il y en a un.</li>
+            <li>Si votre réponse est <span className='text-green-500 font-bold'>correcte</span>, vous gagnez <strong>{round.rewardsPerQuestion} point</strong> et la question se termine.</li>
+            <li>Si votre réponse est <span className='text-red-500 font-bold'>incorrecte</span>, votre essai est invalidé et on passe au prochain joueur dans la file d&apos;attente, s&apos;il y en a un.</li>
         </ul>
         <p className='2xl:text-2xl text-center'>⏳ Vous avez <u><strong>{EMOJI_THINKING_TIME} secondes</strong></u> pour répondre, faute de quoi votre essai sera invalidé !</p>
         <p className='2xl:text-2xl text-center'>⚠️ Vous disposez de <strong>{round.maxTries} essais par question</strong>.</p>
@@ -65,8 +65,8 @@ function ImageRoundRules({ round }) {
             Vous pouvez <span className='font-bold text-blue-400'>annuler votre buzz</span> en <strong>cliquant sur &quot;Annuler&quot;</strong>.</p>
         <p className='2xl:text-2xl text-center'>🥇 Si vous êtes en tête de la file d&apos;attente, proposez votre réponse à l&apos;oral.</p>
         <ul className='2xl:text-2xl list-disc pl-10'>
-            <li>Si votre réponse est <span className='2xl:text-green-500 font-bold'>correcte</span>, vous gagnez <strong>{round.rewardsPerQuestion} point</strong> et la question se termine.</li>
-            <li>Si votre réponse est <span className='2xl:text-red-500 font-bold'>incorrecte</span>, votre essai est invalidé et on passe au prochain joueur dans la file d&apos;attente, s&apos;il y en a un.</li>
+            <li>Si votre réponse est <span className='text-green-500 font-bold'>correcte</span>, vous gagnez <strong>{round.rewardsPerQuestion} point</strong> et la question se termine.</li>
+            <li>Si votre réponse est <span className='text-red-500 font-bold'>incorrecte</span>, votre essai est invalidé et on passe au prochain joueur dans la file d&apos;attente, s&apos;il y en a un.</li>
         </ul>
         <p className='2xl:text-2xl text-center'>⏳ Vous avez <u><strong>{IMAGE_THINKING_TIME} secondes</strong></u> pour répondre, faute de quoi votre essai sera invalidé !</p>
         <p className='2xl:text-2xl text-center'>⚠️ Vous disposez de <strong>{round.maxTries} essais par question</strong>.</p>
@@ -79,8 +79,8 @@ function BlindtestRoundRules({ round }) {
             Vous pouvez <span className='font-bold text-blue-400'>annuler votre buzz</span> en <strong>cliquant sur &quot;Annuler&quot;</strong>.</p>
         <p className='2xl:text-2xl text-center'>🥇 Si vous êtes en tête de la file d&apos;attente, proposez votre réponse à l&apos;oral.</p>
         <ul className='2xl:text-2xl list-disc pl-10'>
-            <li>Si votre réponse est <span className='2xl:text-green-500 font-bold'>correcte</span>, vous gagnez <strong>{round.rewardsPerQuestion} point</strong> et la question se termine.</li>
-            <li>Si votre réponse est <span className='2xl:text-red-500 font-bold'>incorrecte</span>, votre essai est invalidé et on passe au prochain joueur dans la file d&apos;attente, s&apos;il y en a un.</li>
+            <li>Si votre réponse est <span className='text-green-500 font-bold'>correcte</span>, vous gagnez <strong>{round.rewardsPerQuestion} point</strong> et la question se termine.</li>
+            <li>Si votre réponse est <span className='text-red-500 font-bold'>incorrecte</span>, votre essai est invalidé et on passe au prochain joueur dans la file d&apos;attente, s&apos;il y en a un.</li>
         </ul>
         <p className='2xl:text-2xl text-center'>⏳ Vous avez <u><strong>{BLINDTEST_THINKING_TIME} secondes</strong></u> pour répondre, faute de quoi votre essai sera invalidé !</p>
         <p className='2xl:text-2xl text-center'>⚠️ Vous disposez de <strong>{round.maxTries} essais par question</strong>.</p>
@@ -103,8 +103,8 @@ function OddOneOutRoundRules({ round }) {
     return <>
         <p className='2xl:text-2xl text-center'>🖱️ Chaque équipe se relaie à son tour et <strong>clique sur une proposition de la liste qu&apos;elle considère juste</strong>.</p>
         <ul className='2xl:text-2xl list-disc pl-10'>
-            <li>Si la proposition est <span className='2xl:text-green-500 font-bold'>correcte</span>, on passe à l&apos;équipe suivante.</li>
-            <li>Si la proposition est <span className='2xl:text-red-500 font-bold'>incorrecte</span>, on termine la question et l&apos;équipe obtient <strong>{round.mistakePenalty} point de pénalité.</strong> De plus, elle devient <strong>1ère dans l&apos;ordre de passage de la question suivante</strong>.</li>
+            <li>Si la proposition est <span className='text-green-500 font-bold'>correcte</span>, on passe à l&apos;équipe suivante.</li>
+            <li>Si la proposition est <span className='text-red-500 font-bold'>incorrecte</span>, on termine la question et l&apos;équipe obtient <strong>{round.mistakePenalty} point de pénalité.</strong> De plus, elle devient <strong>1ère dans l&apos;ordre de passage de la question suivante</strong>.</li>
         </ul>
         <p className='2xl:text-2xl text-center'>ℹ️ Une petite <strong>explication</strong> est affichée à chaque fois.</p>
         <p className='2xl:text-2xl text-center'>⏳ Vous avez <u><strong>{OOO_THINKING_TIME} secondes</strong></u> pour vous décider, faute de quoi <strong>une proposition sera choisie aléatoirement dans la liste !</strong></p>
@@ -121,8 +121,8 @@ function EnumRoundRules({ round }) {
         </ol>
         <p className='2xl:text-2xl'>Il y a alors deux issues possibles :</p>
         <ul className='2xl:text-2xl list-disc pl-10'>
-            <li>Le pari est <span className='2xl:text-green-500 font-bold'>réalisé</span>: l&apos;équipe remporte <strong>{round.rewardsPerQuestion} point</strong>, <strong>+{round.rewardsForBonus} point bonus</strong> si elle énonce encore plus de réponses qu&apos;annoncé.</li>
-            <li>Le pari n&apos;est <span className='2xl:text-red-500 font-bold'>pas réalisé</span>: toutes les autres équipes remportent <strong>{round.rewardsPerQuestion} point</strong>.</li>
+            <li>Le pari est <span className='text-green-500 font-bold'>réalisé</span>: l&apos;équipe remporte <strong>{round.rewardsPerQuestion} point</strong>, <strong>+{round.rewardsForBonus} point bonus</strong> si elle énonce encore plus de réponses qu&apos;annoncé.</li>
+            <li>Le pari n&apos;est <span className='text-red-500 font-bold'>pas réalisé</span>: toutes les autres équipes remportent <strong>{round.rewardsPerQuestion} point</strong>.</li>
         </ul>
     </>
 }
@@ -131,8 +131,8 @@ function MatchingRoundRules({ round }) {
     return <>
         <p className='2xl:text-2xl text-center'>🖱️ Chaque équipe se relaie à son tour et <strong>clique sur les propositions </strong> du lien qu&apos;elle considère juste, <span className='font-bold underline'>de gauche à droite</span>.</p>
         <ul className='2xl:text-2xl list-disc pl-10'>
-            <li>Si le lien est <span className='2xl:text-green-500 font-bold'>correct</span>, on passe à l&apos;équipe suivante.</li>
-            <li>Si le lien est <span className='2xl:text-red-500 font-bold'>incorrect</span>, l&apos;équipe obtient <strong>{round.mistakePenalty} point de pénalité.</strong></li>
+            <li>Si le lien est <span className='text-green-500 font-bold'>correct</span>, on passe à l&apos;équipe suivante.</li>
+            <li>Si le lien est <span className='text-red-500 font-bold'>incorrect</span>, l&apos;équipe obtient <strong>{round.mistakePenalty} point de pénalité.</strong></li>
         </ul>
         <p className='2xl:text-2xl text-center'>⚠️ <strong>Dans tous les cas, le lien est dessiné !</strong></p>
         <p className='2xl:text-2xl text-center'>⏳ Vous avez <u><strong>entre {MATCHING_THINKING_TIME * (MATCHING_MIN_NUM_COLS - 1)} et {MATCHING_THINKING_TIME * (MATCHING_MAX_NUM_COLS - 1)} secondes</strong></u> pour vous décider, faute de quoi <strong>un lien aléatoire sera dessiné !</strong></p>

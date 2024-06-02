@@ -80,7 +80,7 @@ function OddOneOutRoundDescription({ round }) {
     return <>
         <p className='2xl:text-2xl text-center'>🔀 Une liste de <strong>{OOO_ITEMS_LENGTH} propositions</strong>, affichée dans un <strong>ordre aléatoire</strong> pour chaque participant.</p>
         <br />
-        <p className='2xl:text-2xl text-center'><span className='2xl:text-green-500'>Toutes vraies</span>, <span className='font-bold text-red-500'>sauf une!</span></p>
+        <p className='2xl:text-2xl text-center'><span className='text-green-500'>Toutes vraies</span>, <span className='font-bold text-red-500'>sauf une!</span></p>
         <br />
         <p className='2xl:text-2xl text-center'>Si vous connaissez l&apos;intrus, <strong>gardez-le secret</strong>... 🤫</p>
     </>

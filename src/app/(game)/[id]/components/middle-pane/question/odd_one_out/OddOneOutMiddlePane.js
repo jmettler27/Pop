@@ -210,7 +210,7 @@ function ProposalItem({ item, onProposalClick, onAccordionChange, selectedItem, 
                 sx={{ color: 'text.primary' }}
                 primary={item.title}
                 primaryTypographyProps={{
-                    className: clsx('text-2xl')
+                    className: '2xl:text-2xl'
                 }}
             />
         </ListItemButton >

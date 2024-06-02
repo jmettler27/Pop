@@ -218,14 +218,14 @@ function QuestionSummary({ question, order, lang = 'fr-FR' }) {
         case 'progressive_clues':
         case 'emoji':
         case 'image':
-            return <span className='2xl:text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong>: {question.details.title}</span>
+            return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong>: {question.details.title}</span>
         case 'blindtest':
-            // return <span className='2xl:text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1} ({BLINDTEST_TYPE_TO_TITLE[lang][question.details.subtype]})</strong>: {question.details.title}</span>
-            return <span className='2xl:text-lg'>{blindtestTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong></span>
+            // return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1} ({BLINDTEST_TYPE_TO_TITLE[lang][question.details.subtype]})</strong>: {question.details.title}</span>
+            return <span className='text-lg'>{blindtestTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong></span>
         case 'matching':
-            return <span className='2xl:text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong> ({question.details.numCols} col)</span>
+            return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong> ({question.details.numCols} col)</span>
         default:
-            return <span className='2xl:text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong></span>
+            return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong></span>
     }
 }
 
@@ -299,7 +299,7 @@ function EnumQuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = '
     //     <Typography>
     //         🏅 {winnerTeam ?
     //             <span style={{ color: winnerTeam.color }}>{winnerPlayer.name} {winnerTeam.teamAllowed && `(${winnerTeam.name})`}: {numCited}/{bet}</span> :
-    //             <span className='italic opacity-50'>{NO_WINNER_TEXT[lang]} {players.challenger && <span className='2xl:text-red-500'>({numCited}/{bet})</span>}</span>
+    //             <span className='italic opacity-50'>{NO_WINNER_TEXT[lang]} {players.challenger && <span className='text-red-500'>({numCited}/{bet})</span>}</span>
     //         }
     //     </Typography>
     // )

@@ -102,7 +102,7 @@ function EnumQuestionAnswer({ answer }) {
                 return (
                     <li key={index}
                         className={clsx(
-                            'text-3xl max-w-md pointer-events-none',
+                            '2xl:text-3xl max-w-md pointer-events-none',
                             isCited && 'text-green-500',
                             !(showComplete || isCited) && 'opacity-0',
                             isSelectable && 'pointer-events-auto cursor-pointer hover:opacity-50'

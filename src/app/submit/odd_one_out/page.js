@@ -174,7 +174,7 @@ function EnterItemsStep({ onSubmit, validationSchema }) {
                         {values.items.length > 0 &&
                             values.items.map((item, index) => (
                                 <Box key={index} component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: '500px' }}>
-                                    <span className='2xl:text-lg'>Item #{index + 1}</span>
+                                    <span className='text-lg'>Item #{index + 1}</span>
 
                                     <IconButton
                                         color='error'

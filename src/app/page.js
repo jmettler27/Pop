@@ -1,10 +1,7 @@
 "use client";
 
 import { redirect } from "next/navigation";
-import { useSession, signOut } from "next-auth/react"
-
-import { Avatar, Button } from "@mui/material";
-import LogoutIcon from '@mui/icons-material/Logout'
+import { useSession } from "next-auth/react"
 
 import OngoingGames from "@/app/components/home/OngoingGames";
 import GamesUnderConstruction from "@/app/components/home/GamesUnderConstruction";
@@ -30,42 +27,7 @@ export default function Home() {
     )
 }
 
-function UserSidebar({ user }) {
-    // const user = useUserContext()
 
-    return (
-        <div className="flex flex-col w-1/5 divide-y divide-dashed">
-
-            <div className="flex flex-col h-1/5 items-center justify-around">
-                <p className="text-2xl text-clip">{user.name}</p>
-                <Avatar
-                    alt={user.name}
-                    src={user.image}
-                    sx={{ width: 60, height: 60 }}
-                />
-                <LogoutButton />
-            </div>
-
-            <div className="flex flex-col h-4/5 items-center">
-                <p className='2xl:text-1xl'>Previous games</p>
-                {/* <UserPreviousGames /> */}
-            </div>
-        </div>
-    )
-}
-
-function LogoutButton() {
-    return (
-        <Button
-            variant="outlined"
-            color="error"
-            endIcon={<LogoutIcon />}
-            onClick={() => signOut()}
-        >
-            Logout
-        </Button>
-    )
-}
 
 function UserHome({ user }) {
     return (

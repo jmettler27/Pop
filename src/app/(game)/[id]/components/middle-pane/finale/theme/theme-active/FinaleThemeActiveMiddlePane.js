@@ -86,7 +86,7 @@ function SectionQuestions({ currentThemeId, currentSectionId, sectionQuestions }
                     )}>
                         {/* Question */}
                         <p className={clsx(
-                            'text-3xl font-bold',
+                            '2xl:text-3xl font-bold',
                             statusToColor(status, idx)
                         )}>
                             {question.title}
@@ -94,7 +94,7 @@ function SectionQuestions({ currentThemeId, currentSectionId, sectionQuestions }
 
                         {/* Answer */}
                         <p className={clsx(
-                            'text-3xl italic',
+                            '2xl:text-3xl italic',
                             !(status || isOrganizer) && 'opacity-0'
                         )}>
                             {question.answer}

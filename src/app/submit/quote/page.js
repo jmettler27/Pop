@@ -364,7 +364,7 @@ function EnterQuotePart({ quotePart, index, onDelete, validationSchema }) {
         <div className='flex flex-col'>
 
             <span className='2xl:text-xl'>Part #{index + 1}: {startIdx !== -1 && endIdx !== -1 && (
-                <span className='2xl:text-yellow-500'>&quot;{quote.substring(startIdx, endIdx + 1)}&quot;</span>
+                <span className='text-yellow-500'>&quot;{quote.substring(startIdx, endIdx + 1)}&quot;</span>
             )}</span>
 
             <div className='flex flex-row'>

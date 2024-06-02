@@ -124,7 +124,7 @@ function BuzzerMessage({ playerStatus, hasExceededMaxTries, round, myCanceledIte
     if (isFirst) {
         const message = `${RIDDLE_FIRST_BUZZER_TEXT[lang]} 🧐`
         if (myCanceledItems.length === round.maxTries - 1)
-            return <span className='2xl:text-3xl'>{message}. <span className='2xl:text-red-500'>{LAST_ATTEMPT_TEXT[lang]}</span></span>
+            return <span className='2xl:text-3xl'>{message}. <span className='text-red-500'>{LAST_ATTEMPT_TEXT[lang]}</span></span>
         return <span className='2xl:text-3xl'>{message}</span>
     }
     if (hasBuzzed)
@@ -168,7 +168,7 @@ function BuzzerButton({ isDisabled }) {
             style={{ backgroundColor: isDisabled ? 'gray' : 'red' }}
             endIcon={<PanToolIcon />}
         >
-            <span className={clsx('text-3xl', !isDisabled && 'text-slate-100')}>BUZZ</span>
+            <span className={clsx('2xl:text-3xl', !isDisabled && 'text-slate-100')}>BUZZ</span>
         </Button>
     )
 }
