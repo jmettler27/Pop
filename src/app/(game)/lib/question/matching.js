@@ -132,7 +132,7 @@ const submitMatchTransaction = async (
                 transaction.update(playerDoc.ref, { status: 'correct' })
             }
 
-            await addSoundToQueueTransaction(transaction, gameId, 'Anime wow')
+            await addSoundToQueueTransaction(transaction, gameId, 'zelda_secret_door')
 
             // Sort the UNIQUE scores according to the notion of "winner first" 
             const sortedUniqueRoundScores = sortScores(currentRoundScores, sortAscendingRoundScores('matching'));

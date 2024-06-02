@@ -23,13 +23,16 @@ export default function BlindtestMainContent({ question }) {
     </>
 }
 
+const DEFAULT_VOLUME = 0.25
+
 function ActiveBlindtestMainContent({ question }) {
     const game = useGameContext()
 
     const audioRef = useRef(null)
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0)
-    const [volume, setVolume] = useState(0.25)
+    const [volume, setVolume] = useState(localStorage.getItem('volume') || DEFAULT_VOLUME)
+
     const [isPlaying, setIsPlaying] = useState(true);
 
     useEffect(() => {
@@ -79,6 +82,7 @@ function ActiveBlindtestMainContent({ question }) {
 
     const handleVolumeChange = (event, value) => {
         audioRef.current.volume = value
+        localStorage.setItem('volume', value)
         setVolume(value)
     }
 
