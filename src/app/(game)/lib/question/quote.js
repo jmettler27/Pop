@@ -142,7 +142,7 @@ const revealQuoteElementTransaction = async (
         await endQuestionTransaction(transaction, gameId, roundId, questionId)
         return
     }
-    await addSoundToQueueTransaction(transaction, gameId, playerId ? 'OUI' : 'cartoon_mystery_musical_tone_002')
+    await addSoundToQueueTransaction(transaction, gameId, playerId ? 'super_mario_world_coin' : 'cartoon_mystery_musical_tone_002')
 }
 
 /* ==================================================================================================== */

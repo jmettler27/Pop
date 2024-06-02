@@ -19,7 +19,7 @@ export default function Timer({ timer, serverTimeOffset, onTimerEnd = () => { } 
     const startTimer = () => {
         console.log("startTimer", Date.now())
         timerId.current = setInterval(() => {
-            const elapsedTimeMs = Date.now() - timer.timestamp.toMillis() - serverTimeOffset
+            const elapsedTimeMs = Date.now() - timer.timestamp.toMillis() //- serverTimeOffset
             const timeLeftMs = milliseconds - elapsedTimeMs
             setMilliSeconds(() => (timer.forward) ? elapsedTimeMs : timeLeftMs)
         }, INTERVAL_MS)
