@@ -188,3 +188,20 @@ video {
         /* Gradually dim the glow */
     }
 }
+
+
+.glow-border-white {
+    -webkit-animation: glow-white 1s ease-in-out infinite alternate;
+    -moz-animation: glow-white 1s ease-in-out infinite alternate;
+    animation: glow-white 1s ease-in-out infinite alternate;
+}
+
+@keyframes glow-white {
+    from {
+        box-shadow: 0 0 10px #fff;
+    }
+
+    to {
+        box-shadow: 0 0 20px #fff;
+    }
+}

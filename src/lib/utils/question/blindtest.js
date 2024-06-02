@@ -12,6 +12,26 @@ export const BLINDTEST_TYPE_TO_TITLE = {
     }
 }
 
+export const BLINDTEST_TYPE_TO_EMOJI = {
+    'song': '🎵',
+    'sound': '🔊'
+}
+
+export function blindtestTypeToEmoji(type) {
+    return BLINDTEST_TYPE_TO_EMOJI[type]
+}
+
+export function blindtestTypeToTitle(type, lang = 'fr-FR') {
+    return BLINDTEST_TYPE_TO_TITLE[lang][type]
+}
+
+
+import { prependWithEmojiAndSpace } from '@/lib/utils/emojis';
+export function prependBlindtestTypeWithEmoji(blindtestType, lang = 'fr-FR') {
+    return prependWithEmojiAndSpace(blindtestTypeToEmoji(blindtestType), blindtestTypeToTitle(blindtestType, lang))
+}
+
+
 export const BLINDTEST_TITLE_EXAMPLE = "Film"
 export const BLINDTEST_TITLE_MAX_LENGTH = 50
 

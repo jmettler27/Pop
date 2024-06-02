@@ -8,11 +8,13 @@ import { useCollectionOnce, useDocumentData, useDocumentDataOnce } from 'react-f
 import { questionTypeToTitle } from '@/lib/utils/question_types'
 import { topicToEmoji } from '@/lib/utils/topics'
 
-import { CircularProgress, Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material'
+import { CircularProgress, Accordion, AccordionSummary, AccordionDetails, Typography, Divider } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
-import { BLINDTEST_TYPE_TO_TITLE } from '@/lib/utils/question/blindtest'
+import { blindtestTypeToEmoji } from '@/lib/utils/question/blindtest'
 import { useParams } from 'next/navigation'
+import { QuestionCardContent } from '@/app/components/questions/QuestionCard'
+import clsx from 'clsx'
 
 
 export default function RoundQuestionsProgress({ game, round }) {
@@ -137,8 +139,6 @@ function RoundQuestionAccordion({ game, roundId, questionId, order, hasEnded, is
     const winnerTeam = winnerTeamData(question.type)
 
     const borderColor = (() => {
-        if (isCurrent && game.status === 'question_active')
-            return '#f97316';
         if (hasNotStarted)
             return '#6b7280'
         if (showComplete) {
@@ -155,8 +155,6 @@ function RoundQuestionAccordion({ game, roundId, questionId, order, hasEnded, is
     })
 
     const summaryColor = (() => {
-        if (isCurrent && game.status === 'question_active')
-            return '#f97316'
         if (hasNotStarted)
             return '#6b7280'
         if (showComplete) {
@@ -178,7 +176,7 @@ function RoundQuestionAccordion({ game, roundId, questionId, order, hasEnded, is
             expanded={expanded}
             onChange={onAccordionChange}
             disabled={isDisabled()}
-            className='rounded-lg'
+            className={clsx('rounded-lg', (isCurrent && game.status === 'question_active') && 'glow-border-white')}
             elevation={0}
             sx={{
                 borderWidth: borderWidth(),
@@ -198,14 +196,15 @@ function RoundQuestionAccordion({ game, roundId, questionId, order, hasEnded, is
                 }}
             >
                 <Typography sx={{ color: summaryColor() }}>
-                    <QuestionTitle question={question} order={order} />
+                    <QuestionSummary question={question} order={order} />
                 </Typography>
             </AccordionSummary>
 
             {showComplete && (
                 <AccordionDetails>
-                    <QuestionContent question={question} />
-                    <QuestionAnswerDetails question={question} />
+                    <QuestionTitle question={question} />
+                    <QuestionCardContent question={question} />
+                    <Divider className='my-2 bg-slate-600' />
                     <QuestionWinner question={question} winnerPlayer={winnerPlayer} winnerTeam={winnerTeam} game={game} />
                 </AccordionDetails>
             )}
@@ -214,15 +213,15 @@ function RoundQuestionAccordion({ game, roundId, questionId, order, hasEnded, is
 }
 
 /* ============================================================================================ */
-function QuestionTitle({ question, order, lang = 'fr-FR' }) {
+function QuestionSummary({ question, order, lang = 'fr-FR' }) {
     switch (question.type) {
         case 'progressive_clues':
         case 'emoji':
         case 'image':
             return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong>: {question.details.title}</span>
         case 'blindtest':
-            return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1} ({BLINDTEST_TYPE_TO_TITLE[lang][question.details.subtype]})</strong>: {question.details.title}</span>
-        // return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1} ({BLINDTEST_TYPE_TO_TITLE[lang][question.details.subtype]})</strong></span>
+            // return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1} ({BLINDTEST_TYPE_TO_TITLE[lang][question.details.subtype]})</strong>: {question.details.title}</span>
+            return <span className='text-lg'>{blindtestTypeToEmoji(question.details.subtype)} {topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong></span>
         default:
             return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong></span>
     }
@@ -231,31 +230,23 @@ function QuestionTitle({ question, order, lang = 'fr-FR' }) {
 
 
 /* ============================================================================================ */
-function QuestionContent({ question }) {
+function QuestionTitle({ question }) {
     switch (question.type) {
         case 'progressive_clues':
         case 'emoji':
         case 'image':
-        case 'blindtest':
+        case 'quote':
             return <></>
         case 'mcq':
             return <MCQTitle question={question} />
         default:
             return (
                 <Typography>
-                    <span className='italic'>{question.details.title}</span>
+                    &quot;{question.details.title}&quot;
                 </Typography>
             )
     }
 }
-
-// function BlindtestTitle({ question }) {
-//     return (
-//         <Typography>
-//             <strong>{BLINDTEST_TYPE_TO_TITLE['en'][question.details.subtype]}</strong>: {question.details.title}
-//         </Typography>
-//     )
-// }
 
 function MCQTitle({ question }) {
     return (
@@ -265,79 +256,6 @@ function MCQTitle({ question }) {
     )
 }
 
-
-/* ============================================================================================ */
-function QuestionAnswerDetails({ question }) {
-    switch (question.type) {
-        case 'progressive_clues':
-        case 'emoji':
-            return (
-                <Typography>
-                    <span className='text-green-500'>{question.details.answer.title}</span>
-                </Typography>
-            )
-        case 'blindtest':
-            return <BlindtestAnswerDetails question={question} />
-        case 'quote':
-            return <></>
-
-        case 'odd_one_out':
-            return <OddOneOutAnswerDetails question={question} />
-        case 'enum':
-            return <EnumAnswerDetails question={question} />
-        case 'mcq':
-            return <MCQAnswerDetails question={question} />
-        case 'matching':
-            return <MatchingAnswerDetails question={question} />
-        default:
-            return (
-                <Typography>
-                    <span className='text-green-500'>{question.details.answer}</span>
-                </Typography>
-            )
-    }
-}
-
-function BlindtestAnswerDetails({ question }) {
-    return (
-        <Typography>
-            <span className='text-green-500'><span className='italic'>{question.details.answer.title}</span> - {question.details.answer.author} (<strong>{question.details.answer.source}</strong>)</span>
-        </Typography>
-    )
-}
-
-function OddOneOutAnswerDetails({ question }) {
-    return (
-        <Typography>
-            <span className='text-red-500'>{question.details.items[question.details.answerIdx].title}</span>
-        </Typography>
-    )
-}
-
-function EnumAnswerDetails({ question, lang = 'fr-FR' }) {
-    return (
-        <Typography>
-            {ENUM_ANSWER_DETAILS_NUM_ANSWERS[lang]}: <span className='text-yellow-300'>{!question.details.maxIsKnown && ">="} <span className='font-bold'>{question.details.answer.length}</span></span>
-        </Typography>
-    )
-}
-const ENUM_ANSWER_DETAILS_NUM_ANSWERS = {
-    'en': "Number of answers",
-    'fr-FR': "Nombre de réponses"
-}
-
-function MCQAnswerDetails({ question }) {
-    return (
-        <Typography>
-            <span className='text-green-500'>{question.details.choices[question.details.answerIdx]}</span>
-        </Typography>
-    )
-}
-
-
-function MatchingAnswerDetails({ question }) {
-    return <></>
-}
 
 /* ============================================================================================ */
 function QuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = 'fr-FR' }) {
