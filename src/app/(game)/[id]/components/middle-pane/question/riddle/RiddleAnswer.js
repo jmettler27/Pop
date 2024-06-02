@@ -8,10 +8,10 @@ import { useDocumentData } from 'react-firebase-hooks/firestore';
 import PlayerName, { WinnerName } from '@/app/(game)/[id]/components/PlayerName'
 import { getRandomElement } from '@/lib/utils/arrays';
 
-export default function RiddleAnswer({ question, lang = 'fr-FR' }) {
+export default function RiddleAnswer({ question }) {
 
     return (
-        <div className='flex flex-col h-full items-center justify-center'>
+        <div className='flex flex-col h-full items-center'>
             <RiddleAnswerText question={question} />
             <RiddleWinnerInfo />
         </div>
@@ -19,14 +19,14 @@ export default function RiddleAnswer({ question, lang = 'fr-FR' }) {
 }
 
 function RiddleAnswerText({ question }) {
-    const answer = question.details.answer
+    const { answer } = question.details
 
     switch (question.type) {
         case 'progressive_clues':
-        case 'emoji':
             return <span className='2xl:text-4xl font-bold text-green-500'>{answer.title}</span>
         case 'image':
             return <span className='2xl:text-4xl font-bold text-green-500'>{answer}</span>
+        case 'emoji':
         case 'blindtest':
             return <></>
     }
@@ -37,13 +37,21 @@ function RiddleWinnerInfo({ lang = 'fr-FR' }) {
     const game = useGameContext()
     const [realtime, realtimeLoading, realtimeError] = useDocumentData(doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion))
 
-    return <>
-        {realtimeError && <p><strong>Error: {JSON.stringify(realtimeError)}</strong></p>}
-        {realtimeLoading && <p>Loading question realtime info...</p>}
-        {!realtimeLoading && realtime && (realtime.winner && game.status === 'question_end') && (
-            <span className='2xl:text-3xl'>{RIDDLE_WINNER_TEXT[lang]} <strong><WinnerName playerId={realtime.winner.playerId} teamId={realtime.winner.teamId} /></strong>! 🥳</span>
-        )}
-    </>
+    if (realtimeError) {
+        return <p><strong>Error: {JSON.stringify(realtimeError)}</strong></p>
+    }
+    if (realtimeLoading) {
+        return <p>Loading question realtime info...</p>
+    }
+    if (!realtime) {
+        return <></>
+    }
+
+    if (!(realtime.winner && game.status === 'question_end')) {
+        return <></>
+    }
+
+    return <span className='2xl:text-3xl'>{RIDDLE_WINNER_TEXT[lang]} <strong><WinnerName playerId={realtime.winner.playerId} teamId={realtime.winner.teamId} /></strong>! 🥳</span>
 }
 
 const RIDDLE_WINNER_TEXT_EN = [

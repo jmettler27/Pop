@@ -48,7 +48,7 @@ export const BLINDTEST_DEFAULT_REWARD = 1
 
 export const BLINDTEST_DEFAULT_MAX_TRIES = 2
 
-export const BLINDTEST_THINKING_TIME = 10
+export const BLINDTEST_THINKING_TIME = 15
 
 /* Validation  */
 import * as Yup from 'yup'

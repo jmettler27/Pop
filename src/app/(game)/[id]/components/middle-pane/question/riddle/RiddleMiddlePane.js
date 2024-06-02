@@ -21,13 +21,13 @@ export default function RiddleMiddlePane({ question }) {
             'flex flex-col h-full items-center',
             // question.type === 'progressive_clues' && 'bg-progressive-clues',
         )}>
-            <div className='flex h-[10%] items-center justify-center'>
+            <div className='flex h-[10%]'>
                 <RiddleQuestionHeader question={question} />
             </div>
             <div className='flex h-[80%] w-full items-center justify-center'>
                 <RiddleMainContent question={question} showComplete={showAnswer} />
             </div>
-            <div className='flex h-[10%] items-center justify-center'>
+            <div className='flex h-[10%]'>
                 {showAnswer && <RiddleAnswer question={question} />}
             </div>
         </div>

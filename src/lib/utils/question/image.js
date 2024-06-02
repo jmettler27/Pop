@@ -8,4 +8,4 @@ export const IMAGE_DEFAULT_REWARD = 1
 
 export const IMAGE_DEFAULT_MAX_TRIES = 2
 
-export const IMAGE_THINKING_TIME = 10
+export const IMAGE_THINKING_TIME = 15

@@ -1,6 +1,4 @@
-import { useGameContext, useRoleContext } from '@/app/(game)/contexts'
-
-import RiddleAnswerImage from './RiddleAnswerImage'
+import { useGameContext } from '@/app/(game)/contexts'
 
 import { clsx } from 'clsx'
 import LoadingScreen from '@/app/components/LoadingScreen'
@@ -8,7 +6,9 @@ import LoadingScreen from '@/app/components/LoadingScreen'
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { doc } from 'firebase/firestore'
 import { useDocumentData } from 'react-firebase-hooks/firestore'
-import FirebaseImage from '../../../../FirebaseImage'
+
+import FirebaseImage from '@/app/(game)/[id]/components/FirebaseImage'
+
 import { Box } from '@mui/material'
 
 export default function ProgressiveCluesMainContent({ question, showComplete }) {
@@ -44,7 +44,7 @@ function ProgressiveClues({ question, showComplete }) {
         <ul className='list-disc pl-10 overflow-auto space-y-1'>
             {clues.map((clue, idx) => (
                 <li key={idx} className={clsx(
-                    '2xl: text-3xl',
+                    '2xl:text-3xl',
                     (idx === currentIdx) && 'font-bold',
                     (idx === currentIdx && game.status === "question_active") && 'temp-glow',
                     (idx === currentIdx && showComplete) && 'text-orange-300',
@@ -65,12 +65,11 @@ function ActiveProgressiveCluesMainContent({ question, showComplete }) {
     )
 }
 
-
 function EndedProgressiveCluesMainContent({ question }) {
     return (
         <Box className='flex flex-row h-full w-[90%] items-center justify-center space-x-8'>
             <Box className='flex flex-col h-3/4 w-1/2 items-end justify-end'>
-                <RiddleAnswerImage question={question} />
+                <FirebaseImage url={question.details.answer.image} alt={question.details.answer.title} />
             </Box>
             <Box className='flex flex-col h-full w-1/2 items-start justify-center'>
                 <ProgressiveClues question={question} showComplete={true} />

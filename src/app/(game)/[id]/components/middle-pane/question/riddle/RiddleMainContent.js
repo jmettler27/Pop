@@ -12,7 +12,7 @@ export default function RiddleMainContent({ question, showComplete }) {
         case 'image':
             return <ImageMainContent question={question} />
         case 'blindtest':
-            return <BlindtestMainContent question={question} showComplete={showComplete} />
+            return <BlindtestMainContent question={question} />
         case 'emoji':
             return <EmojiMainContent question={question} />
         default:

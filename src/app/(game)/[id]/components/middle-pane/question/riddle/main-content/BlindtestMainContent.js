@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { useGameContext, useRoleContext } from '@/app/(game)/contexts'
+import { useGameContext } from '@/app/(game)/contexts'
 
 import { Box, Typography, Slider, IconButton, Stack } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
@@ -14,16 +14,16 @@ import FirebaseImage from '@/app/(game)/[id]/components/FirebaseImage';
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/lib/utils/question/question';
 
 
-export default function BlindtestMainContent({ question, showComplete }) {
+export default function BlindtestMainContent({ question }) {
     const game = useGameContext()
 
     return <>
-        {game.status === 'question_active' && <ActiveBlindtestMainContent question={question} showComplete={showComplete} />}
+        {game.status === 'question_active' && <ActiveBlindtestMainContent question={question} />}
         {game.status === 'question_end' && <EndedBlindtestMainContent question={question} />}
     </>
 }
 
-function ActiveBlindtestMainContent({ question, showComplete }) {
+function ActiveBlindtestMainContent({ question }) {
     const game = useGameContext()
 
     const audioRef = useRef(null)
@@ -277,11 +277,4 @@ const CoverImage = styled('div')({
     '& > img': {
         width: '100%',
     },
-});
-
-const TinyText = styled(Typography)({
-    fontSize: '0.75rem',
-    opacity: 0.38,
-    fontWeight: 500,
-    letterSpacing: 0.2,
 });
