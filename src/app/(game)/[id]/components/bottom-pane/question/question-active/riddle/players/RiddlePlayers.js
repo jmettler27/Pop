@@ -79,7 +79,7 @@ function CanceledPlayers({ canceled, players }) {
     return (
         <ol className='overflow-auto'>
             {canceled.map((item, index) => (
-                <li key={index} className='text-xl'>💩 {getPlayerName(players, item.playerId)} (#{item.clueIdx + 1})</li>
+                <li key={index} className='text-xl'>💩 {getPlayerName(players, item.playerId)} {item.clueIdx && `(#${item.clueIdx + 1})`}</li>
             ))}
         </ol>
     )

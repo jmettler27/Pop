@@ -11,6 +11,7 @@ import LoadingScreen from '@/app/components/LoadingScreen'
 import { useAsyncAction } from '@/lib/utils/async'
 import { isObjectEmpty } from '@/lib/utils'
 import { revealQuoteElement } from '@/app/(game)/lib/question/quote'
+import { QUESTION_ELEMENT_TO_EMOJI } from '@/lib/utils/question/question'
 
 
 export default function QuoteMiddlePane({ question }) {
@@ -57,7 +58,8 @@ function QuoteMainContent({ question }) {
     return (
         <div className='flex flex-col h-full w-2/3 items-center justify-center space-y-5'>
             <blockquote className='text-3xl md:text-5xl dark:text-white'>&quot;{<DisplayedQuote toGuess={toGuess} revealed={revealed} quote={quote} quoteParts={quoteParts} />}&quot;</blockquote>
-            <h4 className='text-3xl md:text-5xl dark:text-white'>- {<DisplayedAuthor toGuess={toGuess} revealed={revealed} author={author} />}, <i>{<DisplayedSource toGuess={toGuess} revealed={revealed} source={source} />}</i></h4>
+            {author && <h4 className='text-3xl md:text-5xl dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['author']} {<DisplayedAuthor toGuess={toGuess} revealed={revealed} author={author} />}</h4>}
+            {source && <h4 className='text-3xl md:text-5xl dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['source']} <i>{<DisplayedSource toGuess={toGuess} revealed={revealed} source={source} />}</i></h4>}
         </div>
     );
 }

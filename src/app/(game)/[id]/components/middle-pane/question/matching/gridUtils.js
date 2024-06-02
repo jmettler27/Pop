@@ -24,9 +24,9 @@ export const getNodeText = (id, answer) => {
 const nodeTextFontSize = (text, numCols) => {
     switch (numCols) {
         case 2:
-            return text.length > 25 ? 4 : 6
+            return text.length <= 25 ? 6 : 4
         case 3:
-            return 5
+            return text.length <= 25 ? 5 : 4
     }
 }
 
@@ -99,7 +99,7 @@ export const MatchingNode = ({ text, col, pos, onClick, isActive, isMatched, num
                 r={NODE_RADIUS}
             />
             <text
-                x={(inLastCol && numCols == 2) ? pos[0] + 5 : pos[0] - 5}
+                x={(inLastCol && numCols == 2) ? pos[0] + 4 : pos[0] - 4}
                 y={pos[1] + 2}
                 textAnchor={(inLastCol && numCols == 2) ? 'start' : 'end'}
                 fontSize={nodeTextFontSize(text, numCols)}

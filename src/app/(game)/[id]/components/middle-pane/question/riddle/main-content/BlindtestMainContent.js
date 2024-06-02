@@ -238,11 +238,11 @@ function EndedBlindtestMainContent({ question }) {
     const { answer: { image, title, author, source } } = question.details
 
     return (
-        <Box className='flex flex-row items-center justify-center space-x-8 w-2/3 h-2/3'>
-            <Box className='flex flex-col h-full w-1/2 items-end justify-end'>
+        <Box className='flex flex-row h-full w-[90%] items-center justify-center space-x-8'>
+            <Box className='flex flex-col h-3/4 max-w-1/2 items-end justify-end'>
                 <FirebaseImage url={image} alt={source || ''} />
             </Box>
-            <Box className='flex flex-col h-full w-1/2 justify-center items-start space-y-2'>
+            <Box className='flex flex-col h-3/4 max-w-1/2 items-start justify-center space-y-2'>
                 <span className='2xl:text-4xl text-green-500'><strong>{title}</strong></span>
                 {author && <span className='2xl:text-4xl text-green-500'>{QUESTION_ELEMENT_TO_EMOJI['author']} {author}</span>}
                 {source && <span className='2xl:text-4xl text-green-500'>{QUESTION_ELEMENT_TO_EMOJI['source']} <i>{source}</i></span>}
