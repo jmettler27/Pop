@@ -24,7 +24,7 @@ export const getNodeText = (id, answer) => {
 const nodeTextFontSize = (text, numCols) => {
     switch (numCols) {
         case 2:
-            return text.length <= 25 ? 6 : 4
+            return text.length <= 25 ? 5 : 4
         case 3:
             return text.length <= 25 ? 5 : 4
     }
