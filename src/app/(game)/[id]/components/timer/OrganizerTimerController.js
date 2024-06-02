@@ -33,7 +33,7 @@ export default function OrganizerTimerController({ timer, serverTimeOffset, onTi
 
     return (
         <div className='flex flex-col items-center'>
-            <span className='text-4xl'>
+            <span className='2xl:text-4xl'>
                 ⌛ <Timer
                     timer={timer}
                     serverTimeOffset={serverTimeOffset}

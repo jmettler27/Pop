@@ -8,7 +8,6 @@ import GoGameHomeButton from '@/app/(game)/[id]/components/bottom-pane/GoGameHom
 import { useAsyncAction } from '@/lib/utils/async'
 
 import TimerPane from '../../timer/TimerPane'
-import AuthorizePlayersSwitch from '../AuthorizePlayersSwitch'
 import ReadyPlayerController from '@/app/(game)/[id]/components/bottom-pane/ReadyPlayerController';
 
 export default function GameStartBottomPane() {
@@ -47,10 +46,5 @@ function GameStartOrganizerController() {
         await startGame(gameId)
     })
 
-    return (
-        <div className='flex flex-col items-center justify-center h-full w-full'>
-            <GoGameHomeButton onClick={handleStartGame} disabled={isStarting} />
-            <AuthorizePlayersSwitch />
-        </div>
-    )
+    return <GoGameHomeButton onClick={handleStartGame} disabled={isStarting} />
 }

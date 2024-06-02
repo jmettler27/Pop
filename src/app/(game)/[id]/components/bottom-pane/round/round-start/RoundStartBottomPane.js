@@ -6,7 +6,6 @@ import { Button } from '@mui/material'
 import { startRound } from '@/app/(game)/lib/round/round-transitions';
 import { useAsyncAction } from '@/lib/utils/async';
 import TimerPane from '../../../timer/TimerPane';
-import AuthorizePlayersSwitch from '../../AuthorizePlayersSwitch';
 import ReadyPlayerController from '@/app/(game)/[id]/components/bottom-pane/ReadyPlayerController';
 
 export default function RoundStartBottomPane({ }) {
@@ -31,19 +30,11 @@ function RoundStartController({ }) {
     return (
         <div className='flex flex-col h-full items-center justify-center space-y-5'>
             <ReadyPlayerController />
-            {myRole === 'organizer' && <RoundStartOrganizerController />}
+            {myRole === 'organizer' && <RoundStartOrganizerButton />}
         </div>
     )
 }
 
-function RoundStartOrganizerController({ lang = 'fr-FR' }) {
-    return (
-        <div className='flex flex-col items-center justify-center h-full w-full'>
-            <RoundStartOrganizerButton lang={lang} />
-            <AuthorizePlayersSwitch lang={lang} />
-        </div>
-    )
-}
 
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 

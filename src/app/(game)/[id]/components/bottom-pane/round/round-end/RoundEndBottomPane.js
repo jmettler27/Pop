@@ -7,8 +7,6 @@ import EndGameButton from '@/app/(game)/[id]/components/bottom-pane/EndGameButto
 import { roundEndToGameHome } from '@/app/(game)/lib/transitions'
 
 import { useAsyncAction } from '@/lib/utils/async'
-import { useState } from 'react'
-import LoadingScreen from '@/app/components/LoadingScreen'
 
 import { useParams } from 'next/navigation'
 

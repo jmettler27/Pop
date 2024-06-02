@@ -32,7 +32,7 @@ function QuestionEndController({ isLastQuestion }) {
     return (
         <div className='flex flex-col h-full items-center justify-center space-y-5'>
             <ReadyPlayerController isLastQuestion={isLastQuestion} />
-            {myRole === 'organizer' && <QuestionEndOrganizerController isLastQuestion={isLastQuestion} />}
+            {myRole === 'organizer' && <QuestionEndOrganizerButton isLastQuestion={isLastQuestion} />}
         </div>
     )
 }
@@ -44,17 +44,7 @@ import { handleRoundQuestionEnd } from '@/app/(game)/lib/round/round-transitions
 import { Button } from '@mui/material'
 import FastForwardIcon from '@mui/icons-material/FastForward'
 import ScoreboardIcon from '@mui/icons-material/Scoreboard'
-import AuthorizePlayersSwitch from '../../AuthorizePlayersSwitch'
 
-
-function QuestionEndOrganizerController({ isLastQuestion, lang = 'fr-FR' }) {
-    return (
-        <div className='flex flex-col items-center justify-center h-full w-full'>
-            <QuestionEndOrganizerButton isLastQuestion={isLastQuestion} lang={lang} />
-            <AuthorizePlayersSwitch lang={lang} />
-        </div>
-    )
-}
 
 function QuestionEndOrganizerButton({ isLastQuestion, lang = 'fr-FR' }) {
     const game = useGameContext()

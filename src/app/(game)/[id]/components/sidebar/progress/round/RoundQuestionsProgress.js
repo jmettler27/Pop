@@ -221,7 +221,9 @@ function QuestionSummary({ question, order, lang = 'fr-FR' }) {
             return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong>: {question.details.title}</span>
         case 'blindtest':
             // return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1} ({BLINDTEST_TYPE_TO_TITLE[lang][question.details.subtype]})</strong>: {question.details.title}</span>
-            return <span className='text-lg'>{blindtestTypeToEmoji(question.details.subtype)} {topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong></span>
+            return <span className='text-lg'>{blindtestTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong></span>
+        case 'matching':
+            return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong> ({question.details.numCols} col)</span>
         default:
             return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong></span>
     }

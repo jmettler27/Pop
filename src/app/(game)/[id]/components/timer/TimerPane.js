@@ -6,6 +6,7 @@ import { useGameContext, useRoleContext } from "@/app/(game)/contexts"
 import Timer from '@/app/(game)/[id]/components/timer/Timer'
 import OrganizerTimerController from '@/app/(game)/[id]/components/timer/OrganizerTimerController'
 import { CircularProgress } from "@mui/material"
+import AuthorizePlayersSwitch from "@/app/(game)/[id]/components/bottom-pane/AuthorizePlayersSwitch"
 
 import { doc } from "firebase/firestore"
 import { useDocumentData, useDocumentDataOnce } from "react-firebase-hooks/firestore"
@@ -18,22 +19,15 @@ import { startGame } from "@/app/(game)/lib/transitions"
 import { useObject } from 'react-firebase-hooks/database';
 import { SERVER_TIME_OFFSET_REF } from "@/lib/firebase/database"
 
-
-
 export default function TimerPane() {
-    return (
-        <div className='flex flex-col items-center justify-center space-y-2'>
-            <TimerHeader lang='fr-FR' />
-            <TimerController />
-        </div>
-    )
+    const myRole = useRoleContext();
+    return myRole === 'organizer' ? <OrganizerTimerPane /> : <SpectatorTimerPane />
 }
 
 
-function TimerController({ }) {
+function OrganizerTimerPane() {
     const user = useUserContext();
     const game = useGameContext();
-    const myRole = useRoleContext();
 
     const lastExecuted = useRef(null)
 
@@ -92,16 +86,55 @@ function TimerController({ }) {
     console.log("- Server time offset (MS): ", serverTimeOffset)
     console.log("- Timer:", timer)
 
-    switch (myRole) {
-        case 'organizer':
-            return <OrganizerTimerController timer={timer} serverTimeOffset={serverTimeOffset} onTimerEnd={() => handleTimerEnd(timer)} />
-        default:
-            return <span className='2xl:text-4xl'>⌛ <Timer timer={timer} serverTimeOffset={serverTimeOffset} /></span>
-    }
+    return (
+        <div className='flex flex-col h-full items-center justify-center space-y-2'>
+            <TimerHeader />
+            <OrganizerTimerController timer={timer} serverTimeOffset={serverTimeOffset} onTimerEnd={() => handleTimerEnd(timer)} />
+            <AuthorizePlayersSwitch authorized={timer.authorized} />
+        </div>
+    )
 }
 
 
-function TimerHeader({ lang }) {
+function SpectatorTimerPane() {
+    const game = useGameContext();
+
+    const [offsetSnapshot, offsetLoading, offsetError] = useObject(SERVER_TIME_OFFSET_REF);
+
+    const timerDocRef = doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'timer')
+    const [timer, timerLoading, timerError] = useDocumentData(timerDocRef)
+
+
+    if (offsetError) {
+        return <p><strong>Error: {JSON.stringify(offsetError)}</strong></p>
+    }
+    if (timerError) {
+        return <p><strong>Error: {JSON.stringify(timerError)}</strong></p>
+    }
+    if (offsetLoading || timerLoading) {
+        return <CircularProgress />
+    }
+    if (!offsetSnapshot || !timer) {
+        return <></>
+    }
+
+    const serverTimeOffset = offsetSnapshot.val()
+
+    console.log("SPECTATOR TIMER PANE RENDERED:",)
+    console.log("- Server time offset (MS): ", serverTimeOffset)
+    console.log("- Timer:", timer)
+
+    return (
+        <div className='flex flex-col h-full items-center justify-center space-y-2'>
+            <TimerHeader />
+            <span className='2xl:text-4xl'>⌛ <Timer timer={timer} serverTimeOffset={serverTimeOffset} /></span>
+        </div>
+    )
+}
+
+
+
+function TimerHeader({ lang = 'fr-FR' }) {
     const game = useGameContext();
 
     switch (game.status) {

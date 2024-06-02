@@ -46,9 +46,9 @@ function ImageRoundDescription({ round }) {
 
 function BlindtestRoundDescription({ round }) {
     return <>
-        <p className='text-2xl text-center'>🎧 Écoutez la musique ou le son, et répondez à la question.</p>
+        <p className='text-2xl text-center'>👂 Écoutez la musique ou le son, et répondez à la question.</p>
         <br></br>
-        <p className='text-2xl text-center'>🎚️ Des contrôles vous permettent de <strong>régler le volume</strong> et d&apos;<strong>avancer dans la timeline</strong>.</p>
+        <p className='text-2xl text-center'>🎚️ Des contrôles vous permettent de <strong>régler le volume</strong> et d&apos;<strong>avancer ou reculer dans la timeline</strong>.</p>
     </>
 }
 
@@ -94,8 +94,8 @@ function EnumRoundDescription({ round }) {
 
 function MatchingRoundDescription({ round }) {
     return <>
-        <p className='text-2xl text-center'>🔗 Chaque question consiste en <strong>{MATCHING_MIN_NUM_COLS} à {MATCHING_MAX_NUM_COLS}</strong> colonnes de propositions, entre lesquelles il existe des liens.</p>
-        <p className='text-2xl text-center'>Le but est de trouver les bonnes associations.</p>
+        <p className='text-2xl text-center'>🔀 Une grille, organisée en <strong>{MATCHING_MIN_NUM_COLS} à {MATCHING_MAX_NUM_COLS}</strong> de propositions affichées dans un ordre aléatoire, et entre lesquelles il existe des liens.</p>
+        <p className='text-2xl text-center'>🔗 Le but est de trouver les bonnes associations.</p>
     </>
 }
 

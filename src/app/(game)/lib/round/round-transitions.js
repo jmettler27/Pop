@@ -180,7 +180,7 @@ const switchRoundQuestionTransaction = async (
         getDocDataTransaction(transaction, realtimeDocRef)
     ])
 
-    const { managedBy } = realtimeData
+    // const { managedBy } = realtimeData
 
 
     if (questionData.type !== 'blindtest') {
@@ -223,7 +223,8 @@ const switchRoundQuestionTransaction = async (
             })
         }
 
-        await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: defaultThinkingTime })
+        // await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: defaultThinkingTime })
+        await updateTimerTransaction(transaction, gameId, { status: 'reset', duration: defaultThinkingTime })
     }
     else if (questionData.type === 'odd_one_out' || questionData.type === 'matching') {
         const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
@@ -231,17 +232,21 @@ const switchRoundQuestionTransaction = async (
             chooserIdx: 0
         })
         if (questionData.type === 'matching') {
-            await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: defaultThinkingTime * (questionData.details.numCols - 1) })
+            // await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: defaultThinkingTime * (questionData.details.numCols - 1) })
+            await updateTimerTransaction(transaction, gameId, { status: 'reset', duration: defaultThinkingTime * (questionData.details.numCols - 1) })
         } else {
-            await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: defaultThinkingTime })
+            // await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: defaultThinkingTime })
+            await updateTimerTransaction(transaction, gameId, { status: 'reset', duration: defaultThinkingTime })
         }
     }
     else {
         if (questionData.type === 'enum') {
-            await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: questionData.details.thinkingTime })
+            // await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: questionData.details.thinkingTime })
+            await updateTimerTransaction(transaction, gameId, { status: 'reset', duration: questionData.details.thinkingTime })
         }
         else {
-            await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: defaultThinkingTime })
+            // await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: defaultThinkingTime })
+            await updateTimerTransaction(transaction, gameId, { status: 'reset', duration: defaultThinkingTime })
         }
 
         const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')

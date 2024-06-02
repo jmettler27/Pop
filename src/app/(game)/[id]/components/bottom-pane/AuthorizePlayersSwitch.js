@@ -9,29 +9,17 @@ import { switchAuthorizePlayers } from '@/app/(game)/lib/game'
 import { doc } from 'firebase/firestore'
 
 
-export default function AuthorizePlayersSwitch({ lang = 'fr-FR' }) {
+export default function AuthorizePlayersSwitch({ authorized, lang = 'fr-FR' }) {
     const { id: gameId } = useParams()
 
     const [handleAuthorizePlayers, isAuthorizing] = useAsyncAction(async () => {
         await switchAuthorizePlayers(gameId)
     })
 
-    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
-    const [timer, timerLoading, timerError] = useDocumentData(timerDocRef)
-    if (timerError) {
-        return <p><strong>Error: {JSON.stringify(timerError)}</strong></p>
-    }
-    if (timerLoading) {
-        return <CircularProgress />
-    }
-    if (!timer) {
-        return <></>
-    }
-
     return (
         <FormControlLabel control={
             <Switch
-                checked={timer.authorized}
+                checked={authorized}
                 onChange={handleAuthorizePlayers}
                 disabled={isAuthorizing}
                 inputProps={{ 'aria-label': 'controlled' }}

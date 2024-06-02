@@ -26,12 +26,14 @@ export default function ReadyPlayerController({ isLastQuestion, lang = 'fr-FR' }
     }
 
     return (
-        timer.authorized && (
-            <div className='flex flex-col items-center justify-center space-y-5'>
-                {(myRole === 'player' || myRole === 'spectator') && <ReadyPlayerHeader isLastQuestion={isLastQuestion} />}
-                {myRole === 'player' && <ReadyPlayerButton lang={lang} />}
-            </div>
-        )
+        <div className='flex flex-col items-center justify-center space-y-5'>
+            {timer.authorized && (
+                <>
+                    <ReadyPlayerHeader isLastQuestion={isLastQuestion} />
+                    {myRole === 'player' && <ReadyPlayerButton lang={lang} />}
+                </>
+            )}
+        </div>
     )
 }
 
@@ -68,9 +70,7 @@ function ReadyPlayerHeader({ isLastQuestion, lang = 'fr-FR' }) {
         }
     }
 
-    if (myRole === 'spectator') {
-        return <span className='2xl:text-4xl'>{WAITING_FOR_PLAYERS_TEXT[lang]} ({numReady}/{numPlayers})</span>
-    }
+    return <span className='2xl:text-4xl'>{WAITING_FOR_PLAYERS_TEXT[lang]} ({numReady}/{numPlayers})</span>
 }
 
 

@@ -39,7 +39,7 @@ function RiddleQuestionHeader({ question }) {
     return (
         <div className='flex flex-row items-center justify-center '>
             <QuestionTypeIcon questionType={question.type} fontSize={50} />
-            <h1 className='2xl:text-5xl'>{question.type === 'blindtest' && blindtestTypeToEmoji(question.details.subtype)} {topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong>: {question.details.title}</h1>
+            <h1 className='2xl:text-5xl'>{question.type === 'blindtest' && blindtestTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong>: {question.details.title}</h1>
         </div>
     )
 }
