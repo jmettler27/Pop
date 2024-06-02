@@ -24,7 +24,7 @@ export function QuestionCard({ question }) {
     return (
         <Card>
             <CardHeader className='flex flex-row items-center justify-between' >
-                <CardTitle className='text-base md:text-lg dark:text-white'><QuestionCardTitle question={question} /></CardTitle>
+                <CardTitle className='2xl:text-base md:text-lg dark:text-white'><QuestionCardTitle question={question} /></CardTitle>
             </CardHeader >
 
             <CardContent>
@@ -75,7 +75,7 @@ function QuestionCardFooter({ question, lang = 'fr-FR' }) {
     }
 
     return (
-        <p className='text-sm md:text-base dark:text-white'>{LOCALE_TO_EMOJI[question.lang]} Created by <strong>{user.name}</strong> ({timestampToDate(question.createdAt, lang)})</p>
+        <p className='2xl:text-sm md:text-base dark:text-white'>{LOCALE_TO_EMOJI[question.lang]} Created by <strong>{user.name}</strong> ({timestampToDate(question.createdAt, lang)})</p>
     )
 }
 
@@ -121,7 +121,7 @@ const ProgressiveCluesCardMainContent = ({ question }) => {
                 }}
                 className='self-center'
             />
-            <span className='text-sm md:text-base dark:text-white'><strong>{answer.title}</strong></span>
+            <span className='2xl:text-sm md:text-base dark:text-white'><strong>{answer.title}</strong></span>
             <ol className='list-decimal py-1 pl-5'>
                 {question.details.clues.map((clue, idx) => <li className='dark:text-white' key={idx}>{clue}</li>)}
             </ol>
@@ -146,7 +146,7 @@ const ImageCardMainContent = ({ question }) => {
                 }}
                 className='self-center'
             />
-            <span className='text-sm md:text-base dark:text-white'><strong>{answer}</strong></span>
+            <span className='2xl:text-sm md:text-base dark:text-white'><strong>{answer}</strong></span>
         </div>
     );
 }
@@ -169,8 +169,8 @@ const EmojiCardMainContent = ({ question }) => {
                 }}
                 className='self-center'
             />
-            <span className='text-3xl self-center'>{clue}</span>
-            <span className='text-sm md:text-base dark:text-white'><strong>{title}</strong></span>
+            <span className='2xl:text-3xl self-center'>{clue}</span>
+            <span className='2xl:text-sm md:text-base dark:text-white'><strong>{title}</strong></span>
         </div>
     );
 }
@@ -193,9 +193,9 @@ const BlindtestCardMainContent = ({ question }) => {
                 }}
                 className='self-center'
             />
-            <span className='text-sm md:text-base dark:text-white'><strong>{title}</strong></span>
-            {author && <span className='text-sm md:text-base dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['author']} {author}</span>}
-            {source && <span className='text-sm md:text-base dark:text-white'><i>{QUESTION_ELEMENT_TO_EMOJI['source']} {source}</i></span>}
+            <span className='2xl:text-sm md:text-base dark:text-white'><strong>{title}</strong></span>
+            {author && <span className='2xl:text-sm md:text-base dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['author']} {author}</span>}
+            {source && <span className='2xl:text-sm md:text-base dark:text-white'><i>{QUESTION_ELEMENT_TO_EMOJI['source']} {source}</i></span>}
             <audio src={question.details.audio} controls className='w-full' />
         </div>
     );
@@ -208,23 +208,23 @@ const QuoteCardMainContent = ({ question }) => {
 
     return (
         <div className='flex flex-col w-full space-y-2'>
-            <blockquote className='text-sm md:text-base dark:text-white'>&quot;{<DisplayedQuote toGuess={toGuess} quote={quote} quoteParts={quoteParts} />}&quot;</blockquote>
-            {author && <span className='text-sm md:text-base dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['author']} {<DisplayedAuthor toGuess={toGuess} author={author} />}</span>}
-            {source && <span className='text-sm md:text-base dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['source']} <i>{<DisplayedSource toGuess={toGuess} source={source} />}</i></span>}
+            <blockquote className='2xl:text-sm md:text-base dark:text-white'>&quot;{<DisplayedQuote toGuess={toGuess} quote={quote} quoteParts={quoteParts} />}&quot;</blockquote>
+            {author && <span className='2xl:text-sm md:text-base dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['author']} {<DisplayedAuthor toGuess={toGuess} author={author} />}</span>}
+            {source && <span className='2xl:text-sm md:text-base dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['source']} <i>{<DisplayedSource toGuess={toGuess} source={source} />}</i></span>}
         </div>
     );
 }
 
 const DisplayedAuthor = ({ toGuess, author }) => {
     if (toGuess.includes('author')) {
-        return <span className='text-yellow-500'>{author}</span>
+        return <span className='2xl:text-yellow-500'>{author}</span>
     }
     return <span>{author}</span>
 }
 
 const DisplayedSource = ({ toGuess, source }) => {
     if (toGuess.includes('source')) {
-        return <span className='text-yellow-500'>{source}</span>
+        return <span className='2xl:text-yellow-500'>{source}</span>
     }
     return <span>{source}</span>
 }
@@ -240,7 +240,7 @@ const DisplayedQuote = ({ toGuess, quote, quoteParts }) => {
             lastIndex = quotePart.endIdx + 1;
 
             parts.push(<span key={`before_${quotePartIdx}`}>{before}</span>);
-            parts.push(<span key={quotePartIdx} className='text-yellow-500'>{within}</span>);
+            parts.push(<span key={quotePartIdx} className='2xl:text-yellow-500'>{within}</span>);
         });
 
         parts.push(<span key={'lastIndex'}>{quote.substring(lastIndex)}</span>);
@@ -318,7 +318,7 @@ const MCQCardMainContent = ({ question }) => {
 
     return (
         <div className='flex flex-col w-full space-y-2'>
-            {note && <p className='text-sm md:text-base dark:text-white'>{note}</p>}
+            {note && <p className='2xl:text-sm md:text-base dark:text-white'>{note}</p>}
             <ul>
                 {choices.map((choice, idx) => <li key={idx}
                     className={clsx(
@@ -330,7 +330,7 @@ const MCQCardMainContent = ({ question }) => {
                 </li>
                 )}
             </ul>
-            {explanation && <p className='text-sm md:text-base dark:text-white'>{explanation}</p>}
+            {explanation && <p className='2xl:text-sm md:text-base dark:text-white'>{explanation}</p>}
         </div >
     );
 }

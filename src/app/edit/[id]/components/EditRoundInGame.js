@@ -62,7 +62,7 @@ export function EditGameRoundCard({ roundId }) {
     return (
         <Card>
             <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
-                <CardTitle className='text-2xl'>{questionTypeToEmoji(round.type)} <i>{round.title}</i> <RoundTopicDistribution round={round} /></CardTitle>
+                <CardTitle className='2xl:text-2xl'>{questionTypeToEmoji(round.type)} <i>{round.title}</i> <RoundTopicDistribution round={round} /></CardTitle>
                 <RemoveRoundFromGameButton roundId={round.id} />
             </CardHeader>
             <CardContent>
@@ -118,7 +118,7 @@ function RoundTopicDistribution({ round }) {
     }, [ids])
 
     return (
-        <span className='text-xl'>
+        <span className='2xl:text-xl'>
             ({Object.entries(topics).map(([topic, count]) => `${topicToEmoji(topic)}x${count}`).join(', ')})
         </span>
     )

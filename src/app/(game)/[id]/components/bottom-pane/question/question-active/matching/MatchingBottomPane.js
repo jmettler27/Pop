@@ -70,7 +70,7 @@ function MatchingOrganizerController({ chooserTeamId }) {
 
     return (
         <div className='flex flex-col h-full w-full items-center justify-around'>
-            <span className='text-4xl font-bold'><GameChooserHelperText chooserTeamId={chooserTeamId} /></span>
+            <span className='2xl:text-4xl font-bold'><GameChooserHelperText chooserTeamId={chooserTeamId} /></span>
             <MatchingOrganizerQuestionController />
         </div>
     )
@@ -90,7 +90,7 @@ function MatchingOrganizerQuestionController({ }) {
 function MatchingSpectatorController({ chooserTeamId }) {
     return (
         <div className='flex flex-col h-full items-center justify-center'>
-            <span className='text-4xl font-bold'><GameChooserHelperText chooserTeamId={chooserTeamId} /></span>
+            <span className='2xl:text-4xl font-bold'><GameChooserHelperText chooserTeamId={chooserTeamId} /></span>
         </div>
     )
 }

@@ -31,7 +31,7 @@ export const MyTextInput = ({ label, maxLength, validationSchema, fieldType = 's
     return (
         <>
             <label htmlFor={props.id || props.name}>{requiredIndicator(validationSchema, fieldType, field.name)}{label} {maxLength > 0 && (props.onlyEmojis ? numEmojisIndicator(field.value, maxLength) : numCharsIndicator(field.value, maxLength))}</label>
-            <input className='text-input' {...field} {...props} value={field.value || ''} />
+            <input className='2xl:text-input' {...field} {...props} value={field.value || ''} />
             {meta.touched && meta.error && <div className='error'>{meta.error}</div>}
         </>
     );

@@ -22,7 +22,7 @@ export default function FinaleThemeEndMiddlePane({ theme, themeRealtime }) {
 }
 
 function ThemeTitle({ theme, themeRealtime, lang = 'fr-FR' }) {
-    return <h1 className='text-4xl font-bold'>{THEME_END_TEXT[lang]} {themeRealtime.order + 1} ({theme.details.title})</h1>
+    return <h1 className='2xl:text-4xl font-bold'>{THEME_END_TEXT[lang]} {themeRealtime.order + 1} ({theme.details.title})</h1>
 }
 
 const THEME_END_TEXT = {
@@ -60,7 +60,7 @@ function ThemeScores({ themeId, lang = 'fr-FR' }) {
     }
         , { correct: 0, wrong: 0 })
 
-    return <span className='text-4xl'>{totalCounts.correct} {CORRECT_ANSWER_TEXT[lang]}, <span className='font-bold text-red-600'>{totalCounts.wrong} {WRONG_ANSWER_TEXT[lang]}</span></span>
+    return <span className='2xl:text-4xl'>{totalCounts.correct} {CORRECT_ANSWER_TEXT[lang]}, <span className='font-bold text-red-600'>{totalCounts.wrong} {WRONG_ANSWER_TEXT[lang]}</span></span>
 
 }
 

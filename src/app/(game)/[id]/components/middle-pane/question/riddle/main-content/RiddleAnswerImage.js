@@ -20,7 +20,7 @@ function EmojiAnswerImage({ question }) {
             />
 
             {/* <FirebaseImage url={question.details.answer.image} alt={question.details.answer.title} /> */}
-            <p className='text-5xl text-center'>{question.details.clue}</p>
+            <p className='2xl:text-5xl text-center'>{question.details.clue}</p>
         </div>
     )
 }

@@ -21,7 +21,7 @@ export default function MCQMainContent({ question }) {
     return (
         <div className='h-full w-full flex flex-col items-center justify-center'>
             <div className='flex h-[10%] w-full items-center justify-center space-y-2'>
-                <h2 className='text-4xl'>{question.details.title}</h2>
+                <h2 className='2xl:text-4xl'>{question.details.title}</h2>
             </div>
             <div className='flex h-[90%] w-full items-center justify-center'>
                 <MCQMainContentQuestion question={question} />
@@ -119,7 +119,7 @@ function MCQChoices({ question, realtime }) {
 
     if (realtime.option === null || realtime.option === 'hide') {
         // return <Image src={mcq_correct.src} height={'70%'} />
-        return <span className='text-6xl'>{mcqOptionToEmoji('hide')} {mcqOptionToEmoji('square')} {mcqOptionToEmoji('duo')} ?</span>
+        return <span className='2xl:text-6xl'>{mcqOptionToEmoji('hide')} {mcqOptionToEmoji('square')} {mcqOptionToEmoji('duo')} ?</span>
     }
 
     return (

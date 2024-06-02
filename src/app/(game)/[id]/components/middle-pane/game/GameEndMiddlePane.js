@@ -24,7 +24,7 @@ export default function GameEndMiddlePane({ }) {
 
 function GameEndHeader() {
     return (
-        <h1 className='text-4xl font-bold'>célafin</h1>
+        <h1 className='2xl:text-4xl font-bold'>célafin</h1>
     )
 }
 

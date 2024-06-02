@@ -15,10 +15,10 @@ export default function RoundScoreboard({ roundScores, teams, lang = 'fr-FR' }) 
                 {/* Table head */}
                 <TableHead>
                     <TableRow>
-                        <TableCell className='text-2xl font-bold text-center'>{HEAD_RANKING_TEXT[lang]}</TableCell>
-                        <TableCell className='text-2xl font-bold'>{HEAD_TEAM_TEXT[lang]}</TableCell>
-                        <TableCell className='text-2xl font-bold text-center'>{HEAD_SCORE_TEXT[lang]}</TableCell>
-                        <TableCell className='text-2xl font-bold text-center'>{HEAD_REWARD_TEXT[lang]}</TableCell>
+                        <TableCell className='2xl:text-2xl font-bold text-center'>{HEAD_RANKING_TEXT[lang]}</TableCell>
+                        <TableCell className='2xl:text-2xl font-bold'>{HEAD_TEAM_TEXT[lang]}</TableCell>
+                        <TableCell className='2xl:text-2xl font-bold text-center'>{HEAD_SCORE_TEXT[lang]}</TableCell>
+                        <TableCell className='2xl:text-2xl font-bold text-center'>{HEAD_REWARD_TEXT[lang]}</TableCell>
                     </TableRow>
                 </TableHead>
 
@@ -29,7 +29,7 @@ export default function RoundScoreboard({ roundScores, teams, lang = 'fr-FR' }) 
                             <TableRow
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                                <TableCell className='text-3xl text-center' scope='row' rowSpan={item.teams.length + 1}>
+                                <TableCell className='2xl:text-3xl text-center' scope='row' rowSpan={item.teams.length + 1}>
                                     {rankingToEmoji(idx)}
                                 </TableCell>
                             </TableRow>
@@ -40,15 +40,15 @@ export default function RoundScoreboard({ roundScores, teams, lang = 'fr-FR' }) 
                                 const hasLostPoints = item.reward < 0
                                 return (
                                     <TableRow key={teamId}>
-                                        <TableCell className='text-2xl' sx={{ color: teamData.color }}>
+                                        <TableCell className='2xl:text-2xl' sx={{ color: teamData.color }}>
                                             {teamData.name}
                                         </TableCell>
 
-                                        <TableCell className='text-2xl text-center'>
+                                        <TableCell className='2xl:text-2xl text-center'>
                                             {item.score}
                                         </TableCell>
 
-                                        <TableCell className='text-2xl text-center font-bold'>
+                                        <TableCell className='2xl:text-2xl text-center font-bold'>
                                             <span className={clsx(
                                                 hasEarnedPoints && 'text-green-500',
                                                 hasLostPoints && 'text-red-500',

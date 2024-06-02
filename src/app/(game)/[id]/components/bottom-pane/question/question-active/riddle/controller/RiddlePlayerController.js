@@ -112,24 +112,24 @@ const RIDDLE_INCORRECT_ASNWER_TEXT = {
 
 function BuzzerMessage({ playerStatus, hasExceededMaxTries, round, myCanceledItems, isFirst, hasBuzzed, remaining, lang = 'fr-FR' }) {
     if (hasExceededMaxTries)
-        return <span className='text-3xl'>{MAX_TRIES_EXCEEDED_TEXT[lang]} ({round.maxTries})</span>
+        return <span className='2xl:text-3xl'>{MAX_TRIES_EXCEEDED_TEXT[lang]} ({round.maxTries})</span>
 
     if (playerStatus === 'wrong') {
         const message = RIDDLE_INCORRECT_ASNWER_TEXT[lang]
         if (round.type === 'progressive_clues' && round.delay && round.delay > 0) {
-            return <span className='text-3xl'>{message} {CANCELED_WARNING_TEXT[lang]} <span className='font-bold text-blue-500'>{remaining > 1 ? numRemainingClues(remaining, lang) : ONE_MORE_WAITING_CLUE_TEXT[lang]}.</span></span>
+            return <span className='2xl:text-3xl'>{message} {CANCELED_WARNING_TEXT[lang]} <span className='font-bold text-blue-500'>{remaining > 1 ? numRemainingClues(remaining, lang) : ONE_MORE_WAITING_CLUE_TEXT[lang]}.</span></span>
         }
-        return <span className='text-3xl'>{message}</span>
+        return <span className='2xl:text-3xl'>{message}</span>
     }
     if (isFirst) {
         const message = `${RIDDLE_FIRST_BUZZER_TEXT[lang]} 🧐`
         if (myCanceledItems.length === round.maxTries - 1)
-            return <span className='text-3xl'>{message}. <span className='text-red-500'>{LAST_ATTEMPT_TEXT[lang]}</span></span>
-        return <span className='text-3xl'>{message}</span>
+            return <span className='2xl:text-3xl'>{message}. <span className='2xl:text-red-500'>{LAST_ATTEMPT_TEXT[lang]}</span></span>
+        return <span className='2xl:text-3xl'>{message}</span>
     }
     if (hasBuzzed)
-        return <span className='text-3xl'>{WAITING_FOR_TURN_TEXT[lang]}</span>
-    return <span className='text-3xl'>{RIDDLE_IDLE_TEXT[lang]} 🤔</span>
+        return <span className='2xl:text-3xl'>{WAITING_FOR_TURN_TEXT[lang]}</span>
+    return <span className='2xl:text-3xl'>{RIDDLE_IDLE_TEXT[lang]} 🤔</span>
 }
 
 

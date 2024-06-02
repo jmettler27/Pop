@@ -30,7 +30,7 @@ export default function GameHomeMiddlePane({ }) {
 
 
 function GameHomeTitle() {
-    return <h1 className='text-5xl font-bold'>Les manches</h1>
+    return <h1 className='2xl:text-5xl font-bold'>Les manches</h1>
 }
 
 function GameHomeRounds() {

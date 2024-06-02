@@ -55,7 +55,7 @@ function TeamItem({ team }) {
 }
 
 const TeamName = ({ team }) =>
-    <span className='text-3xl' style={{ color: team.color }}><strong>{team.name}</strong></span>
+    <span className='2xl:text-3xl' style={{ color: team.color }}><strong>{team.name}</strong></span>
 
 
 function TeamPlayersInfo({ teamId }) {

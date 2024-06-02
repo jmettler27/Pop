@@ -26,7 +26,7 @@ export default function GlobalProgressTabPanel({ game }) {
 }
 
 const GameRoundsProgressHeader = memo(function GameRoundsProgressHeader({ gameTitle }) {
-    return <h1 className='text-xl font-bold mt-1 italic'>{gameTitle}</h1>
+    return <h1 className='2xl:text-xl font-bold mt-1 italic'>{gameTitle}</h1>
 });
 
 const GameRoundsProgress = memo(function GameRoundsProgress({ gameId }) {
@@ -122,7 +122,7 @@ function RoundAccordion({ gameId, round, teams, hasEnded, isCurrent, lang = 'fr-
                     <Typography className={clsx(
                         (isCurrent && !hasEnded) && 'text-orange-300',
                     )}>
-                        <span className='text-xl'><strong>{ROUND_HEADER_TEXT[lang]} {round.order + 1}</strong>: <i>{round.title}</i></span>
+                        <span className='2xl:text-xl'><strong>{ROUND_HEADER_TEXT[lang]} {round.order + 1}</strong>: <i>{round.title}</i></span>
                     </Typography>
                 </div>
             </AccordionSummary>

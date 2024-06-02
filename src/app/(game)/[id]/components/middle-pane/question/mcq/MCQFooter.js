@@ -5,7 +5,7 @@ export default function MCQFooter({ question, realtime, lang = 'fr-FR' }) {
     return (
         <div className='flex flex-col h-full items-center justify-center'>
             <span className="text-4xl">{realtime.correct !== null && <MCQPlayerAnswerText realtime={realtime} lang={lang} />} {ANSWER_TEXT[lang]}: <span className='font-bold text-green-500'>{question.details.choices[question.details.answerIdx]}</span></span>
-            {question.details.explanation && <span className='text-2xl'>{question.details.explanation}</span>}
+            {question.details.explanation && <span className='2xl:text-2xl'>{question.details.explanation}</span>}
         </div>
     )
 }

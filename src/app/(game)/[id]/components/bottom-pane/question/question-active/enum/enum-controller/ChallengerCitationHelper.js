@@ -52,7 +52,7 @@ function ChallengerName({ challengerId }) {
         return <></>
     }
 
-    return <span className='text-3xl font-bold'>{challengerData.name}</span>
+    return <span className='2xl:text-3xl font-bold'>{challengerData.name}</span>
 }
 
 const progressToSmiley = {

@@ -15,7 +15,7 @@ export default function EmojiMainContent({ question }) {
 
 
 function ActiveEmojiMainContent({ question }) {
-    return <span className='text-9xl'>{question.details.clue}</span>
+    return <span className='2xl:text-9xl'>{question.details.clue}</span>
 }
 
 function EndedEmojiMainContent({ question }) {

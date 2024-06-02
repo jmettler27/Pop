@@ -21,7 +21,7 @@ function FinaleRoundHeader({ round, lang = 'fr-FR' }) {
     return (
         <div className='flex flex-row items-center justify-center space-x-1'>
             <RoundTypeIcon roundType={round.type} fontSize={50} />
-            <h1 className='text-5xl'><span className='font-bold'>{ROUND_HEADER_TEXT[lang]} {round.order + 1}</span>: <i>{round.title}</i> </h1>
+            <h1 className='2xl:text-5xl'><span className='font-bold'>{ROUND_HEADER_TEXT[lang]} {round.order + 1}</span>: <i>{round.title}</i> </h1>
         </div>
     )
 }

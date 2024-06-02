@@ -42,7 +42,7 @@ function EnumQuestionHeader({ question }) {
 
 function EnumQuestionIndication({ indication }) {
     return (
-        <p className='text-2xl'>
+        <p className='2xl:text-2xl'>
             <span className='underline'>Note</span>: {indication}
         </p>
     )
@@ -51,9 +51,9 @@ function EnumQuestionIndication({ indication }) {
 function EnumQuestionObjective({ question, lang = 'fr-FR' }) {
     switch (lang) {
         case 'en':
-            return <span className='text-3xl text-yellow-300'>There are {question.details.maxIsKnown ? "exactly" : "at least"} <strong>{question.details.answer.length}</strong> answers</span>
+            return <span className='2xl:text-3xl text-yellow-300'>There are {question.details.maxIsKnown ? "exactly" : "at least"} <strong>{question.details.answer.length}</strong> answers</span>
         case 'fr-FR':
-            return <span className='text-3xl text-yellow-300'>Il y a {question.details.maxIsKnown ? "exactement" : "au moins"} <strong>{question.details.answer.length}</strong> réponses</span>
+            return <span className='2xl:text-3xl text-yellow-300'>Il y a {question.details.maxIsKnown ? "exactement" : "au moins"} <strong>{question.details.answer.length}</strong> réponses</span>
     }
 }
 

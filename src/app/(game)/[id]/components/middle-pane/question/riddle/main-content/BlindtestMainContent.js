@@ -99,7 +99,7 @@ function ActiveBlindtestMainContent({ question }) {
                 <Box className='flex items-center'>
 
                     <CoverImage>
-                        <span className='text-5xl w-full h-full flex flex-col items-center justify-center'>🎵</span>
+                        <span className='2xl:text-5xl w-full h-full flex flex-col items-center justify-center'>🎵</span>
                     </CoverImage>
 
                     <audio
@@ -171,7 +171,7 @@ function ActiveBlindtestMainContent({ question }) {
                         aria-label="fast rewind"
                         onClick={() => audioRef.current.currentTime -= 10}
                     >
-                        <FastRewindIcon className='text-4xl' htmlColor={mainIconColor} />
+                        <FastRewindIcon className='2xl:text-4xl' htmlColor={mainIconColor} />
                     </IconButton>
 
                     {/* Play/Pause */}
@@ -180,7 +180,7 @@ function ActiveBlindtestMainContent({ question }) {
                         onClick={handlePlayPauseReplay}
                     >
                         {(currentTime < duration) ? (isPlaying ?
-                            <PauseRounded className='text-5xl' htmlColor={mainIconColor} /> :
+                            <PauseRounded className='2xl:text-5xl' htmlColor={mainIconColor} /> :
                             <PlayArrowRounded sx={{ fontSize: '3rem' }} htmlColor={mainIconColor} />
                         ) :
                             <PlayArrowRounded sx={{ fontSize: '3rem' }} htmlColor={mainIconColor} />
@@ -192,7 +192,7 @@ function ActiveBlindtestMainContent({ question }) {
                         aria-label="fast forward"
                         onClick={() => audioRef.current.currentTime += 10}
                     >
-                        <FastForwardIcon className='text-4xl' htmlColor={mainIconColor} />
+                        <FastForwardIcon className='2xl:text-4xl' htmlColor={mainIconColor} />
                     </IconButton>
                 </Box>
 

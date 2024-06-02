@@ -33,7 +33,7 @@ const UploadFile = ({ fileRef, ...props }) => {
                 {/* <input ref={fileRef} multiple={false} type="file" {...field} value={field.value || ''} /> */}
                 <VisuallyHiddenInput type="file" ref={fileRef} {...field} value={field.value || ''} />
             </Button>
-            {(meta.touched && meta.error) && <div className='text-red-600'>❌ {meta.error}</div>}
+            {(meta.touched && meta.error) && <div className='2xl:text-red-600'>❌ {meta.error}</div>}
         </>
     );
 };

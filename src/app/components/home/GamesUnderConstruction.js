@@ -38,7 +38,7 @@ export default function GamesUnderConstruction({ lang = 'fr-FR' }) {
     return (
         <Card>
             <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
-                <CardTitle className='text-2xl'>🛠️ {GAMES_UNDER_CONSTRUCTION_CARD_TITLE[lang]} ({sortedGames.length})</CardTitle>
+                <CardTitle className='2xl:text-2xl'>🛠️ {GAMES_UNDER_CONSTRUCTION_CARD_TITLE[lang]} ({sortedGames.length})</CardTitle>
                 {/* <RemoveRoundFromGameButton roundId={roundId} /> */}
             </CardHeader>
 
@@ -81,7 +81,7 @@ export function GameUnderConstructionCard({ game, lang = 'fr-FR' }) {
     return (
         <Card>
             <CardHeader className='flex flex-row items-center justify-around pb-2'>
-                <CardTitle className='text-lg font-medium'>{gameTypeToEmoji(game.type)} {localeToEmoji(game.lang)} <i>{game.title}</i></CardTitle>
+                <CardTitle className='2xl:text-lg font-medium'>{gameTypeToEmoji(game.type)} {localeToEmoji(game.lang)} <i>{game.title}</i></CardTitle>
                 {isOrganizer && <EditGameButton gameId={game.id} />}
             </CardHeader>
             <CardContent>

@@ -47,7 +47,7 @@ function UserSidebar({ user }) {
             </div>
 
             <div className="flex flex-col h-4/5 items-center">
-                <p className='text-1xl'>Previous games</p>
+                <p className='2xl:text-1xl'>Previous games</p>
                 {/* <UserPreviousGames /> */}
             </div>
         </div>

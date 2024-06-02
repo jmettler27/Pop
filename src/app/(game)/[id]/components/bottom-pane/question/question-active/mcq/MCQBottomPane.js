@@ -78,8 +78,8 @@ function MCQController({ gameStates }) {
 function MCQSpectatorController({ chooserTeamId, realtime }) {
     return (
         <div className='flex flex-col h-full items-center justify-center'>
-            {realtime.option === null & <span className='text-4xl font-bold'><GameChooserHelperText chooserTeamId={chooserTeamId} /></span>}
-            {realtime.option !== null && <span className='text-4xl font-bold'><MCQPlayerOptionHelperText realtime={realtime} /></span>}
+            {realtime.option === null & <span className='2xl:text-4xl font-bold'><GameChooserHelperText chooserTeamId={chooserTeamId} /></span>}
+            {realtime.option !== null && <span className='2xl:text-4xl font-bold'><MCQPlayerOptionHelperText realtime={realtime} /></span>}
         </div>
     )
 }

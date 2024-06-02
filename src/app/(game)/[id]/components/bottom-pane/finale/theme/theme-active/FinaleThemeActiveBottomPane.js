@@ -22,7 +22,7 @@ export default function FinaleThemeActiveBottomPane({ theme, themeRealtime }) {
         case 'organizer':
             return <FinaleThemeActiveOrganizerBottomPane theme={theme} themeRealtime={themeRealtime} />
         default:
-            return <span className='text-4xl font-bold'><GameChooserHelperText chooserTeamId={themeRealtime.teamId} /></span>
+            return <span className='2xl:text-4xl font-bold'><GameChooserHelperText chooserTeamId={themeRealtime.teamId} /></span>
     }
 
 }

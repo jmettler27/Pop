@@ -68,7 +68,7 @@ export default function Page({ params }) {
                 <div className='flex h-16 items-center border-b'>
                     {/* <Link className='flex items-center gap-2 font-semibold' href='#'> */}
                     {/* <Package2Icon className='h-6 w-6' /> */}
-                    <span className='text-lg md:text-xl'>{GAME_TYPE_TO_EMOJI[game.type]} {localeToEmoji(game.lang)} <strong>{game.title}</strong></span>
+                    <span className='2xl:text-lg md:text-xl'>{GAME_TYPE_TO_EMOJI[game.type]} {localeToEmoji(game.lang)} <strong>{game.title}</strong></span>
                     {/* </Link> */}
                     {/* <Button className='ml-auto h-8 w-8' size='icon' variant='outline'>
                             <BellIcon className='h-6 w-6' />

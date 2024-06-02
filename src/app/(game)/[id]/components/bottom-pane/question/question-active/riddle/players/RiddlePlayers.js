@@ -29,7 +29,7 @@ export default function RiddlePlayers({ players, lang = 'fr-FR' }) {
                 <h2 className='font-bold text-xl'>{BUZZED_TEXT[lang]}</h2>
                 {(buzzed && buzzed.length > 0) ?
                     <BuzzedPlayers buzzed={buzzed} players={gamePlayers} /> :
-                    <p className='text-xl italic opacity-50'>{NO_BUZZERS[lang]}</p>
+                    <p className='2xl:text-xl italic opacity-50'>{NO_BUZZERS[lang]}</p>
                 }
             </div>
 
@@ -69,7 +69,7 @@ function BuzzedPlayers({ buzzed, players }) {
     return (
         <ol className='overflow-auto'>
             {buzzed.map((playerId, index) => (
-                <li key={index} className='text-xl'>{rankingToEmoji(index)} {getPlayerName(players, playerId)}</li>
+                <li key={index} className='2xl:text-xl'>{rankingToEmoji(index)} {getPlayerName(players, playerId)}</li>
             ))}
         </ol>
     )
@@ -79,7 +79,7 @@ function CanceledPlayers({ canceled, players }) {
     return (
         <ol className='overflow-auto'>
             {canceled.map((item, index) => (
-                <li key={index} className='text-xl'>💩 {getPlayerName(players, item.playerId)} {item.clueIdx && `(#${item.clueIdx + 1})`}</li>
+                <li key={index} className='2xl:text-xl'>💩 {getPlayerName(players, item.playerId)} {item.clueIdx && `(#${item.clueIdx + 1})`}</li>
             ))}
         </ol>
     )

@@ -20,7 +20,7 @@ export default function RoundEndBottomPane({ endedRound, lang = 'fr-FR' }) {
 
     return (
         <div className='flex flex-col h-full justify-around items-center'>
-            <span className='text-4xl font-bold'><GameChooserTeamAnnouncement /> {ROUND_TEXT[lang]} {(endedRound.order + 1) + 1}</span>
+            <span className='2xl:text-4xl font-bold'><GameChooserTeamAnnouncement /> {ROUND_TEXT[lang]} {(endedRound.order + 1) + 1}</span>
             {myRole === 'organizer' && (endedRound.type === 'finale' ?
                 <EndGameButton /> :
                 <GoGameHomeButton onClick={handleClick} disabled={isHandling} />

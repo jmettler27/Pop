@@ -42,7 +42,7 @@ function FinaleController() {
 
     switch (round.status) {
         case 'finale_home':
-            return <span className='text-4xl font-bold'><GameChooserTeamAnnouncement /></span>
+            return <span className='2xl:text-4xl font-bold'><GameChooserTeamAnnouncement /></span>
         case 'theme_active':
         case 'theme_end':
             return <FinaleThemeBottomPane round={round} />

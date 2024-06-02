@@ -20,10 +20,10 @@ export default function MCQOrganizerController({ realtime }) {
             {/* <BuzzerHeadPlayer realtime={realtime} />
             */}
             {realtime.option === null && (
-                <span className='text-4xl font-bold'><GameChooserHelperText chooserTeamId={realtime.teamId} /></span>
+                <span className='2xl:text-4xl font-bold'><GameChooserHelperText chooserTeamId={realtime.teamId} /></span>
             )}
             {realtime.option !== null && (
-                <span className='text-4xl'><MCQPlayerOptionHelperText realtime={realtime} /></span>
+                <span className='2xl:text-4xl'><MCQPlayerOptionHelperText realtime={realtime} /></span>
             )}
             {realtime.option === 'hide' && <MCQOrganizerHideAnswerController realtime={realtime} />}
             <MCQOrganizerQuestionController />
