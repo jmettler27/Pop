@@ -260,7 +260,7 @@ const EnumCardMainContent = ({ question }) => {
     return (
         <>
             <div className='flex flex-col w-full space-y-2'>
-                <span className='dark: text-white'><strong>{!maxIsKnown && '>='} {totalNumElements}</strong> elements</span>
+                <span className='dark:text-white'><strong>{!maxIsKnown && '>='} {totalNumElements}</strong> elements</span>
                 <ul className='list-disc py-1 pl-5'>
                     {answer.slice(0, ENUM_MAX_NUM_ELEMENTS).map((element, idx) => <li className='dark:text-white' key={idx}>{element}</li>)}
                     {(totalNumElements > ENUM_MAX_NUM_ELEMENTS || !maxIsKnown) && <li className='dark:text-white' key={ENUM_MAX_NUM_ELEMENTS}>...</li>}
@@ -268,8 +268,8 @@ const EnumCardMainContent = ({ question }) => {
             </div>
             <Divider className='my-2 bg-slate-600' />
             <div className='flex flex-col w-full'>
-                <span className='dark: text-white'>🤔 Thinking: <strong>{thinkingTime}s</strong></span>
-                <span className='dark: text-white'>🗣️ Enumeration: <strong>{challengeTime}s</strong></span>
+                <span className='dark:text-white'>🤔 Thinking: <strong>{thinkingTime}s</strong></span>
+                <span className='dark:text-white'>🗣️ Enumeration: <strong>{challengeTime}s</strong></span>
             </div>
         </>
     );
