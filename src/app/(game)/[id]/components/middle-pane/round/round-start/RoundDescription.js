@@ -1,36 +1,36 @@
-import { mcqOptionToTitle, MCQ_OPTIONS, MCQ_OPTION_TO_ICON } from '@/lib/utils/question/mcq'
 import { OOO_ITEMS_LENGTH } from '@/lib/utils/question/odd_one_out'
 import { MATCHING_MAX_NUM_COLS, MATCHING_MIN_NUM_COLS } from '@/lib/utils/question/matching'
 import { quoteElementToEmoji } from '@/lib/utils/question/quote'
+import { blindtestTypeToEmoji } from '@/lib/utils/question/blindtest'
 
 export function RoundDescription({ round }) {
     switch (round.type) {
         case 'progressive_clues':
-            return <ProgressiveCluesRoundDescription round={round} />
+            return <ProgressiveCluesRoundDescription />
         case 'image':
-            return <ImageRoundDescription round={round} />
+            return <ImageRoundDescription />
         case 'blindtest':
-            return <BlindtestRoundDescription round={round} />
+            return <BlindtestRoundDescription />
         case 'emoji':
-            return <EmojiRoundDescription round={round} />
+            return <EmojiRoundDescription />
         case 'quote':
-            return <QuoteRoundDescription round={round} />
+            return <QuoteRoundDescription />
         case 'odd_one_out':
-            return <OddOneOutRoundDescription round={round} />
+            return <OddOneOutRoundDescription />
         case 'enum':
-            return <EnumRoundDescription round={round} />
+            return <EnumRoundDescription />
         case 'matching':
-            return <MatchingRoundDescription round={round} />
+            return <MatchingRoundDescription />
         case 'mcq':
-            return <MCQRoundDescription round={round} />
+            return <MCQRoundDescription />
         case 'finale':
-            return <ThemesRoundDescription round={round} />
+            return <ThemesRoundDescription />
         default:
             return <></>
     }
 }
 
-function ProgressiveCluesRoundDescription({ round }) {
+function ProgressiveCluesRoundDescription({ }) {
     return <>
         <p className='2xl:text-2xl text-center'>🕵️‍♂️ Une <strong>liste d&apos;indices</strong> vous est dévoilée progressivement...</p>
         <br></br>
@@ -38,21 +38,21 @@ function ProgressiveCluesRoundDescription({ round }) {
     </>
 }
 
-function ImageRoundDescription({ round }) {
+function ImageRoundDescription({ }) {
     return <>
         <p className='2xl:text-2xl text-center'>🧐 Trouvez l&apos;œuvre ou le lieu/personnage/objet/... qui se cache derrière chaque image.</p>
     </>
 }
 
-function BlindtestRoundDescription({ round }) {
+function BlindtestRoundDescription({ }) {
     return <>
-        <p className='2xl:text-2xl text-center'>👂 Écoutez la musique ou le son, et répondez à la question.</p>
+        <p className='2xl:text-2xl text-center'>👂 Écoutez la musique ({blindtestTypeToEmoji('song')}) ou le son ({blindtestTypeToEmoji('sound')}), et répondez à la question.</p>
         <br></br>
         <p className='2xl:text-2xl text-center'>🎚️ Des contrôles vous permettent de <strong>régler le volume</strong> et d&apos;<strong>avancer ou reculer dans la timeline</strong>.</p>
     </>
 }
 
-function EmojiRoundDescription({ round }) {
+function EmojiRoundDescription({ }) {
     return <>
         <p className='2xl:text-2xl text-center'>🧐 Trouvez l&apos;œuvre ou le lieu/personnage/objet/... qui se cache derrière chaque combinaison d&apos;emojis.</p>
         <br></br>
@@ -61,7 +61,7 @@ function EmojiRoundDescription({ round }) {
 }
 
 
-function QuoteRoundDescription({ round }) {
+function QuoteRoundDescription({ }) {
     return <>
         <p className='2xl:text-2xl text-center'>Chaque question consiste en</p>
         <ul className='2xl:text-2xl list-disc pl-10'>
@@ -76,7 +76,7 @@ function QuoteRoundDescription({ round }) {
     </>
 }
 
-function OddOneOutRoundDescription({ round }) {
+function OddOneOutRoundDescription({ }) {
     return <>
         <p className='2xl:text-2xl text-center'>🔀 Une liste de <strong>{OOO_ITEMS_LENGTH} propositions</strong>, affichée dans un <strong>ordre aléatoire</strong> pour chaque participant.</p>
         <br />
@@ -86,26 +86,26 @@ function OddOneOutRoundDescription({ round }) {
     </>
 }
 
-function EnumRoundDescription({ round }) {
+function EnumRoundDescription({ }) {
     return <>
         <p className='2xl:text-2xl text-center'>💬 Citez-nous le plus d&apos;éléments qui répondent à la question.</p>
     </>
 }
 
-function MatchingRoundDescription({ round }) {
+function MatchingRoundDescription({ }) {
     return <>
-        <p className='2xl:text-2xl text-center'>🔀 Une grille, organisée en <strong>{MATCHING_MIN_NUM_COLS} à {MATCHING_MAX_NUM_COLS}</strong> de propositions affichées dans un ordre aléatoire, et entre lesquelles il existe des liens.</p>
+        <p className='2xl:text-2xl text-center'>🔀 Une grille, organisée en <strong>{MATCHING_MIN_NUM_COLS} à {MATCHING_MAX_NUM_COLS}</strong> colonnes de propositions affichées dans un ordre aléatoire, et entre lesquelles il existe des liens.</p>
         <p className='2xl:text-2xl text-center'>🔗 Le but est de trouver les bonnes associations.</p>
     </>
 }
 
-function MCQRoundDescription({ round }) {
+function MCQRoundDescription({ }) {
     return <>
         <p className='2xl:text-2xl text-center'>🔀 Plusieurs questions directes sur des sujets différents, dans un <strong>ordre aléatoire.</strong></p>
     </>
 }
 
-function ThemesRoundDescription({ round }) {
+function ThemesRoundDescription({ }) {
     return <>
         <p className='2xl:text-2xl text-center'><strong>25 questions</strong> organisées en <strong>5 niveaux</strong>.</p>
     </>

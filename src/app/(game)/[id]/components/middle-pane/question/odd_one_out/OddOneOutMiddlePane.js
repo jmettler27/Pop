@@ -52,7 +52,7 @@ function OddOneOutQuestionHeader({ question }) {
                 <QuestionTypeIcon questionType={question.type} fontSize={50} />
                 <h1 className='2xl:text-5xl'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong></h1>
             </div>
-            <h2 className='2xl:text-5xl'>{question.details.title}</h2>
+            <h2 className='2xl:text-4xl'>{question.details.title}</h2>
         </div>
     )
 }
@@ -114,7 +114,7 @@ function OddOneOutProposals({ question, randomization, selectedItems, isChooser 
 
     return (
         <List
-            className='rounded-lg max-h-full w-1/3 overflow-y-auto mb-3'
+            className='rounded-lg max-h-[90%] w-1/3 overflow-y-auto mb-3'
             sx={{ bgcolor: 'background.paper' }}
         >
             {randomization.map((origIdx, idx) => (
@@ -139,24 +139,10 @@ function ProposalItem({ item, onProposalClick, onAccordionChange, selectedItem, 
     const myRole = useRoleContext()
 
     const isClicked = selectedItem != null
-
-    const itemIsDisabled = () => {
-        if (myRole === 'organizer')
-            return false
-        if (myRole === 'player') {
-            if (game.status === 'question_end') {
-                return true
-            }
-            if (isClicked) {
-                return true
-            }
-            return !isChooser
-        }
-        return true
-    }
-
-    const showExplanation = isClicked || game.status === 'question_end'
+    const showExplanation = game.status === 'question_end' || isClicked
     const showComplete = myRole === 'organizer' || showExplanation
+
+    const isItemInteractive = () => myRole === 'organizer' || (myRole === 'player' && isChooser && !showExplanation);
 
     return (showExplanation ?
         <Accordion
@@ -200,7 +186,7 @@ function ProposalItem({ item, onProposalClick, onAccordionChange, selectedItem, 
             className='max-w-full'
             divider={!isLast}
             onClick={onProposalClick}
-            disabled={isSubmitting || itemIsDisabled()}
+            disabled={isSubmitting || !isItemInteractive()}
             sx={{
                 '&.Mui-disabled': {
                     opacity: 1.0

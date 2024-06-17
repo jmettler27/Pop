@@ -10,6 +10,7 @@ import {
 
 import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
+import { updateTimerStateTransaction } from '../timer';
 
 
 /* ====================================================================================================== */
@@ -53,8 +54,9 @@ const handleNextClueClickTransaction = async (
         getDocDataTransaction(transaction, roundRef),
     ])
 
+    const { buzzed, canceled } = playersData
+
     // If there is a buzzed player, update his status to idle
-    const buzzed = playersData.buzzed
     if (buzzed && buzzed.length > 0) {
         const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', buzzed[0])
         transaction.update(playerRef, {
@@ -69,18 +71,17 @@ const handleNextClueClickTransaction = async (
     })
 
     // Decancel players who need it
-    const canceled = playersData.canceled
-    if (canceled) {
-        for (const item of canceled) {
-            if (item.clueIdx === (realtimeData.currentClueIdx + 1) - roundData.delay) {
-                const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', item.playerId)
-                transaction.update(playerRef, {
-                    status: 'idle'
-                })
+    if (canceled && canceled.length > 0) {
+        const targetClueIdx = (realtimeData.currentClueIdx + 1) - roundData.delay
+        for (const cancellation of canceled) {
+            if (cancellation.clueIdx === targetClueIdx) {
+                const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', cancellation.playerId)
+                transaction.update(playerRef, { status: 'idle' })
             }
         }
     }
 
+    await updateTimerStateTransaction(transaction, gameId, 'reset')
     await addSoundToQueueTransaction(transaction, gameId, 'cartoon_mystery_musical_tone_002')
 }
 /* ====================================================================================================== */

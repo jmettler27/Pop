@@ -1,16 +1,16 @@
 import { useGameContext, useRoleContext } from '@/app/(game)/contexts'
-
 import { CurrentRoundQuestionOrder } from '@/app/(game)/[id]/components/middle-pane/question/QuestionHeader'
+import { revealQuoteElement } from '@/app/(game)/lib/question/quote'
+import LoadingScreen from '@/app/components/LoadingScreen'
 
+import { doc } from 'firebase/firestore'
+import { useDocumentData } from 'react-firebase-hooks/firestore'
+
+import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
+import { isObjectEmpty } from '@/lib/utils'
+import { useAsyncAction } from '@/lib/utils/async'
 import { questionTypeToTitle, QuestionTypeIcon } from '@/lib/utils/question_types'
 import { topicToEmoji } from '@/lib/utils/topics'
-import { doc } from 'firebase/firestore'
-import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
-import { useDocumentData } from 'react-firebase-hooks/firestore'
-import LoadingScreen from '@/app/components/LoadingScreen'
-import { useAsyncAction } from '@/lib/utils/async'
-import { isObjectEmpty } from '@/lib/utils'
-import { revealQuoteElement } from '@/app/(game)/lib/question/quote'
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/lib/utils/question/question'
 
 
@@ -57,68 +57,53 @@ function QuoteMainContent({ question }) {
 
     return (
         <div className='flex flex-col h-full w-2/3 items-center justify-center space-y-5'>
-            <blockquote className='md:text-5xl dark:text-white'>&quot;{<DisplayedQuote toGuess={toGuess} revealed={revealed} quote={quote} quoteParts={quoteParts} />}&quot;</blockquote>
-            {author && <h4 className='md:text-5xl dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['author']} {<DisplayedAuthor toGuess={toGuess} revealed={revealed} author={author} />}</h4>}
-            {source && <h4 className='md:text-5xl dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['source']} <i>{<DisplayedSource toGuess={toGuess} revealed={revealed} source={source} />}</i></h4>}
+            <blockquote className='2xl:text-5xl dark:text-white'>&quot;{<DisplayedQuote toGuess={toGuess} revealed={revealed} quote={quote} quoteParts={quoteParts} />}&quot;</blockquote>
+            {author && <h4 className='2xl:text-5xl dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['author']} {<DisplayedQuoteElement toGuess={toGuess} revealed={revealed} quoteElement={author} quoteElementStr='author' />}</h4>}
+            {source && <h4 className='2xl:text-5xl dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['source']} <i>{<DisplayedQuoteElement toGuess={toGuess} revealed={revealed} quoteElement={source} quoteElementStr='source' />}</i></h4>}
         </div>
     );
 }
 
 
-const DisplayedAuthor = ({ toGuess, revealed, author }) => {
+const DisplayedQuoteElement = ({ toGuess, revealed, quoteElement, quoteElementStr }) => {
     const game = useGameContext()
     const myRole = useRoleContext()
 
-    const [handleAuthorClick, isSubmitting] = useAsyncAction(async () => {
-        await revealQuoteElement(game.id, game.currentRound, game.currentQuestion, 'author')
+    const [handleQuoteElementClick, isSubmitting] = useAsyncAction(async () => {
+        await revealQuoteElement(game.id, game.currentRound, game.currentQuestion, quoteElementStr)
     })
 
-    if (toGuess.includes('author')) {
-        if (game.status === 'question_end') {
-            return <span className='text-green-500'>{author}</span>
-        }
-        const revealedObj = revealed['author']
-        const hasBeenRevealed = !isObjectEmpty(revealedObj)
-        if (hasBeenRevealed) {
-            if (revealedObj.playerId) {
-                return <span className='text-green-500'>{author}</span>
-            } else {
-                return <span className='text-blue-500'>{author}</span>
-            }
-        } else if (myRole === 'organizer') {
-            return <span className='text-yellow-500 pointer-events-auto cursor-pointer hover:opacity-50' onClick={handleAuthorClick} disabled={isSubmitting}>{author}</span>
-        }
-        return <span className='text-yellow-500'>???</span>
+    const isToGuess = toGuess.includes(quoteElementStr)
+    if (!isToGuess) {
+        return <span>{quoteElement}</span>
     }
-    return <span>{author}</span>
-}
 
-const DisplayedSource = ({ toGuess, revealed, source }) => {
-    const game = useGameContext()
-    const myRole = useRoleContext()
+    const isQuestionEnd = game.status === 'question_end'
+    const revealedObj = revealed[quoteElementStr]
+    const hasBeenRevealed = !isObjectEmpty(revealedObj)
+    const hasBeenRevealedByPlayer = hasBeenRevealed && revealedObj.playerId
 
-    const [handleSourceClick, isSubmitting] = useAsyncAction(async () => {
-        await revealQuoteElement(game.id, game.currentRound, game.currentQuestion, 'source')
-    })
-
-    if (toGuess.includes('source')) {
-        if (game.status === 'question_end') {
-            return <span className='text-green-500'>{source}</span>
-        }
-        const revealedObj = revealed['source']
-        const hasBeenRevealed = !isObjectEmpty(revealedObj)
-        if (hasBeenRevealed) {
-            if (revealedObj.playerId) {
-                return <span className='text-green-500'>{source}</span>
-            } else {
-                return <span className='text-blue-500'>{source}</span>
-            }
-        } else if (myRole === 'organizer') {
-            return <span className='text-yellow-500 pointer-events-auto cursor-pointer hover:opacity-50' onClick={handleSourceClick} disabled={isSubmitting}>{source}</span>
-        }
-        return <span className='text-yellow-500'>???</span>
+    if (isQuestionEnd || hasBeenRevealedByPlayer) {
+        return <span className='text-green-500'>{quoteElement}</span>;
     }
-    return <span>{source}</span>
+
+    if (hasBeenRevealed) {
+        return <span className='text-blue-500'>{quoteElement}</span>;
+    }
+
+    if (myRole === 'organizer') {
+        return (
+            <span
+                className='text-yellow-500 pointer-events-auto cursor-pointer hover:opacity-50'
+                onClick={handleQuoteElementClick}
+                disabled={isSubmitting}
+            >
+                {quoteElement}
+            </span>
+        );
+    }
+
+    return <span className='text-yellow-500'>???</span>;
 }
 
 const DisplayedQuote = ({ toGuess, revealed, quote, quoteParts }) => {
@@ -135,36 +120,44 @@ const DisplayedQuote = ({ toGuess, revealed, quote, quoteParts }) => {
         let lastIndex = 0
 
         // quoteParts.sort((a, b) => a.startIdx - b.startIdx).forEach((quotePart, index) => {
-        quoteParts.forEach((quotePart, quotePartIdx) => {
+        quoteParts.forEach((quotePart, idx) => {
             const before = quote.substring(lastIndex, quotePart.startIdx);
             const within = quote.substring(quotePart.startIdx, quotePart.endIdx + 1);
             lastIndex = quotePart.endIdx + 1;
 
-            parts.push(<span key={`before_${quotePartIdx}`}>{before}</span>);
+            parts.push(<span key={`before_${idx}`}>{before}</span>);
 
             if (game.status === 'question_end') {
-                parts.push(<span key={`answer_${quotePartIdx}`} className='text-green-500'>{within}</span>);
+                parts.push(<span key={`answer_${idx}`} className='text-green-500'>{within}</span>);
                 return
             }
 
-            const revealedQuotePart = revealed['quote'][quotePartIdx];
+            const revealedQuotePart = revealed['quote'][idx];
             const hasBeenRevealed = !isObjectEmpty(revealedQuotePart)
             if (hasBeenRevealed) {
                 if (revealedQuotePart.playerId) { // Has been found by a player
-                    parts.push(<span key={quotePartIdx} className='text-green-500'>{within}</span>);
+                    parts.push(<span key={idx} className='text-green-500'>{within}</span>);
                 } else { // Has been revealed by the organizer
-                    parts.push(<span key={quotePartIdx} className='text-blue-500'>{within}</span>);
+                    parts.push(<span key={idx} className='text-blue-500'>{within}</span>);
                 }
             } else if (myRole === 'organizer') {
-                parts.push(<span key={quotePartIdx} className='text-yellow-500 pointer-events-auto cursor-pointer hover:opacity-50' onClick={() => handleQuotePartClick(quotePartIdx)} disabled={isSubmitting}>{within}</span>);
+                parts.push(
+                    <span key={idx}
+                        className='text-yellow-500 pointer-events-auto cursor-pointer hover:opacity-50'
+                        onClick={() => handleQuotePartClick(idx)}
+                        disabled={isSubmitting}
+                    >
+                        {within}
+                    </span>
+                );
             } else {
                 // Replace all non-space characters of within with underscores
                 const replaced = within.replace(/\S/g, '_');
-                parts.push(<span key={quotePartIdx} className='text-yellow-500'>{replaced}</span>);
+                parts.push(<span key={idx} className='text-yellow-500'>{replaced}</span>);
             }
         });
 
-        parts.push(<span key={'lastIndex'}>{quote.substring(lastIndex)}</span>);
+        parts.push(<span key={lastIndex}>{quote.substring(lastIndex)}</span>);
         return <>{parts}</>;
     }
     return <span>{quote}</span>

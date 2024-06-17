@@ -42,7 +42,7 @@ function RiddleQuestionHeader({ question }) {
                 <QuestionTypeIcon questionType={question.type} fontSize={50} />
                 <h1 className='2xl:text-5xl'>{question.type === 'blindtest' && blindtestTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong></h1>
             </div>
-            <h2 className='2xl:text-5xl'>{question.details.title}</h2>
+            <h2 className='2xl:text-4xl'>{question.details.title}</h2>
         </div>
     )
 }

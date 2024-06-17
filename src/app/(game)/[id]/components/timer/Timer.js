@@ -19,9 +19,9 @@ export default function Timer({ timer, serverTimeOffset, onTimerEnd = () => { } 
     const startTimer = () => {
         console.log("startTimer", Date.now())
         timerId.current = setInterval(() => {
-            const elapsedTimeMs = Date.now() - timer.timestamp.toMillis() //- serverTimeOffset
+            const elapsedTimeMs = Date.now() - timer.timestamp.toMillis() + serverTimeOffset
             const timeLeftMs = milliseconds - elapsedTimeMs
-            setMilliSeconds(() => (timer.forward) ? elapsedTimeMs : timeLeftMs)
+            setMilliSeconds(() => timer.forward ? elapsedTimeMs : timeLeftMs)
         }, INTERVAL_MS)
     }
 
@@ -62,7 +62,7 @@ export default function Timer({ timer, serverTimeOffset, onTimerEnd = () => { } 
     }, [timer.status, timer.duration, timer.timestamp])
 
 
-    if ((timer.forward && milliseconds >= endMillisecond) || (!timer.forward && milliseconds <= endMillisecond)) {
+    if ((!timer.forward && milliseconds <= endMillisecond) || (timer.forward && milliseconds >= endMillisecond)) {
         endTimer()
     }
 
