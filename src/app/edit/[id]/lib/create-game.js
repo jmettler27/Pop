@@ -8,16 +8,8 @@ import { GAMES_COLLECTION_REF, USERS_COLLECTION_REF } from '@/lib/firebase/fires
 import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
 import {
     doc,
-    arrayUnion,
-    Timestamp,
-    writeBatch,
     runTransaction,
-    collection,
     serverTimestamp,
-    where,
-    query,
-    getDocs,
-    increment
 } from 'firebase/firestore'
 
 
@@ -67,7 +59,7 @@ export const createGameTransaction = async (
     await createGameOrganizersTransaction(transaction, gameId, organizerId, organizerName, userData.image);
 
     // Create realtime collection
-    await createGameRealtimeTransaction(transaction, gameId);
+    await createGameRealtimeTransaction(transaction, gameId, organizerId);
 
     await addSoundToQueueTransaction(transaction, gameId, "level-passed");
 
@@ -92,52 +84,39 @@ const createGameOrganizersTransaction = async (
 
 const createGameRealtimeTransaction = async (
     transaction,
-    gameId
+    gameId,
+    organizerId
 ) => {
-    const realtimeScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'scores');
-    transaction.set(realtimeScoresRef, {
+    const readyRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready');
+    transaction.set(readyRef, {
+        numPlayers: 0,
+        numReady: 0,
+    });
+
+    const scoresRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'scores');
+    transaction.set(scoresRef, {
         gameSortedTeams: [],
         scores: {},
         scoresProgress: {},
 
     });
 
-    const realtimeStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states');
-    transaction.set(realtimeStatesRef, {
+    const statesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states');
+    transaction.set(statesRef, {
         chooserIdx: null,
         chooserOrder: null,
     })
 
-    await updateTimerTransaction(transaction, gameId, {
+    const timerRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer');
+    transaction.set(timerRef, {
+        authorized: false,
         duration: READY_COUNTDOWN_SECONDS,
         forward: false,
-        status: 'reset'
-
-    });
+        managedBy: organizerId,
+        status: 'reset',
+        timestamp: serverTimestamp()
+    })
 
     console.log("Realtime collections created successfully.")
 }
-
-
-// const createGameTeamsTransaction = async (
-//     transaction,
-//     gameId
-// ) => {
-//     const dummyTeamDocRef = doc(GAMES_COLLECTION_REF, gameId, 'teams', 'dummy');
-//     transaction.set(dummyTeamDocRef, {
-//         color: '#000000',
-//         name: "Dummy Team",
-//         teamAllowed: false
-//     });
-
-//     const dummyPlayerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'players', 'dummy');
-//     transaction.set(dummyPlayerDocRef, {
-//         image: '',
-//         joinedAt: serverTimestamp(),
-//         name: "Dummy Player",
-//         status: 'idle',
-//         teamId: dummyTeamDocRef.id
-//     });
-// }
-
 

@@ -114,7 +114,7 @@ function OddOneOutProposals({ question, randomization, selectedItems, isChooser 
 
     return (
         <List
-            className='rounded-lg max-h-[90%] w-1/3 overflow-y-auto mb-3'
+            className='rounded-lg max-h-[95%] w-1/3 overflow-y-auto mb-3'
             sx={{ bgcolor: 'background.paper' }}
         >
             {randomization.map((origIdx, idx) => (
