@@ -14,7 +14,7 @@ import { DEFAULT_LOCALE, localeSchema } from '@/lib/utils/locales';
 import { topicSchema } from '@/lib/utils/topics';
 import { stringSchema } from '@/lib/utils/forms';
 import { getFileFromRef, imageFileSchema } from '@/lib/utils/files';
-import { IMAGE_ANSWER_EXAMPLE, IMAGE_ANSWER_MAX_LENGTH, IMAGE_TITLE_EXAMPLE, IMAGE_TITLE_MAX_LENGTH } from '@/lib/utils/question/image';
+import { IMAGE_ANSWER_DESCRIPTION_EXAMPLE, IMAGE_ANSWER_DESCRIPTION_MAX_LENGTH, IMAGE_ANSWER_SOURCE_EXAMPLE, IMAGE_ANSWER_SOURCE_MAX_LENGTH, IMAGE_TITLE_EXAMPLE, IMAGE_TITLE_MAX_LENGTH } from '@/lib/utils/question/image';
 
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation'
@@ -84,7 +84,8 @@ export function SubmitImageQuestionForm({ userId, ...props }) {
         lang: localeSchema(),
         topic: topicSchema(),
         title: stringSchema(IMAGE_TITLE_MAX_LENGTH),
-        answer: stringSchema(IMAGE_ANSWER_MAX_LENGTH),
+        answer_description: stringSchema(IMAGE_ANSWER_DESCRIPTION_MAX_LENGTH, false),
+        answer_source: stringSchema(IMAGE_ANSWER_SOURCE_MAX_LENGTH),
         files: imageFileSchema(fileRef),
     })
 
@@ -94,7 +95,8 @@ export function SubmitImageQuestionForm({ userId, ...props }) {
                 lang: DEFAULT_LOCALE,
                 topic: '',
                 title: '',
-                answer: '',
+                answer_description: '',
+                answer_source: '',
                 files: '',
             }}
             onSubmit={async values => {
@@ -122,12 +124,21 @@ export function SubmitImageQuestionForm({ userId, ...props }) {
                 />
 
                 <MyTextInput
-                    label="What is the answer?"
-                    name='answer'
+                    label="What is represented in this image?"
+                    name='answer_description'
                     type='text'
-                    placeholder={IMAGE_ANSWER_EXAMPLE}
+                    placeholder={IMAGE_ANSWER_DESCRIPTION_EXAMPLE}
                     validationSchema={validationSchema}
-                    maxLength={IMAGE_ANSWER_MAX_LENGTH}
+                    maxLength={IMAGE_ANSWER_DESCRIPTION_MAX_LENGTH}
+                />
+
+                <MyTextInput
+                    label="Where does this image come from?"
+                    name='answer_source'
+                    type='text'
+                    placeholder={IMAGE_ANSWER_SOURCE_EXAMPLE}
+                    validationSchema={validationSchema}
+                    maxLength={IMAGE_ANSWER_SOURCE_MAX_LENGTH}
                 />
 
                 <UploadImage fileRef={fileRef} name='files' validationSchema={validationSchema} />

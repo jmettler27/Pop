@@ -15,7 +15,7 @@ import { DEFAULT_LOCALE, localeSchema } from '@/lib/utils/locales';
 import { topicSchema } from '@/lib/utils/topics';
 import { stringSchema } from '@/lib/utils/forms';
 import { getFileFromRef, audioFileSchema, imageFileSchema } from '@/lib/utils/files';
-import { BLINDTEST_ANSWER_AUTHOR_EXAMPLE, BLINDTEST_ANSWER_AUTHOR_MAX_LENGTH, BLINDTEST_ANSWER_TITLE_MAX_LENGTH, BLINDTEST_ANSWER_SOURCE_EXAMPLE, BLINDTEST_ANSWER_SOURCE_MAX_LENGTH, BLINDTEST_ANSWER_TITLE_EXAMPLE, BLINDTEST_TYPE_TO_TITLE, subtypeSchema, BLINDTEST_TITLE_EXAMPLE, BLINDTEST_TITLE_MAX_LENGTH } from '@/lib/utils/question/blindtest';
+import { BLINDTEST_ANSWER_AUTHOR_EXAMPLE, BLINDTEST_ANSWER_AUTHOR_MAX_LENGTH, BLINDTEST_ANSWER_TITLE_MAX_LENGTH, BLINDTEST_ANSWER_SOURCE_EXAMPLE, BLINDTEST_ANSWER_SOURCE_MAX_LENGTH, BLINDTEST_ANSWER_TITLE_EXAMPLE, BLINDTEST_TYPE_TO_TITLE, subtypeSchema, BLINDTEST_TITLE_EXAMPLE, BLINDTEST_TITLE_MAX_LENGTH, BLINDTEST_TYPE_TO_EMOJI } from '@/lib/utils/question/blindtest';
 
 
 import { useSession } from 'next-auth/react';
@@ -141,7 +141,7 @@ export function SubmitBlindtestQuestionForm({ userId, ...props }) {
                 >
                     <option value="">Select a type</option>
                     {Object.entries(BLINDTEST_TYPE_TO_TITLE['en']).map(([subtype, title]) => (
-                        <option key={subtype} value={subtype}>{title}</option>
+                        <option key={subtype} value={subtype}>{BLINDTEST_TYPE_TO_EMOJI[subtype]} {title}</option>
                     ))}
                 </MySelect>
 

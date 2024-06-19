@@ -11,38 +11,35 @@ import { Avatar } from '@mui/material';
 import LoadingScreen from '../LoadingScreen';
 import { DataGrid } from '@mui/x-data-grid';
 
-//
 const progressiveCluesQuestionRow = (question) => {
     const { title, answer, clues } = question.details
     return {
         title,
         answer: answer.title,
-        // clues: clues.join(', '),    // { field: 'clues', headerName: 'Clues', width: 130 },
 
     }
 }
 const progressiveCluesQuestionColumns = [
     { field: 'title', headerName: 'Question', width: 130 },
     { field: 'answer', headerName: 'Answer', width: 200 },
-    // { field: 'clues', headerName: 'Clues', width: 130 },
 ]
 
 
-//
 const imageQuestionRow = (question) => {
-    const { title, answer } = question.details
+    const { title, answer: { description, source } } = question.details
     return {
         title,
-        answer,
+        description,
+        source,
     }
 }
 const imageQuestionColumns = [
     { field: 'title', headerName: 'Question', width: 250 },
-    { field: 'answer', headerName: 'Answer', width: 500 },
+    { field: 'description', headerName: 'Description', width: 250 },
+    { field: 'source', headerName: 'Source', width: 250 }
 ]
 
 
-//
 const emojiQuestionRow = (question) => {
     const { title, answer, clue } = question.details
     return {
@@ -58,7 +55,6 @@ const emojiQuestionColumns = [
 ]
 
 
-//
 const blindtestQuestionRow = (question) => {
     const { subtype, title, answer } = question.details
     return {
@@ -78,7 +74,6 @@ const blindtestQuestionColumns = [
 ]
 
 
-//
 const enumQuestionRow = (question) => {
     const { title, note, answer, maxIsKnown, thinkingTime, challengeTime } = question.details
     return {
@@ -98,7 +93,6 @@ const enumQuestionColumns = [
 ]
 
 
-//
 const oddOneOutQuestionRow = (question) => {
     const { answerIdx, items, title } = question.details
     return {
@@ -112,7 +106,6 @@ const oddOneOutQuestionColumns = [
 ]
 
 
-//
 const matchingQuestionRow = (question) => {
     const { title, numCols, numRows } = question.details
     return {
@@ -128,7 +121,6 @@ const matchingQuestionColumns = [
 ]
 
 
-//
 const quoteQuestionRow = (question) => {
     const { author, quote, source, toGuess } = question.details
     return {

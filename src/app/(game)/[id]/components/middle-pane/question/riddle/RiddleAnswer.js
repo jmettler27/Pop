@@ -25,7 +25,6 @@ function RiddleAnswerText({ question }) {
         case 'progressive_clues':
             return <span className='2xl:text-4xl font-bold text-green-500'>{answer.title}</span>
         case 'image':
-            return <span className='2xl:text-4xl font-bold text-green-500'>{answer}</span>
         case 'emoji':
         case 'blindtest':
             return <></>

@@ -44,6 +44,8 @@ export const BLINDTEST_ANSWER_SOURCE_MAX_LENGTH = 75
 export const BLINDTEST_ANSWER_AUTHOR_EXAMPLE = "Ludwig Göransson"
 export const BLINDTEST_ANSWER_AUTHOR_MAX_LENGTH = 50
 
+export const BLINDTEST_ELEMENTS = ['title', 'source', 'author']
+
 export const BLINDTEST_DEFAULT_REWARD = 1
 
 export const BLINDTEST_DEFAULT_MAX_TRIES = 2

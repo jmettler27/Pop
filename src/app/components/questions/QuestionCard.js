@@ -130,12 +130,12 @@ const ProgressiveCluesCardMainContent = ({ question }) => {
 }
 
 const ImageCardMainContent = ({ question }) => {
-    const answer = question.details.answer
+    const { description, source } = question.details.answer
     return (
         <div className='flex flex-col w-full space-y-2'>
             <Image
                 src={question.details.image}
-                alt={answer}
+                alt={description ? `${description} - ${source}` : source}
                 priority={true}
                 height={0}
                 width={0}
@@ -146,7 +146,8 @@ const ImageCardMainContent = ({ question }) => {
                 }}
                 className='self-center'
             />
-            <span className='text-sm md:text-base dark:text-white'><strong>{answer}</strong></span>
+            {description && <span className='text-sm md:text-base dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['description']} {description}</span>}
+            <span className='text-sm md:text-base dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['source']} <i>{source}</i></span>
         </div>
     );
 }
@@ -195,7 +196,7 @@ const BlindtestCardMainContent = ({ question }) => {
             />
             <span className='text-sm md:text-base dark:text-white'><strong>{title}</strong></span>
             {author && <span className='text-sm md:text-base dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['author']} {author}</span>}
-            {source && <span className='text-sm md:text-base dark:text-white'><i>{QUESTION_ELEMENT_TO_EMOJI['source']} {source}</i></span>}
+            {source && <span className='text-sm md:text-base dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['source']} <i>{source}</i></span>}
             <audio src={question.details.audio} controls className='w-full' />
         </div>
     );

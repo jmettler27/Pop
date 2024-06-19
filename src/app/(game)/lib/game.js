@@ -228,44 +228,44 @@ const updateQuestionTransaction = async (
     transaction,
     questionId
 ) => {
-    // const themeId = 'R9ZM0YoYyGgPVY7taJAC'
-
-    // const themeDocRef = doc(QUESTIONS_COLLECTION_REF, themeId)
-    // const themeData = await getDocDataTransaction(transaction, themeDocRef)
-
-    // const newThemeDocRef = doc(collection(QUESTIONS_COLLECTION_REF))
-    // transaction.set(newThemeDocRef, { ...themeData })
-
-    // const sectionsCollectionRef = collection(QUESTIONS_COLLECTION_REF, themeId, 'sections')
-    // const sectionsSnapshot = await getDocs(query(sectionsCollectionRef))
-    // for (const sectionDoc of sectionsSnapshot.docs) {
-    //     const sectionId = sectionDoc.id
-    //     const sectionData = sectionDoc.data()
-
-    //     const { order, ...rest } = sectionData
-    //     const newSectionDocRef = doc(QUESTIONS_COLLECTION_REF, newThemeDocRef.id, 'sections', sectionId)
-    //     transaction.set(newSectionDocRef, { ...rest })
-
-    //     const { questions } = rest
-    //     const updatedQuestions = questions.map(elem => {
-    //         const { question, status, ...rest } = elem
-    //         return {
-    //             ...rest,
-    //             title: rest.title || question
-    //         }
-    //     })
-    //     transaction.update(newSectionDocRef, { questions: updatedQuestions })
-    // }
     const questionDocRef = doc(QUESTIONS_COLLECTION_REF, questionId)
+    const questionData = await getDocDataTransaction(transaction, questionDocRef)
+    const { answer, image, title } = questionData.details
+
+
+    // if answer is a string, return
+    if (typeof answer !== 'string') {
+        return
+    }
+    let description = null
+    let source = null
+
+    const answerParts = answer.split(' - ')
+
+    if (answerParts.length === 1) {
+        source = answerParts[0]
+    } else if (answerParts.length === 2) {
+        description = answerParts[0]
+        source = answerParts[1]
+    }
+
+
     transaction.update(questionDocRef, {
-        createdBy: "dE1ItazZqaoBjChy7NN8"
+        details: {
+            image,
+            title,
+            answer: {
+                source,
+                description
+            },
+        }
     })
 }
 
 export async function updateQuestions() {
 
     try {
-        const q = query(QUESTIONS_COLLECTION_REF, where('type', '==', 'mcq'), where('topic', '==', 'anime_manga'));
+        const q = query(QUESTIONS_COLLECTION_REF, where('type', '==', 'image'), where('topic', '==', 'video_game'));
         const querySnapshot = await getDocs(q)
 
         for (const questionDoc of querySnapshot.docs) {
@@ -274,9 +274,8 @@ export async function updateQuestions() {
             )
             // console.log(questionDoc.id)
         }
-        console.log("Matching submission handled successfully.");
     } catch (error) {
-        console.error("There was an error handling the matching submission:", error);
+        console.error("There was an error updating the questions", error);
         throw error;
     }
 }

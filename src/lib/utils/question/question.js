@@ -76,6 +76,7 @@ export const QUESTION_ELEMENT_TO_TITLE = {
 export const QUESTION_ELEMENT_TO_EMOJI = {
     'source': "📜",
     'author': "🧑",
+    'description': "📝",
 }
 
 export function questionElementToTitle(element, lang = 'fr-FR') {
