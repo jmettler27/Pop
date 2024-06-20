@@ -59,8 +59,16 @@ export function SubmitImageQuestionForm({ userId, ...props }) {
                 throw new Error("No image file");
             }
             const { files, topic, lang, ...details } = values;
+            const { title, answer_description, answer_source } = details;
+
             const questionId = await addNewQuestion({
-                details: { ...details },
+                details: {
+                    title,
+                    answer: {
+                        description: answer_description,
+                        source: answer_source,
+                    },
+                },
                 type: QUESTION_TYPE,
                 topic,
                 // subtopics,

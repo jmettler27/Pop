@@ -229,43 +229,15 @@ const updateQuestionTransaction = async (
     questionId
 ) => {
     const questionDocRef = doc(QUESTIONS_COLLECTION_REF, questionId)
-    const questionData = await getDocDataTransaction(transaction, questionDocRef)
-    const { answer, image, title } = questionData.details
-
-
-    // if answer is a string, return
-    if (typeof answer !== 'string') {
-        return
-    }
-    let description = null
-    let source = null
-
-    const answerParts = answer.split(' - ')
-
-    if (answerParts.length === 1) {
-        source = answerParts[0]
-    } else if (answerParts.length === 2) {
-        description = answerParts[0]
-        source = answerParts[1]
-    }
-
-
     transaction.update(questionDocRef, {
-        details: {
-            image,
-            title,
-            answer: {
-                source,
-                description
-            },
-        }
+        createdBy: 'dE1ItazZqaoBjChy7NN8'
     })
 }
 
 export async function updateQuestions() {
 
     try {
-        const q = query(QUESTIONS_COLLECTION_REF, where('type', '==', 'image'), where('topic', '==', 'video_game'));
+        const q = query(QUESTIONS_COLLECTION_REF, where('type', '==', 'basic'), where('topic', '==', 'video_game'));
         const querySnapshot = await getDocs(q)
 
         for (const questionDoc of querySnapshot.docs) {
