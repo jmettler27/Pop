@@ -9,7 +9,7 @@ import { resetProgressiveCluesRealtimeTransaction } from './question/progressive
 import { handleRiddleCountdownEndTransaction, resetRiddleQuestionTransaction } from './question/riddle';
 import { endEnumQuestionTransaction, endEnumReflectionTransaction, resetEnumQuestionTransaction } from './question/enum';
 import { handleOOOCountdownEndTransaction, resetOddOneOutQuestionTransaction } from './question/odd_one_out';
-import { handleMCQCountdownEnd, resetMCQTransaction } from './question/mcq';
+import { handleMCQCountdownEndTransaction, resetMCQTransaction } from './question/mcq';
 import { handleMatchingCountdownEndTransaction, resetMatchingQuestionTransaction } from './question/matching';
 import { handleQuoteCountdownEndTransaction, resetQuoteQuestionTransaction } from './question/quote';
 
@@ -17,6 +17,7 @@ import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/lib/utils/question/question';
 import { QUESTION_TYPES, isRiddle } from '@/lib/utils/question_types';
 import { updateTimerTransaction } from './timer';
+import { handleBasicQuestionCountdownEndTransaction, resetBasicQuestionTransaction } from './question/basic';
 
 /* ==================================================================================================== */
 // READ
@@ -108,6 +109,9 @@ export const resetQuestionTransaction = async (
             break
         case 'mcq':
             await resetMCQTransaction(transaction, gameId, roundId, questionId)
+            break
+        case 'basic':
+            await resetBasicQuestionTransaction(transaction, gameId, roundId, questionId)
             break
     }
 
@@ -213,7 +217,9 @@ const handleQuestionActiveCountdownEndTransaction = async (
     } else if (type === 'matching') {
         await handleMatchingCountdownEndTransaction(transaction, gameId, roundId, questionId)
     } else if (type === 'mcq') {
-        await handleMCQCountdownEnd(transaction, gameId, roundId, questionId)
+        await handleMCQCountdownEndTransaction(transaction, gameId, roundId, questionId)
+    } else if (type === 'basic') {
+        await handleBasicQuestionCountdownEndTransaction(transaction, gameId, roundId, questionId)
     } else if (type === 'enum') {
         const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
         const questionData = await getDocDataTransaction(transaction, questionRef)

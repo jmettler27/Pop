@@ -24,6 +24,7 @@ import {
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { QUOTE_DEFAULT_MAX_TRIES, QUOTE_DEFAULT_REWARDS_PER_ELEMENT } from '@/lib/utils/question/quote';
 import { resetGameChooserTransaction } from '@/app/(game)/lib/chooser';
+import { BASIC_QUESTION_DEFAULT_REWARD } from '@/lib/utils/question/basic';
 
 /* ==================================================================================================== */
 export async function addGameRound(gameId, title, type, rewards, rewardsPerQuestion) {
@@ -91,6 +92,8 @@ const addGameRoundTransaction = async (
         initRoundInfo.mistakePenalty = MATCHING_DEFAULT_MISTAKE_PENALTY
     } else if (type === 'mcq') {
         initRoundInfo.rewardsPerQuestion = MCQ_DEFAULT_REWARDS
+    } else if (type === 'basic') {
+        initRoundInfo.rewardsPerQuestion = BASIC_QUESTION_DEFAULT_REWARD;
     }
 
     // Create a new round document
@@ -252,7 +255,13 @@ const addGameQuestionTransaction = async (
             reward: null,
             teamId: null,
         });
+    } else if (questionData.type === 'basic') {
+        transaction.set(questionRealtimeRef, {
+            ...commonRealtimeInfo,
+            winner: null
+        });
     }
+
 
     const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId);
     transaction.update(roundRef, {

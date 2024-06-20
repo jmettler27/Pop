@@ -93,7 +93,7 @@ const selectRoundTransaction = async (
             })
         }
     }
-    if (roundData.type === 'mcq') {
+    if (roundData.type === 'mcq' || roundData.type === 'basic') {
         const shuffledQuestionIds = shuffle(roundData.questions)
         transaction.update(roundRef, {
             questions: shuffledQuestionIds
@@ -175,21 +175,11 @@ const switchRoundQuestionTransaction = async (
     const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
     const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
 
-    const [questionData, realtimeData] = await Promise.all([
-        getDocDataTransaction(transaction, questionRef),
-        getDocDataTransaction(transaction, realtimeDocRef)
-    ])
-
-    // const { managedBy } = realtimeData
-
-
-    if (questionData.type !== 'blindtest') {
-        await addSoundToQueueTransaction(transaction, gameId, 'skyrim_skill_increase')
-    }
+    const questionData = await getDocDataTransaction(transaction, questionRef)
 
     const defaultThinkingTime = DEFAULT_THINKING_TIME_SECONDS[questionData.type]
 
-    if (questionData.type === 'mcq') {
+    if (questionData.type === 'mcq' || questionData.type === 'basic') {
         const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
         const gameStatesData = await getDocDataTransaction(transaction, gameStatesRef)
         const { chooserOrder, chooserIdx } = gameStatesData
@@ -207,12 +197,14 @@ const switchRoundQuestionTransaction = async (
             const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
             const newChooserPlayersQuerySnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', newChooserTeamId)))
             for (const playerDoc of newChooserPlayersQuerySnapshot.docs) {
+                console.log("Setting focus on player", playerDoc.id)
                 transaction.update(playerDoc.ref, {
                     status: 'focus'
                 })
             }
             const prevChooserPlayersQuerySnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', chooserTeamId)))
             for (const playerDoc of prevChooserPlayersQuerySnapshot.docs) {
+                console.log("Setting idle on player", playerDoc.id)
                 transaction.update(playerDoc.ref, {
                     status: 'idle'
                 })
@@ -256,6 +248,10 @@ const switchRoundQuestionTransaction = async (
                 status: 'idle'
             })
         }
+    }
+
+    if (questionData.type !== 'blindtest') {
+        await addSoundToQueueTransaction(transaction, gameId, 'skyrim_skill_increase')
     }
 
     transaction.update(realtimeDocRef, {
@@ -391,7 +387,7 @@ const switchRoundNextQuestionTransaction = async (
 
     await switchRoundQuestionTransaction(transaction, gameId, roundId, roundData.currentQuestionIdx + 1)
 
-    if (roundData.type !== 'mcq') {
+    if (roundData.type !== 'mcq' && roundData.type !== 'basic') {
         // Set the status of every player to 'idle'
         const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
         const querySnapshot = await getDocs(query(playersCollectionRef))

@@ -1,4 +1,5 @@
 import { getRandomElement } from "../arrays";
+import { BASIC_QUESTION_THINKING_TIME } from "./basic";
 import { BLINDTEST_THINKING_TIME } from "./blindtest";
 import { EMOJI_THINKING_TIME } from "./emoji";
 import { ENUM_MIN_THINKING_SECONDS } from "./enum";
@@ -16,6 +17,7 @@ export const DEFAULT_THINKING_TIME_SECONDS = {
     'image': IMAGE_THINKING_TIME,
     'quote': QUOTE_THINKING_TIME,
     'mcq': MCQ_THINKING_TIME,
+    'basic': BASIC_QUESTION_THINKING_TIME,
     'matching': MATCHING_THINKING_TIME,
     'odd_one_out': OOO_THINKING_TIME,
     'finale': 20,

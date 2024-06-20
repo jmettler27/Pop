@@ -30,6 +30,7 @@ function RoundRewardsTitle({ round }) {
         case 'blindtest':
         case 'emoji':
         case 'enum':
+        case 'basic':
             return <RiddleRoundRewardsTitle round={round} />
         case 'quote':
             return <QuoteRoundRewardsTitle round={round} />

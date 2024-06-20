@@ -12,6 +12,7 @@ import EnumMiddlePane from './enum/EnumMiddlePane'
 import OddOneOutMiddlePane from './odd_one_out/OddOneOutMiddlePane'
 import MCQMiddlePane from './mcq/MCQMiddlePane'
 import MatchingMiddlePane from './matching/MatchingMiddlePane'
+import BasicMiddlePane from './basic/BasicMiddlePane'
 
 export default function QuestionMiddlePane() {
     const game = useGameContext()
@@ -44,5 +45,7 @@ export default function QuestionMiddlePane() {
             return <MatchingMiddlePane question={question} />
         case 'mcq':
             return <MCQMiddlePane question={question} />
+        case 'basic':
+            return <BasicMiddlePane question={question} />
     }
 }

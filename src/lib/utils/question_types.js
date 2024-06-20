@@ -9,7 +9,7 @@ export const QUESTION_TYPES = [
     'odd_one_out',
     'matching',
     'mcq',
-    // 'basic'
+    'basic'
 ]
 
 export const QUESTION_TYPE_TO_EMOJI = {
@@ -22,7 +22,7 @@ export const QUESTION_TYPE_TO_EMOJI = {
     'odd_one_out': "🕵️",
     'matching': "💖",
     'mcq': "💲4️⃣2️⃣",
-    // 'basic': "🏁"
+    'basic': "❓"
 }
 
 export const QUESTION_TYPE_TO_TITLE = {
@@ -36,7 +36,7 @@ export const QUESTION_TYPE_TO_TITLE = {
         'odd_one_out': "Odd One Out",
         'matching': "Matching",
         'mcq': "MCQ",
-        // 'basic': "Question-Answer"
+        'basic': "Question"
     },
     'fr-FR': {
         'progressive_clues': "Devinette",
@@ -48,7 +48,7 @@ export const QUESTION_TYPE_TO_TITLE = {
         'odd_one_out': "Coup par coup",
         'matching': "Liaisons",
         'mcq': "QCM",
-        // 'basic': "Question-Réponse"
+        'basic': "Question"
     }
 }
 
@@ -100,8 +100,8 @@ import ChecklistIcon from '@mui/icons-material/Checklist'
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
-import AbcIcon from '@mui/icons-material/Abc';
 import ReorderIcon from '@mui/icons-material/Reorder';
+import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 
 export function RoundTypeIcon({ roundType, fontSize = 'small' }) {
     switch (roundType) {
@@ -132,6 +132,8 @@ export function QuestionTypeIcon({ questionType, fontSize = 'small' }) {
             return <FavoriteIcon sx={{ fontSize }} />
         case 'quote':
             return <FormatQuoteIcon sx={{ fontSize }} />
+        case 'basic':
+            return <QuestionMarkIcon sx={{ fontSize }} />
     }
 }
 

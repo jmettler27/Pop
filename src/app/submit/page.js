@@ -54,6 +54,7 @@ const QUESTION_TYPE_TO_DESCRIPTION = {
         'odd_one_out': "Select only the correct proposals.",
         'matching': "Match the elements together.",
         'mcq': "What's the answer?",
+        'basic': "One question, one answer. Simple as that."
     },
     'fr-FR': {
         'progressive_clues': "Qu'est-ce qui se cache derrière ces indices?",
@@ -65,5 +66,6 @@ const QUESTION_TYPE_TO_DESCRIPTION = {
         'odd_one_out': "Ne sélectionnez que les propositions correctes.",
         'matching': "Liez ces élements ensemble.",
         'mcq': "Quelle est la réponse?",
+        'basic': "Une question, une réponse. Tout simplement."
     }
 }

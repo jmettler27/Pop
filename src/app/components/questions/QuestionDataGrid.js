@@ -156,6 +156,24 @@ const mcqQuestionColumns = [
     // { field: 'explanation', headerName: 'Explanation', width: 130 },
 ]
 
+const basicQuestionRow = (question) => {
+    const { answer, explanation, note, source, title } = question.details
+    return {
+        answer,
+        // explanation,
+        // note,
+        source,
+        title,
+    }
+}
+const basicQuestionColumns = [
+    { field: 'source', headerName: 'Source', width: 250 },
+    { field: 'title', headerName: 'Question', width: 500 },
+    // { field: 'note', headerName: 'Note', width: MCQ_NOTE_MAX_LENGTH * 6 },
+    { field: 'answer', headerName: 'Answer', width: 400 },
+    // { field: 'explanation', headerName: 'Explanation', width: 130 },
+]
+
 
 const questionTypeToRow = {
     'progressive_clues': progressiveCluesQuestionRow,
@@ -167,6 +185,7 @@ const questionTypeToRow = {
     'matching': matchingQuestionRow,
     'quote': quoteQuestionRow,
     'mcq': mcqQuestionRow,
+    'basic': basicQuestionRow
 }
 
 const questionTypeToColumns = {
@@ -179,6 +198,7 @@ const questionTypeToColumns = {
     'matching': matchingQuestionColumns,
     'quote': quoteQuestionColumns,
     'mcq': mcqQuestionColumns,
+    'basic': basicQuestionColumns
 }
 
 const commonQuestionRow = (question, users) => {

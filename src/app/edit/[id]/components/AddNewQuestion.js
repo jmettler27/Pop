@@ -221,6 +221,7 @@ import { SubmitMCQForm } from '@/app/submit/mcq/page'
 import { SubmitOOOQuestionForm } from '@/app/submit/odd_one_out/page'
 import { SubmitProgressiveCluesQuestionForm } from '@/app/submit/progressive_clues/page'
 import { SubmitQuoteQuestionForm } from '@/app/submit/quote/page'
+import { SubmitBasicQuestionForm } from '@/app/submit/basic/page';
 
 function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
     const { id: gameId } = useParams()
@@ -240,6 +241,8 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
             return <SubmitMatchingQuestionForm userId={userId} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case 'mcq':
             return <SubmitMCQForm userId={userId} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
+        case 'basic':
+            return <SubmitBasicQuestionForm userId={userId} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case 'odd_one_out':
             return <SubmitOOOQuestionForm userId={userId} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case 'progressive_clues':

@@ -56,6 +56,7 @@ export function QuestionCardTitle({ question, lang = 'fr-FR' }) {
         case 'quote':
             return <span>{prependTopicWithEmoji(question.topic, lang)}</span>
         case 'mcq':
+        case 'basic':
             return <span>{topicToEmoji(question.topic)} {question.details.source && <i>{question.details.source}:</i>} &quot;{question.details.title}&quot;</span>
     }
 }
@@ -99,6 +100,8 @@ export function QuestionCardContent({ question }) {
             return <MatchingCardMainContent question={question} />
         case 'mcq':
             return <MCQCardMainContent question={question} />
+        case 'basic':
+            return <BasicCardMainContent question={question} />
         default:
             return <></>
     }
@@ -331,6 +334,18 @@ const MCQCardMainContent = ({ question }) => {
                 </li>
                 )}
             </ul>
+            {explanation && <p className='text-sm md:text-base dark:text-white'>{explanation}</p>}
+        </div >
+    );
+}
+
+const BasicCardMainContent = ({ question }) => {
+    const { note, answer, explanation } = question.details
+
+    return (
+        <div className='flex flex-col w-full space-y-2'>
+            {note && <p className='text-sm md:text-base dark:text-white'>{note}</p>}
+            <span className='dark:text-white'>{answer}</span>
             {explanation && <p className='text-sm md:text-base dark:text-white'>{explanation}</p>}
         </div >
     );

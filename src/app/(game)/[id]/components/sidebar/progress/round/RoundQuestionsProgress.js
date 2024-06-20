@@ -114,7 +114,7 @@ function RoundQuestionAccordion({ game, roundId, questionId, order, hasEnded, is
     const showComplete = myRole === 'organizer' || (isCurrent && game.status === 'question_end') || hasEnded || (game.status === 'round_end')
 
     const winnerPlayerData = (questionType) => {
-        if (questionType === 'mcq') {
+        if (questionType === 'mcq' || questionType === 'basic') {
             if (!realtime.correct)
                 return null
             return players.find(player => player.id === realtime.playerId)
@@ -125,7 +125,7 @@ function RoundQuestionAccordion({ game, roundId, questionId, order, hasEnded, is
     }
 
     const winnerTeamData = (questionType) => {
-        if (questionType === 'mcq') {
+        if (questionType === 'mcq' || questionType === 'basic') {
             if (!realtime.correct)
                 return null
             return teams.find(team => team.id === realtime.teamId)
@@ -240,6 +240,7 @@ function QuestionTitle({ question }) {
         case 'quote':
             return <></>
         case 'mcq':
+        case 'basic':
             return <MCQTitle question={question} />
         default:
             return (

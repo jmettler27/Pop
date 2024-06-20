@@ -12,6 +12,7 @@ import LoadingScreen from '@/app/components/LoadingScreen'
 import { QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { doc } from 'firebase/firestore'
 import { useDocumentOnce } from 'react-firebase-hooks/firestore'
+import BasicQuestionBottomPane from './basic/BasicQuestionBottomPane'
 
 export default function QuestionActiveBottomPane({ }) {
     const game = useGameContext();
@@ -46,6 +47,8 @@ export default function QuestionActiveBottomPane({ }) {
             return <MatchingBottomPane />
         case 'mcq':
             return <MCQBottomPane />
+        case 'basic':
+            return <BasicQuestionBottomPane />
     }
 }
 

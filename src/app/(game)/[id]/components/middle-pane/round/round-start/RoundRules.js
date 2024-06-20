@@ -1,3 +1,4 @@
+import { BASIC_QUESTION_THINKING_TIME } from "@/lib/utils/question/basic"
 import { BLINDTEST_THINKING_TIME } from "@/lib/utils/question/blindtest"
 import { EMOJI_THINKING_TIME } from "@/lib/utils/question/emoji"
 import { IMAGE_THINKING_TIME } from "@/lib/utils/question/image"
@@ -26,6 +27,8 @@ export function RoundRules({ round }) {
             return <MatchingRoundRules round={round} />
         case 'mcq':
             return <MCQRoundRules round={round} />
+        case 'basic':
+            return <BasicRoundRules round={round} />
         case 'finale':
             return <ThemesRoundRules round={round} />
     }
@@ -149,6 +152,19 @@ function MCQRoundRules({ round }) {
         <p className='2xl:text-2xl text-center'>L&apos;ordre de passage = {round.order > 0 ? `Le classement inversé de la manche ${round.order}` : 'Un ordre aléatoire'}.</p>
     </>
 }
+
+function BasicRoundRules({ round }) {
+    return <>
+        <p className='2xl:text-2xl text-center'>❓ Chaque question est attribuée à une équipe, qui doit proposer sa réponse à l&apos;oral.</p>
+        <ul className='2xl:text-2xl list-disc pl-10'>
+            <li>Si votre réponse est <span className='text-green-500 font-bold'>correcte</span>, vous gagnez <strong>{round.rewardsPerQuestion} point</strong>.</li>
+            <li>Si votre réponse est <span className='text-red-500 font-bold'>incorrecte</span>, vous n&apos;obtenez aucun point.</li>
+        </ul>
+        <p className='2xl:text-2xl text-center'>⏳ Vous avez <u><strong>{BASIC_QUESTION_THINKING_TIME} secondes</strong></u> pour répondre, faute de quoi votre essai sera invalidé !</p>
+        <p className='2xl:text-2xl text-center'>L&apos;ordre de passage = {round.order > 0 ? `Le classement inversé de la manche ${round.order}` : 'Un ordre aléatoire'}.</p>
+    </>
+}
+
 
 // Finale
 function ThemesRoundRules({ round }) {

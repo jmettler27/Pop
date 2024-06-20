@@ -23,6 +23,8 @@ export function RoundDescription({ round }) {
             return <MatchingRoundDescription />
         case 'mcq':
             return <MCQRoundDescription />
+        case 'basic':
+            return <BasicRoundDescription />
         case 'finale':
             return <ThemesRoundDescription />
         default:
@@ -104,6 +106,13 @@ function MCQRoundDescription({ }) {
         <p className='2xl:text-2xl text-center'>🔀 Plusieurs questions directes sur des sujets différents, dans un <strong>ordre aléatoire.</strong></p>
     </>
 }
+
+function BasicRoundDescription({ }) {
+    return <>
+        <p className='2xl:text-2xl text-center'>🔀 Plusieurs questions directes sur des sujets différents, dans un <strong>ordre aléatoire.</strong></p>
+    </>
+}
+
 
 function ThemesRoundDescription({ }) {
     return <>
