@@ -306,7 +306,7 @@ function JoinOrCreateTeam({ validationSchema, lang = 'fr-FR' }) {
     if (teamsLoading) {
         return <CircularProgress color='inherit' />
     }
-    if (!teamsCollection || teamsCollection.empty) {
+    if (!teamsCollection) {
         return <></>
     }
 
