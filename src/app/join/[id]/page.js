@@ -6,7 +6,7 @@ import { redirect, useParams, useRouter } from 'next/navigation'
 import { Field, useField, useFormikContext } from 'formik';
 import * as Yup from 'yup';
 
-import { MyTextInput, MySelect, StyledErrorMessage, MyColorPicker, MyRadioGroup } from '@/app/components/forms/StyledFormComponents'
+import { MyTextInput, MySelect, StyledErrorMessage, MyRadioGroup } from '@/app/components/forms/StyledFormComponents'
 import { Wizard, WizardStep } from '@/app/components/forms/MultiStepComponents';
 
 import LoadingScreen from '@/app/components/LoadingScreen';
@@ -401,6 +401,7 @@ const SELECT_TEAM_FIRST_OPTION = {
     'fr-FR': 'Sélectionne une équipe',
 }
 
+import MyColorPicker from '@/app/components/forms/MyColorPicker';
 
 
 function CreateTeamStep({ onSubmit, validationSchema, lang = 'fr-FR' }) {

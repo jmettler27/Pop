@@ -14,7 +14,7 @@ export const numEmojisIndicator = (strField, maxLength) =>
     '(' + emojiCount(strField) + '/' + maxLength + ')'
 
 /* Required field indicator */
-export const requiredIndicator = (isRequired) =>
+export const requiredIndicatorString = (isRequired) =>
     isRequired ? '' : '(Optional) '
 // isRequired ? '*' : '(Optional) '
 
@@ -29,7 +29,7 @@ function fieldIsRequired(yupSchema, fieldName) {
 }
 
 export const requiredFieldIndicator = (yupSchema, fieldName) =>
-    requiredIndicator(fieldIsRequired(yupSchema, fieldName))
+    requiredIndicatorString(fieldIsRequired(yupSchema, fieldName))
 
 
 // The field is a string field in an array field
@@ -44,7 +44,7 @@ function stringFieldinArrayFieldIsRequired(yupSchema, outerFieldName) {
 }
 
 export const requiredStringInArrayFieldIndicator = (yupSchema, outerFieldName) =>
-    requiredIndicator(stringFieldinArrayFieldIsRequired(yupSchema, outerFieldName))
+    requiredIndicatorString(stringFieldinArrayFieldIsRequired(yupSchema, outerFieldName))
 
 
 // The field is an object field in an array field
@@ -59,7 +59,7 @@ function objectFieldInArrayFieldIsRequired(yupSchema, outerFieldName, innerField
 }
 
 export const requiredObjectInArrayFieldIndicator = (yupSchema, outerFieldName, innerFieldName) =>
-    requiredIndicator(objectFieldInArrayFieldIsRequired(yupSchema, outerFieldName, innerFieldName))
+    requiredIndicatorString(objectFieldInArrayFieldIsRequired(yupSchema, outerFieldName, innerFieldName))
 
 
 
@@ -76,7 +76,7 @@ function fileFieldIsRequired(yupSchema, fieldName) {
 }
 
 export const requiredFileFieldIndicator = (yupSchema, fieldName) =>
-    requiredIndicator(fileFieldIsRequired(yupSchema, fieldName))
+    requiredIndicatorString(fileFieldIsRequired(yupSchema, fieldName))
 
 
 // The field is a boolean
@@ -90,4 +90,20 @@ function booleanFieldIsRequired(yupSchema, fieldName) {
     return true
 }
 export const requiredBooleanFieldIndicator = (yupSchema, fieldName) =>
-    requiredIndicator(booleanFieldIsRequired(yupSchema, fieldName))
+    requiredIndicatorString(booleanFieldIsRequired(yupSchema, fieldName))
+
+
+export const requiredIndicator = (validationSchema, fieldType, fieldName) => {
+    switch (fieldType) {
+        case 'string':
+            return requiredFieldIndicator(validationSchema, fieldName)
+        case 'string_in_array': {
+            const outerFieldName = fieldName.split('.')[0]
+            return requiredStringInArrayFieldIndicator(validationSchema, outerFieldName)
+        }
+        case 'object_in_array': {
+            const [outerFieldName, _, innerFieldName] = fieldName.split('.')
+            return requiredObjectInArrayFieldIndicator(validationSchema, outerFieldName, innerFieldName)
+        }
+    }
+}

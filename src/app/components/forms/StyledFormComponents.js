@@ -5,24 +5,10 @@ import styled from "@emotion/styled";
 import "@/app/submit/styles.css";
 import "@/app/submit/styles-custom.css";
 
-import { numCharsIndicator, requiredObjectInArrayFieldIndicator, requiredFieldIndicator, requiredStringInArrayFieldIndicator, numEmojisIndicator } from "@/lib/utils/forms";
+import { requiredIndicator, requiredFieldIndicator, numCharsIndicator, numEmojisIndicator, requiredIndicatorString } from "@/lib/utils/forms";
 
-const requiredIndicator = (validationSchema, fieldType, fieldName) => {
-    switch (fieldType) {
-        case 'string':
-            return requiredFieldIndicator(validationSchema, fieldName)
-        case 'string_in_array': {
-            const outerFieldName = fieldName.split('.')[0]
-            return requiredStringInArrayFieldIndicator(validationSchema, outerFieldName)
-        }
-        case 'object_in_array': {
-            const [outerFieldName, _, innerFieldName] = fieldName.split('.')
-            return requiredObjectInArrayFieldIndicator(validationSchema, outerFieldName, innerFieldName)
-        }
-    }
-}
 
-export const MyTextInput = ({ label, maxLength, validationSchema, fieldType = 'string', ...props }) => {
+export function MyTextInput({ label, maxLength, validationSchema, fieldType = 'string', ...props }) {
     // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
     // which we can spread on <input> and alse replace ErrorMessage entirely.
     const [field, meta] = useField(props);
@@ -38,7 +24,7 @@ export const MyTextInput = ({ label, maxLength, validationSchema, fieldType = 's
 };
 
 
-export const MyCheckbox = ({ children, ...props }) => {
+export function MyCheckbox({ children, ...props }) {
     const [field, meta] = useField({ ...props, type: 'checkbox' });
     return (
         <>
@@ -70,11 +56,11 @@ export const StyledErrorMessage = styled.div`
   }
 `;
 
-const StyledLabel = styled.label`
+export const StyledLabel = styled.label`
   margin-top: 1rem;
 `;
 
-export const MySelect = ({ label, validationSchema, ...props }) => {
+export function MySelect({ label, validationSchema, ...props }) {
     // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
     // which we can spread on <input> and alse replace ErrorMessage entirely.
     const [field, meta] = useField(props);
@@ -96,7 +82,7 @@ export function MyNumberInput({ label, name, min, max, ...props }) {
 
     return (
         <>
-            <StyledLabel htmlFor={props.id || props.name}>{requiredIndicator(true)}{label} ({min}-{max})</StyledLabel>
+            <StyledLabel htmlFor={props.id || props.name}>{requiredIndicatorString(true)}{label} ({min}-{max})</StyledLabel>
             <NumberInput name={field.name} value={field.value} min={min} max={max}
                 onChange={(event, newValue) => {
                     helpers.setValue(newValue);
@@ -136,25 +122,3 @@ export function MyRadioGroup({ label, name, trueText, falseText, validationSchem
         </>
     );
 }
-
-import Chrome from '@uiw/react-color-chrome';
-
-export function MyColorPicker({ label, validationSchema, name, ...props }) {
-    const [field, meta, helpers] = useField(name);
-
-    const formik = useFormikContext();
-
-    return (
-        <div className='space-y-1'>
-            <StyledLabel htmlFor={props.id || props.name}>{requiredFieldIndicator(validationSchema, field.name)}{label}</StyledLabel>
-            <Chrome
-                color={field.value}
-                // style={{ float: 'left' }}
-                // placement={GithubPlacement.Right}
-                onChange={(color) => helpers.setValue(color.hex)}
-            />
-            {meta.touched && meta.error && <StyledErrorMessage>{meta.error}</StyledErrorMessage>}
-        </div>
-    )
-}
-

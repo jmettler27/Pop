@@ -21,7 +21,7 @@ import { GAME_DEFAULT_TYPE, GAME_MAX_NUMBER_OF_PLAYERS, GAME_MIN_NUMBER_OF_PLAYE
 import SelectGameType from './components/SelectGameType';
 import { createGame } from './[id]/lib/create-game';
 
-export default function Page({ lang = 'fr-FR' }) {
+export default function Page({ }) {
     const { data: session } = useSession()
     const router = useRouter()
 
