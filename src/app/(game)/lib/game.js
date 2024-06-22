@@ -251,3 +251,74 @@ export async function updateQuestions() {
         throw error;
     }
 }
+
+/* ==================================================================================================== */
+export async function updateQuestionManager(gameId, roundId, questionId, managedBy) {
+    if (!gameId || !roundId || !questionId || !managedBy) {
+        throw new Error("Missing required parameters!");
+    }
+    try {
+        await runTransaction(firestore, transaction =>
+            updateQuestionManagerTransaction(transaction, gameId, roundId, questionId, managedBy)
+        )
+        console.log("Matching submission handled successfully.");
+    } catch (error) {
+        console.error("There was an error handling the matching submission:", error);
+        throw error;
+    }
+}
+
+const updateQuestionManagerTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+    questionId,
+    managedBy
+) => {
+    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.update(realtimeDocRef, { managedBy })
+}
+
+
+export async function updateAllQuestionManagers(gameId, managedBy) {
+    if (!gameId || !managedBy) {
+        throw new Error("Missing required parameters!");
+    }
+    try {
+        await runTransaction(firestore, transaction =>
+            updateQuestionAllManagersTransaction(transaction, gameId, managedBy)
+        )
+        console.log("Matching submission handled successfully.");
+    } catch (error) {
+        console.error("There was an error handling the matching submission:", error);
+        throw error;
+    }
+}
+
+const updateQuestionAllManagersTransaction = async (
+    transaction,
+    gameId,
+    managedBy
+) => {
+    // const gameRef = doc(GAMES_COLLECTION_REF, gameId)
+    // const gameData = await getDocDataTransaction(transaction, gameRef)
+    // const { rounds: roundIds } = gameData
+
+    // Get the ids of all the documents in the 'rounds' collection
+    const roundsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds')
+    const roundsQuerySnapshot = await getDocs(roundsCollectionRef)
+    const roundIds = roundsQuerySnapshot.docs.map(doc => doc.id)
+
+    // For each round, get the ids of all the documents in the 'questions' collection
+    for (const roundId of roundIds) {
+        const questionsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions')
+        const questionsQuerySnapshot = await getDocs(questionsCollectionRef)
+        const questionIds = questionsQuerySnapshot.docs.map(doc => doc.id)
+
+        // For each question, update the 'managedBy' field
+        for (const questionId of questionIds) {
+            const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+            transaction.update(realtimeDocRef, { managedBy })
+        }
+    }
+}

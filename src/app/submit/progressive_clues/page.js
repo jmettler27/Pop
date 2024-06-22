@@ -40,6 +40,7 @@ import { handleProgressiveCluesFormSubmission } from '@/app/submit/actions';
 
 import { useAsyncAction } from '@/lib/utils/async';
 import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game';
+import { QUESTION_ANSWER_LABEL, QUESTION_TITLE_LABEL } from '@/lib/utils/submit';
 
 const QUESTION_TYPE = "progressive_clues";
 
@@ -52,7 +53,7 @@ const progressiveCluesSchema = () => Yup.array()
     .max(PROGRESSIVE_CUES_MAX_NUMBER_OF_CLUES, `There can be at most ${PROGRESSIVE_CUES_MAX_NUMBER_OF_CLUES} clues.`)
 
 
-export default function Page({ }) {
+export default function Page({ lang = 'fr-FR' }) {
     const { data: session } = useSession()
 
     // Protected route
@@ -62,13 +63,13 @@ export default function Page({ }) {
 
     return (
         <>
-            <QuestionFormHeader questionType={QUESTION_TYPE} />
-            <SubmitProgressiveCluesQuestionForm userId={session.user.id} inSubmitPage={true} />
+            <QuestionFormHeader questionType={QUESTION_TYPE} lang={lang} />
+            <SubmitProgressiveCluesQuestionForm userId={session.user.id} lang={lang} inSubmitPage={true} />
         </>
     );
 }
 
-export function SubmitProgressiveCluesQuestionForm({ userId, ...props }) {
+export function SubmitProgressiveCluesQuestionForm({ userId, lang, ...props }) {
     const router = useRouter()
 
     const [submitProgressiveCluesQuestion, isSubmitting] = useAsyncAction(async (values, fileRef) => {
@@ -135,6 +136,7 @@ export function SubmitProgressiveCluesQuestionForm({ userId, ...props }) {
                     title: stringSchema(PROGRESSIVE_CLUES_TITLE_MAX_LENGTH),
                     answer_title: stringSchema(PROGRESSIVE_CLUES_ANSWER_TITLE_MAX_LENGTH),
                 })}
+                lang={lang}
             />
 
             {/* Step 2: clues */}
@@ -143,6 +145,7 @@ export function SubmitProgressiveCluesQuestionForm({ userId, ...props }) {
                 validationSchema={Yup.object({
                     clues: progressiveCluesSchema(),
                 })}
+                lang={lang}
             />
 
             {/* Step 3: image */}
@@ -152,24 +155,25 @@ export function SubmitProgressiveCluesQuestionForm({ userId, ...props }) {
                     files: imageFileSchema(fileRef),
                 })}
                 fileRef={fileRef}
+                lang={lang}
             />
         </Wizard>
     )
 }
 
-function GeneralInfoStep({ onSubmit, validationSchema }) {
+function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
     return (
         <WizardStep
             onSubmit={onSubmit}
             validationSchema={validationSchema}
         >
 
-            <SelectLanguage lang='fr-FR' name='lang' validationSchema={validationSchema} />
+            <SelectLanguage lang={lang} name='lang' validationSchema={validationSchema} />
 
-            <SelectQuestionTopic lang='fr-FR' name='topic' validationSchema={validationSchema} />
+            <SelectQuestionTopic lang={lang} name='topic' validationSchema={validationSchema} />
 
             <MyTextInput
-                label="What is the question?"
+                label={QUESTION_TITLE_LABEL[lang]}
                 name='title'
                 type='text'
                 placeholder={PROGRESSIVE_CLUES_TITLE_EXAMPLE}
@@ -178,7 +182,7 @@ function GeneralInfoStep({ onSubmit, validationSchema }) {
             />
 
             <MyTextInput
-                label="What is the answer?"
+                label={QUESTION_ANSWER_LABEL[lang]}
                 name='answer_title'
                 type='text'
                 placeholder={PROGRESSIVE_CLUES_ANSWER_TITLE_EXAMPLE}
@@ -189,7 +193,7 @@ function GeneralInfoStep({ onSubmit, validationSchema }) {
     )
 }
 
-function EnterCluesStep({ onSubmit, validationSchema }) {
+function EnterCluesStep({ onSubmit, validationSchema, lang }) {
     const formik = useFormikContext();
 
     const values = formik.values
@@ -208,15 +212,15 @@ function EnterCluesStep({ onSubmit, validationSchema }) {
             onSubmit={onSubmit}
             validationSchema={validationSchema}
         >
-            <p>This type of question typically comprises from {PROGRESSIVE_CUES_MIN_NUMBER_OF_CLUES} to {PROGRESSIVE_CUES_MAX_NUMBER_OF_CLUES} clues.</p>
+            <p>{NUM_CLUES_ALLOWED[lang]}: {PROGRESSIVE_CUES_MIN_NUMBER_OF_CLUES}-{PROGRESSIVE_CUES_MAX_NUMBER_OF_CLUES}</p>
 
             <FieldArray name='clues'>
-                {({ insert, remove, push }) => (
+                {({ remove, push }) => (
                     <div>
                         {values.clues.length > 0 &&
                             values.clues.map((clue, index) => (
                                 <div className='row' key={index}>
-                                    <label htmlFor={'clues.' + index}>{requiredStringInArrayFieldIndicator(validationSchema, 'clues')}Clue #{index + 1} {numCharsIndicator(clue, PROGRESSIVE_CLUES_CLUE_MAX_LENGTH)}</label>
+                                    <label htmlFor={'clues.' + index}>{requiredStringInArrayFieldIndicator(validationSchema, 'clues')}{CLUE[lang]} #{index + 1} {numCharsIndicator(clue, PROGRESSIVE_CLUES_CLUE_MAX_LENGTH)}</label>
                                     <Field
                                         name={'clues.' + index}
                                         placeholder={index < PROGRESSIVE_CLUES_CLUES_EXAMPLE.length ? PROGRESSIVE_CLUES_CLUES_EXAMPLE[index] : 'Some clue'}
@@ -240,7 +244,7 @@ function EnterCluesStep({ onSubmit, validationSchema }) {
                             startIcon={<AddIcon />}
                             onClick={() => push('')}
                         >
-                            New clue
+                            {ADD_CLUE[lang]}
                         </Button>
 
                     </div>
@@ -252,6 +256,23 @@ function EnterCluesStep({ onSubmit, validationSchema }) {
         </WizardStep>
     )
 }
+
+const NUM_CLUES_ALLOWED = {
+    'en': "Number of clues allowed",
+    'fr-FR': "Nombre d'indices autorisé"
+
+}
+
+const CLUE = {
+    'en': "Clue",
+    'fr-FR': "Indice"
+}
+
+const ADD_CLUE = {
+    'en': "Add clue",
+    'fr-FR': "Ajouter indice"
+}
+
 
 function ClueTextField({ index }) {
 
@@ -282,13 +303,13 @@ function ClueTextField({ index }) {
 }
 
 
-function SelectImageStep({ onSubmit, validationSchema, fileRef }) {
+function SelectImageStep({ onSubmit, validationSchema, fileRef, lang }) {
     return (
         <WizardStep
             onSubmit={onSubmit}
             validationSchema={validationSchema}
         >
-            <UploadImage fileRef={fileRef} name='files' validationSchema={validationSchema} />
+            <UploadImage fileRef={fileRef} name='files' validationSchema={validationSchema} lang={lang} />
         </WizardStep>
     )
 }

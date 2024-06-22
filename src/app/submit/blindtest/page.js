@@ -26,12 +26,13 @@ import { addNewQuestion } from '@/lib/firebase/firestore';
 import { updateQuestionAudio, updateQuestionImage } from '@/lib/firebase/storage';
 import { useAsyncAction } from '@/lib/utils/async';
 import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game';
+import { QUESTION_TITLE_LABEL, CREATE_GAME_SUBMIT_BUTTON_LABEL } from '@/lib/utils/submit';
 
 
 
 const QUESTION_TYPE = 'blindtest'
 
-export default function Page({ params }) {
+export default function Page({ lang = 'fr-FR' }) {
     const { data: session } = useSession()
 
     // Protected route
@@ -41,13 +42,13 @@ export default function Page({ params }) {
 
     return (
         <>
-            <QuestionFormHeader questionType={QUESTION_TYPE} />
-            <SubmitBlindtestQuestionForm userId={session.user.id} inSubmitPage={true} />
+            <QuestionFormHeader questionType={QUESTION_TYPE} lang={lang} />
+            <SubmitBlindtestQuestionForm userId={session.user.id} lang={lang} inSubmitPage={true} />
         </>
     )
 }
 
-export function SubmitBlindtestQuestionForm({ userId, ...props }) {
+export function SubmitBlindtestQuestionForm({ userId, lang, ...props }) {
     const router = useRouter()
 
     const [submitBlindtestQuestion, isSubmitting] = useAsyncAction(async (values, imageFileRef, audioFileRef) => {
@@ -130,23 +131,23 @@ export function SubmitBlindtestQuestionForm({ userId, ...props }) {
             }}
         >
             <Form>
-                <SelectLanguage lang='fr-FR' name='lang' validationSchema={validationSchema} />
+                <SelectLanguage lang={lang} name='lang' validationSchema={validationSchema} />
 
-                <SelectQuestionTopic lang='fr-FR' name='topic' validationSchema={validationSchema} />
+                <SelectQuestionTopic lang={lang} name='topic' validationSchema={validationSchema} />
 
                 <MySelect
-                    label="What kind of blindtest is this?"
+                    label={BLINDTEST_TYPE[lang]}
                     name='subtype'
                     validationSchema={validationSchema}
                 >
-                    <option value="">Select a type</option>
+                    <option value="">{SELECT_BLINDTEST_TYPE[lang]}</option>
                     {Object.entries(BLINDTEST_TYPE_TO_TITLE['en']).map(([subtype, title]) => (
                         <option key={subtype} value={subtype}>{BLINDTEST_TYPE_TO_EMOJI[subtype]} {title}</option>
                     ))}
                 </MySelect>
 
                 <MyTextInput
-                    label="What is the question?"
+                    label={QUESTION_TITLE_LABEL[lang]}
                     name='title'
                     type='text'
                     placeholder={BLINDTEST_TITLE_EXAMPLE}
@@ -155,7 +156,7 @@ export function SubmitBlindtestQuestionForm({ userId, ...props }) {
                 />
 
                 <MyTextInput
-                    label="Title of the audio"
+                    label={BLINDTEST_ANSWER_TITLE[lang]}
                     name='answer_title'
                     type='text'
                     placeholder={BLINDTEST_ANSWER_TITLE_EXAMPLE}
@@ -164,7 +165,7 @@ export function SubmitBlindtestQuestionForm({ userId, ...props }) {
                 />
 
                 <MyTextInput
-                    label="Where does this audio come from?"
+                    label={BLINDTEST_ANSWER_SOURCE[lang]}
                     name='answer_source'
                     type='text'
                     placeholder={BLINDTEST_ANSWER_SOURCE_EXAMPLE}
@@ -173,7 +174,7 @@ export function SubmitBlindtestQuestionForm({ userId, ...props }) {
                 />
 
                 <MyTextInput
-                    label="Who made this audio?"
+                    label={BLINDTEST_ANSWER_AUTHOR[lang]}
                     name='answer_author'
                     type='text'
                     placeholder={BLINDTEST_ANSWER_AUTHOR_EXAMPLE}
@@ -181,12 +182,37 @@ export function SubmitBlindtestQuestionForm({ userId, ...props }) {
                     maxLength={BLINDTEST_ANSWER_AUTHOR_MAX_LENGTH}
                 />
 
-                <UploadAudio fileRef={audioFileRef} name='audioFiles' validationSchema={validationSchema} />
+                <UploadAudio fileRef={audioFileRef} name='audioFiles' validationSchema={validationSchema} lang={lang} />
 
-                <UploadImage fileRef={imageFileRef} name='imageFiles' validationSchema={validationSchema} />
+                <UploadImage fileRef={imageFileRef} name='imageFiles' validationSchema={validationSchema} lang={lang} />
 
-                <SubmitFormButton isSubmitting={isSubmitting} />
+                <SubmitFormButton isSubmitting={isSubmitting} label={CREATE_GAME_SUBMIT_BUTTON_LABEL[lang]} />
             </Form>
         </Formik >
     );
+}
+
+const BLINDTEST_TYPE = {
+    'en': "Type of the blindtest",
+    'fr-FR': "Type de blindtest",
+}
+
+const SELECT_BLINDTEST_TYPE = {
+    'en': "Select the type",
+    'fr-FR': "Sélectionnez le type",
+}
+
+const BLINDTEST_ANSWER_TITLE = {
+    'en': "Title of the audio",
+    'fr-FR': "Titre de l'audio",
+}
+
+const BLINDTEST_ANSWER_SOURCE = {
+    'en': "Source of the audio",
+    'fr-FR': "Source de l'audio",
+}
+
+const BLINDTEST_ANSWER_AUTHOR = {
+    'en': "Author of the audio",
+    'fr-FR': "Auteur de l'audio",
 }

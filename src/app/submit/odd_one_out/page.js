@@ -28,10 +28,11 @@ import { OOO_ITEMS_LENGTH, OOO_TITLE_MAX_LENGTH, OOO_ITEM_EXPLANATION_MAX_LENGTH
 
 import { useAsyncAction } from '@/lib/utils/async';
 import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game';
+import { ADD_ITEM, QUESTION_ITEM, QUESTION_TITLE_LABEL, SELECT_PROPOSAL } from '@/lib/utils/submit';
 
 const QUESTION_TYPE = 'odd_one_out'
 
-export default function Page({ }) {
+export default function Page({ lang = 'fr-FR' }) {
     const { data: session } = useSession()
 
     // Protected route
@@ -41,8 +42,8 @@ export default function Page({ }) {
 
     return (
         <>
-            <QuestionFormHeader questionType={QUESTION_TYPE} />
-            <SubmitOOOQuestionForm userId={session.user.id} inSubmitPage={true} />
+            <QuestionFormHeader questionType={QUESTION_TYPE} lang={lang} />
+            <SubmitOOOQuestionForm userId={session.user.id} lang={lang} inSubmitPage={true} />
         </>
     );
 }
@@ -56,7 +57,7 @@ const oddOneOutItemsSchema = () => Yup.array()
     .required("Required.")
 
 
-export function SubmitOOOQuestionForm({ userId, ...props }) {
+export function SubmitOOOQuestionForm({ userId, lang, ...props }) {
     const router = useRouter()
 
     const [submitOOOQuestion, isSubmitting] = useAsyncAction(async (values) => {
@@ -107,6 +108,7 @@ export function SubmitOOOQuestionForm({ userId, ...props }) {
                     topic: topicSchema(),
                     title: stringSchema(OOO_TITLE_MAX_LENGTH),
                 })}
+                lang={lang}
             />
 
             {/* Step 2: Proposals */}
@@ -119,23 +121,24 @@ export function SubmitOOOQuestionForm({ userId, ...props }) {
                         .max(OOO_ITEMS_LENGTH - 1, "Required.")
                         .required("Required."),
                 })}
+                lang={lang}
             />
         </Wizard>
     )
 }
 
-function GeneralInfoStep({ onSubmit, validationSchema }) {
+function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
     return (
         <WizardStep
             onSubmit={onSubmit}
             validationSchema={validationSchema}
         >
-            <SelectLanguage lang='fr-FR' name='lang' validationSchema={validationSchema} />
+            <SelectLanguage lang={lang} name='lang' validationSchema={validationSchema} />
 
-            <SelectQuestionTopic lang='fr-FR' name='topic' validationSchema={validationSchema} />
+            <SelectQuestionTopic lang={lang} name='topic' validationSchema={validationSchema} />
 
             <MyTextInput
-                label="What is the question?"
+                label={QUESTION_TITLE_LABEL[lang]}
                 name='title'
                 type='text'
                 placeholder={OOO_TITLE_EXAMPLE}
@@ -146,7 +149,7 @@ function GeneralInfoStep({ onSubmit, validationSchema }) {
     )
 }
 
-function EnterItemsStep({ onSubmit, validationSchema }) {
+function EnterItemsStep({ onSubmit, validationSchema, lang }) {
     const formik = useFormikContext();
 
     const values = formik.values
@@ -174,7 +177,7 @@ function EnterItemsStep({ onSubmit, validationSchema }) {
                         {values.items.length > 0 &&
                             values.items.map((item, index) => (
                                 <Box key={index} component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: '500px' }}>
-                                    <span className='text-lg'>Item #{index + 1}</span>
+                                    <span className='text-lg'>{QUESTION_ITEM[lang]} #{index + 1}</span>
 
                                     <IconButton
                                         color='error'
@@ -213,7 +216,7 @@ function EnterItemsStep({ onSubmit, validationSchema }) {
                             startIcon={<AddIcon />}
                             onClick={() => push({ title: '', explanation: '' })}
                         >
-                            New item
+                            {ADD_ITEM[lang]}
                         </Button>
                     </>
                 )}
@@ -223,12 +226,12 @@ function EnterItemsStep({ onSubmit, validationSchema }) {
 
             {!errors.items && formik.touched.items && (
                 <MySelect
-                    label="What proposal is the odd one?"
+                    label={ANSWER_IDX_LABEL[lang]}
                     name='answerIdx'
                     validationSchema={validationSchema}
                     onChange={(e) => formik.setFieldValue('answerIdx', parseInt(e.target.value, 10))}
                 >
-                    <option value="">Select the odd</option>
+                    <option value="">{SELECT_PROPOSAL[lang]}</option>
                     {values.items.map((item, index) => (
                         <option key={index} value={index}>{item.title}</option>
                     ))}
@@ -238,4 +241,9 @@ function EnterItemsStep({ onSubmit, validationSchema }) {
 
         </WizardStep>
     )
+}
+
+const ANSWER_IDX_LABEL = {
+    'en': "What proposal is the odd one?",
+    'fr-FR': "Qui est l'intrus ?"
 }

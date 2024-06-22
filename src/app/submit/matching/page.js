@@ -36,8 +36,9 @@ import Box from '@mui/system/Box';
 
 import { useAsyncAction } from '@/lib/utils/async';
 import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game';
+import { QUESTION_ITEM, QUESTION_TITLE_LABEL } from '@/lib/utils/submit';
 
-export default function Page({ }) {
+export default function Page({ lang = 'fr-FR' }) {
     const { data: session } = useSession()
 
     // Protected route
@@ -47,13 +48,13 @@ export default function Page({ }) {
 
     return (
         <>
-            <QuestionFormHeader questionType={QUESTION_TYPE} />
-            <SubmitMatchingQuestionForm userId={session.user.id} inSubmitPage={true} />
+            <QuestionFormHeader questionType={QUESTION_TYPE} lang={lang} />
+            <SubmitMatchingQuestionForm userId={session.user.id} lang={lang} inSubmitPage={true} />
         </>
     )
 }
 
-export function SubmitMatchingQuestionForm({ userId, ...props }) {
+export function SubmitMatchingQuestionForm({ userId, lang, ...props }) {
     const router = useRouter()
 
     const [submitMatchingQuestion, isSubmitting] = useAsyncAction(async (values) => {
@@ -115,28 +116,30 @@ export function SubmitMatchingQuestionForm({ userId, ...props }) {
                         .max(MATCHING_MAX_NUM_COLS, `Must be between ${MATCHING_MIN_NUM_COLS} and ${MATCHING_MAX_NUM_COLS}`)
                         .required("Required."),
                 })}
+                lang={lang}
             />
 
             {/* Step 2: Proposals */}
             <EnterMatchesStep
                 onSubmit={() => { }}
+                lang={lang}
             />
         </Wizard>
     );
 }
 
-function GeneralInfoStep({ onSubmit, validationSchema }) {
+function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
     return (
         <WizardStep
             onSubmit={onSubmit}
             validationSchema={validationSchema}
         >
-            <SelectLanguage lang='fr-FR' name='lang' validationSchema={validationSchema} />
+            <SelectLanguage lang={lang} name='lang' validationSchema={validationSchema} />
 
-            <SelectQuestionTopic lang='fr-FR' name='topic' validationSchema={validationSchema} />
+            <SelectQuestionTopic lang={lang} name='topic' validationSchema={validationSchema} />
 
             <MyTextInput
-                label="What is the question?"
+                label={QUESTION_TITLE_LABEL[lang]}
                 name='title'
                 type='text'
                 placeholder={MATCHING_TITLE_EXAMPLE}
@@ -147,7 +150,7 @@ function GeneralInfoStep({ onSubmit, validationSchema }) {
             {/* <br />
             <br /> */}
             <MyNumberInput
-                label="How many columns do you want to have?"
+                label={NUM_COLUMNS[lang]}
                 name='numCols'
                 min={MATCHING_MIN_NUM_COLS} max={MATCHING_MAX_NUM_COLS}
             // validationSchema={validationSchema}
@@ -157,6 +160,10 @@ function GeneralInfoStep({ onSubmit, validationSchema }) {
     )
 }
 
+const NUM_COLUMNS = {
+    'en': "Number of columns",
+    'fr-FR': "Nombre de colonnes"
+}
 
 
 const matchingItemsSchema = (numCols) => {
@@ -178,7 +185,7 @@ const matchingItemsSchema = (numCols) => {
 // return acc;
 // }, {})
 
-function EnterMatchesStep({ onSubmit }) {
+function EnterMatchesStep({ onSubmit, lang }) {
     const formik = useFormikContext();
 
     const values = formik.values
@@ -207,7 +214,7 @@ function EnterMatchesStep({ onSubmit }) {
             onSubmit={onSubmit}
             validationSchema={validationSchema}
         >
-            <p>You must provide at least {MATCHING_MIN_NUM_ROWS} matches and at most {MATCHING_MAX_NUM_ROWS} matches. </p>
+            <p>{NUM_MATCHES_ALLOWED[lang]}: {MATCHING_MIN_NUM_ROWS}-{MATCHING_MAX_NUM_ROWS}. </p>
 
             <FieldArray name='matches'>
                 {({ remove, push }) => (
@@ -227,7 +234,7 @@ function EnterMatchesStep({ onSubmit }) {
                                     {Array(values.numCols).fill(0).map((_, col) => (
                                         <Fragment key={`${row}_${col}`}>
                                             <MyTextInput
-                                                label={`Item #${col + 1}`}
+                                                label={`${QUESTION_ITEM[lang]} #${col + 1}`}
                                                 name={`matches.${row}.${col}`}
                                                 type='text'
                                                 placeholder={itemPlaceholder(col, row, values.numCols)}
@@ -245,7 +252,7 @@ function EnterMatchesStep({ onSubmit }) {
                             startIcon={<AddIcon />}
                             onClick={() => push(Array.from({ length: values.numCols }, () => ''))}
                         >
-                            New match
+                            {ADD_MATCH[lang]}
                         </Button>
                     </>
                 )}
@@ -257,10 +264,21 @@ function EnterMatchesStep({ onSubmit }) {
     )
 }
 
+const NUM_MATCHES_ALLOWED = {
+    'en': "Number of matches allowed",
+    'fr-FR': "Nombre de matchs autorisé"
+}
+
+
+const ADD_MATCH = {
+    'en': "Add match",
+    'fr-FR': "Ajouter match"
+}
+
 const itemPlaceholder = (col, row, numCols) => {
     if (numCols === 2)
         return MATCHING_ANSWER_EXAMPLE_2[row % MATCHING_ANSWER_EXAMPLE_2.length][col]
     if (numCols === 3)
         return MATCHING_ANSWER_EXAMPLE_3[row % MATCHING_ANSWER_EXAMPLE_3.length][col]
-    return `Item #${col + 1} of Matching #${row + 1}`
+    return `${QUESTION_ITEM[lang]} #${col + 1} of Matching #${row + 1}`
 }

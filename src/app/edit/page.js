@@ -21,7 +21,7 @@ import { GAME_DEFAULT_TYPE, GAME_MAX_NUMBER_OF_PLAYERS, GAME_MIN_NUMBER_OF_PLAYE
 import SelectGameType from './components/SelectGameType';
 import { createGame } from './[id]/lib/create-game';
 
-export default function Page({ }) {
+export default function Page({ lang = 'fr-FR' }) {
     const { data: session } = useSession()
     const router = useRouter()
 
@@ -38,7 +38,7 @@ export default function Page({ }) {
 
     const user = session.user;
 
-    const fileRef = useRef(null);
+    // const fileRef = useRef(null);
 
     const validationSchema = Yup.object({
         lang: localeSchema(),
@@ -51,7 +51,7 @@ export default function Page({ }) {
 
     return (
         <>
-            <h1>Create a new game</h1>
+            <h1>{CREATE_GAME[lang]}</h1>
             <Formik
                 initialValues={{
                     type: GAME_DEFAULT_TYPE,
@@ -78,7 +78,7 @@ export default function Page({ }) {
                     <SelectGameType lang='fr-FR' name='type' validationSchema={validationSchema} />
 
                     <MyTextInput
-                        label="Give a title to the game"
+                        label={GAME_TITLE_LABEL[lang]}
                         name='title'
                         type='text'
                         placeholder={GAME_TITLE_EXAMPLE}
@@ -87,14 +87,14 @@ export default function Page({ }) {
                     />
 
                     <MyNumberInput
-                        label="How many players do you want AT MOST in your game?"
+                        label={GAME_MAX_PLAYERS_LABEL[lang]}
                         name='maxPlayers'
                         min={GAME_MIN_NUMBER_OF_PLAYERS} max={GAME_MAX_NUMBER_OF_PLAYERS}
                     // validationSchema={validationSchema}
                     />
 
                     <MyTextInput
-                        label="What is your nickname?"
+                        label={GAME_ORGANIZER_NAME_LABEL[lang]}
                         name='organizerName'
                         type='text'
                         placeholder={user.name}
@@ -104,7 +104,7 @@ export default function Page({ }) {
 
                     <br />
 
-                    <SubmitFormButton isSubmitting={isSubmitting} text="Create the game" />
+                    <SubmitFormButton isSubmitting={isSubmitting} label={CREATE_GAME_SUBMIT_BUTTON_LABEL[lang]} />
                 </Form>
             </Formik >
         </>
@@ -112,7 +112,32 @@ export default function Page({ }) {
 
 }
 
+const CREATE_GAME = {
+    'en': "Create a new game",
+    'fr-FR': "Créer une nouvelle partie"
+}
+
 const GAME_LANGUAGE_SELECTOR_LABELS = {
-    'en': "What language is this game in?",
-    'fr-FR': "Dans quelle langue est cette partie?"
+    'en': "Game language",
+    'fr-FR': "Langue de la partie"
+}
+
+const GAME_TITLE_LABEL = {
+    'en': "Game title",
+    'fr-FR': "Titre de la partie"
+}
+
+const GAME_MAX_PLAYERS_LABEL = {
+    'en': "Maximum number of players allowed for the game",
+    'fr-FR': "Nombre maximum de joueurs autorisés pour la partie"
+}
+
+const GAME_ORGANIZER_NAME_LABEL = {
+    'en': "Choose a nickname for the game",
+    'fr-FR': "Choisis un pseudo pour la partie"
+}
+
+const CREATE_GAME_SUBMIT_BUTTON_LABEL = {
+    'en': "Create",
+    'fr-FR': "Créer"
 }

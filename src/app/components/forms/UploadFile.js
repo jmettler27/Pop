@@ -29,7 +29,7 @@ const UploadFile = ({ fileRef, ...props }) => {
     return (
         <>
             <Button component="label" variant="contained" startIcon={<CloudUploadIcon />}>
-                Upload file
+                Upload
                 {/* <input ref={fileRef} multiple={false} type="file" {...field} value={field.value || ''} /> */}
                 <VisuallyHiddenInput type="file" ref={fileRef} {...field} value={field.value || ''} />
             </Button>
@@ -44,7 +44,7 @@ import Image from 'next/image'
 
 import { requiredFileFieldIndicator } from "@/lib/utils/forms";
 
-export function UploadImage({ validationSchema, fileRef, name }) {
+export function UploadImage({ validationSchema, fileRef, lang, name }) {
     const formik = useFormikContext();
     const [, meta] = useField(name);
 
@@ -54,9 +54,9 @@ export function UploadImage({ validationSchema, fileRef, name }) {
     return (
         <Box component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: "400px" }}>
             {/* This field is always required */}
-            <span className="text-lg">{requiredFileFieldIndicator(validationSchema, name)}Select an image file</span>
+            <span className="text-lg">{requiredFileFieldIndicator(validationSchema, name)}{SELECT_IMAGE_FILE[lang]}</span>
             <br />
-            <span className="text-md">Accepted formats: {IMAGE_VALID_TYPES.join(", ")} (max {MAX_IMAGE_SIZE_MB}MB)</span>
+            <span className="text-md">{ACCEPTED_FORMATS[lang]}: {IMAGE_VALID_TYPES.join(", ")} (max {MAX_IMAGE_SIZE_MB}MB)</span>
             <br />
             {image && (
                 <>
@@ -76,7 +76,7 @@ export function UploadImage({ validationSchema, fileRef, name }) {
                             formik.setFieldValue(name, '')
                         }}
                     >
-                        Cancel
+                        {CANCEL[lang]}
                     </Button>
                 </>
             )}
@@ -86,7 +86,7 @@ export function UploadImage({ validationSchema, fileRef, name }) {
     )
 }
 
-export function UploadAudio({ validationSchema, fileRef, name = "files" }) {
+export function UploadAudio({ validationSchema, fileRef, lang, name = "files" }) {
     const formik = useFormikContext();
     const [, meta] = useField(name);
 
@@ -96,9 +96,9 @@ export function UploadAudio({ validationSchema, fileRef, name = "files" }) {
     return (
         <Box component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: "400px" }}>
             {/* This field is always required */}
-            <span className="text-lg">{requiredFileFieldIndicator(validationSchema, name)}Select an audio file </span>
+            <span className="text-lg">{requiredFileFieldIndicator(validationSchema, name)}{SELECT_AUDIO_FILE[lang]} </span>
             <br />
-            <span className="text-md">Accepted formats: {AUDIO_VALID_TYPES.join(", ")} (max {MAX_AUDIO_SIZE_MB}MB)</span>
+            <span className="text-md">{ACCEPTED_FORMATS[lang]}: {AUDIO_VALID_TYPES.join(", ")} (max {MAX_AUDIO_SIZE_MB}MB)</span>
             <br />
             {audio && (
                 <>
@@ -112,11 +112,31 @@ export function UploadAudio({ validationSchema, fileRef, name = "files" }) {
                             formik.setFieldValue(name, '')
                         }}
                     >
-                        Cancel
+                        {CANCEL[lang]}
                     </Button>
                 </>
             )}
             <UploadFile name={name} fileRef={fileRef} />
         </Box>
     )
+}
+
+const SELECT_IMAGE_FILE = {
+    'en': "Select an image file",
+    'fr-FR': "Sélectionnez une image",
+}
+
+const SELECT_AUDIO_FILE = {
+    'en': "Select an audio file",
+    'fr-FR': "Sélectionnez un fichier audio",
+}
+
+const ACCEPTED_FORMATS = {
+    'en': "Accepted formats",
+    'fr-FR': "Formats acceptés",
+}
+
+const CANCEL = {
+    'en': "Cancel",
+    'fr-FR': "Annuler",
 }

@@ -31,6 +31,7 @@ import Box from '@mui/system/Box';
 
 import { useAsyncAction } from '@/lib/utils/async';
 import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game';
+import { ADD_ITEM, QUESTION_HINTS_REMARKS, QUESTION_ITEM, QUESTION_TITLE_LABEL } from '@/lib/utils/submit';
 
 const enumAnswerSchema = () => Yup.array()
     .of(stringSchema(ENUM_ANSWER_ITEM_MAX_LENGTH))
@@ -38,7 +39,7 @@ const enumAnswerSchema = () => Yup.array()
     .max(ENUM_MAX_NUMBER_OF_ANSWERS, `There can be at most ${ENUM_MAX_NUMBER_OF_ANSWERS} answers`)
 
 
-export default function Page({ }) {
+export default function Page({ lang = 'fr-FR' }) {
     const { data: session } = useSession()
 
     // Protected route
@@ -48,13 +49,13 @@ export default function Page({ }) {
 
     return (
         <>
-            <QuestionFormHeader questionType={QUESTION_TYPE} />
-            <SubmitEnumQuestionForm userId={session.user.id} inSubmitPage={true} />
+            <QuestionFormHeader questionType={QUESTION_TYPE} lang={lang} />
+            <SubmitEnumQuestionForm userId={session.user.id} lang={lang} inSubmitPage={true} />
         </>
     )
 }
 
-export function SubmitEnumQuestionForm({ userId, ...props }) {
+export function SubmitEnumQuestionForm({ userId, lang, ...props }) {
     const router = useRouter()
 
     const [submitEnumQuestion, isSubmitting] = useAsyncAction(async (values) => {
@@ -110,6 +111,7 @@ export function SubmitEnumQuestionForm({ userId, ...props }) {
                     title: stringSchema(ENUM_TITLE_MAX_LENGTH),
                     note: stringSchema(ENUM_NOTE_MAX_LENGTH, false),
                 })}
+                lang={lang}
             />
 
 
@@ -120,6 +122,7 @@ export function SubmitEnumQuestionForm({ userId, ...props }) {
                     answer: enumAnswerSchema(),
                     maxIsKnown: Yup.boolean().required("Required."),
                 })}
+                lang={lang}
             />
 
             {/* Step 3: Times */}
@@ -141,18 +144,18 @@ export function SubmitEnumQuestionForm({ userId, ...props }) {
     );
 }
 
-function GeneralInfoStep({ onSubmit, validationSchema }) {
+function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
     return (
         <WizardStep
             onSubmit={onSubmit}
             validationSchema={validationSchema}
         >
-            <SelectLanguage lang='fr-FR' name='lang' validationSchema={validationSchema} />
+            <SelectLanguage lang={lang} name='lang' validationSchema={validationSchema} />
 
-            <SelectQuestionTopic lang='fr-FR' name='topic' validationSchema={validationSchema} />
+            <SelectQuestionTopic lang={lang} name='topic' validationSchema={validationSchema} />
 
             <MyTextInput
-                label="What is the question?"
+                label={QUESTION_TITLE_LABEL[lang]}
                 name='title'
                 type='text'
                 placeholder={ENUM_TITLE_EXAMPLE}
@@ -161,7 +164,7 @@ function GeneralInfoStep({ onSubmit, validationSchema }) {
             />
 
             <MyTextInput
-                label="Do you have any hints/remarks to make?"
+                label={QUESTION_HINTS_REMARKS[lang]}
                 name='note'
                 type='text'
                 placeholder={ENUM_NOTE_EXAMPLE}
@@ -173,7 +176,7 @@ function GeneralInfoStep({ onSubmit, validationSchema }) {
 }
 
 
-function EnterAnswerItemsStep({ onSubmit, validationSchema }) {
+function EnterAnswerItemsStep({ onSubmit, validationSchema, lang }) {
     const formik = useFormikContext();
 
     const values = formik.values
@@ -197,7 +200,7 @@ function EnterAnswerItemsStep({ onSubmit, validationSchema }) {
             onSubmit={onSubmit}
             validationSchema={validationSchema}
         >
-            <p>This type of question typically comprises from {ENUM_MIN_NUMBER_OF_ANSWERS} to {ENUM_MAX_NUMBER_OF_ANSWERS} answers.</p>
+            <p>{NUM_ANSWERS_ALLOWED[lang]}: {ENUM_MIN_NUMBER_OF_ANSWERS}-{ENUM_MAX_NUMBER_OF_ANSWERS}.</p>
 
             <MyRadioGroup
                 label="Do you know the maximum number of possible answers?"
@@ -217,7 +220,7 @@ function EnterAnswerItemsStep({ onSubmit, validationSchema }) {
                         {values.answer.length > 0 &&
                             values.answer.map((item, index) => (
                                 <Box key={index} component='section' sx={{ my: 2, pb: 2, px: 2, border: '2px dashed grey', width: '500px' }}>
-                                    <label htmlFor={'answer.' + index}>{requiredStringInArrayFieldIndicator(validationSchema, 'answer')}Item #{index + 1} {numCharsIndicator(item, ENUM_ANSWER_ITEM_MAX_LENGTH)}</label>
+                                    <label htmlFor={'answer.' + index}>{requiredStringInArrayFieldIndicator(validationSchema, 'answer')}{QUESTION_ITEM[lang]} #{index + 1} {numCharsIndicator(item, ENUM_ANSWER_ITEM_MAX_LENGTH)}</label>
                                     <Field
                                         name={'answer.' + index}
                                         type='text'
@@ -239,7 +242,7 @@ function EnterAnswerItemsStep({ onSubmit, validationSchema }) {
                             startIcon={<AddIcon />}
                             onClick={() => push('')}
                         >
-                            New item
+                            {ADD_ITEM[lang]}
                         </Button>
                     </div>
                 )}
@@ -250,6 +253,11 @@ function EnterAnswerItemsStep({ onSubmit, validationSchema }) {
 
         </WizardStep>
     )
+}
+
+const NUM_ANSWERS_ALLOWED = {
+    'en': "Number of items allowed",
+    'fr-FR': "Nombre d'items autorisé",
 }
 
 

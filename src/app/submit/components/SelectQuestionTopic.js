@@ -5,22 +5,22 @@ import { allTopicsToTitle } from '@/lib/utils/topics';
 export default function SelectQuestionTopic({ validationSchema, lang = 'fr-FR', name = 'topic' }) {
     return (
         <MySelect
-            label={LABEL[lang]}
+            label={SELECT_QUESTION_TOPIC_LABEL[lang]}
             name={name}
             validationSchema={validationSchema}
         >
-            <option value="">{HEADER[lang]}</option>
+            <option value="">{SELECT_QUESTION_TOPIC_HEADER[lang]}</option>
             {allTopicsToTitle(lang).map(([topic, title]) => <option key={topic} value={topic}>{title}</option>)}
         </MySelect>
     )
 }
 
-const LABEL = {
-    'en': "What topic is this question related to?",
-    'fr-FR': "À quel sujet cette question est-elle liée?"
+const SELECT_QUESTION_TOPIC_LABEL = {
+    'en': "Topic of the question",
+    'fr-FR': "Sujet de la question"
 }
 
-const HEADER = {
-    'en': "Select a topic",
-    'fr-FR': "Sélectionnez un sujet"
+const SELECT_QUESTION_TOPIC_HEADER = {
+    'en': "Select the topic",
+    'fr-FR': "Sélectionnez le sujet"
 }

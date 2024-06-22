@@ -31,11 +31,12 @@ import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game';
 import { imageFileSchema } from '@/lib/utils/files';
 import SubmitFormButton from '@/app/components/forms/SubmitFormButton';
 import { UploadImage } from '@/app/components/forms/UploadFile';
+import { QUESTION_ANSWER_LABEL, QUESTION_TITLE_LABEL, CREATE_GAME_SUBMIT_BUTTON_LABEL, QUESTION_HINTS_REMARKS, QUESTION_SOURCE_LABEL, QUESTION_EXPLANATION_LABEL } from '@/lib/utils/submit';
 
 const QUESTION_TYPE = 'basic'
 
 
-export default function Page({ params }) {
+export default function Page({ lang = 'fr-FR' }) {
     const { data: session } = useSession()
 
     // Protected route
@@ -45,14 +46,14 @@ export default function Page({ params }) {
 
     return (
         <>
-            <QuestionFormHeader questionType={QUESTION_TYPE} />
-            <SubmitBasicQuestionForm userId={session.user.id} inSubmitPage={true} />
+            <QuestionFormHeader questionType={QUESTION_TYPE} lang={lang} />
+            <SubmitBasicQuestionForm userId={session.user.id} lang={lang} inSubmitPage={true} />
         </>
     );
 }
 
 
-export function SubmitBasicQuestionForm({ userId, ...props }) {
+export function SubmitBasicQuestionForm({ userId, lang, ...props }) {
     const router = useRouter()
 
     const [submitBasicQuestion, isSubmitting] = useAsyncAction(async (values) => {
@@ -109,12 +110,12 @@ export function SubmitBasicQuestionForm({ userId, ...props }) {
 
             <Form>
 
-                <SelectLanguage lang='fr-FR' name='lang' validationSchema={validationSchema} />
+                <SelectLanguage lang={lang} name='lang' validationSchema={validationSchema} />
 
-                <SelectQuestionTopic lang='fr-FR' name='topic' validationSchema={validationSchema} />
+                <SelectQuestionTopic lang={lang} name='topic' validationSchema={validationSchema} />
 
                 <MyTextInput
-                    label="To what work is this question related to?"
+                    label={QUESTION_SOURCE_LABEL[lang]}
                     name='source'
                     type='text'
                     placeholder={MCQ_SOURCE_EXAMPLE}
@@ -123,7 +124,7 @@ export function SubmitBasicQuestionForm({ userId, ...props }) {
                 />
 
                 <MyTextInput
-                    label="What is the title of the question?"
+                    label={QUESTION_TITLE_LABEL[lang]}
                     name='title'
                     type='text'
                     placeholder={MCQ_TITLE_EXAMPLE}
@@ -132,7 +133,7 @@ export function SubmitBasicQuestionForm({ userId, ...props }) {
                 />
 
                 <MyTextInput
-                    label="Do you have any hints/remarks to make?"
+                    label={QUESTION_HINTS_REMARKS[lang]}
                     name='note'
                     type='text'
                     placeholder={MCQ_NOTE_EXAMPLE}
@@ -141,7 +142,7 @@ export function SubmitBasicQuestionForm({ userId, ...props }) {
                 />
 
                 <MyTextInput
-                    label="What is the answer?"
+                    label={QUESTION_ANSWER_LABEL[lang]}
                     name='answer'
                     type='text'
                     placeholder={MCQ_CHOICES_EXAMPLE[0]}
@@ -150,7 +151,7 @@ export function SubmitBasicQuestionForm({ userId, ...props }) {
                 />
 
                 <MyTextInput
-                    label="Give an explanation"
+                    label={QUESTION_EXPLANATION_LABEL[lang]}
                     name='explanation'
                     type='text'
                     placeholder={MCQ_EXPLANATION_EXAMPLE}
@@ -158,8 +159,7 @@ export function SubmitBasicQuestionForm({ userId, ...props }) {
                     maxLength={MCQ_EXPLANATION_MAX_LENGTH}
                 />
 
-                <SubmitFormButton isSubmitting={isSubmitting} />
-
+                <SubmitFormButton isSubmitting={isSubmitting} label={CREATE_GAME_SUBMIT_BUTTON_LABEL[lang]} />
             </Form>
         </Formik>
     )

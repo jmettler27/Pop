@@ -31,11 +31,12 @@ import { serverTimestamp } from 'firebase/firestore';
 
 import { useAsyncAction } from '@/lib/utils/async';
 import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game';
+import { QUESTION_EXPLANATION_LABEL, QUESTION_HINTS_REMARKS, QUESTION_SOURCE_LABEL, QUESTION_TITLE_LABEL, SELECT_PROPOSAL } from '@/lib/utils/submit';
 
 const QUESTION_TYPE = 'mcq'
 
 
-export default function Page({ params }) {
+export default function Page({ lang = 'fr-FR' }) {
     const { data: session } = useSession()
 
     // Protected route
@@ -45,14 +46,14 @@ export default function Page({ params }) {
 
     return (
         <>
-            <QuestionFormHeader questionType={QUESTION_TYPE} />
-            <SubmitMCQForm userId={session.user.id} inSubmitPage={true} />
+            <QuestionFormHeader questionType={QUESTION_TYPE} lang={lang} />
+            <SubmitMCQForm userId={session.user.id} lang={lang} inSubmitPage={true} />
         </>
     );
 }
 
 
-export function SubmitMCQForm({ userId, ...props }) {
+export function SubmitMCQForm({ userId, lang, ...props }) {
     const router = useRouter()
 
     const [submitMCQ, isSubmitting] = useAsyncAction(async (values) => {
@@ -112,6 +113,7 @@ export function SubmitMCQForm({ userId, ...props }) {
                     title: stringSchema(MCQ_TITLE_MAX_LENGTH),
                     note: stringSchema(MCQ_NOTE_MAX_LENGTH, false),
                 })}
+                lang={lang}
             />
 
             <EnterChoicesStep
@@ -137,6 +139,7 @@ export function SubmitMCQForm({ userId, ...props }) {
                     //         return this.parent.answerIdx !== this.parent.duoIdx
                     //     })
                 })}
+                lang={lang}
             >
                 {/* TODO */}
             </EnterChoicesStep>
@@ -144,20 +147,20 @@ export function SubmitMCQForm({ userId, ...props }) {
     )
 }
 
-function GeneralInfoStep({ onSubmit, validationSchema }) {
+function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
     return (
         <WizardStep
             onSubmit={onSubmit}
             validationSchema={validationSchema}
         >
 
-            <SelectLanguage lang='fr-FR' name='lang' validationSchema={validationSchema} />
+            <SelectLanguage lang={lang} name='lang' validationSchema={validationSchema} />
 
-            <SelectQuestionTopic lang='fr-FR' name='topic' validationSchema={validationSchema} />
+            <SelectQuestionTopic lang={lang} name='topic' validationSchema={validationSchema} />
 
             <MyTextInput
                 // label={`${stringRequiredAsterisk(validationSchema, 'source')}To what work is this question related to? ${numCharsIndicator(values['source'], MCQ_SOURCE_MAX_LENGTH)}`}
-                label="To what work is this question related to?"
+                label={QUESTION_SOURCE_LABEL[lang]}
                 name='source'
                 type='text'
                 placeholder={MCQ_SOURCE_EXAMPLE}
@@ -166,7 +169,7 @@ function GeneralInfoStep({ onSubmit, validationSchema }) {
             />
 
             <MyTextInput
-                label="What is the title of the question?"
+                label={QUESTION_TITLE_LABEL[lang]}
                 name='title'
                 type='text'
                 placeholder={MCQ_TITLE_EXAMPLE}
@@ -175,7 +178,7 @@ function GeneralInfoStep({ onSubmit, validationSchema }) {
             />
 
             <MyTextInput
-                label="Do you have any hints/remarks to make?"
+                label={QUESTION_HINTS_REMARKS[lang]}
                 name='note'
                 type='text'
                 placeholder={MCQ_NOTE_EXAMPLE}
@@ -188,7 +191,7 @@ function GeneralInfoStep({ onSubmit, validationSchema }) {
 }
 
 
-function EnterChoicesStep({ onSubmit, validationSchema }) {
+function EnterChoicesStep({ onSubmit, validationSchema, lang }) {
     const formik = useFormikContext();
 
     const values = formik.values
@@ -231,19 +234,19 @@ function EnterChoicesStep({ onSubmit, validationSchema }) {
             <ChoiceArrayErrors />
 
             <MySelect
-                label="What proposal is the correct one?"
+                label={MCQ_ANSWER_IDX_LABEL[lang]}
                 name='answerIdx'
                 validationSchema={validationSchema}
                 onChange={(e) => formik.setFieldValue('answerIdx', parseInt(e.target.value, 10))}
             >
-                <option value="">Select the answer</option>
+                <option value="">{MCQ_SELECT_PROPOSAL[lang]}</option>
                 {values.choices.map((choice, index) => (
                     <option key={index} value={index}>{MCQ_CHOICES[index]}. {choice}</option>
                 ))}
             </MySelect>
 
             <MyTextInput
-                label="Give an explanation"
+                label={QUESTION_EXPLANATION_LABEL[lang]}
                 name='explanation'
                 type='text'
                 placeholder={MCQ_EXPLANATION_EXAMPLE}
@@ -253,12 +256,12 @@ function EnterChoicesStep({ onSubmit, validationSchema }) {
 
             {values.answerIdx >= 0 &&
                 <MySelect
-                    label="What other proposal do you want for the duo?"
+                    label={MCQ_DUO_IDX_LABEL[lang]}
                     name='duoIdx'
                     validationSchema={validationSchema}
                     onChange={(e) => formik.setFieldValue('duoIdx', parseInt(e.target.value, 10))}
                 >
-                    <option value="">Select the proposal</option>
+                    <option value="">{SELECT_PROPOSAL[lang]}</option>
                     {values.choices.map((choice, index) => (index !== values.answerIdx &&
                         <option key={index} value={index}>{MCQ_CHOICES[index]}. {choice}</option>
                     ))}
@@ -267,4 +270,14 @@ function EnterChoicesStep({ onSubmit, validationSchema }) {
 
         </WizardStep>
     )
+}
+
+const MCQ_ANSWER_IDX_LABEL = {
+    'en': "What proposal is the correct one ?",
+    'fr-FR': "Quelle proposition est la bonne?"
+}
+
+const MCQ_DUO_IDX_LABEL = {
+    'en': "What other proposal do you want for the duo?",
+    'fr-FR': "Quelle autre proposition voulez-vous pour le duo ?"
 }

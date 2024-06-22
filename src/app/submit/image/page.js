@@ -22,12 +22,12 @@ import { redirect, useRouter } from 'next/navigation'
 import { addNewQuestion } from '@/lib/firebase/firestore';
 import { updateQuestionImage } from '@/lib/firebase/storage';
 import { serverTimestamp } from 'firebase/firestore';
-import { handleImageFormSubmission, handleQuestionFormSubmission } from '@/app/submit/actions';
 
 import SelectLanguage from '@/app/submit/components/SelectLanguage';
 
 import { useAsyncAction } from '@/lib/utils/async';
 import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game';
+import { QUESTION_TITLE_LABEL, CREATE_GAME_SUBMIT_BUTTON_LABEL } from '@/lib/utils/submit';
 
 const QUESTION_TYPE = 'image'
 
@@ -48,7 +48,7 @@ export default function Page({ }) {
     )
 }
 
-export function SubmitImageQuestionForm({ userId, ...props }) {
+export function SubmitImageQuestionForm({ userId, lang = 'fr-FR', ...props }) {
     const router = useRouter()
 
     const [submitImageQuestion, isSubmitting] = useAsyncAction(async (values, fileRef) => {
@@ -118,12 +118,12 @@ export function SubmitImageQuestionForm({ userId, ...props }) {
             validationSchema={validationSchema}
         >
             <Form>
-                <SelectLanguage lang='fr-FR' name='lang' validationSchema={validationSchema} />
+                <SelectLanguage lang={lang} name='lang' validationSchema={validationSchema} />
 
-                <SelectQuestionTopic lang='fr-FR' name='topic' validationSchema={validationSchema} />
+                <SelectQuestionTopic lang={lang} name='topic' validationSchema={validationSchema} />
 
                 <MyTextInput
-                    label="What is the question?"
+                    label={QUESTION_TITLE_LABEL[lang]}
                     name='title'
                     type='text'
                     placeholder={IMAGE_TITLE_EXAMPLE}
@@ -132,7 +132,7 @@ export function SubmitImageQuestionForm({ userId, ...props }) {
                 />
 
                 <MyTextInput
-                    label="What is represented in this image?"
+                    label={IMAGE_ANSWER_DESCRIPTION_LABEL[lang]}
                     name='answer_description'
                     type='text'
                     placeholder={IMAGE_ANSWER_DESCRIPTION_EXAMPLE}
@@ -141,7 +141,7 @@ export function SubmitImageQuestionForm({ userId, ...props }) {
                 />
 
                 <MyTextInput
-                    label="Where does this image come from?"
+                    label={IMAGE_ANSWER_SOURCE_LABEL[lang]}
                     name='answer_source'
                     type='text'
                     placeholder={IMAGE_ANSWER_SOURCE_EXAMPLE}
@@ -149,11 +149,21 @@ export function SubmitImageQuestionForm({ userId, ...props }) {
                     maxLength={IMAGE_ANSWER_SOURCE_MAX_LENGTH}
                 />
 
-                <UploadImage fileRef={fileRef} name='files' validationSchema={validationSchema} />
+                <UploadImage fileRef={fileRef} name='files' validationSchema={validationSchema} lang={lang} />
 
-                <SubmitFormButton isSubmitting={isSubmitting} />
+                <SubmitFormButton isSubmitting={isSubmitting} label={CREATE_GAME_SUBMIT_BUTTON_LABEL[lang]} />
             </Form>
         </Formik >
     );
 
+}
+
+const IMAGE_ANSWER_DESCRIPTION_LABEL = {
+    'en': "Description of the image",
+    'fr-FR': "Description de l'image",
+}
+
+const IMAGE_ANSWER_SOURCE_LABEL = {
+    'en': "Source of the image",
+    'fr-FR': "Source de l'image",
 }

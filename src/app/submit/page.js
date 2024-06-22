@@ -35,13 +35,19 @@ function QuestionTypeComponent({ questionType, lang = 'fr-FR' }) {
         <div className="relative group overflow-hidden rounded-lg">
             <QuestionTypeIcon questionType={questionType} fontSize={40} />
             <div className="bg-white px-4 py-2 dark:bg-gray-950">
-                <h3 className="font-semibold text-lg md:text-xl">{questionTypeToTitle(questionType, lang)}</h3>
+                <h3 className="text-lg md:text-xl font-semibold dark:text-gray-500">{questionTypeToTitle(questionType, lang)}</h3>
                 <p className="text-lg text-gray-500 dark:text-gray-400">{QUESTION_TYPE_TO_DESCRIPTION[lang][questionType]}</p>
-                <Link href={'/submit/' + questionType}>Submit a new question</Link>
+                <Link href={'/submit/' + questionType}>{CREATE_NEW_QUESTION[lang]}</Link>
             </div>
         </div>
     );
 }
+
+const CREATE_NEW_QUESTION = {
+    'en': "Create a new question",
+    'fr-FR': "Créer une nouvelle question"
+}
+
 
 const QUESTION_TYPE_TO_DESCRIPTION = {
     'en': {
@@ -57,15 +63,15 @@ const QUESTION_TYPE_TO_DESCRIPTION = {
         'basic': "One question, one answer. Simple as that."
     },
     'fr-FR': {
-        'progressive_clues': "Qu'est-ce qui se cache derrière ces indices?",
-        'image': "Qu'est-ce qui se cache derrière cette image?",
-        'emoji': "Qu'est-ce qui se cache derrière ces emojis?",
-        'blindtest': "Qu'est-ce qui se cache derrière cette chanson ou ce son?",
-        'quote': "Complétez les informations sur cette citation.",
+        'progressive_clues': "Qu'est-ce qui se cache derrière ces indices ?",
+        'image': "Qu'est-ce qui se cache derrière cette image ?",
+        'emoji': "Qu'est-ce qui se cache derrière ces emojis ?",
+        'blindtest': "Qu'est-ce qui se cache derrière cet audio ?",
+        'quote': "Complétez les informations sur cette réplique.",
         'enum': "Listez autant d'éléments que vous pouvez.",
-        'odd_one_out': "Ne sélectionnez que les propositions correctes.",
-        'matching': "Liez ces élements ensemble.",
-        'mcq': "Quelle est la réponse?",
+        'odd_one_out': "Quel est l'intrus ?",
+        'matching': "Liez correctement les éléments ensemble.",
+        'mcq': "Une question, plusieurs choix. Laquelle est la bonne ?",
         'basic': "Une question, une réponse. Tout simplement."
     }
 }

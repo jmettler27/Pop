@@ -16,6 +16,7 @@ import { topicSchema } from '@/lib/utils/topics';
 import { stringSchema } from '@/lib/utils/forms';
 import { getFileFromRef, imageFileSchema } from '@/lib/utils/files';
 import { EMOJI_ANSWER_TITLE_EXAMPLE, EMOJI_ANSWER_TITLE_MAX_LENGTH, EMOJI_CLUE_EXAMPLE, EMOJI_CLUE_MAX_LENGTH, EMOJI_CLUE_MIN_LENGTH, EMOJI_TITLE_EXAMPLE, EMOJI_TITLE_MAX_LENGTH, emojiClueSchema } from '@/lib/utils/question/emoji';
+import { QUESTION_ANSWER_LABEL, QUESTION_TITLE_LABEL, CREATE_GAME_SUBMIT_BUTTON_LABEL } from '@/lib/utils/submit';
 
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation'
@@ -26,13 +27,12 @@ import Picker from '@emoji-mart/react'
 import { addNewQuestion } from '@/lib/firebase/firestore';
 import { updateQuestionImage } from '@/lib/firebase/storage';
 import { serverTimestamp } from 'firebase/firestore';
-import { handleEmojiFormSubmission } from '@/app/submit/actions';
 
 import { useAsyncAction } from '@/lib/utils/async';
 
 const QUESTION_TYPE = 'emoji'
 
-export default function Page({ }) {
+export default function Page({ lang = 'fr-FR' }) {
     const { data: session } = useSession()
 
     // Protected route
@@ -42,13 +42,13 @@ export default function Page({ }) {
 
     return (
         <>
-            <QuestionFormHeader questionType={QUESTION_TYPE} />
-            <SubmitEmojiQuestionForm userId={session.user.id} inSubmitPage={true} />
+            <QuestionFormHeader questionType={QUESTION_TYPE} lang={lang} />
+            <SubmitEmojiQuestionForm userId={session.user.id} lang={lang} inSubmitPage={true} />
         </>
     )
 }
 
-export function SubmitEmojiQuestionForm({ userId, ...props }) {
+export function SubmitEmojiQuestionForm({ userId, lang, ...props }) {
     const router = useRouter()
 
     const fileRef = useRef(null);
@@ -114,12 +114,12 @@ export function SubmitEmojiQuestionForm({ userId, ...props }) {
             validationSchema={validationSchema}
         >
             <Form>
-                <SelectLanguage lang='fr-FR' name='lang' validationSchema={validationSchema} />
+                <SelectLanguage lang={lang} name='lang' validationSchema={validationSchema} />
 
-                <SelectQuestionTopic lang='fr-FR' name='topic' validationSchema={validationSchema} />
+                <SelectQuestionTopic lang={lang} name='topic' validationSchema={validationSchema} />
 
                 <MyTextInput
-                    label="What is the question?"
+                    label={QUESTION_TITLE_LABEL[lang]}
                     name='title'
                     type='text'
                     placeholder={EMOJI_TITLE_EXAMPLE}
@@ -128,7 +128,7 @@ export function SubmitEmojiQuestionForm({ userId, ...props }) {
                 />
 
                 <MyTextInput
-                    label="What is the answer?"
+                    label={QUESTION_ANSWER_LABEL[lang]}
                     name='answer_title'
                     type='text'
                     placeholder={EMOJI_ANSWER_TITLE_EXAMPLE}
@@ -137,7 +137,7 @@ export function SubmitEmojiQuestionForm({ userId, ...props }) {
                 />
 
                 <MyTextInput
-                    label="Enter the clue"
+                    label="Emojis"
                     name='clue'
                     type='text'
                     placeholder={EMOJI_CLUE_EXAMPLE}
@@ -150,10 +150,9 @@ export function SubmitEmojiQuestionForm({ userId, ...props }) {
                 <EmojiPicker />
 
                 {/* Image */}
-                <UploadImage fileRef={fileRef} name='files' validationSchema={validationSchema} />
+                <UploadImage fileRef={fileRef} name='files' validationSchema={validationSchema} lang={lang} />
 
-                <SubmitFormButton isSubmitting={isSubmitting} />
-
+                <SubmitFormButton isSubmitting={isSubmitting} label={CREATE_GAME_SUBMIT_BUTTON_LABEL[lang]} />
             </Form>
         </Formik >
     );
@@ -173,7 +172,6 @@ function EmojiPicker() {
         <Picker
             data={data}
             onEmojiSelect={(emoji) => {
-                // Append emoji to clue
                 formik.setFieldValue('clue', formik.values.clue + emoji.native);
             }}
         />

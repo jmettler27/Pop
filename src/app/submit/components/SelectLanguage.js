@@ -2,25 +2,25 @@ import { MySelect } from '@/app/components/forms/StyledFormComponents'
 
 import { LOCALES, prependLocaleWithEmoji } from '@/lib/utils/locales';
 
-export default function SelectLanguage({ validationSchema, labels = QUESTION_LANGUAGE_SELECTOR_LABELS, lang = 'fr-FR', name = 'lang' }) {
+export default function SelectLanguage({ validationSchema, labels = SELECT_QUESTION_LANGUAGE_LABEL, lang = 'fr-FR', name = 'lang' }) {
     return (
         <MySelect
             label={labels[lang]}
             name={name}
             validationSchema={validationSchema}
         >
-            <option value="">{HEADER[lang]}</option>
+            <option value="">{SELECT_QUESTION_LANGUAGE_HEADER[lang]}</option>
             {LOCALES.map((locale) => <option key={locale} value={locale}>{prependLocaleWithEmoji(locale)}</option>)}
         </MySelect>
     )
 }
 
-const QUESTION_LANGUAGE_SELECTOR_LABELS = {
-    'en': "What language is this question in?",
-    'fr-FR': "Dans quelle langue est cette question?"
+const SELECT_QUESTION_LANGUAGE_LABEL = {
+    'en': "Language of the question",
+    'fr-FR': "Langue de la question"
 }
 
-const HEADER = {
-    'en': "Select a language",
-    'fr-FR': "Sélectionnez une langue"
+const SELECT_QUESTION_LANGUAGE_HEADER = {
+    'en': "Select the language",
+    'fr-FR': "Sélectionnez la langue"
 }

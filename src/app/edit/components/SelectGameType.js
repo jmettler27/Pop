@@ -15,8 +15,8 @@ export default function SelectGameType({ validationSchema, lang = 'fr-FR', name 
 }
 
 const LABEL = {
-    'en': "What is the type of game?",
-    'fr-FR': "Quel est le type de partie?"
+    'en': "Type of the game",
+    'fr-FR': "Type de la partie"
 }
 
 const HEADER = {

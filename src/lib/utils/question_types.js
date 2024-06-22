@@ -46,7 +46,7 @@ export const QUESTION_TYPE_TO_TITLE = {
         'quote': "Réplique",
         'enum': "Énumération",
         'odd_one_out': "Coup par coup",
-        'matching': "Liaisons",
+        'matching': "Matching",
         'mcq': "QCM",
         'basic': "Question"
     }

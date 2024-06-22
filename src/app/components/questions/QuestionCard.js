@@ -18,6 +18,7 @@ import { QUESTION_ELEMENT_TO_EMOJI } from '@/lib/utils/question/question';
 import { CardTitle, CardHeader, CardContent, Card, CardFooter } from '@/app/components/card'
 
 import { Divider, Tooltip } from '@mui/material';
+import { blindtestTypeToEmoji } from '@/lib/utils/question/blindtest';
 
 export function QuestionCard({ question }) {
 
@@ -47,10 +48,11 @@ export function QuestionCardTitle({ question, lang = 'fr-FR' }) {
         case 'progressive_clues':
         case 'image':
         case 'emoji':
-        case 'blindtest':
         case 'enum':
         case 'odd_one_out':
             return <span>{topicToEmoji(question.topic)} &quot;{question.details.title}&quot;</span>
+        case 'blindtest':
+            return <span>{blindtestTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} &quot;{question.details.title}&quot;</span>
         case 'matching':
             return <span>{topicToEmoji(question.topic)} <strong>({question.details.numCols} col)</strong> &quot;{question.details.title}&quot;</span>
         case 'quote':
