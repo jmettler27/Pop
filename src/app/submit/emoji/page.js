@@ -16,7 +16,7 @@ import { topicSchema } from '@/lib/utils/topics';
 import { stringSchema } from '@/lib/utils/forms';
 import { getFileFromRef, imageFileSchema } from '@/lib/utils/files';
 import { EMOJI_ANSWER_TITLE_EXAMPLE, EMOJI_ANSWER_TITLE_MAX_LENGTH, EMOJI_CLUE_EXAMPLE, EMOJI_CLUE_MAX_LENGTH, EMOJI_CLUE_MIN_LENGTH, EMOJI_TITLE_EXAMPLE, EMOJI_TITLE_MAX_LENGTH, emojiClueSchema } from '@/lib/utils/question/emoji';
-import { QUESTION_ANSWER_LABEL, QUESTION_TITLE_LABEL, CREATE_GAME_SUBMIT_BUTTON_LABEL } from '@/lib/utils/submit';
+import { QUESTION_ANSWER_LABEL, QUESTION_TITLE_LABEL, SUBMIT_QUESTION_BUTTON_LABEL } from '@/lib/utils/submit';
 
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation'
@@ -152,7 +152,7 @@ export function SubmitEmojiQuestionForm({ userId, lang, ...props }) {
                 {/* Image */}
                 <UploadImage fileRef={fileRef} name='files' validationSchema={validationSchema} lang={lang} />
 
-                <SubmitFormButton isSubmitting={isSubmitting} label={CREATE_GAME_SUBMIT_BUTTON_LABEL[lang]} />
+                <SubmitFormButton isSubmitting={isSubmitting} label={SUBMIT_QUESTION_BUTTON_LABEL[lang]} />
             </Form>
         </Formik >
     );

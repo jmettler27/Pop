@@ -199,7 +199,7 @@ function RemoveRoundFromGameButton({ roundId, lang = 'fr-FR' }) {
 
 const REMOVE_ROUND_FROM_GAME_DIALOG_TITLE = {
     'en': "Are you sure you want to remove this round?",
-    'fr-FR': "T'es sûr de vouloir supprimer cette round ?"
+    'fr-FR': "T'es sûr de vouloir supprimer cette manche ?"
 }
 
 const REMOVE_ROUND_FROM_GAME_DIALOG_ACTION_VALIDATE = {

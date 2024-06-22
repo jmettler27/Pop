@@ -27,7 +27,7 @@ import SelectLanguage from '@/app/submit/components/SelectLanguage';
 
 import { useAsyncAction } from '@/lib/utils/async';
 import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game';
-import { QUESTION_TITLE_LABEL, CREATE_GAME_SUBMIT_BUTTON_LABEL } from '@/lib/utils/submit';
+import { QUESTION_TITLE_LABEL, SUBMIT_QUESTION_BUTTON_LABEL } from '@/lib/utils/submit';
 
 const QUESTION_TYPE = 'image'
 
@@ -151,7 +151,7 @@ export function SubmitImageQuestionForm({ userId, lang = 'fr-FR', ...props }) {
 
                 <UploadImage fileRef={fileRef} name='files' validationSchema={validationSchema} lang={lang} />
 
-                <SubmitFormButton isSubmitting={isSubmitting} label={CREATE_GAME_SUBMIT_BUTTON_LABEL[lang]} />
+                <SubmitFormButton isSubmitting={isSubmitting} label={SUBMIT_QUESTION_BUTTON_LABEL[lang]} />
             </Form>
         </Formik >
     );

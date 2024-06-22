@@ -43,7 +43,7 @@ function QuestionTypeComponent({ questionType, lang = 'fr-FR' }) {
     );
 }
 
-const CREATE_NEW_QUESTION = {
+export const CREATE_NEW_QUESTION = {
     'en': "Create a new question",
     'fr-FR': "Créer une nouvelle question"
 }

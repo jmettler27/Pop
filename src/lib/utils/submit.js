@@ -8,7 +8,7 @@ export const QUESTION_ANSWER_LABEL = {
     'fr-FR': "Réponse"
 }
 
-export const CREATE_GAME_SUBMIT_BUTTON_LABEL = {
+export const SUBMIT_QUESTION_BUTTON_LABEL = {
     'en': "Submit",
     'fr-FR': "Soumettre"
 }

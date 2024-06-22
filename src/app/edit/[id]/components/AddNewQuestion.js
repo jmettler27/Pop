@@ -23,7 +23,9 @@ import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game'
 
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
-export function AddQuestionToRoundButton({ roundId, roundType, disabled }) {
+import { CREATE_NEW_QUESTION } from '@/app/submit/page';
+
+export function AddQuestionToRoundButton({ roundId, roundType, disabled, lang = 'fr-FR' }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const menuOpen = Boolean(anchorEl);
     const handleMenuClose = () => {
@@ -66,8 +68,8 @@ export function AddQuestionToRoundButton({ roundId, roundType, disabled }) {
                             'aria-labelledby': 'basic-button',
                         }}
                     >
-                        <MenuItem onClick={() => setDialog('new-question')}>🆕 Create a new question</MenuItem>
-                        <MenuItem onClick={() => setDialog('existing-question')}>🔍 Search for an existing question</MenuItem>
+                        <MenuItem onClick={() => setDialog('new-question')}>🆕 {CREATE_NEW_QUESTION[lang]}</MenuItem>
+                        <MenuItem onClick={() => setDialog('existing-question')}>🔍 {SEARCH_EXISTING_QUESTION[lang]}</MenuItem>
                     </Menu>
                 </CardContent>
             </Card>
@@ -75,6 +77,12 @@ export function AddQuestionToRoundButton({ roundId, roundType, disabled }) {
         </>
     )
 }
+
+const SEARCH_EXISTING_QUESTION = {
+    'en': "Search for an existing question",
+    'fr-FR': "Rechercher une question existante"
+}
+
 
 function AddQuestionToRoundDialog({ roundId, questionType, dialog, onDialogClose }) {
     return (

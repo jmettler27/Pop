@@ -128,13 +128,13 @@ const GAME_TITLE_LABEL = {
 }
 
 const GAME_MAX_PLAYERS_LABEL = {
-    'en': "Maximum number of players allowed for the game",
-    'fr-FR': "Nombre maximum de joueurs autorisés pour la partie"
+    'en': "Maximum number of players allowed",
+    'fr-FR': "Nombre maximum de joueurs autorisés"
 }
 
 const GAME_ORGANIZER_NAME_LABEL = {
     'en': "Choose a nickname for the game",
-    'fr-FR': "Choisis un pseudo pour la partie"
+    'fr-FR': "Choisis un pseudo pour cette partie"
 }
 
 const CREATE_GAME_SUBMIT_BUTTON_LABEL = {

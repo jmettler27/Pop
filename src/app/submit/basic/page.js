@@ -31,7 +31,7 @@ import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game';
 import { imageFileSchema } from '@/lib/utils/files';
 import SubmitFormButton from '@/app/components/forms/SubmitFormButton';
 import { UploadImage } from '@/app/components/forms/UploadFile';
-import { QUESTION_ANSWER_LABEL, QUESTION_TITLE_LABEL, CREATE_GAME_SUBMIT_BUTTON_LABEL, QUESTION_HINTS_REMARKS, QUESTION_SOURCE_LABEL, QUESTION_EXPLANATION_LABEL } from '@/lib/utils/submit';
+import { QUESTION_ANSWER_LABEL, QUESTION_TITLE_LABEL, SUBMIT_QUESTION_BUTTON_LABEL, QUESTION_HINTS_REMARKS, QUESTION_SOURCE_LABEL, QUESTION_EXPLANATION_LABEL } from '@/lib/utils/submit';
 
 const QUESTION_TYPE = 'basic'
 
@@ -159,7 +159,7 @@ export function SubmitBasicQuestionForm({ userId, lang, ...props }) {
                     maxLength={MCQ_EXPLANATION_MAX_LENGTH}
                 />
 
-                <SubmitFormButton isSubmitting={isSubmitting} label={CREATE_GAME_SUBMIT_BUTTON_LABEL[lang]} />
+                <SubmitFormButton isSubmitting={isSubmitting} label={SUBMIT_QUESTION_BUTTON_LABEL[lang]} />
             </Form>
         </Formik>
     )

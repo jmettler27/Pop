@@ -21,7 +21,7 @@ import SubmitFormButton from "@/app/components/forms/SubmitFormButton"
 
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
-export function AddNewRoundButton({ disabled }) {
+export function AddNewRoundButton({ disabled, lang = 'fr-FR' }) {
     const [dialogOpen, setDialogOpen] = useState(false)
 
     return (
@@ -32,28 +32,38 @@ export function AddNewRoundButton({ disabled }) {
                     disabled={disabled}
                     onClick={() => setDialogOpen(true)}
                 >
-                    Add round
+                    {ADD_ROUND[lang]}
                 </Button>
             </div>
-            <AddNewRoundFormDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
+            <AddNewRoundFormDialog open={dialogOpen} onClose={() => setDialogOpen(false)} lang={lang} />
         </>
     )
 }
 
+const ADD_ROUND = {
+    'en': "Add round",
+    'fr-FR': "Ajouter manche"
+}
 
 
-function AddNewRoundFormDialog({ open, onClose }) {
+function AddNewRoundFormDialog({ open, onClose, lang }) {
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogTitle>Create new round</DialogTitle>
+            <DialogTitle>{ADD_NEW_ROUND_TITLE[lang]}</DialogTitle>
             <DialogContent>
-                <AddNewRoundForm onClose={onClose} />
+                <AddNewRoundForm onClose={onClose} lang={lang} />
             </DialogContent>
         </Dialog>
     )
 }
 
-function AddNewRoundForm({ onClose }) {
+const ADD_NEW_ROUND_TITLE = {
+    'en': "Create new round",
+    'fr-FR': "Créer une nouvelle manche"
+}
+
+
+function AddNewRoundForm({ onClose, lang }) {
     const { id: gameId } = useParams()
 
     const [submitRound, isSubmitting] = useAsyncAction(async (values) => {
@@ -96,22 +106,30 @@ function AddNewRoundForm({ onClose }) {
             validationSchema={validationSchema}
         >
             <Form>
-                <SelectRoundType label='Type' name='type' validationSchema={validationSchema} />
+                <SelectRoundType label='Type' name='type' validationSchema={validationSchema} lang={lang} />
 
                 <MyTextInput
-                    label="Give a title to your round"
+                    label={ROUND_TITLE_LABEL[lang]}
                     name='title'
                     type='text'
                     validationSchema={validationSchema}
                     maxLength={GAME_ROUND_TITLE_MAX_LENGTH}
                 />
 
-                {/* <MyNumberInput label="Rewards" name='rewards' /> */}
-
                 <MyNumberInput label="Rewards per question" name='rewardsPerQuestion' min={1} max={10} />
 
-                <SubmitFormButton isSubmitting={isSubmitting} />
+                <SubmitFormButton isSubmitting={isSubmitting} label={SUBMIT_BUTTON_LABEL[lang]} />
             </Form>
         </Formik>
     )
+}
+
+const ROUND_TITLE_LABEL = {
+    'en': "Title of the round",
+    'fr-FR': "Titre de la manche"
+}
+
+const SUBMIT_BUTTON_LABEL = {
+    'en': "Create",
+    'fr-FR': "Créer"
 }

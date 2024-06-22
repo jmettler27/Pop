@@ -26,7 +26,7 @@ import { addNewQuestion } from '@/lib/firebase/firestore';
 import { updateQuestionAudio, updateQuestionImage } from '@/lib/firebase/storage';
 import { useAsyncAction } from '@/lib/utils/async';
 import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game';
-import { QUESTION_TITLE_LABEL, CREATE_GAME_SUBMIT_BUTTON_LABEL } from '@/lib/utils/submit';
+import { QUESTION_TITLE_LABEL, SUBMIT_QUESTION_BUTTON_LABEL } from '@/lib/utils/submit';
 
 
 
@@ -186,7 +186,7 @@ export function SubmitBlindtestQuestionForm({ userId, lang, ...props }) {
 
                 <UploadImage fileRef={imageFileRef} name='imageFiles' validationSchema={validationSchema} lang={lang} />
 
-                <SubmitFormButton isSubmitting={isSubmitting} label={CREATE_GAME_SUBMIT_BUTTON_LABEL[lang]} />
+                <SubmitFormButton isSubmitting={isSubmitting} label={SUBMIT_QUESTION_BUTTON_LABEL[lang]} />
             </Form>
         </Formik >
     );
