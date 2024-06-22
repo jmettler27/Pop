@@ -12,18 +12,15 @@ import { doc } from 'firebase/firestore';
 import { useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 
 
-import LoadingScreen from '@/app/components/LoadingScreen';
-// import { Button } from '@/components/ui/button'
-import { CardTitle, CardHeader, CardContent, Card } from '@/app/components/card'
+import { CardContent, Card } from '@/app/components/card'
 import { QuestionCard } from '@/app/components/questions/QuestionCard';
-
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Menu, MenuItem } from '@mui/material'
-
+import { SearchQuestionDataGrid } from '@/app/components/questions/QuestionDataGrid';
 import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game'
 
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Menu, MenuItem } from '@mui/material'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import CancelIcon from '@mui/icons-material/Cancel'
 
-import { CREATE_NEW_QUESTION } from '@/app/submit/page';
 
 export function AddQuestionToRoundButton({ roundId, roundType, disabled, lang = 'fr-FR' }) {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -78,6 +75,11 @@ export function AddQuestionToRoundButton({ roundId, roundType, disabled, lang = 
     )
 }
 
+const CREATE_NEW_QUESTION = {
+    'en': "Create a new question",
+    'fr-FR': "Créer une nouvelle question"
+}
+
 const SEARCH_EXISTING_QUESTION = {
     'en': "Search for an existing question",
     'fr-FR': "Rechercher une question existante"
@@ -98,9 +100,6 @@ function AddQuestionToRoundDialog({ roundId, questionType, dialog, onDialogClose
         </Dialog>
     )
 }
-
-import { SearchQuestionDataGrid } from '@/app/components/questions/QuestionDataGrid';
-import CancelIcon from '@mui/icons-material/Cancel'
 
 function SearchQuestionDialog({ roundId, questionType, onDialogClose }) {
     const [questionSelectionModel, setSelectedQuestionModel] = useState([]);
