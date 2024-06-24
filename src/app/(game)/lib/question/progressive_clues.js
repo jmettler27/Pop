@@ -81,7 +81,7 @@ const handleNextClueClickTransaction = async (
         }
     }
 
-    await updateTimerStateTransaction(transaction, gameId, 'reset')
+    // await updateTimerStateTransaction(transaction, gameId, 'reset')
     await addSoundToQueueTransaction(transaction, gameId, 'cartoon_mystery_musical_tone_002')
 }
 /* ====================================================================================================== */
