@@ -46,7 +46,7 @@ const handleRiddleBuzzerHeadChangedTransaction = async (
     playerId
 ) => {
     await updatePlayerStatusTransaction(transaction, gameId, playerId, 'focus')
-    await updateTimerStateTransaction(transaction, gameId, 'start')
+    // await updateTimerStateTransaction(transaction, gameId, 'start')
 }
 
 
@@ -200,7 +200,7 @@ export const handleRiddleInvalidateAnswerClickTransaction = async (
     await Promise.all([
         updatePlayerStatusTransaction(transaction, gameId, playerId, 'wrong'),
         addWrongAnswerSoundToQueueTransaction(transaction, gameId),
-        updateTimerStateTransaction(transaction, gameId, 'reset')
+        // updateTimerStateTransaction(transaction, gameId, 'reset')
     ])
 
     // } else {
@@ -319,9 +319,9 @@ const removeBuzzedPlayerTransaction = async (
     await updatePlayerStatusTransaction(transaction, gameId, playerId, 'idle')
     await addSoundToQueueTransaction(transaction, gameId, 'JPP_de_lair')
 
-    if (buzzed[0] === playerId) {
-        await updateTimerStateTransaction(transaction, gameId, 'reset')
-    }
+    // if (buzzed[0] === playerId) {
+    //     await updateTimerStateTransaction(transaction, gameId, 'reset')
+    // }
 }
 
 /* ==================================================================================================== */

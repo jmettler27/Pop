@@ -298,7 +298,7 @@ export const cancelQuotePlayerTransaction = async (
     await Promise.all([
         updatePlayerStatusTransaction(transaction, gameId, playerId, 'wrong'),
         addWrongAnswerSoundToQueueTransaction(transaction, gameId),
-        updateTimerStateTransaction(transaction, gameId, 'reset')
+        // updateTimerStateTransaction(transaction, gameId, 'reset')
     ])
 }
 

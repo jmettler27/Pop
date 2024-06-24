@@ -226,7 +226,7 @@ const submitMatchTransaction = async (
         })
     }
 
-    await updateTimerStateTransaction(transaction, gameId, 'reset')
+    // await updateTimerStateTransaction(transaction, gameId, 'reset')
 }
 
 /* ==================================================================================================== */
