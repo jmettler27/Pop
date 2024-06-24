@@ -16,7 +16,7 @@ export function MyTextInput({ label, maxLength, validationSchema, fieldType = 's
     // const maxLength = validationSchema.fields[field.name].tests.find(test => test.OPTIONS.name === 'max')?.OPTIONS.params.max || 0
     return (
         <>
-            <label htmlFor={props.id || props.name}>{requiredIndicator(validationSchema, fieldType, field.name)}{label} {maxLength > 0 && (props.onlyEmojis ? numEmojisIndicator(field.value, maxLength) : numCharsIndicator(field.value, maxLength))}</label>
+            <StyledLabel htmlFor={props.id || props.name}>{requiredIndicator(validationSchema, fieldType, field.name)}{label} {maxLength > 0 && (props.onlyEmojis ? numEmojisIndicator(field.value, maxLength) : numCharsIndicator(field.value, maxLength))}</StyledLabel>
             <input className='text-input' {...field} {...props} value={field.value || ''} />
             {meta.touched && meta.error && <div className='error'>{meta.error}</div>}
         </>

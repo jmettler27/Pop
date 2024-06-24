@@ -1,4 +1,6 @@
-// import Chrome from '@uiw/react-color-chrome';
+import React from 'react';
+
+import Sketch from '@uiw/react-color-sketch';
 
 import { useField } from 'formik';
 
@@ -7,11 +9,12 @@ import { StyledLabel, StyledErrorMessage } from "./StyledFormComponents";
 
 export default function MyColorPicker({ label, validationSchema, name, ...props }) {
     const [field, meta, helpers] = useField(name);
+    console.log('field', field)
 
     return (
         <div className='space-y-1'>
             <StyledLabel htmlFor={props.id || props.name}>{requiredIndicator(validationSchema, 'string', field.name)}{label}</StyledLabel>
-            {/* <Chrome
+            <Sketch
                 color={field.value}
                 // style={{ marginTop: 10, width: 140 }}
                 // showEyeDropper={false}
@@ -20,7 +23,7 @@ export default function MyColorPicker({ label, validationSchema, name, ...props 
                 onChange={(color) => {
                     helpers.setValue(color.hex)
                 }}
-            /> */}
+            />
             {meta.touched && meta.error && <StyledErrorMessage>{meta.error}</StyledErrorMessage>}
         </div>
     )
