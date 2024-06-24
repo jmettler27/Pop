@@ -148,7 +148,7 @@ export default function Page({ params, lang = 'fr-FR' }) {
                     joinTeam: null,
                     teamId: "",
                     teamName: "",
-                    teamColor: null,
+                    teamColor: "#000000",
                 }}
                 onSubmit={async values => await joinGame(values, user)}
                 isSubmitting={isJoining}
