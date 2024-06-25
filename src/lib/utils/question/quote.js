@@ -65,6 +65,9 @@ export const QUOTE_ELEMENT_TO_EMOJI = {
     'quote': "💬"
 }
 
+export const QUOTE_ELEMENTS_SORT_ORDER = ['quote', 'author', 'source'];
+
+
 import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
 export function quoteElementToTitle(element, lang = DEFAULT_LOCALE) {

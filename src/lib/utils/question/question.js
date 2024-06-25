@@ -68,10 +68,20 @@ export const QUESTION_ELEMENT_TO_TITLE = {
     'en': {
         'source': "Source",
         'author': "Author",
+        'answer': 'Answer',
+        'topic': 'Topic',
+        'title': 'Title',
+        'createdAt': 'Created at',
+        'createdBy': 'Created by',
     },
     'fr-FR': {
         'source': "Source",
         'author': "Auteur",
+        'answer': 'Réponse',
+        'topic': 'Sujet',
+        'title': 'Titre',
+        'createdAt': 'Créé le',
+        'createdBy': 'Créé par',
     }
 }
 

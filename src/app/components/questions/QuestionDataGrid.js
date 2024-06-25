@@ -2,14 +2,28 @@ import { QUESTIONS_COLLECTION_REF, USERS_COLLECTION_REF } from '@/lib/firebase/f
 import { query, where } from 'firebase/firestore';
 import { useCollection, useCollectionOnce } from 'react-firebase-hooks/firestore';
 
-import { timestampToDate } from '@/lib/utils/time';
-import { localeToEmoji } from '@/lib/utils/locales';
+import { timestampToDate, timestampToDate1 } from '@/lib/utils/time';
+import { DEFAULT_LOCALE, localeToEmoji } from '@/lib/utils/locales';
 import { topicToEmoji } from '@/lib/utils/topics';
 
 import { BLINDTEST_TYPE_TO_TITLE } from '@/lib/utils/question/blindtest';
 import { Avatar } from '@mui/material';
 import LoadingScreen from '../LoadingScreen';
 import { DataGrid } from '@mui/x-data-grid';
+import { QUOTE_ELEMENTS_SORT_ORDER, QUOTE_ELEMENT_TO_EMOJI } from '@/lib/utils/question/quote';
+import { QUESTION_ELEMENT_TO_TITLE } from '@/lib/utils/question/question';
+
+
+const CLUE = {
+    'en': "Clue",
+    'fr-FR': "Indice"
+}
+
+
+const TITLE = {
+    'en': "Title",
+    'fr-FR': "Titre"
+}
 
 const progressiveCluesQuestionRow = (question) => {
     const { title, answer, clues } = question.details
@@ -20,8 +34,8 @@ const progressiveCluesQuestionRow = (question) => {
     }
 }
 const progressiveCluesQuestionColumns = [
-    { field: 'title', headerName: 'Question', width: 130 },
-    { field: 'answer', headerName: 'Answer', width: 200 },
+    { field: 'title', headerName: 'Question', width: 150 },
+    { field: 'answer', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['answer'], width: 250 },
 ]
 
 
@@ -36,7 +50,7 @@ const imageQuestionRow = (question) => {
 const imageQuestionColumns = [
     { field: 'title', headerName: 'Question', width: 250 },
     { field: 'description', headerName: 'Description', width: 250 },
-    { field: 'source', headerName: 'Source', width: 250 }
+    { field: 'source', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['source'], width: 250 }
 ]
 
 
@@ -49,9 +63,9 @@ const emojiQuestionRow = (question) => {
     }
 }
 const emojiQuestionColumns = [
-    { field: 'title', headerName: 'Question', width: 200 },
-    { field: 'answer', headerName: 'Answer', width: 300 },
-    { field: 'clue', headerName: 'Clue', width: 130 },
+    { field: 'title', headerName: 'Question', width: 225 },
+    { field: 'answer', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['answer'], width: 225 },
+    { field: 'clue', headerName: CLUE[DEFAULT_LOCALE], width: 200 },
 ]
 
 
@@ -66,11 +80,11 @@ const blindtestQuestionRow = (question) => {
     }
 }
 const blindtestQuestionColumns = [
-    { field: 'subtype', headerName: 'Type', width: 130 },
-    { field: 'title', headerName: 'Question', width: 200 },
-    { field: 'answer_source', headerName: 'Source', width: 200 },
-    { field: 'answer_author', headerName: 'Author', width: 200 },
-    { field: 'answer_title', headerName: 'Title', width: 200 },
+    { field: 'subtype', headerName: 'Type', width: 100 },
+    { field: 'title', headerName: 'Question', width: 150 },
+    { field: 'answer_source', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['source'], width: 200 },
+    { field: 'answer_author', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['answer'], width: 200 },
+    { field: 'answer_title', headerName: TITLE[DEFAULT_LOCALE], width: 200 },
 ]
 
 
@@ -78,17 +92,25 @@ const enumQuestionRow = (question) => {
     const { title, note, answer, maxIsKnown, thinkingTime, challengeTime } = question.details
     return {
         title,
-        note: note,
+        note,
         numAnswers: maxIsKnown ? answer.length : ">= " + answer.length,
         thinkingTime,
         challengeTime
     }
 }
+const ENUM_NUM_ANSWERS = {
+    'en': "Answers",
+    'fr-FR': "Réponses"
+}
+const ENUM_THINKING = {
+    'en': "Thinking (s)",
+    'fr-FR': "Réflexion (s)"
+}
 const enumQuestionColumns = [
-    { field: 'title', headerName: 'Question', width: 450 },
-    { field: 'note', headerName: 'Note', width: 200 },
-    { field: 'numAnswers', headerName: '# of answers', width: 130 },
-    { field: 'thinkingTime', headerName: 'Thinking (s)', width: 100 },
+    { field: 'title', headerName: 'Question', width: 400 },
+    { field: 'note', headerName: 'Note', width: 250 },
+    { field: 'numAnswers', headerName: ENUM_NUM_ANSWERS[DEFAULT_LOCALE], width: 100 },
+    { field: 'thinkingTime', headerName: ENUM_THINKING[DEFAULT_LOCALE], width: 100 },
     { field: 'challengeTime', headerName: 'Challenge (s)', width: 100 },
 ]
 
@@ -100,9 +122,13 @@ const oddOneOutQuestionRow = (question) => {
         oddOneOut: items[answerIdx].title,
     }
 }
+const ODD_ONE_OUT = {
+    'en': "Odd one out",
+    'fr-FR': "Intrus"
+}
 const oddOneOutQuestionColumns = [
-    { field: 'title', headerName: 'Question', width: 450 },
-    { field: 'oddOneOut', headerName: 'Odd one out', width: 450 },
+    { field: 'title', headerName: 'Question', width: 500 },
+    { field: 'oddOneOut', headerName: ODD_ONE_OUT[DEFAULT_LOCALE], width: 250 },
 ]
 
 
@@ -114,27 +140,45 @@ const matchingQuestionRow = (question) => {
         numRows,
     }
 }
+const MATCHING_COLUMNS = {
+    'en': "Columns",
+    'fr-FR': "Colonnes"
+}
 const matchingQuestionColumns = [
     { field: 'title', headerName: 'Question', width: 500 },
-    { field: 'numCols', headerName: 'Columns', width: 100 },
+    { field: 'numCols', headerName: MATCHING_COLUMNS[DEFAULT_LOCALE], width: 100 },
     { field: 'numRows', headerName: 'Matches', width: 100 },
 ]
 
 
 const quoteQuestionRow = (question) => {
     const { author, quote, source, toGuess } = question.details
+
+    const sortedToGuess = toGuess.sort((a, b) => {
+        return QUOTE_ELEMENTS_SORT_ORDER.indexOf(a) - QUOTE_ELEMENTS_SORT_ORDER.indexOf(b);
+    });
+    const toGuessWithEmojis = sortedToGuess.map((item) => QUOTE_ELEMENT_TO_EMOJI[item]).join(', ');
+
     return {
         author,
         quote: `"${quote}"`,
         source,
-        toGuess: toGuess.join(', '),
+        toGuess: toGuessWithEmojis
     }
 }
+const QUOTE = {
+    'en': "Quote",
+    'fr-FR': "Réplique"
+}
+const QUOTE_TO_GUESS = {
+    'en': "To guess",
+    'fr-FR': "À deviner"
+}
 const quoteQuestionColumns = [
-    { field: 'source', headerName: 'Source', width: 200 },
-    { field: 'author', headerName: 'Author', width: 200 },
-    { field: 'quote', headerName: 'Quote', width: 500 },
-    { field: 'toGuess', headerName: 'To guess', width: 200 },
+    { field: 'source', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['source'], width: 200 },
+    { field: 'author', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['author'], width: 200 },
+    { field: 'quote', headerName: QUOTE[DEFAULT_LOCALE], width: 500 },
+    { field: 'toGuess', headerName: QUOTE_TO_GUESS[DEFAULT_LOCALE], width: 100 },
 ]
 
 
@@ -149,10 +193,10 @@ const mcqQuestionRow = (question) => {
     }
 }
 const mcqQuestionColumns = [
-    { field: 'source', headerName: 'Source', width: 250 },
+    { field: 'source', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['source'], width: 200 },
     { field: 'title', headerName: 'Question', width: 500 },
     // { field: 'note', headerName: 'Note', width: MCQ_NOTE_MAX_LENGTH * 6 },
-    { field: 'answer', headerName: 'Answer', width: 400 },
+    { field: 'answer', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['answer'], width: 250 },
     // { field: 'explanation', headerName: 'Explanation', width: 130 },
 ]
 
@@ -167,10 +211,10 @@ const basicQuestionRow = (question) => {
     }
 }
 const basicQuestionColumns = [
-    { field: 'source', headerName: 'Source', width: 250 },
+    { field: 'source', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['source'], width: 200 },
     { field: 'title', headerName: 'Question', width: 500 },
     // { field: 'note', headerName: 'Note', width: MCQ_NOTE_MAX_LENGTH * 6 },
-    { field: 'answer', headerName: 'Answer', width: 400 },
+    { field: 'answer', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['answer'], width: 250 },
     // { field: 'explanation', headerName: 'Explanation', width: 130 },
 ]
 
@@ -212,7 +256,7 @@ const commonQuestionRow = (question, users) => {
         lang: localeToEmoji(lang),
         topic: topicToEmoji(topic),
         // type: prependQuestionTypeWithEmoji(type, lang),
-        createdAt: timestampToDate(createdAt, lang),
+        createdAt: timestampToDate1(createdAt, lang),
         createdBy: {
             name,
             image,
@@ -220,15 +264,15 @@ const commonQuestionRow = (question, users) => {
     }
 }
 
-const questionColumns = (questionType) => {
+const questionColumns = (questionType, lang = DEFAULT_LOCALE) => {
     return [
         { field: 'id', headerName: "ID", width: 100 },
         { field: 'lang', headerName: "Lang", width: 50 },
-        { field: 'topic', headerName: "Topic", width: 75 },
+        { field: 'topic', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['topic'], width: 75 },
         ...questionTypeToColumns[questionType],
-        { field: 'createdAt', headerName: "Created at", width: 130 },
+        { field: 'createdAt', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['createdAt'], width: 130 },
         {
-            field: 'createdBy', headerName: "Created by", width: 130,
+            field: 'createdBy', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['createdBy'], width: 130,
             renderCell: (params) => (
                 <div className='flex flex-row w-full space-x-2 items-center'>
                     <Avatar src={params.row.createdBy.image} variant='rounded' sx={{ width: 30, height: 30 }} />

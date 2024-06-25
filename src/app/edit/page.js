@@ -73,9 +73,9 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
                 validationSchema={validationSchema}
             >
                 <Form>
-                    <SelectLanguage labels={GAME_LANGUAGE_SELECTOR_LABELS} lang='fr-FR' name='lang' validationSchema={validationSchema} />
+                    <SelectLanguage labels={SELECT_GAME_LANGUAGE_LABEL} lang={lang} name='lang' validationSchema={validationSchema} />
 
-                    <SelectGameType lang='fr-FR' name='type' validationSchema={validationSchema} />
+                    <SelectGameType lang={lang} name='type' validationSchema={validationSchema} />
 
                     <MyTextInput
                         label={GAME_TITLE_LABEL[lang]}
@@ -117,7 +117,7 @@ const CREATE_GAME = {
     'fr-FR': "Créer une nouvelle partie"
 }
 
-const GAME_LANGUAGE_SELECTOR_LABELS = {
+const SELECT_GAME_LANGUAGE_LABEL = {
     'en': "Game language",
     'fr-FR': "Langue de la partie"
 }

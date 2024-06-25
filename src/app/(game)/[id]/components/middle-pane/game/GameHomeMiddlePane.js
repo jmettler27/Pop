@@ -147,8 +147,9 @@ function GameHomeRounds() {
 }
 
 import NewReleasesIcon from '@mui/icons-material/NewReleases';
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
-function GameHomeRoundItem({ round, isDisabled, onSelectRound, locale = 'fr-FR' }) {
+function GameHomeRoundItem({ round, isDisabled, onSelectRound, locale = DEFAULT_LOCALE }) {
 
     const secondaryText = () => {
         if (!round.dateStart)

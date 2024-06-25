@@ -13,10 +13,16 @@ import { emojiCount } from './question/emoji'
 export const numEmojisIndicator = (strField, maxLength) =>
     '(' + emojiCount(strField) + '/' + maxLength + ')'
 
+import { DEFAULT_LOCALE } from './locales'
+
 /* Required field indicator */
 export const requiredIndicatorString = (isRequired) =>
-    isRequired ? '' : '(Optional) '
-// isRequired ? '*' : '(Optional) '
+    isRequired ? '' : `(${OPTIONAL[DEFAULT_LOCALE]}) `
+
+const OPTIONAL = {
+    'en': "Optional",
+    'fr-FR': "Optionnel"
+}
 
 // Regular field
 function fieldIsRequired(yupSchema, fieldName) {

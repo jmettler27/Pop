@@ -1,4 +1,6 @@
-export function timestampToDate(timestamp, locale = 'fr-FR') {
+import { DEFAULT_LOCALE } from "./locales";
+
+export function timestampToDate(timestamp, locale = DEFAULT_LOCALE) {
     if (!timestamp) {
         return null;
     }
@@ -7,7 +9,18 @@ export function timestampToDate(timestamp, locale = 'fr-FR') {
     });
 }
 
-export function timestampToHour(timestamp, locale = 'fr-FR') {
+export function timestampToDate1(timestamp) {
+    if (!timestamp) {
+        return null;
+    }
+    const date = new Date(timestamp.seconds * 1000);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
+    const year = date.getFullYear();
+    return `${year}/${month}/${day}`;
+}
+
+export function timestampToHour(timestamp, locale = DEFAULT_LOCALE) {
     if (!timestamp) {
         return null;
     }
