@@ -141,7 +141,7 @@ export function SubmitBlindtestQuestionForm({ userId, lang, ...props }) {
                     validationSchema={validationSchema}
                 >
                     <option value="">{SELECT_BLINDTEST_TYPE[lang]}</option>
-                    {Object.entries(BLINDTEST_TYPE_TO_TITLE['en']).map(([subtype, title]) => (
+                    {Object.entries(BLINDTEST_TYPE_TO_TITLE[lang]).map(([subtype, title]) => (
                         <option key={subtype} value={subtype}>{BLINDTEST_TYPE_TO_EMOJI[subtype]} {title}</option>
                     ))}
                 </MySelect>

@@ -18,7 +18,10 @@ import {
     runTransaction,
     collection,
     serverTimestamp,
-    arrayRemove
+    arrayRemove,
+    query,
+    where,
+    getDocs
 } from 'firebase/firestore'
 
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';

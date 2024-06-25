@@ -50,7 +50,7 @@ export function EditQuestionCard({ roundId, questionId, questionOrder }) {
                 {/* <span className='text-base md:text-lg dark:text-white'>#{questionOrder + 1}</span> */}
                 <CardTitle className='text-base md:text-lg dark:text-white'><QuestionCardTitle question={questionData} /></CardTitle>
                 <RemoveQuestionFromRoundButton roundId={roundId} questionId={questionId} />
-                {/* <UpdateCreatorButton roundId={roundId} questionId={questionId} /> */}
+                <UpdateCreatorButton roundId={roundId} questionId={questionId} />
             </CardHeader>
 
             <CardContent className='flex flex-col justify-center items-center w-full'>
@@ -95,7 +95,7 @@ function UpdateCreatorButton({ roundId, questionId, lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
 
     const [handleChange, isChanging] = useAsyncAction(async () => {
-        await updateQuestionCreator(gameId, roundId, questionId, '')
+        await updateQuestionCreator(gameId, roundId, questionId, 'dE1ItazZqaoBjChy7NN8')
     })
 
     return (

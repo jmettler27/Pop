@@ -1,4 +1,39 @@
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
+
+
 /* MCQ Options */
+export const MCQ_TYPES = ['conditional', 'immediate']
+
+export const MCQ_TYPE_TO_TITLE = {
+    'en': {
+        'conditional': "Everyone Wants to Take Their Place",
+        'immediate': "Who Wants to Be a Millionaire?"
+    },
+    'fr-FR': {
+        'conditional': "Tout le Monde Veut Prendre sa Place",
+        'immediate': "Qui Veut Gagner des Millions ?"
+    }
+}
+
+export const MCQ_TYPE_TO_EMOJI = {
+    'conditional': '🐴',
+    'immediate': '💲'
+}
+
+export function mcqTypeToEmoji(type) {
+    return MCQ_TYPE_TO_EMOJI[type]
+}
+
+export function mcqTypeToTitle(type, lang = DEFAULT_LOCALE) {
+    return MCQ_TYPE_TO_TITLE[lang][type]
+}
+
+
+import { prependWithEmojiAndSpace } from '@/lib/utils/emojis';
+export function prependMCQTypeWithEmoji(mcqType, lang = DEFAULT_LOCALE) {
+    return prependWithEmojiAndSpace(mcqTypeToEmoji(mcqType), mcqTypeToTitle(mcqType, lang))
+}
+
 export const MCQ_OPTIONS = ['hide', 'square', 'duo']
 
 export const MCQ_OPTION_TO_EMOJI = {
@@ -34,7 +69,6 @@ export const MCQ_DEFAULT_REWARDS = {
     'duo': 2
 }
 
-import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
 export function mcqOptionToTitle(option, lang = DEFAULT_LOCALE) {
     return MCQ_OPTION_TO_TITLE[lang][option]
@@ -50,6 +84,9 @@ export function prependMCQOptionWithEmoji(option, lang = DEFAULT_LOCALE) {
 
 /* MCQ choices */
 export const MCQ_CHOICES = ["A", "B", "C", "D"]
+
+export const MCQ_MIN_NUMBER_OF_CHOICES = 2;
+export const MCQ_MAX_NUMBER_OF_CHOICES = MCQ_CHOICES.length;
 export const MCQ_NUMBER_OF_CHOICES = MCQ_CHOICES.length;
 
 export const MCQ_CHOICES_EXAMPLE = [
@@ -85,3 +122,10 @@ export const MCQ_EXPLANATION_MAX_LENGTH = 500;
 
 
 export const MCQ_THINKING_TIME = 20;
+
+/* Validation  */
+import * as Yup from 'yup'
+
+export const mcqSubtypeSchema = () => Yup.string()
+    .oneOf(MCQ_TYPES, "Invalid question subtype.")
+    .required("Required.")

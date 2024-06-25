@@ -12,13 +12,18 @@ import QuestionFormHeader from '@/app/submit/components/QuestionFormHeader';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/lib/utils/locales';
 import { topicSchema } from '@/lib/utils/topics';
-import { stringSchema } from '@/lib/utils/forms';
+import { requiredStringInArrayFieldIndicator, stringSchema } from '@/lib/utils/forms';
 import {
     MCQ_CHOICES, MCQ_CHOICES_EXAMPLE, MCQ_CHOICE_MAX_LENGTH, MCQ_NUMBER_OF_CHOICES,
     MCQ_EXPLANATION_EXAMPLE, MCQ_EXPLANATION_MAX_LENGTH,
     MCQ_NOTE_EXAMPLE, MCQ_NOTE_MAX_LENGTH,
     MCQ_SOURCE_EXAMPLE, MCQ_SOURCE_MAX_LENGTH,
-    MCQ_TITLE_EXAMPLE, MCQ_TITLE_MAX_LENGTH
+    MCQ_TITLE_EXAMPLE, MCQ_TITLE_MAX_LENGTH,
+    mcqSubtypeSchema,
+    MCQ_TYPE_TO_TITLE,
+    MCQ_TYPE_TO_EMOJI,
+    MCQ_MIN_NUMBER_OF_CHOICES,
+    MCQ_MAX_NUMBER_OF_CHOICES,
 } from '@/lib/utils/question/mcq';
 
 import Box from '@mui/system/Box';
@@ -58,9 +63,10 @@ export function SubmitMCQForm({ userId, lang, ...props }) {
 
     const [submitMCQ, isSubmitting] = useAsyncAction(async (values) => {
         try {
-            const { topic, lang, ...details } = values
+            const { topic, lang, duoIdx, ...rest } = values
+            const details = values.subtype === 'immediate' ? rest : { duoIdx, ...rest };
             const questionId = await addNewQuestion({
-                details: { ...details },
+                details,
                 type: QUESTION_TYPE,
                 topic,
                 // subtopics,,
@@ -83,6 +89,7 @@ export function SubmitMCQForm({ userId, lang, ...props }) {
             initialValues={{
                 lang: DEFAULT_LOCALE,
                 topic: '',
+                subtype: '',
                 source: '',
                 title: '',
                 note: '',
@@ -109,6 +116,7 @@ export function SubmitMCQForm({ userId, lang, ...props }) {
                 validationSchema={Yup.object({
                     lang: localeSchema(),
                     topic: topicSchema(),
+                    subtype: mcqSubtypeSchema(),
                     source: stringSchema(MCQ_SOURCE_MAX_LENGTH, false),
                     title: stringSchema(MCQ_TITLE_MAX_LENGTH),
                     note: stringSchema(MCQ_NOTE_MAX_LENGTH, false),
@@ -121,17 +129,21 @@ export function SubmitMCQForm({ userId, lang, ...props }) {
                 validationSchema={Yup.object({
                     choices: Yup.array()
                         .of(stringSchema(MCQ_CHOICE_MAX_LENGTH))
-                        .length(MCQ_NUMBER_OF_CHOICES, `There must be exactly ${MCQ_NUMBER_OF_CHOICES} choices`)
-                        .required("Required."),
+                        .min(MCQ_MIN_NUMBER_OF_CHOICES, `There must be at least ${MCQ_MIN_NUMBER_OF_CHOICES} choices`)
+                        .max(MCQ_MAX_NUMBER_OF_CHOICES, `There must be at most ${MCQ_MAX_NUMBER_OF_CHOICES} choices`),
+                    // .length(MCQ_NUMBER_OF_CHOICES, `There must be exactly ${MCQ_NUMBER_OF_CHOICES} choices`)
+                    // .required("Required."),
                     answerIdx: Yup.number()
                         .min(0, "Required.")
                         .max(MCQ_NUMBER_OF_CHOICES - 1, "Required.")
                         .required("Required."),
                     explanation: stringSchema(MCQ_EXPLANATION_MAX_LENGTH, false),
                     duoIdx: Yup.number()
-                        .min(0, "Required.")
-                        .max(MCQ_NUMBER_OF_CHOICES - 1, "Required.")
-                        .required("Required."),
+                        .when('subtype', {
+                            is: 'conditional',
+                            then: (schema) => schema.min(0, "Required.").max(MCQ_NUMBER_OF_CHOICES - 1, "Required.").required("Required."),
+                            otherwise: (schema) => schema.notRequired()
+                        })
                     // .test(
                     //     "same-as-answer",
                     //     "Must be different that the answer",
@@ -157,6 +169,17 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
             <SelectLanguage lang={lang} name='lang' validationSchema={validationSchema} />
 
             <SelectQuestionTopic lang={lang} name='topic' validationSchema={validationSchema} />
+
+            <MySelect
+                label={MCQ_TYPE[lang]}
+                name='subtype'
+                validationSchema={validationSchema}
+            >
+                <option value="">{SELECT_MCQ_TYPE[lang]}</option>
+                {Object.entries(MCQ_TYPE_TO_TITLE[lang]).map(([subtype, title]) => (
+                    <option key={subtype} value={subtype}>{MCQ_TYPE_TO_EMOJI[subtype]} {title}</option>
+                ))}
+            </MySelect>
 
             <MyTextInput
                 // label={`${stringRequiredAsterisk(validationSchema, 'source')}To what work is this question related to? ${numCharsIndicator(values['source'], MCQ_SOURCE_MAX_LENGTH)}`}
@@ -190,6 +213,21 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
     )
 }
 
+const MCQ_TYPE = {
+    'en': "Type of the MCQ",
+    'fr-FR': "Type de QCM",
+}
+
+const SELECT_MCQ_TYPE = {
+    'en': "Select the type",
+    'fr-FR': "Sélectionnez le type",
+}
+
+import Button from '@mui/material/Button';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import { IconButton } from '@mui/material';
+
 
 function EnterChoicesStep({ onSubmit, validationSchema, lang }) {
     const formik = useFormikContext();
@@ -215,20 +253,52 @@ function EnterChoicesStep({ onSubmit, validationSchema, lang }) {
             validationSchema={validationSchema}
         >
             <FieldArray name='choices'>
-                {({ }) => (
-                    <Box component='section' sx={{ my: 2, p: 2, border: '2px dashed grey', width: '500px' }}>
-                        {values.choices.map((_item, index) => (
-                            <div key={index}>
+                {({ remove, push }) => (
+                    <div>
+                        {values.choices.map((clue, index) => (
+                            <div className='row' key={index}>
                                 <label htmlFor={`choices.${index}`}>{MCQ_CHOICES[index]} ({values.choices[index].length}/{MCQ_CHOICE_MAX_LENGTH})</label>
                                 <Field
-                                    name={`choices.${index}`}
-                                    type='text'
+                                    name={'choices.' + index}
                                     placeholder={MCQ_CHOICES_EXAMPLE[index]}
+                                    type='text'
                                 />
                                 <ChoiceError index={index} />
+
+                                <IconButton
+                                    color='error'
+                                    onClick={() => remove(index)}
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+
+                                <ChoiceError index={index} />
+
                             </div>
                         ))}
-                    </Box>
+                        <Button
+                            variant="outlined"
+                            startIcon={<AddIcon />}
+                            onClick={() => push('')}
+                        >
+                            {ADD_CHOICE[lang]}
+                        </Button>
+
+                    </div>
+
+                    // <Box component='section' sx={{ my: 2, p: 2, border: '2px dashed grey', width: '500px' }}>
+                    //     {values.choices.map((_item, index) => (
+                    //         <div key={index}>
+                    //             <label htmlFor={`choices.${index}`}>{MCQ_CHOICES[index]} ({values.choices[index].length}/{MCQ_CHOICE_MAX_LENGTH})</label>
+                    //             <Field
+                    //                 name={`choices.${index}`}
+                    //                 type='text'
+                    //                 placeholder={MCQ_CHOICES_EXAMPLE[index]}
+                    //             />
+                    //             <ChoiceError index={index} />
+                    //         </div>
+                    //     ))}
+                    // </Box>
                 )}
             </FieldArray>
             <ChoiceArrayErrors />
@@ -254,7 +324,7 @@ function EnterChoicesStep({ onSubmit, validationSchema, lang }) {
                 maxLength={MCQ_EXPLANATION_MAX_LENGTH}
             />
 
-            {values.answerIdx >= 0 &&
+            {values.subtype === 'conditional' && values.answerIdx >= 0 &&
                 <MySelect
                     label={MCQ_DUO_IDX_LABEL[lang]}
                     name='duoIdx'
@@ -270,6 +340,11 @@ function EnterChoicesStep({ onSubmit, validationSchema, lang }) {
 
         </WizardStep>
     )
+}
+
+const ADD_CHOICE = {
+    'en': "Add choice",
+    'fr-FR': "Ajouter choix"
 }
 
 const MCQ_ANSWER_IDX_LABEL = {

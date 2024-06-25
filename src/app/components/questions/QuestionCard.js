@@ -12,7 +12,7 @@ import { timestampToDate } from '@/lib/utils/time';
 import { prependTopicWithEmoji, topicToEmoji } from '@/lib/utils/topics';
 
 import clsx from 'clsx';
-import { MCQ_CHOICES } from '@/lib/utils/question/mcq';
+import { MCQ_CHOICES, mcqTypeToEmoji } from '@/lib/utils/question/mcq';
 import { QUESTION_ELEMENT_TO_EMOJI, QUESTION_ELEMENT_TO_TITLE } from '@/lib/utils/question/question';
 
 import { CardTitle, CardHeader, CardContent, Card, CardFooter } from '@/app/components/card'
@@ -58,6 +58,7 @@ export function QuestionCardTitle({ question, lang = DEFAULT_LOCALE }) {
         case 'quote':
             return <span>{prependTopicWithEmoji(question.topic, lang)}</span>
         case 'mcq':
+            return <span>{mcqTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} {question.details.source && <i>{question.details.source}:</i>} &quot;{question.details.title}&quot;</span>
         case 'basic':
             return <span>{topicToEmoji(question.topic)} {question.details.source && <i>{question.details.source}:</i>} &quot;{question.details.title}&quot;</span>
     }
@@ -320,7 +321,7 @@ const MatchingCardMainContent = ({ question }) => {
 }
 
 const MCQCardMainContent = ({ question }) => {
-    const { source, note, explanation, choices, answerIdx, duoIdx } = question.details
+    const { note, explanation, choices, answerIdx, duoIdx } = question.details
 
     return (
         <div className='flex flex-col w-full space-y-2'>

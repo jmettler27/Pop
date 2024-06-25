@@ -21,7 +21,7 @@ export const QUESTION_TYPE_TO_EMOJI = {
     'enum': "🗣️",
     'odd_one_out': "🕵️",
     'matching': "💖",
-    'mcq': "💲4️⃣2️⃣",
+    'mcq': "🔘",
     'basic': "❓"
 }
 

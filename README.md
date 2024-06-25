@@ -1,8 +1,8 @@
 ![logo](./cover.png)
 
-***Pop!*** is a web application built with [Next.js](https://nextjs.org/), using [React](https://reactjs.org/) for the front-end and [Firebase](https://firebase.google.com) for the back-end. The application is hosted on [Vercel](https://vercel.com/).
+**_Pop!_** is a web application built with [Next.js](https://nextjs.org/), using [React](https://reactjs.org/) for the front-end and [Firebase](https://firebase.google.com) for the back-end. The application is hosted on [Vercel](https://vercel.com/).
 
-It allows authenticated users to create, organize, play and/or spectate quizz games with friends, that revolve around ***pop culture*** in general, whether it be *video games*, *movies*, *animes/mangas*, *music*, *literature*, *Internet*, etc.
+It allows authenticated users to create, organize, play and/or spectate quizz games with friends, that revolve around **_pop culture_** in general, whether it be _video games_, _movies_, _animes/mangas_, _music_, _literature_, _Internet_, etc.
 
 ## 🔓 Authentication
 
@@ -45,14 +45,14 @@ There are two scoring systems for each team, displayed at the top of the screen:
 
 ## Types of Rounds
 
-***Pop!*** features 9 types of questions, each with unique rules and gameplay. In addition, a special round is available at the end of the game, as a final step to determine the winner.
+**_Pop!_** features 9 types of questions, each with unique rules and gameplay. In addition, a special round is available at the end of the game, as a final step to determine the winner.
 
 > [!WARNING]
 > The game is designed to be played while chatting in-person or on a VoIP application such as Discord or Zoom.
 
 The game's homepage (`game_home`) displays the available rounds. After each round, the team with the lowest points (or a randomly selected one if there are multiple lowest-scoring teams) chooses the next round. The initial **"chooser"** team is randomly selected at the start of the game.
 
-/*TODO: add a demo of the game home*/
+/_TODO: add a demo of the game home_/
 
 Let us now describe each type of round.
 
@@ -68,7 +68,6 @@ Once a player thinks they know the answer, they press a buzzer button. If they b
 #### Quick demo (Player POV)
 
 https://github.com/jmettler27/Pop/assets/56764091/3980b830-a91d-48b6-9270-76cf7c1575fd
-
 
 #### Full round (Spectator POV)
 
@@ -121,7 +120,7 @@ The audio can evoke either:
 
 Again, each player is given a buzzer button and must give an oral answer.
 
-/*TODO: add a demo of the blindtest*
+/_TODO: add a demo of the blindtest_
 
 An example round is shown [on YouTube](https://youtu.be/JscPXeTtSIM?si=ehytl5m_jZaN36tx&t=3079) (in French).
 
@@ -140,7 +139,7 @@ The trick in this type of questions is that the players must be able to reconstr
 
 ### 🗣️ Enumeration (`enum`)
 
-Each question prompts players to list as many relevant elements as they can in response to the query (e.g., "Name as many Springfield residents as you can in *The Simpsons*").
+Each question prompts players to list as many relevant elements as they can in response to the query (e.g., "Name as many Springfield residents as you can in _The Simpsons_").
 
 The question proceeds through two phases, with the duration of each stage determined by the user who created the question:
 
@@ -152,7 +151,7 @@ Two potential outcomes ensue:
 - **The bet is made**, i.e. the player has stated the number of answers they declared and they are all correct: the team earns 1 point, with an additional bonus point if it provides more answers than initially announced.
 - **The bet is not made**, i.e. the player has stated a number of answers that is lower than the number they declared: all other teams gain 1 point.
 
-The trick in this type of questions lies in the fact that the teams must bet on the number of answers they *think* they can give. The goal is to aim for a high bet without going too far, because if the team falls short of its bet, it forfeits the question. But simultaneously, to advance to the second phase, a team must have the highest bet, adding an element of strategic gameplay. This setup leads to intricate mind games among teams, as they attempt to predict others' bets or bluff about their own bet.
+The trick in this type of questions lies in the fact that the teams must bet on the number of answers they _think_ they can give. The goal is to aim for a high bet without going too far, because if the team falls short of its bet, it forfeits the question. But simultaneously, to advance to the second phase, a team must have the highest bet, adding an element of strategic gameplay. This setup leads to intricate mind games among teams, as they attempt to predict others' bets or bluff about their own bet.
 
 #### Quick demo (Player POV)
 
@@ -164,7 +163,7 @@ An example round is visible [on YouTube](https://youtu.be/JscPXeTtSIM?si=JzRGfiy
 
 ### 🕵️ Odd One Out (`odd_one_out`)
 
-This question format is inspired by the round titled **"Le coup par coup" (*Stroke by stroke*)** from the French game show **["Les Douze Coups de midi"](https://fr.wikipedia.org/wiki/Les_Douze_Coups_de_midi) (*The Twelve Strokes of Midday*)** presented by [Jean-Luc Reichmann](https://en.wikipedia.org/wiki/Jean-Luc_Reichmann).
+This question format is inspired by the round titled **"Le coup par coup" (_Stroke by stroke_)** from the French game show **["Les Douze Coups de midi"](https://fr.wikipedia.org/wiki/Les_Douze_Coups_de_midi) (_The Twelve Strokes of Midday_)** presented by [Jean-Luc Reichmann](https://en.wikipedia.org/wiki/Jean-Luc_Reichmann).
 
 Each question consists in **10 proposals**, **9 of which are correct** with respect to the question, and **1 that is incorrect** (the **"odd one out"**). The proposals are displayed in a random order for each user. Each team alternates and clicks on a proposal they think is correct. The goal is to end the question by clicking on all correct proposals and not click on the odd one out.
 
@@ -202,17 +201,17 @@ https://github.com/jmettler27/Pop/assets/56764091/15ba1c19-8d2b-4e3d-8da0-f46dc8
 
 https://github.com/jmettler27/Pop/assets/56764091/dc3d7709-f1b0-4191-bcb5-05aa20634159
 
-### 💲4️⃣2️⃣ Multiple-Choice Questions (MCQ) (`mcq`)
+### 🔘 Multiple-Choice Questions (MCQ) (`mcq`)
 
-This question format is inspired by the French game show **["Tout le monde veut prendre sa place"](https://en.wikipedia.org/wiki/Tout_le_monde_veut_prendre_sa_place#Game_format) (*Everyone wants to take their place*)** presented by [Nagui](https://en.wikipedia.org/wiki/Nagui).
+This question format is inspired by the French game show **["Tout le monde veut prendre sa place"](https://en.wikipedia.org/wiki/Tout_le_monde_veut_prendre_sa_place#Game_format) (_Everyone wants to take their place_)** presented by [Nagui](https://en.wikipedia.org/wiki/Nagui).
 
 For each question, the player is presented with **three options**, ranging from the most challenging to the easiest:
 
-- 💲***Cash***: Provide an immediate oral response to the question.
-- 4️⃣ ***Square***: Display 4 choices, and the player must select the correct answer.
-- 2️⃣ ***Duo***: Reduce the MCQ to 2 choices, and the player must select the correct answer.
+- 💲 **_Cash_**: Provide an immediate oral response to the question.
+- 4️⃣ **_Square_**: Display 4 choices, and the player must select the correct answer.
+- 2️⃣ **_Duo_**: Reduce the MCQ to 2 choices, and the player must select the correct answer.
 
-Each option is assigned a different point value based on its difficulty; for example, 5 points for *Cash*, 3 points for *Square* and 1 point for *Duo*.
+Each option is assigned a different point value based on its difficulty; for example, 5 points for _Cash_, 3 points for _Square_ and 1 point for _Duo_.
 
 #### Quick demo (Player POV, Duo)
 
@@ -250,9 +249,9 @@ Upon selecting a round, an introductory page outlines the round's principles, ru
 
 At the end of each question, the answer of the question is displayed, along with the team(s) that provided the correct answer. The team(s) that provided the correct answer are rewarded with the number of points associated with the question type.
 
-Moreover, a *Continue* button appears for each player. Pressing it signals the player as `ready` for the next question. Once all players are ready, a 5-second countdown precedes the display of the next question.
+Moreover, a _Continue_ button appears for each player. Pressing it signals the player as `ready` for the next question. Once all players are ready, a 5-second countdown precedes the display of the next question.
 
-/*TODO: add a demo of the question_end page*
+/_TODO: add a demo of the question_end page_
 
 ### Completing a Round (`round_end`)
 
@@ -299,11 +298,11 @@ An authenticated user can create a game (`/edit`), which gives them access to an
 
 When the organizer(s) think the game is ready, they can launch it, which makes it visible to all users on the site's home page.
 
-*TODO: add a demo of the game creation and editing process*
+_TODO: add a demo of the game creation and editing process_
 
 ## The origins of the project
 
-The concept originated from a practical need. My friends and I consistently enjoyed creating and playing in quiz games together, which we dubbed ***Quiz Pop Culture (QPC)***, centered around our shared interests in video games, films, TV shows and anime.
+The concept originated from a practical need. My friends and I consistently enjoyed creating and playing in quiz games together, which we dubbed **_Quiz Pop Culture (QPC)_**, centered around our shared interests in video games, films, TV shows and anime.
 
 Initally, we conducted these quizzes verbally on Discord, but it proved to be impractical.
 
@@ -313,7 +312,7 @@ However, the organizers would have to manually keep track of the scores, which w
 
 This prompted me to develop a web app that would facilitate real-time quiz games, offering **complete interactivity** and addressing the issues we encountered with previous methods. My motivation was further fueled by our enjoyment of the interactive quiz game [PopSauce](https://jklm.fun/), which we occasionally played.
 
-All question types in ***Pop!*** are in fact implementations of the question types we used in our original quiz games. Likewise, most of the database's questions are directly sourced from our past quiz game sessions.
+All question types in **_Pop!_** are in fact implementations of the question types we used in our original quiz games. Likewise, most of the database's questions are directly sourced from our past quiz game sessions.
 
 ## 🧰 Technologies
 
