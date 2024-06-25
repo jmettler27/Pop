@@ -4,13 +4,14 @@ import { Button } from '@mui/material'
 import ClearAllIcon from '@mui/icons-material/ClearAll'
 import { clearBuzzer } from '@/app/(game)/lib/question/riddle'
 import { useAsyncAction } from '@/lib/utils/async'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 
 /**
  * End the question
  * @returns 
  */
-export default function ClearBuzzerButton({ lang = 'fr-FR' }) {
+export default function ClearBuzzerButton({ lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
 
     const [handleClick, isClearing] = useAsyncAction(async () => {

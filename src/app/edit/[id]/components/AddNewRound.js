@@ -20,8 +20,9 @@ import { MyNumberInput, MyTextInput } from "@/app/components/forms/StyledFormCom
 import SubmitFormButton from "@/app/components/forms/SubmitFormButton"
 
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { DEFAULT_LOCALE } from "@/lib/utils/locales"
 
-export function AddNewRoundButton({ disabled, lang = 'fr-FR' }) {
+export function AddNewRoundButton({ disabled, lang = DEFAULT_LOCALE }) {
     const [dialogOpen, setDialogOpen] = useState(false)
 
     return (

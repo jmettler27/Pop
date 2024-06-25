@@ -8,6 +8,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import SendIcon from '@mui/icons-material/Send';
 
 import SubmitFormButton from './SubmitFormButton';
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
 // Wizard is a single Formik instance whose children are each page of the
 // multi-step form. The form is submitted on each forward transition (can only
@@ -15,7 +16,7 @@ import SubmitFormButton from './SubmitFormButton';
 // incomplete data. A snapshot of form state is used as initialValues after each
 // transition. Each page has an optional submit handler, and the top-level
 // submit is called when the final page is submitted.
-export const Wizard = ({ children, initialValues, onSubmit, isSubmitting, submitButtonLabel = DEFAULT_SUBMIT_BUTTON_TEXT['fr-FR'], lang = 'fr-FR' }) => {
+export const Wizard = ({ children, initialValues, onSubmit, isSubmitting, submitButtonLabel = DEFAULT_SUBMIT_BUTTON_TEXT[DEFAULT_LOCALE], lang = DEFAULT_LOCALE }) => {
     const [stepNumber, setStepNumber] = useState(0);
     const steps = React.Children.toArray(children);
     const [snapshot, setSnapshot] = useState(initialValues);
@@ -88,7 +89,7 @@ const STEP_TEXT = {
 export const WizardStep = ({ children }) => children;
 
 
-function PreviousStepButton({ onClick, lang = 'fr-FR' }) {
+function PreviousStepButton({ onClick, lang = DEFAULT_LOCALE }) {
     return (
         <Button
             // size='large'
@@ -108,7 +109,7 @@ const PREVIOUS_STEP_BUTTON_LABEL = {
 }
 
 
-function NextStepButton({ disabled, lang = 'fr-FR' }) {
+function NextStepButton({ disabled, lang = DEFAULT_LOCALE }) {
     return (
         <Button
             // size='large'

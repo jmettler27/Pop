@@ -1,6 +1,7 @@
 import { RoundTypeIcon } from '@/lib/utils/question_types'
 import FinaleHomeThemes from './FinaleHomeThemes'
 import { ROUND_HEADER_TEXT } from '@/lib/utils/round'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 export default function FinaleHomeMiddlePane({ round }) {
 
@@ -17,7 +18,7 @@ export default function FinaleHomeMiddlePane({ round }) {
     )
 }
 
-function FinaleRoundHeader({ round, lang = 'fr-FR' }) {
+function FinaleRoundHeader({ round, lang = DEFAULT_LOCALE }) {
     return (
         <div className='flex flex-row items-center justify-center space-x-1'>
             <RoundTypeIcon roundType={round.type} fontSize={50} />

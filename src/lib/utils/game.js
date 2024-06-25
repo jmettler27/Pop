@@ -15,7 +15,10 @@ export const GAME_TYPE_TO_EMOJI = {
     'random': '🎲',
     'rounds': '🔄'
 }
-export function gameTypeToTitle(gameType, lang = 'fr-FR') {
+
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
+
+export function gameTypeToTitle(gameType, lang = DEFAULT_LOCALE) {
     return GAME_TYPE_TO_TITLE[lang][gameType]
 }
 
@@ -24,7 +27,7 @@ export function gameTypeToEmoji(gameType) {
     return GAME_TYPE_TO_EMOJI[gameType]
 }
 
-export function prependGameTypeWithEmoji(gameType, lang = 'fr-FR') {
+export function prependGameTypeWithEmoji(gameType, lang = DEFAULT_LOCALE) {
     return prependWithEmojiAndSpace(gameTypeToEmoji(gameType), gameTypeToTitle(gameType, lang))
 }
 

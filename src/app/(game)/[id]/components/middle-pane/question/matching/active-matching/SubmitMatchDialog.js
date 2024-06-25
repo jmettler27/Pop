@@ -13,8 +13,9 @@ import { matchIsComplete } from '../gridUtils';
 import { DIALOG_ACTION_CANCEL, DIALOG_ACTION_VALIDATE, DIALOG_TITLE } from '@/lib/utils/dialogs';
 
 import { useAsyncAction } from '@/lib/utils/async';
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
-export default function SubmitMatchDialog({ edges, setEdges, numCols, setNewEdgeSource, answer, lang = 'fr-FR' }) {
+export default function SubmitMatchDialog({ edges, setEdges, numCols, setNewEdgeSource, answer, lang = DEFAULT_LOCALE }) {
     const user = useUserContext()
     const game = useGameContext()
 

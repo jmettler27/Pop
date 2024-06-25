@@ -36,7 +36,7 @@ import { QUESTION_EXPLANATION_LABEL, QUESTION_HINTS_REMARKS, QUESTION_SOURCE_LAB
 const QUESTION_TYPE = 'mcq'
 
 
-export default function Page({ lang = 'fr-FR' }) {
+export default function Page({ lang = DEFAULT_LOCALE }) {
     const { data: session } = useSession()
 
     // Protected route
@@ -163,7 +163,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
                 label={QUESTION_SOURCE_LABEL[lang]}
                 name='source'
                 type='text'
-                placeholder={MCQ_SOURCE_EXAMPLE}
+                placeholder={MCQ_SOURCE_EXAMPLE[lang]}
                 validationSchema={validationSchema}
                 maxLength={MCQ_SOURCE_MAX_LENGTH}
             />
@@ -172,7 +172,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
                 label={QUESTION_TITLE_LABEL[lang]}
                 name='title'
                 type='text'
-                placeholder={MCQ_TITLE_EXAMPLE}
+                placeholder={MCQ_TITLE_EXAMPLE[lang]}
                 validationSchema={validationSchema}
                 maxLength={MCQ_TITLE_MAX_LENGTH}
             />
@@ -181,7 +181,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
                 label={QUESTION_HINTS_REMARKS[lang]}
                 name='note'
                 type='text'
-                placeholder={MCQ_NOTE_EXAMPLE}
+                placeholder={MCQ_NOTE_EXAMPLE[lang]}
                 validationSchema={validationSchema}
                 maxLength={MCQ_NOTE_MAX_LENGTH}
             />
@@ -239,7 +239,7 @@ function EnterChoicesStep({ onSubmit, validationSchema, lang }) {
                 validationSchema={validationSchema}
                 onChange={(e) => formik.setFieldValue('answerIdx', parseInt(e.target.value, 10))}
             >
-                <option value="">{MCQ_SELECT_PROPOSAL[lang]}</option>
+                <option value="">{SELECT_PROPOSAL[lang]}</option>
                 {values.choices.map((choice, index) => (
                     <option key={index} value={index}>{MCQ_CHOICES[index]}. {choice}</option>
                 ))}
@@ -249,7 +249,7 @@ function EnterChoicesStep({ onSubmit, validationSchema, lang }) {
                 label={QUESTION_EXPLANATION_LABEL[lang]}
                 name='explanation'
                 type='text'
-                placeholder={MCQ_EXPLANATION_EXAMPLE}
+                placeholder={MCQ_EXPLANATION_EXAMPLE[lang]}
                 validationSchema={validationSchema}
                 maxLength={MCQ_EXPLANATION_MAX_LENGTH}
             />

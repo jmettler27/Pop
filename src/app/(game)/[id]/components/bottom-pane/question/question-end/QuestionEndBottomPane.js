@@ -44,9 +44,10 @@ import { handleRoundQuestionEnd } from '@/app/(game)/lib/round/round-transitions
 import { Button } from '@mui/material'
 import FastForwardIcon from '@mui/icons-material/FastForward'
 import ScoreboardIcon from '@mui/icons-material/Scoreboard'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
 
-function QuestionEndOrganizerButton({ isLastQuestion, lang = 'fr-FR' }) {
+function QuestionEndOrganizerButton({ isLastQuestion, lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
 
     const [handleContinueClick, isEnding] = useAsyncAction(async () => {

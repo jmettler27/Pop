@@ -7,8 +7,9 @@ import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import { DIALOG_ACTION_CANCEL } from "@/lib/utils/dialogs";
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { launchGame } from "@/app/edit/[id]/lib/edit-game";
+import { DEFAULT_LOCALE } from "@/lib/utils/locales";
 
-export function LaunchGameButton({ lang = 'fr-FR' }) {
+export function LaunchGameButton({ lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
 
     const router = useRouter()

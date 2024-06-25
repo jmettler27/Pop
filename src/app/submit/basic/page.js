@@ -32,11 +32,12 @@ import { imageFileSchema } from '@/lib/utils/files';
 import SubmitFormButton from '@/app/components/forms/SubmitFormButton';
 import { UploadImage } from '@/app/components/forms/UploadFile';
 import { QUESTION_ANSWER_LABEL, QUESTION_TITLE_LABEL, SUBMIT_QUESTION_BUTTON_LABEL, QUESTION_HINTS_REMARKS, QUESTION_SOURCE_LABEL, QUESTION_EXPLANATION_LABEL } from '@/lib/utils/submit';
+import { BASIC_QUESTION_ANSWER_EXAMPLE, BASIC_QUESTION_SOURCE_EXAMPLE, BASIC_QUESTION_TITLE_EXAMPLE } from '@/lib/utils/question/basic';
 
 const QUESTION_TYPE = 'basic'
 
 
-export default function Page({ lang = 'fr-FR' }) {
+export default function Page({ lang = DEFAULT_LOCALE }) {
     const { data: session } = useSession()
 
     // Protected route
@@ -118,7 +119,7 @@ export function SubmitBasicQuestionForm({ userId, lang, ...props }) {
                     label={QUESTION_SOURCE_LABEL[lang]}
                     name='source'
                     type='text'
-                    placeholder={MCQ_SOURCE_EXAMPLE}
+                    placeholder={BASIC_QUESTION_SOURCE_EXAMPLE[lang]}
                     validationSchema={validationSchema}
                     maxLength={MCQ_SOURCE_MAX_LENGTH}
                 />
@@ -127,7 +128,7 @@ export function SubmitBasicQuestionForm({ userId, lang, ...props }) {
                     label={QUESTION_TITLE_LABEL[lang]}
                     name='title'
                     type='text'
-                    placeholder={MCQ_TITLE_EXAMPLE}
+                    placeholder={BASIC_QUESTION_TITLE_EXAMPLE[lang]}
                     validationSchema={validationSchema}
                     maxLength={MCQ_TITLE_MAX_LENGTH}
                 />
@@ -136,7 +137,7 @@ export function SubmitBasicQuestionForm({ userId, lang, ...props }) {
                     label={QUESTION_HINTS_REMARKS[lang]}
                     name='note'
                     type='text'
-                    placeholder={MCQ_NOTE_EXAMPLE}
+                    // placeholder={MCQ_NOTE_EXAMPLE}
                     validationSchema={validationSchema}
                     maxLength={MCQ_NOTE_MAX_LENGTH}
                 />
@@ -145,7 +146,7 @@ export function SubmitBasicQuestionForm({ userId, lang, ...props }) {
                     label={QUESTION_ANSWER_LABEL[lang]}
                     name='answer'
                     type='text'
-                    placeholder={MCQ_CHOICES_EXAMPLE[0]}
+                    placeholder={BASIC_QUESTION_ANSWER_EXAMPLE[lang]}
                     validationSchema={validationSchema}
                     maxLength={MCQ_CHOICE_MAX_LENGTH}
                 />
@@ -154,7 +155,7 @@ export function SubmitBasicQuestionForm({ userId, lang, ...props }) {
                     label={QUESTION_EXPLANATION_LABEL[lang]}
                     name='explanation'
                     type='text'
-                    placeholder={MCQ_EXPLANATION_EXAMPLE}
+                    // placeholder={MCQ_EXPLANATION_EXAMPLE}
                     validationSchema={validationSchema}
                     maxLength={MCQ_EXPLANATION_MAX_LENGTH}
                 />

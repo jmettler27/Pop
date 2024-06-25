@@ -2,8 +2,9 @@ import { Box, Typography } from '@mui/material'
 
 
 import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from './GameAvatars'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
-export function GameOrganizersCardContent({ gameId, lang = 'fr-FR' }) {
+export function GameOrganizersCardContent({ gameId, lang = DEFAULT_LOCALE }) {
     return (
         <Box className='flex flex-row items-center justify-between pb-2'>
             <Typography variant="subtitle1">{ORGANIZERS[lang]}</Typography>
@@ -12,7 +13,7 @@ export function GameOrganizersCardContent({ gameId, lang = 'fr-FR' }) {
     )
 }
 
-export function GamePlayersCardContent({ gameId, lang = 'fr-FR' }) {
+export function GamePlayersCardContent({ gameId, lang = DEFAULT_LOCALE }) {
     return (
         <Box className='flex flex-row items-center justify-between pb-2'>
             <Typography variant="subtitle1">{PLAYERS[lang]}</Typography>

@@ -17,6 +17,7 @@ import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import { useSession, signOut } from "next-auth/react"
 import { redirect, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
 const pages = {
     'en': ['Games', 'Create a new game', 'Submit a question', 'About'],
@@ -27,7 +28,7 @@ const settings = {
     'fr-FR': ['Profil', 'Compte', 'Tableau de bord', 'Déconnexion'],
 }
 
-export function HomeBar({ lang = 'fr-FR' }) {
+export function HomeBar({ lang = DEFAULT_LOCALE }) {
     const { data: session } = useSession()
     const { user } = session
 

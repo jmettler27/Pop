@@ -6,12 +6,13 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import { updateAllPlayersStatuses } from '@/app/(game)/lib/players'
 import { resetQuestion } from '@/app/(game)/lib/question'
 import { useAsyncAction } from '@/lib/utils/async'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 /**
  * Reset the question
  * @returns 
  */
-export default function ResetQuestionButton({ lang = 'fr-FR' }) {
+export default function ResetQuestionButton({ lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
 
     const [handleResetQuestion, isResetting] = useAsyncAction(async () => {

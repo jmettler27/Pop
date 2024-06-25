@@ -81,13 +81,15 @@ export const QUESTION_ELEMENT_TO_EMOJI = {
     'description': "📝",
 }
 
-export function questionElementToTitle(element, lang = 'fr-FR') {
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
+
+export function questionElementToTitle(element, lang = DEFAULT_LOCALE) {
     return QUESTION_ELEMENT_TO_TITLE[lang][element]
 }
 export function questionElementToEmoji(element) {
     return QUESTION_ELEMENT_TO_EMOJI[element]
 }
 
-export function prependQuestionElementWithEmoji(element, lang = 'fr-FR') {
+export function prependQuestionElementWithEmoji(element, lang = DEFAULT_LOCALE) {
     return questionElementToEmoji(element) + " " + questionElementToTitle(element, lang)
 }

@@ -22,6 +22,7 @@ import { atLeastOneElementRevealed } from '@/lib/utils/question/quote'
 import { isEmpty } from '@/lib/utils/arrays'
 import { handleRiddleBuzzerHeadChanged } from '@/app/(game)/lib/question/riddle'
 import { useParams } from 'next/navigation'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 
 export default function QuoteOrganizerController({ question, players }) {
@@ -89,7 +90,7 @@ function QuoteOrganizerAnswerController({ buzzed, question }) {
     )
 }
 
-function ValidateAllQuoteElementsButton({ buzzed, revealed, lang = 'fr-FR' }) {
+function ValidateAllQuoteElementsButton({ buzzed, revealed, lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
 
     const atLeastOneRevealed = atLeastOneElementRevealed(revealed)
@@ -118,7 +119,7 @@ const VALIDATE_ALL_QUOTE_ELEMENTS = {
 }
 
 
-function CancelQuoteElementButton({ buzzed, lang = 'fr-FR' }) {
+function CancelQuoteElementButton({ buzzed, lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
 
     const buzzedIsEmpty = isEmpty(buzzed)

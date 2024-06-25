@@ -10,8 +10,9 @@ import GameScoreboard from '@/app/(game)/[id]/components/scores/GameScoreboard'
 import GameScoresChart from '@/app/(game)/[id]/components/scores/GameScoresChart'
 
 import LoadingScreen from '@/app/components/LoadingScreen'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
-export default function RoundEndBody({ currentRound, lang = 'fr-FR' }) {
+export default function RoundEndBody({ currentRound, lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
 
     const teamsRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')

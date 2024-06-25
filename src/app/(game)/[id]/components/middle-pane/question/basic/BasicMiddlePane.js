@@ -86,8 +86,9 @@ function BasicQuestionAnswer({ question, realtime }) {
 
 
 import { CORRECT_ANSWER_TEXT, INCORRECT_ANSWER_TEXT } from "@/lib/utils/question/question"
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
-function BasicQuestionFooter({ question, realtime, lang = 'fr-FR' }) {
+function BasicQuestionFooter({ question, realtime, lang = DEFAULT_LOCALE }) {
     const { explanation } = question.details
 
     return (
@@ -98,7 +99,7 @@ function BasicQuestionFooter({ question, realtime, lang = 'fr-FR' }) {
     )
 }
 
-function BasicQuestionPlayerAnswerText({ realtime, lang = 'fr-FR' }) {
+function BasicQuestionPlayerAnswerText({ realtime, lang = DEFAULT_LOCALE }) {
     return (realtime.correct) ?
         <span className="text-green-500">{CORRECT_ANSWER_TEXT[lang]}</span> :
         <span className="text-red-500">{INCORRECT_ANSWER_TEXT[lang]}</span>

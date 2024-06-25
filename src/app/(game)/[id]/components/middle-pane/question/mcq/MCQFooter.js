@@ -1,6 +1,7 @@
+import { DEFAULT_LOCALE } from "@/lib/utils/locales"
 import { ANSWER_TEXT, CORRECT_ANSWER_TEXT, INCORRECT_ANSWER_TEXT } from "@/lib/utils/question/question"
 
-export default function MCQFooter({ question, realtime, lang = 'fr-FR' }) {
+export default function MCQFooter({ question, realtime, lang = DEFAULT_LOCALE }) {
 
     return (
         <div className='flex flex-col h-full items-center justify-center'>
@@ -10,7 +11,7 @@ export default function MCQFooter({ question, realtime, lang = 'fr-FR' }) {
     )
 }
 
-function MCQPlayerAnswerText({ realtime, lang = 'fr-FR' }) {
+function MCQPlayerAnswerText({ realtime, lang = DEFAULT_LOCALE }) {
     if (realtime.correct) {
         return <span className="text-green-500">{CORRECT_ANSWER_TEXT[lang]}</span>
     }

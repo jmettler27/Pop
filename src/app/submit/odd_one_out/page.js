@@ -32,7 +32,7 @@ import { ADD_ITEM, QUESTION_ITEM, QUESTION_TITLE_LABEL, SELECT_PROPOSAL } from '
 
 const QUESTION_TYPE = 'odd_one_out'
 
-export default function Page({ lang = 'fr-FR' }) {
+export default function Page({ lang = DEFAULT_LOCALE }) {
     const { data: session } = useSession()
 
     // Protected route
@@ -141,7 +141,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
                 label={QUESTION_TITLE_LABEL[lang]}
                 name='title'
                 type='text'
-                placeholder={OOO_TITLE_EXAMPLE}
+                placeholder={OOO_TITLE_EXAMPLE[lang]}
                 validationSchema={validationSchema}
                 maxLength={OOO_TITLE_MAX_LENGTH}
             />
@@ -190,7 +190,7 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
                                         label={`Proposal #${index + 1}`}
                                         name={`items.${index}.title`}
                                         type='text'
-                                        placeholder={OOO_ITEMS_EXAMPLE[index % OOO_ITEMS_EXAMPLE.length].title}
+                                        placeholder={OOO_ITEMS_EXAMPLE[lang][index % OOO_ITEMS_EXAMPLE.length].title}
                                         validationSchema={validationSchema}
                                         maxLength={OOO_ITEM_TITLE_MAX_LENGTH}
                                         fieldType='object_in_array'

@@ -18,6 +18,7 @@ import clsx from 'clsx'
 import LoadingScreen from '@/app/components/LoadingScreen'
 import { THEME_SECTION_TEXT, THEME_TEXT } from '@/lib/utils/question/theme'
 import { topicToEmoji } from '@/lib/utils/topics'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 
 export default function FinaleRoundProgress({ game, round }) {
@@ -33,7 +34,7 @@ export default function FinaleRoundProgress({ game, round }) {
 /**
  * Sidebar visible in the finale round home screen
  */
-function FinaleRoundHomeProgress({ round, lang = 'fr-FR' }) {
+function FinaleRoundHomeProgress({ round, lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
 
     const themeRealtimesCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds', round.id, 'themes')
@@ -107,7 +108,7 @@ function FinaleRoundHomeProgress({ round, lang = 'fr-FR' }) {
 /**
  * Sidebar visible in a finale round theme
  */
-function FinaleRoundThemeProgress({ round, lang = 'fr-FR' }) {
+function FinaleRoundThemeProgress({ round, lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
     const themeId = round.currentTheme
 
@@ -199,7 +200,7 @@ function FinaleRoundThemeProgress({ round, lang = 'fr-FR' }) {
 }
 
 
-function ThemeSectionAccordion({ themeId, sectionId, sectionOrder, hasEnded, isCurrent, hasNotStarted, onAccordionChange, expanded, sectionRealtime, currentSectionRealtime, playerTeam, lang = 'fr-FR' }) {
+function ThemeSectionAccordion({ themeId, sectionId, sectionOrder, hasEnded, isCurrent, hasNotStarted, onAccordionChange, expanded, sectionRealtime, currentSectionRealtime, playerTeam, lang = DEFAULT_LOCALE }) {
     const myRole = useRoleContext()
 
     const showComplete = myRole === 'organizer' || hasEnded || isCurrent
@@ -277,7 +278,7 @@ function ThemeSectionAccordion({ themeId, sectionId, sectionOrder, hasEnded, isC
 
 }
 
-function SectionSummary({ themeId, sectionId, sectionOrder, showComplete, isCurrent, lang = 'fr-FR' }) {
+function SectionSummary({ themeId, sectionId, sectionOrder, showComplete, isCurrent, lang = DEFAULT_LOCALE }) {
     const sectionRef = doc(QUESTIONS_COLLECTION_REF, themeId, 'sections', sectionId)
     const [section, sectionLoading, sectionError] = useDocumentDataOnce(sectionRef)
     if (sectionError) {
@@ -299,7 +300,7 @@ function SectionSummary({ themeId, sectionId, sectionOrder, showComplete, isCurr
     )
 }
 
-function SectionDetails({ sectionRealtime, sectionIsCurrent, sectionHasEnded, currentSectionRealtime, lang = 'fr-FR' }) {
+function SectionDetails({ sectionRealtime, sectionIsCurrent, sectionHasEnded, currentSectionRealtime, lang = DEFAULT_LOCALE }) {
     const { currentQuestionIdx } = currentSectionRealtime
 
     return (

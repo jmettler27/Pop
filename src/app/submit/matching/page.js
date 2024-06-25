@@ -38,7 +38,7 @@ import { useAsyncAction } from '@/lib/utils/async';
 import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game';
 import { QUESTION_ITEM, QUESTION_TITLE_LABEL } from '@/lib/utils/submit';
 
-export default function Page({ lang = 'fr-FR' }) {
+export default function Page({ lang = DEFAULT_LOCALE }) {
     const { data: session } = useSession()
 
     // Protected route

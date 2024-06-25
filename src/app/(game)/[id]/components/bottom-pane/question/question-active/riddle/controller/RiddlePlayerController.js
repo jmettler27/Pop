@@ -13,6 +13,7 @@ import clsx from 'clsx'
 
 import { addBuzzedPlayer, removeBuzzedPlayer } from '@/app/(game)/lib/question/riddle'
 import { useAsyncAction } from '@/lib/utils/async'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 export default function RiddlePlayerController({ players }) {
     const game = useGameContext()
@@ -110,7 +111,7 @@ const RIDDLE_INCORRECT_ASNWER_TEXT = {
     'fr-FR': "Mauvaise réponse!"
 }
 
-function BuzzerMessage({ playerStatus, hasExceededMaxTries, round, myCanceledItems, isFirst, hasBuzzed, remaining, lang = 'fr-FR' }) {
+function BuzzerMessage({ playerStatus, hasExceededMaxTries, round, myCanceledItems, isFirst, hasBuzzed, remaining, lang = DEFAULT_LOCALE }) {
     if (hasExceededMaxTries)
         return <span className='2xl:text-3xl'>{MAX_TRIES_EXCEEDED_TEXT[lang]} ({round.maxTries})</span>
 

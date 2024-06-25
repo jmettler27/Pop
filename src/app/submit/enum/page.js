@@ -39,7 +39,7 @@ const enumAnswerSchema = () => Yup.array()
     .max(ENUM_MAX_NUMBER_OF_ANSWERS, `There can be at most ${ENUM_MAX_NUMBER_OF_ANSWERS} answers`)
 
 
-export default function Page({ lang = 'fr-FR' }) {
+export default function Page({ lang = DEFAULT_LOCALE }) {
     const { data: session } = useSession()
 
     // Protected route
@@ -138,6 +138,7 @@ export function SubmitEnumQuestionForm({ userId, lang, ...props }) {
                         .max(ENUM_MAX_CHALLENGE_SECONDS, `Must be between ${ENUM_MIN_CHALLENGE_SECONDS} and ${ENUM_MAX_CHALLENGE_SECONDS} seconds`)
                         .required("Required."),
                 })}
+                lang={lang}
             />
 
         </Wizard >
@@ -158,7 +159,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
                 label={QUESTION_TITLE_LABEL[lang]}
                 name='title'
                 type='text'
-                placeholder={ENUM_TITLE_EXAMPLE}
+                placeholder={ENUM_TITLE_EXAMPLE[lang]}
                 validationSchema={validationSchema}
                 maxLength={ENUM_TITLE_MAX_LENGTH}
             />
@@ -167,7 +168,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
                 label={QUESTION_HINTS_REMARKS[lang]}
                 name='note'
                 type='text'
-                placeholder={ENUM_NOTE_EXAMPLE}
+                placeholder={ENUM_NOTE_EXAMPLE[lang]}
                 validationSchema={validationSchema}
                 maxLength={ENUM_NOTE_MAX_LENGTH}
             />
@@ -203,14 +204,14 @@ function EnterAnswerItemsStep({ onSubmit, validationSchema, lang }) {
             <p>{NUM_ANSWERS_ALLOWED[lang]}: {ENUM_MIN_NUMBER_OF_ANSWERS}-{ENUM_MAX_NUMBER_OF_ANSWERS}.</p>
 
             <MyRadioGroup
-                label="Do you know the maximum number of possible answers?"
+                label={MAX_IS_KNOWN[lang]}
                 name='maxIsKnown'
                 // options={[
                 //     { value: true, label: 'Yes' },
                 //     { value: false, label: 'No' },
                 // ]}
-                trueText='Yes'
-                falseText='No'
+                trueText={TRUE_TEXT[lang]}
+                falseText={FALSE_TEXT[lang]}
                 validationSchema={validationSchema}
             />
 
@@ -224,7 +225,7 @@ function EnterAnswerItemsStep({ onSubmit, validationSchema, lang }) {
                                     <Field
                                         name={'answer.' + index}
                                         type='text'
-                                        placeholder={ENUM_ANSWER_EXAMPLE[index % ENUM_ANSWER_EXAMPLE.length]}
+                                        placeholder={ENUM_ANSWER_EXAMPLE[lang][index % ENUM_ANSWER_EXAMPLE.length]}
                                     />
                                     <IconButton
                                         color='error'
@@ -260,26 +261,50 @@ const NUM_ANSWERS_ALLOWED = {
     'fr-FR': "Nombre d'items autorisé",
 }
 
+const MAX_IS_KNOWN = {
+    'en': "Is the total number of answers known?",
+    'fr-FR': "Le nombre total de réponses est-il connu ?",
+}
 
-function EnterTimesStep({ onSubmit, validationSchema }) {
+const TRUE_TEXT = {
+    'en': "Yes",
+    'fr-FR': "Oui",
+}
+
+const FALSE_TEXT = {
+    'en': "No",
+    'fr-FR': "Non",
+}
+
+function EnterTimesStep({ onSubmit, validationSchema, lang }) {
     return (
         <WizardStep
             onSubmit={onSubmit}
             validationSchema={validationSchema}
         >
             <MyNumberInput
-                label="How many seconds should the user have to think and submit a bet?"
+                label={ENUM_THINKING_LABEL[lang]}
                 name='thinkingTime'
                 min={ENUM_MIN_THINKING_SECONDS} max={ENUM_MAX_THINKING_SECONDS}
             // validationSchema={validationSchema}
             />
 
             <MyNumberInput
-                label="How many seconds should the challenger have to enumerate the items?"
+                label={ENUM_CHALLENGE_LABEL[lang]}
                 name='challengeTime'
                 min={ENUM_MIN_CHALLENGE_SECONDS} max={ENUM_MAX_CHALLENGE_SECONDS}
             // validationSchema={validationSchema}
             />
         </WizardStep>
     )
+}
+
+const ENUM_THINKING_LABEL = {
+    'en': "How many seconds should a player have to think and submit a bet?",
+    'fr-FR': "Combien de secondes un joueur doit-il avoir pour réfléchir et soumettre un pari ?",
+}
+
+const ENUM_CHALLENGE_LABEL = {
+    'en': "How many seconds should the challenger have to enumerate its answers?",
+    'fr-FR': "Combien de secondes le challenger doit-il avoir pour énumérer ses réponses ?",
 }

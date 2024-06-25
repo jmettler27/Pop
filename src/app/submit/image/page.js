@@ -48,7 +48,7 @@ export default function Page({ }) {
     )
 }
 
-export function SubmitImageQuestionForm({ userId, lang = 'fr-FR', ...props }) {
+export function SubmitImageQuestionForm({ userId, lang = DEFAULT_LOCALE, ...props }) {
     const router = useRouter()
 
     const [submitImageQuestion, isSubmitting] = useAsyncAction(async (values, fileRef) => {
@@ -126,7 +126,7 @@ export function SubmitImageQuestionForm({ userId, lang = 'fr-FR', ...props }) {
                     label={QUESTION_TITLE_LABEL[lang]}
                     name='title'
                     type='text'
-                    placeholder={IMAGE_TITLE_EXAMPLE}
+                    placeholder={IMAGE_TITLE_EXAMPLE[lang]}
                     validationSchema={validationSchema}
                     maxLength={IMAGE_TITLE_MAX_LENGTH}
                 />
@@ -135,7 +135,7 @@ export function SubmitImageQuestionForm({ userId, lang = 'fr-FR', ...props }) {
                     label={IMAGE_ANSWER_DESCRIPTION_LABEL[lang]}
                     name='answer_description'
                     type='text'
-                    placeholder={IMAGE_ANSWER_DESCRIPTION_EXAMPLE}
+                    placeholder={IMAGE_ANSWER_DESCRIPTION_EXAMPLE[lang]}
                     validationSchema={validationSchema}
                     maxLength={IMAGE_ANSWER_DESCRIPTION_MAX_LENGTH}
                 />
@@ -144,7 +144,7 @@ export function SubmitImageQuestionForm({ userId, lang = 'fr-FR', ...props }) {
                     label={IMAGE_ANSWER_SOURCE_LABEL[lang]}
                     name='answer_source'
                     type='text'
-                    placeholder={IMAGE_ANSWER_SOURCE_EXAMPLE}
+                    placeholder={IMAGE_ANSWER_SOURCE_EXAMPLE[lang]}
                     validationSchema={validationSchema}
                     maxLength={IMAGE_ANSWER_SOURCE_MAX_LENGTH}
                 />

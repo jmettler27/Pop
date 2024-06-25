@@ -1,8 +1,9 @@
 import { MySelect } from '@/app/components/forms/StyledFormComponents'
 
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 import { allTopicsToTitle } from '@/lib/utils/topics';
 
-export default function SelectQuestionTopic({ validationSchema, lang = 'fr-FR', name = 'topic' }) {
+export default function SelectQuestionTopic({ validationSchema, lang = DEFAULT_LOCALE, name = 'topic' }) {
     return (
         <MySelect
             label={SELECT_QUESTION_TOPIC_LABEL[lang]}

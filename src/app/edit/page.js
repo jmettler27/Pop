@@ -21,7 +21,7 @@ import { GAME_DEFAULT_TYPE, GAME_MAX_NUMBER_OF_PLAYERS, GAME_MIN_NUMBER_OF_PLAYE
 import SelectGameType from './components/SelectGameType';
 import { createGame } from './[id]/lib/create-game';
 
-export default function Page({ lang = 'fr-FR' }) {
+export default function Page({ lang = DEFAULT_LOCALE }) {
     const { data: session } = useSession()
     const router = useRouter()
 
@@ -128,8 +128,8 @@ const GAME_TITLE_LABEL = {
 }
 
 const GAME_MAX_PLAYERS_LABEL = {
-    'en': "Maximum number of players allowed",
-    'fr-FR': "Nombre maximum de joueurs autorisés"
+    'en': "Maximum number of players",
+    'fr-FR': "Nombre maximum de joueurs"
 }
 
 const GAME_ORGANIZER_NAME_LABEL = {

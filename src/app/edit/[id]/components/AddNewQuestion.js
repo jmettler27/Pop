@@ -3,9 +3,10 @@ import { useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 
-import { questionTypeToTitle } from '@/lib/utils/question_types';
+import { prependQuestionTypeWithEmoji, questionTypeToTitle } from '@/lib/utils/question_types';
 import { DIALOG_ACTION_CANCEL, DIALOG_ACTION_VALIDATE, DIALOG_TITLE } from '@/lib/utils/dialogs';
 import { useAsyncAction } from '@/lib/utils/async';
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
 import { QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
 import { doc } from 'firebase/firestore';
@@ -22,7 +23,17 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CancelIcon from '@mui/icons-material/Cancel'
 
 
-export function AddQuestionToRoundButton({ roundId, roundType, disabled, lang = 'fr-FR' }) {
+const CREATE_NEW_QUESTION = {
+    'en': "Create a new question",
+    'fr-FR': "Créer une nouvelle question"
+}
+
+const SEARCH_EXISTING_QUESTION = {
+    'en': "Search for an existing question",
+    'fr-FR': "Rechercher une question existante"
+}
+
+export function AddQuestionToRoundButton({ roundId, roundType, disabled, lang = DEFAULT_LOCALE }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const menuOpen = Boolean(anchorEl);
     const handleMenuClose = () => {
@@ -75,23 +86,15 @@ export function AddQuestionToRoundButton({ roundId, roundType, disabled, lang = 
     )
 }
 
-const CREATE_NEW_QUESTION = {
-    'en': "Create a new question",
-    'fr-FR': "Créer une nouvelle question"
-}
-
-const SEARCH_EXISTING_QUESTION = {
-    'en': "Search for an existing question",
-    'fr-FR': "Rechercher une question existante"
-}
 
 
-function AddQuestionToRoundDialog({ roundId, questionType, dialog, onDialogClose }) {
+
+function AddQuestionToRoundDialog({ roundId, questionType, dialog, onDialogClose, lang = DEFAULT_LOCALE }) {
     return (
         <Dialog open={dialog !== null} onClose={onDialogClose} maxWidth='xl'>
             <DialogTitle>
-                {dialog === 'new-question' && `Submit a new question: ${questionTypeToTitle(questionType)}`}
-                {dialog === 'existing-question' && `Search for a existing question: ${questionTypeToTitle(questionType)}`}
+                {dialog === 'new-question' && `${CREATE_NEW_QUESTION[lang]} (${prependQuestionTypeWithEmoji(questionType)})`}
+                {dialog === 'existing-question' && `${SEARCH_EXISTING_QUESTION[lang]} (${prependQuestionTypeWithEmoji(questionType)})`}
             </DialogTitle>
             <DialogContent>
                 {dialog === 'new-question' && <SubmitQuestionDialog roundId={roundId} questionType={questionType} onDialogClose={onDialogClose} />}
@@ -135,7 +138,7 @@ function SearchQuestionDialog({ roundId, questionType, onDialogClose }) {
     )
 }
 
-function AddExistingQuestionToRoundDialog({ validationDialogOpen, setValidationDialogOpen, roundId, questionSelectionModel, setSelectedQuestionModel, onDialogClose, lang = 'fr-FR' }) {
+function AddExistingQuestionToRoundDialog({ validationDialogOpen, setValidationDialogOpen, roundId, questionSelectionModel, setSelectedQuestionModel, onDialogClose, lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
     const { data: session } = useSession()
 
@@ -237,24 +240,24 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
 
     switch (questionType) {
         case 'blindtest':
-            return <SubmitBlindtestQuestionForm userId={userId} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
+            return <SubmitBlindtestQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case 'emoji':
-            return <SubmitEmojiQuestionForm userId={userId} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
+            return <SubmitEmojiQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case 'enum':
-            return <SubmitEnumQuestionForm userId={userId} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
+            return <SubmitEnumQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case 'image':
-            return <SubmitImageQuestionForm userId={userId} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
+            return <SubmitImageQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case 'matching':
-            return <SubmitMatchingQuestionForm userId={userId} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
+            return <SubmitMatchingQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case 'mcq':
-            return <SubmitMCQForm userId={userId} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
+            return <SubmitMCQForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case 'basic':
-            return <SubmitBasicQuestionForm userId={userId} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
+            return <SubmitBasicQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case 'odd_one_out':
-            return <SubmitOOOQuestionForm userId={userId} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
+            return <SubmitOOOQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case 'progressive_clues':
-            return <SubmitProgressiveCluesQuestionForm userId={userId} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
+            return <SubmitProgressiveCluesQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case 'quote':
-            return <SubmitQuoteQuestionForm userId={userId} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
+            return <SubmitQuoteQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
     }
 }

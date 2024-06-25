@@ -1,13 +1,22 @@
 import { isObjectEmpty } from "@/lib/utils";
 
 /* Quote */
-export const QUOTE_EXAMPLE = "I'm Commander Shepard, and this is my favorite store on the Citadel."
+export const QUOTE_EXAMPLE = {
+    'en': "I'm Commander Shepard and this is my favorite store on the Citadel.",
+    'fr-FR': "Je suis le Commandant Shepard et c'est mon magasin préféré de la Citadelle."
+}
 export const QUOTE_MAX_LENGTH = 300;
 
-export const QUOTE_SOURCE_EXAMPLE = "Mass Effect 2"
+export const QUOTE_SOURCE_EXAMPLE = {
+    'en': "Mass Effect 2",
+    'fr-FR': "Mass Effect 2"
+}
 export const QUOTE_SOURCE_MAX_LENGTH = 50
 
-export const QUOTE_AUTHOR_EXAMPLE = "Commander Shepard"
+export const QUOTE_AUTHOR_EXAMPLE = {
+    'en': "Commander Shepard",
+    'fr-FR': "Commandant Shepard"
+}
 export const QUOTE_AUTHOR_MAX_LENGTH = 50
 
 export const QUOTE_ELEMENTS = ['source', 'author', 'quote']
@@ -56,14 +65,16 @@ export const QUOTE_ELEMENT_TO_EMOJI = {
     'quote': "💬"
 }
 
-export function quoteElementToTitle(element, lang = 'fr-FR') {
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
+
+export function quoteElementToTitle(element, lang = DEFAULT_LOCALE) {
     return QUOTE_ELEMENT_TO_TITLE[lang][element]
 }
 export function quoteElementToEmoji(element) {
     return QUOTE_ELEMENT_TO_EMOJI[element]
 }
 
-export function prependQuoteElementWithEmoji(element, lang = 'fr-FR') {
+export function prependQuoteElementWithEmoji(element, lang = DEFAULT_LOCALE) {
     return quoteElementToEmoji(element) + " " + quoteElementToTitle(element, lang)
 }
 

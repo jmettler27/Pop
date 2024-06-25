@@ -9,8 +9,9 @@ import { roundEndToGameHome } from '@/app/(game)/lib/transitions'
 import { useAsyncAction } from '@/lib/utils/async'
 
 import { useParams } from 'next/navigation'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
-export default function RoundEndBottomPane({ endedRound, lang = 'fr-FR' }) {
+export default function RoundEndBottomPane({ endedRound, lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
     const myRole = useRoleContext()
 

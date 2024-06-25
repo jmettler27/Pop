@@ -361,6 +361,50 @@ const removeQuestionFromRoundTransaction = async (
 }
 
 /* ==================================================================================================== */
+export async function updateQuestionCreator(gameId, roundId, questionId, userId) {
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+    if (!roundId) {
+        throw new Error("No round ID has been provided!");
+    }
+    if (!questionId) {
+        throw new Error("No question ID has been provided!");
+    }
+    if (!userId) {
+        throw new Error("No user ID has been provided!");
+    }
+    try {
+        await runTransaction(firestore, transaction =>
+            updateQuestionCreatorTransaction(transaction, gameId, roundId, questionId, userId)
+        )
+        console.log(`Game ${gameId}, Round ${roundId}: Realtime info of ${questionId} removed successfully.`);
+    } catch (error) {
+        console.error("There was an error removing the question:", error);
+        throw error;
+    }
+}
+
+const updateQuestionCreatorTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+    questionId,
+    userId
+) => {
+    const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId);
+    transaction.update(questionRef, {
+        createdBy: userId
+    });
+
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId);
+    transaction.update(questionRealtimeRef, {
+        managedBy: userId
+    });
+
+}
+
+/* ==================================================================================================== */
 export async function addGameOrganizer(gameId, organizerId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");

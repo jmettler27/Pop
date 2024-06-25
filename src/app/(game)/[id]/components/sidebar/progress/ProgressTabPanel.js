@@ -12,6 +12,7 @@ import { ROUND_HEADER_TEXT } from '@/lib/utils/round'
 import { GAME_HEADER_TEXT } from '@/lib/utils/game'
 
 import { useParams } from 'next/navigation'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 export default function ProgressTabPanel({ }) {
     const { id: gameId } = useParams()
@@ -32,7 +33,7 @@ export default function ProgressTabPanel({ }) {
     return <ProgressTabPanelMainContent game={game} />
 }
 
-function ProgressTabPanelMainContent({ game, lang = 'fr-FR' }) {
+function ProgressTabPanelMainContent({ game, lang = DEFAULT_LOCALE }) {
     const [value, setValue] = useState(0)
 
     useEffect(() => {

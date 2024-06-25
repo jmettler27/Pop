@@ -37,9 +37,10 @@ function RoundStartController({ }) {
 
 
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
 
-function RoundStartOrganizerButton({ lang = 'fr-FR' }) {
+function RoundStartOrganizerButton({ lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
 
     const [handleContinueClick, isHandling] = useAsyncAction(async () => {

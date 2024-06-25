@@ -20,8 +20,9 @@ import ListItemText from '@mui/material/ListItemText';
 import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
-export default function RevealQuoteElementButton({ buzzed, question, revealed, lang = 'fr-FR' }) {
+export default function RevealQuoteElementButton({ buzzed, question, revealed, lang = DEFAULT_LOCALE }) {
     const buzzedIsEmpty = isEmpty(buzzed)
 
     const { toGuess, quoteParts } = question.details
@@ -193,7 +194,7 @@ function QuoteListItemButton({ revealed, quote, quoteParts, setQuotePartIdx, han
     )
 }
 
-function RevealQuoteElementDialog({ question, quoteElem, quoteParts, quotePartIdx, dialogOpen, onDialogClose, lang = 'fr-FR' }) {
+function RevealQuoteElementDialog({ question, quoteElem, quoteParts, quotePartIdx, dialogOpen, onDialogClose, lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
 
     const [handleRevealQuoteElement, isRevealing] = useAsyncAction(async () => {

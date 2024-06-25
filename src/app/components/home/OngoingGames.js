@@ -19,10 +19,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '../card'
 
 
 import { gameTypeToEmoji } from '@/lib/utils/game'
-import { localeToEmoji } from '@/lib/utils/locales'
+import { DEFAULT_LOCALE, localeToEmoji } from '@/lib/utils/locales'
 import { GameOrganizersCardContent, GamePlayersCardContent } from './GameCardContent'
 
-export default function OngoingGames({ lang = 'fr-FR' }) {
+export default function OngoingGames({ lang = DEFAULT_LOCALE }) {
     const [games, gamesLoading, gamesError] = useCollection(query(GAMES_COLLECTION_REF,
         or(where('status', '==', 'game_start'),
             where('status', '==', 'game_home'),
@@ -56,7 +56,7 @@ export default function OngoingGames({ lang = 'fr-FR' }) {
             <CardContent>
                 <div className='grid gap-4 md:grid-cols-4'>
                     {sortedOngoingGames.map(game => (
-                        <GameCard key={game.id} game={game} />
+                        <GameCard key={game.id} game={game} lang={lang} />
                     ))}
                 </div>
             </CardContent>
@@ -71,7 +71,7 @@ const ONGOING_GAMES_CARD_TITLE = {
 
 const GameCard = ({
     game,
-    lang = 'fr-FR',
+    lang,
 }) => {
     const router = useRouter()
     const { data: session } = useSession()

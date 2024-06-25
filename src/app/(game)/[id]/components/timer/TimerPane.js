@@ -18,6 +18,7 @@ import { startGame } from "@/app/(game)/lib/transitions"
 
 import { useObject } from 'react-firebase-hooks/database';
 import { SERVER_TIME_OFFSET_REF } from "@/lib/firebase/database"
+import { DEFAULT_LOCALE } from "@/lib/utils/locales"
 
 export default function TimerPane() {
     const myRole = useRoleContext();
@@ -134,7 +135,7 @@ function SpectatorTimerPane() {
 
 
 
-function TimerHeader({ lang = 'fr-FR' }) {
+function TimerHeader({ lang = DEFAULT_LOCALE }) {
     const game = useGameContext();
 
     switch (game.status) {

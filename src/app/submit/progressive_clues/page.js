@@ -53,7 +53,7 @@ const progressiveCluesSchema = () => Yup.array()
     .max(PROGRESSIVE_CUES_MAX_NUMBER_OF_CLUES, `There can be at most ${PROGRESSIVE_CUES_MAX_NUMBER_OF_CLUES} clues.`)
 
 
-export default function Page({ lang = 'fr-FR' }) {
+export default function Page({ lang = DEFAULT_LOCALE }) {
     const { data: session } = useSession()
 
     // Protected route
@@ -176,7 +176,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
                 label={QUESTION_TITLE_LABEL[lang]}
                 name='title'
                 type='text'
-                placeholder={PROGRESSIVE_CLUES_TITLE_EXAMPLE}
+                placeholder={PROGRESSIVE_CLUES_TITLE_EXAMPLE[lang]}
                 validationSchema={validationSchema}
                 maxLength={PROGRESSIVE_CLUES_TITLE_MAX_LENGTH}
             />
@@ -185,7 +185,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
                 label={QUESTION_ANSWER_LABEL[lang]}
                 name='answer_title'
                 type='text'
-                placeholder={PROGRESSIVE_CLUES_ANSWER_TITLE_EXAMPLE}
+                placeholder={PROGRESSIVE_CLUES_ANSWER_TITLE_EXAMPLE[lang]}
                 validationSchema={validationSchema}
                 maxLength={PROGRESSIVE_CLUES_ANSWER_TITLE_MAX_LENGTH}
             />
@@ -223,7 +223,7 @@ function EnterCluesStep({ onSubmit, validationSchema, lang }) {
                                     <label htmlFor={'clues.' + index}>{requiredStringInArrayFieldIndicator(validationSchema, 'clues')}{CLUE[lang]} #{index + 1} {numCharsIndicator(clue, PROGRESSIVE_CLUES_CLUE_MAX_LENGTH)}</label>
                                     <Field
                                         name={'clues.' + index}
-                                        placeholder={index < PROGRESSIVE_CLUES_CLUES_EXAMPLE.length ? PROGRESSIVE_CLUES_CLUES_EXAMPLE[index] : 'Some clue'}
+                                        placeholder={index < PROGRESSIVE_CLUES_CLUES_EXAMPLE[lang].length ? PROGRESSIVE_CLUES_CLUES_EXAMPLE[lang][index] : 'Some clue'}
                                         type='text'
                                     />
                                     {/* <ClueTextField index={index} /> */}

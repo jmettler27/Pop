@@ -7,7 +7,7 @@ import { collection, query, where } from "firebase/firestore"
 import { useCollection, useCollectionOnce } from "react-firebase-hooks/firestore"
 
 import { gameTypeToEmoji } from '@/lib/utils/game';
-import { localeToEmoji } from '@/lib/utils/locales';
+import { DEFAULT_LOCALE, localeToEmoji } from '@/lib/utils/locales';
 import { timestampToDate } from '@/lib/utils/time';
 
 
@@ -18,7 +18,7 @@ import LoadingScreen from '../LoadingScreen';
 import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from './GameAvatars';
 import { GameOrganizersCardContent, GamePlayersCardContent } from './GameCardContent';
 
-export default function EndedGames({ lang = 'fr-FR' }) {
+export default function EndedGames({ lang = DEFAULT_LOCALE }) {
     const [endedGamesCollection, loading, error] = useCollection(query(GAMES_COLLECTION_REF, where('dateEnd', '!=', null)))
     if (error) {
         return <p><strong>Error: {JSON.stringify(error)}</strong></p>
@@ -58,7 +58,7 @@ const ENDED_GAMES_CARD_TITLE = {
     'fr-FR': 'Parties terminées',
 }
 
-export function EndedGameCard({ game, lang = 'fr-FR' }) {
+export function EndedGameCard({ game, lang = DEFAULT_LOCALE }) {
     const { data: session } = useSession()
     const user = session.user
 

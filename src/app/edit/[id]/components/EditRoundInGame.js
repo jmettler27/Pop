@@ -24,6 +24,7 @@ import { AddQuestionToRoundButton } from '@/app/edit/[id]/components/AddNewQuest
 import { EditQuestionCard } from '@/app/edit/[id]/components/EditQuestionInRound';
 import clsx from 'clsx';
 import { topicToEmoji } from '@/lib/utils/topics';
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
 
 const editGameRoundCardNumCols = (roundType) => {
@@ -137,7 +138,7 @@ function EditGameRoundQuestionCards({ round }) {
     ))
 }
 
-function RemoveRoundFromGameButton({ roundId, lang = 'fr-FR' }) {
+function RemoveRoundFromGameButton({ roundId, lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
 
     const [dialogOpen, setDialogOpen] = useState(false)

@@ -10,6 +10,7 @@ import { RoundTypeIcon } from '@/lib/utils/question_types'
 import FinaleRoundProgress from './FinaleRoundProgress'
 import RoundQuestionsProgress from './RoundQuestionsProgress'
 import { ROUND_HEADER_TEXT } from '@/lib/utils/round'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 export default function RoundProgressTabPanel({ game }) {
     const [roundDoc, roundLoading, roundError] = useDocument(doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound))
@@ -35,7 +36,7 @@ export default function RoundProgressTabPanel({ game }) {
     )
 }
 
-const RoundProgressHeader = memo(function RoundProgressHeader({ roundType, roundOrder, roundTitle, lang = 'fr-FR' }) {
+const RoundProgressHeader = memo(function RoundProgressHeader({ roundType, roundOrder, roundTitle, lang = DEFAULT_LOCALE }) {
     console.log("RENDERED RoundProgressHeader")
     return (
         <div className='flex flex-row items-center w-full justify-center space-x-1 mt-1'>

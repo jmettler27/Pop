@@ -17,7 +17,9 @@ import { QuestionCardTitle, QuestionCardContent } from '@/app/components/questio
 
 import { useAsyncAction } from '@/lib/utils/async'
 import { DIALOG_ACTION_CANCEL, DIALOG_WARNING } from '@/lib/utils/dialogs'
-import { removeQuestionFromRound } from '@/app/edit/[id]/lib/edit-game'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
+
+import { removeQuestionFromRound, updateQuestionCreator } from '@/app/edit/[id]/lib/edit-game'
 
 
 
@@ -48,6 +50,7 @@ export function EditQuestionCard({ roundId, questionId, questionOrder }) {
                 {/* <span className='text-base md:text-lg dark:text-white'>#{questionOrder + 1}</span> */}
                 <CardTitle className='text-base md:text-lg dark:text-white'><QuestionCardTitle question={questionData} /></CardTitle>
                 <RemoveQuestionFromRoundButton roundId={roundId} questionId={questionId} />
+                {/* <UpdateCreatorButton roundId={roundId} questionId={questionId} /> */}
             </CardHeader>
 
             <CardContent className='flex flex-col justify-center items-center w-full'>
@@ -63,7 +66,7 @@ export function EditQuestionCard({ roundId, questionId, questionOrder }) {
     );
 }
 
-function EditQuestionCardFooter({ realtimeData, lang = 'fr-FR' }) {
+function EditQuestionCardFooter({ realtimeData, lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
 
     const organizerRef = doc(GAMES_COLLECTION_REF, gameId, 'organizers', realtimeData.managedBy)
@@ -86,9 +89,30 @@ function EditQuestionCardFooter({ realtimeData, lang = 'fr-FR' }) {
     )
 }
 
+import PersonIcon from '@mui/icons-material/Person';
+
+function UpdateCreatorButton({ roundId, questionId, lang = DEFAULT_LOCALE }) {
+    const { id: gameId } = useParams()
+
+    const [handleChange, isChanging] = useAsyncAction(async () => {
+        await updateQuestionCreator(gameId, roundId, questionId, '')
+    })
+
+    return (
+        <>
+            <IconButton
+                color='error'
+                onClick={handleChange}
+                disabled={isChanging}
+            >
+                <PersonIcon />
+            </IconButton>
+        </>
+    )
+}
 
 
-function RemoveQuestionFromRoundButton({ roundId, questionId, lang = 'fr-FR' }) {
+function RemoveQuestionFromRoundButton({ roundId, questionId, lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
 
     const [dialogOpen, setDialogOpen] = useState(false)

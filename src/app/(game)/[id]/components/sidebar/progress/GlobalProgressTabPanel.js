@@ -14,6 +14,7 @@ import { RoundTypeIcon } from '@/lib/utils/question_types'
 
 import LoadingScreen from '@/app/components/LoadingScreen'
 import { ROUND_HEADER_TEXT } from '@/lib/utils/round'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 
 export default function GlobalProgressTabPanel({ game }) {
@@ -69,7 +70,7 @@ const GameRoundsProgress = memo(function GameRoundsProgress({ gameId }) {
     )
 })
 
-function RoundAccordion({ gameId, round, teams, hasEnded, isCurrent, lang = 'fr-FR' }) {
+function RoundAccordion({ gameId, round, teams, hasEnded, isCurrent, lang = DEFAULT_LOCALE }) {
     const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', round.id, 'realtime', 'scores')
     const [roundScores, roundScoresLoading, roundScoresError] = useDocumentDataOnce(roundScoresRef)
 

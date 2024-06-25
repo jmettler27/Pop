@@ -9,8 +9,9 @@ import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { doc } from 'firebase/firestore'
 import { useDocumentData } from 'react-firebase-hooks/firestore'
 
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
-export default function ReadyPlayerController({ isLastQuestion, lang = 'fr-FR' }) {
+export default function ReadyPlayerController({ isLastQuestion, lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
     const myRole = useRoleContext();
 
@@ -37,7 +38,7 @@ export default function ReadyPlayerController({ isLastQuestion, lang = 'fr-FR' }
     )
 }
 
-function ReadyPlayerHeader({ isLastQuestion, lang = 'fr-FR' }) {
+function ReadyPlayerHeader({ isLastQuestion, lang = DEFAULT_LOCALE }) {
     const game = useGameContext();
     const myRole = useRoleContext();
 
@@ -116,7 +117,7 @@ import { useAsyncAction } from '@/lib/utils/async'
 import { setPlayerReady } from '@/app/(game)/lib/transitions'
 import { useUserContext } from '@/app/contexts'
 
-export function ReadyPlayerButton({ lang = 'fr-FR' }) {
+export function ReadyPlayerButton({ lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
     const user = useUserContext()
 

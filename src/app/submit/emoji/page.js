@@ -32,7 +32,7 @@ import { useAsyncAction } from '@/lib/utils/async';
 
 const QUESTION_TYPE = 'emoji'
 
-export default function Page({ lang = 'fr-FR' }) {
+export default function Page({ lang = DEFAULT_LOCALE }) {
     const { data: session } = useSession()
 
     // Protected route

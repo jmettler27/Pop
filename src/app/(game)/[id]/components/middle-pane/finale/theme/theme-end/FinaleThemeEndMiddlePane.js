@@ -5,6 +5,7 @@ import { collection, doc, increment } from 'firebase/firestore'
 import { useCollectionData, useDocument, useDocumentData } from 'react-firebase-hooks/firestore'
 
 import LoadingScreen from '@/app/components/LoadingScreen'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 
 export default function FinaleThemeEndMiddlePane({ theme, themeRealtime }) {
@@ -21,7 +22,7 @@ export default function FinaleThemeEndMiddlePane({ theme, themeRealtime }) {
 
 }
 
-function ThemeTitle({ theme, themeRealtime, lang = 'fr-FR' }) {
+function ThemeTitle({ theme, themeRealtime, lang = DEFAULT_LOCALE }) {
     return <h1 className='2xl:text-4xl font-bold'>{THEME_END_TEXT[lang]} {themeRealtime.order + 1} ({theme.details.title})</h1>
 }
 
@@ -30,7 +31,7 @@ const THEME_END_TEXT = {
     'fr-FR': "Fin du thème"
 }
 
-function ThemeScores({ themeId, lang = 'fr-FR' }) {
+function ThemeScores({ themeId, lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
 
     const [sectionRealtimes, sectionRealtimesLoading, sectionRealtimesError] = useCollectionData(collection(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'themes', themeId, 'sections'))

@@ -5,9 +5,10 @@ import clsx from 'clsx'
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { collection } from 'firebase/firestore'
 import { useCollection } from 'react-firebase-hooks/firestore'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 
-export default function GameChooserOrder({ gameStates, lang = 'fr-FR' }) {
+export default function GameChooserOrder({ gameStates, lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
 
     const [teams, teamsLoading, teamsError] = useCollection(collection(GAMES_COLLECTION_REF, game.id, 'teams'))

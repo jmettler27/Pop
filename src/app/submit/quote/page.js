@@ -19,7 +19,8 @@ import {
     QUOTE_SOURCE_EXAMPLE, QUOTE_SOURCE_MAX_LENGTH,
     QUOTE_AUTHOR_EXAMPLE, QUOTE_AUTHOR_MAX_LENGTH,
     QUOTE_ELEMENTS,
-    replaceAllNonSpace, replaceSubstrings
+    replaceAllNonSpace, replaceSubstrings,
+    quoteElementToEmoji
 } from '@/lib/utils/question/quote';
 
 import { useSession } from 'next-auth/react';
@@ -35,11 +36,11 @@ import Box from '@mui/system/Box';
 
 import { useAsyncAction } from '@/lib/utils/async';
 import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game';
+import { QUESTION_ELEMENT_TO_EMOJI } from '@/lib/utils/question/question';
 
 const QUESTION_TYPE = 'quote'
 
-
-export default function Page({ lang = 'fr-FR' }) {
+export default function Page({ lang = DEFAULT_LOCALE }) {
     const { data: session } = useSession()
 
     // Protected route
@@ -208,7 +209,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
                 label={QUOTE[lang]}
                 name='quote'
                 type='text'
-                placeholder={QUOTE_EXAMPLE}
+                placeholder={QUOTE_EXAMPLE[lang]}
                 validationSchema={validationSchema}
                 maxLength={QUOTE_MAX_LENGTH}
             />
@@ -217,7 +218,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
                 label={QUOTE_SOURCE[lang]}
                 name='source'
                 type='text'
-                placeholder={QUOTE_SOURCE_EXAMPLE}
+                placeholder={QUOTE_SOURCE_EXAMPLE[lang]}
                 validationSchema={validationSchema}
                 maxLength={QUOTE_SOURCE_MAX_LENGTH}
             />
@@ -226,7 +227,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
                 label={QUOTE_AUTHOR[lang]}
                 name='author'
                 type='text'
-                placeholder={QUOTE_AUTHOR_EXAMPLE}
+                placeholder={QUOTE_AUTHOR_EXAMPLE[lang]}
                 validationSchema={validationSchema}
                 maxLength={QUOTE_AUTHOR_MAX_LENGTH}
             />
@@ -277,11 +278,11 @@ function EnterGuessSteps({ onSubmit, validationSchema, lang }) {
             onSubmit={onSubmit}
             validationSchema={validationSchema}
         >
-            <Box component="section" sx={{ my: 2, p: 2, border: '2px solid white', maxWidth: '900px' }}>
-                <span className='2xl:text-3xl text-center'>&quot;{displayedQuote}&quot;</span>
-                <br />
-                <span className='2xl:text-2xl text-center'>- {displayedAuthor}, <i>{displayedSource}</i></span>
-            </Box>
+            <div className='flex flex-col w-full space-y-2'>
+                <blockquote className='2xl:text-3xl text-center'>&quot;{displayedQuote}&quot;</blockquote>
+                {values.author && <span className='2xl:text-2xl text-center'>{QUESTION_ELEMENT_TO_EMOJI['author']} {displayedAuthor}</span>}
+                {values.source && <span className='2xl:text-2xl text-center'>{QUESTION_ELEMENT_TO_EMOJI['source']} <i>{displayedSource}</i></span>}
+            </div>
 
             <br />
 
@@ -289,15 +290,15 @@ function EnterGuessSteps({ onSubmit, validationSchema, lang }) {
             <div role="group" aria-labelledby="checkbox-group">
                 <label>
                     <Field type="checkbox" name="toGuess" value="source" />
-                    {QUOTE_SOURCE[lang]} (&quot;{values.source}&quot;)
+                    {quoteElementToEmoji('source')} {QUOTE_SOURCE[lang]} (&quot;{values.source}&quot;)
                 </label>
                 <label>
                     <Field type="checkbox" name="toGuess" value="author" />
-                    {QUOTE_AUTHOR[lang]} (&quot;{values.author}&quot;)
+                    {quoteElementToEmoji('author')} {QUOTE_AUTHOR[lang]} (&quot;{values.author}&quot;)
                 </label>
                 <label>
                     <Field type="checkbox" name="toGuess" value="quote" />
-                    {QUOTE_PARTS[lang]}
+                    {quoteElementToEmoji('quote')} {QUOTE_PARTS[lang]}
                 </label>
             </div>
             <ToGuessArrayErrors />

@@ -50,9 +50,10 @@ export const topicSchema = () => Yup.string()
     .oneOf(TOPICS, "Invalid question topic.")
     .required("Required.")
 
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
 /* Utility functions */
-export function topicToTitle(topic, lang = 'fr-FR') {
+export function topicToTitle(topic, lang = DEFAULT_LOCALE) {
     return TOPIC_TO_TITLE[lang][topic]
 }
 
@@ -60,11 +61,11 @@ export function topicToEmoji(topic) {
     return TOPIC_TO_EMOJI[topic]
 }
 
-export function prependTopicWithEmoji(topic, lang = 'fr-FR') {
+export function prependTopicWithEmoji(topic, lang = DEFAULT_LOCALE) {
     return topicToEmoji(topic) + " " + topicToTitle(topic, lang)
 }
 
-export function allTopicsToTitle(lang = 'fr-FR', withEmoji = true) {
+export function allTopicsToTitle(lang = DEFAULT_LOCALE, withEmoji = true) {
     return Object.keys(TOPIC_TO_TITLE[lang]).map(topic => {
         return [topic, withEmoji ? prependTopicWithEmoji(topic, lang) : topicToTitle(topic, lang)]
     })

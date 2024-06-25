@@ -14,6 +14,7 @@ import { topicToEmoji } from '@/lib/utils/topics'
 import { handleEnumAnswerItemClick } from '@/app/(game)/lib/question/enum'
 import { CurrentRoundQuestionOrder } from '@/app/(game)/[id]/components/middle-pane/question/QuestionHeader'
 import { useAsyncAction } from '@/lib/utils/async'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 export default function EnumMiddlePane({ question }) {
 
@@ -48,7 +49,7 @@ function EnumQuestionIndication({ indication }) {
     )
 }
 
-function EnumQuestionObjective({ question, lang = 'fr-FR' }) {
+function EnumQuestionObjective({ question, lang = DEFAULT_LOCALE }) {
     switch (lang) {
         case 'en':
             return <span className='2xl:text-3xl text-yellow-300'>There are {question.details.maxIsKnown ? "exactly" : "at least"} <strong>{question.details.answer.length}</strong> answers</span>

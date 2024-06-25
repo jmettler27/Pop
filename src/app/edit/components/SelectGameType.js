@@ -1,7 +1,8 @@
 import { MySelect } from '@/app/components/forms/StyledFormComponents'
 import { GAME_TYPES, prependGameTypeWithEmoji } from '@/lib/utils/game'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
-export default function SelectGameType({ validationSchema, lang = 'fr-FR', name = 'type' }) {
+export default function SelectGameType({ validationSchema, lang = DEFAULT_LOCALE, name = 'type' }) {
     return (
         <MySelect
             label={LABEL[lang]}

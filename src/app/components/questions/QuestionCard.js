@@ -7,7 +7,7 @@ import { USERS_COLLECTION_REF } from '@/lib/firebase/firestore';
 import { doc } from 'firebase/firestore';
 import { useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 
-import { LOCALE_TO_EMOJI } from '@/lib/utils/locales';
+import { DEFAULT_LOCALE, LOCALE_TO_EMOJI } from '@/lib/utils/locales';
 import { timestampToDate } from '@/lib/utils/time';
 import { prependTopicWithEmoji, topicToEmoji } from '@/lib/utils/topics';
 
@@ -43,7 +43,7 @@ export function QuestionCard({ question }) {
     );
 }
 
-export function QuestionCardTitle({ question, lang = 'fr-FR' }) {
+export function QuestionCardTitle({ question, lang = DEFAULT_LOCALE }) {
     switch (question.type) {
         case 'progressive_clues':
         case 'image':
@@ -64,7 +64,7 @@ export function QuestionCardTitle({ question, lang = 'fr-FR' }) {
 }
 
 
-function QuestionCardFooter({ question, lang = 'fr-FR' }) {
+function QuestionCardFooter({ question, lang = DEFAULT_LOCALE }) {
     const userRef = doc(USERS_COLLECTION_REF, question.createdBy)
     const [user, loading, error] = useDocumentDataOnce(userRef)
     if (error) {

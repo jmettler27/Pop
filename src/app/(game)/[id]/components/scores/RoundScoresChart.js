@@ -1,3 +1,4 @@
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -48,7 +49,7 @@ export const options = (lang) => {
 };
 
 
-export default function RoundScoresChart({ round, teams, roundScores, lang = 'fr-FR' }) {
+export default function RoundScoresChart({ round, teams, roundScores, lang = DEFAULT_LOCALE }) {
     const labels = ["", ...round.questions.map((_question, idx) => `Q${idx + 1}`)]
 
     const datasets = teams.map((team) => ({

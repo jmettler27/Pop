@@ -5,7 +5,7 @@ import { and, collection, query, where } from "firebase/firestore"
 import { useCollection, useCollectionOnce } from "react-firebase-hooks/firestore"
 
 import { gameTypeToEmoji } from '@/lib/utils/game';
-import { localeToEmoji } from '@/lib/utils/locales';
+import { DEFAULT_LOCALE, localeToEmoji } from '@/lib/utils/locales';
 
 import { useSession } from 'next-auth/react';
 
@@ -17,7 +17,7 @@ import EditGameButton from './EditGameButton';
 
 
 
-export default function GamesUnderConstruction({ lang = 'fr-FR' }) {
+export default function GamesUnderConstruction({ lang = DEFAULT_LOCALE }) {
     const [gamesUnderConstructionCollection, loading, error] = useCollection(query(GAMES_COLLECTION_REF,
         and(where('status', '==', 'build'), where('dateEnd', '==', null))))
     if (error) {
@@ -59,7 +59,7 @@ const GAMES_UNDER_CONSTRUCTION_CARD_TITLE = {
 }
 
 
-export function GameUnderConstructionCard({ game, lang = 'fr-FR' }) {
+export function GameUnderConstructionCard({ game }) {
     const { data: session } = useSession()
     const user = session.user
 

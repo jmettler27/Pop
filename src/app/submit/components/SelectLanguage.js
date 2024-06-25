@@ -1,8 +1,8 @@
 import { MySelect } from '@/app/components/forms/StyledFormComponents'
 
-import { LOCALES, prependLocaleWithEmoji } from '@/lib/utils/locales';
+import { DEFAULT_LOCALE, LOCALES, prependLocaleWithEmoji } from '@/lib/utils/locales';
 
-export default function SelectLanguage({ validationSchema, labels = SELECT_QUESTION_LANGUAGE_LABEL, lang = 'fr-FR', name = 'lang' }) {
+export default function SelectLanguage({ validationSchema, labels = SELECT_QUESTION_LANGUAGE_LABEL, lang = DEFAULT_LOCALE, name = 'lang' }) {
     return (
         <MySelect
             label={labels[lang]}

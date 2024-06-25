@@ -8,8 +8,9 @@ import { doc } from "firebase/firestore"
 import { useDocumentDataOnce } from "react-firebase-hooks/firestore"
 
 import { prependMCQOptionWithEmoji } from "@/lib/utils/question/mcq"
+import { DEFAULT_LOCALE } from "@/lib/utils/locales"
 
-export default function MCQPlayerOptionHelperText({ realtime, lang = 'fr-FR' }) {
+export default function MCQPlayerOptionHelperText({ realtime, lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
     const myRole = useRoleContext()
     const user = useUserContext()

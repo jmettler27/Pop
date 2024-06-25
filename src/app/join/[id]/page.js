@@ -26,7 +26,7 @@ import {
 import { useAsyncAction } from '@/lib/utils/async';
 
 
-function JoinGameHeader({ lang = 'fr-FR' }) {
+function JoinGameHeader({ lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
 
     const [game, gameLoading, gameError] = useDocumentDataOnce(doc(GAMES_COLLECTION_REF, gameId))
@@ -46,7 +46,7 @@ const JOIN_GAME_HEADER = {
 
 const REGEX_HEX_COLOR = /^#[0-9A-F]{6}$/i
 
-export default function Page({ params, lang = 'fr-FR' }) {
+export default function Page({ params, lang = DEFAULT_LOCALE }) {
     const { data: session } = useSession()
 
     const gameId = params.id
@@ -215,7 +215,7 @@ const SUBMIT_FORM_BUTTON_LABEL = {
     'fr-FR': "Rejoindre la partie",
 }
 
-function GeneralInfoStep({ onSubmit, validationSchema, lang = 'fr-FR' }) {
+function GeneralInfoStep({ onSubmit, validationSchema, lang = DEFAULT_LOCALE }) {
     const formik = useFormikContext();
     const values = formik.values
     const errors = formik.errors
@@ -290,7 +290,7 @@ const ALONE = {
 }
 
 
-function JoinOrCreateTeam({ validationSchema, lang = 'fr-FR' }) {
+function JoinOrCreateTeam({ validationSchema, lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
 
     const formik = useFormikContext();
@@ -402,9 +402,10 @@ const SELECT_TEAM_FIRST_OPTION = {
 }
 
 import MyColorPicker from '@/app/components/forms/MyColorPicker';
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
 
-function CreateTeamStep({ onSubmit, validationSchema, lang = 'fr-FR' }) {
+function CreateTeamStep({ onSubmit, validationSchema, lang = DEFAULT_LOCALE }) {
     const formik = useFormikContext();
     const values = formik.values
     const errors = formik.errors

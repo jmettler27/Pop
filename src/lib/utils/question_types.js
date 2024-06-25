@@ -74,9 +74,10 @@ export const sortAscendingRoundScores = (roundType) => {
     }
 }
 
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
 /* TITLE */
-export function questionTypeToTitle(questionType, lang = 'fr-FR') {
+export function questionTypeToTitle(questionType, lang = DEFAULT_LOCALE) {
     return QUESTION_TYPE_TO_TITLE[lang][questionType]
 }
 
@@ -85,7 +86,7 @@ export function questionTypeToEmoji(questionType) {
 }
 
 import { prependWithEmojiAndSpace } from '@/lib/utils/emojis';
-export function prependQuestionTypeWithEmoji(questionType, lang = 'fr-FR') {
+export function prependQuestionTypeWithEmoji(questionType, lang = DEFAULT_LOCALE) {
     return prependWithEmojiAndSpace(questionTypeToEmoji(questionType), questionTypeToTitle(questionType, lang))
 }
 

@@ -1,10 +1,19 @@
-export const IMAGE_TITLE_EXAMPLE = "Object + Video game"
+export const IMAGE_TITLE_EXAMPLE = {
+    'en': "Object + Video game",
+    'fr-FR': "Objet + Jeu vidéo"
+}
 export const IMAGE_TITLE_MAX_LENGTH = 75
 
-export const IMAGE_ANSWER_SOURCE_EXAMPLE = "Elden Ring"
+export const IMAGE_ANSWER_SOURCE_EXAMPLE = {
+    'en': "Elden Ring",
+    'fr-FR': "Elden Ring"
+}
 export const IMAGE_ANSWER_SOURCE_MAX_LENGTH = 75
 
-export const IMAGE_ANSWER_DESCRIPTION_EXAMPLE = "Flask of Wondrous Physick"
+export const IMAGE_ANSWER_DESCRIPTION_EXAMPLE = {
+    'en': "Flask of Wondrous Physick",
+    'fr-FR': "Flacon de salut miraculeux"
+}
 export const IMAGE_ANSWER_DESCRIPTION_MAX_LENGTH = 75
 
 export const IMAGE_ELEMENTS = ['source', 'description']

@@ -5,12 +5,13 @@ import SkipNextIcon from '@mui/icons-material/SkipNext'
 
 import { endQuestion } from '@/app/(game)/lib/question'
 import { useAsyncAction } from '@/lib/utils/async'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 /**
  * End the question
  * @returns 
  */
-export default function EndQuestionButton({ lang = 'fr-FR' }) {
+export default function EndQuestionButton({ lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
 
     const [handleEndQuestion, isEnding] = useAsyncAction(async () => {

@@ -15,6 +15,7 @@ import { blindtestTypeToEmoji } from '@/lib/utils/question/blindtest'
 import { useParams } from 'next/navigation'
 import { QuestionCardContent } from '@/app/components/questions/QuestionCard'
 import clsx from 'clsx'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 
 export default function RoundQuestionsProgress({ game, round }) {
@@ -213,7 +214,7 @@ function RoundQuestionAccordion({ game, roundId, questionId, order, hasEnded, is
 }
 
 /* ============================================================================================ */
-function QuestionSummary({ question, order, lang = 'fr-FR' }) {
+function QuestionSummary({ question, order, lang = DEFAULT_LOCALE }) {
     switch (question.type) {
         case 'progressive_clues':
         case 'emoji':
@@ -261,7 +262,7 @@ function MCQTitle({ question }) {
 
 
 /* ============================================================================================ */
-function QuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = 'fr-FR' }) {
+function QuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = DEFAULT_LOCALE }) {
     switch (question.type) {
         case 'enum':
             return <EnumQuestionWinner winnerTeam={winnerTeam} winnerPlayer={winnerPlayer} question={question} game={game} />
@@ -279,7 +280,7 @@ function QuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = 'fr-F
     }
 }
 
-function EnumQuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = 'fr-FR' }) {
+function EnumQuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = DEFAULT_LOCALE }) {
     return <></>
     // const playersDocRef = doc(GAMES_COLLECTION_REF, gameIdds', roundId, 'questions', question.id, 'realtime', 'players')
     // const [players, playersLoading, playersError] = useDocumentDataOnce(playersDocRef)
@@ -308,5 +309,5 @@ function EnumQuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = '
 
 const NO_WINNER_TEXT = {
     'en': "Nobody",
-    'fr-FR': "Personne"
+    DEFAULT_LOCALE: "Personne"
 }

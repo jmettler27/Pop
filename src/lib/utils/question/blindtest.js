@@ -21,13 +21,14 @@ export function blindtestTypeToEmoji(type) {
     return BLINDTEST_TYPE_TO_EMOJI[type]
 }
 
-export function blindtestTypeToTitle(type, lang = 'fr-FR') {
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
+export function blindtestTypeToTitle(type, lang = DEFAULT_LOCALE) {
     return BLINDTEST_TYPE_TO_TITLE[lang][type]
 }
 
 
 import { prependWithEmojiAndSpace } from '@/lib/utils/emojis';
-export function prependBlindtestTypeWithEmoji(blindtestType, lang = 'fr-FR') {
+export function prependBlindtestTypeWithEmoji(blindtestType, lang = DEFAULT_LOCALE) {
     return prependWithEmojiAndSpace(blindtestTypeToEmoji(blindtestType), blindtestTypeToTitle(blindtestType, lang))
 }
 

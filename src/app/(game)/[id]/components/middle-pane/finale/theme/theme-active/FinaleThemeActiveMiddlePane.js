@@ -8,6 +8,7 @@ import { clsx } from 'clsx'
 
 import LoadingScreen from '@/app/components/LoadingScreen'
 import { THEME_SECTION_TEXT } from '@/lib/utils/question/theme'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 
 export default function FinaleThemeActiveMiddlePane({ theme, themeRealtime }) {
@@ -41,7 +42,7 @@ export default function FinaleThemeActiveMiddlePane({ theme, themeRealtime }) {
 }
 
 
-function SectionTitle({ section, themeRealtime, lang = 'fr-FR' }) {
+function SectionTitle({ section, themeRealtime, lang = DEFAULT_LOCALE }) {
     return <h1 className='2xl:text-4xl'><span className='font-bold'>{THEME_SECTION_TEXT[lang]} {themeRealtime.currentSectionIdx + 1}</span>{section.title && `: ${section.title}`}</h1>
 }
 

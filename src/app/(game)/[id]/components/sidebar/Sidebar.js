@@ -14,8 +14,9 @@ import ProgressTabPanel from '@/app/(game)/[id]/components/sidebar/progress/Prog
 import { useRoleContext } from '@/app/(game)/contexts';
 
 import OrganizerSpeedDial from '../speed-dial/OrganizerSpeedDial';
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
-export default function Sidebar({ lang = 'fr-FR' }) {
+export default function Sidebar({ lang = DEFAULT_LOCALE }) {
     const myRole = useRoleContext()
 
     const [value, setValue] = useState(0);

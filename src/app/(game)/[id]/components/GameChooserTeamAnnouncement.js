@@ -7,6 +7,7 @@ import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { collection, doc, query, where } from 'firebase/firestore'
 import { useDocumentData, useCollection } from 'react-firebase-hooks/firestore'
 import LoadingScreen from '@/app/components/LoadingScreen'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 
 export default function GameChooserTeamAnnouncement({ }) {
@@ -27,7 +28,7 @@ export default function GameChooserTeamAnnouncement({ }) {
     return chooserTeamId && <GameChooserHelperText chooserTeamId={chooserTeamId} />
 }
 
-export function GameChooserHelperText({ chooserTeamId, lang = 'fr-FR' }) {
+export function GameChooserHelperText({ chooserTeamId, lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
     const myTeam = useTeamContext()
     const myRole = useRoleContext()

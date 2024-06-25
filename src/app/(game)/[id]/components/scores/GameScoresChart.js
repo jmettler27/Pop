@@ -17,6 +17,7 @@ import {
     Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
 ChartJS.register(
     CategoryScale,
@@ -54,7 +55,7 @@ export const options = (lang) => {
 }
 
 
-export default function GameScoresChart({ currentRoundOrder, teams, lang = 'fr-FR' }) {
+export default function GameScoresChart({ currentRoundOrder, teams, lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
 
     const roundsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds')

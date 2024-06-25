@@ -3,13 +3,11 @@ import { useParams } from 'next/navigation'
 import { useAsyncAction } from '@/lib/utils/async'
 
 import { CircularProgress, FormControlLabel, Switch } from '@mui/material'
-import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
-import { useDocumentData } from 'react-firebase-hooks/firestore'
 import { switchAuthorizePlayers } from '@/app/(game)/lib/game'
-import { doc } from 'firebase/firestore'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 
-export default function AuthorizePlayersSwitch({ authorized, lang = 'fr-FR' }) {
+export default function AuthorizePlayersSwitch({ authorized, lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
 
     const [handleAuthorizePlayers, isAuthorizing] = useAsyncAction(async () => {

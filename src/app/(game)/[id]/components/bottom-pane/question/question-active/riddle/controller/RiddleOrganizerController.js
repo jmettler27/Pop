@@ -20,6 +20,7 @@ import { handleNextClueClick } from '@/app/(game)/lib/question/progressive_clues
 import { useAsyncAction } from '@/lib/utils/async'
 import { useEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 export default function RiddleOrganizerController({ question, players }) {
     const { id: gameId } = useParams()
@@ -113,7 +114,7 @@ function RiddleOrganizerQuestionController({ question }) {
  * @param {*} question 
  * @returns 
  */
-function NextClueButton({ question, lang = 'fr-FR' }) {
+function NextClueButton({ question, lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
 
     const [handleClick, isLoadingNextClue] = useAsyncAction(async () => {
