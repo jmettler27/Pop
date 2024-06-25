@@ -13,7 +13,7 @@ import { prependTopicWithEmoji, topicToEmoji } from '@/lib/utils/topics';
 
 import clsx from 'clsx';
 import { MCQ_CHOICES } from '@/lib/utils/question/mcq';
-import { QUESTION_ELEMENT_TO_EMOJI } from '@/lib/utils/question/question';
+import { QUESTION_ELEMENT_TO_EMOJI, QUESTION_ELEMENT_TO_TITLE } from '@/lib/utils/question/question';
 
 import { CardTitle, CardHeader, CardContent, Card, CardFooter } from '@/app/components/card'
 
@@ -78,7 +78,7 @@ function QuestionCardFooter({ question, lang = DEFAULT_LOCALE }) {
     }
 
     return (
-        <p className='text-sm md:text-base dark:text-white'>{LOCALE_TO_EMOJI[question.lang]} Created by <strong>{user.name}</strong> ({timestampToDate(question.createdAt, lang)})</p>
+        <p className='text-sm md:text-base dark:text-white'>{LOCALE_TO_EMOJI[question.lang]} {QUESTION_ELEMENT_TO_TITLE[lang]['createdBy']} <strong>{user.name}</strong> ({timestampToDate(question.createdAt, lang)})</p>
     )
 }
 

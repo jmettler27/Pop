@@ -4,47 +4,52 @@ import { authOptions } from '../api/auth/[...nextauth]/route';
 
 import React from 'react';
 
-import { QUESTION_TYPES, QUESTION_TYPE_TO_TITLE, QuestionTypeIcon } from '@/lib/utils/question_types';
+import { QUESTION_TYPES, prependQuestionTypeWithEmoji } from '@/lib/utils/question_types';
 
-export default async function Page({ }) {
+export default async function Page({ lang = DEFAULT_LOCALE }) {
     const session = await getServerSession(authOptions)
 
-    // Protected route
     if (!session || !session.user) {
         redirect("/api/auth/signin");
     }
     return (
-        <section className="grid grid-cols-1 md:grid-cols-3 2xl:grid-cols-4 gap-4 p-4 md:p-6">
-            {QUESTION_TYPES.map((questionType, index) => (
-                <QuestionTypeComponent key={index} questionType={questionType} />
-            ))}
-        </section>
+        <div className='flex flex-col'>
+            <h1 className='text-4xl font-bold text-center p-4 md:p-6'>🆕 {CREATE_NEW_QUESTION[lang]}</h1>
+            <section className="grid grid-cols-1 md:grid-cols-3 2xl:grid-cols-4 gap-4 p-4 md:p-6">
+                {QUESTION_TYPES.map((questionType, index) => (
+                    <SubmitQuestionCard key={index} questionType={questionType} lang={lang} />
+                ))}
+            </section>
+        </div>
     )
 
 }
 
 import Link from 'next/link'
 
-import Image from 'next/image';
-import questionPic from '../../../public/mcq-correct.png'
-
-import { questionTypeToTitle } from '@/lib/utils/question_types';
 import { DEFAULT_LOCALE } from '@/lib/utils/locales';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/card';
 
-function QuestionTypeComponent({ questionType, lang = DEFAULT_LOCALE }) {
+function SubmitQuestionCard({ questionType, lang }) {
     return (
-        <div className="relative group overflow-hidden rounded-lg">
-            <QuestionTypeIcon questionType={questionType} fontSize={40} />
-            <div className="bg-white px-4 py-2 dark:bg-gray-950">
-                <h3 className="text-lg md:text-xl font-semibold dark:text-gray-500">{questionTypeToTitle(questionType, lang)}</h3>
-                <p className="text-lg text-gray-500 dark:text-gray-400">{QUESTION_TYPE_TO_DESCRIPTION[lang][questionType]}</p>
-                <Link href={'/submit/' + questionType}>{CREATE_NEW_QUESTION[lang]}</Link>
-            </div>
-        </div>
-    );
+        <Card>
+            <CardHeader className='flex flex-row items-center justify-between' >
+                <CardTitle>{prependQuestionTypeWithEmoji(questionType, lang)}</CardTitle>
+            </CardHeader >
+
+            <CardContent>
+                <span className='text-xl'>{QUESTION_TYPE_TO_DESCRIPTION[lang][questionType]}</span>
+            </CardContent>
+
+            <CardFooter>
+                <Link className='text-xl' href={'/submit/' + questionType}>{CREATE_NEW_QUESTION[lang]}</Link>
+            </CardFooter>
+
+        </Card>
+    )
 }
 
-export const CREATE_NEW_QUESTION = {
+const CREATE_NEW_QUESTION = {
     'en': "Create a new question",
     'fr-FR': "Créer une nouvelle question"
 }
