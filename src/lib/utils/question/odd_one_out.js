@@ -26,7 +26,7 @@ export const OOO_ITEMS_EXAMPLE = {
         { explanation: 'Comédie horrifique avec des zombies, réalisée par Peter Jackson', title: 'Braindead (1992)' },
         { explanation: 'Qu’y a-t-il dans la boîte?', title: 'Seven (1995)' },
         { title: 'Hot Fuzz (2007)', explanation: 'Simon Skinner' },
-        { title: 'Saw (2004)', explanation: 'John Kramer, alias “Jigsaw”, ' },
+        { title: 'Saw (2004)', explanation: 'John Kramer, alias “Jigsaw”' },
         { title: 'The House That Jack Built (2018)', explanation: 'Architecte le jour, tueur en série la nuit' },
         { explanation: 'Slasher français dans lequel un tueur en série massacre une famille dans une ferme', title: 'Haute Tension (2003)' },
         { title: 'American Psycho (2000)', explanation: 'Patrick Bateman' }

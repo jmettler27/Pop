@@ -190,7 +190,7 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
                                         label={`Proposal #${index + 1}`}
                                         name={`items.${index}.title`}
                                         type='text'
-                                        placeholder={OOO_ITEMS_EXAMPLE[lang][index % OOO_ITEMS_EXAMPLE.length].title}
+                                        placeholder={OOO_ITEMS_EXAMPLE[lang][index % OOO_ITEMS_EXAMPLE[lang].length].title}
                                         validationSchema={validationSchema}
                                         maxLength={OOO_ITEM_TITLE_MAX_LENGTH}
                                         fieldType='object_in_array'
@@ -201,7 +201,7 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
                                         label={`Explanation #${index + 1}`}
                                         name={`items.${index}.explanation`}
                                         type='text'
-                                        placeholder={OOO_ITEMS_EXAMPLE[index % OOO_ITEMS_EXAMPLE.length].explanation}
+                                        placeholder={OOO_ITEMS_EXAMPLE[lang][index % OOO_ITEMS_EXAMPLE[lang].length].explanation}
                                         validationSchema={validationSchema}
                                         maxLength={OOO_ITEM_EXPLANATION_MAX_LENGTH}
                                         fieldType='object_in_array'
