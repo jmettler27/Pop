@@ -6,8 +6,9 @@ import GameEndMiddlePane from './game/GameEndMiddlePane'
 import RoundMiddlePane from './round/RoundMiddlePane'
 import QuestionMiddlePane from './question/QuestionMiddlePane'
 import FinaleMiddlePane from './finale/FinaleMiddlePane'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
-export default function MiddlePane({ }) {
+export default function MiddlePane({ lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
 
     switch (game.status) {
@@ -31,7 +32,15 @@ export default function MiddlePane({ }) {
         case 'game_end':
             return <GameEndMiddlePane />
 
+        case 'build':
+            return <span>{GAME_BUILD_TEXT[lang]}</span>
+
         default:
-            return <h1>MIDDLE PANE</h1>
+            return <></>
     }
+}
+
+const GAME_BUILD_TEXT = {
+    'en': "The game is currently under construction. Come back later!",
+    'fr-FR': "Le jeu est actuellement en construction. Reviens plus tard !",
 }

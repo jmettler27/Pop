@@ -7,14 +7,16 @@ import { useCollectionOnce, useDocumentDataOnce, useDocumentOnce } from 'react-f
 import LoadingScreen from '@/app/components/LoadingScreen'
 import GameScoreboard from '@/app/(game)/[id]/components/scores/GameScoreboard'
 import GameScoresChart from '@/app/(game)/[id]/components/scores/GameScoresChart'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
-export default function GameEndMiddlePane({ }) {
+export default function GameEndMiddlePane({ lang = DEFAULT_LOCALE }) {
+    const game = useGameContext()
+
     return (
         <div className='flex flex-col h-full w-full items-center justify-center'>
             <div className='flex h-[10%] w-full items-center justify-center mt-3'>
-                <GameEndHeader />
+                <h1 className='2xl:text-5xl font-bold'>{IT_WAS[lang]} <span className='text-yellow-300 italic'>{game.title}</span></h1>
             </div>
-
             <div className='flex h-[90%] w-full items-center justify-center'>
                 <GameEndBody />
             </div>
@@ -22,10 +24,9 @@ export default function GameEndMiddlePane({ }) {
     )
 }
 
-function GameEndHeader() {
-    return (
-        <h1 className='2xl:text-4xl font-bold'>célafin</h1>
-    )
+const IT_WAS = {
+    'en': "It was",
+    'fr-FR': "C'était",
 }
 
 

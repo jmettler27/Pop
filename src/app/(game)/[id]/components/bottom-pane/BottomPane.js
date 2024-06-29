@@ -5,6 +5,7 @@ import GameStartBottomPane from './game/GameStartBottomPane'
 import RoundBottomPane from './round/RoundBottomPane'
 import QuestionBottomPane from './question/QuestionBottomPane'
 import FinaleBottomPane from './finale/FinaleBottomPane'
+import GameEndBottomPane from './game/GameEndBottomPane'
 
 export default function BottomPane() {
     const game = useGameContext();
@@ -28,7 +29,7 @@ export default function BottomPane() {
             return <FinaleBottomPane />
 
         case 'game_end':
-            return <></>
+            return <GameEndBottomPane />
 
         default:
             return <h1>BOTTOM PANE</h1>
