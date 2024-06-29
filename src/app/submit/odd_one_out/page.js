@@ -164,49 +164,51 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
     const ExplanationError = ({ index }) =>
         typeof errors.items === 'array' && errors.items[index] && <StyledErrorMessage>{errors.items[index].explanation}</StyledErrorMessage>
 
+    const exampleItems = OOO_ITEMS_EXAMPLE[lang]
+
     return (
         <WizardStep
             onSubmit={onSubmit}
             validationSchema={validationSchema}
         >
-            <p>You must provide {OOO_ITEMS_LENGTH} proposals: 9 correct, 1 incorrect.</p>
+            <p>{ENTER_ITEMS[lang]}</p>
 
             <FieldArray name="items">
                 {({ remove, push }) => (
                     <>
                         {values.items.length > 0 &&
-                            values.items.map((item, index) => (
-                                <Box key={index} component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: '500px' }}>
-                                    <span className='text-lg'>{QUESTION_ITEM[lang]} #{index + 1}</span>
+                            values.items.map((item, idx) => (
+                                <Box key={idx} component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: '500px' }}>
+                                    <span className='text-lg'>{QUESTION_ITEM[lang]} #{idx + 1}</span>
 
                                     <IconButton
                                         color='error'
-                                        onClick={() => remove(index)}
+                                        onClick={() => remove(idx)}
                                     >
                                         <DeleteIcon />
                                     </IconButton>
 
                                     <MyTextInput
-                                        label={`Proposal #${index + 1}`}
-                                        name={`items.${index}.title`}
+                                        label={`${PROPOSAL[lang]} #${idx + 1}`}
+                                        name={`items.${idx}.title`}
                                         type='text'
-                                        placeholder={OOO_ITEMS_EXAMPLE[lang][index % OOO_ITEMS_EXAMPLE[lang].length].title}
+                                        placeholder={exampleItems[idx % exampleItems.length].title}
                                         validationSchema={validationSchema}
                                         maxLength={OOO_ITEM_TITLE_MAX_LENGTH}
                                         fieldType='object_in_array'
                                     />
-                                    <TitleError index={index} />
+                                    <TitleError index={idx} />
 
                                     <MyTextInput
-                                        label={`Explanation #${index + 1}`}
-                                        name={`items.${index}.explanation`}
+                                        label={`${EXPLANATION[lang]} #${idx + 1}`}
+                                        name={`items.${idx}.explanation`}
                                         type='text'
-                                        placeholder={OOO_ITEMS_EXAMPLE[lang][index % OOO_ITEMS_EXAMPLE[lang].length].explanation}
+                                        placeholder={exampleItems[idx % exampleItems.length].explanation}
                                         validationSchema={validationSchema}
                                         maxLength={OOO_ITEM_EXPLANATION_MAX_LENGTH}
                                         fieldType='object_in_array'
                                     />
-                                    <ExplanationError index={index} />
+                                    <ExplanationError index={idx} />
 
 
                                 </Box>
@@ -242,6 +244,22 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
         </WizardStep>
     )
 }
+
+const ENTER_ITEMS = {
+    'en': "All the proposals must be correct, except for one (the odd one out).",
+    'fr-FR': "Toutes les propositions doivent être correctes, sauf une (l'intrus)."
+}
+
+const PROPOSAL = {
+    'en': "Proposal",
+    'fr-FR': "Proposition"
+}
+
+const EXPLANATION = {
+    'en': "Explanation",
+    'fr-FR': "Explication"
+}
+
 
 const ANSWER_IDX_LABEL = {
     'en': "What proposal is the odd one?",

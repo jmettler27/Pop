@@ -2,28 +2,25 @@ import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
-import { collection, doc, limit, or, orderBy, query, where } from 'firebase/firestore'
-import { useCollection, useCollectionOnce, useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/firestore'
+import { collection, or, query, where } from 'firebase/firestore'
+import { useCollection, useCollectionOnce } from 'react-firebase-hooks/firestore'
 
 import { styled } from '@mui/material/styles'
-import { Avatar, AvatarGroup, Box, Button, Divider, Grid, Typography } from '@mui/material'
+import { Button, Divider } from '@mui/material'
 import { Skeleton } from '@mui/material'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import LoginIcon from '@mui/icons-material/Login'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
+import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/card'
+import { GameOrganizersCardContent, GamePlayersCardContent } from '@/app/components/home/GameCardContent'
 import GameErrorScreen from '@/app/(game)/[id]/components/GameErrorScreen'
-
-import { arrayToCommaSeparatedString } from '@/lib/utils/arrays'
-import { Card, CardContent, CardHeader, CardTitle } from '../card'
-
 
 import { gameTypeToEmoji } from '@/lib/utils/game'
 import { DEFAULT_LOCALE, localeToEmoji } from '@/lib/utils/locales'
-import { GameOrganizersCardContent, GamePlayersCardContent } from './GameCardContent'
 
 export default function OngoingGames({ lang = DEFAULT_LOCALE }) {
-    const [games, gamesLoading, gamesError] = useCollection(query(GAMES_COLLECTION_REF,
+    const [games, gamesLoading, gamesError] = useCollectionOnce(query(GAMES_COLLECTION_REF,
         or(where('status', '==', 'game_start'),
             where('status', '==', 'game_home'),
             where('status', '==', 'round_start'),
@@ -50,14 +47,11 @@ export default function OngoingGames({ lang = DEFAULT_LOCALE }) {
         <Card>
             <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
                 <CardTitle className='2xl:text-2xl'>🕒 {ONGOING_GAMES_CARD_TITLE[lang]} ({sortedOngoingGames.length})</CardTitle>
-                {/* <RemoveRoundFromGameButton roundId={roundId} /> */}
             </CardHeader>
 
             <CardContent>
                 <div className='grid gap-4 md:grid-cols-4'>
-                    {sortedOngoingGames.map(game => (
-                        <GameCard key={game.id} game={game} lang={lang} />
-                    ))}
+                    {sortedOngoingGames.map(game => <GameCard key={game.id} game={game} lang={lang} />)}
                 </div>
             </CardContent>
         </Card>
@@ -105,33 +99,24 @@ const GameCard = ({
     }
 
     const buttonText = () => {
-        if (myRole === 'spectator') {
-            if (isFull) {
-                return WATCH_GAME[lang]
-            }
-            return JOIN_GAME[lang]
-        }
-        return CONTINUE_GAME[lang]
+        if (myRole === 'player' || myRole === 'organizer')
+            return CONTINUE_GAME[lang]
+        if (myRole === 'spectator')
+            return isFull ? WATCH_GAME[lang] : JOIN_GAME[lang]
     }
 
     const ButtonIcon = () => {
-        if (myRole === 'spectator') {
-            if (isFull) {
-                return <VisibilityIcon />
-            }
-            return <LoginIcon />
-        }
-        return <PlayArrowIcon />
+        if (myRole === 'player' || myRole === 'organizer')
+            return <PlayArrowIcon />
+        if (myRole === 'spectator')
+            return isFull ? <VisibilityIcon /> : <LoginIcon />
     }
 
     const buttonColor = () => {
-        if (myRole === 'spectator') {
-            if (isFull) {
-                return 'warning'
-            }
-            return 'primary'
-        }
-        return 'success'
+        if (myRole === 'player' || myRole === 'organizer')
+            return 'success'
+        if (myRole === 'spectator')
+            return isFull ? 'warning' : 'primary'
     }
 
     const handleJoinClick = () => {

@@ -1,7 +1,6 @@
 import { useParams } from 'next/navigation'
 
-import React from 'react';
-import { useState } from 'react'
+import React, { useState, memo } from 'react'
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { doc } from 'firebase/firestore';
@@ -22,15 +21,15 @@ import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 import { removeQuestionFromRound, updateQuestionCreator } from '@/app/edit/[id]/lib/edit-game'
 
 
-
-export function EditQuestionCard({ roundId, questionId, questionOrder }) {
+export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questionId, questionOrder }) {
+    console.log("EditQuestionCard", questionId)
     const { id: gameId } = useParams()
 
     const questionDocRef = doc(QUESTIONS_COLLECTION_REF, questionId)
     const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
 
     const [questionData, questionDataLoading, questionDataError] = useDocumentDataOnce(questionDocRef)
-    const [realtimeData, realtimeDataLoading, realtimeDataError] = useDocumentData(realtimeDocRef)
+    const [realtimeData, realtimeDataLoading, realtimeDataError] = useDocumentDataOnce(realtimeDocRef)
     if (questionDataError) {
         return <span>Error: {JSON.stringify(questionDataError)}</span>
     }
@@ -64,9 +63,9 @@ export function EditQuestionCard({ roundId, questionId, questionOrder }) {
 
         </Card>
     );
-}
+})
 
-function EditQuestionCardFooter({ realtimeData, lang = DEFAULT_LOCALE }) {
+function EditQuestionCardFooter({ realtimeData }) {
     const { id: gameId } = useParams()
 
     const organizerRef = doc(GAMES_COLLECTION_REF, gameId, 'organizers', realtimeData.managedBy)
@@ -91,7 +90,7 @@ function EditQuestionCardFooter({ realtimeData, lang = DEFAULT_LOCALE }) {
 
 import PersonIcon from '@mui/icons-material/Person';
 
-function UpdateCreatorButton({ roundId, questionId, lang = DEFAULT_LOCALE }) {
+function UpdateCreatorButton({ roundId, questionId }) {
     const { id: gameId } = useParams()
 
     const [handleChange, isChanging] = useAsyncAction(async () => {

@@ -295,7 +295,7 @@ const questionRow = (question, users) => {
 export function SearchQuestionDataGrid({ questionType, questionSelectionModel = [], onQuestionSelectionModelChange = () => { } }) {
     const [usersCollection, usersLoading, usersError] = useCollectionOnce(USERS_COLLECTION_REF)
     const q = query(QUESTIONS_COLLECTION_REF, where('type', '==', questionType), where('approved', '==', true));
-    const [questionsCollection, questionsLoading, questionsError] = useCollection(q)
+    const [questionsCollection, questionsLoading, questionsError] = useCollectionOnce(q)
     if (usersError) {
         return <p><strong>Error: {JSON.stringify(usersError)}</strong></p>
     }

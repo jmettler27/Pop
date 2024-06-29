@@ -12,7 +12,7 @@ export const IMAGE_ANSWER_SOURCE_MAX_LENGTH = 75
 
 export const IMAGE_ANSWER_DESCRIPTION_EXAMPLE = {
     'en': "Flask of Wondrous Physick",
-    'fr-FR': "Flacon de salut miraculeux"
+    'fr-FR': "Fiole de salut miraculeux"
 }
 export const IMAGE_ANSWER_DESCRIPTION_MAX_LENGTH = 75
 

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { GAMES_COLLECTION_REF } from "@/lib/firebase/firestore"
 import { and, collection, query, where } from "firebase/firestore"
-import { useCollection, useCollectionOnce } from "react-firebase-hooks/firestore"
+import { useCollectionOnce } from "react-firebase-hooks/firestore"
 
 import { gameTypeToEmoji } from '@/lib/utils/game';
 import { DEFAULT_LOCALE, localeToEmoji } from '@/lib/utils/locales';
@@ -10,15 +10,13 @@ import { DEFAULT_LOCALE, localeToEmoji } from '@/lib/utils/locales';
 import { useSession } from 'next-auth/react';
 
 import { Skeleton } from '@mui/material';
-import LoadingScreen from '../LoadingScreen';
+import LoadingScreen from '@/app/components/LoadingScreen';
 import { CardTitle, CardHeader, CardContent, Card } from '@/app/components/card'
-import EditGameButton from './EditGameButton';
-
-
+import EditGameButton from '@/app/components/home/EditGameButton';
 
 
 export default function GamesUnderConstruction({ lang = DEFAULT_LOCALE }) {
-    const [gamesUnderConstructionCollection, loading, error] = useCollection(query(GAMES_COLLECTION_REF,
+    const [gamesUnderConstructionCollection, loading, error] = useCollectionOnce(query(GAMES_COLLECTION_REF,
         and(where('status', '==', 'build'), where('dateEnd', '==', null))))
     if (error) {
         return <p><strong>Error: {JSON.stringify(error)}</strong></p>
@@ -39,14 +37,11 @@ export default function GamesUnderConstruction({ lang = DEFAULT_LOCALE }) {
         <Card>
             <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
                 <CardTitle className='2xl:text-2xl'>🛠️ {GAMES_UNDER_CONSTRUCTION_CARD_TITLE[lang]} ({sortedGames.length})</CardTitle>
-                {/* <RemoveRoundFromGameButton roundId={roundId} /> */}
             </CardHeader>
 
             <CardContent>
                 <div className='grid gap-4 md:grid-cols-4'>
-                    {sortedGames.map(game => (
-                        <GameUnderConstructionCard key={game.id} game={game} />
-                    ))}
+                    {sortedGames.map(game => <GameUnderConstructionCard key={game.id} game={game} />)}
                 </div>
             </CardContent>
         </Card>

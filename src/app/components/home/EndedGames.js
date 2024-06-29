@@ -4,22 +4,21 @@ import { useSession } from 'next-auth/react';
 
 import { GAMES_COLLECTION_REF } from "@/lib/firebase/firestore"
 import { collection, query, where } from "firebase/firestore"
-import { useCollection, useCollectionOnce } from "react-firebase-hooks/firestore"
+import { useCollectionOnce } from "react-firebase-hooks/firestore"
 
 import { gameTypeToEmoji } from '@/lib/utils/game';
-import { DEFAULT_LOCALE, localeToEmoji } from '@/lib/utils/locales';
 import { timestampToDate } from '@/lib/utils/time';
+import { DEFAULT_LOCALE, localeToEmoji } from '@/lib/utils/locales';
 
 
-import { Box, Divider, IconButton, Skeleton, Typography } from '@mui/material';
+import { Divider, Skeleton } from '@mui/material';
 import { CardTitle, CardHeader, CardContent, Card } from '@/app/components/card'
-import EditGameButton from './EditGameButton';
-import LoadingScreen from '../LoadingScreen';
-import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from './GameAvatars';
-import { GameOrganizersCardContent, GamePlayersCardContent } from './GameCardContent';
+import LoadingScreen from '@/app/components/LoadingScreen';
+import EditGameButton from '@/app/components/home/EditGameButton';
+import { GameOrganizersCardContent, GamePlayersCardContent } from '@/app/components/home/GameCardContent';
 
 export default function EndedGames({ lang = DEFAULT_LOCALE }) {
-    const [endedGamesCollection, loading, error] = useCollection(query(GAMES_COLLECTION_REF, where('dateEnd', '!=', null)))
+    const [endedGamesCollection, loading, error] = useCollectionOnce(query(GAMES_COLLECTION_REF, where('dateEnd', '!=', null)))
     if (error) {
         return <p><strong>Error: {JSON.stringify(error)}</strong></p>
     }
@@ -44,9 +43,7 @@ export default function EndedGames({ lang = DEFAULT_LOCALE }) {
 
             <CardContent>
                 <div className='grid gap-4 md:grid-cols-4'>
-                    {sortedGames.map(game => (
-                        <EndedGameCard key={game.id} game={game} />
-                    ))}
+                    {sortedGames.map(game => <EndedGameCard key={game.id} game={game} />)}
                 </div>
             </CardContent>
         </Card>
@@ -62,28 +59,16 @@ export function EndedGameCard({ game, lang = DEFAULT_LOCALE }) {
     const { data: session } = useSession()
     const user = session.user
 
-
-    const [usersCollection, usersLoading, usersError] = useCollectionOnce(collection(GAMES_COLLECTION_REF, game.id, 'users'))
-
     const organizersCollectionRef = collection(GAMES_COLLECTION_REF, game.id, 'organizers')
     const [organizersCollection, organizersLoading, organizersError] = useCollectionOnce(organizersCollectionRef)
 
-    if (usersError) {
-        return <p><strong>Error: {JSON.stringify(usersError)}</strong></p>
-    }
     if (organizersError) {
         return <p><strong>Error: {JSON.stringify(organizersError)}</strong></p>
-    }
-
-    if (usersLoading) {
-        return <Skeleton variant='rounded' width={210} height={60} />
     }
     if (organizersLoading) {
         return <Skeleton variant='rounded' width={210} height={60} />
     }
-
-
-    if (!usersCollection || !organizersCollection) {
+    if (!organizersCollection) {
         return <></>
     }
 

@@ -1,7 +1,6 @@
 import { useParams } from 'next/navigation'
 
-import React, { useEffect } from 'react';
-import { useState } from 'react'
+import React, { memo, useEffect, useState } from 'react';
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
 import { collection, doc, getDoc } from 'firebase/firestore';
@@ -43,8 +42,8 @@ const editGameRoundCardNumCols = (roundType) => {
     }
 }
 
-
-export function EditGameRoundCard({ roundId }) {
+export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId }) {
+    console.log("EditGameRoundCard", roundId)
     // <div className='border-dashed border-4 p-2 w-[30%] h-full overflow-auto'>
 
     const { id: gameId } = useParams()
@@ -81,7 +80,7 @@ export function EditGameRoundCard({ roundId }) {
             </CardContent>
         </Card>
     )
-}
+})
 
 const fetchTopics = async (questionIds) => {
     const promises = questionIds.map(id => getDoc(doc(QUESTIONS_COLLECTION_REF, id)));

@@ -2,8 +2,6 @@ import { useState } from "react"
 
 import { useParams } from "next/navigation"
 
-import { CardTitle, CardHeader, CardContent, Card } from '@/app/components/card'
-
 import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material"
 
 import { useAsyncAction } from "@/lib/utils/async"
@@ -36,7 +34,7 @@ export function AddNewRoundButton({ disabled, lang = DEFAULT_LOCALE }) {
                     {ADD_ROUND[lang]}
                 </Button>
             </div>
-            <AddNewRoundFormDialog open={dialogOpen} onClose={() => setDialogOpen(false)} lang={lang} />
+            <CreateRoundFormDialog open={dialogOpen} onClose={() => setDialogOpen(false)} lang={lang} />
         </>
     )
 }
@@ -47,12 +45,12 @@ const ADD_ROUND = {
 }
 
 
-function AddNewRoundFormDialog({ open, onClose, lang }) {
+function CreateRoundFormDialog({ open, onClose, lang }) {
     return (
         <Dialog open={open} onClose={onClose}>
             <DialogTitle>{ADD_NEW_ROUND_TITLE[lang]}</DialogTitle>
             <DialogContent>
-                <AddNewRoundForm onClose={onClose} lang={lang} />
+                <CreateRoundForm onClose={onClose} lang={lang} />
             </DialogContent>
         </Dialog>
     )
@@ -64,7 +62,7 @@ const ADD_NEW_ROUND_TITLE = {
 }
 
 
-function AddNewRoundForm({ onClose, lang }) {
+function CreateRoundForm({ onClose, lang }) {
     const { id: gameId } = useParams()
 
     const [submitRound, isSubmitting] = useAsyncAction(async (values) => {

@@ -1,11 +1,11 @@
 "use server";
 
 import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
-import { updateTimerTransaction } from '@/app/(game)/lib/timer';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
+import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
+
 import { firestore } from '@/lib/firebase/firebase';
 import { GAMES_COLLECTION_REF, USERS_COLLECTION_REF } from '@/lib/firebase/firestore'
-import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
 import {
     doc,
     runTransaction,

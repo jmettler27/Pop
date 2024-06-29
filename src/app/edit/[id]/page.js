@@ -11,20 +11,20 @@ import { useSession } from 'next-auth/react';
 import React from 'react';
 
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
-import { collection, doc, orderBy, query } from 'firebase/firestore';
-import { useCollection, useCollectionOnce, useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/firestore'
+import { collection, doc } from 'firebase/firestore';
+import { useCollectionOnce, useDocumentData } from 'react-firebase-hooks/firestore'
 
 
+import { localeToEmoji } from '@/lib/utils/locales';
 import { GAME_MAX_NUMBER_OF_ROUNDS, GAME_TYPE_TO_EMOJI } from '@/lib/utils/game'
-
-import { AddNewRoundButton } from '@/app/edit/[id]/components/AddNewRound'
 
 import LoadingScreen from '@/app/components/LoadingScreen';
 import GameErrorScreen from '@/app/(game)/[id]/components/GameErrorScreen';
-import { localeToEmoji } from '@/lib/utils/locales';
 
-import { EditGameRoundCard } from './components/EditRoundInGame';
-import { LaunchGameButton } from './components/LaunchGameButton';
+import { AddNewRoundButton } from '@/app/edit/[id]/components/AddNewRound'
+import { EditGameRoundCard } from '@/app/edit/[id]/components/EditRoundInGame';
+import { LaunchGameButton } from '@/app/edit/[id]/components/LaunchGameButton';
+
 
 export default function Page({ params }) {
     const { data: session } = useSession()
@@ -37,7 +37,7 @@ export default function Page({ params }) {
     const gameId = params.id
     const user = session.user
 
-    const [gameData, gameLoading, gameError] = useDocumentDataOnce(doc(GAMES_COLLECTION_REF, gameId))
+    const [gameData, gameLoading, gameError] = useDocumentData(doc(GAMES_COLLECTION_REF, gameId))
     const [organizers, organizersLoading, organizersError] = useCollectionOnce(collection(GAMES_COLLECTION_REF, gameId, 'organizers'))
 
     if (gameError || organizersError) {
@@ -51,9 +51,6 @@ export default function Page({ params }) {
     }
 
     const organizerIds = organizers.docs.map(doc => doc.id)
-
-    if (gameData.status !== 'build')
-        redirect('/')
 
     if (!organizerIds.includes(user.id))
         redirect('/')
@@ -172,7 +169,7 @@ export default function Page({ params }) {
 
                 {/* Main content */}
                 <main className='flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6'>
-                    <EditGameRounds />
+                    <EditGameRounds game={game} />
                     <LaunchGameButton />
                 </main>
             </div>
@@ -181,32 +178,14 @@ export default function Page({ params }) {
 
 }
 
-function EditGameRounds({ }) {
-    const params = useParams()
+function EditGameRounds({ game }) {
+    console.log("RENDERING EditGameRounds")
 
-    const gameId = params.id
-    console.log("RENDERING EditGameRounds", gameId)
-
-    const gameDocRef = doc(GAMES_COLLECTION_REF, gameId)
-    const [gameData, gameDataLoading, gameDataError] = useDocumentData(gameDocRef)
-    if (gameDataError) {
-        return <p><strong>Error: {JSON.stringify(gameDataError)}</strong></p>
-    }
-    if (gameDataLoading) {
-        return <></>
-    }
-    if (!gameData) {
-        return <></>
-    }
-    const roundIds = gameData.rounds
+    const { rounds: roundIds } = game
 
     return (
         <main className='flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6'>
-            {roundIds.map(roundId => (
-                <EditGameRoundCard key={roundId}
-                    roundId={roundId}
-                />
-            ))}
+            {roundIds.map(roundId => <EditGameRoundCard key={roundId} roundId={roundId} />)}
             <AddNewRoundButton disabled={roundIds.length >= GAME_MAX_NUMBER_OF_ROUNDS} />
         </main>
     )
