@@ -42,7 +42,7 @@ const editGameRoundCardNumCols = (roundType) => {
     }
 }
 
-export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId }) {
+export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, status }) {
     console.log("EditGameRoundCard", roundId)
     // <div className='border-dashed border-4 p-2 w-[30%] h-full overflow-auto'>
 
@@ -64,18 +64,20 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId }) {
         <Card>
             <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
                 <CardTitle className='2xl:text-2xl'>{questionTypeToEmoji(round.type)} <i>{round.title}</i> <RoundTopicDistribution round={round} /></CardTitle>
-                <RemoveRoundFromGameButton roundId={round.id} />
+                {status === 'build' && <RemoveRoundFromGameButton roundId={round.id} />}
             </CardHeader>
             <CardContent>
                 <div className={clsx('grid', 'gap-4',
                     editGameRoundCardNumCols(round.type),
                 )}>
-                    <EditGameRoundQuestionCards round={round} />
-                    <AddQuestionToRoundButton
-                        roundId={round.id}
-                        roundType={round.type}
-                        disabled={round.questions.length >= GAME_ROUND_MAX_NUM_QUESTIONS}
-                    />
+                    <EditGameRoundQuestionCards round={round} status={status} />
+                    {status === 'build' &&
+                        <AddQuestionToRoundButton
+                            roundId={round.id}
+                            roundType={round.type}
+                            disabled={round.questions.length >= GAME_ROUND_MAX_NUM_QUESTIONS}
+                        />
+                    }
                 </div>
             </CardContent>
         </Card>
@@ -127,12 +129,13 @@ function RoundTopicDistribution({ round }) {
 }
 
 
-function EditGameRoundQuestionCards({ round }) {
+function EditGameRoundQuestionCards({ round, status }) {
     return round.questions.map((questionId, idx) => (
         <EditQuestionCard key={questionId}
             roundId={round.id}
             questionId={questionId}
             questionOrder={idx}
+            status={status}
         />
     ))
 }

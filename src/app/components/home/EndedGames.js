@@ -11,14 +11,13 @@ import { timestampToDate } from '@/lib/utils/time';
 import { DEFAULT_LOCALE, localeToEmoji } from '@/lib/utils/locales';
 
 
-import { Divider, Skeleton } from '@mui/material';
+import { Divider, Skeleton, Tooltip } from '@mui/material';
 import { CardTitle, CardHeader, CardContent, Card } from '@/app/components/card'
 import LoadingScreen from '@/app/components/LoadingScreen';
-import EditGameButton from '@/app/components/home/EditGameButton';
 import { GameOrganizersCardContent, GamePlayersCardContent } from '@/app/components/home/GameCardContent';
 
 export default function EndedGames({ lang = DEFAULT_LOCALE }) {
-    const [endedGamesCollection, loading, error] = useCollectionOnce(query(GAMES_COLLECTION_REF, where('dateEnd', '!=', null)))
+    const [endedGamesCollection, loading, error] = useCollectionOnce(query(GAMES_COLLECTION_REF, where('status', '==', 'game_end')))
     if (error) {
         return <p><strong>Error: {JSON.stringify(error)}</strong></p>
     }
@@ -80,7 +79,7 @@ export function EndedGameCard({ game, lang = DEFAULT_LOCALE }) {
         <Card>
             <CardHeader className='flex flex-row items-center justify-around pb-2'>
                 <CardTitle className='text-lg font-medium'>{gameTypeToEmoji(game.type)} {localeToEmoji(game.lang)} <i>{game.title}</i></CardTitle>
-                {isOrganizer && <EditGameButton gameId={game.id} />}
+                {isOrganizer && <AccessGameDashboardButton gameId={game.id} />}
             </CardHeader>
 
             <CardContent>
@@ -94,4 +93,28 @@ export function EndedGameCard({ game, lang = DEFAULT_LOCALE }) {
             </CardContent>
         </Card>
     )
+}
+
+
+import { IconButton } from '@mui/material';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+
+function AccessGameDashboardButton({ gameId, lang = DEFAULT_LOCALE }) {
+    return (
+        <Tooltip title={ACCESS_GAME_DASHBOARD_BUTTON_LABEL[lang]} placement='top'>
+            <span>
+                <IconButton
+                    color='primary'
+                    href={'/edit/' + gameId}
+                >
+                    <DashboardIcon />
+                </IconButton>
+            </span>
+        </Tooltip>
+    )
+}
+
+const ACCESS_GAME_DASHBOARD_BUTTON_LABEL = {
+    'en': "Access game dashboard",
+    'fr-FR': "Accéder au tableau de bord",
 }

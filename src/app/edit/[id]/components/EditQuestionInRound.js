@@ -4,7 +4,7 @@ import React, { useState, memo } from 'react'
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { doc } from 'firebase/firestore';
-import { useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/firestore'
+import { useDocumentDataOnce } from 'react-firebase-hooks/firestore'
 
 
 import { Avatar, Button, Divider } from '@mui/material';
@@ -21,7 +21,7 @@ import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 import { removeQuestionFromRound, updateQuestionCreator } from '@/app/edit/[id]/lib/edit-game'
 
 
-export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questionId, questionOrder }) {
+export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questionId, questionOrder, status }) {
     console.log("EditQuestionCard", questionId)
     const { id: gameId } = useParams()
 
@@ -48,7 +48,7 @@ export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questi
             <CardHeader className='flex flex-row items-center justify-between'>
                 {/* <span className='text-base md:text-lg dark:text-white'>#{questionOrder + 1}</span> */}
                 <CardTitle className='text-base md:text-lg dark:text-white'><QuestionCardTitle question={questionData} /></CardTitle>
-                <RemoveQuestionFromRoundButton roundId={roundId} questionId={questionId} />
+                {status === 'build' && <RemoveQuestionFromRoundButton roundId={roundId} questionId={questionId} />}
                 {/* <UpdateCreatorButton roundId={roundId} questionId={questionId} /> */}
             </CardHeader>
 

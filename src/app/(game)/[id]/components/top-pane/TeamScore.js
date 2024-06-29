@@ -24,6 +24,7 @@ export default function TeamScore({ teamId }) {
     }
 
     switch (game.status) {
+        case 'build':
         case 'game_start':
         case 'game_home':
         case 'game_end':

@@ -75,8 +75,8 @@ export default function OrganizerSpeedDial() {
                 endGame(gameId)
                 break
             case 'Resume editing':
-                await resumeEditing(gameId)
-                router.push(`/{gameId}/edit`)
+                resumeEditing(gameId)
+                router.push('/edit/' + gameId)
                 break
         }
     }

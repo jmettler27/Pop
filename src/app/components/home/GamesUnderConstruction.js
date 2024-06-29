@@ -9,15 +9,13 @@ import { DEFAULT_LOCALE, localeToEmoji } from '@/lib/utils/locales';
 
 import { useSession } from 'next-auth/react';
 
-import { Skeleton } from '@mui/material';
+import { Skeleton, Tooltip } from '@mui/material';
 import LoadingScreen from '@/app/components/LoadingScreen';
 import { CardTitle, CardHeader, CardContent, Card } from '@/app/components/card'
-import EditGameButton from '@/app/components/home/EditGameButton';
 
 
 export default function GamesUnderConstruction({ lang = DEFAULT_LOCALE }) {
-    const [gamesUnderConstructionCollection, loading, error] = useCollectionOnce(query(GAMES_COLLECTION_REF,
-        and(where('status', '==', 'build'), where('dateEnd', '==', null))))
+    const [gamesUnderConstructionCollection, loading, error] = useCollectionOnce(query(GAMES_COLLECTION_REF, where('status', '==', 'build')))
     if (error) {
         return <p><strong>Error: {JSON.stringify(error)}</strong></p>
     }
@@ -54,7 +52,7 @@ const GAMES_UNDER_CONSTRUCTION_CARD_TITLE = {
 }
 
 
-export function GameUnderConstructionCard({ game }) {
+export function GameUnderConstructionCard({ game, lang = DEFAULT_LOCALE }) {
     const { data: session } = useSession()
     const user = session.user
 
@@ -80,9 +78,32 @@ export function GameUnderConstructionCard({ game }) {
                 {isOrganizer && <EditGameButton gameId={game.id} />}
             </CardHeader>
             <CardContent>
-
+                <GameOrganizersCardContent gameId={game.id} lang={lang} />
             </CardContent>
         </Card>
     )
 }
 
+import { IconButton } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import { GameOrganizersCardContent } from './GameCardContent';
+
+function EditGameButton({ gameId, lang = DEFAULT_LOCALE }) {
+    return (
+        <Tooltip title={ACCESS_GAME_EDITOR_BUTTON_LABEL[lang]} placement='top'>
+            <span>
+                <IconButton
+                    color='warning'
+                    href={'/edit/' + gameId}
+                >
+                    <EditIcon />
+                </IconButton>
+            </span>
+        </Tooltip>
+    )
+}
+
+const ACCESS_GAME_EDITOR_BUTTON_LABEL = {
+    'en': "Edit game",
+    'fr-FR': "Éditer la partie",
+}

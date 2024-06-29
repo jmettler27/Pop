@@ -429,11 +429,13 @@ const endRoundTransaction = async (
     gameId,
     roundId,
 ) => {
+    const gameRef = doc(GAMES_COLLECTION_REF, gameId)
     const gameScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'scores')
     const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
     const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
 
-    const [gameScoresData, roundData, roundScoresData] = await Promise.all([
+    const [gameData, gameScoresData, roundData, roundScoresData] = await Promise.all([
+        getDocDataTransaction(transaction, gameRef),
         getDocDataTransaction(transaction, gameScoresRef),
         getDocDataTransaction(transaction, roundRef),
         getDocDataTransaction(transaction, roundScoresRef)
@@ -527,21 +529,23 @@ const endRoundTransaction = async (
         scoresProgress: updatedGlobalScoresProgress,
     })
 
-    // Set focus on chooser players, Set idle on all non-chooser players
-    const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    for (const [idx, teamId] of updatedChooserOrder.entries()) {
-        const playersQuerySnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)))
-        for (const playerDoc of playersQuerySnapshot.docs) {
-            transaction.update(playerDoc.ref, {
-                status: idx === 0 ? 'focus' : 'idle'
-            })
+    if (roundData.order < gameData.rounds.length - 1) {
+        // Set focus on chooser players, Set idle on all non-chooser players
+        const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
+        for (const [idx, teamId] of updatedChooserOrder.entries()) {
+            const playersQuerySnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)))
+            for (const playerDoc of playersQuerySnapshot.docs) {
+                transaction.update(playerDoc.ref, {
+                    status: idx === 0 ? 'focus' : 'idle'
+                })
+            }
         }
+        const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
+        transaction.update(gameStatesRef, {
+            chooserIdx: 0,
+            chooserOrder: updatedChooserOrder
+        })
     }
-    const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
-    transaction.update(gameStatesRef, {
-        chooserIdx: 0,
-        chooserOrder: updatedChooserOrder
-    })
 
     const readyDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready')
     transaction.update(readyDocRef, {

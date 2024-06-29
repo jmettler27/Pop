@@ -12,15 +12,15 @@ import {
     where,
 } from 'firebase/firestore'
 
+import { shuffle } from '@/lib/utils/arrays';
+import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
+
 import { resetAllRoundsTransaction } from '@/app/(game)/lib/round';
 import { getDocData, getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
-import { getRandomElement, shuffle } from '@/lib/utils/arrays';
-import { updateTimerTransaction } from './timer';
-import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
-import { addSoundToQueueTransaction } from './sounds';
+import { updateTimerTransaction } from '@/app/(game)/lib/timer';
+import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 
-/* ==================================================================================================== */
-// WRITE
+
 export async function updateGameFields(gameId, fieldsToUpdate) {
     const gameRef = doc(GAMES_COLLECTION_REF, gameId)
     const updateObject = { ...fieldsToUpdate }
@@ -30,13 +30,10 @@ export async function updateGameFields(gameId, fieldsToUpdate) {
 }
 
 
-// Game
-// WRITE
 export async function updateGameStatus(gameId, newStatus) {
     await updateGameFields(gameId, { status: newStatus })
 }
 
-// WRITE
 export async function updateGameStates(gameId, fieldsToUpdate) {
     const statesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
     const updateObject = { ...fieldsToUpdate }
@@ -45,19 +42,16 @@ export async function updateGameStates(gameId, fieldsToUpdate) {
     console.log(`Game ${gameId}, States:`, fieldsToUpdate)
 }
 
-// READ
 export async function getGameData(gameId) {
     return getDocData('games', gameId);
 }
 
-// READ
 export async function getGameStatesData(gameId) {
     return getDocData('games', gameId, 'realtime', 'states');
 }
 
 
 /* ==================================================================================================== */
-// TRANSACTION
 export async function resetGame(gameId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -206,7 +200,7 @@ const resumeEditingTransaction = async (
     transaction,
     gameId
 ) => {
-    await resetGameTransaction(transaction, gameId)
+    // await resetGameTransaction(transaction, gameId)
     await updateGameStatusTransaction(transaction, gameId, 'build')
 }
 

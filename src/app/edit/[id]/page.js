@@ -5,7 +5,7 @@
  * @see https://v0.dev/t/LS90ZXefxGc
  */
 import Link from 'next/link'
-import { useParams, redirect } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { useSession } from 'next-auth/react';
 
 import React from 'react';
@@ -170,7 +170,7 @@ export default function Page({ params }) {
                 {/* Main content */}
                 <main className='flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6'>
                     <EditGameRounds game={game} />
-                    <LaunchGameButton />
+                    {game.status === 'build' && <LaunchGameButton />}
                 </main>
             </div>
         </div>
@@ -181,12 +181,12 @@ export default function Page({ params }) {
 function EditGameRounds({ game }) {
     console.log("RENDERING EditGameRounds")
 
-    const { rounds: roundIds } = game
+    const { rounds: roundIds, status } = game
 
     return (
         <main className='flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6'>
-            {roundIds.map(roundId => <EditGameRoundCard key={roundId} roundId={roundId} />)}
-            <AddNewRoundButton disabled={roundIds.length >= GAME_MAX_NUMBER_OF_ROUNDS} />
+            {roundIds.map(roundId => <EditGameRoundCard key={roundId} roundId={roundId} status={status} />)}
+            {status === 'build' && <AddNewRoundButton disabled={roundIds.length >= GAME_MAX_NUMBER_OF_ROUNDS} />}
         </main>
     )
 }
