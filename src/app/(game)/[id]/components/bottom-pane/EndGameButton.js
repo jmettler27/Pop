@@ -1,17 +1,16 @@
 
-import { useGameContext } from '@/app/(game)/contexts'
-
 import { Button } from '@mui/material'
-import { updateGameStatus } from '@/app/(game)/lib/game'
+import { endGame } from '@/app/(game)/lib/game'
 import { useAsyncAction } from '@/lib/utils/async'
 import { DEFAULT_LOCALE } from '@/lib/utils/locales'
+import { useParams } from 'next/navigation'
 
 
 export default function EndGameButton({ lang = DEFAULT_LOCALE }) {
-    const game = useGameContext()
+    const { id: gameId } = useParams()
 
     const [handleEndGame, isEnding] = useAsyncAction(async () => {
-        await updateGameStatus(game.id, 'game_end')
+        await endGame(gameId)
     })
 
     return (

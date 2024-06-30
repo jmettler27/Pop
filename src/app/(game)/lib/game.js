@@ -8,6 +8,7 @@ import {
     getDocs,
     query,
     runTransaction,
+    serverTimestamp,
     updateDoc,
     where,
 } from 'firebase/firestore'
@@ -315,4 +316,35 @@ const updateQuestionAllManagersTransaction = async (
             transaction.update(realtimeDocRef, { managedBy })
         }
     }
+}
+
+/* ==================================================================================================== */
+export async function endGame(gameId) {
+    if (!gameId) {
+        throw new Error("No game ID has been provided!");
+    }
+
+    try {
+        runTransaction(firestore, transaction =>
+            endGameTransaction(transaction, gameId)
+        )
+    }
+    catch (error) {
+        console.error("There was an error ending the game:", error);
+        throw error;
+    }
+}
+
+const endGameTransaction = async (
+    transaction,
+    gameId
+) => {
+
+    const gameRef = doc(GAMES_COLLECTION_REF, gameId)
+    transaction.update(gameRef, {
+        dateEnd: serverTimestamp(),
+    })
+    await updateGameStatusTransaction(transaction, gameId, 'game_end')
+
+    await addSoundToQueueTransaction(transaction, gameId, 'ffxvi_victory_fanfare')
 }

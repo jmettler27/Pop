@@ -16,8 +16,7 @@ import { Backdrop } from '@mui/material'
 import SoundboardController from '../soundboard/SoundboardController'
 
 
-import { endGame } from '@/app/(game)/lib/transitions'
-import { resetGame, updateGameStatus, resumeEditing } from '@/app/(game)/lib/game'
+import { resetGame, updateGameStatus, resumeEditing, endGame } from '@/app/(game)/lib/game'
 import { useParams, useRouter } from 'next/navigation'
 
 const StyledSpeedDial = styled(SpeedDial)(({ theme }) => ({
@@ -33,7 +32,6 @@ const actions = [
     { icon: <HomeIcon />, name: 'Home' },
     { icon: <RestartAltIcon />, name: 'Reset game' },
     { icon: <EditIcon />, name: 'Resume editing' },
-    { icon: <WarningIcon />, name: 'End game' },
 
 ]
 
@@ -70,9 +68,6 @@ export default function OrganizerSpeedDial() {
                 break
             case 'Reset game':
                 resetGame(gameId)
-                break
-            case 'End game':
-                endGame(gameId)
                 break
             case 'Resume editing':
                 resumeEditing(gameId)
