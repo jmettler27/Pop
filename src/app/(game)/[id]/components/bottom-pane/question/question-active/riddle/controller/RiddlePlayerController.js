@@ -88,7 +88,7 @@ const CANCELED_WARNING_TEXT = {
 
 const LAST_ATTEMPT_TEXT = {
     'en': "Attention, it's your last attempt.",
-    'fr-FR': "Attenton, c'est ton dernier essai."
+    'fr-FR': "Attention, c'est ton dernier essai."
 }
 
 const WAITING_FOR_TURN_TEXT = {
@@ -120,7 +120,7 @@ function BuzzerMessage({ playerStatus, hasExceededMaxTries, round, myCanceledIte
         if (round.type === 'progressive_clues' && round.delay && round.delay > 0) {
             return <span className='2xl:text-3xl'>{message} {CANCELED_WARNING_TEXT[lang]} <span className='font-bold text-blue-500'>{remaining > 1 ? numRemainingClues(remaining, lang) : ONE_MORE_WAITING_CLUE_TEXT[lang]}.</span></span>
         }
-        return <span className='2xl:text-3xl'>{message}</span>
+        return <span className='2xl:text-3xl text-red-500'>{message}</span>
     }
     if (isFirst) {
         const message = `${RIDDLE_FIRST_BUZZER_TEXT[lang]} 🧐`

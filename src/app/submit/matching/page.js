@@ -78,7 +78,9 @@ export function SubmitMatchingQuestionForm({ userId, lang, ...props }) {
                 createdBy: userId,
                 approved: true
             })
-            return questionId
+            if (props.inGameEditor) {
+                await addGameQuestion(props.gameId, props.roundId, questionId, userId)
+            }
         } catch (error) {
             console.error("There was an error submitting your question:", error)
         }
@@ -94,11 +96,10 @@ export function SubmitMatchingQuestionForm({ userId, lang, ...props }) {
                 matches: []
             }}
             onSubmit={async values => {
-                const questionId = await submitMatchingQuestion(values)
+                await submitMatchingQuestion(values)
                 if (props.inSubmitPage) {
                     router.push('/submit')
                 } else if (props.inGameEditor) {
-                    await addGameQuestion(props.gameId, props.roundId, questionId, userId)
                     props.onDialogClose()
                 }
             }}
