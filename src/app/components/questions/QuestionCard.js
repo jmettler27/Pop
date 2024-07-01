@@ -3,22 +3,21 @@ import React from 'react';
 import Image from 'next/image';
 
 import { USERS_COLLECTION_REF } from '@/lib/firebase/firestore';
-
 import { doc } from 'firebase/firestore';
 import { useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 
 import { DEFAULT_LOCALE, LOCALE_TO_EMOJI } from '@/lib/utils/locales';
 import { timestampToDate } from '@/lib/utils/time';
 import { prependTopicWithEmoji, topicToEmoji } from '@/lib/utils/topics';
-
-import clsx from 'clsx';
-import { MCQ_CHOICES, mcqTypeToEmoji } from '@/lib/utils/question/mcq';
 import { QUESTION_ELEMENT_TO_EMOJI, QUESTION_ELEMENT_TO_TITLE } from '@/lib/utils/question/question';
+import { blindtestTypeToEmoji } from '@/lib/utils/question/blindtest';
+import { MCQ_CHOICES, mcqTypeToEmoji } from '@/lib/utils/question/mcq';
 
 import { CardTitle, CardHeader, CardContent, Card, CardFooter } from '@/app/components/card'
 
 import { Divider, Tooltip } from '@mui/material';
-import { blindtestTypeToEmoji } from '@/lib/utils/question/blindtest';
+
+import clsx from 'clsx';
 
 export function QuestionCard({ question }) {
 
@@ -322,7 +321,7 @@ const MCQCardMainContent = ({ question }) => {
 
     return (
         <div className='flex flex-col w-full space-y-2'>
-            {note && <p className='text-sm md:text-base dark:text-white'>{note}</p>}
+            {note && <p className='text-sm md:text-base dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['note']} {note}</p>}
             <ul>
                 {choices.map((choice, idx) => <li key={idx}
                     className={clsx(
@@ -344,7 +343,7 @@ const BasicCardMainContent = ({ question }) => {
 
     return (
         <div className='flex flex-col w-full space-y-2'>
-            {note && <p className='text-sm md:text-base dark:text-white'>{note}</p>}
+            {note && <p className='text-sm md:text-base dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['note']} {note}</p>}
             <span className='dark:text-white'>{answer}</span>
             {explanation && <p className='text-sm md:text-base dark:text-white'>{explanation}</p>}
         </div >

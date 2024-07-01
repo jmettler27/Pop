@@ -1,11 +1,11 @@
 import { useGameContext, useRoleContext } from '@/app/(game)/contexts'
 
-import { questionTypeToTitle, QuestionTypeIcon } from '@/lib/utils/question_types'
 import { topicToEmoji } from '@/lib/utils/topics'
-
-import MCQMainContent from './MCQMainContent'
+import { questionTypeToTitle, QuestionTypeIcon } from '@/lib/utils/question_types'
+import { mcqTypeToEmoji } from '@/lib/utils/question/mcq'
 
 import { CurrentRoundQuestionOrder } from '@/app/(game)/[id]/components/middle-pane/question/QuestionHeader'
+import MCQMainContent from '@/app/(game)/[id]/components/middle-pane/question/mcq/MCQMainContent'
 
 export default function MCQMiddlePane({ question }) {
     const game = useGameContext()
@@ -31,7 +31,7 @@ function MCQHeader({ question }) {
     return (
         <div className='flex flex-row items-center justify-center space-x-1'>
             <QuestionTypeIcon questionType={question.type} fontSize={50} />
-            <h1 className='2xl:text-4xl'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong>: <i>{question.details.source}</i></h1>
+            <h1 className='2xl:text-4xl'>{mcqTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong>: <i>{question.details.source}</i></h1>
         </div>
     )
 }

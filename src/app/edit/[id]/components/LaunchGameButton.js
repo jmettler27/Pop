@@ -30,7 +30,7 @@ export function LaunchGameButton({ lang = DEFAULT_LOCALE }) {
     }
 
     return (
-        <>
+        <div className='flex flex-col h-full'>
             <Button
                 variant='contained'
                 color='warning'
@@ -69,7 +69,7 @@ export function LaunchGameButton({ lang = DEFAULT_LOCALE }) {
                 </DialogActions>
 
             </Dialog>
-        </>
+        </div>
     )
 }
 

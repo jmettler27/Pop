@@ -1,21 +1,25 @@
+import { useParams } from 'next/navigation'
+
 import { useState, useEffect, memo } from 'react'
+
 import { useRoleContext } from '@/app/(game)/contexts'
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { doc, collection } from 'firebase/firestore'
 import { useCollectionOnce, useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/firestore'
 
-import { questionTypeToTitle } from '@/lib/utils/question_types'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 import { topicToEmoji } from '@/lib/utils/topics'
+import { questionTypeToTitle } from '@/lib/utils/question_types'
+import { blindtestTypeToEmoji } from '@/lib/utils/question/blindtest'
+import { mcqTypeToEmoji } from '@/lib/utils/question/mcq'
 
 import { CircularProgress, Accordion, AccordionSummary, AccordionDetails, Typography, Divider } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
-import { blindtestTypeToEmoji } from '@/lib/utils/question/blindtest'
-import { useParams } from 'next/navigation'
 import { QuestionCardContent } from '@/app/components/questions/QuestionCard'
+
 import clsx from 'clsx'
-import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 
 export default function RoundQuestionsProgress({ game, round }) {
@@ -223,12 +227,12 @@ function QuestionSummary({ question, order, lang = DEFAULT_LOCALE }) {
             return <span className='text-lg'>{blindtestTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong></span>
         case 'matching':
             return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong> ({question.details.numCols} col)</span>
+        case 'mcq':
+            return <span className='text-lg'>{mcqTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong></span>
         default:
             return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong></span>
     }
 }
-
-
 
 /* ============================================================================================ */
 function QuestionTitle({ question }) {
@@ -253,7 +257,7 @@ function QuestionTitle({ question }) {
 function MCQTitle({ question }) {
     return (
         <Typography>
-            <strong>{question.details.source}</strong>: <span className='italic'>{question.details.title}</span>
+            <i><strong>{question.details.source}</strong></i>: &quot;{question.details.title}&quot;
         </Typography>
     )
 }
