@@ -12,8 +12,8 @@ import { useDocumentData } from 'react-firebase-hooks/firestore'
 export default function RiddleBottomPane({ question }) {
     const game = useGameContext()
 
-    const playersDocRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'players')
-    const [players, playersLoading, playersError] = useDocumentData(playersDocRef)
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'players')
+    const [players, playersLoading, playersError] = useDocumentData(questionPlayersRef)
 
     if (playersError) {
         return <p><strong>Error: </strong>{JSON.stringify(playersError)}</p>

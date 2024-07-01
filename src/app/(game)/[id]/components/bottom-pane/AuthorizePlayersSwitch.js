@@ -3,7 +3,7 @@ import { useParams } from 'next/navigation'
 import { useAsyncAction } from '@/lib/utils/async'
 
 import { CircularProgress, FormControlLabel, Switch } from '@mui/material'
-import { switchAuthorizePlayers } from '@/app/(game)/lib/game'
+import { togglePlayerAuthorization } from '@/app/(game)/lib/game'
 import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 
@@ -11,7 +11,7 @@ export default function AuthorizePlayersSwitch({ authorized, lang = DEFAULT_LOCA
     const { id: gameId } = useParams()
 
     const [handleAuthorizePlayers, isAuthorizing] = useAsyncAction(async () => {
-        await switchAuthorizePlayers(gameId)
+        await togglePlayerAuthorization(gameId)
     })
 
     return (

@@ -3,7 +3,7 @@ import { memo, useState, useEffect } from 'react'
 
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material'
 
-import { addSoundToQueue } from '@/app/(game)/lib/sounds'
+import { addSoundEffect } from '@/app/(game)/lib/sounds'
 import { loadSounds } from '@/lib/utils/sounds'
 import { useParams } from 'next/navigation'
 
@@ -21,7 +21,7 @@ const SoundboardController = memo(function SoundboardController({ }) {
 
     const handleSelectSound = async (e) => {
         e.preventDefault()
-        addSoundToQueue(gameId, e.target.value)
+        addSoundEffect(gameId, e.target.value)
     }
 
     return (

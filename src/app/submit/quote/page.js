@@ -259,9 +259,6 @@ function EnterGuessSteps({ onSubmit, validationSchema, lang }) {
     const errors = formik.errors;
 
     const quoteParts = values.quoteParts;
-    console.log("Quote parts:", quoteParts)
-
-    // console.log("errors:", errors)
     const displayedAuthor = values.toGuess.includes('author') ? replaceAllNonSpace(values.author, '_') : values.author
     const displayedSource = values.toGuess.includes('source') ? replaceAllNonSpace(values.source, '_') : values.source
     const displayedQuote = values.toGuess.includes('quote') ? replaceSubstrings(values.quote, '_', values.quoteParts) : values.quote

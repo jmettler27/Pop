@@ -42,8 +42,8 @@ function ReadyPlayerHeader({ isLastQuestion, lang = DEFAULT_LOCALE }) {
     const game = useGameContext();
     const myRole = useRoleContext();
 
-    const readyDocRef = doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'ready')
-    const [ready, readyLoading, readyError] = useDocumentData(readyDocRef)
+    const readyRef = doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'ready')
+    const [ready, readyLoading, readyError] = useDocumentData(readyRef)
     if (readyError) {
         return <p><strong>Error: {JSON.stringify(readyError)}</strong></p>
     }

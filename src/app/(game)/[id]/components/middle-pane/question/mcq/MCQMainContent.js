@@ -8,7 +8,7 @@ import { useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/fires
 import LoadingScreen from '@/app/components/LoadingScreen'
 
 import { MCQ_CHOICES } from '@/lib/utils/question/mcq'
-import { handleSubmitChoicePlayer } from '@/app/(game)/lib/question/mcq'
+import { selectMCQChoice } from '@/app/(game)/lib/question/mcq'
 
 import { Avatar, Badge, Button, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 import { clsx } from 'clsx'
@@ -16,22 +16,22 @@ import { clsx } from 'clsx'
 import mcq_correct from '../../../../../../../../public/mcq-correct.png';
 import mcq_wrong from '../../../../../../../../public/mcq-wrong.png';
 
+import { QUESTION_ELEMENT_TO_EMOJI } from '@/lib/utils/question/question'
 
 export default function MCQMainContent({ question }) {
+    const { title, note } = question.details
     return (
         <div className='h-full w-full flex flex-col items-center justify-center'>
-            <div className='flex h-[10%] w-full items-center justify-center space-y-2'>
-                <h2 className='2xl:text-4xl'>{question.details.title}</h2>
+            <div className='h-[25%] w-full flex flex-col items-center justify-center space-y-2'>
+                <h2 className='2xl:text-4xl font-bold'>{title}</h2>
+                {note && <p className='2xl:text-2xl'>{QUESTION_ELEMENT_TO_EMOJI['note']} {note}</p>}
             </div>
-            <div className='flex h-[90%] w-full items-center justify-center'>
+            <div className='h-[75%] w-full flex items-center justify-center'>
                 <MCQMainContentQuestion question={question} />
             </div>
-
         </div>
     )
 }
-
-import MCQFooter from './MCQFooter'
 
 import Image from 'next/image'
 
@@ -59,9 +59,9 @@ function MCQAnswerImage({ correct }) {
 
 function MCQMainContentQuestion({ question }) {
     const game = useGameContext()
-    const myRole = useRoleContext()
 
-    const [realtime, realtimeLoading, realtimeError] = useDocumentData(doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion))
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
+    const [realtime, realtimeLoading, realtimeError] = useDocumentData(questionRealtimeRef)
     if (realtimeError) {
         return <p><strong>Error: {JSON.stringify(realtimeError)}</strong></p>
     }
@@ -73,28 +73,25 @@ function MCQMainContentQuestion({ question }) {
     }
 
     return (
-        <div className='flex flex-col h-full w-full'>
-            <div className='flex flex-row h-[80%] w-full items-center justify-center'>
-                <div className='flex flex-col h-full w-1/4 items-center justify-center'>
-                    <MCQAnswerImage correct={realtime.correct} />
-                </div>
-                {game.status === 'question_end' && <MCQAnswerChoices question={question} realtime={realtime} />}
-                {game.status === 'question_active' && <MCQChoices question={question} realtime={realtime} />}
-                <div className='flex flex-col h-full w-1/4 items-center justify-center'>
-                    <MCQAnswerImage correct={realtime.correct} />
-                </div>
+        <div className='flex flex-row h-full w-full items-center justify-center'>
+            <div className='flex flex-col h-full w-1/4 items-center justify-center'>
+                <MCQAnswerImage correct={realtime.correct} />
             </div>
-            <div className='flex h-[20%] w-full items-center justify-center'>
-                {(game.status === 'question_end' || myRole === 'organizer') && <MCQFooter question={question} realtime={realtime} />}
+            {game.status === 'question_end' && <MCQAnswerChoices question={question} realtime={realtime} />}
+            {game.status === 'question_active' && <MCQChoices question={question} realtime={realtime} />}
+            <div className='flex flex-col h-full w-1/4 items-center justify-center'>
+                <MCQAnswerImage correct={realtime.correct} />
             </div>
         </div>
     )
 }
 
 
-const choiceIsDisabled = (choiceIdx, myRole, isChooser, option, duoIdx, answerIdx) => {
+const choiceIsDisabled = (choiceIdx, myRole, isChooser, subtype, option, duoIdx, answerIdx) => {
     if (!(myRole === 'player' && isChooser))
         return true
+    if (subtype === 'immediate')
+        return false
     if (option === 'duo')
         return !(choiceIdx === duoIdx || choiceIdx === answerIdx)
     if (option === 'square')
@@ -111,30 +108,35 @@ function MCQChoices({ question, realtime }) {
     const myRole = useRoleContext()
     const user = useUserContext()
 
+    const { choices, answerIdx, duoIdx, subtype } = question.details
+
     const isChooser = myTeam === realtime.teamId
 
-    const [handlePlayerChoiceClick, isSubmitting] = useAsyncAction(async (idx) => {
-        await handleSubmitChoicePlayer(game.id, game.currentRound, game.currentQuestion, user.id, myTeam, idx)
+    const [handleSelectChoice, isSubmitting] = useAsyncAction(async (idx) => {
+        await selectMCQChoice(game.id, game.currentRound, game.currentQuestion, user.id, myTeam, idx)
     })
 
-    if (realtime.option === null || realtime.option === 'hide') {
+    if (subtype === 'conditional' && (realtime.option === null || realtime.option === 'hide')) {
         // return <Image src={mcq_correct.src} height={'70%'} />
         return <span className='2xl:text-6xl'>{mcqOptionToEmoji('hide')} {mcqOptionToEmoji('square')} {mcqOptionToEmoji('duo')} ?</span>
     }
 
+
     return (
         <List className='rounded-lg max-h-full w-1/2 overflow-y-auto mb-3 space-y-3'>
-            {question.details.choices.map((choice, idx) => (
+            {choices.map((choice, idx) => (
                 // If the question is a duo question, only show the duoIdx and answerIdx
-                (realtime.option !== 'duo' || (idx === question.details.answerIdx || idx === question.details.duoIdx)) && (
+                (subtype === 'immediate' ||
+                    (subtype === 'conditional' && (realtime.option !== 'duo' || (idx === answerIdx || idx === duoIdx)))
+                ) && (
                     <ListItemButton key={idx}
-                        divider={idx !== question.details.choices.length - 1}
-                        disabled={isSubmitting || choiceIsDisabled(idx, myRole, isChooser, realtime.option, question.details.duoIdx, question.details.answerIdx)}
+                        divider={idx !== choices.length - 1}
+                        disabled={isSubmitting || choiceIsDisabled(idx, myRole, isChooser, subtype, realtime.option, duoIdx, answerIdx)}
                         sx={{
                             '&.Mui-disabled': { opacity: 1 },
                         }}
                         className='border-4 border-solid rounded-lg border-blue-500 hover:text-blue-400'
-                        onClick={() => handlePlayerChoiceClick(idx)}
+                        onClick={() => handleSelectChoice(idx)}
                     >
                         <ListItemText
                             primary={`${MCQ_CHOICES[idx]}. ${choice}`}

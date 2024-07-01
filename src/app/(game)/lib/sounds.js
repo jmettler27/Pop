@@ -13,8 +13,8 @@ import {
     writeBatch
 } from 'firebase/firestore'
 
-// WRITE
-export async function addSoundToQueue(gameId, filename) {
+
+export async function addSoundEffect(gameId, filename) {
     const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue')
     await addDoc(queueCollectionRef, {
         timestamp: serverTimestamp(),
@@ -24,7 +24,7 @@ export async function addSoundToQueue(gameId, filename) {
 }
 
 
-export const addSoundToQueueTransaction = async (transaction, gameId, filename) => {
+export const addSoundEffectTransaction = async (transaction, gameId, filename) => {
     const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue');
     const newSoundDocument = doc(queueCollectionRef);
     transaction.set(newSoundDocument, {
@@ -33,15 +33,13 @@ export const addSoundToQueueTransaction = async (transaction, gameId, filename) 
     });
 };
 
-// BATCHED WRITE
 export async function clearSounds(gameId) {
     const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue')
-    const querySnapshot = await getDocs(query(queueCollectionRef))
+    const soundsSnapshot = await getDocs(query(queueCollectionRef))
 
     const batch = writeBatch(firestore)
-    for (const doc of querySnapshot.docs) {
-        // await deleteDoc(doc.ref)
-        batch.delete(doc.ref)
+    for (const soundDoc of soundsSnapshot.docs) {
+        batch.delete(soundDoc.ref)
     }
 
     await batch.commit()
@@ -59,5 +57,5 @@ const WRONG_ANSWER_SOUNDS = [
 import { getRandomElement } from '@/lib/utils/arrays';
 
 export const addWrongAnswerSoundToQueueTransaction = async (transaction, gameId) => {
-    await addSoundToQueueTransaction(transaction, gameId, getRandomElement(WRONG_ANSWER_SOUNDS))
+    await addSoundEffectTransaction(transaction, gameId, getRandomElement(WRONG_ANSWER_SOUNDS))
 }

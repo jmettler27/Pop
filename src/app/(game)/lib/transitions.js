@@ -12,9 +12,9 @@ import {
 } from 'firebase/firestore'
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
 
-import { updateGameFields, switchAuthorizePlayersTransaction } from '@/app/(game)/lib/game';
+import { updateGameFields, togglePlayerAuthorizationTransaction } from '@/app/(game)/lib/game';
 import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
-import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { addSoundEffectTransaction } from '@/app/(game)/lib/sounds';
 import { updateTimerStateTransaction, updateTimerTransaction } from '@/app/(game)/lib/timer';
 
 
@@ -45,19 +45,19 @@ const setPlayerReadyTransaction = async (
     gameId,
     playerId
 ) => {
-    const readyDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready')
-    const readyData = await getDocDataTransaction(transaction, readyDocRef)
+    const readyRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready')
+    const readyData = await getDocDataTransaction(transaction, readyRef)
     const { numReady, numPlayers } = readyData
     const newNumReady = numReady + 1
 
     await updatePlayerStatusTransaction(transaction, gameId, playerId, 'ready')
 
-    transaction.update(readyDocRef, {
+    transaction.update(readyRef, {
         numReady: newNumReady
     })
 
     const num = Math.floor(Math.random() * 50)
-    await addSoundToQueueTransaction(transaction, gameId, num === 0 ? 'fart_perfecter' : 'pop')
+    await addSoundEffectTransaction(transaction, gameId, num === 0 ? 'fart_perfecter' : 'pop')
 
     if (newNumReady === numPlayers) {
         await updateTimerTransaction(transaction, gameId, {
@@ -65,7 +65,7 @@ const setPlayerReadyTransaction = async (
             duration: READY_COUNTDOWN_SECONDS,
             forward: false
         })
-        await switchAuthorizePlayersTransaction(transaction, gameId, false)
+        await togglePlayerAuthorizationTransaction(transaction, gameId, false)
     }
 }
 
@@ -94,9 +94,9 @@ export const startGameTransaction = async (
     gameId,
 ) => {
     const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
-    const teamsQuerySnapshot = await getDocs(query(teamsCollectionRef))
+    const teamsSnapshot = await getDocs(query(teamsCollectionRef))
 
-    const { teamIds, initTeamGameScores, initTeamGameScoresProgress } = teamsQuerySnapshot.docs.reduce((acc, teamDoc) => {
+    const { teamIds, initTeamGameScores, initTeamGameScoresProgress } = teamsSnapshot.docs.reduce((acc, teamDoc) => {
         acc.teamIds.push(teamDoc.id);
         acc.initTeamGameScores[teamDoc.id] = 0;
         acc.initTeamGameScoresProgress[teamDoc.id] = {};
@@ -108,8 +108,8 @@ export const startGameTransaction = async (
     const chooserTeamId = shuffledTeamIds[0]
 
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const chooserPlayersQuerySnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', chooserTeamId)))
-    const otherPlayersQuerySnapshot = await getDocs(query(playersCollectionRef, where('teamId', '!=', chooserTeamId)))
+    const choosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', chooserTeamId)))
+    const nonChoosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '!=', chooserTeamId)))
 
     const gameRef = doc(GAMES_COLLECTION_REF, gameId)
     transaction.update(gameRef, {
@@ -117,20 +117,19 @@ export const startGameTransaction = async (
         dateStart: serverTimestamp(),
     })
 
-    for (const playerDoc of chooserPlayersQuerySnapshot.docs) {
+    for (const playerDoc of choosersSnapshot.docs) {
         transaction.update(playerDoc.ref, {
             status: 'focus'
         })
     }
-
-    for (const playerDoc of otherPlayersQuerySnapshot.docs) {
+    for (const playerDoc of nonChoosersSnapshot.docs) {
         transaction.update(playerDoc.ref, {
             status: 'idle'
         })
     }
 
-    const gameStatesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
-    transaction.update(gameStatesDocRef, {
+    const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
+    transaction.update(gameStatesRef, {
         chooserIdx: 0,
         chooserOrder: shuffledTeamIds
     })
@@ -146,7 +145,7 @@ export const startGameTransaction = async (
         numReady: 0,
     })
 
-    await addSoundToQueueTransaction(transaction, gameId, 'ui-confirmation-alert-b2')
+    await addSoundEffectTransaction(transaction, gameId, 'ui-confirmation-alert-b2')
 
     await updateTimerStateTransaction(transaction, gameId, 'reset')
 }
@@ -173,7 +172,7 @@ const roundEndToGameHomeTransaction = async (
     transaction,
     gameId,
 ) => {
-    await addSoundToQueueTransaction(transaction, gameId, 'ui-confirmation-alert-b2')
+    await addSoundEffectTransaction(transaction, gameId, 'ui-confirmation-alert-b2')
 
     await updateGameStatusTransaction(transaction, gameId, 'game_home')
 }

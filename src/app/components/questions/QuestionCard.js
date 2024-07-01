@@ -36,10 +36,7 @@ export function QuestionCard({ question }) {
             <CardFooter>
                 <QuestionCardFooter question={question} />
             </CardFooter>
-
         </Card>
-
-
     );
 }
 

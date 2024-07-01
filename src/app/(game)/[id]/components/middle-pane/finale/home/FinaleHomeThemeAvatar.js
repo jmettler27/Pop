@@ -19,8 +19,8 @@ export default function FinaleHomeThemeAvatar({ themeRealtime, isChooser }) {
     })
 
     const themeId = themeRealtime.id
-    const themeDocRef = doc(QUESTIONS_COLLECTION_REF, themeId)
-    const [themeDoc, themeDocLoading, themeDocError] = useDocument(themeDocRef)
+    const themeRef = doc(QUESTIONS_COLLECTION_REF, themeId)
+    const [themeDoc, themeDocLoading, themeDocError] = useDocument(themeRef)
 
     if (themeDocError) {
         return <p><strong>Error: {JSON.stringify(themeDocError)}</strong></p>

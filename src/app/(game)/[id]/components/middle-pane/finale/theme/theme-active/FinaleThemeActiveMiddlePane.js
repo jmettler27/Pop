@@ -15,8 +15,8 @@ export default function FinaleThemeActiveMiddlePane({ theme, themeRealtime }) {
     const currentThemeId = theme.id
     const currentSectionId = theme.details.sections[themeRealtime.currentSectionIdx]
 
-    const sectionDocRef = doc(QUESTIONS_COLLECTION_REF, currentThemeId, 'sections', currentSectionId)
-    const [section, sectionLoading, sectionError] = useDocumentData(sectionDocRef)
+    const sectionRef = doc(QUESTIONS_COLLECTION_REF, currentThemeId, 'sections', currentSectionId)
+    const [section, sectionLoading, sectionError] = useDocumentData(sectionRef)
 
     if (sectionError) {
         return <p><strong>Error: {JSON.stringify(sectionError)}</strong></p>

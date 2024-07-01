@@ -64,8 +64,8 @@ function OrganizerTimerPane() {
 
     const [offsetSnapshot, offsetLoading, offsetError] = useObject(SERVER_TIME_OFFSET_REF);
 
-    const timerDocRef = doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'timer')
-    const [timer, timerLoading, timerError] = useDocumentData(timerDocRef)
+    const timerRef = doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'timer')
+    const [timer, timerLoading, timerError] = useDocumentData(timerRef)
 
 
     if (offsetError) {
@@ -102,8 +102,8 @@ function SpectatorTimerPane() {
 
     const [offsetSnapshot, offsetLoading, offsetError] = useObject(SERVER_TIME_OFFSET_REF);
 
-    const timerDocRef = doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'timer')
-    const [timer, timerLoading, timerError] = useDocumentData(timerDocRef)
+    const timerRef = doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'timer')
+    const [timer, timerLoading, timerError] = useDocumentData(timerRef)
 
 
     if (offsetError) {

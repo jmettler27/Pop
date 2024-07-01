@@ -16,17 +16,18 @@ import {
     increment
 } from 'firebase/firestore'
 
+import { updateTimerStateTransaction } from '@/app/(game)/lib/timer';
 import { switchNextChooserTransaction } from '@/app/(game)/lib/chooser'
-import { addSoundToQueueTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
-
-import { findMostFrequentValueAndIndices, generateNewMatch } from '@/lib/utils/question/matching';
+import { addSoundEffectTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
+import { endQuestionTransaction } from '@/app/(game)/lib/question';
+import { increaseRoundTeamScoreTransaction } from '@/app/(game)/lib/scores';
+
+import { findMostFrequentValueAndIndices, generateMatch } from '@/lib/utils/question/matching';
 import { sortScores } from '@/lib/utils/scores';
 import { sortAscendingRoundScores } from '@/lib/utils/question_types';
 import { getNextCyclicIndex, shuffle } from '@/lib/utils/arrays';
 
-import { endQuestionTransaction } from '@/app/(game)/lib/question';
-import { updateTimerStateTransaction } from '../timer';
 
 export async function submitMatch(gameId, roundId, questionId, userId, edges, match) {
     if (!gameId) {
@@ -67,13 +68,13 @@ const submitMatchTransaction = async (
 ) => {
     const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
     const gameStatesData = await getDocDataTransaction(transaction, gameStatesRef)
-    const teamId = gameStatesData.chooserOrder[gameStatesData.chooserIdx]
+    const { chooserOrder, chooserIdx } = gameStatesData
+    const teamId = chooserOrder[chooserIdx]
 
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const q = query(playersCollectionRef, where('teamId', '==', teamId))
-    const playersQuerySnapshot = await getDocs(q)
+    const choosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)))
 
-    const correctMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct')
+    const correctMatchesRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct')
     const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
 
     // edges is an array of numCols objects of the form {from: origRow0_col0, to: origRow1_col1}
@@ -89,20 +90,24 @@ const submitMatchTransaction = async (
 
     if (isCorrect) {
         // Case 1: The matching is correct
-
-        const questionDocRef = doc(QUESTIONS_COLLECTION_REF, questionId)
+        const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
         const [correctMatchesData, questionData] = await Promise.all([
-            getDocDataTransaction(transaction, correctMatchesDocRef),
-            getDocDataTransaction(transaction, questionDocRef),
+            getDocDataTransaction(transaction, correctMatchesRef),
+            getDocDataTransaction(transaction, questionRef),
         ])
 
         if (correctMatchesData.correctMatches.length === questionData.details.numRows - 1) {
             // Case 1.2: It is the last correct matching
-
             const roundScoresData = await getDocDataTransaction(transaction, roundScoresRef)
-            const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
+            const { scores: currentRoundScores } = roundScoresData
 
-            transaction.update(correctMatchesDocRef, {
+            await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, 0)
+
+            for (const chooserDoc of choosersSnapshot.docs) {
+                transaction.update(chooserDoc.ref, { status: 'correct' })
+            }
+
+            transaction.update(correctMatchesRef, {
                 correctMatches: arrayUnion({
                     matchIdx: rows[0],
                     userId,
@@ -111,54 +116,27 @@ const submitMatchTransaction = async (
                 })
             })
 
-            const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-            transaction.update(realtimeDocRef, {
-                dateEnd: serverTimestamp(),
-            })
-
-            const newRoundProgress = {}
-            const teamsQuerySnapshot = await getDocs(query(collection(GAMES_COLLECTION_REF, gameId, 'teams')))
-            for (const teamDoc of teamsQuerySnapshot.docs) {
-                newRoundProgress[teamDoc.id] = {
-                    ...currentRoundProgress[teamDoc.id],
-                    [questionId]: currentRoundScores[teamDoc.id]
-                }
-            }
-            transaction.update(roundScoresRef, {
-                scoresProgress: newRoundProgress
-            })
-
-            for (const playerDoc of playersQuerySnapshot.docs) {
-                transaction.update(playerDoc.ref, { status: 'correct' })
-            }
-
-            await addSoundToQueueTransaction(transaction, gameId, 'zelda_secret_door')
-
-            // Sort the UNIQUE scores according to the notion of "winner first" 
             const sortedUniqueRoundScores = sortScores(currentRoundScores, sortAscendingRoundScores('matching'));
             const roundSortedTeams = sortedUniqueRoundScores.map(score => {
-                const teamsWithThisScore = Object.keys(currentRoundScores).filter(teamId => currentRoundScores[teamId] === score);
+                const teamsWithThisScore = Object.keys(currentRoundScores).filter(tid => currentRoundScores[tid] === score);
                 return { score, teams: teamsWithThisScore };
             });
-            // updatedChooserOrder array is the flattened array of the teams in roundSortedTeams, in reverse order
-            // slice() is used to create a copy of the roundSortedTeams array
-            const updatedChooserOrder = roundSortedTeams.slice().reverse().flatMap(({ teams }) => shuffle(teams));
+            const newChooserOrder = roundSortedTeams.slice().reverse().flatMap(({ teams }) => shuffle(teams));
             transaction.update(gameStatesRef, {
-                chooserOrder: updatedChooserOrder,
+                chooserOrder: newChooserOrder,
             })
 
-            // End the question
+            await addSoundEffectTransaction(transaction, gameId, 'zelda_secret_door')
             await endQuestionTransaction(transaction, gameId, roundId, questionId)
-
         } else {
             // Case 1.1: The matching is correct but not the last one
             await switchNextChooserTransaction(transaction, gameId)
-            await addSoundToQueueTransaction(transaction, gameId, 'OUI')
-            for (const playerDoc of playersQuerySnapshot.docs) {
-                transaction.update(playerDoc.ref, { status: 'correct' })
+            for (const chooserDoc of choosersSnapshot.docs) {
+                transaction.update(chooserDoc.ref, { status: 'correct' })
             }
+            await addSoundEffectTransaction(transaction, gameId, 'OUI')
 
-            transaction.update(correctMatchesDocRef, {
+            transaction.update(correctMatchesRef, {
                 correctMatches: arrayUnion({
                     matchIdx: rows[0],
                     userId,
@@ -169,42 +147,35 @@ const submitMatchTransaction = async (
         }
     } else {
         // Case 2: The matching is incorrect
-
-        // let penalty = 0
         const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-        const [roundData, roundScoresData] = await Promise.all([
-            getDocDataTransaction(transaction, roundRef),
-            getDocDataTransaction(transaction, roundScoresRef)
-        ])
-
+        const roundData = await getDocDataTransaction(transaction, roundRef)
         const { mistakePenalty: penalty } = roundData
-        const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
-        const newRoundProgress = {}
-        for (const tid of Object.keys(currentRoundScores)) {
-            // Add an entry whose key is questionId and value is currentRoundScores[tid
-            newRoundProgress[tid] = {
-                ...currentRoundProgress[tid],
-                [questionId]: currentRoundScores[tid] + (tid === teamId ? penalty : 0)
-            }
+        await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, penalty)
+
+        for (const chooserDoc of choosersSnapshot.docs) {
+            transaction.update(chooserDoc.ref, { status: 'wrong' })
         }
 
-        await switchNextChooserTransaction(transaction, gameId)
-        await addWrongAnswerSoundToQueueTransaction(transaction, gameId)
-        for (const playerDoc of playersQuerySnapshot.docs) {
-            transaction.update(playerDoc.ref, { status: 'wrong' })
-        }
-
-        transaction.update(roundScoresRef, {
-            [`scores.${teamId}`]: increment(penalty),
-            scoresProgress: newRoundProgress
+        const newChooserIdx = getNextCyclicIndex(chooserIdx, chooserOrder.length)
+        transaction.update(gameStatesRef, {
+            chooserIdx: newChooserIdx
         })
+        const newChooserTeamId = chooserOrder[newChooserIdx]
+        const newChoosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', newChooserTeamId)))
+        for (const newChooserDoc of newChoosersSnapshot.docs) {
+            transaction.update(newChooserDoc.ref, {
+                status: 'focus'
+            })
+        }
+
+        await addWrongAnswerSoundToQueueTransaction(transaction, gameId)
 
         const numCols = rows.length
         if (numCols > 2) {
             const [colIndices, rowIdx] = findMostFrequentValueAndIndices(rows)
             if (colIndices.length > 0 && rowIdx !== null) {
-                const partiallyCorrectMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'partially_correct')
-                transaction.update(partiallyCorrectMatchesDocRef, {
+                const partiallyCorrectMatchesRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'partially_correct')
+                transaction.update(partiallyCorrectMatchesRef, {
                     partiallyCorrectMatches: arrayUnion({
                         colIndices,
                         matchIdx: rowIdx,
@@ -215,8 +186,8 @@ const submitMatchTransaction = async (
                 })
             }
         }
-        const incorrectMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'incorrect')
-        transaction.update(incorrectMatchesDocRef, {
+        const incorrectMatchesRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'incorrect')
+        transaction.update(incorrectMatchesRef, {
             incorrectMatches: arrayUnion({
                 match: rows,
                 userId,
@@ -225,7 +196,6 @@ const submitMatchTransaction = async (
             }),
         })
     }
-
     // await updateTimerStateTransaction(transaction, gameId, 'reset')
 }
 
@@ -269,32 +239,32 @@ export const handleMatchingCountdownEndTransaction = async (transaction, gameId,
 
     const correctMatchIndices = correctData.correctMatches.map(obj => obj.matchIdx)
     const incorrectMatches = incorrectData.incorrectMatches.map(obj => obj.match)
-    const randomMatch = generateNewMatch(numRows, numCols, incorrectMatches, correctMatchIndices);
+    const match = generateMatch(numRows, numCols, incorrectMatches, correctMatchIndices);
 
-    await submitMatchTransaction(transaction, gameId, roundId, questionId, 'system', null, randomMatch)
+    await submitMatchTransaction(transaction, gameId, roundId, questionId, 'system', null, match)
 }
 
 /* ==================================================================================================== */
 export async function resetMatchingQuestion(gameId, roundId, questionId) {
     const batch = writeBatch(firestore)
 
-    const statesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
-    batch.update(statesDocRef, {
+    const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
+    batch.update(gameStatesRef, {
         chooserIdx: 0,
     })
 
-    const correctMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct')
-    batch.set(correctMatchesDocRef, {
+    const correctMatchesRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct')
+    batch.set(correctMatchesRef, {
         correctMatches: [],
     })
 
-    const partiallyCorrectMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'partially_correct')
-    batch.set(partiallyCorrectMatchesDocRef, {
+    const partiallyCorrectMatchesRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'partially_correct')
+    batch.set(partiallyCorrectMatchesRef, {
         partiallyCorrectMatches: [],
     })
 
-    const incorrectMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'incorrect')
-    batch.set(incorrectMatchesDocRef, {
+    const incorrectMatchesRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'incorrect')
+    batch.set(incorrectMatchesRef, {
         incorrectMatches: [],
     })
 
@@ -302,23 +272,23 @@ export async function resetMatchingQuestion(gameId, roundId, questionId) {
 }
 
 export const resetMatchingQuestionTransaction = async (transaction, gameId, roundId, questionId) => {
-    const statesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
-    transaction.update(statesDocRef, {
+    const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
+    transaction.update(gameStatesRef, {
         chooserIdx: 0,
     })
 
-    const correctMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct')
-    transaction.set(correctMatchesDocRef, {
+    const correctMatchesRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct')
+    transaction.set(correctMatchesRef, {
         correctMatches: [],
     })
 
-    const partiallyCorrectMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'partially_correct')
-    transaction.set(partiallyCorrectMatchesDocRef, {
+    const partiallyCorrectMatchesRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'partially_correct')
+    transaction.set(partiallyCorrectMatchesRef, {
         partiallyCorrectMatches: [],
     })
 
-    const incorrectMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'incorrect')
-    transaction.set(incorrectMatchesDocRef, {
+    const incorrectMatchesRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'incorrect')
+    transaction.set(incorrectMatchesRef, {
         incorrectMatches: [],
     })
 }

@@ -13,8 +13,8 @@ export default function CorrectMatches({ nodePositions, colIndices }) {
     console.log("CORRECT MATCHES RENDERED")
 
     const game = useGameContext()
-    const correctDocRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'correct')
-    const [correctData, correctLoading, correctError] = useDocumentData(correctDocRef)
+    const correctRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'correct')
+    const [correctData, correctLoading, correctError] = useDocumentData(correctRef)
     if (correctError) {
         return <p><strong>Error: {JSON.stringify(correctError)}</strong></p>
     }

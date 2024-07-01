@@ -19,7 +19,7 @@ import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
 import { resetAllRoundsTransaction } from '@/app/(game)/lib/round';
 import { getDocData, getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
 import { updateTimerTransaction } from '@/app/(game)/lib/timer';
-import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { addSoundEffectTransaction } from '@/app/(game)/lib/sounds';
 
 
 export async function updateGameFields(gameId, fieldsToUpdate) {
@@ -36,10 +36,10 @@ export async function updateGameStatus(gameId, newStatus) {
 }
 
 export async function updateGameStates(gameId, fieldsToUpdate) {
-    const statesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
+    const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
     const updateObject = { ...fieldsToUpdate }
 
-    await updateDoc(statesRef, updateObject)
+    await updateDoc(gameStatesRef, updateObject)
     console.log(`Game ${gameId}, States:`, fieldsToUpdate)
 }
 
@@ -79,13 +79,13 @@ const resetGameTransaction = async (
     const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue')
     const organizersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'organizers')
 
-    const [teamsQuerySnapshot, playersQuerySnapshot, queueQuerySnapshot, organizersQuerySnapshot] = await Promise.all([
+    const [teamsSnapshot, playersSnapshot, queueSnapshot, organizersSnapshot] = await Promise.all([
         getDocs(query(teamsCollectionRef)),
         getDocs(query(playersCollectionRef)),
         getDocs(query(queueCollectionRef)),
         getDocs(query(organizersCollectionRef))
     ])
-    const { teamIds, initTeamGameScores, initTeamGameScoresProgress } = teamsQuerySnapshot.docs.reduce((acc, teamDoc) => {
+    const { teamIds, initTeamGameScores, initTeamGameScoresProgress } = teamsSnapshot.docs.reduce((acc, teamDoc) => {
         acc.teamIds.push(teamDoc.id);
         acc.initTeamGameScores[teamDoc.id] = 0;
         acc.initTeamGameScoresProgress[teamDoc.id] = {};
@@ -105,8 +105,8 @@ const resetGameTransaction = async (
     })
 
     // Reset timer
-    // const managerId = getRandomElement(organizersQuerySnapshot.docs).id
-    const managerId = organizersQuerySnapshot.docs[0].id
+    // const managerId = getRandomElement(organizersSnapshot.docs).id
+    const managerId = organizersSnapshot.docs[0].id
     await updateTimerTransaction(transaction, gameId, {
         status: 'reset',
         duration: READY_COUNTDOWN_SECONDS,
@@ -117,8 +117,8 @@ const resetGameTransaction = async (
 
     // Init chooser
     const shuffledTeamIds = shuffle(teamIds)
-    const gameStatesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
-    transaction.update(gameStatesDocRef, {
+    const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
+    transaction.update(gameStatesRef, {
         chooserIdx: 0,
         chooserOrder: shuffledTeamIds
     })
@@ -130,31 +130,31 @@ const resetGameTransaction = async (
         scoresProgress: initTeamGameScoresProgress,
     })
 
-    const gameReadyDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready')
-    transaction.set(gameReadyDocRef, {
-        numPlayers: playersQuerySnapshot.size,
+    const gameReadyRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready')
+    transaction.set(gameReadyRef, {
+        numPlayers: playersSnapshot.size,
         numReady: 0
     })
 
 
-    for (const playerDoc of playersQuerySnapshot.docs) {
+    for (const playerDoc of playersSnapshot.docs) {
         transaction.update(playerDoc.ref, { status: 'idle' })
     }
 
     // Clear sounds
-    for (const doc of queueQuerySnapshot.docs) {
+    for (const doc of queueSnapshot.docs) {
         transaction.delete(doc.ref)
     }
 }
 
-export async function switchAuthorizePlayers(gameId, authorized = null) {
+export async function togglePlayerAuthorization(gameId, authorized = null) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
 
     try {
         await runTransaction(firestore, transaction =>
-            switchAuthorizePlayersTransaction(transaction, gameId, authorized)
+            togglePlayerAuthorizationTransaction(transaction, gameId, authorized)
         )
     }
     catch (error) {
@@ -163,22 +163,21 @@ export async function switchAuthorizePlayers(gameId, authorized = null) {
     }
 }
 
-export const switchAuthorizePlayersTransaction = async (
+export const togglePlayerAuthorizationTransaction = async (
     transaction,
     gameId,
     authorized = null
 ) => {
-    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
+    const timerRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
 
     let newVal = authorized
     if (authorized === null) {
-        const timerData = await getDocDataTransaction(transaction, timerDocRef)
+        const timerData = await getDocDataTransaction(transaction, timerRef)
         newVal = !timerData.authorized
     }
-
-    updateTimerTransaction(transaction, gameId, { authorized: newVal })
+    await updateTimerTransaction(transaction, gameId, { authorized: newVal })
     if (newVal === true)
-        addSoundToQueueTransaction(transaction, gameId, 'minecraft_button_plate')
+        await addSoundEffectTransaction(transaction, gameId, 'minecraft_button_plate')
 }
 
 export async function resumeEditing(gameId) {
@@ -223,14 +222,13 @@ const updateQuestionTransaction = async (
     transaction,
     questionId
 ) => {
-    const questionDocRef = doc(QUESTIONS_COLLECTION_REF, questionId)
-    transaction.update(questionDocRef, {
+    const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
+    transaction.update(questionRef, {
         createdBy: 'dE1ItazZqaoBjChy7NN8'
     })
 }
 
 export async function updateQuestions() {
-
     try {
         const q = query(QUESTIONS_COLLECTION_REF, where('type', '==', 'basic'), where('topic', '==', 'video_game'));
         const querySnapshot = await getDocs(q)
@@ -239,7 +237,6 @@ export async function updateQuestions() {
             await runTransaction(firestore, transaction =>
                 updateQuestionTransaction(transaction, questionDoc.id)
             )
-            // console.log(questionDoc.id)
         }
     } catch (error) {
         console.error("There was an error updating the questions", error);
@@ -270,52 +267,8 @@ const updateQuestionManagerTransaction = async (
     questionId,
     managedBy
 ) => {
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    transaction.update(realtimeDocRef, { managedBy })
-}
-
-
-export async function updateAllQuestionManagers(gameId, managedBy) {
-    if (!gameId || !managedBy) {
-        throw new Error("Missing required parameters!");
-    }
-    try {
-        await runTransaction(firestore, transaction =>
-            updateQuestionAllManagersTransaction(transaction, gameId, managedBy)
-        )
-        console.log("Matching submission handled successfully.");
-    } catch (error) {
-        console.error("There was an error handling the matching submission:", error);
-        throw error;
-    }
-}
-
-const updateQuestionAllManagersTransaction = async (
-    transaction,
-    gameId,
-    managedBy
-) => {
-    // const gameRef = doc(GAMES_COLLECTION_REF, gameId)
-    // const gameData = await getDocDataTransaction(transaction, gameRef)
-    // const { rounds: roundIds } = gameData
-
-    // Get the ids of all the documents in the 'rounds' collection
-    const roundsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds')
-    const roundsQuerySnapshot = await getDocs(roundsCollectionRef)
-    const roundIds = roundsQuerySnapshot.docs.map(doc => doc.id)
-
-    // For each round, get the ids of all the documents in the 'questions' collection
-    for (const roundId of roundIds) {
-        const questionsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions')
-        const questionsQuerySnapshot = await getDocs(questionsCollectionRef)
-        const questionIds = questionsQuerySnapshot.docs.map(doc => doc.id)
-
-        // For each question, update the 'managedBy' field
-        for (const questionId of questionIds) {
-            const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-            transaction.update(realtimeDocRef, { managedBy })
-        }
-    }
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.update(questionRealtimeRef, { managedBy })
 }
 
 /* ==================================================================================================== */
@@ -339,12 +292,10 @@ const endGameTransaction = async (
     transaction,
     gameId
 ) => {
-
     const gameRef = doc(GAMES_COLLECTION_REF, gameId)
     transaction.update(gameRef, {
         dateEnd: serverTimestamp(),
     })
     await updateGameStatusTransaction(transaction, gameId, 'game_end')
-
-    await addSoundToQueueTransaction(transaction, gameId, 'ffxvi_victory_fanfare')
+    await addSoundEffectTransaction(transaction, gameId, 'ffxvi_victory_fanfare')
 }

@@ -6,10 +6,8 @@ import { firestore } from '@/lib/firebase/firebase'
 import {
     collection,
     query,
-    where,
     getDocs,
     doc,
-    updateDoc,
     writeBatch
 } from 'firebase/firestore'
 
@@ -19,20 +17,7 @@ export async function getPlayerData(gameId, playerId) {
     return getDocData('games', gameId, 'players', playerId);
 }
 
-async function updatePlayerFields(gameId, playerId, fieldsToUpdate) {
-    const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
-    const updateObject = { ...fieldsToUpdate }
-
-    await updateDoc(playerRef, updateObject)
-    console.log(`Game ${gameId}, Player ${playerId}:`, fieldsToUpdate)
-}
-
-
 /* ==================================================================================================== */
-export async function updatePlayerStatus(gameId, playerId, status) {
-    await updatePlayerFields(gameId, playerId, { status })
-}
-
 export const updatePlayerStatusTransaction = async (
     transaction,
     gameId,
@@ -46,23 +31,10 @@ export const updatePlayerStatusTransaction = async (
 
 export async function updateAllPlayersStatuses(gameId, status) {
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const q = query(playersCollectionRef)
-    const querySnapshot = await getDocs(q)
+    const playersSnapshot = await getDocs(query(playersCollectionRef))
 
     const batch = writeBatch(firestore)
-    for (const playerDoc of querySnapshot.docs) {
-        batch.update(playerDoc.ref, { status })
-    }
-    await batch.commit()
-}
-
-export async function updateTeamStatus(gameId, teamId, status) {
-    const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const q = query(playersCollectionRef, where('teamId', '==', teamId))
-    const querySnapshot = await getDocs(q)
-
-    const batch = writeBatch(firestore)
-    for (const playerDoc of querySnapshot.docs) {
+    for (const playerDoc of playersSnapshot.docs) {
         batch.update(playerDoc.ref, { status })
     }
     await batch.commit()

@@ -12,11 +12,11 @@ import { CircularProgress } from '@mui/material'
 export default function EnumController({ question }) {
     const game = useGameContext()
 
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
-    const [realtime, realtimeLoading, realtimeError] = useDocumentData(realtimeDocRef)
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
+    const [realtime, realtimeLoading, realtimeError] = useDocumentData(questionRealtimeRef)
 
-    const timerDocRef = doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'timer')
-    const [timer, timerLoading, timerError] = useDocumentData(timerDocRef)
+    const timerRef = doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'timer')
+    const [timer, timerLoading, timerError] = useDocumentData(timerRef)
 
     if (realtimeError) {
         return <p><strong>Error: </strong>{JSON.stringify(realtimeError)}</p>

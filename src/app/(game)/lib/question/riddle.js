@@ -7,21 +7,19 @@ import {
     updateDoc,
     arrayUnion,
     arrayRemove,
-    increment,
-    serverTimestamp,
     Timestamp,
     runTransaction,
     writeBatch
 } from 'firebase/firestore'
 
+import { addSoundEffectTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
-import { addSoundToQueueTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { updateTimerStateTransaction } from '@/app/(game)/lib/timer';
 import { endQuestionTransaction } from '@/app/(game)/lib/question';
 import { updatePlayerStatusTransaction } from '@/app/(game)/lib/players';
+import { increaseRoundTeamScoreTransaction } from '@/app/(game)/lib/scores';
 
 
-/* ==================================================================================================== */
 export async function handleRiddleBuzzerHeadChanged(gameId, playerId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -49,15 +47,11 @@ const handleRiddleBuzzerHeadChangedTransaction = async (
     // await updateTimerStateTransaction(transaction, gameId, 'start')
 }
 
-
-
 /* ==================================================================================================== */
-
 /**
  * When the organizer validates the answer of a player
  */
-// TRANSACTION
-export async function handleRiddleValidateAnswerClick(gameId, roundId, questionId, playerId, wholeTeam = false) {
+export async function validateRiddleAnswer(gameId, roundId, questionId, playerId, wholeTeam = false) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -74,7 +68,7 @@ export async function handleRiddleValidateAnswerClick(gameId, roundId, questionI
     try {
         // transaction
         await runTransaction(firestore, transaction =>
-            handleRiddleValidateAnswerClickTransaction(transaction, gameId, roundId, questionId, playerId, wholeTeam)
+            validateRiddleAnswerTransaction(transaction, gameId, roundId, questionId, playerId, wholeTeam)
         );
     } catch (error) {
         console.error("There was an error validating the player's answer", error);
@@ -82,7 +76,7 @@ export async function handleRiddleValidateAnswerClick(gameId, roundId, questionI
     }
 }
 
-const handleRiddleValidateAnswerClickTransaction = async (
+const validateRiddleAnswerTransaction = async (
     transaction,
     gameId,
     roundId,
@@ -93,61 +87,38 @@ const handleRiddleValidateAnswerClickTransaction = async (
     /* Update the winner team scores */
     const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
     const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
 
-    const [playerData, roundData, roundScoresData] = await Promise.all([
+    const [playerData, roundData] = await Promise.all([
         getDocDataTransaction(transaction, playerRef),
         getDocDataTransaction(transaction, roundRef),
-        getDocDataTransaction(transaction, roundScoresRef)
     ])
 
     const { teamId } = playerData
     const { rewardsPerQuestion: points } = roundData
-    const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
 
-    const newRoundProgress = {}
-    for (const tid of Object.keys(currentRoundScores)) {
-        // Add an entry whose key is questionId and value is currentRoundScores[tid
-        newRoundProgress[tid] = {
-            ...currentRoundProgress[tid],
-            [questionId]: currentRoundScores[tid] + (tid === teamId ? points : 0)
-        }
-    }
-
-    transaction.update(roundScoresRef, {
-        [`scores.${teamId}`]: increment(points),
-        scoresProgress: newRoundProgress
-    })
-
-    // Update the question winner team
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    transaction.update(realtimeDocRef, {
-        winner: {
-            playerId: playerId,
-            teamId: teamId
-        },
-        dateEnd: serverTimestamp(),
-    })
+    await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, points)
 
     // Update the winner player status
     transaction.update(playerRef, {
         status: 'correct'
     })
 
+    // Update the question winner team
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.update(questionRealtimeRef, {
+        winner: { playerId, teamId },
+    })
+    await addSoundEffectTransaction(transaction, gameId, 'Anime wow')
     await endQuestionTransaction(transaction, gameId, roundId, questionId)
-
-    await addSoundToQueueTransaction(transaction, gameId, 'Anime wow')
 }
 
 /* ==================================================================================================== */
 /**
  * When the organizer invalidates the answer of a player.
  */
-// TRANSACTION
-export async function handleRiddleInvalidateAnswerClick(gameId, roundId, questionId, playerId, questionType = null) {
+export async function invalidateRiddleAnswer(gameId, roundId, questionId, playerId, questionType = null) {
     // const questionData = await getQuestionData(gameId, roundId, questionId)
     // if (questionData.type === 'progressive_clues') {
-    // TRANSACTION
 
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -164,7 +135,7 @@ export async function handleRiddleInvalidateAnswerClick(gameId, roundId, questio
 
     try {
         await runTransaction(firestore, transaction =>
-            handleRiddleInvalidateAnswerClickTransaction(transaction, gameId, roundId, questionId, playerId, questionType)
+            invalidateRiddleAnswerTransaction(transaction, gameId, roundId, questionId, playerId, questionType)
         );
 
         console.log(`Player ${playerId} was canceled successfully.`);
@@ -174,7 +145,7 @@ export async function handleRiddleInvalidateAnswerClick(gameId, roundId, questio
     }
 }
 
-export const handleRiddleInvalidateAnswerClickTransaction = async (
+export const invalidateRiddleAnswerTransaction = async (
     transaction,
     gameId,
     roundId,
@@ -182,13 +153,12 @@ export const handleRiddleInvalidateAnswerClickTransaction = async (
     playerId,
     questionType = null
 ) => {
-    const realtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    const realtimeData = await getDocDataTransaction(transaction, realtimeRef)
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    const questionRealtimeData = await getDocDataTransaction(transaction, questionRealtimeRef)
+    const clueIdx = questionRealtimeData.currentClueIdx || 0;
 
-    const clueIdx = realtimeData.currentClueIdx || 0;
-
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-    transaction.update(playersDocRef, {
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    transaction.update(questionPlayersRef, {
         canceled: arrayUnion({
             clueIdx,
             playerId,
@@ -213,23 +183,13 @@ export const handleRiddleInvalidateAnswerClickTransaction = async (
 
 
 /* ==================================================================================================== */
-// WRITE
 async function updateRiddleBuzzed(gameId, roundId, questionId, fieldsToUpdate) {
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
     const updateObject = { ...fieldsToUpdate }
 
-    await updateDoc(playersDocRef, updateObject)
+    await updateDoc(questionPlayersRef, updateObject)
     console.log(`Game ${gameId}, Round ${roundId}, Question ${questionId} : Buzzed list updated`)
 }
-
-// export async function addBuzzedPlayer(gameId, roundId, questionId, playerId) {
-//     const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-//     updateDoc(playersDocRef, {
-//         buzzed: arrayUnion(playerId)
-//     })
-
-//     addSoundToQueue(gameId, 'sfx-menu-validate')
-// }
 
 export async function addBuzzedPlayer(gameId, roundId, questionId, playerId) {
     if (!gameId) {
@@ -263,12 +223,11 @@ const addBuzzedPlayerTransaction = async (
     questionId,
     playerId
 ) => {
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-    transaction.update(playersDocRef, {
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    transaction.update(questionPlayersRef, {
         buzzed: arrayUnion(playerId)
     })
-
-    addSoundToQueueTransaction(transaction, gameId, 'sfx-menu-validate')
+    addSoundEffectTransaction(transaction, gameId, 'sfx-menu-validate')
 }
 
 /* ==================================================================================================== */
@@ -305,19 +264,18 @@ const removeBuzzedPlayerTransaction = async (
     questionType = null
 ) => {
 
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-    const playersData = await getDocDataTransaction(transaction, playersDocRef)
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    // const questionPlayersData = await getDocDataTransaction(transaction, questionPlayersRef)
 
     // const type = questionType || (await getDocDataTransaction(transaction, doc(QUESTIONS_COLLECTION_REF, questionId))).type
 
-    const { buzzed } = playersData
+    // const { buzzed } = questionPlayersData
 
-    transaction.update(playersDocRef, {
+    transaction.update(questionPlayersRef, {
         buzzed: arrayRemove(playerId)
     })
-
     await updatePlayerStatusTransaction(transaction, gameId, playerId, 'idle')
-    await addSoundToQueueTransaction(transaction, gameId, 'JPP_de_lair')
+    await addSoundEffectTransaction(transaction, gameId, 'JPP_de_lair')
 
     // if (buzzed[0] === playerId) {
     //     await updateTimerStateTransaction(transaction, gameId, 'reset')
@@ -355,28 +313,27 @@ export const handleRiddleCountdownEndTransaction = async (
     questionType = null
 ) => {
 
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-    const playersData = await getDocDataTransaction(transaction, playersDocRef)
-    const { buzzed } = playersData
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    const questionPlayersData = await getDocDataTransaction(transaction, questionPlayersRef)
+    const { buzzed } = questionPlayersData
 
     if (buzzed.length === 0)
         await updateTimerStateTransaction(transaction, gameId, 'reset')
     else
-        await handleRiddleInvalidateAnswerClickTransaction(transaction, gameId, roundId, questionId, buzzed[0], questionType)
+        await invalidateRiddleAnswerTransaction(transaction, gameId, roundId, questionId, buzzed[0], questionType)
 }
 
 /* ==================================================================================================== */
-// BATCHED WRITE
 export async function resetRiddleQuestion(gameId, roundId, questionId) {
     const batch = writeBatch(firestore)
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-    batch.set(playersDocRef, {
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    batch.set(questionPlayersRef, {
         buzzed: [],
         canceled: []
     })
 
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    batch.update(realtimeDocRef, {
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    batch.update(questionRealtimeRef, {
         winner: null,
     })
 
@@ -389,18 +346,19 @@ export const resetRiddleQuestionTransaction = async (
     roundId,
     questionId
 ) => {
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-    transaction.set(playersDocRef, {
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    transaction.set(questionPlayersRef, {
         buzzed: [],
         canceled: []
     })
 
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    transaction.update(realtimeDocRef, {
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.update(questionRealtimeRef, {
         winner: null,
     })
 }
 
+/* ==================================================================================================== */
 export async function clearBuzzer(gameId, roundId, questionId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -429,20 +387,16 @@ const clearBuzzerTransaction = async (
     roundId,
     questionId
 ) => {
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    const questionPlayersData = await getDocDataTransaction(transaction, questionPlayersRef)
 
-    const playersData = await getDocDataTransaction(transaction, playersDocRef)
-    const { buzzed } = playersData
+    const { buzzed } = questionPlayersData
     for (const playerId of buzzed) {
         await updatePlayerStatusTransaction(transaction, gameId, playerId, 'idle')
     }
-
-    transaction.update(playersDocRef, {
+    transaction.update(questionPlayersRef, {
         buzzed: []
     })
-
     await updateTimerStateTransaction(transaction, gameId, 'reset')
-
-    await addSoundToQueueTransaction(transaction, gameId, 'robinet_desert')
-
+    await addSoundEffectTransaction(transaction, gameId, 'robinet_desert')
 }

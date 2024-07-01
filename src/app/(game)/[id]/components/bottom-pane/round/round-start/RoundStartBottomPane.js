@@ -3,9 +3,10 @@ import { useGameContext, useRoleContext } from '@/app/(game)/contexts'
 
 import { Button } from '@mui/material'
 
-import { startRound } from '@/app/(game)/lib/round/round-transitions';
 import { useAsyncAction } from '@/lib/utils/async';
-import TimerPane from '../../../timer/TimerPane';
+
+import { startRound } from '@/app/(game)/lib/round/round-transitions';
+import TimerPane from '@/app/(game)/[id]/components/timer/TimerPane';
 import ReadyPlayerController from '@/app/(game)/[id]/components/bottom-pane/ReadyPlayerController';
 
 export default function RoundStartBottomPane({ }) {

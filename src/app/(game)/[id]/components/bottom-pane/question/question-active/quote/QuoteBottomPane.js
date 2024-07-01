@@ -6,15 +6,15 @@ import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { doc } from 'firebase/firestore'
 import { useDocumentData } from 'react-firebase-hooks/firestore'
 
-import RiddleSpectatorController from '../riddle/controller/RiddleSpectatorController'
-import RiddlePlayerController from '../riddle/controller/RiddlePlayerController'
-import RiddlePlayers from '../riddle/players/RiddlePlayers'
+import RiddleSpectatorController from '@/app/(game)/[id]/components/bottom-pane/question/question-active/riddle/controller/RiddleSpectatorController'
+import RiddlePlayerController from '@/app/(game)/[id]/components/bottom-pane/question/question-active/riddle/controller/RiddlePlayerController'
+import RiddlePlayers from '@/app/(game)/[id]/components/bottom-pane/question/question-active/riddle/players/RiddlePlayers'
 
 export default function QuoteBottomPane({ question }) {
     const game = useGameContext()
 
-    const playersDocRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'players')
-    const [players, playersLoading, playersError] = useDocumentData(playersDocRef)
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'players')
+    const [players, playersLoading, playersError] = useDocumentData(questionPlayersRef)
 
     if (playersError) {
         return <p><strong>Error: </strong>{JSON.stringify(playersError)}</p>
@@ -54,5 +54,3 @@ function QuoteController({ question, players }) {
             return <RiddleSpectatorController players={players} />
     }
 }
-
-

@@ -8,7 +8,7 @@ import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
 import { doc } from 'firebase/firestore'
 import { useDocumentData } from 'react-firebase-hooks/firestore'
 
-import { incrementChallengerNumCorrect } from '@/app/(game)/lib/question/enum';
+import { incrementCorrectAnswersCount } from '@/app/(game)/lib/question/enum';
 import { useAsyncAction } from '@/lib/utils/async';
 
 export default function ValidateChallengerCitationButton() {
@@ -16,11 +16,11 @@ export default function ValidateChallengerCitationButton() {
     const user = useUserContext()
 
     const [handleClick, isSubmitting] = useAsyncAction(async () => {
-        await incrementChallengerNumCorrect(game.id, game.currentRound, game.currentQuestion, user.id)
+        await incrementCorrectAnswersCount(game.id, game.currentRound, game.currentQuestion, user.id)
     })
 
-    const timerDocRef = doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'timer')
-    const [timer, timerLoading, timerError] = useDocumentData(timerDocRef)
+    const timerRef = doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'timer')
+    const [timer, timerLoading, timerError] = useDocumentData(timerRef)
 
     if (timerError) {
         return <p><strong>Error: </strong>{JSON.stringify(timerError)}</p>

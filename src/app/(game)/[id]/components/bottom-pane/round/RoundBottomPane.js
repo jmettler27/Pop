@@ -12,8 +12,8 @@ import RoundEndBottomPane from './round-end/RoundEndBottomPane'
 export default function RoundBottomPane() {
     const game = useGameContext()
 
-    const roundDocRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound)
-    const [round, roundLoading, roundError] = useDocumentData(roundDocRef)
+    const roundRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound)
+    const [round, roundLoading, roundError] = useDocumentData(roundRef)
 
     if (roundError) {
         return <p><strong>Error: {JSON.stringify(roundError)}</strong></p>

@@ -9,7 +9,6 @@ import { StyledLabel, StyledErrorMessage } from "./StyledFormComponents";
 
 export default function MyColorPicker({ label, validationSchema, name, ...props }) {
     const [field, meta, helpers] = useField(name);
-    console.log('field', field)
 
     return (
         <div className='space-y-1'>

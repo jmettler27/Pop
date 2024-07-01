@@ -23,7 +23,6 @@ export default function TopPane({ }) {
     }
 
     const teams = teamsCollection.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-    console.log("TEAMS:", teams)
 
     return (
         <div className='flex flex-row h-full justify-center space-x-9 items-center'>

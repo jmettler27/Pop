@@ -20,15 +20,14 @@ import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/lib/utils/question/question';
 
 import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
-import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { updateTimerStateTransaction, updateTimerTransaction } from '@/app/(game)/lib/timer';
+import { addSoundEffectTransaction } from '@/app/(game)/lib/sounds';
 
 
 /* ==================================================================================================== */
 /**
  * game_home -> round_start
  * Switch to the round that has been selected by the chooser
- * 
  */
 export async function handleSelectRound(gameId, roundId, userId) {
     if (!gameId) {
@@ -58,12 +57,12 @@ const selectRoundTransaction = async (
     userId
 ) => {
     const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-    const statesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
+    const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
     const gameRef = doc(GAMES_COLLECTION_REF, gameId)
 
-    const [roundData, statesData, gameData] = await Promise.all([
+    const [roundData, gameStatesData, gameData] = await Promise.all([
         getDocDataTransaction(transaction, roundRef),
-        getDocDataTransaction(transaction, statesRef),
+        getDocDataTransaction(transaction, gameStatesRef),
         getDocDataTransaction(transaction, gameRef)
     ]);
 
@@ -80,14 +79,14 @@ const selectRoundTransaction = async (
         return
     }
 
-    // await addSoundToQueueTransaction(transaction, gameId, 'super_mario_odyssey_moon')
+    // await addSoundEffectTransaction(transaction, gameId, 'super_mario_odyssey_moon')
 
     if (isRiddle(roundData.type) || roundData.type === 'quote' || roundData.type === 'enum') {
         // Set the status of every player to 'idle'
         const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-        const querySnapshot = await getDocs(query(playersCollectionRef))
+        const playersSnapshot = await getDocs(query(playersCollectionRef))
 
-        for (const playerDoc of querySnapshot.docs) {
+        for (const playerDoc of playersSnapshot.docs) {
             transaction.update(playerDoc.ref, {
                 status: 'idle'
             })
@@ -108,20 +107,19 @@ const selectRoundTransaction = async (
     })
 
     // If the round requires an order of chooser teams (e.g. OOO, MCQ) and it is the first round, find a random order for the chooser teams
-    if (statesData.chooserOrder.length === 0 || statesData.chooserIdx === null) {
+    if (gameStatesData.chooserOrder.length === 0 || gameStatesData.chooserIdx === null) {
         const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
-        const querySnapshot = await getDocs(query(teamsCollectionRef))
+        const teamsSnapshot = await getDocs(query(teamsCollectionRef))
 
         // Create an array of random ids for the teams
-        const teamIds = querySnapshot.docs.map(doc => doc.id)
+        const teamIds = teamsSnapshot.docs.map(doc => doc.id)
         const shuffledTeamIds = shuffle(teamIds)
-
-        transaction.update(statesRef, {
+        transaction.update(gameStatesRef, {
             chooserOrder: shuffledTeamIds,
         })
     }
 
-    transaction.update(statesRef, {
+    transaction.update(gameStatesRef, {
         chooserIdx: 0,
     })
 
@@ -131,7 +129,7 @@ const selectRoundTransaction = async (
         authorized: false
     })
 
-    await addSoundToQueueTransaction(transaction, gameId, 'super_mario_odyssey_moon')
+    await addSoundEffectTransaction(transaction, gameId, 'super_mario_odyssey_moon')
 
     transaction.update(gameRef, {
         currentRound: roundId,
@@ -141,7 +139,7 @@ const selectRoundTransaction = async (
 }
 
 /* ==================================================================================================== */
-// TRANSACTION
+
 async function switchRoundQuestion(gameId, roundId, questionOrder) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -169,60 +167,74 @@ const switchRoundQuestionTransaction = async (
 ) => {
     /* Game: fetch next question and reset every player's state */
     const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-    const roundData = await getDocDataTransaction(transaction, roundRef)
+    const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
+
+    const [roundData, gameStatesData] = await Promise.all([
+        getDocDataTransaction(transaction, roundRef),
+        getDocDataTransaction(transaction, gameStatesRef)
+    ]);
 
     const questionId = roundData.questions[questionOrder]
     const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
 
     const questionData = await getDocDataTransaction(transaction, questionRef)
-
     const defaultThinkingTime = DEFAULT_THINKING_TIME_SECONDS[questionData.type]
 
+    const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
+
+    const { chooserOrder, chooserIdx } = gameStatesData
+
     if (questionData.type === 'mcq' || questionData.type === 'basic') {
-        const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
-        const gameStatesData = await getDocDataTransaction(transaction, gameStatesRef)
-        const { chooserOrder, chooserIdx } = gameStatesData
         const chooserTeamId = chooserOrder[chooserIdx]
 
         if (questionOrder > 0) {
             const newChooserIdx = getNextCyclicIndex(chooserIdx, chooserOrder.length)
             const newChooserTeamId = chooserOrder[newChooserIdx]
-            transaction.update(realtimeDocRef, {
-                teamId: newChooserTeamId,
-            })
             transaction.update(gameStatesRef, {
                 chooserIdx: newChooserIdx
             })
-            const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-            const newChooserPlayersQuerySnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', newChooserTeamId)))
-            for (const playerDoc of newChooserPlayersQuerySnapshot.docs) {
-                console.log("Setting focus on player", playerDoc.id)
+            transaction.update(questionRealtimeRef, {
+                teamId: newChooserTeamId,
+            })
+            const newChoosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', newChooserTeamId)))
+            for (const playerDoc of newChoosersSnapshot.docs) {
                 transaction.update(playerDoc.ref, {
                     status: 'focus'
                 })
             }
-            const prevChooserPlayersQuerySnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', chooserTeamId)))
-            for (const playerDoc of prevChooserPlayersQuerySnapshot.docs) {
-                console.log("Setting idle on player", playerDoc.id)
+            const prevChoosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', chooserTeamId)))
+            for (const playerDoc of prevChoosersSnapshot.docs) {
                 transaction.update(playerDoc.ref, {
                     status: 'idle'
                 })
             }
         } else {
-            transaction.update(realtimeDocRef, {
+            transaction.update(questionRealtimeRef, {
                 teamId: chooserTeamId,
             })
         }
 
         // await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: defaultThinkingTime })
         await updateTimerTransaction(transaction, gameId, { status: 'reset', duration: defaultThinkingTime })
-    }
-    else if (questionData.type === 'odd_one_out' || questionData.type === 'matching') {
-        const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
+    } else if (questionData.type === 'odd_one_out' || questionData.type === 'matching') {
+        const newChooserIdx = 0
+        const newChooserTeamId = chooserOrder[newChooserIdx]
         transaction.update(gameStatesRef, {
-            chooserIdx: 0
+            chooserIdx: newChooserIdx
         })
+        const choosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', newChooserTeamId)))
+        for (const playerDoc of choosersSnapshot.docs) {
+            transaction.update(playerDoc.ref, {
+                status: 'focus'
+            })
+        }
+        const nonChoosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '!=', newChooserTeamId)))
+        for (const playerDoc of nonChoosersSnapshot.docs) {
+            transaction.update(playerDoc.ref, {
+                status: 'idle'
+            })
+        }
         if (questionData.type === 'matching') {
             // await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: defaultThinkingTime * (questionData.details.numCols - 1) })
             await updateTimerTransaction(transaction, gameId, { status: 'reset', duration: defaultThinkingTime * (questionData.details.numCols - 1) })
@@ -230,8 +242,13 @@ const switchRoundQuestionTransaction = async (
             // await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: defaultThinkingTime })
             await updateTimerTransaction(transaction, gameId, { status: 'reset', duration: defaultThinkingTime })
         }
-    }
-    else {
+    } else {
+        const playersSnapshot = await getDocs(query(playersCollectionRef))
+        for (const playerDoc of playersSnapshot.docs) {
+            transaction.update(playerDoc.ref, {
+                status: 'idle'
+            })
+        }
         if (questionData.type === 'enum') {
             // await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: questionData.details.thinkingTime })
             await updateTimerTransaction(transaction, gameId, { status: 'reset', duration: questionData.details.thinkingTime })
@@ -240,21 +257,13 @@ const switchRoundQuestionTransaction = async (
             // await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: defaultThinkingTime })
             await updateTimerTransaction(transaction, gameId, { status: 'reset', duration: defaultThinkingTime })
         }
-
-        const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-        const playersQuerySnapshot = await getDocs(query(playersCollectionRef))
-        for (const playerDoc of playersQuerySnapshot.docs) {
-            transaction.update(playerDoc.ref, {
-                status: 'idle'
-            })
-        }
     }
 
     if (questionData.type !== 'blindtest') {
-        await addSoundToQueueTransaction(transaction, gameId, 'skyrim_skill_increase')
+        await addSoundEffectTransaction(transaction, gameId, 'skyrim_skill_increase')
     }
 
-    transaction.update(realtimeDocRef, {
+    transaction.update(questionRealtimeRef, {
         dateStart: serverTimestamp(),
     })
 
@@ -304,8 +313,6 @@ const startRoundTransaction = async (
     gameId,
     roundId,
 ) => {
-    console.log(gameId, roundId)
-
     const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
     const roundData = await getDocDataTransaction(transaction, roundRef)
 
@@ -350,62 +357,16 @@ const handleRoundQuestionEndTransaction = async (
 
     await (isRoundEnd ?
         endRoundTransaction(transaction, gameId, roundId) : /* End of round */
-        switchRoundNextQuestionTransaction(transaction, gameId, roundId) /* Prepare the next question */
+        // switchRoundNextQuestionTransaction(transaction, gameId, roundId) /* Prepare the next question */
+        switchRoundQuestionTransaction(transaction, gameId, roundId, roundData.currentQuestionIdx + 1)
     )
 }
-
-/**
- * question_end -> question_active
- * Prepare the next question
- */
-export async function switchRoundNextQuestion(gameId, roundId) {
-    if (!gameId) {
-        throw new Error("No game ID has been provided!");
-    }
-    if (!roundId) {
-        throw new Error("No round ID has been provided!");
-    }
-
-    try {
-        await runTransaction(firestore, async (transaction) =>
-            switchRoundNextQuestionTransaction(transaction, gameId, roundId)
-        )
-        console.log(`Switched successfully to the next question in the round ${roundId}.`);
-    } catch (error) {
-        console.error("There was an error switching to the next question in the round:", error);
-        throw error;
-    }
-}
-
-const switchRoundNextQuestionTransaction = async (
-    transaction,
-    gameId,
-    roundId,
-) => {
-    const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-    const roundData = await getDocDataTransaction(transaction, roundRef)
-
-    await switchRoundQuestionTransaction(transaction, gameId, roundId, roundData.currentQuestionIdx + 1)
-
-    if (roundData.type !== 'mcq' && roundData.type !== 'basic') {
-        // Set the status of every player to 'idle'
-        const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-        const querySnapshot = await getDocs(query(playersCollectionRef))
-        for (const playerDoc of querySnapshot.docs) {
-            transaction.update(playerDoc.ref, {
-                status: 'idle'
-            })
-        }
-    }
-}
-
 
 /* ==================================================================================================== */
 
 /**
  * question_end -> round_end
  */
-// TRANSACTION
 export async function endRound(gameId, roundId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -414,7 +375,7 @@ export async function endRound(gameId, roundId) {
         throw new Error("No round ID has been provided!");
     }
     try {
-        // TRANSACTION
+
         await runTransaction(firestore, transaction =>
             endRoundTransaction(transaction, gameId, roundId)
         );
@@ -502,9 +463,9 @@ const endRoundTransaction = async (
         return progress;
     }, {});
 
-    // updatedChooserOrder array is the flattened array of the teams in roundSortedTeams, in reverse order
+    // newChooserOrder array is the flattened array of the teams in roundSortedTeams, in reverse order
     // slice() is used to create a copy of the roundSortedTeams array
-    const updatedChooserOrder = roundSortedTeams.slice().reverse().flatMap(({ teams }) => shuffle(teams));
+    const newChooserOrder = roundSortedTeams.slice().reverse().flatMap(({ teams }) => shuffle(teams));
 
     let rankingDiffs = null
     if (roundData.order > 0) {
@@ -532,9 +493,9 @@ const endRoundTransaction = async (
     if (roundData.order < gameData.rounds.length - 1) {
         // Set focus on chooser players, Set idle on all non-chooser players
         const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-        for (const [idx, teamId] of updatedChooserOrder.entries()) {
-            const playersQuerySnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)))
-            for (const playerDoc of playersQuerySnapshot.docs) {
+        for (const [idx, teamId] of newChooserOrder.entries()) {
+            const playersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)))
+            for (const playerDoc of playersSnapshot.docs) {
                 transaction.update(playerDoc.ref, {
                     status: idx === 0 ? 'focus' : 'idle'
                 })
@@ -543,12 +504,12 @@ const endRoundTransaction = async (
         const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
         transaction.update(gameStatesRef, {
             chooserIdx: 0,
-            chooserOrder: updatedChooserOrder
+            chooserOrder: newChooserOrder
         })
     }
 
-    const readyDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready')
-    transaction.update(readyDocRef, {
+    const readyRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready')
+    transaction.update(readyRef, {
         numReady: 0
     })
 
@@ -557,9 +518,7 @@ const endRoundTransaction = async (
         dateEnd: serverTimestamp(),
     })
     await updateGameStatusTransaction(transaction, gameId, 'round_end')
-
-    await addSoundToQueueTransaction(transaction, gameId, 'level-passed')
-
+    await addSoundEffectTransaction(transaction, gameId, 'level-passed')
     await updateTimerStateTransaction(transaction, gameId, 'reset')
 }
 
@@ -617,5 +576,5 @@ const startFinaleRoundTransaction = async (
     })
 
     await updateGameStatusTransaction(transaction, gameId, 'finale_home')
-    await addSoundToQueueTransaction(transaction, gameId, 'ui-confirmation-alert-b2')
+    await addSoundEffectTransaction(transaction, gameId, 'ui-confirmation-alert-b2')
 }

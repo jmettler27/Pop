@@ -14,8 +14,8 @@ export default function PartiallyCorrectMatches({ nodePositions }) {
 
     const game = useGameContext()
 
-    const partiallyCorrectDocRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'partially_correct')
-    const [partiallyCorrectData, partiallyCorrectLoading, partiallyCorrectError] = useDocumentData(partiallyCorrectDocRef)
+    const partiallyCorrectRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'partially_correct')
+    const [partiallyCorrectData, partiallyCorrectLoading, partiallyCorrectError] = useDocumentData(partiallyCorrectRef)
     if (partiallyCorrectError) {
         return <p><strong>Error: {JSON.stringify(partiallyCorrectError)}</strong></p>
     }

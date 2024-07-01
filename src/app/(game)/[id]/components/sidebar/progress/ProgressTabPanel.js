@@ -17,8 +17,8 @@ import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 export default function ProgressTabPanel({ }) {
     const { id: gameId } = useParams()
 
-    const gameDocRef = doc(GAMES_COLLECTION_REF, gameId)
-    const [gameDoc, gameDocLoading, gameDocError] = useDocument(gameDocRef)
+    const gameRef = doc(GAMES_COLLECTION_REF, gameId)
+    const [gameDoc, gameDocLoading, gameDocError] = useDocument(gameRef)
     if (gameDocError) {
         return <p><strong>Error: {JSON.stringify(gameDocError)}</strong></p>
     }

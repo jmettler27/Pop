@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo } from 'react'
 import { useRoleContext } from '@/app/(game)/contexts'
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore'
@@ -34,8 +34,8 @@ export default function RoundQuestionsProgress({ game, round }) {
     const teamsRef = collection(GAMES_COLLECTION_REF, game.id, 'teams')
     const [teamsCollection, teamsLoading, teamsError] = useCollectionOnce(teamsRef)
 
-    const playersRef = collection(GAMES_COLLECTION_REF, game.id, 'players')
-    const [playersCollection, playersLoading, playersError] = useCollectionOnce(playersRef)
+    const questionPlayersRef = collection(GAMES_COLLECTION_REF, game.id, 'players')
+    const [playersCollection, playersLoading, playersError] = useCollectionOnce(questionPlayersRef)
 
     if (teamsError) {
         return <p><strong>Error: {JSON.stringify(teamsError)}</strong></p>
@@ -89,12 +89,13 @@ export default function RoundQuestionsProgress({ game, round }) {
     )
 }
 
-function RoundQuestionAccordion({ game, roundId, questionId, order, hasEnded, isCurrent, hasNotStarted, onAccordionChange, expanded, teams, players }) {
+export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({ game, roundId, questionId, order, hasEnded, isCurrent, hasNotStarted, onAccordionChange, expanded, teams, players }) {
+    console.log("RoundQuestionAccordion", questionId, order, expanded)
     const { id: gameId } = useParams()
     const myRole = useRoleContext()
 
-    const realtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    const [realtime, realtimeLoading, realtimeError] = useDocumentData(realtimeRef)
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    const [realtime, realtimeLoading, realtimeError] = useDocumentData(questionRealtimeRef)
 
     const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
     const [question, questionLoading, questionError] = useDocumentDataOnce(questionRef)
@@ -150,9 +151,7 @@ function RoundQuestionAccordion({ game, roundId, questionId, order, hasEnded, is
     })
 
     const borderWidth = (() => {
-        if (isCurrent)
-            return '2px';
-        return '1px'
+        return isCurrent ? '2px' : '1px'
     })
 
     const summaryColor = (() => {
@@ -211,22 +210,21 @@ function RoundQuestionAccordion({ game, roundId, questionId, order, hasEnded, is
             )}
         </Accordion>
     )
-}
+})
 
 /* ============================================================================================ */
 function QuestionSummary({ question, order, lang = DEFAULT_LOCALE }) {
     switch (question.type) {
         case 'progressive_clues':
-        case 'emoji':
         case 'image':
-            return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong>: {question.details.title}</span>
+        case 'emoji':
+            return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong>: {question.details.title}</span>
         case 'blindtest':
-            // return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1} ({BLINDTEST_TYPE_TO_TITLE[lang][question.details.subtype]})</strong>: {question.details.title}</span>
-            return <span className='text-lg'>{blindtestTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong></span>
+            return <span className='text-lg'>{blindtestTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong></span>
         case 'matching':
-            return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong> ({question.details.numCols} col)</span>
+            return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong> ({question.details.numCols} col)</span>
         default:
-            return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} {order + 1}</strong></span>
+            return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong></span>
     }
 }
 
@@ -282,8 +280,8 @@ function QuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = DEFAU
 
 function EnumQuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = DEFAULT_LOCALE }) {
     return <></>
-    // const playersDocRef = doc(GAMES_COLLECTION_REF, gameIdds', roundId, 'questions', question.id, 'realtime', 'players')
-    // const [players, playersLoading, playersError] = useDocumentDataOnce(playersDocRef)
+    // const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameIdds', roundId, 'questions', question.id, 'realtime', 'players')
+    // const [players, playersLoading, playersError] = useDocumentDataOnce(questionPlayersRef)
     // if (playersError) {
     //     return <p><strong>Error: {JSON.stringify(playersError)}</strong></p>
     // }

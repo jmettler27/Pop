@@ -1,4 +1,3 @@
-import { getRandomElement } from "../arrays";
 import { BASIC_QUESTION_THINKING_TIME } from "./basic";
 import { BLINDTEST_THINKING_TIME } from "./blindtest";
 import { EMOJI_THINKING_TIME } from "./emoji";
@@ -25,34 +24,45 @@ export const DEFAULT_THINKING_TIME_SECONDS = {
 }
 
 
+export const VALIDATE_ANSWER = {
+    'en': "Validate",
+    'fr-FR': "Valider"
+}
+
+export const INVALIDATE_ANSWER = {
+    'en': "Invalidate",
+    'fr-FR': "Invalider"
+}
+
 export const ANSWER_TEXT = {
     'en': "Answer",
     'fr-FR': "Réponse"
 }
 
-export const CORRECT_ANSWER_TEXT_EN = [
-    "Totally, tubular dude!",
-    "For sure, like totally!",
-    "Absolutely, positively!",
-    "You betcha!",
-    "Without a doubt, no ifs, ands, or buts!",
-    "Affirmative, captain!",
-    "Indeed, without question!",
-    "Absolutely, without a shadow of a doubt!",
-    "Yup, yup, and yup!",
-    "Definitely, without a shred of uncertainty!"
-];
-
-export const CORRECT_ANSWER_TEXT_FR = [
-    "Absolument!",
-    "Oui!",
-    "Tout à fait!",
-    "Exactement!",
-    "Bien sûr!",
-    "Sans aucun doute!",
-    "Évidemment!",
-    "C'est ça!",
-];
+export const CORRECT_ANSWER_TEXT1 = {
+    'en': [
+        "Totally, tubular dude!",
+        "For sure, like totally!",
+        "Absolutely, positively!",
+        "You betcha!",
+        "Without a doubt, no ifs, ands, or buts!",
+        "Affirmative, captain!",
+        "Indeed, without question!",
+        "Absolutely, without a shadow of a doubt!",
+        "Yup, yup, and yup!",
+        "Definitely, without a shred of uncertainty!"
+    ],
+    'fr-FR': [
+        "Absolument!",
+        "Oui!",
+        "Tout à fait!",
+        "Exactement!",
+        "Bien sûr!",
+        "Sans aucun doute!",
+        "Évidemment!",
+        "C'est ça!",
+    ]
+}
 
 export const CORRECT_ANSWER_TEXT = {
     'en': "Yes!",
@@ -68,20 +78,22 @@ export const QUESTION_ELEMENT_TO_TITLE = {
     'en': {
         'source': "Source",
         'author': "Author",
-        'answer': 'Answer',
-        'topic': 'Topic',
-        'title': 'Title',
-        'createdAt': 'Created at',
-        'createdBy': 'Created by',
+        'answer': "Answer",
+        'topic': "Topic",
+        'title': "Title",
+        'createdAt': "Created at",
+        'createdBy': "Created by",
+        'note': "Note",
     },
     'fr-FR': {
         'source': "Source",
         'author': "Auteur",
-        'answer': 'Réponse',
-        'topic': 'Sujet',
-        'title': 'Titre',
-        'createdAt': 'Créé le',
-        'createdBy': 'Créé par',
+        'answer': "Réponse",
+        'topic': "Sujet",
+        'title': "Titre",
+        'createdAt': "Créé le",
+        'createdBy': "Créé par",
+        'note': "Note",
     }
 }
 
@@ -89,6 +101,7 @@ export const QUESTION_ELEMENT_TO_EMOJI = {
     'source': "📜",
     'author': "🧑",
     'description': "📝",
+    'note': "🔍",
 }
 
 import { DEFAULT_LOCALE } from '@/lib/utils/locales';

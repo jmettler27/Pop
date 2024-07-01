@@ -40,8 +40,8 @@ function QuoteQuestionHeader({ question }) {
 function QuoteMainContent({ question }) {
     const game = useGameContext()
 
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
-    const [realtime, realtimeLoading, realtimeError] = useDocumentData(realtimeDocRef)
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
+    const [realtime, realtimeLoading, realtimeError] = useDocumentData(questionRealtimeRef)
     if (realtimeError) {
         return <p><strong>Error: {JSON.stringify(realtimeError)}</strong></p>
     }

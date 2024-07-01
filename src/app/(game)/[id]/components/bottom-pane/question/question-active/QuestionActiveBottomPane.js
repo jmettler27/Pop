@@ -46,7 +46,7 @@ export default function QuestionActiveBottomPane({ }) {
         case 'matching':
             return <MatchingBottomPane />
         case 'mcq':
-            return <MCQBottomPane />
+            return <MCQBottomPane question={question} />
         case 'basic':
             return <BasicQuestionBottomPane />
     }

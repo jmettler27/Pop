@@ -58,6 +58,7 @@ const addGameRoundTransaction = async (
         currentQuestionIdx: 0,
         dateEnd: null,
         dateStart: null,
+        order: null,
         createdAt: serverTimestamp(),
         questions: [],
         rewards,
@@ -115,8 +116,8 @@ const addGameRoundTransaction = async (
         scoresProgress: {},
     });
 
-    const gameDocRef = doc(GAMES_COLLECTION_REF, gameId);
-    transaction.update(gameDocRef, {
+    const gameRef = doc(GAMES_COLLECTION_REF, gameId);
+    transaction.update(gameRef, {
         rounds: arrayUnion(roundId)
     });
 }
@@ -232,19 +233,19 @@ const addGameQuestionTransaction = async (
         });
 
         // Create the document doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct')
-        const correctMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct');
-        transaction.set(correctMatchesDocRef, {
+        const correctMatchesRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct');
+        transaction.set(correctMatchesRef, {
             correctMatches: [],
         });
 
-        const incorrectMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'incorrect');
-        transaction.set(incorrectMatchesDocRef, {
+        const incorrectMatchesRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'incorrect');
+        transaction.set(incorrectMatchesRef, {
             incorrectMatches: [],
         });
 
         if (questionData.numCols > 2) {
-            const partiallyCorrectMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'partially_correct');
-            transaction.set(partiallyCorrectMatchesDocRef, {
+            const partiallyCorrectMatchesRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'partially_correct');
+            transaction.set(partiallyCorrectMatchesRef, {
                 partiallyCorrectMatches: [],
             });
         }
@@ -344,14 +345,14 @@ const removeQuestionFromRoundTransaction = async (
     }
 
     if (type === 'matching') {
-        const correctMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct');
-        transaction.delete(correctMatchesDocRef);
+        const correctMatchesRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct');
+        transaction.delete(correctMatchesRef);
 
-        const incorrectMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'incorrect');
-        transaction.delete(incorrectMatchesDocRef);
+        const incorrectMatchesRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'incorrect');
+        transaction.delete(incorrectMatchesRef);
 
-        const partiallyCorrectMatchesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'partially_correct');
-        transaction.delete(partiallyCorrectMatchesDocRef);
+        const partiallyCorrectMatchesRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'partially_correct');
+        transaction.delete(partiallyCorrectMatchesRef);
     }
 
     const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId);
@@ -467,8 +468,8 @@ const launchGameTransaction = async (
 
     await resetGameChooserTransaction(transaction, gameId);
 
-    const gameDocRef = doc(GAMES_COLLECTION_REF, gameId);
-    transaction.update(gameDocRef, {
+    const gameRef = doc(GAMES_COLLECTION_REF, gameId);
+    transaction.update(gameRef, {
         launchedAt: serverTimestamp(),
         status: 'game_start'
     });

@@ -16,17 +16,17 @@ export const updateTimerTransaction = async (
     gameId,
     fieldsToUpdate,
 ) => {
-    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
+    const timerRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
 
     const updateObject = { ...fieldsToUpdate, timestamp: serverTimestamp() }
-    transaction.update(timerDocRef, updateObject)
+    transaction.update(timerRef, updateObject)
     console.log("Timer updated:", fieldsToUpdate)
 }
 
 
 export async function updateTimerState(gameId, status) {
-    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
-    await updateDoc(timerDocRef, {
+    const timerRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
+    await updateDoc(timerRef, {
         status,
         timestamp: serverTimestamp()
     })
@@ -57,8 +57,8 @@ export async function startTimer(gameId) {
         filename: 'message-incoming',
     })
 
-    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
-    batch.update(timerDocRef, {
+    const timerRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
+    batch.update(timerRef, {
         status: 'start',
         timestamp: serverTimestamp()
     })

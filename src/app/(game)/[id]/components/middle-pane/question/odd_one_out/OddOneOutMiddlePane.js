@@ -21,7 +21,7 @@ import { generateShuffledIndices } from '@/lib/utils/question/odd_one_out'
 import { CurrentRoundQuestionOrder } from '@/app/(game)/[id]/components/middle-pane/question/QuestionHeader'
 import { clsx } from 'clsx'
 
-import { handleProposalClick } from '@/app/(game)/lib/question/odd_one_out'
+import { selectProposal } from '@/app/(game)/lib/question/odd_one_out'
 import { useAsyncAction } from '@/lib/utils/async'
 
 export default function OddOneOutMiddlePane({ question }) {
@@ -87,7 +87,7 @@ function OddOneOutProposals({ question, randomization, selectedItems, isChooser 
     const user = useUserContext()
 
     const [handleClick, isSubmitting] = useAsyncAction(async (idx) => {
-        await handleProposalClick(game.id, game.currentRound, game.currentQuestion, user.id, idx)
+        await selectProposal(game.id, game.currentRound, game.currentQuestion, user.id, idx)
     })
 
     const [expandedIdx, setExpandedIdx] = useState(false)

@@ -47,8 +47,8 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
     // <div className='border-dashed border-4 p-2 w-[30%] h-full overflow-auto'>
 
     const { id: gameId } = useParams()
-    const roundDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-    const [roundData, roundDataLoading, roundDataError] = useDocumentData(roundDocRef)
+    const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
+    const [roundData, roundDataLoading, roundDataError] = useDocumentData(roundRef)
     if (roundDataError) {
         return <p><strong>Error: {JSON.stringify(roundDataError)}</strong></p>
     }

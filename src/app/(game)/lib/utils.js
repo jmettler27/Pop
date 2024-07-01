@@ -37,9 +37,9 @@ export async function getDocData(...docPath) {
     }
 }
 
-export async function copyDocument(fromDocRef, toDocRef) {
-    const fromDocData = (await getDoc(fromDocRef)).data()
+export async function copyDocument(fromRef, toRef) {
+    const fromDocData = (await getDoc(fromRef)).data()
 
     console.log(fromDocData)
-    await setDoc(toDocRef, fromDocData)
+    await setDoc(toRef, fromDocData)
 }

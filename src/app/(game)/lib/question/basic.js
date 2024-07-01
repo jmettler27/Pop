@@ -1,6 +1,6 @@
 "use server";
 
-import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
+import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
 import { firestore } from '@/lib/firebase/firebase'
 import {
     collection,
@@ -14,9 +14,10 @@ import {
     writeBatch
 } from 'firebase/firestore'
 
-import { addSoundToQueueTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { addSoundEffectTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
-import { endQuestionTransaction } from '../question';
+import { endQuestionTransaction } from '@/app/(game)/lib/question';
+import { increaseRoundTeamScoreTransaction } from '@/app/(game)/lib/scores';
 
 /* ====================================================================================================== */
 export async function handleBasicAnswer(gameId, roundId, questionId, teamId, correct) {
@@ -37,9 +38,8 @@ export async function handleBasicAnswer(gameId, roundId, questionId, teamId, cor
         await runTransaction(firestore, transaction =>
             handleBasicAnswerTransaction(transaction, gameId, roundId, questionId, teamId, correct)
         )
-        console.log("Option submitted successfully!")
     } catch (error) {
-        console.error("There was an error handling the hide answer:", error);
+        console.error("There was an error handling the basic answer:", error);
         throw error;
     }
 }
@@ -53,49 +53,21 @@ const handleBasicAnswerTransaction = async (
     correct
 ) => {
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const q = query(playersCollectionRef, where('teamId', '==', teamId))
-    const querySnapshot = await getDocs(q)
+    const playersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)))
 
-    const roundDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
-
-    const [roundData, roundScoresData] = await Promise.all([
-        getDocDataTransaction(transaction, roundDocRef),
-        getDocDataTransaction(transaction, roundScoresRef)
-    ])
-
-    const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
-
+    const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
+    const roundData = await getDocDataTransaction(transaction, roundRef)
     const reward = correct ? roundData.rewardsPerQuestion : 0
-    transaction.update(realtimeDocRef, {
-        teamId,
-        reward,
-        correct,
-        dateEnd: serverTimestamp()
-    })
 
-    const newRoundProgress = {}
-    const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
-    const teamsQuerySnapshot = await getDocs(query(teamsCollectionRef))
-    for (const teamDoc of teamsQuerySnapshot.docs) {
-        newRoundProgress[teamDoc.id] = {
-            ...currentRoundProgress[teamDoc.id],
-            [questionId]: currentRoundScores[teamDoc.id] + (teamDoc.id === teamId ? reward : 0)
-        }
-    }
-    transaction.update(roundScoresRef, {
-        [`scores.${teamId}`]: increment(reward),
-        scoresProgress: newRoundProgress
-    })
-
-    for (const playerDoc of querySnapshot.docs) {
+    await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, teamId, reward)
+    for (const playerDoc of playersSnapshot.docs) {
         transaction.update(playerDoc.ref, { status: 'ready' })
     }
 
-    await addSoundToQueueTransaction(transaction, gameId, correct ? 'Anime wow' : 'hysterical5')
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.update(questionRealtimeRef, { teamId, reward, correct, })
 
-    // End the question
+    await addSoundEffectTransaction(transaction, gameId, correct ? 'Anime wow' : 'hysterical5')
     await endQuestionTransaction(transaction, gameId, roundId, questionId)
 }
 
@@ -129,52 +101,29 @@ export const handleBasicQuestionCountdownEndTransaction = async (
     questionId
 ) => {
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const q = query(playersCollectionRef, where('teamId', '==', teamId))
-    const querySnapshot = await getDocs(q)
+    const playersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)))
 
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
+    await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, teamId, 0)
 
-    const roundScoresData = await getDocDataTransaction(transaction, roundScoresRef)
-
-    const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
-
-    transaction.update(realtimeDocRef, {
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.update(questionRealtimeRef, {
         correct: false,
-        dateEnd: serverTimestamp()
     })
-
-    const newRoundProgress = {}
-    const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
-    const teamsQuerySnapshot = await getDocs(query(teamsCollectionRef))
-    for (const teamDoc of teamsQuerySnapshot.docs) {
-        newRoundProgress[teamDoc.id] = {
-            ...currentRoundProgress[teamDoc.id],
-            [questionId]: currentRoundScores[teamDoc.id]
-        }
-    }
-    transaction.update(roundScoresRef, {
-        scoresProgress: newRoundProgress
-    })
-
-    for (const playerDoc of querySnapshot.docs) {
+    for (const playerDoc of playersSnapshot.docs) {
         transaction.update(playerDoc.ref, { status: 'ready' })
     }
 
     await addWrongAnswerSoundToQueueTransaction(transaction, gameId)
-
-    // End the question
     await endQuestion(gameId, roundId, questionId)
-
 }
 
 /* ====================================================================================================== */
 export async function resetBasicQuestion(gameId, roundId, questionId) {
     const batch = writeBatch(firestore)
 
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    batch.set(realtimeDocRef, {})
-    batch.update(realtimeDocRef, {
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    batch.set(questionRealtimeRef, {})
+    batch.update(questionRealtimeRef, {
         teamId: null,
         correct: null
     })
@@ -187,9 +136,9 @@ export const resetBasicQuestionTransaction = async (
     roundId,
     questionId
 ) => {
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    transaction.set(realtimeDocRef, {})
-    transaction.update(realtimeDocRef, {
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.set(questionRealtimeRef, {})
+    transaction.update(questionRealtimeRef, {
         teamId: null,
         correct: null
     })

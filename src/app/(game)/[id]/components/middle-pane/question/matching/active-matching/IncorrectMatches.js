@@ -14,8 +14,8 @@ export default function IncorrectMatches({ nodePositions, colIndices }) {
 
     const game = useGameContext()
 
-    const incorrectDocRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'incorrect')
-    const [incorrectData, incorrectLoading, incorrectError] = useDocumentData(incorrectDocRef)
+    const incorrectRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'incorrect')
+    const [incorrectData, incorrectLoading, incorrectError] = useDocumentData(incorrectRef)
     if (incorrectError) {
         return <p><strong>Error: {JSON.stringify(incorrectError)}</strong></p>
     }

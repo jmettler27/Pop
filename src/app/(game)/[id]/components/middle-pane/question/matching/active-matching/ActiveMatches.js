@@ -80,11 +80,11 @@ function ActiveMatchingQuestionNodes({ answer, nodePositions, numCols, edges, se
     const myTeam = useTeamContext()
     const myRole = useRoleContext()
 
-    const correctDocRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'correct')
-    const gameStatesDocRef = doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'states')
+    const correctRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'correct')
+    const gameStatesRef = doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'states')
 
-    const [correctData, correctLoading, correctError] = useDocumentData(correctDocRef)
-    const [gameStates, gameStatesLoading, gameStatesError] = useDocumentData(gameStatesDocRef)
+    const [correctData, correctLoading, correctError] = useDocumentData(correctRef)
+    const [gameStates, gameStatesLoading, gameStatesError] = useDocumentData(gameStatesRef)
 
     if (correctError) {
         return <p><strong>Error: {JSON.stringify(correctError)}</strong></p>

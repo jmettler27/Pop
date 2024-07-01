@@ -48,8 +48,6 @@ export default function RiddlePlayerController({ players }) {
     const hasExceededMaxTries = myCanceledItems && myCanceledItems.length >= round.maxTries
     const remaining = remainingWaitingClues(round, hasExceededMaxTries, realtime.currentClueIdx, myCanceledItems)
 
-    console.log(hasBuzzed, hasExceededMaxTries, remaining)
-
     return (
         <div className='flex flex-col h-full items-center justify-around'>
             <BuzzerMessage playerStatus={player.status} hasExceededMaxTries={hasExceededMaxTries} round={round} myCanceledItems={myCanceledItems} isFirst={isFirst} hasBuzzed={hasBuzzed} remaining={remaining} />
@@ -113,7 +111,7 @@ const RIDDLE_INCORRECT_ASNWER_TEXT = {
 
 function BuzzerMessage({ playerStatus, hasExceededMaxTries, round, myCanceledItems, isFirst, hasBuzzed, remaining, lang = DEFAULT_LOCALE }) {
     if (hasExceededMaxTries)
-        return <span className='2xl:text-3xl'>{MAX_TRIES_EXCEEDED_TEXT[lang]} ({round.maxTries})</span>
+        return <span className='2xl:text-3xl text-red-500'>🤐 {MAX_TRIES_EXCEEDED_TEXT[lang]} ({round.maxTries})</span>
 
     if (playerStatus === 'wrong') {
         const message = RIDDLE_INCORRECT_ASNWER_TEXT[lang]

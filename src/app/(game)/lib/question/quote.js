@@ -3,31 +3,27 @@
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
 import { firestore } from '@/lib/firebase/firebase'
 import {
-    collection,
     doc,
-    setDoc,
-    updateDoc,
     arrayUnion,
     arrayRemove,
-    increment,
     serverTimestamp,
     Timestamp,
     runTransaction,
-    writeBatch
 } from 'firebase/firestore'
 
-import { addSoundToQueueTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
-import { getDocDataTransaction } from '@/app/(game)/lib/utils';
-import { QUOTE_ELEMENTS } from '@/lib/utils/question/quote';
 import { isObjectEmpty } from '@/lib/utils';
-import { endQuestionTransaction } from '../question';
-import { updateTimerStateTransaction } from '../timer';
-import { updatePlayerStatusTransaction } from '../players';
+import { QUOTE_ELEMENTS } from '@/lib/utils/question/quote';
+
+import { addSoundEffectTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { getDocDataTransaction } from '@/app/(game)/lib/utils';
+import { endQuestionTransaction } from '@/app/(game)/lib/question';
+import { updateTimerStateTransaction } from '@/app/(game)/lib/timer';
+import { updatePlayerStatusTransaction } from '@/app/(game)/lib/players';
+import { increaseRoundTeamScoreTransaction } from '@/app/(game)/lib/scores';
 
 /**
  * When the organizer reveals an element from the quote (author, source, quote part)
  */
-// TRANSACTION
 export async function revealQuoteElement(gameId, roundId, questionId, quoteElem, quotePartIdx = null, wholeTeam = false) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -68,14 +64,12 @@ const revealQuoteElementTransaction = async (
 
     const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
     const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
     const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
     const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
 
-    const [questionData, roundData, roundScoresData, questionRealtimeData, questionPlayersData] = await Promise.all([
+    const [questionData, roundData, questionRealtimeData, questionPlayersData] = await Promise.all([
         getDocDataTransaction(transaction, questionRef),
         getDocDataTransaction(transaction, roundRef),
-        getDocDataTransaction(transaction, roundScoresRef),
         getDocDataTransaction(transaction, questionRealtimeRef),
         getDocDataTransaction(transaction, questionPlayersRef)
     ])
@@ -100,22 +94,10 @@ const revealQuoteElementTransaction = async (
     if (playerId) {
         const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
         const playerData = await getDocDataTransaction(transaction, playerRef)
+
         const { teamId } = playerData
         const { rewardsPerElement: points } = roundData
-        const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
-        const newRoundProgress = {}
-        for (const tid of Object.keys(currentRoundScores)) {
-            // Add an entry whose key is questionId and value is currentRoundScores[tid
-            newRoundProgress[tid] = {
-                ...currentRoundProgress[tid],
-                [questionId]: currentRoundScores[tid] + (tid === teamId ? points : 0)
-            }
-        }
-        console.log("Points: ", points)
-        transaction.update(roundScoresRef, {
-            [`scores.${teamId}`]: increment(points),
-            scoresProgress: newRoundProgress
-        })
+        await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, points)
 
         transaction.update(playerRef, {
             status: 'correct'
@@ -135,14 +117,11 @@ const revealQuoteElementTransaction = async (
 
     // If all revealed
     if (allRevealed) {
-        await addSoundToQueueTransaction(transaction, gameId, 'Anime wow')
-        transaction.update(questionRealtimeRef, {
-            dateEnd: serverTimestamp(),
-        })
+        await addSoundEffectTransaction(transaction, gameId, 'Anime wow')
         await endQuestionTransaction(transaction, gameId, roundId, questionId)
         return
     }
-    await addSoundToQueueTransaction(transaction, gameId, playerId ? 'super_mario_world_coin' : 'cartoon_mystery_musical_tone_002')
+    await addSoundEffectTransaction(transaction, gameId, playerId ? 'super_mario_world_coin' : 'cartoon_mystery_musical_tone_002')
 }
 
 /* ==================================================================================================== */
@@ -180,14 +159,12 @@ const validateAllQuoteElementsTransaction = async (
 
     const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
     const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
     const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
     const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', playerId)
 
-    const [questionData, roundData, roundScoresData, questionRealtimeData, playerData] = await Promise.all([
+    const [questionData, roundData, questionRealtimeData, playerData] = await Promise.all([
         getDocDataTransaction(transaction, questionRef),
         getDocDataTransaction(transaction, roundRef),
-        getDocDataTransaction(transaction, roundScoresRef),
         getDocDataTransaction(transaction, questionRealtimeRef),
         getDocDataTransaction(transaction, playerRef)
     ])
@@ -216,24 +193,10 @@ const validateAllQuoteElementsTransaction = async (
 
     /* Update the winner team scores */
     const { teamId } = playerData
-
     const { rewardsPerElement: points } = roundData
-    const multiplier = toGuess.length + (toGuess.includes('quote') ? quoteParts.length - 1 : 0);
+    const multiplier = toGuess.length + toGuess.includes('quote') * (quoteParts.length - 1);
     const totalPoints = points * multiplier;
-
-    const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
-    const newRoundProgress = {}
-    for (const tid of Object.keys(currentRoundScores)) {
-        // Add an entry whose key is questionId and value is currentRoundScores[tid
-        newRoundProgress[tid] = {
-            ...currentRoundProgress[tid],
-            [questionId]: currentRoundScores[tid] + (tid === teamId) * totalPoints
-        }
-    }
-    transaction.update(roundScoresRef, {
-        [`scores.${teamId}`]: increment(totalPoints),
-        scoresProgress: newRoundProgress
-    })
+    await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, totalPoints)
 
     transaction.update(playerRef, {
         status: 'correct'
@@ -241,10 +204,9 @@ const validateAllQuoteElementsTransaction = async (
 
     transaction.update(questionRealtimeRef, {
         revealed: newRevealed,
-        dateEnd: serverTimestamp(),
     })
 
-    await addSoundToQueueTransaction(transaction, gameId, 'Anime wow')
+    await addSoundEffectTransaction(transaction, gameId, 'Anime wow')
     await endQuestionTransaction(transaction, gameId, roundId, questionId)
 }
 
@@ -253,7 +215,6 @@ const validateAllQuoteElementsTransaction = async (
 /**
  * When the organizer invalidates the answer of a player.
  */
-// TRANSACTION
 export async function cancelQuotePlayer(gameId, roundId, questionId, playerId, wholeTeam = false) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -285,9 +246,9 @@ export const cancelQuotePlayerTransaction = async (
     playerId,
     wholeTeam = false
 ) => {
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
 
-    transaction.update(playersDocRef, {
+    transaction.update(questionPlayersRef, {
         canceled: arrayUnion({
             playerId,
             timestamp: Timestamp.now()
@@ -333,8 +294,8 @@ export const handleQuoteCountdownEndTransaction = async (
     questionId
 ) => {
 
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-    const { buzzed } = await getDocDataTransaction(transaction, playersDocRef)
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    const { buzzed } = await getDocDataTransaction(transaction, questionPlayersRef)
 
     if (buzzed.length === 0)
         await updateTimerStateTransaction(transaction, gameId, 'reset')
@@ -370,8 +331,8 @@ export const resetQuoteQuestionTransaction = async (
             return acc
         }, {})
     }
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    transaction.update(realtimeDocRef, {
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.update(questionRealtimeRef, {
         revealed: initialRevealed
     })
 }

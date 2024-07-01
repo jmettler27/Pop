@@ -23,8 +23,8 @@ export default function ProgressiveCluesMainContent({ question, showComplete }) 
 function ProgressiveClues({ question, showComplete }) {
     const game = useGameContext()
 
-    const realtimeRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
-    const [realtime, realtimeLoading, realtimeError] = useDocumentData(realtimeRef)
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
+    const [realtime, realtimeLoading, realtimeError] = useDocumentData(questionRealtimeRef)
 
     if (realtimeError) {
         return <p><strong>Error: {JSON.stringify(realtimeError)}</strong></p>

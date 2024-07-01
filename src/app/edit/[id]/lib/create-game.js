@@ -1,6 +1,6 @@
 "use server";
 
-import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { addSoundEffectTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
 
@@ -61,7 +61,7 @@ export const createGameTransaction = async (
     // Create realtime collection
     await createGameRealtimeTransaction(transaction, gameId, organizerId);
 
-    await addSoundToQueueTransaction(transaction, gameId, "level-passed");
+    await addSoundEffectTransaction(transaction, gameId, "level-passed");
 
     return gameId;
 }
@@ -101,8 +101,8 @@ const createGameRealtimeTransaction = async (
 
     });
 
-    const statesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states');
-    transaction.set(statesRef, {
+    const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states');
+    transaction.set(gameStatesRef, {
         chooserIdx: null,
         chooserOrder: null,
     })

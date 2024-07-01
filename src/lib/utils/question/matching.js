@@ -56,7 +56,7 @@ export function randomMatch(numCols, numRows) {
     return Array.from({ length: numCols }, () => Math.floor(Math.random() * numRows));
 }
 
-export function generateNewMatch(numRows, numCols, incorrectMatches, correctMatchIndices) {
+export function generateMatch(numRows, numCols, incorrectMatches, correctMatchIndices) {
     // Convert to a Set for efficient lookup
     const incorrectMatchesSet = new Set(incorrectMatches.map(match => match.join(',')));
     const correctMatchIndicesSet = new Set(correctMatchIndices);

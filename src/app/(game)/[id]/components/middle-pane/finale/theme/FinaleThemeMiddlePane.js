@@ -12,11 +12,11 @@ export default function FinaleThemeMiddlePane({ round }) {
     const game = useGameContext()
     const themeId = round.currentTheme
 
-    const themeDocRef = doc(QUESTIONS_COLLECTION_REF, themeId)
-    const themeRealtimeDocRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'themes', themeId)
+    const themeRef = doc(QUESTIONS_COLLECTION_REF, themeId)
+    const themeRealtimeRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'themes', themeId)
 
-    const [themeDoc, themeLoading, themeError] = useDocumentOnce(themeDocRef)
-    const [themeRealtime, themeRealtimeLoading, themeRealtimeError] = useDocumentData(themeRealtimeDocRef)
+    const [themeDoc, themeLoading, themeError] = useDocumentOnce(themeRef)
+    const [themeRealtime, themeRealtimeLoading, themeRealtimeError] = useDocumentData(themeRealtimeRef)
     if (themeError) {
         return <p><strong>Error: {JSON.stringify(themeError)}</strong></p>
     }

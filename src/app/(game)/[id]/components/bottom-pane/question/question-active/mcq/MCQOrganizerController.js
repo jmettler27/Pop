@@ -12,6 +12,8 @@ import { handleHideAnswer } from '@/app/(game)/lib/question/mcq'
 import { GameChooserHelperText } from '@/app/(game)/[id]/components/GameChooserTeamAnnouncement'
 import MCQPlayerOptionHelperText from './MCQPlayerOptionHelperText'
 import { useAsyncAction } from '@/lib/utils/async'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
+import { INVALIDATE_ANSWER, VALIDATE_ANSWER } from '@/lib/utils/question/question'
 
 
 export default function MCQOrganizerController({ realtime }) {
@@ -32,7 +34,7 @@ export default function MCQOrganizerController({ realtime }) {
 }
 
 
-function MCQOrganizerHideAnswerController({ realtime }) {
+function MCQOrganizerHideAnswerController({ realtime, lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
 
     const [handleClick, isHandling] = useAsyncAction(async (correct) => {
@@ -54,7 +56,7 @@ function MCQOrganizerHideAnswerController({ realtime }) {
                 onClick={() => handleClick(true)}
                 disabled={isHandling}
             >
-                Validate
+                {VALIDATE_ANSWER[lang]}
             </Button>
 
             {/* Invalidate the player's answer */}
@@ -64,7 +66,7 @@ function MCQOrganizerHideAnswerController({ realtime }) {
                 onClick={() => handleClick(false)}
                 disabled={isHandling}
             >
-                Cancel
+                {INVALIDATE_ANSWER[lang]}
             </Button>
         </ButtonGroup>
     </>

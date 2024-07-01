@@ -10,6 +10,8 @@ import ClearBuzzerButton from '@/app/(game)/[id]/components/bottom-pane/question
 
 import { useAsyncAction } from '@/lib/utils/async'
 import { handleBasicAnswer } from '@/app/(game)/lib/question/basic'
+import { INVALIDATE_ANSWER, VALIDATE_ANSWER } from '@/lib/utils/question/question'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 export default function BasicQuestionOrganizerController({ realtime }) {
 
@@ -22,7 +24,7 @@ export default function BasicQuestionOrganizerController({ realtime }) {
 }
 
 
-function BasicQuestionOrganizerAnswerController({ realtime }) {
+function BasicQuestionOrganizerAnswerController({ realtime, lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
 
     const [validateBasicAnswer, isValidating] = useAsyncAction(async () => {
@@ -49,7 +51,7 @@ function BasicQuestionOrganizerAnswerController({ realtime }) {
                 onClick={validateBasicAnswer}
                 disabled={isValidating}
             >
-                Validate
+                {VALIDATE_ANSWER[lang]}
             </Button>
 
             {/* Invalidate the player's answer */}
@@ -59,7 +61,7 @@ function BasicQuestionOrganizerAnswerController({ realtime }) {
                 onClick={invalidateBasicAnswer}
                 disabled={isInvalidating}
             >
-                Cancel
+                {INVALIDATE_ANSWER[lang]}
             </Button>
         </ButtonGroup>
     </>

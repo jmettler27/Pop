@@ -53,40 +53,38 @@ export default function Page({ params, lang = DEFAULT_LOCALE }) {
 
     const [joinGame, isJoining] = useAsyncAction(async (values, user) => {
         try {
-            console.log("Form values:", values)
-
             const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
             let teamId = values.teamId
 
             await runTransaction(firestore, async (transaction) => {
                 if (!values.playInTeams) {
                     /* Single player */
-                    const teamDocRef = doc(teamsCollectionRef);
-                    transaction.set(teamDocRef, {
+                    const teamRef = doc(teamsCollectionRef);
+                    transaction.set(teamRef, {
                         color: values.teamColor,
                         name: values.playerName,
                         teamAllowed: false,
                         createdBy: user.id,
                         createdAt: serverTimestamp(),
                     });
-                    teamId = teamDocRef.id;
+                    teamId = teamRef.id;
                 }
                 else if (!values.joinTeam) {
                     /* Player that creates a new team */
-                    const teamDocRef = doc(teamsCollectionRef);
-                    transaction.set(teamDocRef, {
+                    const teamRef = doc(teamsCollectionRef);
+                    transaction.set(teamRef, {
                         color: values.teamColor,
                         name: values.teamName,
                         teamAllowed: true,
                         createdBy: user.id,
                         createdAt: serverTimestamp(),
                     });
-                    teamId = teamDocRef.id;
+                    teamId = teamRef.id;
                 }
 
                 /* In any case: create player doc */
-                const playerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'players', user.id);
-                transaction.set(playerDocRef, {
+                const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', user.id);
+                transaction.set(playerRef, {
                     image: user.image,
                     name: values.playerName,
                     status: 'idle',
@@ -220,7 +218,6 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang = DEFAULT_LOCALE }) 
     const values = formik.values
     const errors = formik.errors
 
-    console.log("General info step: Values:", values, "Errors:", errors, "Validation schema:", validationSchema)
     const PlayInTeamsError = () => {
         const [_, meta] = useField('playInTeams');
         return typeof errors.playInTeams === 'string' && meta.touched && meta.error && <StyledErrorMessage>{meta.error}</StyledErrorMessage>
@@ -409,9 +406,6 @@ function CreateTeamStep({ onSubmit, validationSchema, lang = DEFAULT_LOCALE }) {
     const formik = useFormikContext();
     const values = formik.values
     const errors = formik.errors
-
-    console.log("Create team step: Values:", values, "Errors:", errors, "Validation schema:", validationSchema)
-
 
     return (
         <WizardStep

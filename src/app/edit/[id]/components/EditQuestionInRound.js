@@ -25,21 +25,21 @@ export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questi
     console.log("EditQuestionCard", questionId)
     const { id: gameId } = useParams()
 
-    const questionDocRef = doc(QUESTIONS_COLLECTION_REF, questionId)
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
 
-    const [questionData, questionDataLoading, questionDataError] = useDocumentDataOnce(questionDocRef)
-    const [realtimeData, realtimeDataLoading, realtimeDataError] = useDocumentDataOnce(realtimeDocRef)
+    const [questionData, questionDataLoading, questionDataError] = useDocumentDataOnce(questionRef)
+    const [questionRealtimeData, questionRealtimeDataLoading, questionRealtimeDataError] = useDocumentDataOnce(questionRealtimeRef)
     if (questionDataError) {
         return <span>Error: {JSON.stringify(questionDataError)}</span>
     }
-    if (realtimeDataError) {
-        return <span>Error: {JSON.stringify(realtimeDataError)}</span>
+    if (questionRealtimeDataError) {
+        return <span>Error: {JSON.stringify(questionRealtimeDataError)}</span>
     }
-    if (questionDataLoading || realtimeDataLoading) {
+    if (questionDataLoading || questionRealtimeDataLoading) {
         return <div>Loading...</div>
     }
-    if (!questionData || !realtimeData) {
+    if (!questionData || !questionRealtimeData) {
         return <div>No data...</div>
     }
 
@@ -58,17 +58,17 @@ export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questi
 
             <Divider className='my-2 bg-slate-600' />
             <CardFooter>
-                <EditQuestionCardFooter realtimeData={realtimeData} />
+                <EditQuestionCardFooter questionRealtimeData={questionRealtimeData} />
             </CardFooter>
 
         </Card>
     );
 })
 
-function EditQuestionCardFooter({ realtimeData }) {
+function EditQuestionCardFooter({ questionRealtimeData }) {
     const { id: gameId } = useParams()
 
-    const organizerRef = doc(GAMES_COLLECTION_REF, gameId, 'organizers', realtimeData.managedBy)
+    const organizerRef = doc(GAMES_COLLECTION_REF, gameId, 'organizers', questionRealtimeData.managedBy)
     const [organizer, loading, error] = useDocumentDataOnce(organizerRef)
     if (error) {
         return <p>Error: {JSON.stringify(error)}</p>

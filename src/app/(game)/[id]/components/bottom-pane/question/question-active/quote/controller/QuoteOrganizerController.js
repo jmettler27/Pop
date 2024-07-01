@@ -1,4 +1,7 @@
+import { useParams } from 'next/navigation'
+
 import { useEffect, useRef } from 'react'
+
 import { useGameContext } from '@/app/(game)/contexts'
 
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
@@ -13,16 +16,15 @@ import EndQuestionButton from '@/app/(game)/[id]/components/bottom-pane/question
 import ResetQuestionButton from '@/app/(game)/[id]/components/bottom-pane/question/question-active/ResetQuestionButton'
 import ClearBuzzerButton from '@/app/(game)/[id]/components/bottom-pane/question/question-active/riddle/controller/ClearBuzzerButton'
 import BuzzerHeadPlayer from '@/app/(game)/[id]/components/bottom-pane/question/question-active/riddle/controller/BuzzerHeadPlayer'
-import RevealQuoteElementButton from './RevealQuoteElement'
+import RevealQuoteElementButton from '@/app/(game)/[id]/components/bottom-pane/question/question-active/quote/controller/RevealQuoteElement'
 
+import { handleRiddleBuzzerHeadChanged } from '@/app/(game)/lib/question/riddle'
 import { cancelQuotePlayer, validateAllQuoteElements } from '@/app/(game)/lib/question/quote'
 
-import { useAsyncAction } from '@/lib/utils/async'
-import { atLeastOneElementRevealed } from '@/lib/utils/question/quote'
-import { isEmpty } from '@/lib/utils/arrays'
-import { handleRiddleBuzzerHeadChanged } from '@/app/(game)/lib/question/riddle'
-import { useParams } from 'next/navigation'
 import { DEFAULT_LOCALE } from '@/lib/utils/locales'
+import { useAsyncAction } from '@/lib/utils/async'
+import { isEmpty } from '@/lib/utils/arrays'
+import { atLeastOneElementRevealed } from '@/lib/utils/question/quote'
 
 
 export default function QuoteOrganizerController({ question, players }) {
@@ -56,8 +58,8 @@ export default function QuoteOrganizerController({ question, players }) {
 function QuoteOrganizerAnswerController({ buzzed, question }) {
     const game = useGameContext()
 
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
-    const [realtime, realtimeLoading, realtimeError] = useDocumentData(realtimeDocRef)
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
+    const [realtime, realtimeLoading, realtimeError] = useDocumentData(questionRealtimeRef)
     if (realtimeError) {
         return <p><strong>Error: {JSON.stringify(realtimeError)}</strong></p>
     }
@@ -80,11 +82,8 @@ function QuoteOrganizerAnswerController({ buzzed, question }) {
             // aria-label='outlined primary button group'
             >
                 <ValidateAllQuoteElementsButton buzzed={buzzed} revealed={revealed} />
-
                 <CancelQuoteElementButton buzzed={buzzed} />
-
                 <RevealQuoteElementButton buzzed={buzzed} question={question} revealed={revealed} />
-
             </ButtonGroup>
         </>
     )

@@ -54,8 +54,8 @@ function AddBetForm({ question, status, lang }) {
     const [myBet, setMyBet] = useState(0)
     const [hasValidated, setHasValidated] = useState(false)
 
-    const playersDocRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'players')
-    const [players, playersLoading, playersError] = useDocumentDataOnce(playersDocRef)
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'players')
+    const [players, playersLoading, playersError] = useDocumentDataOnce(questionPlayersRef)
     if (playersError) {
         return <p><strong>Error: </strong>{JSON.stringify(playersError)}</p>
     }

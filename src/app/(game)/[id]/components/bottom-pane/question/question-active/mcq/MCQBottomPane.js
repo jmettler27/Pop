@@ -16,7 +16,7 @@ import MCQPlayerController from './MCQPlayerController'
 import MCQPlayerOptionHelperText from './MCQPlayerOptionHelperText'
 import MCQOrganizerController from './MCQOrganizerController'
 
-export default function MCQBottomPane({ }) {
+export default function MCQBottomPane({ question }) {
     const { id: gameId } = useParams()
 
     const [gameStates, statesLoading, statesError] = useDocumentDataOnce(doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states'))
@@ -35,7 +35,7 @@ export default function MCQBottomPane({ }) {
 
             {/* Left part: controller */}
             <div className='basis-3/4'>
-                <MCQController gameStates={gameStates} />
+                <MCQController gameStates={gameStates} question={question} />
             </div>
 
             {/* Right part: list of riddle players who buzzed and/or were canceled */}
@@ -47,7 +47,7 @@ export default function MCQBottomPane({ }) {
 
 }
 
-function MCQController({ gameStates }) {
+function MCQController({ gameStates, question }) {
     const game = useGameContext()
     const myRole = useRoleContext()
 
@@ -68,7 +68,7 @@ function MCQController({ gameStates }) {
         case 'organizer':
             return <MCQOrganizerController realtime={realtime} />
         case 'player':
-            return <MCQPlayerController chooserTeamId={chooserTeamId} realtime={realtime} />
+            return <MCQPlayerController chooserTeamId={chooserTeamId} realtime={realtime} question={question} />
         default:
             return <MCQSpectatorController chooserTeamId={chooserTeamId} realtime={realtime} />
     }

@@ -8,7 +8,6 @@ import {
     where,
     getDocs,
     doc,
-    setDoc,
     updateDoc,
     arrayUnion,
     increment,
@@ -18,24 +17,24 @@ import {
     runTransaction
 } from 'firebase/firestore'
 
-import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
-import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
-import { findHighestBidder } from '@/lib/utils/question/enum';
-import { updateTimerStateTransaction, updateTimerTransaction } from '../timer';
-import { endQuestionTransaction } from '../question';
-import { updatePlayerStatusTransaction } from '../players';
+import { addSoundEffectTransaction } from '@/app/(game)/lib/sounds';
+import { getDocDataTransaction } from '@/app/(game)/lib/utils';
+import { updateTimerTransaction } from '@/app/(game)/lib/timer';
+import { endQuestionTransaction } from '@/app/(game)/lib/question';
+import { updatePlayerStatusTransaction } from '@/app/(game)/lib/players';
+import { increaseRoundTeamScoreTransaction } from '@/app/(game)/lib/scores';
 
-// WRITE
+import { findHighestBidder } from '@/lib/utils/question/enum';
+
 export async function updateEnumBets(gameId, roundId, questionId, fieldsToUpdate) {
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
     const updateObject = { ...fieldsToUpdate }
 
-    await updateDoc(playersDocRef, updateObject)
+    await updateDoc(questionPlayersRef, updateObject)
     console.log(`Game ${gameId}, Round ${roundId}, Question ${questionId} : Bet list updated`)
 }
 
 /* ============================================================================================================ */
-// BATCHED WRITE
 export async function addPlayerBet(gameId, roundId, questionId, playerId, teamId, bet) {
     const batch = writeBatch(firestore)
 
@@ -46,8 +45,8 @@ export async function addPlayerBet(gameId, roundId, questionId, playerId, teamId
         filename: 'pop',
     })
 
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-    batch.update(playersDocRef, {
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    batch.update(questionPlayersRef, {
         bets: arrayUnion({
             playerId,
             teamId,
@@ -60,16 +59,14 @@ export async function addPlayerBet(gameId, roundId, questionId, playerId, teamId
 }
 
 /* ============================================================================================================ */
-// WRITE
 async function updateEnumRealtime(gameId, roundId, questionId, fieldsToUpdate) {
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
     const updateObject = { ...fieldsToUpdate }
 
-    await updateDoc(realtimeDocRef, updateObject)
+    await updateDoc(questionRealtimeRef, updateObject)
     console.log(`Game ${gameId}, Round ${roundId}, Question ${questionId} : States updated`)
 }
 
-// WRITE
 export async function updateEnumQuestionState(gameId, roundId, questionId, newStatus) {
     await updateEnumRealtime(gameId, roundId, questionId, {
         status: newStatus
@@ -80,7 +77,6 @@ export async function updateEnumQuestionState(gameId, roundId, questionId, newSt
 /**
  * reflection_active -> challenge_active
  */
-// TRANSACTION
 export async function endEnumReflection(gameId, roundId, questionId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -110,28 +106,21 @@ export const endEnumReflectionTransaction = async (
     roundId,
     questionId
 ) => {
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-    const playersData = await getDocDataTransaction(transaction, playersDocRef)
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    const questionPlayersData = await getDocDataTransaction(transaction, questionPlayersRef)
 
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
 
     /* No player made a bet */
-    if (playersData.bets.length === 0) {
-        transaction.update(realtimeDocRef, {
-            dateEnd: serverTimestamp()
-        })
-
-        const gameDocRef = doc(GAMES_COLLECTION_REF, gameId)
-        transaction.update(gameDocRef, {
-            status: 'question_end'
-        })
+    if (questionPlayersData.bets.length === 0) {
+        await endQuestionTransaction(transaction, gameId, roundId, questionId)
     } else {
-        const questionDocRef = doc(QUESTIONS_COLLECTION_REF, questionId)
-        const questionData = await getDocDataTransaction(transaction, questionDocRef)
+        const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
+        const questionData = await getDocDataTransaction(transaction, questionRef)
 
         // Calculate the 'challenger' of this question (the best player)
-        const [playerId, teamId, bet] = findHighestBidder(playersData.bets)
-        transaction.update(playersDocRef, {
+        const [playerId, teamId, bet] = findHighestBidder(questionPlayersData.bets)
+        transaction.update(questionPlayersRef, {
             challenger: {
                 playerId,
                 teamId,
@@ -143,7 +132,7 @@ export const endEnumReflectionTransaction = async (
 
         await updatePlayerStatusTransaction(transaction, gameId, playerId, 'focus')
 
-        transaction.update(realtimeDocRef, {
+        transaction.update(questionRealtimeRef, {
             status: 'challenge_active'
         })
 
@@ -154,8 +143,7 @@ export const endEnumReflectionTransaction = async (
 }
 
 /* ============================================================================================================ */
-// BATCHED WRITE
-export async function handleEnumAnswerItemClick(gameId, roundId, questionId, itemIdx) {
+export async function validateEnumItem(gameId, roundId, questionId, itemIdx) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -171,7 +159,7 @@ export async function handleEnumAnswerItemClick(gameId, roundId, questionId, ite
 
     try {
         await runTransaction(firestore, transaction =>
-            handleEnumAnswerItemClickTransaction(transaction, gameId, roundId, questionId, itemIdx)
+            validateEnumItemTransaction(transaction, gameId, roundId, questionId, itemIdx)
         );
         console.log(`Enum question ${questionId}: Item ${itemIdx} click successfully handled.`)
     }
@@ -181,25 +169,23 @@ export async function handleEnumAnswerItemClick(gameId, roundId, questionId, ite
     }
 }
 
-const handleEnumAnswerItemClickTransaction = async (
+const validateEnumItemTransaction = async (
     transaction,
     gameId,
     roundId,
     questionId,
     itemIdx
 ) => {
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-    transaction.update(playersDocRef, {
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    transaction.update(questionPlayersRef, {
         ['challenger.numCorrect']: increment(1),
         [`challenger.cited.${itemIdx}`]: serverTimestamp()
 
     })
-
-    await addSoundToQueueTransaction(transaction, gameId, 'super_mario_world_coin')
+    await addSoundEffectTransaction(transaction, gameId, 'super_mario_world_coin')
 }
 
-// BATCHED WRITE
-export async function incrementChallengerNumCorrect(gameId, roundId, questionId, organizerId) {
+export async function incrementCorrectAnswersCount(gameId, roundId, questionId, organizerId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -221,8 +207,8 @@ export async function incrementChallengerNumCorrect(gameId, roundId, questionId,
         filename: 'super_mario_world_coin',
     })
 
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-    batch.update(playersDocRef, {
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    batch.update(questionPlayersRef, {
         ['challenger.numCorrect']: increment(1)
     })
 
@@ -234,7 +220,6 @@ export async function incrementChallengerNumCorrect(gameId, roundId, questionId,
 /**
  * question_active -> question_end
  */
-// TRANSACTION
 export async function endEnumQuestion(gameId, roundId, questionId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -264,33 +249,32 @@ export const endEnumQuestionTransaction = async (
     roundId,
     questionId
 ) => {
-    const roundDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
+    const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
     const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
 
-    const [roundData, roundScoresData, playersData] = await Promise.all([
-        getDocDataTransaction(transaction, roundDocRef),
+    const [roundData, roundScoresData, questionPlayersData] = await Promise.all([
+        getDocDataTransaction(transaction, roundRef),
         getDocDataTransaction(transaction, roundScoresRef),
-        getDocDataTransaction(transaction, playersDocRef),
+        getDocDataTransaction(transaction, questionPlayersRef),
     ])
 
-    const { challenger } = playersData
+    const { challenger } = questionPlayersData
     const { teamId, playerId, numCorrect, bet } = challenger
 
     const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
 
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const challengerTeamPlayersQuery = query(playersCollectionRef, where('teamId', '==', teamId))
-    const challengerTeamPlayersQuerySnapshot = await getDocs(challengerTeamPlayersQuery)
+    const challengersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)))
 
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
 
     if (numCorrect < bet) {
         // The challenger did not succeed in its challenge
-        const reward = roundData.rewardsPerQuestion
+        const { rewardsPerQuestion: reward } = roundData
 
-        for (const playerDoc of challengerTeamPlayersQuerySnapshot.docs) {
-            transaction.update(playerDoc.ref, {
+        for (const challengerDoc of challengersSnapshot.docs) {
+            transaction.update(challengerDoc.ref, {
                 status: 'wrong'
             })
         }
@@ -304,18 +288,19 @@ export const endEnumQuestionTransaction = async (
         }
 
         const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
-        const otherTeamsQuerySnapshot = await getDocs(query(teamsCollectionRef, where('id', '!=', teamId)))
-        for (const otherTeamDoc of otherTeamsQuerySnapshot.docs) {
-            newRoundProgress[otherTeamDoc.id] = {
-                ...currentRoundProgress[otherTeamDoc.id],
-                [questionId]: currentRoundScores[otherTeamDoc.id] + reward
-            }
-            newRoundScores[otherTeamDoc.id] = currentRoundScores[otherTeamDoc.id] + reward
 
-            const otherTeamPlayersQuery = query(playersCollectionRef, where('teamId', '==', otherTeamDoc.id))
-            const otherTeamPlayersQuerySnapshot = await getDocs(otherTeamPlayersQuery)
-            for (const playerDoc of otherTeamPlayersQuerySnapshot.docs) {
-                transaction.update(playerDoc.ref, {
+        const spectatorTeamsSnapshot = await getDocs(query(teamsCollectionRef, where('id', '!=', teamId)))
+        for (const spectatorTeamDoc of spectatorTeamsSnapshot.docs) {
+            const stid = spectatorTeamDoc.id
+            newRoundProgress[stid] = {
+                ...currentRoundProgress[stid],
+                [questionId]: currentRoundScores[stid] + reward
+            }
+            newRoundScores[stid] = currentRoundScores[stid] + reward
+
+            const spectatorsSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', stid)))
+            for (const spectator of spectatorsSnapshot.docs) {
+                transaction.update(spectator.ref, {
                     status: 'correct'
                 })
             }
@@ -327,57 +312,37 @@ export const endEnumQuestionTransaction = async (
     } else {
         // The challenger succeeded in its challenge
         const reward = roundData.rewardsPerQuestion + (numCorrect > bet) * roundData.rewardsForBonus
+        await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, reward)
 
-        const newRoundProgress = {}
-        for (const tid of Object.keys(currentRoundScores)) {
-            newRoundProgress[tid] = {
-                ...currentRoundProgress[tid],
-                [questionId]: currentRoundScores[tid] + (tid === teamId) * reward
-            }
-        }
-        transaction.update(roundScoresRef, {
-            [`scores.${teamId}`]: increment(reward),
-            scoresProgress: newRoundProgress
-        })
-
-        for (const playerDoc of challengerTeamPlayersQuerySnapshot.docs) {
-            transaction.update(playerDoc.ref, {
+        for (const challengerDoc of challengersSnapshot.docs) {
+            transaction.update(challengerDoc.ref, {
                 status: 'correct'
             })
         }
-        transaction.update(realtimeDocRef, {
-            winner: {
-                playerId,
-                teamId
-            }
+        transaction.update(questionRealtimeRef, {
+            winner: { playerId, teamId }
         })
     }
-
-    transaction.update(realtimeDocRef, {
-        dateEnd: serverTimestamp()
-    })
-
     await endQuestionTransaction(transaction, gameId, roundId, questionId)
 }
 
 /* ============================================================================================================ */
-// BATCHED WRITE
 export async function resetEnumQuestion(gameId, roundId, questionId) {
     const batch = writeBatch(firestore)
 
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-    batch.set(playersDocRef, {
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    batch.set(questionPlayersRef, {
         bets: [],
     })
 
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    batch.set(realtimeDocRef, {
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    batch.set(questionRealtimeRef, {
         status: 'reflection_active',
         winner: null,
     })
 
-    const timerDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
-    batch.update(timerDocRef, {
+    const timerRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'timer')
+    batch.update(timerRef, {
         status: 'reset',
         timestamp: serverTimestamp()
     })
@@ -391,46 +356,14 @@ export const resetEnumQuestionTransaction = async (
     roundId,
     questionId
 ) => {
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-    transaction.set(playersDocRef, {
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    transaction.set(questionPlayersRef, {
         bets: [],
     })
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    transaction.set(realtimeDocRef, {
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.set(questionRealtimeRef, {
         status: 'reflection_active',
         winner: null,
     })
 
-}
-
-// WRITE
-async function resetEnumBets(gameId, roundId, questionId) {
-    await initEnumBets(gameId, roundId, questionId, {
-        bets: [],
-    })
-}
-
-// WRITE
-async function initEnumBets(gameId, roundId, questionId, fieldsToUpdate) {
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-    const updateObject = { ...fieldsToUpdate }
-
-    await setDoc(playersDocRef, updateObject)
-    console.log(`Game ${gameId}, Round ${roundId}, Question ${questionId} : Bets initialized`)
-}
-
-// WRITE
-async function resetEnumRealtime(gameId, roundId, questionId) {
-    await initEnumRealtime(gameId, roundId, questionId, {
-        status: 'reflection_active',
-    })
-}
-
-// WRITE
-async function initEnumRealtime(gameId, roundId, questionId, fieldsToUpdate) {
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    const updateObject = { ...fieldsToUpdate }
-
-    await setDoc(realtimeDocRef, updateObject)
-    console.log(`Game ${gameId}, Round ${roundId}, Question ${questionId} : States initialized`)
 }

@@ -1,31 +1,32 @@
+import { useState } from 'react'
+
 import { useGameContext } from '@/app/(game)/contexts'
 
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
+import { useAsyncAction } from '@/lib/utils/async'
+import { isEmpty } from '@/lib/utils/arrays'
+import { prependQuoteElementWithEmoji, quoteElementIsRevealed, quoteElementToTitle, quotePartIsRevealed } from '@/lib/utils/question/quote'
+
+import { revealQuoteElement } from '@/app/(game)/lib/question/quote'
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Menu } from '@mui/material'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import CancelIcon from '@mui/icons-material/Cancel'
-import VisibilityIcon from '@mui/icons-material/Visibility';
-
-import { useAsyncAction } from '@/lib/utils/async'
-import { useState } from 'react'
-import { revealQuoteElement } from '@/app/(game)/lib/question/quote'
-import { prependQuoteElementWithEmoji, quoteElementIsRevealed, quoteElementToTitle, quotePartIsRevealed } from '@/lib/utils/question/quote'
-import { isEmpty } from '@/lib/utils/arrays'
-
-import * as React from 'react';
 import ListSubheader from '@mui/material/ListSubheader';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Collapse from '@mui/material/Collapse';
+
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import { DEFAULT_LOCALE } from '@/lib/utils/locales';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import CancelIcon from '@mui/icons-material/Cancel'
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
 
 export default function RevealQuoteElementButton({ buzzed, question, revealed, lang = DEFAULT_LOCALE }) {
     const buzzedIsEmpty = isEmpty(buzzed)
 
-    const { toGuess, quoteParts } = question.details
+    const { author, source, quote, toGuess, quoteParts } = question.details
 
     const [element, setElement] = useState(null)
     const [quotePartIdx, setQuotePartIdx] = useState(null)
@@ -47,7 +48,7 @@ export default function RevealQuoteElementButton({ buzzed, question, revealed, l
         setAnchorEl(event.currentTarget);
     };
 
-    const handleListItemClick = (quoteElem) => {
+    const handleRevealQuoteElement = (quoteElem) => {
         setElement(quoteElem)
         setDialogOpen(true)
     };
@@ -85,24 +86,26 @@ export default function RevealQuoteElementButton({ buzzed, question, revealed, l
                     {toGuess.map((quoteElem, idx) => {
                         switch (quoteElem) {
                             case 'author':
-                                return <AuthorListItemButton key={idx}
+                                return <RevealQuoteElementItemButton key={idx}
                                     revealed={revealed}
-                                    author={question.details.author}
-                                    onClick={() => handleListItemClick('author')}
+                                    quoteElement={author}
+                                    quoteElementStr='author'
+                                    onClick={() => handleRevealQuoteElement('author')}
                                 />
                             case 'source':
-                                return <SourceListItemButton key={idx}
+                                return <RevealQuoteElementItemButton key={idx}
                                     revealed={revealed}
-                                    source={question.details.source}
-                                    onClick={() => handleListItemClick('source')}
+                                    quoteElement={source}
+                                    quoteElementStr='source'
+                                    onClick={() => handleRevealQuoteElement('source')}
                                 />
                             case 'quote':
-                                return <QuoteListItemButton key={idx}
+                                return <RevealQuotePartItemButton key={idx}
                                     revealed={revealed}
-                                    quote={question.details.quote}
+                                    quote={quote}
                                     quoteParts={quoteParts}
                                     setQuotePartIdx={setQuotePartIdx}
-                                    handleListItemClick={handleListItemClick}
+                                    handleListItemClick={handleRevealQuoteElement}
                                 />
                         }
                     })}
@@ -125,28 +128,13 @@ const REVEAL_LIST_HEADER = {
 }
 
 
-function AuthorListItemButton({ revealed, author, onClick }) {
-
-    const itemText = `${prependQuoteElementWithEmoji('author')} ("${author}")`
-
-    return (
-        <ListItemButton
-            onClick={onClick}
-            disabled={quoteElementIsRevealed(revealed, 'author')}
-        >
-            <ListItemText primary={itemText} />
-        </ListItemButton>
-    )
-}
-
-function SourceListItemButton({ revealed, source, onClick }) {
-
-    const itemText = `${prependQuoteElementWithEmoji('source')} ("${source}")`
+function RevealQuoteElementItemButton({ revealed, quoteElement, quoteElementStr, onClick }) {
+    const itemText = `${prependQuoteElementWithEmoji(quoteElementStr)} ("${quoteElement}")`
 
     return (
         <ListItemButton
             onClick={onClick}
-            disabled={quoteElementIsRevealed(revealed, 'source')}
+            disabled={quoteElementIsRevealed(revealed, quoteElementStr)}
         >
             <ListItemText primary={itemText} />
         </ListItemButton>
@@ -154,14 +142,14 @@ function SourceListItemButton({ revealed, source, onClick }) {
 }
 
 
-function QuoteListItemButton({ revealed, quote, quoteParts, setQuotePartIdx, handleListItemClick }) {
+function RevealQuotePartItemButton({ revealed, quote, quoteParts, setQuotePartIdx, handleListItemClick }) {
     const [open, setOpen] = useState(true);
 
     const itemText = (quotePart) => {
         return `"${quote.substring(quotePart.startIdx, quotePart.endIdx + 1)}"`
     }
 
-    const handleQuotePartClick = (idx) => {
+    const handleSelectQuotePart = (idx) => {
         setQuotePartIdx(idx)
         handleListItemClick('quote')
     }
@@ -177,17 +165,14 @@ function QuoteListItemButton({ revealed, quote, quoteParts, setQuotePartIdx, han
             </ListItemButton>
             <Collapse in={open} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
-                    {quoteParts.map((part, idx) => {
-                        return (
-                            <ListItemButton key={idx} sx={{ pl: 4 }}
-                                onClick={() => handleQuotePartClick(idx)}
-                                disabled={quotePartIsRevealed(revealed, idx)}
-                            >
-                                <ListItemText primary={itemText(part)} />
-                            </ListItemButton>
-                        )
-
-                    })}
+                    {quoteParts.map((part, idx) =>
+                        <ListItemButton key={idx} sx={{ pl: 4 }}
+                            onClick={() => handleSelectQuotePart(idx)}
+                            disabled={quotePartIsRevealed(revealed, idx)}
+                        >
+                            <ListItemText primary={itemText(part)} />
+                        </ListItemButton>
+                    )}
                 </List>
             </Collapse>
         </>

@@ -91,9 +91,9 @@ export async function addNewQuestion(question) {
     }
 
     try {
-        const newQuestionDocRef = await addDoc(QUESTIONS_COLLECTION_REF, question)
-        console.log("Document written with ID: ", newQuestionDocRef.id);
-        return newQuestionDocRef.id;
+        const newQuestionRef = await addDoc(QUESTIONS_COLLECTION_REF, question)
+        console.log("Document written with ID: ", newQuestionRef.id);
+        return newQuestionRef.id;
     } catch (error) {
         console.error("There was an error adding the question:", error);
         throw error;

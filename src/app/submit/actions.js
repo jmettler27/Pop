@@ -46,13 +46,11 @@ export async function handleQuestionFormSubmission(values, userId, image) {
 
     try {
         const { files, ...content } = values;
-
         const questionId = await addNewQuestion({
             ...content,
             createdAt: serverTimestamp(),
             createdBy: userId,
         })
-        console.log("Question ID:", questionId)
         await updateQuestionImage(questionId, image);
 
     } catch (error) {

@@ -4,7 +4,7 @@ import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/f
 import { firestore } from '@/lib/firebase/firebase'
 import { doc, runTransaction, serverTimestamp, updateDoc } from 'firebase/firestore'
 
-import { getDocData, getDocDataTransaction } from './utils';
+import { getDocData, getDocDataTransaction, updateGameStatusTransaction } from './utils';
 import { resetProgressiveCluesRealtimeTransaction } from './question/progressive_clues';
 import { handleRiddleCountdownEndTransaction, resetRiddleQuestionTransaction } from './question/riddle';
 import { endEnumQuestionTransaction, endEnumReflectionTransaction, resetEnumQuestionTransaction } from './question/enum';
@@ -115,8 +115,8 @@ export const resetQuestionTransaction = async (
             break
     }
 
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    await transaction.update(realtimeDocRef, {
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.update(questionRealtimeRef, {
         dateStart: null,
         dateEnd: null,
     })
@@ -155,13 +155,10 @@ export async function endQuestion(gameId, roundId, questionId) {
 }
 
 export const endQuestionTransaction = async (transaction, gameId, roundId, questionId) => {
-    const gameDocRef = doc(GAMES_COLLECTION_REF, gameId)
-    await transaction.update(gameDocRef, {
-        status: 'question_end'
-    })
+    await updateGameStatusTransaction(transaction, gameId, 'question_end')
 
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    await transaction.update(realtimeDocRef, {
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    await transaction.update(questionRealtimeRef, {
         dateEnd: serverTimestamp()
     })
 

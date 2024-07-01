@@ -16,8 +16,8 @@ import ValidateChallengerCitationButton from './ValidateChallengerCitationButton
 export default function ChallengerCitationHelper({ }) {
     const game = useGameContext()
 
-    const playersDocRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'players')
-    const [players, playersLoading, playersError] = useDocumentData(playersDocRef)
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'players')
+    const [players, playersLoading, playersError] = useDocumentData(questionPlayersRef)
     if (playersError) {
         return <p><strong>Error: </strong>{JSON.stringify(playersError)}</p>
     }

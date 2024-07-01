@@ -3,17 +3,19 @@ import { useGameContext, useRoleContext } from '@/app/(game)/contexts'
 
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { doc } from 'firebase/firestore'
-import { useDocument, useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/firestore'
+import { useDocument } from 'react-firebase-hooks/firestore'
 
 import { Button, ButtonGroup } from '@mui/material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CancelIcon from '@mui/icons-material/Cancel'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
-import LoadingScreen from '@/app/components/LoadingScreen'
 import { handleFinalePlayerAnswer, handleFinaleQuestionEndOrganizerContinue } from '@/app/(game)/lib/question/finale'
 import { GameChooserHelperText } from '@/app/(game)/[id]/components/GameChooserTeamAnnouncement'
+
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 import { useAsyncAction } from '@/lib/utils/async'
+import { INVALIDATE_ANSWER, VALIDATE_ANSWER } from '@/lib/utils/question/question'
 
 export default function FinaleThemeActiveBottomPane({ theme, themeRealtime }) {
     const myRole = useRoleContext()
@@ -55,7 +57,7 @@ function FinaleThemeActiveOrganizerBottomPane({ theme, themeRealtime }) {
     }
 }
 
-function FinaleQuestionActiveOrganizerBottomPane({ themeRealtime }) {
+function FinaleQuestionActiveOrganizerBottomPane({ themeRealtime, lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
     const user = useUserContext()
 
@@ -77,7 +79,7 @@ function FinaleQuestionActiveOrganizerBottomPane({ themeRealtime }) {
                 onClick={() => { handlePlayerAnswer(false) }}
                 disabled={isHandling}
             >
-                Validate
+                {VALIDATE_ANSWER[lang]}
             </Button>
 
             {/* Invalidate the player's answer */}
@@ -87,7 +89,7 @@ function FinaleQuestionActiveOrganizerBottomPane({ themeRealtime }) {
                 onClick={() => { handlePlayerAnswer(true) }}
                 disabled={isHandling}
             >
-                Cancel
+                {INVALIDATE_ANSWER[lang]}
             </Button>
         </ButtonGroup>
     )

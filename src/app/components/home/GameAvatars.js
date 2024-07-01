@@ -35,8 +35,8 @@ export function GameOrganizersAvatarGroup({ gameId }) {
 
 
 export function GamePlayersAvatarGroup({ gameId }) {
-    const playersRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const [playersCollection, playersLoading, playersError] = useCollectionOnce(query(playersRef))
+    const gamePlayersRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
+    const [playersCollection, playersLoading, playersError] = useCollectionOnce(query(gamePlayersRef))
 
     if (playersError) {
         return <p><strong>Error: {JSON.stringify(playersError)}</strong></p>

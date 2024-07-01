@@ -9,11 +9,12 @@ import ScoreboardIcon from '@mui/icons-material/Scoreboard'
 import ChatIcon from '@mui/icons-material/Chat'
 import HomeIcon from '@mui/icons-material/Home';
 
-import SoundboardAudioPlayer from '@/app/(game)/[id]/components/soundboard/SoundboardAudioPlayer';
-import ProgressTabPanel from '@/app/(game)/[id]/components/sidebar/progress/ProgressTabPanel'
 import { useRoleContext } from '@/app/(game)/contexts';
 
-import OrganizerSpeedDial from '../speed-dial/OrganizerSpeedDial';
+import SoundboardAudioPlayer from '@/app/(game)/[id]/components/soundboard/SoundboardAudioPlayer';
+import ProgressTabPanel from '@/app/(game)/[id]/components/sidebar/progress/ProgressTabPanel'
+import OrganizerSpeedDial from '@/app/(game)/[id]/components/speed-dial/OrganizerSpeedDial';
+
 import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
 export default function Sidebar({ lang = DEFAULT_LOCALE }) {

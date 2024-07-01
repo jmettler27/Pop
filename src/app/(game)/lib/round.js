@@ -16,15 +16,12 @@ import { getDocData } from '@/app/(game)/lib/utils';
 import { resetFinaleRound } from '@/app/(game)/lib/question/finale';
 import { firestore } from '@/lib/firebase/firebase';
 
-// READ
 export async function getRoundData(gameId, roundId) {
     return getDocData('games', gameId, 'rounds', roundId);
 }
 
 
 /* ==================================================================================================== */
-// Round
-// WRITE
 export async function updateRoundFields(gameId, roundId, fieldsToUpdate) {
     const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
     const updateObject = { ...fieldsToUpdate }
@@ -34,8 +31,6 @@ export async function updateRoundFields(gameId, roundId, fieldsToUpdate) {
 }
 
 /* ============================================================================================== */
-// Reset round
-// BATCHED WRITE
 export async function resetAllRounds(gameId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -56,20 +51,17 @@ export const resetAllRoundsTransaction = async (
     gameId
 ) => {
     const roundsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds')
-    const querySnapshot = await getDocs(query(roundsCollectionRef))
-    for (const roundDoc of querySnapshot.docs) {
+    const roundsSnapshot = await getDocs(query(roundsCollectionRef))
+    for (const roundDoc of roundsSnapshot.docs) {
         if (roundDoc.data().type === 'finale') {
-            // batched write
             await resetFinaleRound(gameId, roundDoc.id)
             continue;
         }
-
-        // Reset round document
         await resetRoundTransaction(transaction, gameId, roundDoc.id)
     }
 }
 
-// WRITE
+/* ============================================================================================== */
 export async function resetRoundInfo(gameId, roundId) {
     await updateRoundFields(gameId, roundId, {
         currentQuestionIdx: 0,
@@ -79,7 +71,7 @@ export async function resetRoundInfo(gameId, roundId) {
     })
 }
 
-// TRANSACTION
+/* ============================================================================================== */
 export async function resetRound(gameId, roundId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -106,11 +98,11 @@ const resetRoundTransaction = async (
     roundId
 ) => {
     const questionsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions')
-    const questionsQuerySnapshot = await getDocs(query(questionsCollectionRef))
+    const questionsSnapshot = await getDocs(query(questionsCollectionRef))
 
     const initTeamRoundScores = await getInitTeamScores(gameId)
 
-    for (const questionDoc of questionsQuerySnapshot.docs) {
+    for (const questionDoc of questionsSnapshot.docs) {
         await resetQuestion(gameId, roundId, questionDoc.id, questionDoc.data().type)
     }
 

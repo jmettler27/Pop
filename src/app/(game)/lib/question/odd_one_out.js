@@ -9,23 +9,23 @@ import {
     writeBatch,
     runTransaction,
     collection,
-    serverTimestamp,
     where,
     query,
     getDocs,
-    increment
 } from 'firebase/firestore'
 
 import { switchNextChooserTransaction } from '@/app/(game)/lib/chooser'
-import { addSoundToQueueTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { addSoundEffectTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
-
-import { getNextCyclicIndex, moveToHead } from '@/lib/utils/arrays';
 import { endQuestionTransaction } from '@/app/(game)/lib/question';
-import { updateTimerStateTransaction } from '../timer';
+import { updateTimerStateTransaction } from '@/app/(game)/lib/timer';
+import { increaseRoundTeamScoreTransaction } from '@/app/(game)/lib/scores';
+
+import { moveToHead } from '@/lib/utils/arrays';
 import { OOO_ITEMS_LENGTH } from '@/lib/utils/question/odd_one_out';
 
-export async function handleProposalClick(gameId, roundId, questionId, userId, idx) {
+
+export async function selectProposal(gameId, roundId, questionId, playerId, idx) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -35,114 +35,86 @@ export async function handleProposalClick(gameId, roundId, questionId, userId, i
     if (!questionId) {
         throw new Error("No question ID has been provided!");
     }
-    if (!userId) {
+    if (!playerId) {
         throw new Error("No player ID has been provided!");
     }
 
     try {
         await runTransaction(firestore, transaction =>
-            handleProposalClickTransaction(transaction, gameId, roundId, questionId, userId, idx)
+            selectProposalTransaction(transaction, gameId, roundId, questionId, playerId, idx)
         )
-        console.log("Proposal click handled successfully.");
+        console.log("Proposal selection handled successfully.");
     } catch (error) {
         console.error("There was an error handling the proposal click:", error);
         throw error;
     }
 }
-const handleProposalClickTransaction = async (
+const selectProposalTransaction = async (
     transaction,
     gameId,
     roundId,
     questionId,
-    userId,
+    playerId,
     idx
 ) => {
-    const questionDocRef = doc(QUESTIONS_COLLECTION_REF, questionId)
-    const statesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
+    const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
+    const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
 
-    const [questionData, statesData] = await Promise.all([
-        getDocDataTransaction(transaction, questionDocRef),
-        getDocDataTransaction(transaction, statesDocRef)
+    const [questionData, gameStatesData] = await Promise.all([
+        getDocDataTransaction(transaction, questionRef),
+        getDocDataTransaction(transaction, gameStatesRef)
     ])
 
-    const { chooserOrder, chooserIdx } = statesData
+    const { chooserOrder, chooserIdx } = gameStatesData
     const teamId = chooserOrder[chooserIdx]
 
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const q = query(playersCollectionRef, where('teamId', '==', teamId))
-    const querySnapshot = await getDocs(q)
+    const choosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)))
 
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
 
-    // Case 1: Is the odd proposal => The first player to find the odd 'wins'
     if (idx === questionData.details.answerIdx) {
+        // The selected proposal is the odd one one out
         const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-        const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
+        const roundData = await getDocDataTransaction(transaction, roundRef)
+        const { mistakePenalty: points } = roundData
+        await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, points)
 
-        const [roundData, roundScoresData] = await Promise.all([
-            getDocDataTransaction(transaction, roundRef),
-            getDocDataTransaction(transaction, roundScoresRef)
-        ])
-
-        const { mistakePenalty: penalty } = roundData
-        const { scores: currentScores, scoresProgress: currentProgress } = roundScoresData
-        const newProgress = {}
-        for (const tid of Object.keys(currentScores)) {
-            newProgress[tid] = {
-                ...currentProgress[tid],
-                [questionId]: currentScores[tid] + (tid === teamId) * penalty
-            }
+        for (const chooserDoc of choosersSnapshot.docs) {
+            transaction.update(chooserDoc.ref, { status: 'wrong' })
         }
-        transaction.update(roundScoresRef, {
-            [`scores.${teamId}`]: increment(penalty),
-            scoresProgress: newProgress
-        })
-
-        for (const playerDoc of querySnapshot.docs) {
-            transaction.update(playerDoc.ref, { status: 'wrong' })
-        }
-        addSoundToQueueTransaction(transaction, gameId, 'hysterical5')
-
         // Move the "winner" to the head of the chooser list
         const newChooserOrder = moveToHead(teamId, chooserOrder)
-        transaction.update(statesDocRef, {
+        transaction.update(gameStatesRef, {
             chooserOrder: newChooserOrder
         })
-
-        transaction.update(realtimeDocRef, {
-            winner: {
-                playerId: userId,
-                teamId
-            }
+        transaction.update(questionRealtimeRef, {
+            winner: { playerId, teamId }
         })
-
+        await addSoundEffectTransaction(transaction, gameId, 'hysterical5')
         await endQuestionTransaction(transaction, gameId, roundId, questionId)
     } else {
-        const realtimeData = await getDocDataTransaction(transaction, realtimeDocRef)
-
-        // Case 2: Was the last good proposal => No one found the odd
-        const newNumClicked = realtimeData.selectedItems.length + 1
+        // The select proposal is correct
+        const questionRealtimeData = await getDocDataTransaction(transaction, questionRealtimeRef)
+        const newNumClicked = questionRealtimeData.selectedItems.length + 1
         if (newNumClicked === questionData.details.items.length - 1) {
-            for (const playerDoc of querySnapshot.docs) {
-                transaction.update(playerDoc.ref, { status: 'idle' })
-            }
-            await addSoundToQueueTransaction(transaction, gameId, 'Akeryo_en_susu')
-
+            // No one selected the odd one out
+            await addSoundEffectTransaction(transaction, gameId, 'zelda_secret_door')
             await endQuestionTransaction(transaction, gameId, roundId, questionId)
         } else {
-            // Case 3: Was a good proposal but not the last one
+            // The selected proposal is not the last remaining one
             await switchNextChooserTransaction(transaction, gameId)
-            for (const playerDoc of querySnapshot.docs) {
-                transaction.update(playerDoc.ref, { status: 'idle' })
-            }
-            await addSoundToQueueTransaction(transaction, gameId, 'Bien')
+            await addSoundEffectTransaction(transaction, gameId, 'Bien')
             await updateTimerStateTransaction(transaction, gameId, 'reset')
         }
+        for (const chooserDoc of choosersSnapshot.docs) {
+            transaction.update(chooserDoc.ref, { status: 'idle' })
+        }
     }
-    transaction.update(realtimeDocRef, {
+    transaction.update(questionRealtimeRef, {
         selectedItems: arrayUnion({
             idx,
-            playerId: userId,
+            playerId,
             timestamp: Timestamp.now()
         })
     })
@@ -177,10 +149,10 @@ export const handleOOOCountdownEndTransaction = async (
     roundId,
     questionId
 ) => {
-    const realtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    const realtimeData = await getDocDataTransaction(transaction, realtimeRef)
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    const questionRealtimeData = await getDocDataTransaction(transaction, questionRealtimeRef)
 
-    const { selectedItems } = realtimeData
+    const { selectedItems } = questionRealtimeData
     const selectedIdxsSet = new Set(selectedItems.map(item => item.idx));
 
     const remainingItems = [];
@@ -191,25 +163,20 @@ export const handleOOOCountdownEndTransaction = async (
     }
 
     const randomIdx = remainingItems[Math.floor(Math.random() * remainingItems.length)];
-    await handleProposalClickTransaction(transaction, gameId, roundId, questionId, 'system', randomIdx)
+    await selectProposalTransaction(transaction, gameId, roundId, questionId, 'system', randomIdx)
 }
 
 /* ==================================================================================================== */
-// BATCHED WRITE
 export async function resetOddOneOutQuestion(gameId, roundId, questionId) {
     const batch = writeBatch(firestore)
 
-    // updateGameStates(gameId, {
-    //     chooserIdx: 0,
-    // })
-    const statesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
-    batch.update(statesDocRef, {
+    const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
+    batch.update(gameStatesRef, {
         chooserIdx: 0,
     })
 
-    // updateQuestionWinner(gameId, roundId, questionId, null)
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    batch.update(realtimeDocRef, {
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    batch.update(questionRealtimeRef, {
         winner: null,
         selectedItems: [],
     })
@@ -223,13 +190,13 @@ export const resetOddOneOutQuestionTransaction = async (
     roundId,
     questionId
 ) => {
-    const statesDocRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
-    transaction.update(statesDocRef, {
+    const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
+    transaction.update(gameStatesRef, {
         chooserIdx: 0,
     })
 
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    transaction.update(realtimeDocRef, {
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.update(questionRealtimeRef, {
         winner: null,
         selectedItems: [],
     })

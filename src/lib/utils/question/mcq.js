@@ -34,6 +34,8 @@ export function prependMCQTypeWithEmoji(mcqType, lang = DEFAULT_LOCALE) {
     return prependWithEmojiAndSpace(mcqTypeToEmoji(mcqType), mcqTypeToTitle(mcqType, lang))
 }
 
+export const IMMEDIATE_MCQ_DEFAULT_REWARD = 1;
+
 export const MCQ_OPTIONS = ['hide', 'square', 'duo']
 
 export const MCQ_OPTION_TO_EMOJI = {

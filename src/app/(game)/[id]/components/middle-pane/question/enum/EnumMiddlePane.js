@@ -11,7 +11,7 @@ import clsx from 'clsx'
 import { questionTypeToTitle, QuestionTypeIcon } from '@/lib/utils/question_types'
 import { topicToEmoji } from '@/lib/utils/topics'
 
-import { handleEnumAnswerItemClick } from '@/app/(game)/lib/question/enum'
+import { validateEnumItem } from '@/app/(game)/lib/question/enum'
 import { CurrentRoundQuestionOrder } from '@/app/(game)/[id]/components/middle-pane/question/QuestionHeader'
 import { useAsyncAction } from '@/lib/utils/async'
 import { DEFAULT_LOCALE } from '@/lib/utils/locales'
@@ -65,17 +65,17 @@ function EnumQuestionAnswer({ answer }) {
     const showComplete = (game.status === 'question_end' || myRole === 'organizer') // 'player' or 'viewer'
 
     const [handleClick, isSubmitting] = useAsyncAction(async (itemIdx) => {
-        await handleEnumAnswerItemClick(game.id, game.currentRound, game.currentQuestion, itemIdx)
+        await validateEnumItem(game.id, game.currentRound, game.currentQuestion, itemIdx)
     })
 
     const timerRef = doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'timer')
     const [timer, timerLoading, timerError] = useDocumentData(timerRef)
 
-    const realtimeRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
-    const [realtime, realtimeLoading, realtimeError] = useDocumentData(realtimeRef)
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
+    const [realtime, realtimeLoading, realtimeError] = useDocumentData(questionRealtimeRef)
 
-    const playersRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'players')
-    const [players, playersLoading, playersError] = useDocumentData(playersRef)
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'players')
+    const [players, playersLoading, playersError] = useDocumentData(questionPlayersRef)
 
     if (timerError) {
         return <p><strong>Error: </strong>{JSON.stringify(timerError)}</p>

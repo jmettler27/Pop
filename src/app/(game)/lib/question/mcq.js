@@ -1,6 +1,6 @@
 "use server";
 
-import { MCQ_CHOICES, MCQ_OPTIONS } from '@/lib/utils/question/mcq';
+import { IMMEDIATE_MCQ_DEFAULT_REWARD, MCQ_CHOICES, MCQ_OPTIONS } from '@/lib/utils/question/mcq';
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
 import { firestore } from '@/lib/firebase/firebase'
@@ -9,20 +9,18 @@ import {
     query,
     where,
     getDocs,
-    getDoc,
     doc,
     updateDoc,
-    increment,
-    serverTimestamp,
     runTransaction,
     writeBatch
 } from 'firebase/firestore'
 
-import { addSoundToQueueTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { addSoundEffectTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
-import { endQuestionTransaction } from '../question';
+import { endQuestionTransaction } from '@/app/(game)/lib/question';
+import { increaseRoundTeamScoreTransaction } from '@/app/(game)/lib/scores';
 
-export async function handleSubmitOptionPlayer(gameId, roundId, questionId, playerId, optionIdx) {
+export async function selectConditionalMCQOption(gameId, roundId, questionId, playerId, optionIdx) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -40,16 +38,15 @@ export async function handleSubmitOptionPlayer(gameId, roundId, questionId, play
         throw new Error("Invalid choice!");
     }
 
-    // updateQuestionWinner(gameId, roundId, questionId, null)
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    updateDoc(realtimeDocRef, {
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    await updateDoc(questionRealtimeRef, {
         playerId,
         option: MCQ_OPTIONS[optionIdx],
     })
 }
 
 /* ====================================================================================================== */
-export async function handleSubmitChoicePlayer(gameId, roundId, questionId, playerId, teamId, choiceIdx) {
+export async function selectMCQChoice(gameId, roundId, questionId, playerId, teamId, choiceIdx) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -71,7 +68,7 @@ export async function handleSubmitChoicePlayer(gameId, roundId, questionId, play
 
     try {
         await runTransaction(firestore, transaction =>
-            handleSubmitChoicePlayerTransaction(transaction, gameId, roundId, questionId, playerId, teamId, choiceIdx)
+            selectMCQChoiceTransaction(transaction, gameId, roundId, questionId, playerId, teamId, choiceIdx)
         )
         console.log("Option submitted successfully!")
     } catch (error) {
@@ -80,7 +77,7 @@ export async function handleSubmitChoicePlayer(gameId, roundId, questionId, play
     }
 }
 
-const handleSubmitChoicePlayerTransaction = async (
+const selectMCQChoiceTransaction = async (
     transaction,
     gameId,
     roundId,
@@ -90,54 +87,31 @@ const handleSubmitChoicePlayerTransaction = async (
     choiceIdx
 ) => {
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const q = query(playersCollectionRef, where('teamId', '==', teamId))
-    const querySnapshot = await getDocs(q)
+    const choosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)))
 
-    const questionDocRef = doc(QUESTIONS_COLLECTION_REF, questionId)
-    const roundDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
+    const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
+    const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
 
-    const [questionData, roundData, realtimeData, roundScoresData] = await Promise.all([
-        getDocDataTransaction(transaction, questionDocRef),
-        getDocDataTransaction(transaction, roundDocRef),
-        getDocDataTransaction(transaction, realtimeDocRef),
-        getDocDataTransaction(transaction, roundScoresRef)
+    const [questionData, roundData, questionRealtimeData] = await Promise.all([
+        getDocDataTransaction(transaction, questionRef),
+        getDocDataTransaction(transaction, roundRef),
+        getDocDataTransaction(transaction, questionRealtimeRef),
     ])
 
-    const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
+    const { subtype, answerIdx } = questionData.details
+    const correct = choiceIdx === answerIdx
+    const reward = subtype === 'immediate' ? (correct ? IMMEDIATE_MCQ_DEFAULT_REWARD : 0) :
+        subtype === 'conditional' && correct ? roundData.rewardsPerQuestion[questionRealtimeData.option] : 0;
+    await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, reward)
 
-    const correct = choiceIdx === questionData.details.answerIdx
-    const reward = correct ? roundData.rewardsPerQuestion[realtimeData.option] : 0
-    transaction.update(realtimeDocRef, {
-        playerId,
-        choiceIdx,
-        reward,
-        correct,
-        dateEnd: serverTimestamp()
-    })
-
-    const newRoundProgress = {}
-    const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
-    const teamsQuerySnapshot = await getDocs(query(teamsCollectionRef))
-    for (const teamDoc of teamsQuerySnapshot.docs) {
-        newRoundProgress[teamDoc.id] = {
-            ...currentRoundProgress[teamDoc.id],
-            [questionId]: currentRoundScores[teamDoc.id] + (teamDoc.id === teamId ? reward : 0)
-        }
-    }
-    transaction.update(roundScoresRef, {
-        [`scores.${teamId}`]: increment(reward),
-        scoresProgress: newRoundProgress
-    })
-
-    for (const playerDoc of querySnapshot.docs) {
-        transaction.update(playerDoc.ref, { status: 'ready' })
+    for (const chooserDoc of choosersSnapshot.docs) {
+        transaction.update(chooserDoc.ref, { status: 'ready' })
     }
 
-    await addSoundToQueueTransaction(transaction, gameId, correct ? 'Anime wow' : 'hysterical5')
+    transaction.update(questionRealtimeRef, { playerId, choiceIdx, reward, correct, })
 
-    // End the question
+    await addSoundEffectTransaction(transaction, gameId, correct ? 'Anime wow' : 'hysterical5')
     await endQuestionTransaction(transaction, gameId, roundId, questionId)
 }
 
@@ -180,52 +154,24 @@ const handleHideAnswerTransaction = async (
     correct
 ) => {
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const q = query(playersCollectionRef, where('teamId', '==', teamId))
-    const querySnapshot = await getDocs(q)
+    const choosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)))
 
-    const roundDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
+    const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
 
-    const [roundData, realtimeData, roundScoresData] = await Promise.all([
-        getDocDataTransaction(transaction, roundDocRef),
-        getDocDataTransaction(transaction, realtimeDocRef),
-        getDocDataTransaction(transaction, roundScoresRef)
+    const [roundData, questionRealtimeData] = await Promise.all([
+        getDocDataTransaction(transaction, roundRef),
+        getDocDataTransaction(transaction, questionRealtimeRef),
     ])
 
-    const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
+    const reward = correct ? roundData.rewardsPerQuestion[questionRealtimeData.option] : 0
+    await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, reward)
+    transaction.update(questionRealtimeRef, { playerId, reward, correct, })
 
-    // const correct = choiceIdx === questionData.details.answerIdx
-    const reward = correct ? roundData.rewardsPerQuestion[realtimeData.option] : 0
-    transaction.update(realtimeDocRef, {
-        playerId,
-        // choiceIdx,
-        reward,
-        correct,
-        dateEnd: serverTimestamp()
-    })
-
-    const newRoundProgress = {}
-    const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
-    const teamsQuerySnapshot = await getDocs(query(teamsCollectionRef))
-    for (const teamDoc of teamsQuerySnapshot.docs) {
-        newRoundProgress[teamDoc.id] = {
-            ...currentRoundProgress[teamDoc.id],
-            [questionId]: currentRoundScores[teamDoc.id] + (teamDoc.id === teamId ? reward : 0)
-        }
+    for (const chooserDoc of choosersSnapshot.docs) {
+        transaction.update(chooserDoc.ref, { status: 'ready' })
     }
-    transaction.update(roundScoresRef, {
-        [`scores.${teamId}`]: increment(reward),
-        scoresProgress: newRoundProgress
-    })
-
-    for (const playerDoc of querySnapshot.docs) {
-        transaction.update(playerDoc.ref, { status: 'ready' })
-    }
-
-    await addSoundToQueueTransaction(transaction, gameId, correct ? 'Anime wow' : 'hysterical5')
-
-    // End the question
+    await addSoundEffectTransaction(transaction, gameId, correct ? 'Anime wow' : 'hysterical5')
     await endQuestionTransaction(transaction, gameId, roundId, questionId)
 }
 
@@ -259,48 +205,20 @@ export const handleMCQCountdownEndTransaction = async (
     questionId
 ) => {
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const q = query(playersCollectionRef, where('teamId', '==', teamId))
-    const querySnapshot = await getDocs(q)
+    const choosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)))
 
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
-
-    const roundScoresData = await getDocDataTransaction(transaction, roundScoresRef)
-
-    const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
 
     const correct = false
     const reward = 0
-    transaction.update(realtimeDocRef, {
-        playerId,
-        choiceIdx,
-        reward,
-        correct,
-        dateEnd: serverTimestamp()
-    })
+    await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, reward)
+    transaction.update(questionRealtimeRef, { playerId, choiceIdx, reward, correct, })
 
-    const newRoundProgress = {}
-    const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
-    const teamsQuerySnapshot = await getDocs(query(teamsCollectionRef))
-    for (const teamDoc of teamsQuerySnapshot.docs) {
-        newRoundProgress[teamDoc.id] = {
-            ...currentRoundProgress[teamDoc.id],
-            [questionId]: currentRoundScores[teamDoc.id]
-        }
+    for (const chooserDoc of choosersSnapshot.docs) {
+        transaction.update(chooserDoc.ref, { status: 'ready' })
     }
-    transaction.update(roundScoresRef, {
-        scoresProgress: newRoundProgress
-    })
-
-    for (const playerDoc of querySnapshot.docs) {
-        transaction.update(playerDoc.ref, { status: 'ready' })
-    }
-
     await addWrongAnswerSoundToQueueTransaction(transaction, gameId)
-
-    // End the question
     await endQuestion(gameId, roundId, questionId)
-
 }
 
 /* ====================================================================================================== */
@@ -308,9 +226,9 @@ export async function resetMCQ(gameId, roundId, questionId) {
     const batch = writeBatch(firestore)
 
     // updateQuestionWinner(gameId, roundId, questionId, null)
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    batch.set(realtimeDocRef, {})
-    batch.update(realtimeDocRef, {
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    batch.set(questionRealtimeRef, {})
+    batch.update(questionRealtimeRef, {
         playerId: null,
         teamId: null,
         option: null,
@@ -326,9 +244,8 @@ export const resetMCQTransaction = async (
     roundId,
     questionId
 ) => {
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    transaction.set(realtimeDocRef, {})
-    transaction.update(realtimeDocRef, {
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.update(questionRealtimeRef, {
         playerId: null,
         teamId: null,
         option: null,

@@ -18,7 +18,7 @@ import {
 import { getDocData, getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { resetRoundInfo, updateRoundFields } from '@/app/(game)/lib/round';
 import { initRoundScores } from '@/app/(game)/lib/scores';
-import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { addSoundEffectTransaction } from '@/app/(game)/lib/sounds';
 
 import { getNextCyclicIndex } from '@/lib/utils/arrays';
 
@@ -50,7 +50,6 @@ async function getFinaleSectionData(themeId, sectionId) {
 /**
  * finale_home -> theme_active (question_active)
  */
-// TRANSACTION
 export async function startFinaleTheme(gameId, roundId, nextThemeId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -85,13 +84,13 @@ const startFinaleThemeTransaction = async (
     const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
     const nextThemeRef = doc(QUESTIONS_COLLECTION_REF, nextThemeId)
 
-    const [finaleRoundData, statesData, nextThemeData] = await Promise.all([
+    const [finaleRoundData, gameStatesData, nextThemeData] = await Promise.all([
         getDocDataTransaction(transaction, roundRef),
         getDocDataTransaction(transaction, gameStatesRef),
         getDocDataTransaction(transaction, nextThemeRef)
     ])
 
-    const { chooserOrder, chooserIdx } = statesData
+    const { chooserOrder, chooserIdx } = gameStatesData
     const chooserTeamId = chooserOrder[chooserIdx]
 
     /* Fetch the order of the theme that just ended */
@@ -115,9 +114,8 @@ const startFinaleThemeTransaction = async (
     })
 
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    let q = query(playersCollectionRef, where('teamId', '==', chooserTeamId))
-    let querySnapshot = await getDocs(q)
-    for (const playerDoc of querySnapshot.docs) {
+    let choosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', chooserTeamId)))
+    for (const playerDoc of choosersSnapshot.docs) {
         transaction.update(playerDoc.ref, { status: 'focus' })
     }
 
@@ -137,7 +135,6 @@ const startFinaleThemeTransaction = async (
  * 
  * TODO: make status in a different array and update only this array
  */
-// TRANSACTION
 export async function handleFinalePlayerAnswer(gameId, roundId, themeId, invalidate, organizerId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -200,9 +197,7 @@ const handleFinalePlayerAnswerTransaction = async (
     updatedQuestionStatus[currentQuestionIdx] = invalidate ? 'wrong' : 'correct';
 
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const q = query(playersCollectionRef, where('teamId', '==', teamId))
-    const querySnapshot = await getDocs(q)
-
+    const choosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)))
 
     transaction.update(sectionRealtimeRef, {
         question_status: updatedQuestionStatus,
@@ -210,14 +205,14 @@ const handleFinalePlayerAnswerTransaction = async (
     })
 
     // Players: update status
-    for (const playerDoc of querySnapshot.docs) {
-        transaction.update(playerDoc.ref, {
+    for (const chooserDoc of choosersSnapshot.docs) {
+        transaction.update(chooserDoc.ref, {
             status: invalidate ? 'wrong' : 'correct'
         })
     }
 
     if (invalidate) {
-        await addSoundToQueueTransaction(transaction, gameId, 'black_ops_knife_stab')
+        await addSoundEffectTransaction(transaction, gameId, 'black_ops_knife_stab')
 
         const gameScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'scores')
         transaction.update(gameScoresRef, {
@@ -277,13 +272,12 @@ const handleFinaleQuestionEndOrganizerContinueTransaction = async (
     const { teamId } = currentThemeRealtimeData
 
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const q = query(playersCollectionRef, where('teamId', '==', teamId))
-    const querySnapshot = await getDocs(q)
+    const choosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)))
 
     /* Not the last question in section */
     if (!isLastQuestionInSection) {
-        for (const playerDoc of querySnapshot.docs) {
-            transaction.update(playerDoc.ref, {
+        for (const chooserDoc of choosersSnapshot.docs) {
+            transaction.update(chooserDoc.ref, {
                 status: 'focus'
             })
         }
@@ -301,7 +295,7 @@ const handleFinaleQuestionEndOrganizerContinueTransaction = async (
         // Switch next section
         await switchFinaleThemeNextSectionTransaction(transaction, gameId, roundId, themeId)
 
-        for (const playerDoc of querySnapshot.docs) {
+        for (const playerDoc of choosersSnapshot.docs) {
             transaction.update(playerDoc.ref, {
                 status: 'focus'
             })
@@ -312,14 +306,13 @@ const handleFinaleQuestionEndOrganizerContinueTransaction = async (
     /* Last question in section, Last section in the theme */
     // End the theme
     await endFinaleThemeTransaction(gameId, roundId, themeId, transaction)
-    await addSoundToQueueTransaction(transaction, gameId, 'level-passed')
+    await addSoundEffectTransaction(transaction, gameId, 'level-passed')
 }
 
 /* ==================================================================================================== */
 /**
  * theme_active (question_end) -> theme_active (question_active)
  */
-// TRANSACTION
 export async function switchFinaleThemeNextSection(gameId, roundId, themeId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -376,7 +369,6 @@ const switchFinaleThemeNextSectionTransaction = async (
 /**
  * theme_active -> theme_end
  */
-// TRANSACTION
 export async function endFinaleTheme(gameId, roundId, themeId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -421,19 +413,17 @@ const endFinaleThemeTransaction = async (
     // assert chooserTeamId === themeData.teamId
     // assert newChooserTeamId !== chooserTeamId
 
-    // Set focus on chooser players
-    // Set idle on all non-chooser players
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
 
-    const newChooserPlayersQuerySnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', newChooserTeamId)))
-    const prevChooserPlayersQuerySnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', chooserTeamId)))
+    const newChoosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', newChooserTeamId)))
+    const prevChoosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', chooserTeamId)))
 
-    for (const playerDoc of newChooserPlayersQuerySnapshot.docs) {
+    for (const playerDoc of newChoosersSnapshot.docs) {
         transaction.update(playerDoc.ref, {
             status: 'focus'
         })
     }
-    for (const playerDoc of prevChooserPlayersQuerySnapshot.docs) {
+    for (const playerDoc of prevChoosersSnapshot.docs) {
         transaction.update(playerDoc.ref, {
             status: 'idle'
         })
@@ -462,7 +452,6 @@ const endFinaleThemeTransaction = async (
 /**
  * theme_end -> finale_home
  */
-// WRITE
 export async function goBackFinaleHome(gameId, roundId) {
     updateRoundFields(gameId, roundId, {
         status: 'finale_home',
@@ -482,8 +471,8 @@ export async function resetFinaleRound(gameId, roundId) {
     })
 
     const themeRealtimesCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'themes')
-    const querySnapshot = await getDocs(query(themeRealtimesCollectionRef))
-    for (const themeRealtimeDoc of querySnapshot.docs) {
+    const themeRealtimesSnapshot = await getDocs(query(themeRealtimesCollectionRef))
+    for (const themeRealtimeDoc of themeRealtimesSnapshot.docs) {
         await resetFinaleTheme(gameId, roundId, themeRealtimeDoc.id)
     }
 }
@@ -500,11 +489,11 @@ async function resetFinaleTheme(gameId, roundId, themeId) {
     })
 
     const sectionsCollectionRef = collection(QUESTIONS_COLLECTION_REF, themeId, 'sections')
-    const querySnapshot = await getDocs(query(sectionsCollectionRef))
-    for (const sectionDoc of querySnapshot.docs) {
-        const sectionRealtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'themes', themeId, 'sections', sectionDoc.id)
+    const sectionsSnapshot = await getDocs(query(sectionsCollectionRef))
+    for (const sectionDoc of sectionsSnapshot.docs) {
+        const sectionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'themes', themeId, 'sections', sectionDoc.id)
         // Set the section to its initial state
-        await setDoc(sectionRealtimeDocRef, {
+        await setDoc(sectionRealtimeRef, {
             currentQuestionIdx: 0,
             question_status: Array(sectionDoc.data().questions.length).fill(null),
             status: 'question_active'

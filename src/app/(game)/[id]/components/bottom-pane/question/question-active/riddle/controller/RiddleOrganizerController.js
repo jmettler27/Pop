@@ -15,12 +15,13 @@ import ResetQuestionButton from '@/app/(game)/[id]/components/bottom-pane/questi
 import ClearBuzzerButton from '@/app/(game)/[id]/components/bottom-pane/question/question-active/riddle/controller/ClearBuzzerButton'
 import BuzzerHeadPlayer from '@/app/(game)/[id]/components/bottom-pane/question/question-active/riddle/controller/BuzzerHeadPlayer'
 
-import { handleRiddleBuzzerHeadChanged, handleRiddleInvalidateAnswerClick, handleRiddleValidateAnswerClick } from '@/app/(game)/lib/question/riddle'
-import { handleNextClueClick } from '@/app/(game)/lib/question/progressive_clues'
+import { handleRiddleBuzzerHeadChanged, invalidateRiddleAnswer, validateRiddleAnswer } from '@/app/(game)/lib/question/riddle'
+import { revealProgressiveClue } from '@/app/(game)/lib/question/progressive_clues'
 import { useAsyncAction } from '@/lib/utils/async'
 import { useEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import { DEFAULT_LOCALE } from '@/lib/utils/locales'
+import { INVALIDATE_ANSWER, VALIDATE_ANSWER } from '@/lib/utils/question/question'
 
 export default function RiddleOrganizerController({ question, players }) {
     const { id: gameId } = useParams()
@@ -50,17 +51,17 @@ export default function RiddleOrganizerController({ question, players }) {
 }
 
 
-function RiddleOrganizerAnswerController({ buzzed }) {
+function RiddleOrganizerAnswerController({ buzzed, lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
 
     const buzzedIsEmpty = buzzed.length === 0
 
     const [handleRiddleValidate, isValidating] = useAsyncAction(async () => {
-        await handleRiddleValidateAnswerClick(game.id, game.currentRound, game.currentQuestion, buzzed[0])
+        await validateRiddleAnswer(game.id, game.currentRound, game.currentQuestion, buzzed[0])
     })
 
     const [handleRiddleInvalidate, isInvalidating] = useAsyncAction(async () => {
-        await handleRiddleInvalidateAnswerClick(game.id, game.currentRound, game.currentQuestion, buzzed[0])
+        await invalidateRiddleAnswer(game.id, game.currentRound, game.currentQuestion, buzzed[0])
     })
 
     {/* Validate or invalidate the player's answer */ }
@@ -80,7 +81,7 @@ function RiddleOrganizerAnswerController({ buzzed }) {
                 onClick={handleRiddleValidate}
                 disabled={isValidating}
             >
-                Validate
+                {VALIDATE_ANSWER[lang]}
             </Button>
 
             {/* Invalidate the player's answer */}
@@ -90,7 +91,7 @@ function RiddleOrganizerAnswerController({ buzzed }) {
                 onClick={handleRiddleInvalidate}
                 disabled={isInvalidating}
             >
-                Cancel
+                {INVALIDATE_ANSWER[lang]}
             </Button>
         </ButtonGroup>
     </>
@@ -118,11 +119,11 @@ function NextClueButton({ question, lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
 
     const [handleClick, isLoadingNextClue] = useAsyncAction(async () => {
-        await handleNextClueClick(game.id, game.currentRound, game.currentQuestion)
+        await revealProgressiveClue(game.id, game.currentRound, game.currentQuestion)
     })
 
-    const realtimeRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
-    const [realtime, realtimeLoading, realtimeError] = useDocumentData(realtimeRef)
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
+    const [realtime, realtimeLoading, realtimeError] = useDocumentData(questionRealtimeRef)
 
     if (realtimeError || realtimeLoading || !realtime) {
         return <></>

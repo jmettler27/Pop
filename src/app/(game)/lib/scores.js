@@ -15,34 +15,22 @@ import { getDocData, getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
 
 
-// READ
 export async function getInitTeamScores(gameId) {
     const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
-    const querySnapshot = await getDocs(query(teamsCollectionRef))
-    // Create a map of all the team ids with value 0 
+    const teamsSnapshot = await getDocs(query(teamsCollectionRef))
+
     const initTeamScores = {}
-    for (const teamDoc of querySnapshot.docs) {
+    for (const teamDoc of teamsSnapshot.docs) {
         initTeamScores[teamDoc.id] = 0
     }
     return initTeamScores
 }
 
-// READ
 export async function getGameScoresData(gameId) {
     return getDocData('games', gameId, 'realtime', 'scores')
 }
 
 /* ==================================================================================================== */
-// WRITE
-async function updateGameScores(gameId, fieldsToUpdate) {
-    const gameScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'scores')
-    const updateObject = { ...fieldsToUpdate }
-
-    await updateDoc(gameScoresRef, updateObject)
-    console.log(`Game ${gameId}, Scores:`, fieldsToUpdate)
-}
-
-// TRANSACTION
 export async function initGameScores(gameId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
@@ -63,11 +51,11 @@ const initGameScoresTransaction = async (
     gameId
 ) => {
     const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
-    const querySnapshot = await getDocs(query(teamsCollectionRef))
+    const teamsSnapshot = await getDocs(query(teamsCollectionRef))
 
     const initTeamGameScores = {}
     const initTeamGameScoresProgress = {}
-    for (const teamDoc of querySnapshot.docs) {
+    for (const teamDoc of teamsSnapshot.docs) {
         initTeamGameScores[teamDoc.id] = 0
         initTeamGameScoresProgress[teamDoc.id] = {}
     }
@@ -79,7 +67,7 @@ const initGameScoresTransaction = async (
     })
 }
 
-// TRANSACTION
+
 export async function initRoundScores(gameId, roundId) {
     const initTeamRoundScores = await getInitTeamScores(gameId)
 
@@ -114,48 +102,29 @@ export async function getRoundScoresData(gameId, roundId) {
     return getDocData('games', gameId, 'rounds', roundId, 'realtime', 'scores')
 }
 
-// TRANSACTION
-async function addTeamRoundQuestionScore(gameId, roundId, questionId) {
-    if (!gameId) {
-        throw new Error("No game ID has been provided!");
-    }
-    if (!roundId) {
-        throw new Error("No round ID has been provided!");
-    }
-    if (!questionId) {
-        throw new Error("No question ID has been provided!");
-    }
-
-    try {
-        await runTransaction(firestore, transaction =>
-            addTeamRoundQuestionScoreTransaction(transaction, gameId, roundId, questionId)
-        );
-    } catch (error) {
-        console.error("There was an error adding a team round question score:", error);
-        throw error;
-    }
-}
-
-const addTeamRoundQuestionScoreTransaction = async (
+/* ==================================================================================================== */
+export const increaseRoundTeamScoreTransaction = async (
     transaction,
     gameId,
     roundId,
-    questionId
+    questionId,
+    teamId = null,
+    points = 0
 ) => {
     const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
     const roundScoresData = await getDocDataTransaction(transaction, roundScoresRef)
-    const { scores: currentScores, scoresProgress: currentProgress } = roundScoresData;
 
-    // Create a newRoundScoresProgress object that is equal to roundScoresProgress but with an entry whose key is questionId and value is currentRoundScores[teamId] for every teamId
-    const newProgress = {}
-    for (const teamId of Object.keys(currentScores)) {
-        // Add an entry whose key is questionId and value is currentRoundScores[teamId
-        newProgress[teamId] = {
-            ...currentProgress[teamId],
-            [questionId]: currentScores[teamId]
+    const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
+
+    const newRoundProgress = {}
+    for (const tid of Object.keys(currentRoundScores)) {
+        newRoundProgress[tid] = {
+            ...currentRoundProgress[tid],
+            [questionId]: currentRoundScores[tid] + (tid === teamId) * points
         }
     }
     transaction.update(roundScoresRef, {
-        scoresProgress: newProgress
+        [`scores.${teamId}`]: increment(points),
+        scoresProgress: newRoundProgress
     })
 }

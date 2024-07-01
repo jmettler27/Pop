@@ -8,14 +8,11 @@ import {
     runTransaction,
 } from 'firebase/firestore'
 
-import { addSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
+import { addSoundEffectTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
-import { updateTimerStateTransaction } from '../timer';
+import { updateTimerStateTransaction } from '@/app/(game)/lib/timer';
 
-
-/* ====================================================================================================== */
-// TRANSACTION
-export async function handleNextClueClick(gameId, roundId, questionId) {
+export async function revealProgressiveClue(gameId, roundId, questionId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -28,7 +25,7 @@ export async function handleNextClueClick(gameId, roundId, questionId) {
 
     try {
         await runTransaction(firestore, transaction =>
-            handleNextClueClickTransaction(transaction, gameId, roundId, questionId)
+            revealProgressiveClueTransaction(transaction, gameId, roundId, questionId)
         )
         console.log("Next clue click handled successfully.");
 
@@ -38,23 +35,23 @@ export async function handleNextClueClick(gameId, roundId, questionId) {
     }
 }
 
-const handleNextClueClickTransaction = async (
+const revealProgressiveClueTransaction = async (
     transaction,
     gameId,
     roundId,
     questionId,
 ) => {
-    const playersDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-    const realtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
     const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
 
-    const [playersData, realtimeData, roundData] = await Promise.all([
-        getDocDataTransaction(transaction, playersDocRef),
-        getDocDataTransaction(transaction, realtimeRef),
+    const [questionPlayersData, questionRealtimeData, roundData] = await Promise.all([
+        getDocDataTransaction(transaction, questionPlayersRef),
+        getDocDataTransaction(transaction, questionRealtimeRef),
         getDocDataTransaction(transaction, roundRef),
     ])
 
-    const { buzzed, canceled } = playersData
+    const { buzzed, canceled } = questionPlayersData
 
     // If there is a buzzed player, update his status to idle
     if (buzzed && buzzed.length > 0) {
@@ -62,17 +59,17 @@ const handleNextClueClickTransaction = async (
         transaction.update(playerRef, {
             status: 'idle'
         })
-        transaction.update(playersDocRef, {
+        transaction.update(questionPlayersRef, {
             buzzed: []
         })
     }
-    transaction.update(realtimeRef, {
+    transaction.update(questionRealtimeRef, {
         currentClueIdx: increment(1),
     })
 
     // Decancel players who need it
     if (canceled && canceled.length > 0) {
-        const targetClueIdx = (realtimeData.currentClueIdx + 1) - roundData.delay
+        const targetClueIdx = (questionRealtimeData.currentClueIdx + 1) - roundData.delay
         for (const cancellation of canceled) {
             if (cancellation.clueIdx === targetClueIdx) {
                 const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', cancellation.playerId)
@@ -80,21 +77,18 @@ const handleNextClueClickTransaction = async (
             }
         }
     }
-
     // await updateTimerStateTransaction(transaction, gameId, 'reset')
-    await addSoundToQueueTransaction(transaction, gameId, 'cartoon_mystery_musical_tone_002')
+    await addSoundEffectTransaction(transaction, gameId, 'cartoon_mystery_musical_tone_002')
 }
 /* ====================================================================================================== */
-
-// WRITE
 export const resetProgressiveCluesRealtimeTransaction = async (
     transaction,
     gameId,
     roundId,
     questionId
 ) => {
-    const realtimeDocRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    transaction.update(realtimeDocRef, {
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.update(questionRealtimeRef, {
         currentClueIdx: -1
     })
 }

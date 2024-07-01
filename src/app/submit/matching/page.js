@@ -100,6 +100,7 @@ export function SubmitMatchingQuestionForm({ userId, lang, ...props }) {
                 if (props.inSubmitPage) {
                     router.push('/submit')
                 } else if (props.inGameEditor) {
+                    await addGameQuestion(props.gameId, props.roundId, questionId, userId)
                     props.onDialogClose()
                 }
             }}

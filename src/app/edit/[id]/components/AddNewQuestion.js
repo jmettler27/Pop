@@ -192,8 +192,8 @@ function AddExistingQuestionToRoundDialog({ validationDialogOpen, setValidationD
 }
 
 function AddExistingQuestionToRoundDialogContent({ selectedQuestionId }) {
-    const questionDocRef = doc(QUESTIONS_COLLECTION_REF, selectedQuestionId)
-    const [question, questionLoading, questionError] = useDocumentDataOnce(questionDocRef)
+    const questionRef = doc(QUESTIONS_COLLECTION_REF, selectedQuestionId)
+    const [question, questionLoading, questionError] = useDocumentDataOnce(questionRef)
     if (questionError) {
         return <p><strong>Error: {JSON.stringify(questionError)}</strong></p>
     }
