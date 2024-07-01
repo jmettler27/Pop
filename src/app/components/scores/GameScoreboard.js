@@ -1,10 +1,10 @@
 import { Fragment } from 'react'
 
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 import { HEAD_RANKING_TEXT, HEAD_SCORE_TEXT, HEAD_TEAM_TEXT } from './scoreboardUtils'
 
-import { DEFAULT_LOCALE } from '@/lib/utils/locales'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material'
 
 export default function GameScoreboard({ roundScores, teams, lang = DEFAULT_LOCALE }) {
     const gameSortedTeams = roundScores.gameSortedTeams

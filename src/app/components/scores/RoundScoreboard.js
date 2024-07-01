@@ -1,11 +1,12 @@
 import { Fragment } from 'react'
 
+import { DEFAULT_LOCALE } from '@/lib/utils/locales';
+import { rankingToEmoji } from '@/lib/utils/emojis';
+
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material'
+import { HEAD_RANKING_TEXT, HEAD_REWARD_TEXT, HEAD_SCORE_TEXT, HEAD_TEAM_TEXT } from './scoreboardUtils';
 
 import clsx from 'clsx';
-import { rankingToEmoji } from '@/lib/utils/emojis';
-import { HEAD_RANKING_TEXT, HEAD_REWARD_TEXT, HEAD_SCORE_TEXT, HEAD_TEAM_TEXT } from './scoreboardUtils';
-import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
 export default function RoundScoreboard({ roundScores, teams, lang = DEFAULT_LOCALE }) {
     const roundSortedTeams = roundScores.roundSortedTeams

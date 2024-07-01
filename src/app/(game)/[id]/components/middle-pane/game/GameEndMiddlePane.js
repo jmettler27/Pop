@@ -5,8 +5,8 @@ import { collection, doc } from 'firebase/firestore'
 import { useCollectionOnce, useDocumentDataOnce, useDocumentOnce } from 'react-firebase-hooks/firestore'
 
 import LoadingScreen from '@/app/components/LoadingScreen'
-import GameScoreboard from '@/app/(game)/[id]/components/scores/GameScoreboard'
-import GameScoresChart from '@/app/(game)/[id]/components/scores/GameScoresChart'
+import GameScoreboard from '@/app/components/scores/GameScoreboard'
+import GameScoresChart from '@/app/components/scores/GameScoresChart'
 import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 export default function GameEndMiddlePane({ lang = DEFAULT_LOCALE }) {
