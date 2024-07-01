@@ -61,8 +61,9 @@ function OddOneOutMainContent({ question, randomization }) {
     const game = useGameContext()
     const myTeam = useTeamContext()
 
-    const [realtime, realtimeLoading, realtimeError] = useDocumentData(doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion))
+    const [questionRealtime, realtimeLoading, realtimeError] = useDocumentData(doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion))
     const [gameStates, statesLoading, statesError] = useDocumentData(doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'states'))
+    const [timer, timerLoading, timerError] = useDocumentData(doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'timer'))
 
     if (realtimeError) {
         return <p><strong>Error: {JSON.stringify(realtimeError)}</strong></p>
@@ -70,23 +71,26 @@ function OddOneOutMainContent({ question, randomization }) {
     if (statesError) {
         return <p><strong>Error: {JSON.stringify(statesError)}</strong></p>
     }
-    if (realtimeLoading || statesLoading) {
+    if (timerError) {
+        return <p><strong>Error: {JSON.stringify(timerError)}</strong></p>
+    }
+    if (realtimeLoading || statesLoading || timerLoading) {
         return <LoadingScreen />
     }
-    if (!realtime || !gameStates) {
+    if (!questionRealtime || !gameStates || !timer) {
         return <></>
     }
 
     const isChooser = gameStates.chooserOrder[gameStates.chooserIdx] === myTeam
 
-    return <OddOneOutProposals question={question} randomization={randomization} selectedItems={realtime.selectedItems} isChooser={isChooser} />
+    return <OddOneOutProposals question={question} randomization={randomization} selectedItems={questionRealtime.selectedItems} isChooser={isChooser} authorized={timer.authorized} />
 }
 
-function OddOneOutProposals({ question, randomization, selectedItems, isChooser }) {
+function OddOneOutProposals({ question, randomization, selectedItems, isChooser, authorized }) {
     const game = useGameContext()
     const user = useUserContext()
 
-    const [handleClick, isSubmitting] = useAsyncAction(async (idx) => {
+    const [handleSelectProposal, isSubmitting] = useAsyncAction(async (idx) => {
         await selectProposal(game.id, game.currentRound, game.currentQuestion, user.id, idx)
     })
 
@@ -102,15 +106,13 @@ function OddOneOutProposals({ question, randomization, selectedItems, isChooser 
         }
     }, [selectedItems, game.status])
 
-    const proposalIsExpanded = (origIdx) =>
-        expandedIdx === origIdx
+    const proposalIsExpanded = (origIdx) => origIdx === expandedIdx
 
     const handleAccordionChange = (origIdx) => {
         setExpandedIdx(proposalIsExpanded(origIdx) ? false : origIdx)
     }
 
-    const proposalIsOdd = (origIdx) =>
-        question.details.answerIdx === origIdx
+    const proposalIsOdd = (origIdx) => origIdx === question.details.answerIdx
 
     return (
         <List
@@ -120,13 +122,14 @@ function OddOneOutProposals({ question, randomization, selectedItems, isChooser 
             {randomization.map((origIdx, idx) => (
                 <ProposalItem key={idx}
                     item={question.details.items[origIdx]}
-                    onProposalClick={() => handleClick(origIdx)}
+                    onProposalClick={() => handleSelectProposal(origIdx)}
                     onAccordionChange={() => handleAccordionChange(origIdx)}
                     selectedItem={selectedItems.find((selected) => selected.idx === origIdx)}
                     expanded={proposalIsExpanded(origIdx)}
                     isOdd={proposalIsOdd(origIdx)}
                     isLast={idx === question.details.items.length - 1}
                     isChooser={isChooser}
+                    authorized={authorized}
                     isSubmitting={isSubmitting}
                 />
             ))}
@@ -134,7 +137,7 @@ function OddOneOutProposals({ question, randomization, selectedItems, isChooser 
     )
 }
 
-function ProposalItem({ item, onProposalClick, onAccordionChange, selectedItem, expanded, isOdd, isLast, isChooser, isSubmitting }) {
+function ProposalItem({ item, onProposalClick, onAccordionChange, selectedItem, expanded, isOdd, isLast, isChooser, authorized, isSubmitting }) {
     const game = useGameContext()
     const myRole = useRoleContext()
 
@@ -142,7 +145,7 @@ function ProposalItem({ item, onProposalClick, onAccordionChange, selectedItem, 
     const showExplanation = game.status === 'question_end' || isClicked
     const showComplete = myRole === 'organizer' || showExplanation
 
-    const isItemInteractive = () => myRole === 'organizer' || (myRole === 'player' && isChooser && !showExplanation);
+    const isItemInteractive = myRole === 'organizer' || (myRole === 'player' && isChooser && authorized && !showExplanation);
 
     return (showExplanation ?
         <Accordion
@@ -166,7 +169,7 @@ function ProposalItem({ item, onProposalClick, onAccordionChange, selectedItem, 
                 </ListItemIcon>
                 <Typography
                     sx={{ color: isOdd ? 'red' : 'green', marginRight: '10px' }}
-                    variant='h5'
+                    variant='h6'
                 >
                     {item.title}
                 </Typography>
@@ -186,7 +189,7 @@ function ProposalItem({ item, onProposalClick, onAccordionChange, selectedItem, 
             className='max-w-full'
             divider={!isLast}
             onClick={onProposalClick}
-            disabled={isSubmitting || !isItemInteractive()}
+            disabled={isSubmitting || !isItemInteractive}
             sx={{
                 '&.Mui-disabled': {
                     opacity: 1.0
@@ -197,7 +200,7 @@ function ProposalItem({ item, onProposalClick, onAccordionChange, selectedItem, 
                 sx={{ color: 'text.primary' }}
                 primary={item.title}
                 primaryTypographyProps={{
-                    className: '2xl:text-2xl'
+                    className: '2xl:text-xl'
                 }}
             />
         </ListItemButton >
@@ -211,7 +214,7 @@ function SelectedProposalPlayerAvatar({ playerId }) {
         <Avatar
             alt={player.name}
             src={player.image}
-            sx={{ width: 17, height: 17 }}
+            sx={{ width: 25, height: 25 }}
         />
     )
 }

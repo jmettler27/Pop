@@ -18,7 +18,7 @@ import { switchNextChooserTransaction } from '@/app/(game)/lib/chooser'
 import { addSoundEffectTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { endQuestionTransaction } from '@/app/(game)/lib/question';
-import { updateTimerStateTransaction } from '@/app/(game)/lib/timer';
+import { updateTimerStateTransaction, updateTimerTransaction } from '@/app/(game)/lib/timer';
 import { increaseRoundTeamScoreTransaction } from '@/app/(game)/lib/scores';
 
 import { moveToHead } from '@/lib/utils/arrays';
@@ -117,6 +117,9 @@ const selectProposalTransaction = async (
             playerId,
             timestamp: Timestamp.now()
         })
+    })
+    await updateTimerTransaction(transaction, gameId, {
+        authorized: false
     })
 }
 
