@@ -64,6 +64,8 @@ export function SubmitQuoteQuestionForm({ userId, lang, ...props }) {
             const { topic, lang, ...details } = values
             if (!(details.toGuess.includes('quote'))) {
                 details.quoteParts = [];
+            } else {
+                details.quoteParts = values.quoteParts.sort((a, b) => a.startIdx - b.startIdx)
             }
             const questionId = await addNewQuestion({
                 details: { ...details },

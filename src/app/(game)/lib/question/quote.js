@@ -193,10 +193,10 @@ const validateAllQuoteElementsTransaction = async (
 
     /* Update the winner team scores */
     const { teamId } = playerData
-    const { rewardsPerElement: points } = roundData
+    const { rewardsPerElement } = roundData
     const multiplier = toGuess.length + toGuess.includes('quote') * (quoteParts.length - 1);
-    const totalPoints = points * multiplier;
-    await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, totalPoints)
+    const points = rewardsPerElement * multiplier;
+    await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, points)
 
     transaction.update(playerRef, {
         status: 'correct'

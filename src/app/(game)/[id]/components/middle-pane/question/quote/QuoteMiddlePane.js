@@ -119,8 +119,7 @@ const DisplayedQuote = ({ toGuess, revealed, quote, quoteParts }) => {
         let parts = []
         let lastIndex = 0
 
-        // quoteParts.sort((a, b) => a.startIdx - b.startIdx).forEach((quotePart, index) => {
-        quoteParts.forEach((quotePart, idx) => {
+        quoteParts.sort((a, b) => a.startIdx - b.startIdx).forEach((quotePart, idx) => {
             const before = quote.substring(lastIndex, quotePart.startIdx);
             const within = quote.substring(quotePart.startIdx, quotePart.endIdx + 1);
             lastIndex = quotePart.endIdx + 1;
@@ -136,13 +135,13 @@ const DisplayedQuote = ({ toGuess, revealed, quote, quoteParts }) => {
             const hasBeenRevealed = !isObjectEmpty(revealedQuotePart)
             if (hasBeenRevealed) {
                 if (revealedQuotePart.playerId) { // Has been found by a player
-                    parts.push(<span key={idx} className='text-green-500'>{within}</span>);
+                    parts.push(<span key={`within_${idx}`} className='text-green-500'>{within}</span>);
                 } else { // Has been revealed by the organizer
-                    parts.push(<span key={idx} className='text-blue-500'>{within}</span>);
+                    parts.push(<span key={`within_${idx}`} className='text-blue-500'>{within}</span>);
                 }
             } else if (myRole === 'organizer') {
                 parts.push(
-                    <span key={idx}
+                    <span key={`within_${idx}`}
                         className='text-yellow-500 pointer-events-auto cursor-pointer hover:opacity-50'
                         onClick={() => handleQuotePartClick(idx)}
                         disabled={isSubmitting}
@@ -157,7 +156,7 @@ const DisplayedQuote = ({ toGuess, revealed, quote, quoteParts }) => {
             }
         });
 
-        parts.push(<span key={lastIndex}>{quote.substring(lastIndex)}</span>);
+        parts.push(<span key={'lastIndex'}>{quote.substring(lastIndex)}</span>);
         return <>{parts}</>;
     }
     return <span>{quote}</span>

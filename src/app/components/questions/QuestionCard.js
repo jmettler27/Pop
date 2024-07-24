@@ -237,13 +237,13 @@ const DisplayedQuote = ({ toGuess, quote, quoteParts }) => {
         let parts = []
         let lastIndex = 0
 
-        quoteParts.forEach((quotePart, quotePartIdx) => {
+        quoteParts.sort((a, b) => a.startIdx - b.startIdx).forEach((quotePart, idx) => {
             const before = quote.substring(lastIndex, quotePart.startIdx);
             const within = quote.substring(quotePart.startIdx, quotePart.endIdx + 1);
             lastIndex = quotePart.endIdx + 1;
 
-            parts.push(<span key={`before_${quotePartIdx}`}>{before}</span>);
-            parts.push(<span key={quotePartIdx} className='text-yellow-500'>{within}</span>);
+            parts.push(<span key={`before_${idx}`}>{before}</span>);
+            parts.push(<span key={`within_${idx}`} className='text-yellow-500'>{within}</span>);
         });
 
         parts.push(<span key={'lastIndex'}>{quote.substring(lastIndex)}</span>);
