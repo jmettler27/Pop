@@ -14,7 +14,8 @@ import {
     serverTimestamp,
     Timestamp,
     writeBatch,
-    runTransaction
+    runTransaction,
+    documentId
 } from 'firebase/firestore'
 
 import { addSoundEffectTransaction } from '@/app/(game)/lib/sounds';
@@ -137,7 +138,8 @@ export const endEnumReflectionTransaction = async (
         })
 
         await updateTimerTransaction(transaction, gameId, {
-            duration: questionData.challengeTime
+            duration: questionData.details.challengeTime,
+            status: 'reset',
         })
     }
 }
@@ -278,18 +280,22 @@ export const endEnumQuestionTransaction = async (
                 status: 'wrong'
             })
         }
-
         const newRoundScores = {}
         const newRoundProgress = {}
-        newRoundScores[teamId] = currentRoundScores[teamId]
+        newRoundScores[teamId] = currentRoundScores[teamId] || 0
         newRoundProgress[teamId] = {
             ...currentRoundProgress[teamId],
-            [questionId]: currentRoundScores[teamId]
+            [questionId]: currentRoundScores[teamId] || 0
         }
 
+        const spectatorsSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '!=', teamId)))
+        for (const spectatorDoc of spectatorsSnapshot.docs) {
+            transaction.update(spectatorDoc.ref, {
+                status: 'correct'
+            })
+        }
         const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
-
-        const spectatorTeamsSnapshot = await getDocs(query(teamsCollectionRef, where('id', '!=', teamId)))
+        const spectatorTeamsSnapshot = await getDocs(query(teamsCollectionRef, where(documentId(), '!=', teamId)))
         for (const spectatorTeamDoc of spectatorTeamsSnapshot.docs) {
             const stid = spectatorTeamDoc.id
             newRoundProgress[stid] = {
@@ -297,14 +303,8 @@ export const endEnumQuestionTransaction = async (
                 [questionId]: currentRoundScores[stid] + reward
             }
             newRoundScores[stid] = currentRoundScores[stid] + reward
-
-            const spectatorsSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', stid)))
-            for (const spectator of spectatorsSnapshot.docs) {
-                transaction.update(spectator.ref, {
-                    status: 'correct'
-                })
-            }
         }
+
         transaction.update(roundScoresRef, {
             scores: newRoundScores,
             scoresProgress: newRoundProgress

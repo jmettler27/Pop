@@ -218,12 +218,12 @@ const handleQuestionActiveCountdownEndTransaction = async (
     } else if (type === 'basic') {
         await handleBasicQuestionCountdownEndTransaction(transaction, gameId, roundId, questionId)
     } else if (type === 'enum') {
-        const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
-        const questionData = await getDocDataTransaction(transaction, questionRef)
-        const { status } = questionData
+        const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+        const questionRealtimeData = await getDocDataTransaction(transaction, questionRealtimeRef)
+        const { status } = questionRealtimeData
         if (status === 'reflection_active') {
             await endEnumReflectionTransaction(transaction, gameId, roundId, questionId)
-        } else if (status === 'reflection_end') {
+        } else if (status === 'challenge_active') {
             await endEnumQuestionTransaction(transaction, gameId, roundId, questionId)
         }
     }
