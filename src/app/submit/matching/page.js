@@ -72,7 +72,6 @@ export function SubmitMatchingQuestionForm({ userId, lang, ...props }) {
                 details: { answer, title, numCols, numRows },
                 type: QUESTION_TYPE,
                 topic,
-                // subtopics: subtopics
                 lang,
                 createdAt: serverTimestamp(),
                 createdBy: userId,
@@ -100,7 +99,6 @@ export function SubmitMatchingQuestionForm({ userId, lang, ...props }) {
                 if (props.inSubmitPage) {
                     router.push('/submit')
                 } else if (props.inGameEditor) {
-                    await addGameQuestion(props.gameId, props.roundId, questionId, userId)
                     props.onDialogClose()
                 }
             }}

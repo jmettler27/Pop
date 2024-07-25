@@ -136,6 +136,11 @@ export function ReadyPlayerButton({ lang = DEFAULT_LOCALE }) {
         return <></>
     }
 
+    const readyButtonText = {
+        'en': getRandomElement(READY_BUTTON_TEXT_EN),
+        'fr-FR': getRandomElement(READY_BUTTON_TEXT_FR)
+    }
+
     return (
         <Button
             className='rounded-full'
@@ -146,7 +151,7 @@ export function ReadyPlayerButton({ lang = DEFAULT_LOCALE }) {
             disabled={player.status === 'ready' || isSubmitting}
             startIcon={<HowToRegIcon />}
         >
-            {READY_BUTTON_TEXT[lang]}
+            {readyButtonText[lang]}
         </Button>
     )
 }
@@ -192,7 +197,3 @@ const READY_BUTTON_TEXT_FR = [
     "Prêt à m'envoler comme un oiseau de nuit!",
 ];
 
-const READY_BUTTON_TEXT = {
-    'en': getRandomElement(READY_BUTTON_TEXT_EN),
-    'fr-FR': getRandomElement(READY_BUTTON_TEXT_FR)
-}

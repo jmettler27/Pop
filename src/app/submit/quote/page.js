@@ -71,7 +71,6 @@ export function SubmitQuoteQuestionForm({ userId, lang, ...props }) {
                 details: { ...details },
                 type: QUESTION_TYPE,
                 topic,
-                // subtopics,,
                 lang,
                 createdAt: serverTimestamp(),
                 createdBy: userId,

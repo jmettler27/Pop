@@ -115,7 +115,7 @@ function CreateRoundForm({ onClose, lang }) {
                     maxLength={GAME_ROUND_TITLE_MAX_LENGTH}
                 />
 
-                <MyNumberInput label="Rewards per question" name='rewardsPerQuestion' min={1} max={10} />
+                <MyNumberInput label={ROUND_REWARDS_PER_QUESTION_LABEL[lang]} name='rewardsPerQuestion' min={1} max={10} />
 
                 <SubmitFormButton isSubmitting={isSubmitting} label={SUBMIT_BUTTON_LABEL[lang]} />
             </Form>
@@ -126,6 +126,11 @@ function CreateRoundForm({ onClose, lang }) {
 const ROUND_TITLE_LABEL = {
     'en': "Title of the round",
     'fr-FR': "Titre de la manche"
+}
+
+const ROUND_REWARDS_PER_QUESTION_LABEL = {
+    'en': "Rewards per question",
+    'fr-FR': "Points par question"
 }
 
 const SUBMIT_BUTTON_LABEL = {

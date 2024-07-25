@@ -59,7 +59,7 @@ export default function RoundEndBody({ currentRound, lang = DEFAULT_LOCALE }) {
                         <GameScoreboard roundScores={roundScores} teams={teams} />
                     </div>
                     <div className='flex flex-col h-full w-1/2 items-center justify-center'>
-                        {(currentRound.order > 0) && <GameScoresChart currentRoundOrder={currentRound.order} teams={teams} />}
+                        <GameScoresChart currentRoundOrder={currentRound.order} teams={teams} />
                     </div>
                 </div>
             </div>
