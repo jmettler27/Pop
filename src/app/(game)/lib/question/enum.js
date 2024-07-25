@@ -361,7 +361,7 @@ export const resetEnumQuestionTransaction = async (
         bets: [],
     })
     const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    transaction.set(questionRealtimeRef, {
+    transaction.update(questionRealtimeRef, {
         status: 'reflection_active',
         winner: null,
     })

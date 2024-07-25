@@ -137,7 +137,7 @@ export const resetBasicQuestionTransaction = async (
     questionId
 ) => {
     const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    transaction.set(questionRealtimeRef, {})
+    // transaction.set(questionRealtimeRef, {})
     transaction.update(questionRealtimeRef, {
         teamId: null,
         correct: null
