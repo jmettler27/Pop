@@ -34,9 +34,12 @@ export default function EnumMiddlePane({ question }) {
 
 function EnumQuestionHeader({ question }) {
     return (
-        <div className='flex flex-row items-center justify-center space-x-1'>
-            <QuestionTypeIcon questionType={question.type} fontSize={40} />
-            <h1 className='2xl:text-4xl'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong>: {question.details.title}</h1>
+        <div className='flex flex-col items-center justify-center space-y-2'>
+            <div className='flex flex-row items-center justify-center space-x-1'>
+                <QuestionTypeIcon questionType={question.type} fontSize={40} />
+                <h1 className='2xl:text-5xl'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong></h1>
+            </div>
+            <h2 className='2xl:text-4xl'>{question.details.title}</h2>
         </div>
     )
 }
