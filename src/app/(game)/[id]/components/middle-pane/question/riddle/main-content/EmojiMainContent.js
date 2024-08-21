@@ -21,6 +21,15 @@ function ActiveEmojiMainContent({ question }) {
 function EndedEmojiMainContent({ question }) {
     const { clue, answer: { image, title } } = question.details
 
+    if (!image) {
+        return (
+            <Box className='flex flex-col h-3/4 max-w-1/2 items-center justify-center space-y-2'>
+                <span className='text-9xl'>{clue}</span>
+                <span className='text-4xl text-green-500'><strong>{title}</strong></span>
+            </Box>
+        )
+    }
+
     return (
         <Box className='flex flex-row h-full w-[90%] items-center justify-center space-x-8'>
             <Box className='flex flex-col h-3/4 max-w-1/2 items-end justify-end'>

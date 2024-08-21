@@ -107,12 +107,13 @@ export function QuestionCardContent({ question }) {
 }
 
 const ProgressiveCluesCardMainContent = ({ question }) => {
-    const answer = question.details.answer
+    const { clues, answer: { image, title } } = question.details
+
     return (
         <div className='flex flex-col w-full space-y-2'>
-            <Image
-                src={answer.image}
-                alt={answer.title}
+            {image && <Image
+                src={image}
+                alt={title}
                 priority={true}
                 height={0}
                 width={0}
@@ -122,21 +123,21 @@ const ProgressiveCluesCardMainContent = ({ question }) => {
                     objectFit: 'cover',
                 }}
                 className='self-center'
-            />
-            <span className='text-sm md:text-base dark:text-white'><strong>{answer.title}</strong></span>
+            />}
+            <span className='text-sm md:text-base dark:text-white'><strong>{title}</strong></span>
             <ol className='list-decimal py-1 pl-5'>
-                {question.details.clues.map((clue, idx) => <li className='dark:text-white' key={idx}>{clue}</li>)}
+                {clues.map((clue, idx) => <li className='dark:text-white' key={idx}>{clue}</li>)}
             </ol>
         </div>
     );
 }
 
 const ImageCardMainContent = ({ question }) => {
-    const { description, source } = question.details.answer
+    const { image, answer: { description, source } } = question.details
     return (
         <div className='flex flex-col w-full space-y-2'>
             <Image
-                src={question.details.image}
+                src={image}
                 alt={description ? `${description} - ${source}` : source}
                 priority={true}
                 height={0}
@@ -159,7 +160,7 @@ const EmojiCardMainContent = ({ question }) => {
 
     return (
         <div className='flex flex-col w-full space-y-2'>
-            <Image
+            {image && <Image
                 src={image}
                 alt={title}
                 priority={true}
@@ -171,7 +172,7 @@ const EmojiCardMainContent = ({ question }) => {
                     objectFit: 'cover',
                 }}
                 className='self-center'
-            />
+            />}
             <span className='2xl:text-3xl self-center'>{clue}</span>
             <span className='text-sm md:text-base dark:text-white'><strong>{title}</strong></span>
         </div>
@@ -179,11 +180,11 @@ const EmojiCardMainContent = ({ question }) => {
 }
 
 const BlindtestCardMainContent = ({ question }) => {
-    const { answer: { image, title, author, source } } = question.details
+    const { audio, answer: { image, title, author, source } } = question.details
 
     return (
         <div className='flex flex-col w-full space-y-2'>
-            <Image
+            {image && <Image
                 src={image}
                 alt={title}
                 priority={true}
@@ -195,11 +196,11 @@ const BlindtestCardMainContent = ({ question }) => {
                     objectFit: 'cover',
                 }}
                 className='self-center'
-            />
+            />}
             <span className='text-sm md:text-base dark:text-white'><strong>{title}</strong></span>
             {author && <span className='text-sm md:text-base dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['author']} {author}</span>}
             {source && <span className='text-sm md:text-base dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['source']} <i>{source}</i></span>}
-            <audio src={question.details.audio} controls className='w-full' />
+            <audio src={audio} controls className='w-full' />
         </div>
     );
 }
@@ -256,7 +257,7 @@ const DisplayedQuote = ({ toGuess, quote, quoteParts }) => {
 
 const ENUM_MAX_NUM_ELEMENTS = 10
 
-const EnumCardMainContent = ({ question }) => {
+const EnumCardMainContent = ({ question, lang = DEFAULT_LOCALE }) => {
     const { note, maxIsKnown, thinkingTime, challengeTime, answer } = question.details
     const totalNumElements = answer.length
 
@@ -272,11 +273,21 @@ const EnumCardMainContent = ({ question }) => {
             </div>
             <Divider className='my-2 bg-slate-600' />
             <div className='flex flex-col w-full'>
-                <span className='dark:text-white'>🤔 Thinking: <strong>{thinkingTime}s</strong></span>
-                <span className='dark:text-white'>🗣️ Enumeration: <strong>{challengeTime}s</strong></span>
+                <span className='dark:text-white'>🤔 {ENUM_THINKING[lang]}: <strong>{thinkingTime}s</strong></span>
+                <span className='dark:text-white'>🗣️ {ENUM_ENUMERATION[lang]}: <strong>{challengeTime}s</strong></span>
             </div>
         </>
     );
+}
+
+const ENUM_THINKING = {
+    'en': 'Thinking',
+    'fr-FR': 'Réflexion',
+}
+
+const ENUM_ENUMERATION = {
+    'en': 'Enumeration',
+    'fr-FR': 'Énumération',
 }
 
 const OOOCardMainContent = ({ question }) => {
@@ -300,7 +311,7 @@ const OOOCardMainContent = ({ question }) => {
 }
 
 const MatchingCardMainContent = ({ question }) => {
-    const { note, answer, numCols } = question.details
+    const { note, answer } = question.details
 
     return (
         <div className='flex flex-col w-full space-y-2'>

@@ -241,6 +241,15 @@ function ActiveBlindtestMainContent({ question }) {
 function EndedBlindtestMainContent({ question }) {
     const { answer: { image, title, author, source } } = question.details
 
+    if (!image) {
+        return (
+            <Box className='flex flex-col h-3/4 w-[90%] items-center justify-center space-y-2'>
+                <span className='2xl:text-4xl text-green-500'><strong>{title}</strong></span>
+                {author && <span className='2xl:text-4xl text-green-500'>{QUESTION_ELEMENT_TO_EMOJI['author']} {author}</span>}
+                {source && <span className='2xl:text-4xl text-green-500'>{QUESTION_ELEMENT_TO_EMOJI['source']} <i>{source}</i></span>}
+            </Box>
+        )
+    }
     return (
         <Box className='flex flex-row h-full w-[90%] items-center justify-center space-x-8'>
             <Box className='flex flex-col h-3/4 max-w-1/2 items-end justify-end'>

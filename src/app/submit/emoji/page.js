@@ -55,11 +55,7 @@ export function SubmitEmojiQuestionForm({ userId, lang, ...props }) {
 
     const [submitEmojiQuestion, isSubmitting] = useAsyncAction(async (values, fileRef) => {
         try {
-            const image = getFileFromRef(fileRef);
-            if (!image) {
-                throw new Error("No image file");
-            }
-            const { files, topic, lang, ...details } = values;
+            const { topic, lang, ...details } = values;
             const { title, clue, answer_title } = details;
             const questionId = await addNewQuestion({
                 details: {
@@ -75,7 +71,10 @@ export function SubmitEmojiQuestionForm({ userId, lang, ...props }) {
                 createdBy: userId,
                 approved: true
             })
-            await updateQuestionImage(questionId, image, true);
+            const image = getFileFromRef(fileRef);
+            if (image) {
+                await updateQuestionImage(questionId, image, true);
+            }
             if (props.inGameEditor) {
                 await addGameQuestion(props.gameId, props.roundId, questionId, userId);
             }
@@ -90,7 +89,7 @@ export function SubmitEmojiQuestionForm({ userId, lang, ...props }) {
         title: stringSchema(EMOJI_TITLE_MAX_LENGTH),
         answer_title: stringSchema(EMOJI_ANSWER_TITLE_MAX_LENGTH),
         clue: emojiClueSchema(),
-        files: imageFileSchema(fileRef),
+        files: imageFileSchema(fileRef, false),
     })
 
     return (

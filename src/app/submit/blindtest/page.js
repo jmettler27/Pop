@@ -53,8 +53,6 @@ export function SubmitBlindtestQuestionForm({ userId, lang, ...props }) {
 
     const [submitBlindtestQuestion, isSubmitting] = useAsyncAction(async (values, imageFileRef, audioFileRef) => {
         try {
-            const image = getFileFromRef(imageFileRef);
-
             const audio = getFileFromRef(audioFileRef);
             if (!audio) {
                 throw new Error("No audio file");
@@ -80,6 +78,7 @@ export function SubmitBlindtestQuestionForm({ userId, lang, ...props }) {
                 createdBy: userId,
                 approved: true
             })
+            const image = getFileFromRef(imageFileRef);
             if (image) {
                 await updateQuestionImage(questionId, image, true);
             }
@@ -103,8 +102,8 @@ export function SubmitBlindtestQuestionForm({ userId, lang, ...props }) {
         answer_title: stringSchema(BLINDTEST_ANSWER_TITLE_MAX_LENGTH),
         answer_source: stringSchema(BLINDTEST_ANSWER_SOURCE_MAX_LENGTH),
         answer_author: stringSchema(BLINDTEST_ANSWER_AUTHOR_MAX_LENGTH, false),
-        imageFiles: imageFileSchema(imageFileRef),
-        audioFiles: audioFileSchema(audioFileRef),
+        imageFiles: imageFileSchema(imageFileRef, false),
+        audioFiles: audioFileSchema(audioFileRef, true),
     })
 
     return (

@@ -94,7 +94,7 @@ export function SubmitImageQuestionForm({ userId, lang = DEFAULT_LOCALE, ...prop
         title: stringSchema(IMAGE_TITLE_MAX_LENGTH),
         answer_description: stringSchema(IMAGE_ANSWER_DESCRIPTION_MAX_LENGTH, false),
         answer_source: stringSchema(IMAGE_ANSWER_SOURCE_MAX_LENGTH),
-        files: imageFileSchema(fileRef),
+        files: imageFileSchema(fileRef, true),
     })
 
     return (

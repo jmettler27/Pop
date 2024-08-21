@@ -74,10 +74,6 @@ export function SubmitProgressiveCluesQuestionForm({ userId, lang, ...props }) {
 
     const [submitProgressiveCluesQuestion, isSubmitting] = useAsyncAction(async (values, fileRef) => {
         try {
-            const image = getFileFromRef(fileRef);
-            if (!image) {
-                throw new Error("No image file");
-            }
             const { files, topic, lang, ...details } = values;
             const { title, clues, answer_title } = details;
             const questionId = await addNewQuestion({
@@ -96,7 +92,10 @@ export function SubmitProgressiveCluesQuestionForm({ userId, lang, ...props }) {
                 createdBy: userId,
                 approved: true
             })
-            await updateQuestionImage(questionId, image, true);
+            const image = getFileFromRef(fileRef);
+            if (image) {
+                await updateQuestionImage(questionId, image, true);
+            }
             if (props.inGameEditor) {
                 await addGameQuestion(props.gameId, props.roundId, questionId, userId);
             }
@@ -152,7 +151,7 @@ export function SubmitProgressiveCluesQuestionForm({ userId, lang, ...props }) {
             <SelectImageStep
                 onSubmit={() => { }}
                 validationSchema={Yup.object({
-                    files: imageFileSchema(fileRef),
+                    files: imageFileSchema(fileRef, false),
                 })}
                 fileRef={fileRef}
                 lang={lang}

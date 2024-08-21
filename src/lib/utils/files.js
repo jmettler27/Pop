@@ -27,10 +27,10 @@ import * as Yup from 'yup';
 
 export const REQUIRED_FILE_TEST_NAME = "is-file-present";
 
-export const imageFileSchema = (imageFileRef) => Yup.mixed()
+export const imageFileSchema = (imageFileRef, required) => Yup.mixed()
     .test(REQUIRED_FILE_TEST_NAME, "No file selected", () => {
         const image = getFileFromRef(imageFileRef);
-        return image;
+        return required ? image : true;
     })
     .test(
         "is-file-too-big",
@@ -38,7 +38,7 @@ export const imageFileSchema = (imageFileRef) => Yup.mixed()
         () => {
             const image = getFileFromRef(imageFileRef);
             if (!image) {
-                return false;
+                return !required;
             }
             return fileIsNotTooBig(image, MAX_IMAGE_SIZE_MB);
         })
@@ -48,17 +48,17 @@ export const imageFileSchema = (imageFileRef) => Yup.mixed()
         () => {
             const image = getFileFromRef(imageFileRef);
             if (!image) {
-                return false;
+                return !required;
             }
             return fileIsOfCorrectType(image, IMAGE_VALID_TYPES);
         }
     )
 
 
-export const audioFileSchema = (audioFileRef) => Yup.mixed()
+export const audioFileSchema = (audioFileRef, required) => Yup.mixed()
     .test(REQUIRED_FILE_TEST_NAME, "No file selected", () => {
         const audio = getFileFromRef(audioFileRef);
-        return audio;
+        return required ? audio : true;
     })
     .test(
         "is-file-too-big",
@@ -66,7 +66,7 @@ export const audioFileSchema = (audioFileRef) => Yup.mixed()
         () => {
             const audio = getFileFromRef(audioFileRef);
             if (!audio) {
-                return false;
+                return !required;
             }
             return fileIsNotTooBig(audio, MAX_AUDIO_SIZE_MB);
         })
@@ -76,7 +76,7 @@ export const audioFileSchema = (audioFileRef) => Yup.mixed()
         () => {
             const audio = getFileFromRef(audioFileRef);
             if (!audio) {
-                return false;
+                return !required;
             }
             return fileIsOfCorrectType(audio, AUDIO_VALID_TYPES);
         }

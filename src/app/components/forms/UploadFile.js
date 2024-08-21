@@ -53,7 +53,6 @@ export function UploadImage({ validationSchema, fileRef, lang, name }) {
 
     return (
         <Box component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: "400px" }}>
-            {/* This field is always required */}
             <span className="text-lg">{requiredFileFieldIndicator(validationSchema, name)}{SELECT_IMAGE_FILE[lang]}</span>
             <br />
             <span className="text-md">{ACCEPTED_FORMATS[lang]}: {IMAGE_VALID_TYPES.join(", ")} (max {MAX_IMAGE_SIZE_MB}MB)</span>
@@ -95,7 +94,6 @@ export function UploadAudio({ validationSchema, fileRef, lang, name = "files" })
 
     return (
         <Box component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: "400px" }}>
-            {/* This field is always required */}
             <span className="text-lg">{requiredFileFieldIndicator(validationSchema, name)}{SELECT_AUDIO_FILE[lang]} </span>
             <br />
             <span className="text-md">{ACCEPTED_FORMATS[lang]}: {AUDIO_VALID_TYPES.join(", ")} (max {MAX_AUDIO_SIZE_MB}MB)</span>

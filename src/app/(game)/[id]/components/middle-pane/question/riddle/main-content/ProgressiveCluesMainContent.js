@@ -66,10 +66,15 @@ function ActiveProgressiveCluesMainContent({ question, showComplete }) {
 }
 
 function EndedProgressiveCluesMainContent({ question }) {
+    const { answer: { image, title } } = question.details
+    if (!image) {
+        return <ActiveProgressiveCluesMainContent question={question} showComplete={true} />
+    }
+
     return (
         <Box className='flex flex-row h-full w-[90%] items-center justify-center space-x-8'>
             <Box className='flex flex-col h-3/4 w-1/2 items-end justify-end'>
-                <FirebaseImage url={question.details.answer.image} alt={question.details.answer.title} />
+                <FirebaseImage url={image} alt={title} />
             </Box>
             <Box className='flex flex-col h-full w-1/2 items-start justify-center'>
                 <ProgressiveClues question={question} showComplete={true} />
