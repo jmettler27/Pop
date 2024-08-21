@@ -22,7 +22,7 @@ export default function MCQMainContent({ question }) {
     const { title, note } = question.details
     return (
         <div className='h-full w-full flex flex-col items-center justify-center'>
-            <div className='h-[25%] w-full flex flex-col items-center justify-center space-y-2'>
+            <div className='h-[25%] w-full flex flex-row items-center justify-center space-x-1'>
                 <h2 className='2xl:text-4xl font-bold'>{title}</h2>
                 {note && <NoteButton note={note} />}
             </div>
