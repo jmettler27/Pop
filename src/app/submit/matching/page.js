@@ -61,7 +61,7 @@ export function SubmitMatchingQuestionForm({ userId, lang, ...props }) {
     const [submitMatchingQuestion, isSubmitting] = useAsyncAction(async (values) => {
         try {
             const { topic, lang, ...details } = values
-            const { matches, title, numCols } = details
+            const { matches, title, note, numCols } = details
             const numRows = matches.length
 
             const answer = matches.reduce((acc, row, index) => {
