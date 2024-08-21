@@ -6,6 +6,13 @@ export const OOO_TITLE_EXAMPLE = {
 }
 export const OOO_TITLE_MAX_LENGTH = 75
 
+export const OOO_NOTE_EXAMPLE = {
+    'en': "Hint: The odd one out is a zombie film.",
+    'fr-FR': "Indice: L'intrus est un film de zombies."
+}
+export const OOO_NOTE_MAX_LENGTH = 500
+
+
 export const OOO_ITEMS_EXAMPLE = {
     'en': [
         { title: "Man Bites Dog (🇧🇪, 1992)", explanation: "Mockumentary about a serial killer played by Benoît Poelvoorde." },

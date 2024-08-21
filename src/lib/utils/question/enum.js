@@ -10,7 +10,7 @@ export const ENUM_NOTE_EXAMPLE = {
     'en': "Main series only!",
     'fr-FR': "Série principale uniquement !"
 }
-export const ENUM_NOTE_MAX_LENGTH = 50
+export const ENUM_NOTE_MAX_LENGTH = 500
 
 export const ENUM_ANSWER_EXAMPLE =
 {

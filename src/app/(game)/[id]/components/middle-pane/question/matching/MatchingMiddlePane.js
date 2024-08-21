@@ -2,6 +2,7 @@ import { questionTypeToTitle, QuestionTypeIcon } from '@/lib/utils/question_type
 import { topicToEmoji } from '@/lib/utils/topics'
 
 import { CurrentRoundQuestionOrder } from '@/app/(game)/[id]/components/middle-pane/question/QuestionHeader'
+import NoteButton from '@/app/(game)/[id]/components/NoteButton'
 
 export default function MatchingMiddlePane({ question }) {
 
@@ -25,7 +26,10 @@ function MatchingQuestionHeader({ question }) {
                 <QuestionTypeIcon questionType={question.type} fontSize={50} />
                 <h1 className='2xl:text-5xl'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong></h1>
             </div>
-            <h2 className='2xl:text-4xl'>{question.details.title}</h2>
+            <div className='flex flex-row items-center justify-center space-x-1'>
+                <h2 className='2xl:text-4xl'>{question.details.title}</h2>
+                {question.details.note && <NoteButton note={question.details.note} />}
+            </div>
         </div>
     )
 }

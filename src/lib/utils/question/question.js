@@ -101,7 +101,7 @@ export const QUESTION_ELEMENT_TO_EMOJI = {
     'source': "📜",
     'author': "🧑",
     'description': "📝",
-    'note': "🔍",
+    'note': "⚠️",
 }
 
 import { DEFAULT_LOCALE } from '@/lib/utils/locales';

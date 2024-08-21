@@ -18,7 +18,8 @@ import {
     MATCHING_TITLE_MAX_LENGTH, MATCHING_TITLE_EXAMPLE,
     MATCHING_MAX_NUM_COLS, MATCHING_MIN_NUM_COLS,
     MATCHING_MIN_NUM_ROWS, MATCHING_MAX_NUM_ROWS,
-    MATCHING_ITEM_MAX_LENGTH, MATCHING_ANSWER_EXAMPLE_2, MATCHING_ANSWER_EXAMPLE_3
+    MATCHING_ITEM_MAX_LENGTH, MATCHING_ANSWER_EXAMPLE_2, MATCHING_ANSWER_EXAMPLE_3,
+    MATCHING_NOTE_MAX_LENGTH, MATCHING_NOTE_EXAMPLE
 } from '@/lib/utils/question/matching';
 
 const QUESTION_TYPE = 'matching'
@@ -36,7 +37,7 @@ import Box from '@mui/system/Box';
 
 import { useAsyncAction } from '@/lib/utils/async';
 import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game';
-import { QUESTION_ITEM, QUESTION_TITLE_LABEL } from '@/lib/utils/submit';
+import { QUESTION_HINTS_REMARKS, QUESTION_ITEM, QUESTION_TITLE_LABEL } from '@/lib/utils/submit';
 
 export default function Page({ lang = DEFAULT_LOCALE }) {
     const { data: session } = useSession()
@@ -69,7 +70,7 @@ export function SubmitMatchingQuestionForm({ userId, lang, ...props }) {
             }, {})
 
             const questionId = await addNewQuestion({
-                details: { answer, title, numCols, numRows },
+                details: { answer, title, note, numCols, numRows },
                 type: QUESTION_TYPE,
                 topic,
                 lang,
@@ -91,6 +92,7 @@ export function SubmitMatchingQuestionForm({ userId, lang, ...props }) {
                 lang: DEFAULT_LOCALE,
                 topic: '',
                 title: '',
+                note: '',
                 numCols: MATCHING_MIN_NUM_COLS,
                 matches: []
             }}
@@ -111,6 +113,7 @@ export function SubmitMatchingQuestionForm({ userId, lang, ...props }) {
                     lang: localeSchema(),
                     topic: topicSchema(),
                     title: stringSchema(MATCHING_TITLE_MAX_LENGTH),
+                    note: stringSchema(MATCHING_NOTE_MAX_LENGTH, false),
                     numCols: Yup.number()
                         .min(MATCHING_MIN_NUM_COLS, `Must be between ${MATCHING_MIN_NUM_COLS} and ${MATCHING_MAX_NUM_COLS}`)
                         .max(MATCHING_MAX_NUM_COLS, `Must be between ${MATCHING_MIN_NUM_COLS} and ${MATCHING_MAX_NUM_COLS}`)
@@ -145,6 +148,15 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
                 placeholder={MATCHING_TITLE_EXAMPLE}
                 validationSchema={validationSchema}
                 maxLength={MATCHING_TITLE_MAX_LENGTH}
+            />
+
+            <MyTextInput
+                label={QUESTION_HINTS_REMARKS[lang]}
+                name='note'
+                type='text'
+                placeholder=""
+                validationSchema={validationSchema}
+                maxLength={MATCHING_NOTE_MAX_LENGTH}
             />
 
             {/* <br />

@@ -24,11 +24,16 @@ import Box from '@mui/system/Box';
 import { DEFAULT_LOCALE, localeSchema } from '@/lib/utils/locales';
 import { topicSchema } from '@/lib/utils/topics';
 import { stringSchema } from '@/lib/utils/forms';
-import { OOO_ITEMS_LENGTH, OOO_TITLE_MAX_LENGTH, OOO_ITEM_EXPLANATION_MAX_LENGTH, OOO_ITEM_TITLE_MAX_LENGTH, OOO_ITEMS_EXAMPLE, OOO_TITLE_EXAMPLE } from '@/lib/utils/question/odd_one_out';
+import {
+    OOO_ITEMS_LENGTH,
+    OOO_TITLE_MAX_LENGTH, OOO_TITLE_EXAMPLE,
+    OOO_NOTE_MAX_LENGTH, OOO_NOTE_EXAMPLE,
+    OOO_ITEM_TITLE_MAX_LENGTH, OOO_ITEM_EXPLANATION_MAX_LENGTH, OOO_ITEMS_EXAMPLE,
+} from '@/lib/utils/question/odd_one_out';
 
 import { useAsyncAction } from '@/lib/utils/async';
 import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game';
-import { ADD_ITEM, QUESTION_ITEM, QUESTION_TITLE_LABEL, SELECT_PROPOSAL } from '@/lib/utils/submit';
+import { ADD_ITEM, QUESTION_HINTS_REMARKS, QUESTION_ITEM, QUESTION_TITLE_LABEL, SELECT_PROPOSAL } from '@/lib/utils/submit';
 
 const QUESTION_TYPE = 'odd_one_out'
 
@@ -87,6 +92,7 @@ export function SubmitOOOQuestionForm({ userId, lang, ...props }) {
                 lang: DEFAULT_LOCALE,
                 topic: '',
                 title: '',
+                note: '',
                 items: [{ title: '', explanation: '' }],
                 answerIdx: -1,
             }}
@@ -107,6 +113,7 @@ export function SubmitOOOQuestionForm({ userId, lang, ...props }) {
                     lang: localeSchema(),
                     topic: topicSchema(),
                     title: stringSchema(OOO_TITLE_MAX_LENGTH),
+                    note: stringSchema(OOO_NOTE_MAX_LENGTH, false),
                 })}
                 lang={lang}
             />
@@ -145,6 +152,16 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
                 validationSchema={validationSchema}
                 maxLength={OOO_TITLE_MAX_LENGTH}
             />
+
+            <MyTextInput
+                label={QUESTION_HINTS_REMARKS[lang]}
+                name='note'
+                type='text'
+                placeholder={OOO_NOTE_EXAMPLE[lang]}
+                validationSchema={validationSchema}
+                maxLength={OOO_NOTE_MAX_LENGTH}
+            />
+
         </WizardStep>
     )
 }

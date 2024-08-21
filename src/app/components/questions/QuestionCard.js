@@ -263,6 +263,7 @@ const EnumCardMainContent = ({ question }) => {
     return (
         <>
             <div className='flex flex-col w-full space-y-2'>
+                {note && <p className='text-sm md:text-base dark:text-white italic'>{QUESTION_ELEMENT_TO_EMOJI['note']} {note}</p>}
                 <span className='dark:text-white'><strong>{!maxIsKnown && '>='} {totalNumElements}</strong> elements</span>
                 <ul className='list-disc py-1 pl-5'>
                     {answer.slice(0, ENUM_MAX_NUM_ELEMENTS).map((element, idx) => <li className='dark:text-white' key={idx}>{element}</li>)}
@@ -279,10 +280,11 @@ const EnumCardMainContent = ({ question }) => {
 }
 
 const OOOCardMainContent = ({ question }) => {
-    const { items, answerIdx } = question.details
+    const { note, items, answerIdx } = question.details
 
     return (
         <div className='flex flex-col w-full space-y-2'>
+            {note && <p className='text-sm md:text-base dark:text-white italic'>{QUESTION_ELEMENT_TO_EMOJI['note']} {note}</p>}
             <ul className='list-disc py-1 pl-5'>
                 {items.map((item, idx) => (
                     <li key={idx} className={clsx(idx === answerIdx ? 'text-red-500' : 'dark:text-white', 'hover:font-bold cursor-pointer')}>
@@ -298,11 +300,11 @@ const OOOCardMainContent = ({ question }) => {
 }
 
 const MatchingCardMainContent = ({ question }) => {
-    const { answer, numCols } = question.details
+    const { note, answer, numCols } = question.details
 
     return (
         <div className='flex flex-col w-full space-y-2'>
-            {/* <span><strong>{numCols}</strong> columns</span> */}
+            {note && <p className='text-sm md:text-base dark:text-white italic'>{QUESTION_ELEMENT_TO_EMOJI['note']} {note}</p>}
             <ul className='list-disc py-1 pl-5'>
                 {Object.values(answer).map((match, idx) => (
                     <li key={idx}
@@ -321,7 +323,7 @@ const MCQCardMainContent = ({ question }) => {
 
     return (
         <div className='flex flex-col w-full space-y-2'>
-            {note && <p className='text-sm md:text-base dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['note']} {note}</p>}
+            {note && <p className='text-sm md:text-base dark:text-white italic'>{QUESTION_ELEMENT_TO_EMOJI['note']} {note}</p>}
             <ul>
                 {choices.map((choice, idx) => <li key={idx}
                     className={clsx(
@@ -343,7 +345,7 @@ const BasicCardMainContent = ({ question }) => {
 
     return (
         <div className='flex flex-col w-full space-y-2'>
-            {note && <p className='text-sm md:text-base dark:text-white'>{QUESTION_ELEMENT_TO_EMOJI['note']} {note}</p>}
+            {note && <p className='text-sm md:text-base dark:text-white italic'>{QUESTION_ELEMENT_TO_EMOJI['note']} {note}</p>}
             <span className='dark:text-white'>{answer}</span>
             {explanation && <p className='text-sm md:text-base dark:text-white'>{explanation}</p>}
         </div >

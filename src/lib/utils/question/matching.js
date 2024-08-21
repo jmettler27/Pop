@@ -5,6 +5,9 @@ import { range, shuffle } from "../arrays";
 export const MATCHING_TITLE_EXAMPLE = "Link these houses of Westeros to their seat"
 export const MATCHING_TITLE_MAX_LENGTH = 75
 
+export const MATCHING_NOTE_EXAMPLE = ""
+export const MATCHING_NOTE_MAX_LENGTH = 500
+
 export const MATCHING_ANSWER_EXAMPLE_2 = [
     { 0: "Targaryen", 1: "Dragonstone" },
     { 0: "Stark", 1: "Winterfell" },

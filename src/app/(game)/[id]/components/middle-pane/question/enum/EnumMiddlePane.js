@@ -10,11 +10,12 @@ import clsx from 'clsx'
 
 import { questionTypeToTitle, QuestionTypeIcon } from '@/lib/utils/question_types'
 import { topicToEmoji } from '@/lib/utils/topics'
+import { useAsyncAction } from '@/lib/utils/async'
+import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 import { validateEnumItem } from '@/app/(game)/lib/question/enum'
 import { CurrentRoundQuestionOrder } from '@/app/(game)/[id]/components/middle-pane/question/QuestionHeader'
-import { useAsyncAction } from '@/lib/utils/async'
-import { DEFAULT_LOCALE } from '@/lib/utils/locales'
+import NoteButton from '@/app/(game)/[id]/components/NoteButton'
 
 export default function EnumMiddlePane({ question }) {
 
@@ -39,16 +40,11 @@ function EnumQuestionHeader({ question }) {
                 <QuestionTypeIcon questionType={question.type} fontSize={40} />
                 <h1 className='2xl:text-5xl'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong></h1>
             </div>
-            <h2 className='2xl:text-4xl'>{question.details.title}</h2>
+            <div className='flex flex-row items-center justify-center space-x-1'>
+                <h2 className='2xl:text-4xl'>{question.details.title}</h2>
+                {question.details.note && <NoteButton note={question.details.note} />}
+            </div>
         </div>
-    )
-}
-
-function EnumQuestionIndication({ indication }) {
-    return (
-        <p className='2xl:text-2xl'>
-            <span className='underline'>Note</span>: {indication}
-        </p>
     )
 }
 

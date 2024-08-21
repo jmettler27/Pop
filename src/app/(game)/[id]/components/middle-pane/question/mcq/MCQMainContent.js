@@ -16,7 +16,7 @@ import { clsx } from 'clsx'
 import mcq_correct from '../../../../../../../../public/mcq-correct.png';
 import mcq_wrong from '../../../../../../../../public/mcq-wrong.png';
 
-import { QUESTION_ELEMENT_TO_EMOJI } from '@/lib/utils/question/question'
+import NoteButton from '@/app/(game)/[id]/components/NoteButton'
 
 export default function MCQMainContent({ question }) {
     const { title, note } = question.details
@@ -24,7 +24,7 @@ export default function MCQMainContent({ question }) {
         <div className='h-full w-full flex flex-col items-center justify-center'>
             <div className='h-[25%] w-full flex flex-col items-center justify-center space-y-2'>
                 <h2 className='2xl:text-4xl font-bold'>{title}</h2>
-                {note && <p className='2xl:text-2xl'>{QUESTION_ELEMENT_TO_EMOJI['note']} {note}</p>}
+                {note && <NoteButton note={note} />}
             </div>
             <div className='h-[75%] w-full flex items-center justify-center'>
                 <MCQMainContentQuestion question={question} />
