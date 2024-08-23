@@ -56,6 +56,13 @@ export const MCQ_OPTION_TO_TITLE = {
     }
 }
 
+export const CONDITIONAL_MCQ_OPTION_TO_SOUND = {
+    'hide': 'quest_ce_que_laudace',
+    'square': 'cest_carre',
+    'duo': 'cest_lheure_du_duo'
+}
+
+
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import Looks4Icon from '@mui/icons-material/Looks4';
 import LooksTwoIcon from '@mui/icons-material/LooksTwo';

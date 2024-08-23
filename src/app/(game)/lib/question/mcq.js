@@ -1,6 +1,6 @@
 "use server";
 
-import { IMMEDIATE_MCQ_DEFAULT_REWARD, MCQ_CHOICES, MCQ_OPTIONS } from '@/lib/utils/question/mcq';
+import { IMMEDIATE_MCQ_DEFAULT_REWARD, MCQ_CHOICES, MCQ_OPTIONS, CONDITIONAL_MCQ_OPTION_TO_SOUND } from '@/lib/utils/question/mcq';
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
 import { firestore } from '@/lib/firebase/firebase'
@@ -38,11 +38,37 @@ export async function selectConditionalMCQOption(gameId, roundId, questionId, pl
         throw new Error("Invalid choice!");
     }
 
+    try {
+        await runTransaction(firestore, transaction =>
+            selectConditionalMCQOptionTransaction(transaction, gameId, roundId, questionId, playerId, optionIdx)
+        )
+        console.log("Option submitted successfully!")
+    }
+    catch (error) {
+        console.error("There was an error handling the choice of the player:", error);
+        throw error;
+    }
+}
+
+
+
+const selectConditionalMCQOptionTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+    questionId,
+    playerId,
+    optionIdx
+) => {
+    const option = MCQ_OPTIONS[optionIdx]
+
     const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    await updateDoc(questionRealtimeRef, {
+    await transaction.update(questionRealtimeRef, {
         playerId,
-        option: MCQ_OPTIONS[optionIdx],
+        option,
     })
+
+    await addSoundEffectTransaction(transaction, gameId, CONDITIONAL_MCQ_OPTION_TO_SOUND[option])
 }
 
 /* ====================================================================================================== */
