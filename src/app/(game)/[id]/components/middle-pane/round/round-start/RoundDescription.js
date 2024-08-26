@@ -27,6 +27,8 @@ export function RoundDescription({ round }) {
             return <BasicRoundDescription />
         case 'finale':
             return <ThemesRoundDescription />
+        case 'mixed':
+            return <MixedRoundDescription />
         default:
             return <></>
     }
@@ -117,5 +119,11 @@ function BasicRoundDescription({ }) {
 function ThemesRoundDescription({ }) {
     return <>
         <p className='2xl:text-2xl text-center'><strong>25 questions</strong> organisées en <strong>5 niveaux</strong>.</p>
+    </>
+}
+
+function MixedRoundDescription({ }) {
+    return <>
+        <p className='2xl:text-2xl text-center'>🔀 Plusieurs questions de <strong>types différents</strong>.</p>
     </>
 }

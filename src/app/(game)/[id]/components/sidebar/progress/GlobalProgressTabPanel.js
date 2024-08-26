@@ -10,7 +10,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import clsx from 'clsx'
 
 import { rankingToEmoji } from '@/lib/utils/emojis'
-import { RoundTypeIcon } from '@/lib/utils/question_types'
+import { RoundTypeIcon } from '@/lib/utils/round'
 
 import LoadingScreen from '@/app/components/LoadingScreen'
 import { ROUND_HEADER_TEXT } from '@/lib/utils/round'

@@ -1,14 +1,13 @@
 import { useGameContext } from '@/app/(game)/contexts'
 
 import LoadingScreen from '@/app/components/LoadingScreen'
-import { RoundTypeIcon } from '@/lib/utils/question_types'
 
 import RoundStartBody from '@/app/(game)/[id]/components/middle-pane/round/round-start/RoundStartBody'
 import RoundEndBody from '@/app/(game)/[id]/components/middle-pane/round/round-end/RoundEndBody'
 
 import { doc } from 'firebase/firestore'
 import { useDocument } from 'react-firebase-hooks/firestore'
-import { ROUND_HEADER_TEXT } from '@/lib/utils/round'
+import { RoundTypeIcon, ROUND_HEADER_TEXT } from '@/lib/utils/round'
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 

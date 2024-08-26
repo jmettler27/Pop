@@ -9,6 +9,7 @@ import { useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 import { DEFAULT_LOCALE, LOCALE_TO_EMOJI } from '@/lib/utils/locales';
 import { timestampToDate } from '@/lib/utils/time';
 import { prependTopicWithEmoji, topicToEmoji } from '@/lib/utils/topics';
+import { questionTypeToEmoji } from '@/lib/utils/question_types';
 import { QUESTION_ELEMENT_TO_EMOJI, QUESTION_ELEMENT_TO_TITLE } from '@/lib/utils/question/question';
 import { blindtestTypeToEmoji } from '@/lib/utils/question/blindtest';
 import { MCQ_CHOICES, mcqTypeToEmoji } from '@/lib/utils/question/mcq';
@@ -19,12 +20,12 @@ import { Divider, Tooltip } from '@mui/material';
 
 import clsx from 'clsx';
 
-export function QuestionCard({ question }) {
+export function QuestionCard({ question, showType = false }) {
 
     return (
         <Card>
             <CardHeader className='flex flex-row items-center justify-between' >
-                <CardTitle className='text-base md:text-lg dark:text-white'><QuestionCardTitle question={question} /></CardTitle>
+                <CardTitle className='text-base md:text-lg dark:text-white'><QuestionCardTitle question={question} showType={showType} /></CardTitle>
             </CardHeader >
 
             <CardContent>
@@ -39,24 +40,25 @@ export function QuestionCard({ question }) {
     );
 }
 
-export function QuestionCardTitle({ question, lang = DEFAULT_LOCALE }) {
+export function QuestionCardTitle({ question, showType = false, lang = DEFAULT_LOCALE }) {
+    const emoji = questionTypeToEmoji(question.type)
     switch (question.type) {
         case 'progressive_clues':
         case 'image':
         case 'emoji':
         case 'enum':
         case 'odd_one_out':
-            return <span>{topicToEmoji(question.topic)} &quot;{question.details.title}&quot;</span>
+            return <span>{showType && emoji}{topicToEmoji(question.topic)} &quot;{question.details.title}&quot;</span>
         case 'blindtest':
-            return <span>{blindtestTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} &quot;{question.details.title}&quot;</span>
+            return <span>{showType && emoji}{blindtestTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} &quot;{question.details.title}&quot;</span>
         case 'matching':
-            return <span>{topicToEmoji(question.topic)} <strong>({question.details.numCols} col)</strong> &quot;{question.details.title}&quot;</span>
+            return <span>{showType && emoji}{topicToEmoji(question.topic)} <strong>({question.details.numCols} col)</strong> &quot;{question.details.title}&quot;</span>
         case 'quote':
-            return <span>{prependTopicWithEmoji(question.topic, lang)}</span>
+            return <span>{showType && emoji}{prependTopicWithEmoji(question.topic, lang)}</span>
         case 'mcq':
-            return <span>{mcqTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} {question.details.source && <i>{question.details.source}:</i>} &quot;{question.details.title}&quot;</span>
+            return <span>{showType && emoji}{mcqTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} {question.details.source && <i>{question.details.source}:</i>} &quot;{question.details.title}&quot;</span>
         case 'basic':
-            return <span>{topicToEmoji(question.topic)} {question.details.source && <i>{question.details.source}:</i>} &quot;{question.details.title}&quot;</span>
+            return <span>{showType && emoji}{topicToEmoji(question.topic)} {question.details.source && <i>{question.details.source}:</i>} &quot;{question.details.title}&quot;</span>
     }
 }
 

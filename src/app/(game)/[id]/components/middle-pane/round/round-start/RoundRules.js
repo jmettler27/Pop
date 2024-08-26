@@ -32,6 +32,8 @@ export function RoundRules({ round }) {
             return <BasicRoundRules round={round} />
         case 'finale':
             return <ThemesRoundRules round={round} />
+        case 'mixed':
+            return <MixedRoundRules round={round} />
     }
 }
 
@@ -173,5 +175,12 @@ function ThemesRoundRules({ round }) {
         <p className='2xl:text-2xl text-center font-bold'>🗣️ Répondez directement aux questions, il n&apos;y a pas de proposition de réponses.</p>
         <p className='2xl:text-2xl text-center'>⚠️ Attention, il faut être précis dans sa réponse!</p>
         <p className='2xl:text-2xl text-center'>💜 Restez calme, ça va bien se passer.</p>
+    </>
+}
+
+// Mixed
+function MixedRoundRules({ round }) {
+    return <>
+        <p className='2xl:text-2xl text-center'>Les règles dépendent du type de la question.</p>
     </>
 }

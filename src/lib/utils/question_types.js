@@ -64,19 +64,9 @@ export const isRiddle = (type) => {
     }
 }
 
-export const sortAscendingRoundScores = (roundType) => {
-    switch (roundType) {
-        case 'odd_one_out':
-        case 'matching':
-            return true;
-        default:
-            return false;
-    }
-}
 
 import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
-/* TITLE */
 export function questionTypeToTitle(questionType, lang = DEFAULT_LOCALE) {
     return QUESTION_TYPE_TO_TITLE[lang][questionType]
 }
@@ -98,20 +88,11 @@ import HeadphonesIcon from '@mui/icons-material/Headphones';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions'
 import SpeakerNotesIcon from '@mui/icons-material/SpeakerNotes'
 import ChecklistIcon from '@mui/icons-material/Checklist'
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
 import ReorderIcon from '@mui/icons-material/Reorder';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 
-export function RoundTypeIcon({ roundType, fontSize = 'small' }) {
-    switch (roundType) {
-        case 'finale':
-            return <EmojiEventsIcon sx={{ fontSize }} />
-        default:
-            return <QuestionTypeIcon questionType={roundType} fontSize={fontSize} />
-    }
-}
 
 export function QuestionTypeIcon({ questionType, fontSize = 'small' }) {
     switch (questionType) {
@@ -140,6 +121,6 @@ export function QuestionTypeIcon({ questionType, fontSize = 'small' }) {
 
 /* Validation */
 import * as Yup from 'yup'
-export const typeSchema = () => Yup.string()
+export const questionTypeSchema = () => Yup.string()
     .oneOf(QUESTION_TYPES, "Invalid type.")
     .required("Required.")
