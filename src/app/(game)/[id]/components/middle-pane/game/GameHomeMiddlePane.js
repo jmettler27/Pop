@@ -8,7 +8,7 @@ import { doc, collection } from 'firebase/firestore'
 import { useCollection, useDocumentData } from 'react-firebase-hooks/firestore'
 
 import { List, ListItemButton, ListItemText, ListItemAvatar, Avatar, Divider } from '@mui/material'
-import { RoundTypeIcon } from '@/lib/utils/question_types'
+import { RoundTypeIcon } from '@/lib/utils/round'
 import LoadingScreen from '@/app/components/LoadingScreen'
 
 import { handleSelectRound } from '@/app/(game)/lib/round/round-transitions'

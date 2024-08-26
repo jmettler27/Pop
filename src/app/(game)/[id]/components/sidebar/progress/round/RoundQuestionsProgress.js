@@ -10,7 +10,7 @@ import { useCollectionOnce, useDocumentData, useDocumentDataOnce } from 'react-f
 
 import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 import { topicToEmoji } from '@/lib/utils/topics'
-import { questionTypeToTitle } from '@/lib/utils/question_types'
+import { questionTypeToEmoji, questionTypeToTitle } from '@/lib/utils/question_types'
 import { blindtestTypeToEmoji } from '@/lib/utils/question/blindtest'
 import { mcqTypeToEmoji } from '@/lib/utils/question/mcq'
 
@@ -77,6 +77,7 @@ export default function RoundQuestionsProgress({ game, round }) {
             {round.questions.map((questionId, idx) => (
                 <RoundQuestionAccordion key={questionId}
                     roundId={round.id}
+                    roundType={round.type}
                     questionId={questionId}
                     order={idx}
                     hasEnded={hasEnded(idx)}
@@ -93,7 +94,7 @@ export default function RoundQuestionsProgress({ game, round }) {
     )
 }
 
-export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({ game, roundId, questionId, order, hasEnded, isCurrent, hasNotStarted, onAccordionChange, expanded, teams, players }) {
+export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({ game, roundId, roundType, questionId, order, hasEnded, isCurrent, hasNotStarted, onAccordionChange, expanded, teams, players }) {
     console.log("RoundQuestionAccordion", questionId, order, expanded)
     const { id: gameId } = useParams()
     const myRole = useRoleContext()
@@ -200,7 +201,7 @@ export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({ gam
                 }}
             >
                 <Typography sx={{ color: summaryColor() }}>
-                    <QuestionSummary question={question} order={order} />
+                    <RoundQuestionSummary roundType={roundType} question={question} order={order} />
                 </Typography>
             </AccordionSummary>
 
@@ -217,7 +218,11 @@ export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({ gam
 })
 
 /* ============================================================================================ */
-function QuestionSummary({ question, order, lang = DEFAULT_LOCALE }) {
+function RoundQuestionSummary({ roundType, question, order, lang = DEFAULT_LOCALE }) {
+    if (roundType === 'mixed') {
+        return <span className='text-lg'>{questionTypeToEmoji(question.type)} {topicToEmoji(question.topic)} <strong>Question {order + 1}</strong></span>
+    }
+
     switch (question.type) {
         case 'progressive_clues':
         case 'image':
@@ -311,5 +316,5 @@ function EnumQuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = D
 
 const NO_WINNER_TEXT = {
     'en': "Nobody",
-    DEFAULT_LOCALE: "Personne"
+    'fr-FR': "Personne"
 }

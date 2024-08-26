@@ -25,7 +25,7 @@ import { increaseRoundTeamScoreTransaction } from '@/app/(game)/lib/scores';
 
 import { findMostFrequentValueAndIndices, generateMatch } from '@/lib/utils/question/matching';
 import { sortScores } from '@/lib/utils/scores';
-import { sortAscendingRoundScores } from '@/lib/utils/question_types';
+import { sortAscendingRoundScores } from '@/lib/utils/round';
 import { getNextCyclicIndex, shuffle } from '@/lib/utils/arrays';
 
 

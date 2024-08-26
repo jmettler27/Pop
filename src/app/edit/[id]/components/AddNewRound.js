@@ -10,7 +10,7 @@ import { GAME_ROUND_DEFAULT_REWARDS, GAME_ROUND_TITLE_MAX_LENGTH } from "@/lib/u
 import { Form, Formik } from "formik"
 import * as Yup from 'yup';
 import { stringSchema } from '@/lib/utils/forms'
-import { typeSchema } from "@/lib/utils/question_types"
+import { roundTypeSchema } from "@/lib/utils/round"
 
 import { addGameRound } from '@/app/edit/[id]/lib/edit-game'
 import SelectRoundType from "@/app/edit/[id]/components/SelectRoundType"
@@ -67,8 +67,8 @@ function CreateRoundForm({ onClose, lang }) {
 
     const [submitRound, isSubmitting] = useAsyncAction(async (values) => {
         try {
-            const { title, type, rewards, rewardsPerQuestion } = values
-            await addGameRound(gameId, title, type, rewards, rewardsPerQuestion)
+            const { type, title } = values
+            await addGameRound(gameId, title, type, GAME_ROUND_DEFAULT_REWARDS, 1)
         } catch (error) {
             console.error("There was an error creating the round:", error)
             throw error
@@ -77,20 +77,20 @@ function CreateRoundForm({ onClose, lang }) {
     })
 
     const validationSchema = Yup.object({
-        type: typeSchema(),
+        type: roundTypeSchema(),
         title: stringSchema(GAME_ROUND_TITLE_MAX_LENGTH),
-        rewards: Yup.array().of(
-            Yup.number()
-                .required()
-                .integer()
-                .min(1)
-                .max(10)
-        ),
-        rewardsPerQuestion: Yup.number()
-            .required()
-            .integer()
-            .min(1)
-            .max(10),
+        // rewards: Yup.array().of(
+        //     Yup.number()
+        //         .required()
+        //         .integer()
+        //         .min(1)
+        //         .max(10)
+        // ),
+        // rewardsPerQuestion: Yup.number()
+        //     .required()
+        //     .integer()
+        //     .min(1)
+        //     .max(10),
     })
 
     return (
@@ -98,8 +98,8 @@ function CreateRoundForm({ onClose, lang }) {
             initialValues={{
                 type: '',
                 title: '',
-                rewards: GAME_ROUND_DEFAULT_REWARDS,
-                rewardsPerQuestion: 1
+                // rewards: GAME_ROUND_DEFAULT_REWARDS,
+                // rewardsPerQuestion: 1
             }}
             onSubmit={async values => await submitRound(values, gameId)}
             validationSchema={validationSchema}
@@ -115,7 +115,7 @@ function CreateRoundForm({ onClose, lang }) {
                     maxLength={GAME_ROUND_TITLE_MAX_LENGTH}
                 />
 
-                <MyNumberInput label={ROUND_REWARDS_PER_QUESTION_LABEL[lang]} name='rewardsPerQuestion' min={1} max={10} />
+                {/* <MyNumberInput label={ROUND_REWARDS_PER_QUESTION_LABEL[lang]} name='rewardsPerQuestion' min={1} max={10} /> */}
 
                 <SubmitFormButton isSubmitting={isSubmitting} label={SUBMIT_BUTTON_LABEL[lang]} />
             </Form>
@@ -128,10 +128,10 @@ const ROUND_TITLE_LABEL = {
     'fr-FR': "Titre de la manche"
 }
 
-const ROUND_REWARDS_PER_QUESTION_LABEL = {
-    'en': "Rewards per question",
-    'fr-FR': "Points par question"
-}
+// const ROUND_REWARDS_PER_QUESTION_LABEL = {
+//     'en': "Rewards per question",
+//     'fr-FR': "Points par question"
+// }
 
 const SUBMIT_BUTTON_LABEL = {
     'en': "Create",

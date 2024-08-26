@@ -14,7 +14,8 @@ import {
 } from 'firebase/firestore'
 
 import { getNextCyclicIndex, shuffle } from '@/lib/utils/arrays';
-import { isRiddle, sortAscendingRoundScores } from '@/lib/utils/question_types';
+import { isRiddle } from '@/lib/utils/question_types';
+import { sortAscendingRoundScores } from '@/lib/utils/round';
 import { sortScores } from '@/lib/utils/scores';
 import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/lib/utils/question/question';
@@ -81,7 +82,7 @@ const selectRoundTransaction = async (
 
     // await addSoundEffectTransaction(transaction, gameId, 'super_mario_odyssey_moon')
 
-    if (isRiddle(roundData.type) || roundData.type === 'quote' || roundData.type === 'enum') {
+    if (isRiddle(roundData.type) || roundData.type === 'quote' || roundData.type === 'enum' || roundData.type === 'mixed') {
         // Set the status of every player to 'idle'
         const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
         const playersSnapshot = await getDocs(query(playersCollectionRef))
@@ -139,26 +140,6 @@ const selectRoundTransaction = async (
 }
 
 /* ==================================================================================================== */
-
-async function switchRoundQuestion(gameId, roundId, questionOrder) {
-    if (!gameId) {
-        throw new Error("No game ID has been provided!");
-    }
-    if (!roundId) {
-        throw new Error("No round ID has been provided!");
-    }
-
-    try {
-        await runTransaction(firestore, transaction =>
-            switchRoundQuestionTransaction(transaction, gameId, roundId, questionOrder)
-        );
-        console.log(`Switched successfully to question ${questionOrder} in the round ${roundId}.`);
-    } catch (error) {
-        console.error("There was an error switching to the next question:", error);
-        throw error;
-    }
-}
-
 const switchRoundQuestionTransaction = async (
     transaction,
     gameId,

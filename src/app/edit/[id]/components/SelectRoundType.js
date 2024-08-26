@@ -1,5 +1,5 @@
 import { MySelect } from '@/app/components/forms/StyledFormComponents'
-import { QUESTION_TYPES, prependQuestionTypeWithEmoji } from '@/lib/utils/question_types'
+import { prependRoundTypeWithEmoji, ROUND_TYPES } from '@/lib/utils/round'
 
 export default function SelectRoundType({ validationSchema, lang, name = 'type' }) {
     return (
@@ -9,7 +9,7 @@ export default function SelectRoundType({ validationSchema, lang, name = 'type' 
             validationSchema={validationSchema}
         >
             <option value="">{SELECT_ROUND_HEADER[lang]}</option>
-            {QUESTION_TYPES.map((roundType) => <option key={roundType} value={roundType}>{prependQuestionTypeWithEmoji(roundType, lang)}</option>)}
+            {ROUND_TYPES.map((roundType) => <option key={roundType} value={roundType}>{prependRoundTypeWithEmoji(roundType, lang)}</option>)}
         </MySelect>
     )
 }

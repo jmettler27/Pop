@@ -47,7 +47,7 @@ export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questi
         <Card>
             <CardHeader className='flex flex-row items-center justify-between'>
                 {/* <span className='text-base md:text-lg dark:text-white'>#{questionOrder + 1}</span> */}
-                <CardTitle className='text-base md:text-lg dark:text-white'><QuestionCardTitle question={questionData} /></CardTitle>
+                <CardTitle className='text-base md:text-lg dark:text-white'><QuestionCardTitle question={questionData} showType={true} /></CardTitle>
                 {status === 'build' && <RemoveQuestionFromRoundButton roundId={roundId} questionId={questionId} />}
                 {/* <UpdateCreatorButton roundId={roundId} questionId={questionId} /> */}
             </CardHeader>

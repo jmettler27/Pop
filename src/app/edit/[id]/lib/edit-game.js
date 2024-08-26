@@ -66,7 +66,15 @@ const addGameRoundTransaction = async (
         type,
     }
 
-    if (type === 'progressive_clues') {
+    if (type === 'mixed') {
+        initRoundInfo.rewardsPerQuestion = 1
+        initRoundInfo.invalidateTeam = false;
+        initRoundInfo.maxTries = 2
+        initRoundInfo.delay = 2
+        initRoundInfo.rewardsForBonus = 1;
+        initRoundInfo.mistakePenalty = - 1
+        initRoundInfo.rewardsPerElement = 1
+    } else if (type === 'progressive_clues') {
         initRoundInfo.rewardsPerQuestion = PROGRESSIVE_CLUES_DEFAULT_REWARD
         initRoundInfo.invalidateTeam = false;
         initRoundInfo.maxTries = PROGRESSIVE_CLUES_DEFAULT_MAX_TRIES

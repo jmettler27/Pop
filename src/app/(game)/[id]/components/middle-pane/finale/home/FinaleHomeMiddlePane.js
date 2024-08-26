@@ -1,6 +1,5 @@
-import { RoundTypeIcon } from '@/lib/utils/question_types'
 import FinaleHomeThemes from './FinaleHomeThemes'
-import { ROUND_HEADER_TEXT } from '@/lib/utils/round'
+import { RoundTypeIcon, ROUND_HEADER_TEXT } from '@/lib/utils/round'
 import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 export default function FinaleHomeMiddlePane({ round }) {

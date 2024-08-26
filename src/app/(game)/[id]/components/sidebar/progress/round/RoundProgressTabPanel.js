@@ -5,11 +5,11 @@ import { doc } from 'firebase/firestore'
 import { useDocument } from 'react-firebase-hooks/firestore'
 
 import { CircularProgress } from '@mui/material'
-import { RoundTypeIcon } from '@/lib/utils/question_types'
 
 import FinaleRoundProgress from './FinaleRoundProgress'
 import RoundQuestionsProgress from './RoundQuestionsProgress'
-import { ROUND_HEADER_TEXT } from '@/lib/utils/round'
+
+import { RoundTypeIcon, ROUND_HEADER_TEXT } from '@/lib/utils/round'
 import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 export default function RoundProgressTabPanel({ game }) {

@@ -6,24 +6,22 @@ import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/f
 import { collection, doc, getDoc } from 'firebase/firestore';
 import { useCollectionData, useDocumentData } from 'react-firebase-hooks/firestore';
 
-import { Button } from '@mui/material';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material'
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete';
-
 import { CardTitle, CardHeader, CardContent, Card } from '@/app/components/card'
 
-import { questionTypeToEmoji, typeSchema } from '@/lib/utils/question_types'
-import { GAME_ROUND_MAX_NUM_QUESTIONS } from '@/lib/utils/round'
+
+import { GAME_ROUND_MAX_NUM_QUESTIONS, roundTypeToEmoji } from '@/lib/utils/round'
 import { useAsyncAction } from '@/lib/utils/async'
 import { DIALOG_ACTION_CANCEL, DIALOG_WARNING } from '@/lib/utils/dialogs'
-
-import { removeRoundFromGame } from '@/app/edit/[id]/lib/edit-game'
-
-import { AddQuestionToRoundButton } from '@/app/edit/[id]/components/AddNewQuestion'
-import { EditQuestionCard } from '@/app/edit/[id]/components/EditQuestionInRound';
-import clsx from 'clsx';
 import { topicToEmoji } from '@/lib/utils/topics';
 import { DEFAULT_LOCALE } from '@/lib/utils/locales';
+
+import { removeRoundFromGame } from '@/app/edit/[id]/lib/edit-game'
+import { EditQuestionCard } from '@/app/edit/[id]/components/EditQuestionInRound';
+import { AddQuestionToMixedRoundButton, AddQuestionToRoundButton } from '@/app/edit/[id]/components/AddNewQuestion'
+
+import clsx from 'clsx';
 
 
 const editGameRoundCardNumCols = (roundType) => {
@@ -63,7 +61,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
     return (
         <Card>
             <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
-                <CardTitle className='2xl:text-2xl'>{questionTypeToEmoji(round.type)} <i>{round.title}</i> <RoundTopicDistribution round={round} /></CardTitle>
+                <CardTitle className='2xl:text-2xl'>{roundTypeToEmoji(round.type)} <i>{round.title}</i> <RoundTopicDistribution round={round} /></CardTitle>
                 {status === 'build' && <RemoveRoundFromGameButton roundId={round.id} />}
             </CardHeader>
             <CardContent>
@@ -71,13 +69,18 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
                     editGameRoundCardNumCols(round.type),
                 )}>
                     <EditGameRoundQuestionCards round={round} status={status} />
-                    {status === 'build' &&
-                        <AddQuestionToRoundButton
-                            roundId={round.id}
-                            roundType={round.type}
-                            disabled={round.questions.length >= GAME_ROUND_MAX_NUM_QUESTIONS}
-                        />
-                    }
+                    {status === 'build' && (
+                        round.type === 'mixed' ?
+                            <AddQuestionToMixedRoundButton
+                                roundId={round.id}
+                                disabled={round.questions.length >= GAME_ROUND_MAX_NUM_QUESTIONS}
+                            /> :
+                            <AddQuestionToRoundButton
+                                roundId={round.id}
+                                roundType={round.type}
+                                disabled={round.questions.length >= GAME_ROUND_MAX_NUM_QUESTIONS}
+                            />
+                    )}
                 </div>
             </CardContent>
         </Card>
