@@ -11,7 +11,7 @@ import { THEME_SECTION_TEXT } from '@/lib/utils/question/theme'
 import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 
-export default function FinaleThemeActiveMiddlePane({ theme, themeRealtime }) {
+export default function SpecialThemeActiveMiddlePane({ theme, themeRealtime }) {
     const currentThemeId = theme.id
     const currentSectionId = theme.details.sections[themeRealtime.currentSectionIdx]
 

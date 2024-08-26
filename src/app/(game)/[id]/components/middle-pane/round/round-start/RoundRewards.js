@@ -2,7 +2,7 @@ import { rankingToEmoji, numberToKeycapEmoji } from '@/lib/utils/emojis'
 
 export function RoundRewards({ round }) {
     switch (round.type) {
-        case 'finale':
+        case 'special':
             return <ThemesRoundRewards round={round} />
         default: return (
             <div className='flex flex-col items-center justify-start space-y-4 p-2'>

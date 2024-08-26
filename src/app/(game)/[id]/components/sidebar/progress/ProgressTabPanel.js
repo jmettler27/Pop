@@ -74,7 +74,7 @@ function ProgressTabPanelMainContent({ game, lang = DEFAULT_LOCALE }) {
                 </CustomTabPanel>
             )}
 
-            {(game.type === 'rounds' && game.currentRound && (game.status === 'round_start' || game.status === 'round_end' || game.status === 'question_active' || game.status === 'question_end' || game.status === 'finale')) && (
+            {(game.type === 'rounds' && game.currentRound && (game.status === 'round_start' || game.status === 'round_end' || game.status === 'question_active' || game.status === 'question_end' || game.status === 'special')) && (
                 <CustomTabPanel value={value} index={1}>
                     <RoundProgressTabPanel game={game} />
                 </CustomTabPanel>

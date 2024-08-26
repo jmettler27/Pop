@@ -5,21 +5,21 @@ import { collection } from 'firebase/firestore'
 import { useCollectionDataOnce } from 'react-firebase-hooks/firestore';
 
 import LoadingScreen from '@/app/components/LoadingScreen'
-import GoFinaleHomeButton from '@/app/(game)/[id]/components/bottom-pane/finale/theme/theme-end/GoFinaleHomeButton'
+import GoSpecialHomeButton from '@/app/(game)/[id]/components/bottom-pane/special/theme/theme-end/GoSpecialHomeButton'
 import EndGameButton from '@/app/(game)/[id]/components/bottom-pane/EndGameButton'
 
 
-export default function FinaleThemeEndBottomPane({ }) {
+export default function SpecialThemeEndBottomPane({ }) {
     const myRole = useRoleContext()
 
     switch (myRole) {
         case 'organizer':
-            return <FinaleThemeEndOrganizerBottomPane />
+            return <SpecialThemeEndOrganizerBottomPane />
     }
 }
 
 
-function FinaleThemeEndOrganizerBottomPane({ }) {
+function SpecialThemeEndOrganizerBottomPane({ }) {
     const game = useGameContext()
 
     const [themeRealtimes, realtimesLoading, realtimesError] = useCollectionDataOnce(collection(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'themes'))
@@ -35,5 +35,5 @@ function FinaleThemeEndOrganizerBottomPane({ }) {
 
     const isLastTheme = themeRealtimes.every(realtime => realtime.order !== null);
 
-    return (isLastTheme ? <EndGameButton /> : <GoFinaleHomeButton />)
+    return (isLastTheme ? <EndGameButton /> : <GoSpecialHomeButton />)
 }

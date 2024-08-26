@@ -6,7 +6,7 @@ import { useDocument } from 'react-firebase-hooks/firestore'
 
 import { CircularProgress } from '@mui/material'
 
-import FinaleRoundProgress from './FinaleRoundProgress'
+import SpecialRoundProgress from './SpecialRoundProgress'
 import RoundQuestionsProgress from './RoundQuestionsProgress'
 
 import { RoundTypeIcon, ROUND_HEADER_TEXT } from '@/lib/utils/round'
@@ -28,8 +28,8 @@ export default function RoundProgressTabPanel({ game }) {
     return (
         <div className='flex flex-col w-full items-center'>
             <RoundProgressHeader roundType={round.type} roundOrder={round.order} roundTitle={round.title} />
-            {round.type == 'finale' ?
-                <FinaleRoundProgress game={game} round={round} /> :
+            {round.type == 'special' ?
+                <SpecialRoundProgress game={game} round={round} /> :
                 <RoundQuestionsProgress game={game} round={round} />
             }
         </div>

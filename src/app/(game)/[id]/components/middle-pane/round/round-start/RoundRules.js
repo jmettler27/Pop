@@ -30,7 +30,7 @@ export function RoundRules({ round }) {
             return <MCQRoundRules round={round} />
         case 'basic':
             return <BasicRoundRules round={round} />
-        case 'finale':
+        case 'special':
             return <ThemesRoundRules round={round} />
         case 'mixed':
             return <MixedRoundRules round={round} />
@@ -169,7 +169,7 @@ function BasicRoundRules({ round }) {
 }
 
 
-// Finale
+// Special
 function ThemesRoundRules({ round }) {
     return <>
         <p className='2xl:text-2xl text-center font-bold'>🗣️ Répondez directement aux questions, il n&apos;y a pas de proposition de réponses.</p>

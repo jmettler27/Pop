@@ -5,10 +5,10 @@ import { doc } from 'firebase/firestore'
 import { useDocument, useDocumentData, useDocumentOnce } from 'react-firebase-hooks/firestore'
 
 import LoadingScreen from '@/app/components/LoadingScreen'
-import FinaleThemeActiveBottomPane from './theme-active/FinaleThemeActiveBottomPane'
-import FinaleThemeEndBottomPane from './theme-end/FinaleThemeEndBottomPane'
+import SpecialThemeActiveBottomPane from './theme-active/SpecialThemeActiveBottomPane'
+import SpecialThemeEndBottomPane from './theme-end/SpecialThemeEndBottomPane'
 
-export default function FinaleThemeBottomPane({ round }) {
+export default function SpecialThemeBottomPane({ round }) {
     const game = useGameContext()
 
     const currentThemeId = round.currentTheme
@@ -35,8 +35,8 @@ export default function FinaleThemeBottomPane({ round }) {
 
     switch (round.status) {
         case 'theme_active':
-            return <FinaleThemeActiveBottomPane theme={theme} themeRealtime={themeRealtime} />
+            return <SpecialThemeActiveBottomPane theme={theme} themeRealtime={themeRealtime} />
         case 'theme_end':
-            return <FinaleThemeEndBottomPane />
+            return <SpecialThemeEndBottomPane />
     }
 }

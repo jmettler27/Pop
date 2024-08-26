@@ -20,14 +20,14 @@ export const ROUND_TYPES = [...QUESTION_TYPES, 'mixed']
 
 export const ROUND_TYPE_TO_EMOJI = {
     'mixed': '🔄',
-    'finale': '🏆',
+    'special': '🏆',
     ...QUESTION_TYPE_TO_EMOJI
 }
 
 export const ROUND_TYPE_TO_TITLE = {
     'en': {
         'mixed': "Mixed",
-        'finale': "Special Round",
+        'special': "Special Round",
         'progressive_clues': "Progressive Clues",
         'image': "Images",
         'emoji': "Emojis",
@@ -41,7 +41,7 @@ export const ROUND_TYPE_TO_TITLE = {
     },
     'fr-FR': {
         'mixed': "Mixte",
-        'finale': "Manche spéciale",
+        'special': "Manche spéciale",
         'progressive_clues': "Devinettes",
         'image': "Images",
         'emoji': "Emojis",
@@ -91,7 +91,7 @@ export function RoundTypeIcon({ roundType, fontSize = 'small' }) {
     switch (roundType) {
         case 'mixed':
             return <RepeatIcon sx={{ fontSize }} />
-        case 'finale':
+        case 'special':
             return <EmojiEventsIcon sx={{ fontSize }} />
         default:
             return <QuestionTypeIcon questionType={roundType} fontSize={fontSize} />

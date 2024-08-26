@@ -25,7 +25,7 @@ export function RoundDescription({ round }) {
             return <MCQRoundDescription />
         case 'basic':
             return <BasicRoundDescription />
-        case 'finale':
+        case 'special':
             return <ThemesRoundDescription />
         case 'mixed':
             return <MixedRoundDescription />

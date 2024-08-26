@@ -4,11 +4,11 @@ import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/f
 import { doc } from 'firebase/firestore'
 import { useDocumentData, useDocumentOnce } from 'react-firebase-hooks/firestore'
 
-import FinaleThemeActiveMiddlePane from './theme-active/FinaleThemeActiveMiddlePane'
-import FinaleThemeEndMiddlePane from './theme-end/FinaleThemeEndMiddlePane'
+import SpecialThemeActiveMiddlePane from './theme-active/SpecialThemeActiveMiddlePane'
+import SpecialThemeEndMiddlePane from './theme-end/SpecialThemeEndMiddlePane'
 import LoadingScreen from '@/app/components/LoadingScreen'
 
-export default function FinaleThemeMiddlePane({ round }) {
+export default function SpecialThemeMiddlePane({ round }) {
     const game = useGameContext()
     const themeId = round.currentTheme
 
@@ -34,8 +34,8 @@ export default function FinaleThemeMiddlePane({ round }) {
 
     switch (round.status) {
         case 'theme_active':
-            return <FinaleThemeActiveMiddlePane theme={theme} themeRealtime={themeRealtime} />
+            return <SpecialThemeActiveMiddlePane theme={theme} themeRealtime={themeRealtime} />
         case 'theme_end':
-            return <FinaleThemeEndMiddlePane theme={theme} themeRealtime={themeRealtime} />
+            return <SpecialThemeEndMiddlePane theme={theme} themeRealtime={themeRealtime} />
     }
 }

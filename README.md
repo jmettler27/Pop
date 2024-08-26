@@ -225,7 +225,7 @@ https://github.com/jmettler27/Pop/assets/56764091/235e7e2a-3cdc-418c-8926-34319a
 
 https://github.com/jmettler27/Pop/assets/56764091/b5faffbb-1bdb-41cc-987b-c2b4237464e7
 
-### 🏆 The Final Round (`finale`)
+### 🏆 The Special Round (`special`)
 
 This round becomes accessible once all preceding rounds have ended. In this round, various **themes** are proposed. Each team selects a theme and responds to a series of questions associated with it, categorized into 5 **sections**.
 

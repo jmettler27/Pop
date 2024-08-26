@@ -27,7 +27,7 @@ export default function OngoingGames({ lang = DEFAULT_LOCALE }) {
             where('status', '==', 'question_active'),
             where('status', '==', 'question_end'),
             where('status', '==', 'round_end'),
-            where('status', '==', 'finale')
+            where('status', '==', 'special')
         )
     ))
     if (gamesError) {

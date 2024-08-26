@@ -6,10 +6,10 @@ import { doc, collection } from 'firebase/firestore'
 import { useDocumentData, useCollection, useCollectionOnce } from 'react-firebase-hooks/firestore'
 
 import { Grid, Box } from '@mui/material'
-import FinaleHomeThemeAvatar from './FinaleHomeThemeAvatar'
+import SpecialHomeThemeAvatar from './SpecialHomeThemeAvatar'
 import LoadingScreen from '@/app/components/LoadingScreen'
 
-export default function FinaleHomeThemes({ round }) {
+export default function SpecialHomeThemes({ round }) {
     const { id: gameId } = useParams()
     const myTeam = useTeamContext()
 
@@ -41,7 +41,7 @@ export default function FinaleHomeThemes({ round }) {
     const chooserTeamId = chooserOrder[chooserIdx]
     const isChooser = (chooserTeamId === myTeam)
 
-    const getThemeAvatar = (idx) => <FinaleHomeThemeAvatar themeRealtime={themeRealtimes[idx]} isChooser={isChooser} />
+    const getThemeAvatar = (idx) => <SpecialHomeThemeAvatar themeRealtime={themeRealtimes[idx]} isChooser={isChooser} />
 
     const renderThemeGrid = (gridLayout) => (
         <Grid container justifyContent='center'>

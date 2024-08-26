@@ -19,7 +19,7 @@ export const DEFAULT_THINKING_TIME_SECONDS = {
     'basic': BASIC_QUESTION_THINKING_TIME,
     'matching': MATCHING_THINKING_TIME,
     'odd_one_out': OOO_THINKING_TIME,
-    'finale': 20,
+    'special': 20,
     'enum': ENUM_MIN_THINKING_SECONDS
 }
 

@@ -4,7 +4,7 @@ import GameHomeBottomPane from './game/GameHomeBottomPane'
 import GameStartBottomPane from './game/GameStartBottomPane'
 import RoundBottomPane from './round/RoundBottomPane'
 import QuestionBottomPane from './question/QuestionBottomPane'
-import FinaleBottomPane from './finale/FinaleBottomPane'
+import SpecialBottomPane from './special/SpecialBottomPane'
 import GameEndBottomPane from './game/GameEndBottomPane'
 
 export default function BottomPane() {
@@ -25,8 +25,8 @@ export default function BottomPane() {
         case 'question_end':
             return <QuestionBottomPane />
 
-        case 'finale':
-            return <FinaleBottomPane />
+        case 'special':
+            return <SpecialBottomPane />
 
         case 'game_end':
             return <GameEndBottomPane />

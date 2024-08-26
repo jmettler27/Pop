@@ -6,16 +6,16 @@ import { useDocumentData, useCollection, useCollectionOnce, useDocument } from '
 
 import { Button, Tooltip, CircularProgress, Badge } from '@mui/material'
 
-import { startFinaleTheme } from '@/app/(game)/lib/question/finale'
+import { startSpecialTheme } from '@/app/(game)/lib/question/special'
 
 import { useAsyncAction } from '@/lib/utils/async'
 
-export default function FinaleHomeThemeAvatar({ themeRealtime, isChooser }) {
+export default function SpecialHomeThemeAvatar({ themeRealtime, isChooser }) {
     const game = useGameContext()
     const myRole = useRoleContext()
 
     const [handleSelectTheme, isStartingTheme] = useAsyncAction(async (themeId) => {
-        await startFinaleTheme(game.id, game.currentRound, themeId)
+        await startSpecialTheme(game.id, game.currentRound, themeId)
     })
 
     const themeId = themeRealtime.id

@@ -8,7 +8,7 @@ import LoadingScreen from '@/app/components/LoadingScreen'
 import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 
-export default function FinaleThemeEndMiddlePane({ theme, themeRealtime }) {
+export default function SpecialThemeEndMiddlePane({ theme, themeRealtime }) {
     return (
         <div className="h-full flex flex-col items-center justify-center">
             <div className="h-[10%] flex flex-col items-center justify-center">

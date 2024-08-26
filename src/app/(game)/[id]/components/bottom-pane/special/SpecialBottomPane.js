@@ -7,26 +7,26 @@ import { useDocumentData } from 'react-firebase-hooks/firestore';
 import LoadingScreen from '@/app/components/LoadingScreen';
 import GameChooserTeamAnnouncement from '@/app/(game)/[id]/components/GameChooserTeamAnnouncement';
 import GameChooserOrder from '@/app/(game)/[id]/components/GameChooserOrder';
-import FinaleThemeBottomPane from '@/app/(game)/[id]/components/bottom-pane/finale/theme/FinaleThemeBottomPane';
+import SpecialThemeBottomPane from '@/app/(game)/[id]/components/bottom-pane/special/theme/SpecialThemeBottomPane';
 
-export default function FinaleBottomPane() {
+export default function SpecialBottomPane() {
 
     return (
         <div className='flex flex-row h-full divide-x divide-solid'>
             {/* Left part: controller */}
             <div className='basis-3/4 flex flex-col items-center justify-center'>
-                <FinaleController />
+                <SpecialController />
             </div>
 
             {/* Right part: list of riddle players who buzzed and/or were canceled */}
             <div className='basis-1/4'>
-                <FinaleChooserOrder />
+                <SpecialChooserOrder />
             </div>
         </div>
     )
 }
 
-function FinaleController() {
+function SpecialController() {
     const game = useGameContext()
 
     const [round, roundLoading, roundError] = useDocumentData(doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound))
@@ -41,17 +41,17 @@ function FinaleController() {
     }
 
     switch (round.status) {
-        case 'finale_home':
+        case 'special_home':
             return <span className='2xl:text-4xl font-bold'><GameChooserTeamAnnouncement /></span>
         case 'theme_active':
         case 'theme_end':
-            return <FinaleThemeBottomPane round={round} />
+            return <SpecialThemeBottomPane round={round} />
     }
 
 }
 
 
-function FinaleChooserOrder() {
+function SpecialChooserOrder() {
     const game = useGameContext()
 
     const [gameStates, statesLoading, statesError] = useDocumentData(doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'states'))

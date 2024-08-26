@@ -21,20 +21,20 @@ import { topicToEmoji } from '@/lib/utils/topics'
 import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 
-export default function FinaleRoundProgress({ game, round }) {
+export default function SpecialRoundProgress({ game, round }) {
     switch (round.status) {
-        case 'finale_home':
-            return <FinaleRoundHomeProgress round={round} />
+        case 'special_home':
+            return <SpecialRoundHomeProgress round={round} />
         case 'theme_active':
         case 'theme_end':
-            return <FinaleRoundThemeProgress game={game} round={round} />
+            return <SpecialRoundThemeProgress game={game} round={round} />
     }
 }
 
 /**
- * Sidebar visible in the finale round home screen
+ * Sidebar visible in the special round home screen
  */
-function FinaleRoundHomeProgress({ round, lang = DEFAULT_LOCALE }) {
+function SpecialRoundHomeProgress({ round, lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
 
     const themeRealtimesCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds', round.id, 'themes')
@@ -106,9 +106,9 @@ function FinaleRoundHomeProgress({ round, lang = DEFAULT_LOCALE }) {
 }
 
 /**
- * Sidebar visible in a finale round theme
+ * Sidebar visible in a special round theme
  */
-function FinaleRoundThemeProgress({ round, lang = DEFAULT_LOCALE }) {
+function SpecialRoundThemeProgress({ round, lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
     const themeId = round.currentTheme
 

@@ -63,17 +63,17 @@ function GameHomeRounds() {
 
     const endedRounds = rounds.filter(round => round.dateEnd !== null).map(round => round.id)
 
-    const nonFinaleRounds = rounds.filter(round => round.type !== 'finale')
-    const activeNonFinaleRounds = nonFinaleRounds.filter(round => round.order === null).sort((a, b) => {
+    const nonSpecialRounds = rounds.filter(round => round.type !== 'special')
+    const activeNonSpecialRounds = nonSpecialRounds.filter(round => round.order === null).sort((a, b) => {
         if (a.title < b.title) return -1
         if (a.title > b.title) return 1
         return 0
     })
 
-    const endedNonFinaleRounds = nonFinaleRounds.filter(round => round.order !== null).sort((a, b) => a.order - b.order)
+    const endedNonSpecialRounds = nonSpecialRounds.filter(round => round.order !== null).sort((a, b) => a.order - b.order)
 
 
-    const finaleRound = rounds.find(round => round.type === 'finale')
+    const specialRound = rounds.find(round => round.type === 'special')
 
     const chooserTeamId = gameStates.chooserOrder[gameStates.chooserIdx]
     const isChooser = myTeam === chooserTeamId
@@ -88,43 +88,43 @@ function GameHomeRounds() {
         return true
     }
 
-    const showFinale = finaleRound && (myRole === 'organizer' || (endedRounds.length === nonFinaleRounds.length && !endedRounds.includes(finaleRound.id)))
+    const showSpecial = specialRound && (myRole === 'organizer' || (endedRounds.length === nonSpecialRounds.length && !endedRounds.includes(specialRound.id)))
 
     /* Rounds */
     return (
         <>
-            {activeNonFinaleRounds.length > 0 && (
+            {activeNonSpecialRounds.length > 0 && (
 
                 <List
                     className='rounded-lg w-1/3'
                     sx={{ bgcolor: 'background.paper' }}
                 >
-                    {activeNonFinaleRounds.map((round, idx) => (
+                    {activeNonSpecialRounds.map((round, idx) => (
                         <div key={round.id}>
                             <GameHomeRoundItem
                                 round={round}
                                 isDisabled={isHandling || roundIsDisabled(round.id)}
                                 onSelectRound={() => handleSelect(round.id)}
                             />
-                            {(idx < activeNonFinaleRounds.length - 1) && <Divider variant='inset' component='li' />}
+                            {(idx < activeNonSpecialRounds.length - 1) && <Divider variant='inset' component='li' />}
                         </div>
                     ))}
                 </List>
             )}
 
-            {endedNonFinaleRounds.length > 0 && (
+            {endedNonSpecialRounds.length > 0 && (
                 <List
                     className='rounded-lg w-1/3'
                     sx={{ bgcolor: 'background.paper' }}
                 >
-                    {endedNonFinaleRounds.map((round, idx) => (
+                    {endedNonSpecialRounds.map((round, idx) => (
                         <div key={round.id}>
                             <GameHomeRoundItem
                                 round={round}
                                 isDisabled={isHandling || roundIsDisabled(round.id)}
                                 onSelectRound={() => handleSelect(round.id)}
                             />
-                            {(idx < endedNonFinaleRounds.length - 1) && <Divider variant='inset' component='li' />}
+                            {(idx < endedNonSpecialRounds.length - 1) && <Divider variant='inset' component='li' />}
                         </div>
                     ))}
                 </List>
@@ -134,11 +134,11 @@ function GameHomeRounds() {
                 className='rounded-full w-1/8'
                 sx={{ bgcolor: 'background.paper' }}
             >
-                {showFinale && (
-                    <GameHomeRoundItem key={finaleRound.id}
-                        round={finaleRound}
+                {showSpecial && (
+                    <GameHomeRoundItem key={specialRound.id}
+                        round={specialRound}
                         isDisabled={isHandling || myRole !== 'organizer'}
-                        onSelectRound={() => handleSelect(finaleRound.id)}
+                        onSelectRound={() => handleSelect(specialRound.id)}
                     />
                 )}
             </List>

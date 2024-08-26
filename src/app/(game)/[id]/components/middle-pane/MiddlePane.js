@@ -5,7 +5,7 @@ import GameHomeMiddlePane from './game/GameHomeMiddlePane'
 import GameEndMiddlePane from './game/GameEndMiddlePane'
 import RoundMiddlePane from './round/RoundMiddlePane'
 import QuestionMiddlePane from './question/QuestionMiddlePane'
-import FinaleMiddlePane from './finale/FinaleMiddlePane'
+import SpecialMiddlePane from './special/SpecialMiddlePane'
 import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
 export default function MiddlePane({ lang = DEFAULT_LOCALE }) {
@@ -26,8 +26,8 @@ export default function MiddlePane({ lang = DEFAULT_LOCALE }) {
         case 'question_end':
             return <QuestionMiddlePane />
 
-        case 'finale':
-            return <FinaleMiddlePane />
+        case 'special':
+            return <SpecialMiddlePane />
 
         case 'game_end':
             return <GameEndMiddlePane />

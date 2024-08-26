@@ -47,7 +47,7 @@ export default function RoundEndBody({ currentRound, lang = DEFAULT_LOCALE }) {
                         <RoundScoreboard roundScores={roundScores} teams={teams} />
                     </div>
                     <div className='flex flex-col h-full w-1/2 items-center justify-center'>
-                        {(currentRound.type !== 'finale') && <RoundScoresChart round={currentRound} roundScores={roundScores} teams={teams} />}
+                        {(currentRound.type !== 'special') && <RoundScoresChart round={currentRound} roundScores={roundScores} teams={teams} />}
                     </div>
                 </div>
             </div>

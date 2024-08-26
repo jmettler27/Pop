@@ -28,7 +28,7 @@ export default function TeamScore({ teamId }) {
         case 'game_start':
         case 'game_home':
         case 'game_end':
-        case 'finale':
+        case 'special':
             return <TeamGameScore teamId={teamId} />
         default:
             return <TeamRoundScore teamId={teamId} roundId={game.currentRound} />

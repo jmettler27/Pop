@@ -1,23 +1,23 @@
-import FinaleHomeThemes from './FinaleHomeThemes'
+import SpecialHomeThemes from './SpecialHomeThemes'
 import { RoundTypeIcon, ROUND_HEADER_TEXT } from '@/lib/utils/round'
 import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 
-export default function FinaleHomeMiddlePane({ round }) {
+export default function SpecialHomeMiddlePane({ round }) {
 
     return (
         <div className='flex flex-col h-full w-full items-center justify-center'>
             <div className='flex h-[10%] w-full items-center justify-center'>
-                <FinaleRoundHeader round={round} />
+                <SpecialRoundHeader round={round} />
             </div>
 
             <div className='flex h-[90%] w-full items-center justify-center'>
-                <FinaleHomeThemes round={round} />
+                <SpecialHomeThemes round={round} />
             </div>
         </div>
     )
 }
 
-function FinaleRoundHeader({ round, lang = DEFAULT_LOCALE }) {
+function SpecialRoundHeader({ round, lang = DEFAULT_LOCALE }) {
     return (
         <div className='flex flex-row items-center justify-center space-x-1'>
             <RoundTypeIcon roundType={round.type} fontSize={50} />

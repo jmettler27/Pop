@@ -6,10 +6,10 @@ import { useDocument } from 'react-firebase-hooks/firestore'
 
 import LoadingScreen from '@/app/components/LoadingScreen'
 
-import FinaleHomeMiddlePane from './home/FinaleHomeMiddlePane'
-import FinaleThemeMiddlePane from './theme/FinaleThemeMiddlePane'
+import SpecialHomeMiddlePane from './home/SpecialHomeMiddlePane'
+import SpecialThemeMiddlePane from './theme/SpecialThemeMiddlePane'
 
-export default function FinaleMiddlePane({ }) {
+export default function SpecialMiddlePane({ }) {
     const game = useGameContext()
 
     const [roundDoc, roundLoading, roundError] = useDocument(doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound))
@@ -26,10 +26,10 @@ export default function FinaleMiddlePane({ }) {
     const round = { id: roundDoc.id, ...roundDoc.data() }
 
     switch (round.status) {
-        case 'finale_home':
-            return <FinaleHomeMiddlePane round={round} />
+        case 'special_home':
+            return <SpecialHomeMiddlePane round={round} />
         case 'theme_active':
         case 'theme_end':
-            return <FinaleThemeMiddlePane round={round} />
+            return <SpecialThemeMiddlePane round={round} />
     }
 }

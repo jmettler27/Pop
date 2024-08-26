@@ -4,15 +4,15 @@ import { useGameContext } from '@/app/(game)/contexts'
 import { Button } from '@mui/material'
 
 import HomeIcon from '@mui/icons-material/Home';
-import { goBackFinaleHome } from '@/app/(game)/lib/question/finale';
+import { goBackSpecialHome } from '@/app/(game)/lib/question/special';
 import { useAsyncAction } from '@/lib/utils/async';
 
 
-export default function GoFinaleHomeButton() {
+export default function GoSpecialHomeButton() {
     const game = useGameContext()
 
     const [handleContinueClick, isHandling] = useAsyncAction(async () => {
-        await goBackFinaleHome(game.id, game.currentRound)
+        await goBackSpecialHome(game.id, game.currentRound)
     })
 
     return (

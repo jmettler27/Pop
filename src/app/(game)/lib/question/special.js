@@ -23,7 +23,7 @@ import { addSoundEffectTransaction } from '@/app/(game)/lib/sounds';
 import { getNextCyclicIndex } from '@/lib/utils/arrays';
 
 // WRITE
-async function updateFinaleThemeRealtime(gameId, roundId, themeId, fieldsToUpdate) {
+async function updateSpecialThemeRealtime(gameId, roundId, themeId, fieldsToUpdate) {
     const themeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'themes', themeId)
     const updateObject = { ...fieldsToUpdate }
 
@@ -32,7 +32,7 @@ async function updateFinaleThemeRealtime(gameId, roundId, themeId, fieldsToUpdat
 }
 
 // WRITE
-async function updateFinaleThemeRealtimeSection(gameId, roundId, themeId, sectionId, fieldsToUpdate) {
+async function updateSpecialThemeRealtimeSection(gameId, roundId, themeId, sectionId, fieldsToUpdate) {
     const sectionRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'themes', themeId, 'sections', sectionId)
     const updateObject = { ...fieldsToUpdate }
 
@@ -42,15 +42,15 @@ async function updateFinaleThemeRealtimeSection(gameId, roundId, themeId, sectio
 
 /* ==================================================================================================== */
 // READ
-async function getFinaleSectionData(themeId, sectionId) {
+async function getSpecialSectionData(themeId, sectionId) {
     return getDocData('questions', themeId, 'sections', sectionId);
 }
 
 /* ==================================================================================================== */
 /**
- * finale_home -> theme_active (question_active)
+ * special_home -> theme_active (question_active)
  */
-export async function startFinaleTheme(gameId, roundId, nextThemeId) {
+export async function startSpecialTheme(gameId, roundId, nextThemeId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -63,17 +63,17 @@ export async function startFinaleTheme(gameId, roundId, nextThemeId) {
 
     try {
         await runTransaction(firestore, transaction =>
-            startFinaleThemeTransaction(transaction, gameId, roundId, nextThemeId)
+            startSpecialThemeTransaction(transaction, gameId, roundId, nextThemeId)
         );
-        console.log("Finale theme successfully started.");
+        console.log("Special theme successfully started.");
     }
     catch (error) {
-        console.error("There was an error starting the finale theme:", error);
+        console.error("There was an error starting the special theme:", error);
         throw error;
     }
 }
 
-const startFinaleThemeTransaction = async (
+const startSpecialThemeTransaction = async (
     transaction,
     gameId,
     roundId,
@@ -84,7 +84,7 @@ const startFinaleThemeTransaction = async (
     const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
     const nextThemeRef = doc(QUESTIONS_COLLECTION_REF, nextThemeId)
 
-    const [finaleRoundData, gameStatesData, nextThemeData] = await Promise.all([
+    const [specialRoundData, gameStatesData, nextThemeData] = await Promise.all([
         getDocDataTransaction(transaction, roundRef),
         getDocDataTransaction(transaction, gameStatesRef),
         getDocDataTransaction(transaction, nextThemeRef)
@@ -94,7 +94,7 @@ const startFinaleThemeTransaction = async (
     const chooserTeamId = chooserOrder[chooserIdx]
 
     /* Fetch the order of the theme that just ended */
-    const nextThemeOrder = (finaleRoundData.currentThemeOrder || 0) + 1
+    const nextThemeOrder = (specialRoundData.currentThemeOrder || 0) + 1
 
     const nextThemeRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'themes', nextThemeId)
     transaction.update(nextThemeRealtimeRef, {
@@ -105,7 +105,7 @@ const startFinaleThemeTransaction = async (
     })
 
     /* Go to first section and first question of it */
-    // await resetFinaleThemeStates(gameId, roundId, nextThemeId)
+    // await resetSpecialThemeStates(gameId, roundId, nextThemeId)
     const firstSectionId = nextThemeData.details.sections[0]
     const firstSectionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'themes', nextThemeId, 'sections', firstSectionId)
     transaction.update(firstSectionRealtimeRef, {
@@ -135,7 +135,7 @@ const startFinaleThemeTransaction = async (
  * 
  * TODO: make status in a different array and update only this array
  */
-export async function handleFinalePlayerAnswer(gameId, roundId, themeId, invalidate, organizerId) {
+export async function handleSpecialPlayerAnswer(gameId, roundId, themeId, invalidate, organizerId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -154,17 +154,17 @@ export async function handleFinalePlayerAnswer(gameId, roundId, themeId, invalid
 
     try {
         await runTransaction(firestore, transaction =>
-            handleFinalePlayerAnswerTransaction(transaction, gameId, roundId, themeId, invalidate, organizerId)
+            handleSpecialPlayerAnswerTransaction(transaction, gameId, roundId, themeId, invalidate, organizerId)
         );
-        console.log("Finale player answer successfully handled.");
+        console.log("Special player answer successfully handled.");
     }
     catch (error) {
-        console.error("There was an error handling the finale player answer:", error);
+        console.error("There was an error handling the special player answer:", error);
         throw error;
     }
 }
 
-const handleFinalePlayerAnswerTransaction = async (
+const handleSpecialPlayerAnswerTransaction = async (
     transaction,
     gameId,
     roundId,
@@ -228,7 +228,7 @@ const handleFinalePlayerAnswerTransaction = async (
 }
 
 /* ==================================================================================================== */
-export async function handleFinaleQuestionEndOrganizerContinue(gameId, roundId, themeId, sectionId, isLastQuestionInSection, isLastSectionInTheme, organizerId) {
+export async function handleSpecialQuestionEndOrganizerContinue(gameId, roundId, themeId, sectionId, isLastQuestionInSection, isLastSectionInTheme, organizerId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -247,17 +247,17 @@ export async function handleFinaleQuestionEndOrganizerContinue(gameId, roundId, 
 
     try {
         await runTransaction(firestore, transaction =>
-            handleFinaleQuestionEndOrganizerContinueTransaction(transaction, gameId, roundId, themeId, sectionId, isLastQuestionInSection, isLastSectionInTheme, organizerId)
+            handleSpecialQuestionEndOrganizerContinueTransaction(transaction, gameId, roundId, themeId, sectionId, isLastQuestionInSection, isLastSectionInTheme, organizerId)
         );
-        console.log("Finale question_end successfully handled.");
+        console.log("Special question_end successfully handled.");
     }
     catch (error) {
-        console.error("There was an error handling the finale question_end:", error);
+        console.error("There was an error handling the special question_end:", error);
         throw error;
     }
 }
 
-const handleFinaleQuestionEndOrganizerContinueTransaction = async (
+const handleSpecialQuestionEndOrganizerContinueTransaction = async (
     transaction,
     gameId,
     roundId,
@@ -293,7 +293,7 @@ const handleFinaleQuestionEndOrganizerContinueTransaction = async (
     /* Last question in section, not the last section in the theme */
     if (!isLastSectionInTheme) {
         // Switch next section
-        await switchFinaleThemeNextSectionTransaction(transaction, gameId, roundId, themeId)
+        await switchSpecialThemeNextSectionTransaction(transaction, gameId, roundId, themeId)
 
         for (const playerDoc of choosersSnapshot.docs) {
             transaction.update(playerDoc.ref, {
@@ -305,7 +305,7 @@ const handleFinaleQuestionEndOrganizerContinueTransaction = async (
 
     /* Last question in section, Last section in the theme */
     // End the theme
-    await endFinaleThemeTransaction(gameId, roundId, themeId, transaction)
+    await endSpecialThemeTransaction(gameId, roundId, themeId, transaction)
     await addSoundEffectTransaction(transaction, gameId, 'level-passed')
 }
 
@@ -313,7 +313,7 @@ const handleFinaleQuestionEndOrganizerContinueTransaction = async (
 /**
  * theme_active (question_end) -> theme_active (question_active)
  */
-export async function switchFinaleThemeNextSection(gameId, roundId, themeId) {
+export async function switchSpecialThemeNextSection(gameId, roundId, themeId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -326,17 +326,17 @@ export async function switchFinaleThemeNextSection(gameId, roundId, themeId) {
 
     try {
         await runTransaction(firestore, transaction =>
-            switchFinaleThemeNextSectionTransaction(transaction, gameId, roundId, themeId)
+            switchSpecialThemeNextSectionTransaction(transaction, gameId, roundId, themeId)
         );
-        console.log("Finale theme next section successfully switched.");
+        console.log("Special theme next section successfully switched.");
     }
     catch (error) {
-        console.error("There was an error switching to the next section of the finale theme:", error);
+        console.error("There was an error switching to the next section of the special theme:", error);
         throw error;
     }
 }
 
-const switchFinaleThemeNextSectionTransaction = async (
+const switchSpecialThemeNextSectionTransaction = async (
     transaction,
     gameId,
     roundId,
@@ -369,7 +369,7 @@ const switchFinaleThemeNextSectionTransaction = async (
 /**
  * theme_active -> theme_end
  */
-export async function endFinaleTheme(gameId, roundId, themeId) {
+export async function endSpecialTheme(gameId, roundId, themeId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -382,17 +382,17 @@ export async function endFinaleTheme(gameId, roundId, themeId) {
 
     try {
         await runTransaction(firestore, transaction =>
-            endFinaleThemeTransaction(gameId, roundId, themeId, transaction)
+            endSpecialThemeTransaction(gameId, roundId, themeId, transaction)
         );
-        console.log("Finale theme successfully ended.");
+        console.log("Special theme successfully ended.");
     }
     catch (error) {
-        console.error("There was an error ending the finale theme:", error);
+        console.error("There was an error ending the special theme:", error);
         throw error;
     }
 }
 
-const endFinaleThemeTransaction = async (
+const endSpecialThemeTransaction = async (
     gameId,
     roundId,
     themeId,
@@ -450,36 +450,36 @@ const endFinaleThemeTransaction = async (
 
 /* ==================================================================================================== */
 /**
- * theme_end -> finale_home
+ * theme_end -> special_home
  */
-export async function goBackFinaleHome(gameId, roundId) {
+export async function goBackSpecialHome(gameId, roundId) {
     updateRoundFields(gameId, roundId, {
-        status: 'finale_home',
+        status: 'special_home',
     })
 }
 
 
 /* ============================================================================================== */
-export async function resetFinaleRound(gameId, roundId) {
+export async function resetSpecialRound(gameId, roundId) {
     await resetRoundInfo(gameId, roundId)
 
     await initRoundScores(gameId, roundId)
 
     await updateRoundFields(gameId, roundId, {
         currentTheme: null,
-        status: 'finale_home'
+        status: 'special_home'
     })
 
     const themeRealtimesCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'themes')
     const themeRealtimesSnapshot = await getDocs(query(themeRealtimesCollectionRef))
     for (const themeRealtimeDoc of themeRealtimesSnapshot.docs) {
-        await resetFinaleTheme(gameId, roundId, themeRealtimeDoc.id)
+        await resetSpecialTheme(gameId, roundId, themeRealtimeDoc.id)
     }
 }
 
 
-async function resetFinaleTheme(gameId, roundId, themeId) {
-    await updateFinaleThemeRealtime(gameId, roundId, themeId, {
+async function resetSpecialTheme(gameId, roundId, themeId) {
+    await updateSpecialThemeRealtime(gameId, roundId, themeId, {
         dateEnd: null,
         dateStart: null,
         order: null,

@@ -10,26 +10,26 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CancelIcon from '@mui/icons-material/Cancel'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
-import { handleFinalePlayerAnswer, handleFinaleQuestionEndOrganizerContinue } from '@/app/(game)/lib/question/finale'
+import { handleSpecialPlayerAnswer, handleSpecialQuestionEndOrganizerContinue } from '@/app/(game)/lib/question/special'
 import { GameChooserHelperText } from '@/app/(game)/[id]/components/GameChooserTeamAnnouncement'
 
 import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 import { useAsyncAction } from '@/lib/utils/async'
 import { INVALIDATE_ANSWER, VALIDATE_ANSWER } from '@/lib/utils/question/question'
 
-export default function FinaleThemeActiveBottomPane({ theme, themeRealtime }) {
+export default function SpecialThemeActiveBottomPane({ theme, themeRealtime }) {
     const myRole = useRoleContext()
 
     switch (myRole) {
         case 'organizer':
-            return <FinaleThemeActiveOrganizerBottomPane theme={theme} themeRealtime={themeRealtime} />
+            return <SpecialThemeActiveOrganizerBottomPane theme={theme} themeRealtime={themeRealtime} />
         default:
             return <span className='2xl:text-4xl font-bold'><GameChooserHelperText chooserTeamId={themeRealtime.teamId} /></span>
     }
 
 }
 
-function FinaleThemeActiveOrganizerBottomPane({ theme, themeRealtime }) {
+function SpecialThemeActiveOrganizerBottomPane({ theme, themeRealtime }) {
     const game = useGameContext()
 
     const { currentSectionIdx } = themeRealtime
@@ -51,18 +51,18 @@ function FinaleThemeActiveOrganizerBottomPane({ theme, themeRealtime }) {
 
     switch (sectionRealtime.status) {
         case 'question_active':
-            return <FinaleQuestionActiveOrganizerBottomPane themeRealtime={themeRealtime} />
+            return <SpecialQuestionActiveOrganizerBottomPane themeRealtime={themeRealtime} />
         case 'question_end':
-            return <FinaleQuestionEndOrganizerBottomPane theme={theme} themeRealtime={themeRealtime} sectionRealtime={sectionRealtime} />
+            return <SpecialQuestionEndOrganizerBottomPane theme={theme} themeRealtime={themeRealtime} sectionRealtime={sectionRealtime} />
     }
 }
 
-function FinaleQuestionActiveOrganizerBottomPane({ themeRealtime, lang = DEFAULT_LOCALE }) {
+function SpecialQuestionActiveOrganizerBottomPane({ themeRealtime, lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
     const user = useUserContext()
 
     const [handlePlayerAnswer, isHandling] = useAsyncAction(async (invalidate) => {
-        await handleFinalePlayerAnswer(game.id, game.currentRound, themeRealtime.id, invalidate, user.id)
+        await handleSpecialPlayerAnswer(game.id, game.currentRound, themeRealtime.id, invalidate, user.id)
     })
 
     return (
@@ -96,12 +96,12 @@ function FinaleQuestionActiveOrganizerBottomPane({ themeRealtime, lang = DEFAULT
 }
 
 
-function FinaleQuestionEndOrganizerBottomPane({ theme, themeRealtime, sectionRealtime }) {
+function SpecialQuestionEndOrganizerBottomPane({ theme, themeRealtime, sectionRealtime }) {
     const game = useGameContext()
     const user = useUserContext()
 
     const [handleContinue, isHandling] = useAsyncAction(async () => {
-        await handleFinaleQuestionEndOrganizerContinue(game.id, game.currentRound, theme.id, sectionRealtime.id, isLastQuestionInSection, isLastSectionInTheme, user.id)
+        await handleSpecialQuestionEndOrganizerContinue(game.id, game.currentRound, theme.id, sectionRealtime.id, isLastQuestionInSection, isLastSectionInTheme, user.id)
     })
 
     const isLastQuestionInSection = sectionRealtime.currentQuestionIdx === sectionRealtime.question_status.length - 1

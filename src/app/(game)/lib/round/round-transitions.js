@@ -104,7 +104,7 @@ const selectRoundTransaction = async (
     transaction.update(roundRef, {
         dateStart: serverTimestamp(),
         order: newOrder,
-        ...(roundData.type !== 'finale' ? { currentQuestionIdx: 0 } : {})
+        ...(roundData.type !== 'special' ? { currentQuestionIdx: 0 } : {})
     })
 
     // If the round requires an order of chooser teams (e.g. OOO, MCQ) and it is the first round, find a random order for the chooser teams
@@ -297,8 +297,8 @@ const startRoundTransaction = async (
     const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
     const roundData = await getDocDataTransaction(transaction, roundRef)
 
-    await (roundData.type === 'finale' ?
-        startFinaleRoundTransaction(transaction, gameId, roundId) :
+    await (roundData.type === 'special' ?
+        startSpecialRoundTransaction(transaction, gameId, roundId) :
         switchRoundQuestionTransaction(transaction, gameId, roundId, 0)
     )
 }
@@ -519,11 +519,11 @@ function calculateRankDifferences(prevRankings, newRankings) {
 
 /* ==================================================================================================== */
 /**
- * round_start -> FINALE (finale_home)
+ * round_start -> special_home
  * 
  */
 // BATCHED WRITE
-export async function startFinaleRound(gameId, roundId) {
+export async function startSpecialRound(gameId, roundId) {
     if (!gameId) {
         throw new Error("No game ID has been provided!");
     }
@@ -533,29 +533,29 @@ export async function startFinaleRound(gameId, roundId) {
 
     try {
         await runTransaction(firestore, async (transaction) =>
-            startFinaleRoundTransaction(transaction, gameId, roundId)
+            startSpecialRoundTransaction(transaction, gameId, roundId)
         )
-        console.log("Finale round successfully started.");
+        console.log("Special round successfully started.");
     }
 
     catch (error) {
-        console.error("There was an error starting the finale round:", error);
+        console.error("There was an error starting the special round:", error);
         throw error;
     }
 }
 
-const startFinaleRoundTransaction = async (
+const startSpecialRoundTransaction = async (
     transaction,
     gameId,
     roundId,
 ) => {
 
-    const finaleRoundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-    transaction.update(finaleRoundRef, {
+    const specialRoundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
+    transaction.update(specialRoundRef, {
         dateStart: serverTimestamp(),
-        status: 'finale_home'
+        status: 'special_home'
     })
 
-    await updateGameStatusTransaction(transaction, gameId, 'finale_home')
+    await updateGameStatusTransaction(transaction, gameId, 'special_home')
     await addSoundEffectTransaction(transaction, gameId, 'ui-confirmation-alert-b2')
 }

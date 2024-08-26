@@ -13,7 +13,7 @@ import {
 import { resetQuestion } from '@/app/(game)/lib/question';
 import { getInitTeamScores } from '@/app/(game)/lib/scores';
 import { getDocData } from '@/app/(game)/lib/utils';
-import { resetFinaleRound } from '@/app/(game)/lib/question/finale';
+import { resetSpecialRound } from '@/app/(game)/lib/question/special';
 import { firestore } from '@/lib/firebase/firebase';
 
 export async function getRoundData(gameId, roundId) {
@@ -53,8 +53,8 @@ export const resetAllRoundsTransaction = async (
     const roundsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds')
     const roundsSnapshot = await getDocs(query(roundsCollectionRef))
     for (const roundDoc of roundsSnapshot.docs) {
-        if (roundDoc.data().type === 'finale') {
-            await resetFinaleRound(gameId, roundDoc.id)
+        if (roundDoc.data().type === 'special') {
+            await resetSpecialRound(gameId, roundDoc.id)
             continue;
         }
         await resetRoundTransaction(transaction, gameId, roundDoc.id)

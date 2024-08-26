@@ -40,8 +40,8 @@ function RoundGeneralInfo({ round }) {
     const numQuestions = round.questions.length
     return (
         <div className='flex flex-col items-center justify-start p-2'>
-            {round.type === 'finale' ?
-                <h1 className='2xl:text-3xl mb-4 font-bold'>{<FinaleNumThemes round={round} />} thèmes</h1> :
+            {round.type === 'special' ?
+                <h1 className='2xl:text-3xl mb-4 font-bold'>{<SpecialNumThemes round={round} />} thèmes</h1> :
                 <h1 className='2xl:text-3xl mb-4 font-bold'>{numberToKeycapEmoji(numQuestions)} question{numQuestions > 1 && 's'}</h1>
             }
             <RoundDescription round={round} />
@@ -49,7 +49,7 @@ function RoundGeneralInfo({ round }) {
     )
 }
 
-function FinaleNumThemes({ round }) {
+function SpecialNumThemes({ round }) {
     const game = useGameContext()
     const [themes, themesLoading, themesError] = useCollection(collection(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'themes'))
     return <span>{(!themesError && !themesLoading && themes) ? numberToKeycapEmoji(themes.docs.length) : '???'}</span>
