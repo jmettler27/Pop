@@ -235,8 +235,6 @@ The team with the highest score at the end of this round emerges as the winner o
 
 #### Quick demo (Player POV)
 
-Uploading demo-theme.mp4…
-
 ### Initiating a Round (`round_start`)
 
 Upon selecting a round, an introductory page outlines the round's principles, rules, question-specific rewards, and the concluding point scale.
