@@ -216,6 +216,15 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
             />
 
             <MyTextInput
+                label={QUOTE_AUTHOR[lang]}
+                name='author'
+                type='text'
+                placeholder={QUOTE_AUTHOR_EXAMPLE[lang]}
+                validationSchema={validationSchema}
+                maxLength={QUOTE_AUTHOR_MAX_LENGTH}
+            />
+
+            <MyTextInput
                 label={QUOTE_SOURCE[lang]}
                 name='source'
                 type='text'
@@ -224,14 +233,6 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
                 maxLength={QUOTE_SOURCE_MAX_LENGTH}
             />
 
-            <MyTextInput
-                label={QUOTE_AUTHOR[lang]}
-                name='author'
-                type='text'
-                placeholder={QUOTE_AUTHOR_EXAMPLE[lang]}
-                validationSchema={validationSchema}
-                maxLength={QUOTE_AUTHOR_MAX_LENGTH}
-            />
         </WizardStep>
     )
 

@@ -164,6 +164,15 @@ export function SubmitBlindtestQuestionForm({ userId, lang, ...props }) {
                 />
 
                 <MyTextInput
+                    label={BLINDTEST_ANSWER_AUTHOR[lang]}
+                    name='answer_author'
+                    type='text'
+                    placeholder={BLINDTEST_ANSWER_AUTHOR_EXAMPLE}
+                    validationSchema={validationSchema}
+                    maxLength={BLINDTEST_ANSWER_AUTHOR_MAX_LENGTH}
+                />
+
+                <MyTextInput
                     label={BLINDTEST_ANSWER_SOURCE[lang]}
                     name='answer_source'
                     type='text'
@@ -172,14 +181,6 @@ export function SubmitBlindtestQuestionForm({ userId, lang, ...props }) {
                     maxLength={BLINDTEST_ANSWER_SOURCE_MAX_LENGTH}
                 />
 
-                <MyTextInput
-                    label={BLINDTEST_ANSWER_AUTHOR[lang]}
-                    name='answer_author'
-                    type='text'
-                    placeholder={BLINDTEST_ANSWER_AUTHOR_EXAMPLE}
-                    validationSchema={validationSchema}
-                    maxLength={BLINDTEST_ANSWER_AUTHOR_MAX_LENGTH}
-                />
 
                 <UploadAudio fileRef={audioFileRef} name='audioFiles' validationSchema={validationSchema} lang={lang} />
 
