@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useUserContext } from '@/app/contexts'
 import { useGameContext, useRoleContext, useTeamContext } from '@/app/(game)/contexts'
 
@@ -9,6 +10,8 @@ import LoadingScreen from '@/app/components/LoadingScreen'
 
 import { MCQ_CHOICES } from '@/lib/utils/question/mcq'
 import { selectMCQChoice } from '@/app/(game)/lib/question/mcq'
+import { generateShuffledIndices } from '@/lib/utils/question/odd_one_out'
+
 
 import { Avatar, Badge, Button, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 import { clsx } from 'clsx'
@@ -19,7 +22,14 @@ import mcq_wrong from '../../../../../../../../public/mcq-wrong.png';
 import NoteButton from '@/app/(game)/[id]/components/NoteButton'
 
 export default function MCQMainContent({ question }) {
-    const { title, note } = question.details
+    const { title, note, choices } = question.details
+
+    // Randomize the order of the choices on the client side
+    const randomMapping = useMemo(() =>
+        generateShuffledIndices(choices.length),
+        [choices.length]
+    )
+
     return (
         <div className='h-full w-full flex flex-col items-center justify-center'>
             <div className='h-[25%] w-full flex flex-row items-center justify-center space-x-1'>
@@ -27,7 +37,7 @@ export default function MCQMainContent({ question }) {
                 {note && <NoteButton note={note} />}
             </div>
             <div className='h-[75%] w-full flex items-center justify-center'>
-                <MCQMainContentQuestion question={question} />
+                <MCQMainContentQuestion question={question} randomization={randomMapping} />
             </div>
         </div>
     )
@@ -57,7 +67,7 @@ function MCQAnswerImage({ correct }) {
     return <></>
 }
 
-function MCQMainContentQuestion({ question }) {
+function MCQMainContentQuestion({ question, randomization }) {
     const game = useGameContext()
 
     const questionRealtimeRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
@@ -77,8 +87,8 @@ function MCQMainContentQuestion({ question }) {
             <div className='flex flex-col h-full w-1/4 items-center justify-center'>
                 <MCQAnswerImage correct={realtime.correct} />
             </div>
-            {game.status === 'question_end' && <MCQAnswerChoices question={question} realtime={realtime} />}
-            {game.status === 'question_active' && <MCQChoices question={question} realtime={realtime} />}
+            {game.status === 'question_end' && <MCQAnswerChoices question={question} realtime={realtime} randomization={randomization} />}
+            {game.status === 'question_active' && <MCQChoices question={question} realtime={realtime} randomization={randomization} />}
             <div className='flex flex-col h-full w-1/4 items-center justify-center'>
                 <MCQAnswerImage correct={realtime.correct} />
             </div>
@@ -102,7 +112,7 @@ const choiceIsDisabled = (choiceIdx, myRole, isChooser, subtype, option, duoIdx,
 import { useAsyncAction } from '@/lib/utils/async'
 
 
-function MCQChoices({ question, realtime }) {
+function MCQChoices({ question, realtime, randomization }) {
     const game = useGameContext()
     const myTeam = useTeamContext()
     const myRole = useRoleContext()
@@ -124,22 +134,22 @@ function MCQChoices({ question, realtime }) {
 
     return (
         <List className='rounded-lg max-h-full w-1/2 overflow-y-auto mb-3 space-y-3'>
-            {choices.map((choice, idx) => (
+            {randomization.map((origIdx, idx) => (
                 // If the question is a duo question, only show the duoIdx and answerIdx
                 (subtype === 'immediate' ||
-                    (subtype === 'conditional' && (realtime.option !== 'duo' || (idx === answerIdx || idx === duoIdx)))
+                    (subtype === 'conditional' && (realtime.option !== 'duo' || (origIdx === answerIdx || origIdx === duoIdx)))
                 ) && (
                     <ListItemButton key={idx}
                         divider={idx !== choices.length - 1}
-                        disabled={isSubmitting || choiceIsDisabled(idx, myRole, isChooser, subtype, realtime.option, duoIdx, answerIdx)}
+                        disabled={isSubmitting || choiceIsDisabled(origIdx, myRole, isChooser, subtype, realtime.option, duoIdx, answerIdx)}
                         sx={{
                             '&.Mui-disabled': { opacity: 1 },
                         }}
                         className='border-4 border-solid rounded-lg border-blue-500 hover:text-blue-400'
-                        onClick={() => handleSelectChoice(idx)}
+                        onClick={() => handleSelectChoice(origIdx)}
                     >
                         <ListItemText
-                            primary={`${MCQ_CHOICES[idx]}. ${choice}`}
+                            primary={`${MCQ_CHOICES[idx]}. ${question.details.choices[origIdx]}`}
                             primaryTypographyProps={{
                                 className: '2xl:text-2xl'
                             }}
@@ -155,7 +165,7 @@ import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 import { mcqOptionToEmoji } from '@/lib/utils/question/mcq'
 
-function MCQAnswerChoices({ question, realtime }) {
+function MCQAnswerChoices({ question, realtime, randomization }) {
     const isCorrectAnswer = idx => ((realtime.option === 'hide' && realtime.correct && idx === question.details.answerIdx) || idx === question.details.answerIdx);
     const isIncorrectChoice = idx => (realtime.option === 'duo' || realtime.option === 'square') && idx === realtime.choiceIdx && idx !== question.details.answerIdx;
     const isNeutralChoice = idx => ((realtime.option === 'hide' && realtime.correct && idx !== question.details.answerIdx) || (idx !== realtime.choiceIdx && idx !== question.details.answerIdx));
@@ -204,18 +214,18 @@ function MCQAnswerChoices({ question, realtime }) {
 
     return (
         <List className='rounded-lg max-h-full w-1/2 overflow-y-auto mb-3 space-y-3'>
-            {question.details.choices.map((choice, idx) => (
+            {randomization.map((origIdx, idx) => (
                 <ListItemButton key={idx}
                     divider={idx !== question.details.choices.length - 1}
                     disabled={true}
                     sx={{ '&.Mui-disabled': { opacity: 1 } }}
-                    className={clsx('border-4 border-solid rounded-lg', getBorderColor(idx))}
+                    className={clsx('border-4 border-solid rounded-lg', getBorderColor(origIdx))}
                 >
                     <ListItemText
-                        primary={`${MCQ_CHOICES[idx]}. ${choice}`}
-                        primaryTypographyProps={{ className: clsx('2xl:text-2xl', getTextColor(idx)) }}
+                        primary={`${MCQ_CHOICES[idx]}. ${question.details.choices[origIdx]}`}
+                        primaryTypographyProps={{ className: clsx('2xl:text-2xl', getTextColor(origIdx)) }}
                     />
-                    {getListItemIcon(idx)}
+                    {getListItemIcon(origIdx)}
                 </ListItemButton>
             ))}
         </List>

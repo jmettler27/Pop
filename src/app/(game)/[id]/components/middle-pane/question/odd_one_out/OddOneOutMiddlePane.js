@@ -26,6 +26,8 @@ import { selectProposal } from '@/app/(game)/lib/question/odd_one_out'
 import { useAsyncAction } from '@/lib/utils/async'
 
 export default function OddOneOutMiddlePane({ question }) {
+
+    // Randomize the order of the items on the client side
     const randomMapping = useMemo(() =>
         generateShuffledIndices(question.details.items.length),
         [question.details.items.length]
