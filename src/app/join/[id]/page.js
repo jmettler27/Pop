@@ -14,7 +14,7 @@ import GameErrorScreen from '@/app/(game)/[id]/components/GameErrorScreen';
 
 import { firestore } from '@/lib/firebase/firebase'
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
-import { addDoc, collection, doc, query, setDoc, where, serverTimestamp, runTransaction } from 'firebase/firestore'
+import { addDoc, collection, doc, query, setDoc, where, serverTimestamp, runTransaction, increment } from 'firebase/firestore'
 import { useCollection, useCollectionOnce, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 
 import { Button, CircularProgress, IconButton } from '@mui/material';
@@ -91,6 +91,12 @@ export default function Page({ params, lang = DEFAULT_LOCALE }) {
                     teamId,
                     joinedAt: serverTimestamp(),
                 });
+
+                // Increment the number of players
+                const readyRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready')
+                transaction.update(readyRef, {
+                    numPlayers: increment(1),
+                })
             });
 
             router.push(`/${gameId}`);

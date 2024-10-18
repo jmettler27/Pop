@@ -80,8 +80,6 @@ const selectRoundTransaction = async (
         return
     }
 
-    // await addSoundEffectTransaction(transaction, gameId, 'super_mario_odyssey_moon')
-
     if (isRiddle(roundData.type) || roundData.type === 'quote' || roundData.type === 'enum' || roundData.type === 'mixed') {
         // Set the status of every player to 'idle'
         const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
