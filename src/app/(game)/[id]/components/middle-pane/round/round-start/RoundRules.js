@@ -2,7 +2,7 @@ import { BASIC_QUESTION_THINKING_TIME } from "@/lib/utils/question/basic"
 import { BLINDTEST_THINKING_TIME } from "@/lib/utils/question/blindtest"
 import { EMOJI_THINKING_TIME } from "@/lib/utils/question/emoji"
 import { IMAGE_THINKING_TIME } from "@/lib/utils/question/image"
-import { MATCHING_MAX_NUM_COLS, MATCHING_MIN_NUM_COLS, MATCHING_THINKING_TIME } from "@/lib/utils/question/matching"
+import { MATCHING_MAX_NUM_COLS, MATCHING_MAX_NUM_MISTAKES, MATCHING_MIN_NUM_COLS, MATCHING_THINKING_TIME } from "@/lib/utils/question/matching"
 import { MCQ_OPTIONS, MCQ_OPTION_TO_ICON, mcqOptionToTitle } from "@/lib/utils/question/mcq"
 import { OOO_THINKING_TIME } from "@/lib/utils/question/odd_one_out"
 import { PROGRESSIVE_CLUES_THINKING_TIME } from "@/lib/utils/question/progressive_clues"
@@ -141,6 +141,7 @@ function MatchingRoundRules({ round }) {
             <li>Si le lien est <span className='text-red-500 font-bold'>incorrect</span>, l&apos;équipe obtient <strong>{round.mistakePenalty} point de pénalité.</strong></li>
         </ul>
         <p className='2xl:text-2xl text-center'>⚠️ <strong>Dans tous les cas, le lien est dessiné !</strong></p>
+        <p className='2xl:text-2xl text-center'>🙅 L&apos;équipe est <strong>disqualifiée</strong> de la question au bout de <strong>{round.maxMistakes || MATCHING_MAX_NUM_MISTAKES} erreurs</strong>, et la question s&apos;arrête si toutes les équipes sont disqualifiées.</p>
         <p className='2xl:text-2xl text-center'>⏳ Vous avez <u><strong>entre {MATCHING_THINKING_TIME * (MATCHING_MIN_NUM_COLS - 1)} et {MATCHING_THINKING_TIME * (MATCHING_MAX_NUM_COLS - 1)} secondes</strong></u> pour vous décider, faute de quoi <strong>un lien aléatoire sera dessiné !</strong></p>
         <p className='2xl:text-2xl text-center'>L&apos;ordre de passage = {round.order > 0 ? `Le classement inversé de la manche ${round.order}` : 'Un ordre aléatoire'}.</p>
     </>

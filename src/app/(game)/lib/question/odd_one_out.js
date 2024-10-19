@@ -19,7 +19,7 @@ import { addSoundEffectTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { endQuestionTransaction } from '@/app/(game)/lib/question';
 import { updateTimerStateTransaction, updateTimerTransaction } from '@/app/(game)/lib/timer';
-import { increaseRoundTeamScoreTransaction } from '@/app/(game)/lib/scores';
+import { decreaseGlobalTeamScoreTransaction, increaseRoundTeamScoreTransaction } from '@/app/(game)/lib/scores';
 
 import { moveToHead } from '@/lib/utils/arrays';
 import { OOO_ITEMS_LENGTH } from '@/lib/utils/question/odd_one_out';
@@ -75,10 +75,23 @@ const selectProposalTransaction = async (
 
     if (idx === questionData.details.answerIdx) {
         // The selected proposal is the odd one one out
+        const gameRef = doc(GAMES_COLLECTION_REF, gameId)
         const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-        const roundData = await getDocDataTransaction(transaction, roundRef)
-        const { mistakePenalty: points } = roundData
-        await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, points)
+        const [gameData, roundData] = await Promise.all([
+            getDocDataTransaction(transaction, gameRef),
+            getDocDataTransaction(transaction, roundRef),
+        ])
+
+        const { roundScorePolicy } = gameData
+        const { mistakePenalty } = roundData
+
+        if (roundScorePolicy === 'ranking') {
+            // Increase the team's round score to 1
+            await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, mistakePenalty)
+        } else if (roundScorePolicy === 'completion_rate') {
+            // Decrease the team's global score by the penalty and increment the number of mistakes of the team in the round
+            await decreaseGlobalTeamScoreTransaction(transaction, gameId, roundId, questionId, mistakePenalty, teamId)
+        }
 
         for (const chooserDoc of choosersSnapshot.docs) {
             transaction.update(chooserDoc.ref, { status: 'wrong' })

@@ -43,9 +43,10 @@ export const MATCHING_MAX_NUM_ROWS = 10;
 export const MATCHING_ITEM_MAX_LENGTH = 30;
 
 export const MATCHING_DEFAULT_MISTAKE_PENALTY = 1;
-
+export const MATCHING_MAX_NUM_MISTAKES = 3;
 
 export const MATCHING_THINKING_TIME = 40
+
 
 /* In-game logic */
 export function shuffleMatching(numCols, numRows) {
@@ -125,4 +126,8 @@ export function edgesToString(edges, answer) {
     });
 
     return leftToRightPath.map(id => getNodeText(id, answer)).join(' - ')
+}
+
+export function matchingTeamIsCanceled(teamId, teamNumMistakes, maxMistakes) {
+    return teamId in teamNumMistakes && teamNumMistakes[teamId] >= maxMistakes;
 }

@@ -4,8 +4,8 @@ import { BLINDTEST_DEFAULT_REWARD, BLINDTEST_DEFAULT_MAX_TRIES } from '@/lib/uti
 import { EMOJI_DEFAULT_REWARD, EMOJI_DEFAULT_MAX_TRIES } from '@/lib/utils/question/emoji';
 import { ENUM_DEFAULT_BONUS, ENUM_DEFAULT_REWARD } from '@/lib/utils/question/enum';
 import { IMAGE_DEFAULT_MAX_TRIES, IMAGE_DEFAULT_REWARD } from '@/lib/utils/question/image';
-import { MATCHING_DEFAULT_MISTAKE_PENALTY } from '@/lib/utils/question/matching';
-import { MCQ_DEFAULT_REWARDS } from '@/lib/utils/question/mcq';
+import { MATCHING_DEFAULT_MISTAKE_PENALTY, MATCHING_MAX_NUM_MISTAKES } from '@/lib/utils/question/matching';
+import { IMMEDIATE_MCQ_DEFAULT_REWARD, MCQ_DEFAULT_REWARDS as CONDITIONAL_MCQ_DEFAULT_REWARDS } from '@/lib/utils/question/mcq';
 import { OOO_DEFAULT_MISTAKE_PENALTY } from '@/lib/utils/question/odd_one_out';
 import { PROGRESSIVE_CLUES_DEFAULT_DELAY, PROGRESSIVE_CLUES_DEFAULT_MAX_TRIES, PROGRESSIVE_CLUES_DEFAULT_REWARD } from '@/lib/utils/question/progressive_clues';
 import { isRiddle } from '@/lib/utils/question_types';
@@ -67,43 +67,44 @@ const addGameRoundTransaction = async (
     }
 
     if (type === 'mixed') {
-        initRoundInfo.rewardsPerQuestion = 1
+        initRoundInfo.rewardsPerQuestion = 1;
         initRoundInfo.invalidateTeam = false;
-        initRoundInfo.maxTries = 2
-        initRoundInfo.delay = 2
+        initRoundInfo.maxTries = 2;
+        initRoundInfo.delay = 2;
         initRoundInfo.rewardsForBonus = 1;
-        initRoundInfo.mistakePenalty = - 1
-        initRoundInfo.rewardsPerElement = 1
+        initRoundInfo.mistakePenalty = - 1;
+        initRoundInfo.rewardsPerElement = 1;
     } else if (type === 'progressive_clues') {
-        initRoundInfo.rewardsPerQuestion = PROGRESSIVE_CLUES_DEFAULT_REWARD
+        initRoundInfo.rewardsPerQuestion = PROGRESSIVE_CLUES_DEFAULT_REWARD;
         initRoundInfo.invalidateTeam = false;
-        initRoundInfo.maxTries = PROGRESSIVE_CLUES_DEFAULT_MAX_TRIES
-        initRoundInfo.delay = PROGRESSIVE_CLUES_DEFAULT_DELAY
+        initRoundInfo.maxTries = PROGRESSIVE_CLUES_DEFAULT_MAX_TRIES;
+        initRoundInfo.delay = PROGRESSIVE_CLUES_DEFAULT_DELAY;
     } else if (type === 'image') {
-        initRoundInfo.rewardsPerQuestion = IMAGE_DEFAULT_REWARD
+        initRoundInfo.rewardsPerQuestion = IMAGE_DEFAULT_REWARD;
         initRoundInfo.invalidateTeam = false;
-        initRoundInfo.maxTries = IMAGE_DEFAULT_MAX_TRIES
+        initRoundInfo.maxTries = IMAGE_DEFAULT_MAX_TRIES;
     } else if (type === 'blindtest') {
-        initRoundInfo.rewardsPerQuestion = BLINDTEST_DEFAULT_REWARD
+        initRoundInfo.rewardsPerQuestion = BLINDTEST_DEFAULT_REWARD;
         initRoundInfo.invalidateTeam = false;
-        initRoundInfo.maxTries = BLINDTEST_DEFAULT_MAX_TRIES
+        initRoundInfo.maxTries = BLINDTEST_DEFAULT_MAX_TRIES;
     } else if (type === 'emoji') {
-        initRoundInfo.rewardsPerQuestion = EMOJI_DEFAULT_REWARD
+        initRoundInfo.rewardsPerQuestion = EMOJI_DEFAULT_REWARD;
         initRoundInfo.invalidateTeam = false;
-        initRoundInfo.maxTries = EMOJI_DEFAULT_MAX_TRIES
+        initRoundInfo.maxTries = EMOJI_DEFAULT_MAX_TRIES;
     } else if (type === 'quote') {
-        initRoundInfo.rewardsPerElement = QUOTE_DEFAULT_REWARDS_PER_ELEMENT
+        initRoundInfo.rewardsPerElement = QUOTE_DEFAULT_REWARDS_PER_ELEMENT;
         initRoundInfo.invalidateTeam = false;
-        initRoundInfo.maxTries = QUOTE_DEFAULT_MAX_TRIES
+        initRoundInfo.maxTries = QUOTE_DEFAULT_MAX_TRIES;
     } else if (type === 'enum') {
-        initRoundInfo.rewardsPerQuestion = ENUM_DEFAULT_REWARD
+        initRoundInfo.rewardsPerQuestion = ENUM_DEFAULT_REWARD;
         initRoundInfo.rewardsForBonus = ENUM_DEFAULT_BONUS;
     } else if (type === 'odd_one_out') {
-        initRoundInfo.mistakePenalty = OOO_DEFAULT_MISTAKE_PENALTY
+        initRoundInfo.mistakePenalty = OOO_DEFAULT_MISTAKE_PENALTY;
     } else if (type === 'matching') {
-        initRoundInfo.mistakePenalty = MATCHING_DEFAULT_MISTAKE_PENALTY
+        initRoundInfo.mistakePenalty = MATCHING_DEFAULT_MISTAKE_PENALTY;
+        initRoundInfo.maxMistakes = MATCHING_MAX_NUM_MISTAKES;
     } else if (type === 'mcq') {
-        initRoundInfo.rewardsPerQuestion = MCQ_DEFAULT_REWARDS
+        initRoundInfo.rewardsPerQuestion = CONDITIONAL_MCQ_DEFAULT_REWARDS;
     } else if (type === 'basic') {
         initRoundInfo.rewardsPerQuestion = BASIC_QUESTION_DEFAULT_REWARD;
     }
@@ -238,6 +239,8 @@ const addGameQuestionTransaction = async (
     } else if (questionData.type === 'matching') {
         transaction.set(questionRealtimeRef, {
             ...commonRealtimeInfo,
+            teamNumMistakes: {},
+            canceled: [],
         });
 
         // Create the document doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct')

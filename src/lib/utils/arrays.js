@@ -43,3 +43,25 @@ export function moveToHead(elem, array) {
 export function isEmpty(array) {
     return array.length === 0;
 }
+
+export function aggregateTiedTeams(uniqueScores, scores) {
+    return uniqueScores.slice().map(score => {
+        const tiedTeams = Object.keys(scores).filter(tid => scores[tid] === score);
+        const shuffledTiedTeams = shuffle(tiedTeams);
+        return { score, teams: shuffledTiedTeams };
+    });
+}
+
+export function findNextAvailableChooser(chooserIdx, chooserOrder, canceled) {
+    const canceledSet = new Set(canceled); // Convert canceled array to a Set for faster lookups
+
+    let newChooserIdx = chooserIdx
+    let newChooserTeamId = chooserOrder[chooserIdx]
+
+    do {
+        newChooserIdx = getNextCyclicIndex(newChooserIdx, chooserOrder.length)
+        newChooserTeamId = chooserOrder[newChooserIdx]
+    } while (canceledSet.has(newChooserTeamId))
+
+    return { newChooserIdx, newChooserTeamId };
+}

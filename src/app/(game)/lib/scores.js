@@ -128,3 +128,75 @@ export const increaseRoundTeamScoreTransaction = async (
         scoresProgress: newRoundProgress
     })
 }
+
+export const increaseGlobalTeamScoreTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+    teamId = null,
+    points = 0
+) => {
+    const gameScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'scores')
+    const gameScoresData = await getDocDataTransaction(transaction, gameScoresRef)
+
+    const { scores: currentGameScores, scoresProgress: currentGameProgress } = gameScoresData
+
+    const newGameProgress = {}
+    for (const tid of Object.keys(currentGameScores)) {
+        newGameProgress[tid] = {
+            ...currentGameProgress[tid],
+            [roundId]: currentGameScores[tid] + (tid === teamId) * points
+        }
+    }
+    transaction.update(gameScoresRef, {
+        [`scores.${teamId}`]: increment(points),
+        scoresProgress: newGameProgress
+    })
+}
+
+export const decreaseGlobalTeamScoreTransaction = async (
+    transaction,
+    gameId,
+    roundId,
+    questionId,
+    penalty,
+    teamId = null,
+) => {
+
+    const gameScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'scores')
+    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
+
+    const [gameScoresData, roundScoresData] = await Promise.all([
+        getDocDataTransaction(transaction, gameScoresRef),
+        getDocDataTransaction(transaction, roundScoresRef)
+    ])
+
+    // Decrease the team's global score by the penalty    
+    const mistakePenalty = penalty
+    const { scores: currentGameScores, scoresProgress: currentGameProgress } = gameScoresData
+    const newGameProgress = {}
+    for (const tid of Object.keys(currentGameScores)) {
+        newGameProgress[tid] = {
+            ...currentGameProgress[tid],
+            [roundId]: currentGameScores[tid] + (tid === teamId) * mistakePenalty
+        }
+    }
+    transaction.update(gameScoresRef, {
+        [`scores.${teamId}`]: increment(mistakePenalty),
+        scoresProgress: newGameProgress
+    })
+
+    // Increase the team's round "score" to 1. In this context, 1 is rather an increment to the counter of mistakes of the team in the round, that a point added to round score
+    const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData
+    const newRoundProgress = {}
+    for (const tid of Object.keys(currentRoundScores)) {
+        newRoundProgress[tid] = {
+            ...currentRoundProgress[tid],
+            [questionId]: currentRoundScores[tid] + (tid === teamId)
+        }
+    }
+    transaction.update(roundScoresRef, {
+        [`scores.${teamId}`]: increment(1),
+        scoresProgress: newRoundProgress
+    })
+}

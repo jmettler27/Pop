@@ -8,7 +8,8 @@ import { numberToKeycapEmoji } from '@/lib/utils/emojis'
 
 import { RoundDescription } from './RoundDescription'
 import { RoundRules } from './RoundRules'
-import { RoundRewards } from './RoundRewards'
+import { RoundRankingPolicy } from './RoundRankingPolicy'
+import { RoundCompletionRatePolicy } from './RoundCompletionRatePolicy'
 
 export default function RoundStartBody({ round }) {
     return (
@@ -29,7 +30,7 @@ export default function RoundStartBody({ round }) {
 
             {/* Scaling */}
             <div className='border-dashed border-4 p-2 w-[30%] h-full overflow-auto'>
-                <RoundRewards round={round} />
+                <RoundScorePolicy round={round} />
             </div>
         </div >
     )
@@ -53,4 +54,13 @@ function SpecialNumThemes({ round }) {
     const game = useGameContext()
     const [themes, themesLoading, themesError] = useCollection(collection(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'themes'))
     return <span>{(!themesError && !themesLoading && themes) ? numberToKeycapEmoji(themes.docs.length) : '???'}</span>
+}
+
+function RoundScorePolicy({ round }) {
+    const game = useGameContext()
+
+    return <>
+        {game.roundScorePolicy === 'ranking' && <RoundRankingPolicy round={round} />}
+        {game.roundScorePolicy && 'completion_rate' && <RoundCompletionRatePolicy round={round} />}
+    </>
 }
