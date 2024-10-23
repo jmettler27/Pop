@@ -203,7 +203,7 @@ https://github.com/jmettler27/Pop/assets/56764091/dc3d7709-f1b0-4191-bcb5-05aa20
 
 ### 💲 Multiple-Choice Question (MCQ) (`mcq`)
 
-This question format is inspired by the game show \*\*["Who Wants to Be a Millionaire?"](<https://en.wikipedia.org/wiki/Who_Wants_to_Be_a_Millionaire%3F_(British_game_show)#Game_rules>).
+This question format is inspired by the game show **["Who Wants to Be a Millionaire?"](https://en.wikipedia.org/wiki/Who_Wants_to_Be_a_Millionaire)**.
 
 For each question, the player is presented with **four choices**. The player must select the correct answer from the list of choices.
 
