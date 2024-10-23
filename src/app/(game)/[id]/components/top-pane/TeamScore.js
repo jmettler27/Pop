@@ -126,6 +126,7 @@ function CompletionRatePolicyTeamRoundActiveScore({ teamId, game }) {
         case 'quote':
         case 'enum':
         case 'mcq':
+        case 'nagui':
         case 'basic':
             return <TeamRoundScore teamId={teamId} roundId={game.currentRound} />
         case 'odd_one_out':

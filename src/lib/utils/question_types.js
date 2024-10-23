@@ -9,6 +9,7 @@ export const QUESTION_TYPES = [
     'odd_one_out',
     'matching',
     'mcq',
+    'nagui',
     'basic'
 ]
 
@@ -21,7 +22,8 @@ export const QUESTION_TYPE_TO_EMOJI = {
     'enum': "🗣️",
     'odd_one_out': "🕵️",
     'matching': "💖",
-    'mcq': "🔘",
+    "nagui": "🐴",
+    'mcq': "💲",
     'basic': "❓"
 }
 
@@ -35,6 +37,7 @@ export const QUESTION_TYPE_TO_TITLE = {
         'enum': "Enumeration",
         'odd_one_out': "Odd One Out",
         'matching': "Matching",
+        "nagui": "Nagui",
         'mcq': "MCQ",
         'basic': "Question"
     },
@@ -47,6 +50,7 @@ export const QUESTION_TYPE_TO_TITLE = {
         'enum': "Énumération",
         'odd_one_out': "Coup par coup",
         'matching': "Matching",
+        "nagui": "Nagui",
         'mcq': "QCM",
         'basic': "Question"
     }
@@ -90,7 +94,8 @@ import SpeakerNotesIcon from '@mui/icons-material/SpeakerNotes'
 import ChecklistIcon from '@mui/icons-material/Checklist'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
-import ReorderIcon from '@mui/icons-material/Reorder';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import BedroomBabyIcon from '@mui/icons-material/BedroomBaby';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 
 
@@ -109,7 +114,9 @@ export function QuestionTypeIcon({ questionType, fontSize = 'small' }) {
         case 'enum':
             return <SpeakerNotesIcon sx={{ fontSize }} />
         case 'mcq':
-            return <ReorderIcon sx={{ fontSize }} />
+            return <AttachMoneyIcon sx={{ fontSize }} />
+        case 'nagui':
+            return <BedroomBabyIcon sx={{ fontSize }} />
         case 'matching':
             return <FavoriteIcon sx={{ fontSize }} />
         case 'quote':

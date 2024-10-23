@@ -5,7 +5,8 @@ import { EMOJI_DEFAULT_REWARD, EMOJI_DEFAULT_MAX_TRIES } from '@/lib/utils/quest
 import { ENUM_DEFAULT_BONUS, ENUM_DEFAULT_REWARD } from '@/lib/utils/question/enum';
 import { IMAGE_DEFAULT_MAX_TRIES, IMAGE_DEFAULT_REWARD } from '@/lib/utils/question/image';
 import { MATCHING_DEFAULT_MISTAKE_PENALTY, MATCHING_MAX_NUM_MISTAKES } from '@/lib/utils/question/matching';
-import { IMMEDIATE_MCQ_DEFAULT_REWARD, MCQ_DEFAULT_REWARDS as CONDITIONAL_MCQ_DEFAULT_REWARDS } from '@/lib/utils/question/mcq';
+import { MCQ_DEFAULT_REWARD } from '@/lib/utils/question/mcq';
+import { NAGUI_DEFAULT_REWARDS } from '@/lib/utils/question/nagui';
 import { OOO_DEFAULT_MISTAKE_PENALTY } from '@/lib/utils/question/odd_one_out';
 import { PROGRESSIVE_CLUES_DEFAULT_DELAY, PROGRESSIVE_CLUES_DEFAULT_MAX_TRIES, PROGRESSIVE_CLUES_DEFAULT_REWARD } from '@/lib/utils/question/progressive_clues';
 import { isRiddle } from '@/lib/utils/question_types';
@@ -104,7 +105,9 @@ const addGameRoundTransaction = async (
         initRoundInfo.mistakePenalty = MATCHING_DEFAULT_MISTAKE_PENALTY;
         initRoundInfo.maxMistakes = MATCHING_MAX_NUM_MISTAKES;
     } else if (type === 'mcq') {
-        initRoundInfo.rewardsPerQuestion = CONDITIONAL_MCQ_DEFAULT_REWARDS;
+        initRoundInfo.rewardsPerQuestion = MCQ_DEFAULT_REWARD;
+    } else if (type === 'nagui') {
+        initRoundInfo.rewardsPerQuestion = NAGUI_DEFAULT_REWARDS;
     } else if (type === 'basic') {
         initRoundInfo.rewardsPerQuestion = BASIC_QUESTION_DEFAULT_REWARD;
     }
@@ -262,6 +265,15 @@ const addGameQuestionTransaction = async (
         }
 
     } else if (questionData.type === 'mcq') {
+        transaction.set(questionRealtimeRef, {
+            ...commonRealtimeInfo,
+            correct: null,
+            playerId: null,
+            reward: null,
+            teamId: null,
+        });
+
+    } else if (questionData.type === 'nagui') {
         transaction.set(questionRealtimeRef, {
             ...commonRealtimeInfo,
             correct: null,

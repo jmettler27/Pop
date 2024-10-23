@@ -7,10 +7,10 @@ import { GAMES_COLLECTION_REF } from "@/lib/firebase/firestore"
 import { doc } from "firebase/firestore"
 import { useDocumentDataOnce } from "react-firebase-hooks/firestore"
 
-import { prependMCQOptionWithEmoji } from "@/lib/utils/question/mcq"
+import { prependNaguiOptionWithEmoji } from "@/lib/utils/question/nagui"
 import { DEFAULT_LOCALE } from "@/lib/utils/locales"
 
-export default function MCQPlayerOptionHelperText({ realtime, lang = DEFAULT_LOCALE }) {
+export default function NaguiPlayerOptionHelperText({ realtime, lang = DEFAULT_LOCALE }) {
     const { id: gameId } = useParams()
     const myRole = useRoleContext()
     const user = useUserContext()
@@ -34,7 +34,7 @@ export default function MCQPlayerOptionHelperText({ realtime, lang = DEFAULT_LOC
         return <p>Team not found</p>
     }
 
-    return <span><span style={{ color: team.color }}>{player.name}</span> {HAS_CHOSEN_TEXT[lang]} {prependMCQOptionWithEmoji(realtime.option)}</span>
+    return <span><span style={{ color: team.color }}>{player.name}</span> {HAS_CHOSEN_TEXT[lang]} {prependNaguiOptionWithEmoji(realtime.option)}</span>
 
 }
 

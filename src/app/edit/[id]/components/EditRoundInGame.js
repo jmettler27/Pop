@@ -32,6 +32,7 @@ const editGameRoundCardNumCols = (roundType) => {
         case 'odd_one_out':
         case 'enum':
         case 'mcq':
+        case 'nagui':
         case 'basic':
         case 'quote':
             return 'md:grid-cols-3'

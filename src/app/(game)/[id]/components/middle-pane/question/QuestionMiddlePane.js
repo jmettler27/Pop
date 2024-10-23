@@ -9,8 +9,9 @@ import LoadingScreen from '@/app/components/LoadingScreen'
 import RiddleMiddlePane from './riddle/RiddleMiddlePane'
 import QuoteMiddlePane from './quote/QuoteMiddlePane'
 import EnumMiddlePane from './enum/EnumMiddlePane'
-import OddOneOutMiddlePane from './odd_one_out/OddOneOutMiddlePane'
 import MCQMiddlePane from './mcq/MCQMiddlePane'
+import NaguiMiddlePane from './nagui/NaguiMiddlePane'
+import OddOneOutMiddlePane from './odd_one_out/OddOneOutMiddlePane'
 import MatchingMiddlePane from './matching/MatchingMiddlePane'
 import BasicMiddlePane from './basic/BasicMiddlePane'
 
@@ -39,12 +40,14 @@ export default function QuestionMiddlePane() {
             return <QuoteMiddlePane question={question} />
         case 'enum':
             return <EnumMiddlePane question={question} />
+        case 'mcq':
+            return <MCQMiddlePane question={question} />
+        case 'nagui':
+            return <NaguiMiddlePane question={question} />
         case 'odd_one_out':
             return <OddOneOutMiddlePane question={question} />
         case 'matching':
             return <MatchingMiddlePane question={question} />
-        case 'mcq':
-            return <MCQMiddlePane question={question} />
         case 'basic':
             return <BasicMiddlePane question={question} />
     }

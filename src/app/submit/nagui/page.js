@@ -12,16 +12,16 @@ import QuestionFormHeader from '@/app/submit/components/QuestionFormHeader';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/lib/utils/locales';
 import { topicSchema } from '@/lib/utils/topics';
-import { stringSchema } from '@/lib/utils/forms';
+import { requiredStringInArrayFieldIndicator, stringSchema } from '@/lib/utils/forms';
 import {
-    MCQ_CHOICES, MCQ_CHOICES_EXAMPLE, MCQ_CHOICE_MAX_LENGTH, MCQ_NUMBER_OF_CHOICES,
-    MCQ_EXPLANATION_EXAMPLE, MCQ_EXPLANATION_MAX_LENGTH,
-    MCQ_NOTE_EXAMPLE, MCQ_NOTE_MAX_LENGTH,
-    MCQ_SOURCE_EXAMPLE, MCQ_SOURCE_MAX_LENGTH,
-    MCQ_TITLE_EXAMPLE, MCQ_TITLE_MAX_LENGTH,
-    MCQ_MIN_NUMBER_OF_CHOICES,
-    MCQ_MAX_NUMBER_OF_CHOICES,
-} from '@/lib/utils/question/mcq';
+    NAGUI_CHOICES, NAGUI_CHOICES_EXAMPLE, NAGUI_CHOICE_MAX_LENGTH, NAGUI_NUMBER_OF_CHOICES,
+    NAGUI_EXPLANATION_EXAMPLE, NAGUI_EXPLANATION_MAX_LENGTH,
+    NAGUI_NOTE_EXAMPLE, NAGUI_NOTE_MAX_LENGTH,
+    NAGUI_SOURCE_EXAMPLE, NAGUI_SOURCE_MAX_LENGTH,
+    NAGUI_TITLE_EXAMPLE, NAGUI_TITLE_MAX_LENGTH,
+} from '@/lib/utils/question/nagui';
+
+import Box from '@mui/system/Box';
 
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation'
@@ -33,7 +33,7 @@ import { useAsyncAction } from '@/lib/utils/async';
 import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game';
 import { QUESTION_EXPLANATION_LABEL, QUESTION_HINTS_REMARKS, QUESTION_SOURCE_LABEL, QUESTION_TITLE_LABEL, SELECT_PROPOSAL } from '@/lib/utils/submit';
 
-const QUESTION_TYPE = 'mcq'
+const QUESTION_TYPE = 'nagui'
 
 
 export default function Page({ lang = DEFAULT_LOCALE }) {
@@ -47,19 +47,19 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
     return (
         <>
             <QuestionFormHeader questionType={QUESTION_TYPE} lang={lang} />
-            <SubmitMCQForm userId={session.user.id} lang={lang} inSubmitPage={true} />
+            <SubmitNaguiQuestionForm userId={session.user.id} lang={lang} inSubmitPage={true} />
         </>
     );
 }
 
 
-export function SubmitMCQForm({ userId, lang, ...props }) {
+export function SubmitNaguiQuestionForm({ userId, lang, ...props }) {
     const router = useRouter()
 
-    const [submitMCQ, isSubmitting] = useAsyncAction(async (values) => {
+    const [submitNaguiQuestion, isSubmitting] = useAsyncAction(async (values) => {
         try {
             const { topic, lang, duoIdx, ...rest } = values
-            const details = rest;
+            const details = { duoIdx, ...rest };
             const questionId = await addNewQuestion({
                 details,
                 type: QUESTION_TYPE,
@@ -88,13 +88,14 @@ export function SubmitMCQForm({ userId, lang, ...props }) {
                 title: '',
                 note: '',
                 explanation: '',
-                choices: Array(MCQ_NUMBER_OF_CHOICES).fill(''),
+                choices: Array(NAGUI_NUMBER_OF_CHOICES).fill(''),
                 answerIdx: -1,
+                duoIdx: -1,
                 // imageFiles: '',
                 // audioFiles: ''
             }}
             onSubmit={async values => {
-                await submitMCQ(values)
+                await submitNaguiQuestion(values)
                 if (props.inSubmitPage) {
                     router.push('/submit')
                 } else if (props.inGameEditor) {
@@ -109,9 +110,9 @@ export function SubmitMCQForm({ userId, lang, ...props }) {
                 validationSchema={Yup.object({
                     lang: localeSchema(),
                     topic: topicSchema(),
-                    source: stringSchema(MCQ_SOURCE_MAX_LENGTH, false),
-                    title: stringSchema(MCQ_TITLE_MAX_LENGTH),
-                    note: stringSchema(MCQ_NOTE_MAX_LENGTH, false),
+                    source: stringSchema(NAGUI_SOURCE_MAX_LENGTH, false),
+                    title: stringSchema(NAGUI_TITLE_MAX_LENGTH),
+                    note: stringSchema(NAGUI_NOTE_MAX_LENGTH, false),
                 })}
                 lang={lang}
             />
@@ -120,14 +121,24 @@ export function SubmitMCQForm({ userId, lang, ...props }) {
                 onSubmit={() => { }}
                 validationSchema={Yup.object({
                     choices: Yup.array()
-                        .of(stringSchema(MCQ_CHOICE_MAX_LENGTH))
-                        .min(MCQ_MIN_NUMBER_OF_CHOICES, `There must be at least ${MCQ_MIN_NUMBER_OF_CHOICES} choices`)
-                        .max(MCQ_MAX_NUMBER_OF_CHOICES, `There must be at most ${MCQ_MAX_NUMBER_OF_CHOICES} choices`),
+                        .of(stringSchema(NAGUI_CHOICE_MAX_LENGTH))
+                        .length(NAGUI_NUMBER_OF_CHOICES, `There must be exactly ${NAGUI_NUMBER_OF_CHOICES} choices`)
+                        .required("Required."),
                     answerIdx: Yup.number()
                         .min(0, "Required.")
-                        .max(MCQ_NUMBER_OF_CHOICES - 1, "Required.")
+                        .max(NAGUI_NUMBER_OF_CHOICES - 1, "Required.")
                         .required("Required."),
-                    explanation: stringSchema(MCQ_EXPLANATION_MAX_LENGTH, false),
+                    explanation: stringSchema(NAGUI_EXPLANATION_MAX_LENGTH, false),
+                    duoIdx: Yup.number()
+                        .min(0, "Required.")
+                        .max(NAGUI_NUMBER_OF_CHOICES - 1, "Required.")
+                        .required("Required.")
+                    // .test(
+                    //     "same-as-answer",
+                    //     "Must be different that the answer",
+                    //     () => {
+                    //         return this.parent.answerIdx !== this.parent.duoIdx
+                    //     })
                 })}
                 lang={lang}
             >
@@ -148,44 +159,37 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
 
             <SelectQuestionTopic lang={lang} name='topic' validationSchema={validationSchema} />
 
-
             <MyTextInput
-                // label={`${stringRequiredAsterisk(validationSchema, 'source')}To what work is this question related to? ${numCharsIndicator(values['source'], MCQ_SOURCE_MAX_LENGTH)}`}
+                // label={`${stringRequiredAsterisk(validationSchema, 'source')}To what work is this question related to? ${numCharsIndicator(values['source'], NAGUI_SOURCE_MAX_LENGTH)}`}
                 label={QUESTION_SOURCE_LABEL[lang]}
                 name='source'
                 type='text'
-                placeholder={MCQ_SOURCE_EXAMPLE[lang]}
+                placeholder={NAGUI_SOURCE_EXAMPLE[lang]}
                 validationSchema={validationSchema}
-                maxLength={MCQ_SOURCE_MAX_LENGTH}
+                maxLength={NAGUI_SOURCE_MAX_LENGTH}
             />
 
             <MyTextInput
                 label={QUESTION_TITLE_LABEL[lang]}
                 name='title'
                 type='text'
-                placeholder={MCQ_TITLE_EXAMPLE[lang]}
+                placeholder={NAGUI_TITLE_EXAMPLE[lang]}
                 validationSchema={validationSchema}
-                maxLength={MCQ_TITLE_MAX_LENGTH}
+                maxLength={NAGUI_TITLE_MAX_LENGTH}
             />
 
             <MyTextInput
                 label={QUESTION_HINTS_REMARKS[lang]}
                 name='note'
                 type='text'
-                placeholder={MCQ_NOTE_EXAMPLE[lang]}
+                placeholder={NAGUI_NOTE_EXAMPLE[lang]}
                 validationSchema={validationSchema}
-                maxLength={MCQ_NOTE_MAX_LENGTH}
+                maxLength={NAGUI_NOTE_MAX_LENGTH}
             />
 
         </WizardStep>
     )
 }
-
-import Button from '@mui/material/Button';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
-import { IconButton } from '@mui/material';
-
 
 function EnterChoicesStep({ onSubmit, validationSchema, lang }) {
     const formik = useFormikContext();
@@ -211,51 +215,31 @@ function EnterChoicesStep({ onSubmit, validationSchema, lang }) {
             validationSchema={validationSchema}
         >
             <FieldArray name='choices'>
-                {({ remove, push }) => (
-                    <div>
-                        {values.choices.map((clue, index) => (
-                            <div className='row' key={index}>
-                                <label htmlFor={`choices.${index}`}>{MCQ_CHOICES[index]} ({values.choices[index].length}/{MCQ_CHOICE_MAX_LENGTH})</label>
-                                <Field
-                                    name={'choices.' + index}
-                                    placeholder={MCQ_CHOICES_EXAMPLE[index]}
-                                    type='text'
-                                />
-                                <ChoiceError index={index} />
-
-                                <IconButton
-                                    color='error'
-                                    onClick={() => remove(index)}
-                                >
-                                    <DeleteIcon />
-                                </IconButton>
-
-                                <ChoiceError index={index} />
-
-                            </div>
-                        ))}
-                        <Button
-                            variant="outlined"
-                            startIcon={<AddIcon />}
-                            onClick={() => push('')}
-                        >
-                            {ADD_CHOICE[lang]}
-                        </Button>
-
-                    </div>
-                )}
+                <Box component='section' sx={{ my: 2, p: 2, border: '2px dashed grey', width: '500px' }}>
+                    {values.choices.map((_item, index) => (
+                        <div key={index}>
+                            <label htmlFor={`choices.${index}`}>{NAGUI_CHOICES[index]} ({values.choices[index].length}/{NAGUI_CHOICE_MAX_LENGTH})</label>
+                            <Field
+                                name={`choices.${index}`}
+                                type='text'
+                                placeholder={NAGUI_CHOICES_EXAMPLE[index]}
+                            />
+                            <ChoiceError index={index} />
+                        </div>
+                    ))}
+                </Box>
             </FieldArray>
             <ChoiceArrayErrors />
 
             <MySelect
-                label={MCQ_ANSWER_IDX_LABEL[lang]}
+                label={NAGUI_ANSWER_IDX_LABEL[lang]}
                 name='answerIdx'
                 validationSchema={validationSchema}
                 onChange={(e) => formik.setFieldValue('answerIdx', parseInt(e.target.value, 10))}
             >
                 <option value="">{SELECT_PROPOSAL[lang]}</option>
                 {values.choices.map((choice, index) => (
-                    <option key={index} value={index}>{MCQ_CHOICES[index]}. {choice}</option>
+                    <option key={index} value={index}>{NAGUI_CHOICES[index]}. {choice}</option>
                 ))}
             </MySelect>
 
@@ -263,21 +247,35 @@ function EnterChoicesStep({ onSubmit, validationSchema, lang }) {
                 label={QUESTION_EXPLANATION_LABEL[lang]}
                 name='explanation'
                 type='text'
-                placeholder={MCQ_EXPLANATION_EXAMPLE[lang]}
+                placeholder={NAGUI_EXPLANATION_EXAMPLE[lang]}
                 validationSchema={validationSchema}
-                maxLength={MCQ_EXPLANATION_MAX_LENGTH}
+                maxLength={NAGUI_EXPLANATION_MAX_LENGTH}
             />
+
+            {values.answerIdx >= 0 &&
+                <MySelect
+                    label={NAGUI_DUO_IDX_LABEL[lang]}
+                    name='duoIdx'
+                    validationSchema={validationSchema}
+                    onChange={(e) => formik.setFieldValue('duoIdx', parseInt(e.target.value, 10))}
+                >
+                    <option value="">{SELECT_PROPOSAL[lang]}</option>
+                    {values.choices.map((choice, index) => (index !== values.answerIdx &&
+                        <option key={index} value={index}>{NAGUI_CHOICES[index]}. {choice}</option>
+                    ))}
+                </MySelect>
+            }
 
         </WizardStep>
     )
 }
 
-const ADD_CHOICE = {
-    'en': "Add choice",
-    'fr-FR': "Ajouter choix"
-}
-
-const MCQ_ANSWER_IDX_LABEL = {
+const NAGUI_ANSWER_IDX_LABEL = {
     'en': "What proposal is the correct one ?",
     'fr-FR': "Quelle proposition est la bonne?"
+}
+
+const NAGUI_DUO_IDX_LABEL = {
+    'en': "What other proposal do you want for the duo?",
+    'fr-FR': "Quelle autre proposition voulez-vous pour le duo ?"
 }

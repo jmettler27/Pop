@@ -201,17 +201,23 @@ https://github.com/jmettler27/Pop/assets/56764091/15ba1c19-8d2b-4e3d-8da0-f46dc8
 
 https://github.com/jmettler27/Pop/assets/56764091/dc3d7709-f1b0-4191-bcb5-05aa20634159
 
-### 🔘 Multiple-Choice Questions (MCQ) (`mcq`)
+### 💲 Multiple-Choice Question (MCQ) (`mcq`)
+
+This question format is inspired by the game show \*\*["Who Wants to Be a Millionaire?"](<https://en.wikipedia.org/wiki/Who_Wants_to_Be_a_Millionaire%3F_(British_game_show)#Game_rules>).
+
+For each question, the player is presented with **four choices**. The player must select the correct answer from the list of choices.
+
+### 🐴 Nagui (`nagui`)
 
 This question format is inspired by the French game show **["Tout le monde veut prendre sa place"](https://en.wikipedia.org/wiki/Tout_le_monde_veut_prendre_sa_place#Game_format) (_Everyone wants to take their place_)** presented by [Nagui](https://en.wikipedia.org/wiki/Nagui).
 
 For each question, the player is presented with **three options**, ranging from the most challenging to the easiest:
 
-- 💲 **_Cash_**: Provide an immediate oral response to the question.
+- 🙈 **_Hide_**: Provide an immediate oral response to the question.
 - 4️⃣ **_Square_**: Display 4 choices, and the player must select the correct answer.
 - 2️⃣ **_Duo_**: Reduce the MCQ to 2 choices, and the player must select the correct answer.
 
-Each option is assigned a different point value based on its difficulty; for example, 5 points for _Cash_, 3 points for _Square_ and 1 point for _Duo_.
+Each option is assigned a different point value based on its difficulty; for example, 5 points for _Hide_, 3 points for _Square_ and 1 point for _Duo_.
 
 #### Quick demo (Player POV, Duo)
 
@@ -221,7 +227,7 @@ https://github.com/jmettler27/Pop/assets/56764091/cdc0d1ed-1fed-498f-b033-774659
 
 https://github.com/jmettler27/Pop/assets/56764091/235e7e2a-3cdc-418c-8926-34319ae9c195
 
-#### Quick demo (Player POV, Cash)
+#### Quick demo (Player POV, Hide)
 
 https://github.com/jmettler27/Pop/assets/56764091/b5faffbb-1bdb-41cc-987b-c2b4237464e7
 

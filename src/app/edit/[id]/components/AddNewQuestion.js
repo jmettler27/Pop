@@ -247,6 +247,7 @@ import { SubmitEnumQuestionForm } from '@/app/submit/enum/page'
 import { SubmitImageQuestionForm } from '@/app/submit/image/page'
 import { SubmitMatchingQuestionForm } from '@/app/submit/matching/page'
 import { SubmitMCQForm } from '@/app/submit/mcq/page'
+import { SubmitNaguiQuestionForm } from '@/app/submit/nagui/page'
 import { SubmitOOOQuestionForm } from '@/app/submit/odd_one_out/page'
 import { SubmitProgressiveCluesQuestionForm } from '@/app/submit/progressive_clues/page'
 import { SubmitQuoteQuestionForm } from '@/app/submit/quote/page'
@@ -271,6 +272,8 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
             return <SubmitMatchingQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case 'mcq':
             return <SubmitMCQForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
+        case 'nagui':
+            return <SubmitNaguiQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case 'basic':
             return <SubmitBasicQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case 'odd_one_out':

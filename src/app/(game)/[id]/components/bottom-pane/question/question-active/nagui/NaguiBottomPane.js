@@ -11,10 +11,11 @@ import { CircularProgress } from '@mui/material'
 import GameChooserOrder from '@/app/(game)/[id]/components/GameChooserOrder'
 import { GameChooserHelperText } from '@/app/(game)/[id]/components/GameChooserTeamAnnouncement';
 
-import EndQuestionButton from '@/app/(game)/[id]/components/bottom-pane/question/question-active/EndQuestionButton'
-import ResetQuestionButton from '@/app/(game)/[id]/components/bottom-pane/question/question-active/ResetQuestionButton'
+import NaguiPlayerController from './NaguiPlayerController'
+import NaguiPlayerOptionHelperText from './NaguiPlayerOptionHelperText'
+import NaguiOrganizerController from './NaguiOrganizerController'
 
-export default function MCQBottomPane({ question }) {
+export default function NaguiBottomPane({ question }) {
     const { id: gameId } = useParams()
 
     const [gameStates, statesLoading, statesError] = useDocumentDataOnce(doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states'))
@@ -33,7 +34,7 @@ export default function MCQBottomPane({ question }) {
 
             {/* Left part: controller */}
             <div className='basis-3/4'>
-                <MCQController gameStates={gameStates} question={question} />
+                <NaguiController gameStates={gameStates} question={question} />
             </div>
 
             {/* Right part: list of riddle players who buzzed and/or were canceled */}
@@ -45,7 +46,7 @@ export default function MCQBottomPane({ question }) {
 
 }
 
-function MCQController({ gameStates, question }) {
+function NaguiController({ gameStates, question }) {
     const game = useGameContext()
     const myRole = useRoleContext()
 
@@ -64,42 +65,20 @@ function MCQController({ gameStates, question }) {
 
     switch (myRole) {
         case 'organizer':
-            return <MCQOrganizerController realtime={realtime} />
+            return <NaguiOrganizerController realtime={realtime} />
         case 'player':
-            return <MCQPlayerController chooserTeamId={chooserTeamId} realtime={realtime} question={question} />
+            return <NaguiPlayerController chooserTeamId={chooserTeamId} realtime={realtime} />
         default:
-            return <MCQSpectatorController chooserTeamId={chooserTeamId} />
+            return <NaguiSpectatorController chooserTeamId={chooserTeamId} realtime={realtime} />
     }
 
 }
 
-function MCQOrganizerController({ realtime }) {
-    return (
-        <div className='flex flex-col h-full w-full items-center justify-around'>
-            {/* <BuzzerHeadPlayer realtime={realtime} />
-            */}
-            <span className='2xl:text-4xl font-bold'><GameChooserHelperText chooserTeamId={realtime.teamId} /></span>
-            <div className='flex flex-row w-full justify-end'>
-                <ResetQuestionButton />
-                <EndQuestionButton />
-            </div>
-        </div>
-    )
-}
-
-
-function MCQPlayerController({ chooserTeamId }) {
+function NaguiSpectatorController({ chooserTeamId, realtime }) {
     return (
         <div className='flex flex-col h-full items-center justify-center'>
-            <span className='2xl:text-4xl font-bold'><GameChooserHelperText chooserTeamId={chooserTeamId} /></span>
-        </div>
-    )
-}
-
-function MCQSpectatorController({ chooserTeamId }) {
-    return (
-        <div className='flex flex-col h-full items-center justify-center'>
-            <span className='2xl:text-4xl font-bold'><GameChooserHelperText chooserTeamId={chooserTeamId} /></span>
+            {realtime.option === null & <span className='2xl:text-4xl font-bold'><GameChooserHelperText chooserTeamId={chooserTeamId} /></span>}
+            {realtime.option !== null && <span className='2xl:text-4xl font-bold'><NaguiPlayerOptionHelperText realtime={realtime} /></span>}
         </div>
     )
 }
