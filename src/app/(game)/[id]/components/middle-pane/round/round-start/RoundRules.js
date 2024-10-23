@@ -31,7 +31,7 @@ export function RoundRules({ round }) {
         case 'basic':
             return <BasicRoundRules round={round} />
         case 'special':
-            return <ThemesRoundRules round={round} />
+            return <SpecialRoundRules round={round} />
         case 'mixed':
             return <MixedRoundRules round={round} />
     }
@@ -106,15 +106,17 @@ function QuoteRoundRules({ round }) {
 
 
 function OddOneOutRoundRules({ round }) {
+    const { order, mistakePenalty } = round
+
     return <>
         <p className='2xl:text-2xl text-center'>🖱️ Chaque équipe se relaie à son tour et <strong>clique sur une proposition de la liste qu&apos;elle considère juste</strong>.</p>
         <ul className='2xl:text-2xl list-disc pl-10'>
             <li>Si la proposition est <span className='text-green-500 font-bold'>correcte</span>, on passe à l&apos;équipe suivante.</li>
-            <li>Si la proposition est <span className='text-red-500 font-bold'>incorrecte</span>, on termine la question et l&apos;équipe obtient <strong>{round.mistakePenalty} point de pénalité.</strong> De plus, elle devient <strong>1ère dans l&apos;ordre de passage de la question suivante</strong>.</li>
+            <li>Si la proposition est <span className='text-red-500 font-bold'>incorrecte</span>, on termine la question et l&apos;équipe obtient <strong>{mistakePenalty} point{Math.abs(mistakePenalty) > 1 ? 's' : ''} de pénalité.</strong> De plus, elle devient <strong>1ère dans l&apos;ordre de passage de la question suivante</strong>.</li>
         </ul>
         <p className='2xl:text-2xl text-center'>ℹ️ Une petite <strong>explication</strong> est affichée à chaque fois.</p>
         <p className='2xl:text-2xl text-center'>⏳ Vous avez <u><strong>{OOO_THINKING_TIME} secondes</strong></u> pour vous décider, faute de quoi <strong>une proposition sera choisie aléatoirement dans la liste !</strong></p>
-        <p className='2xl:text-2xl text-center'>L&apos;ordre de passage = {round.order > 0 ? `Le classement inversé de la manche ${round.order}` : 'Un ordre aléatoire'}.</p>
+        <p className='2xl:text-2xl text-center'>L&apos;ordre de passage = {order > 0 ? `Le classement inversé de la manche ${order}` : 'Un ordre aléatoire'}.</p>
     </>
 }
 
@@ -134,16 +136,18 @@ function EnumRoundRules({ round }) {
 }
 
 function MatchingRoundRules({ round }) {
+    const { order, mistakePenalty, maxMistakes } = round
+
     return <>
         <p className='2xl:text-2xl text-center'>🖱️ Chaque équipe se relaie à son tour et <strong>clique sur les propositions </strong> du lien qu&apos;elle considère juste, <span className='font-bold underline'>de gauche à droite</span>.</p>
         <ul className='2xl:text-2xl list-disc pl-10'>
             <li>Si le lien est <span className='text-green-500 font-bold'>correct</span>, on passe à l&apos;équipe suivante.</li>
-            <li>Si le lien est <span className='text-red-500 font-bold'>incorrect</span>, l&apos;équipe obtient <strong>{round.mistakePenalty} point de pénalité.</strong></li>
+            <li>Si le lien est <span className='text-red-500 font-bold'>incorrect</span>, l&apos;équipe obtient <strong>{mistakePenalty} point{Math.abs(mistakePenalty) > 1 ? 's' : ''} de pénalité.</strong></li>
         </ul>
         <p className='2xl:text-2xl text-center'>⚠️ <strong>Dans tous les cas, le lien est dessiné !</strong></p>
-        <p className='2xl:text-2xl text-center'>🙅 L&apos;équipe est <strong>disqualifiée</strong> de la question au bout de <strong>{round.maxMistakes || MATCHING_MAX_NUM_MISTAKES} erreurs</strong>, et la question s&apos;arrête si toutes les équipes sont disqualifiées.</p>
+        <p className='2xl:text-2xl text-center'>🙅 L&apos;équipe est <strong>disqualifiée</strong> de la question au bout de <strong>{maxMistakes || MATCHING_MAX_NUM_MISTAKES} erreurs</strong>, et la question s&apos;arrête si toutes les équipes sont disqualifiées.</p>
         <p className='2xl:text-2xl text-center'>⏳ Vous avez <u><strong>entre {MATCHING_THINKING_TIME * (MATCHING_MIN_NUM_COLS - 1)} et {MATCHING_THINKING_TIME * (MATCHING_MAX_NUM_COLS - 1)} secondes</strong></u> pour vous décider, faute de quoi <strong>un lien aléatoire sera dessiné !</strong></p>
-        <p className='2xl:text-2xl text-center'>L&apos;ordre de passage = {round.order > 0 ? `Le classement inversé de la manche ${round.order}` : 'Un ordre aléatoire'}.</p>
+        <p className='2xl:text-2xl text-center'>L&apos;ordre de passage = {order > 0 ? `Le classement inversé de la manche ${order}` : 'Un ordre aléatoire'}.</p>
     </>
 }
 
@@ -171,7 +175,7 @@ function BasicRoundRules({ round }) {
 
 
 // Special
-function ThemesRoundRules({ round }) {
+function SpecialRoundRules({ round }) {
     return <>
         <p className='2xl:text-2xl text-center font-bold'>🗣️ Répondez directement aux questions, il n&apos;y a pas de proposition de réponses.</p>
         <p className='2xl:text-2xl text-center'>⚠️ Attention, il faut être précis dans sa réponse!</p>

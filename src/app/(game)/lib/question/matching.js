@@ -148,7 +148,7 @@ const submitMatchTransaction = async (
             }
             if (newChooserTeamId !== teamId) {
                 for (const chooserDoc of choosersSnapshot.docs) {
-                    transaction.update(chooserDoc.ref, { status: 'correct' })
+                    transaction.update(chooserDoc.ref, { status: 'idle' })
                 }
             }
 
@@ -205,10 +205,6 @@ const submitMatchTransaction = async (
             canceled: newCanceled
         })
 
-        // Set the status of the current chooser team to 'wrong'
-        for (const chooserDoc of choosersSnapshot.docs) {
-            transaction.update(chooserDoc.ref, { status: 'wrong' })
-        }
 
         // Log the match
         const numCols = rows.length
@@ -254,7 +250,11 @@ const submitMatchTransaction = async (
                 })
             }
 
-            await addWrongAnswerSoundToQueueTransaction(transaction, gameId)
+            for (const chooserDoc of choosersSnapshot.docs) {
+                transaction.update(chooserDoc.ref, { status: isCanceled ? 'wrong' : 'idle' })
+            }
+
+            await addSoundEffectTransaction(transaction, gameId, isCanceled ? 'zelda_wind_waker_kaboom' : 'zelda_wind_waker_sploosh')
 
         } else {
             // All teams have been canceled => End the question
@@ -267,7 +267,11 @@ const submitMatchTransaction = async (
                 chooserOrder: newChooserOrder,
             })
 
-            await addSoundEffectTransaction(transaction, gameId, 'zelda_wind_waker_sploosh')
+            for (const chooserDoc of choosersSnapshot.docs) {
+                transaction.update(chooserDoc.ref, { status: 'wrong' })
+            }
+
+            await addSoundEffectTransaction(transaction, gameId, 'zelda_wind_waker_game_over')
 
             await endQuestionTransaction(transaction, gameId, roundId, questionId)
         }

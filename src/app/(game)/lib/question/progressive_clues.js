@@ -68,14 +68,16 @@ const revealProgressiveClueTransaction = async (
     })
 
     // Decancel players who need it
-    if (canceled && canceled.length > 0) {
-        const targetClueIdx = (questionRealtimeData.currentClueIdx + 1) - roundData.delay
-        for (const cancellation of canceled) {
-            if (cancellation.clueIdx === targetClueIdx) {
-                const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', cancellation.playerId)
-                transaction.update(playerRef, { status: 'idle' })
-            }
-        }
+    if (canceled?.length > 0) {
+        const targetClueIdx = questionRealtimeData.currentClueIdx + 1 - roundData.delay
+        canceled
+            .filter(cancellation => cancellation.clueIdx === targetClueIdx)
+            .forEach(cancellation => {
+                const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', cancellation.playerId);
+                transaction.update(playerRef, {
+                    status: 'idle'
+                });
+            });
     }
     // await updateTimerStateTransaction(transaction, gameId, 'reset')
     await addSoundEffectTransaction(transaction, gameId, 'cartoon_mystery_musical_tone_002')

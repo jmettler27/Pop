@@ -108,7 +108,7 @@ const selectRoundTransaction = async (
                 maxPoints = totalNumElements * rewardsPerElement;
                 break;
             case 'mcq':
-                maxPoints = Math.ceil(numQuestions / numTeams) * rewardsPerQuestion;
+                maxPoints = Math.ceil(numQuestions / numTeams) * rewardsPerQuestion['hide'];
                 break;
         }
     }

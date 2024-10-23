@@ -85,7 +85,7 @@ function MatchingPlayerQuestionController({ lang = DEFAULT_LOCALE }) {
 
     return isCanceled ?
         <span className='2xl:text-3xl text-red-500'>🙅 {MAX_TRIES_EXCEEDED_TEXT[lang]} ({maxMistakes})</span> :
-        <span className='2xl:text-3xl'>Tu peux faire encore <span className='font-bold text-red-500'>{remainingMistakes} erreur{remainingMistakes > 1 && 's'}.</span></span>
+        <span className='2xl:text-3xl'>Tu peux faire encore <span className='font-bold text-red-500'>{remainingMistakes} erreur{remainingMistakes > 1 && 's'}</span>.</span>
     return
 
 }

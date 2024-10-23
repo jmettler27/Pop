@@ -54,11 +54,13 @@ function QuoteRoundRankingPolicyTitle({ round }) {
 }
 
 function OddOneOutRoundRankingPolicyTitle({ round }) {
-    return <h1 className='2xl:text-3xl'><span className='font-bold'>{round.mistakePenalty} point</span> par intrus trouvé</h1>
+    const { mistakePenalty } = round
+    return <h1 className='2xl:text-3xl'><span className='font-bold'>{mistakePenalty} point{Math.abs(mistakePenalty) > 1 ? 's' : ''}</span> par intrus trouvé</h1>
 }
 
 function MatchingRoundRankingPolicyTitle({ round }) {
-    return <h1 className='2xl:text-3xl'><span className='font-bold'>{round.mistakePenalty} point</span> par mauvais lien créé</h1>
+    const { mistakePenalty } = round
+    return <h1 className='2xl:text-3xl'><span className='font-bold'>{mistakePenalty} point{Math.abs(mistakePenalty) > 1 ? 's' : ''}</span> par mauvais lien créé</h1>
 }
 
 function MCQRoundRankingPolicyTitle({ round }) {
