@@ -1,94 +1,4 @@
-import { DEFAULT_LOCALE } from '@/lib/utils/locales'
-
-
-/* MCQ Options */
-export const MCQ_TYPES = ['conditional', 'immediate']
-
-export const MCQ_TYPE_TO_TITLE = {
-    'en': {
-        'conditional': "Everyone Wants to Take Their Place",
-        'immediate': "Who Wants to Be a Millionaire?"
-    },
-    'fr-FR': {
-        'conditional': "Tout le Monde Veut Prendre sa Place",
-        'immediate': "Qui Veut Gagner des Millions ?"
-    }
-}
-
-export const MCQ_TYPE_TO_EMOJI = {
-    'conditional': '🐴',
-    'immediate': '💲'
-}
-
-export function mcqTypeToEmoji(type) {
-    return MCQ_TYPE_TO_EMOJI[type]
-}
-
-export function mcqTypeToTitle(type, lang = DEFAULT_LOCALE) {
-    return MCQ_TYPE_TO_TITLE[lang][type]
-}
-
-
-import { prependWithEmojiAndSpace } from '@/lib/utils/emojis';
-export function prependMCQTypeWithEmoji(mcqType, lang = DEFAULT_LOCALE) {
-    return prependWithEmojiAndSpace(mcqTypeToEmoji(mcqType), mcqTypeToTitle(mcqType, lang))
-}
-
-export const IMMEDIATE_MCQ_DEFAULT_REWARD = 1;
-
-export const MCQ_OPTIONS = ['hide', 'square', 'duo']
-
-export const MCQ_OPTION_TO_EMOJI = {
-    'hide': "💲",
-    'square': "4️⃣",
-    'duo': "2️⃣"
-}
-export const MCQ_OPTION_TO_TITLE = {
-    'en': {
-        'hide': "Cash",
-        'square': "Square",
-        'duo': "Duo"
-    },
-    'fr-FR': {
-        'hide': "Cash",
-        'square': "Carré",
-        'duo': "Duo"
-    }
-}
-
-export const CONDITIONAL_MCQ_OPTION_TO_SOUND = {
-    'hide': 'quest_ce_que_laudace',
-    'square': 'cest_carre',
-    'duo': 'cest_lheure_du_duo'
-}
-
-
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import Looks4Icon from '@mui/icons-material/Looks4';
-import LooksTwoIcon from '@mui/icons-material/LooksTwo';
-export const MCQ_OPTION_TO_ICON = {
-    'hide': <AttachMoneyIcon />,
-    'square': <Looks4Icon />,
-    'duo': <LooksTwoIcon />
-}
-
-export const MCQ_DEFAULT_REWARDS = {
-    'hide': 5,
-    'square': 3,
-    'duo': 2
-}
-
-
-export function mcqOptionToTitle(option, lang = DEFAULT_LOCALE) {
-    return MCQ_OPTION_TO_TITLE[lang][option]
-}
-export function mcqOptionToEmoji(option) {
-    return MCQ_OPTION_TO_EMOJI[option]
-}
-
-export function prependMCQOptionWithEmoji(option, lang = DEFAULT_LOCALE) {
-    return mcqOptionToEmoji(option) + " " + mcqOptionToTitle(option, lang)
-}
+export const MCQ_DEFAULT_REWARD = 1;
 
 
 /* MCQ choices */
@@ -96,7 +6,6 @@ export const MCQ_CHOICES = ["A", "B", "C", "D"]
 
 export const MCQ_MIN_NUMBER_OF_CHOICES = 2;
 export const MCQ_MAX_NUMBER_OF_CHOICES = MCQ_CHOICES.length;
-export const MCQ_NUMBER_OF_CHOICES = MCQ_CHOICES.length;
 
 export const MCQ_CHOICES_EXAMPLE = [
     "101",
@@ -131,10 +40,3 @@ export const MCQ_EXPLANATION_MAX_LENGTH = 500;
 
 
 export const MCQ_THINKING_TIME = 20;
-
-/* Validation  */
-import * as Yup from 'yup'
-
-export const mcqSubtypeSchema = () => Yup.string()
-    .oneOf(MCQ_TYPES, "Invalid question subtype.")
-    .required("Required.")

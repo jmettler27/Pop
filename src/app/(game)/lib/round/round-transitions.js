@@ -108,6 +108,9 @@ const selectRoundTransaction = async (
                 maxPoints = totalNumElements * rewardsPerElement;
                 break;
             case 'mcq':
+                maxPoints = Math.ceil(numQuestions / numTeams) * rewardsPerQuestion;
+                break;
+            case 'nagui':
                 maxPoints = Math.ceil(numQuestions / numTeams) * rewardsPerQuestion['hide'];
                 break;
         }
@@ -129,7 +132,7 @@ const selectRoundTransaction = async (
             })
         }
     }
-    if (roundType === 'mcq') {
+    if (roundType === 'mcq' || roundType === 'nagui') {
         const shuffledQuestionIds = shuffle(questionIds)
         transaction.update(roundRef, {
             questions: shuffledQuestionIds
@@ -203,7 +206,7 @@ const switchRoundQuestionTransaction = async (
 
     const { chooserOrder, chooserIdx } = gameStatesData
 
-    if (questionData.type === 'mcq' || questionData.type === 'basic') {
+    if (questionData.type === 'mcq' || questionData.type === 'nagui') {
         const chooserTeamId = chooserOrder[chooserIdx]
 
         if (questionOrder > 0) {
@@ -462,7 +465,7 @@ const endRoundTransaction = async (
                 });
             };
 
-            if (roundType === 'mcq') {
+            if (['mcq', 'nagui'].includes(roundType)) {
                 const questionRealtimeDatas = await Promise.all(
                     questionIds.map(questionId =>
                         getDocDataTransaction(transaction, doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId))
@@ -481,9 +484,9 @@ const endRoundTransaction = async (
 
                 // Calculate the completion rate (in %) of each team
                 roundCompletionRates = Object.entries(teamStats).reduce((acc, [teamId, { sumRewards, numQuestions }]) => {
-                    const maxPoints = subtype === 'immediate'
-                        ? numQuestions * rewardsPerQuestion
-                        : numQuestions * rewardsPerQuestion['hide'];
+                    const maxPoints = roundType === 'nagui'
+                        ? numQuestions * rewardsPerQuestion['hide']
+                        : numQuestions * rewardsPerQuestion;
 
                     acc[teamId] = maxPoints > 0 ? Math.round(100 * sumRewards / maxPoints) : 0;
                     return acc;

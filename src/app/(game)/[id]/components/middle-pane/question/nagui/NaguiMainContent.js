@@ -8,20 +8,20 @@ import { useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/fires
 
 import LoadingScreen from '@/app/components/LoadingScreen'
 
-import { MCQ_CHOICES } from '@/lib/utils/question/mcq'
-import { selectMCQChoice } from '@/app/(game)/lib/question/mcq'
+import { NAGUI_CHOICES } from '@/lib/utils/question/nagui'
+import { selectNaguiChoice } from '@/app/(game)/lib/question/nagui'
 import { generateShuffledIndices } from '@/lib/utils/question/odd_one_out'
 
 
 import { Avatar, Badge, Button, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 import { clsx } from 'clsx'
 
-import mcq_correct from '../../../../../../../../public/nagui-correct.png';
-import mcq_wrong from '../../../../../../../../public/nagui-wrong.png';
+import nagui_correct from '../../../../../../../../public/nagui-correct.png';
+import nagui_wrong from '../../../../../../../../public/nagui-wrong.png';
 
 import NoteButton from '@/app/(game)/[id]/components/NoteButton'
 
-export default function MCQMainContent({ question }) {
+export default function NaguiMainContent({ question }) {
     const { title, note, choices } = question.details
 
     // Randomize the order of the choices on the client side
@@ -37,7 +37,7 @@ export default function MCQMainContent({ question }) {
                 {note && <NoteButton note={note} />}
             </div>
             <div className='h-[75%] w-full flex items-center justify-center'>
-                <MCQMainContentQuestion question={question} randomization={randomMapping} />
+                <NaguiMainContentQuestion question={question} randomization={randomMapping} />
             </div>
         </div>
     )
@@ -45,10 +45,10 @@ export default function MCQMainContent({ question }) {
 
 import Image from 'next/image'
 
-function MCQAnswerImage({ correct }) {
+function NaguiAnswerImage({ correct }) {
     if (correct === true) {
         return <Image
-            src={mcq_correct.src}
+            src={nagui_correct.src}
             alt=''
             width={0}
             height={0}
@@ -57,7 +57,7 @@ function MCQAnswerImage({ correct }) {
     }
     if (correct === false) {
         return <Image
-            src={mcq_wrong.src}
+            src={nagui_wrong.src}
             alt=''
             width={0}
             height={0}
@@ -67,7 +67,7 @@ function MCQAnswerImage({ correct }) {
     return <></>
 }
 
-function MCQMainContentQuestion({ question, randomization }) {
+function NaguiMainContentQuestion({ question, randomization }) {
     const game = useGameContext()
 
     const questionRealtimeRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
@@ -85,60 +85,73 @@ function MCQMainContentQuestion({ question, randomization }) {
     return (
         <div className='flex flex-row h-full w-full items-center justify-center'>
             <div className='flex flex-col h-full w-1/4 items-center justify-center'>
-                <MCQAnswerImage correct={realtime.correct} />
+                <NaguiAnswerImage correct={realtime.correct} />
             </div>
-            {game.status === 'question_end' && <MCQAnswerChoices question={question} realtime={realtime} randomization={randomization} />}
-            {game.status === 'question_active' && <MCQChoices question={question} realtime={realtime} randomization={randomization} />}
+            {game.status === 'question_end' && <NaguiAnswerChoices question={question} realtime={realtime} randomization={randomization} />}
+            {game.status === 'question_active' && <NaguiChoices question={question} realtime={realtime} randomization={randomization} />}
             <div className='flex flex-col h-full w-1/4 items-center justify-center'>
-                <MCQAnswerImage correct={realtime.correct} />
+                <NaguiAnswerImage correct={realtime.correct} />
             </div>
         </div>
     )
 }
 
 
-const choiceIsDisabled = (myRole, isChooser) => {
+const choiceIsDisabled = (choiceIdx, myRole, isChooser, option, duoIdx, answerIdx) => {
     if (!(myRole === 'player' && isChooser))
         return true
-    return false
+    if (option === 'duo')
+        return !(choiceIdx === duoIdx || choiceIdx === answerIdx)
+    if (option === 'square')
+        return false
+    return true
 }
 
 import { useAsyncAction } from '@/lib/utils/async'
 
 
-function MCQChoices({ question, realtime, randomization }) {
+function NaguiChoices({ question, realtime, randomization }) {
     const game = useGameContext()
     const myTeam = useTeamContext()
     const myRole = useRoleContext()
     const user = useUserContext()
 
-    const { choices } = question.details
+    const { choices, answerIdx, duoIdx } = question.details
 
     const isChooser = myTeam === realtime.teamId
 
     const [handleSelectChoice, isSubmitting] = useAsyncAction(async (idx) => {
-        await selectMCQChoice(game.id, game.currentRound, game.currentQuestion, user.id, myTeam, idx)
+        await selectNaguiChoice(game.id, game.currentRound, game.currentQuestion, user.id, myTeam, idx)
     })
+
+    if (realtime.option === null || realtime.option === 'hide') {
+        // return <Image src={nagui_correct.src} height={'70%'} />
+        return <span className='2xl:text-6xl'>{naguiOptionToEmoji('hide')} {naguiOptionToEmoji('square')} {naguiOptionToEmoji('duo')} ?</span>
+    }
+
 
     return (
         <List className='rounded-lg max-h-full w-1/2 overflow-y-auto mb-3 space-y-3'>
             {randomization.map((origIdx, idx) => (
-                <ListItemButton key={idx}
-                    divider={idx !== choices.length - 1}
-                    disabled={isSubmitting || choiceIsDisabled(myRole, isChooser)}
-                    sx={{
-                        '&.Mui-disabled': { opacity: 1 },
-                    }}
-                    className='border-4 border-solid rounded-lg border-blue-500 hover:text-blue-400'
-                    onClick={() => handleSelectChoice(origIdx)}
-                >
-                    <ListItemText
-                        primary={`${MCQ_CHOICES[idx]}. ${question.details.choices[origIdx]}`}
-                        primaryTypographyProps={{
-                            className: '2xl:text-2xl'
+                // If the question is a duo question, only show the duoIdx and answerIdx
+                (realtime.option !== 'duo' || (origIdx === answerIdx || origIdx === duoIdx)) && (
+                    <ListItemButton key={idx}
+                        divider={idx !== choices.length - 1}
+                        disabled={isSubmitting || choiceIsDisabled(origIdx, myRole, isChooser, realtime.option, duoIdx, answerIdx)}
+                        sx={{
+                            '&.Mui-disabled': { opacity: 1 },
                         }}
-                    />
-                </ListItemButton>
+                        className='border-4 border-solid rounded-lg border-blue-500 hover:text-blue-400'
+                        onClick={() => handleSelectChoice(origIdx)}
+                    >
+                        <ListItemText
+                            primary={`${NAGUI_CHOICES[idx]}. ${question.details.choices[origIdx]}`}
+                            primaryTypographyProps={{
+                                className: '2xl:text-2xl'
+                            }}
+                        />
+                    </ListItemButton>
+                )
             ))}
         </List>
     )
@@ -146,11 +159,12 @@ function MCQChoices({ question, realtime, randomization }) {
 
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
+import { naguiOptionToEmoji } from '@/lib/utils/question/nagui'
 
-function MCQAnswerChoices({ question, realtime, randomization }) {
-    const isCorrectAnswer = idx => (idx === question.details.answerIdx);
+function NaguiAnswerChoices({ question, realtime, randomization }) {
+    const isCorrectAnswer = idx => ((realtime.option === 'hide' && realtime.correct && idx === question.details.answerIdx) || idx === question.details.answerIdx);
     const isIncorrectChoice = idx => (realtime.option === 'duo' || realtime.option === 'square') && idx === realtime.choiceIdx && idx !== question.details.answerIdx;
-    const isNeutralChoice = idx => ((idx !== realtime.choiceIdx && idx !== question.details.answerIdx));
+    const isNeutralChoice = idx => ((realtime.option === 'hide' && realtime.correct && idx !== question.details.answerIdx) || (idx !== realtime.choiceIdx && idx !== question.details.answerIdx));
 
     const getBorderColor = idx => {
         if (isCorrectAnswer(idx)) return 'border-green-500';
@@ -204,7 +218,7 @@ function MCQAnswerChoices({ question, realtime, randomization }) {
                     className={clsx('border-4 border-solid rounded-lg', getBorderColor(origIdx))}
                 >
                     <ListItemText
-                        primary={`${MCQ_CHOICES[idx]}. ${question.details.choices[origIdx]}`}
+                        primary={`${NAGUI_CHOICES[idx]}. ${question.details.choices[origIdx]}`}
                         primaryTypographyProps={{ className: clsx('2xl:text-2xl', getTextColor(origIdx)) }}
                     />
                     {getListItemIcon(origIdx)}

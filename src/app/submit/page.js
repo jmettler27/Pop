@@ -65,7 +65,8 @@ const QUESTION_TYPE_TO_DESCRIPTION = {
         'enum': "List as many elements as you can.",
         'odd_one_out': "Select only the correct proposals.",
         'matching': "Match the elements together.",
-        'mcq': "What's the answer?",
+        'mcq': "One question, multiple choices. Which one is correct?",
+        "nagui": "Hide, square or duo?",
         'basic': "One question, one answer. Simple as that."
     },
     'fr-FR': {
@@ -77,7 +78,8 @@ const QUESTION_TYPE_TO_DESCRIPTION = {
         'enum': "Listez autant d'éléments que vous pouvez.",
         'odd_one_out': "Quel est l'intrus ?",
         'matching': "Liez correctement les éléments ensemble.",
-        'mcq': "Une question, plusieurs choix. Laquelle est la bonne ?",
+        'mcq': "Une question, plusieurs choix. Lequel est le bon ?",
+        "nagui": "Cache, carré ou duo ?",
         'basic': "Une question, une réponse. Tout simplement."
     }
 }

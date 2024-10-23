@@ -23,6 +23,8 @@ export function RoundDescription({ round }) {
             return <MatchingRoundDescription />
         case 'mcq':
             return <MCQRoundDescription />
+        case 'nagui':
+            return <NaguiRoundDescription />
         case 'basic':
             return <BasicRoundDescription />
         case 'special':
@@ -108,6 +110,13 @@ function MCQRoundDescription({ }) {
         <p className='2xl:text-2xl text-center'>🔀 Plusieurs questions directes sur des sujets différents, dans un <strong>ordre aléatoire.</strong></p>
     </>
 }
+
+function NaguiRoundDescription({ }) {
+    return <>
+        <p className='2xl:text-2xl text-center'>🔀 Plusieurs questions directes sur des sujets différents, dans un <strong>ordre aléatoire.</strong></p>
+    </>
+}
+
 
 function BasicRoundDescription({ }) {
     return <>

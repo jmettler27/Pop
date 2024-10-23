@@ -223,14 +223,21 @@ const updateQuestionTransaction = async (
     questionId
 ) => {
     const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
+    const questionData = await getDocDataTransaction(transaction, questionRef)
+    const { subtype, ...rest } = questionData.details
+
+    const type = subtype === 'immediate' ? 'mcq' : 'nagui'
+
+    // Change the type of the question to subtype
     transaction.update(questionRef, {
-        createdBy: 'dE1ItazZqaoBjChy7NN8'
+        type,
+        details: rest
     })
 }
 
 export async function updateQuestions() {
     try {
-        const q = query(QUESTIONS_COLLECTION_REF, where('type', '==', 'basic'), where('topic', '==', 'video_game'));
+        const q = query(QUESTIONS_COLLECTION_REF, where('type', '==', 'mcq'));
         const querySnapshot = await getDocs(q)
 
         for (const questionDoc of querySnapshot.docs) {

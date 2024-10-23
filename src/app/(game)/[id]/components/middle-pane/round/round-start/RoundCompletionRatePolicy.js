@@ -19,15 +19,16 @@ function RoundCompletionRatePolicyTitle({ round }) {
         case 'emoji':
         case 'enum':
         case 'basic':
+        case 'mcq':
             return <RiddleRoundCompletionRatePolicyTitle round={round} />
         case 'quote':
             return <QuoteRoundCompletionRatePolicyTitle round={round} />
+        case 'nagui':
+            return <NaguiRoundCompletionRatePolicyTitle round={round} />
         case 'odd_one_out':
             return <OddOneOutRoundCompletionRatePolicyTitle round={round} />
         case 'matching':
             return <MatchingRoundCompletionRatePolicyTitle round={round} />
-        case 'mcq':
-            return <MCQRoundCompletionRatePolicyTitle round={round} />
         default:
             return <></>
     }
@@ -43,6 +44,7 @@ function RoundMaxNumPoints({ round }) {
         case 'basic':
         case 'quote':
         case 'mcq':
+        case 'nagui':
             const { maxPoints } = round
             return <h1 className='2xl:text-3xl text-center'>Points max / équipe: <span className='font-bold'>{numberToKeycapEmoji(maxPoints)}</span></h1>
         default:
@@ -72,7 +74,7 @@ function MatchingRoundCompletionRatePolicyTitle({ round }) {
     return <h1 className='2xl:text-2xl text-center'>✨ Dessiner un lien incorrect = <span className='text-red-500'><strong>{mistakePenalty} point{absPenalty > 1 ? 's' : ''}</strong> sur le score global</span></h1>
 }
 
-function MCQRoundCompletionRatePolicyTitle({ }) {
+function NaguiRoundCompletionRatePolicyTitle({ }) {
     return <>
         <h1 className='2xl:text-3xl text-center'>✨ Un nombre variable de points par bonne réponse</h1>
     </>

@@ -5,6 +5,7 @@ import { ENUM_MIN_THINKING_SECONDS } from "./enum";
 import { IMAGE_THINKING_TIME } from "./image";
 import { MATCHING_THINKING_TIME } from "./matching";
 import { MCQ_THINKING_TIME } from "./mcq";
+import { NAGUI_THINKING_TIME } from "./nagui";
 import { OOO_THINKING_TIME } from "./odd_one_out";
 import { PROGRESSIVE_CLUES_THINKING_TIME } from "./progressive_clues";
 import { QUOTE_THINKING_TIME } from "./quote";
@@ -16,6 +17,7 @@ export const DEFAULT_THINKING_TIME_SECONDS = {
     'image': IMAGE_THINKING_TIME,
     'quote': QUOTE_THINKING_TIME,
     'mcq': MCQ_THINKING_TIME,
+    'nagui': NAGUI_THINKING_TIME,
     'basic': BASIC_QUESTION_THINKING_TIME,
     'matching': MATCHING_THINKING_TIME,
     'odd_one_out': OOO_THINKING_TIME,

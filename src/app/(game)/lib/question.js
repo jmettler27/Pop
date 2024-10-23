@@ -10,6 +10,7 @@ import { handleRiddleCountdownEndTransaction, resetRiddleQuestionTransaction } f
 import { endEnumQuestionTransaction, endEnumReflectionTransaction, resetEnumQuestionTransaction } from './question/enum';
 import { handleOOOCountdownEndTransaction, resetOddOneOutQuestionTransaction } from './question/odd_one_out';
 import { handleMCQCountdownEndTransaction, resetMCQTransaction } from './question/mcq';
+import { handleNaguiCountdownEndTransaction, resetNaguiTransaction } from './question/nagui';
 import { handleMatchingCountdownEndTransaction, resetMatchingQuestionTransaction } from './question/matching';
 import { handleQuoteCountdownEndTransaction, resetQuoteQuestionTransaction } from './question/quote';
 
@@ -109,6 +110,9 @@ export const resetQuestionTransaction = async (
             break
         case 'mcq':
             await resetMCQTransaction(transaction, gameId, roundId, questionId)
+            break
+        case 'nagui':
+            await resetNaguiTransaction(transaction, gameId, roundId, questionId)
             break
         case 'basic':
             await resetBasicQuestionTransaction(transaction, gameId, roundId, questionId)
@@ -215,6 +219,8 @@ const handleQuestionActiveCountdownEndTransaction = async (
         await handleMatchingCountdownEndTransaction(transaction, gameId, roundId, questionId)
     } else if (type === 'mcq') {
         await handleMCQCountdownEndTransaction(transaction, gameId, roundId, questionId)
+    } else if (type === 'nagui') {
+        await handleNaguiCountdownEndTransaction(transaction, gameId, roundId, questionId)
     } else if (type === 'basic') {
         await handleBasicQuestionCountdownEndTransaction(transaction, gameId, roundId, questionId)
     } else if (type === 'enum') {

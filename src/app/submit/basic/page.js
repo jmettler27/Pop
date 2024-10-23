@@ -12,13 +12,7 @@ import QuestionFormHeader from '@/app/submit/components/QuestionFormHeader';
 import { DEFAULT_LOCALE, localeSchema } from '@/lib/utils/locales';
 import { topicSchema } from '@/lib/utils/topics';
 import { stringSchema } from '@/lib/utils/forms';
-import {
-    MCQ_CHOICES_EXAMPLE, MCQ_CHOICE_MAX_LENGTH,
-    MCQ_EXPLANATION_EXAMPLE, MCQ_EXPLANATION_MAX_LENGTH,
-    MCQ_NOTE_EXAMPLE, MCQ_NOTE_MAX_LENGTH,
-    MCQ_SOURCE_EXAMPLE, MCQ_SOURCE_MAX_LENGTH,
-    MCQ_TITLE_EXAMPLE, MCQ_TITLE_MAX_LENGTH
-} from '@/lib/utils/question/mcq';
+import { MCQ_CHOICE_MAX_LENGTH, MCQ_EXPLANATION_MAX_LENGTH, MCQ_NOTE_MAX_LENGTH, MCQ_SOURCE_MAX_LENGTH, MCQ_TITLE_MAX_LENGTH } from '@/lib/utils/question/mcq';
 
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation'

@@ -12,7 +12,8 @@ import { prependTopicWithEmoji, topicToEmoji } from '@/lib/utils/topics';
 import { questionTypeToEmoji } from '@/lib/utils/question_types';
 import { QUESTION_ELEMENT_TO_EMOJI, QUESTION_ELEMENT_TO_TITLE } from '@/lib/utils/question/question';
 import { blindtestTypeToEmoji } from '@/lib/utils/question/blindtest';
-import { MCQ_CHOICES, mcqTypeToEmoji } from '@/lib/utils/question/mcq';
+import { MCQ_CHOICES } from '@/lib/utils/question/mcq';
+import { NAGUI_CHOICES } from '@/lib/utils/question/nagui';
 
 import { CardTitle, CardHeader, CardContent, Card, CardFooter } from '@/app/components/card'
 
@@ -55,9 +56,9 @@ export function QuestionCardTitle({ question, showType = false, lang = DEFAULT_L
             return <span>{showType && emoji}{topicToEmoji(question.topic)} <strong>({question.details.numCols} col)</strong> &quot;{question.details.title}&quot;</span>
         case 'quote':
             return <span>{showType && emoji}{prependTopicWithEmoji(question.topic, lang)}</span>
-        case 'mcq':
-            return <span>{showType && emoji}{mcqTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} {question.details.source && <i>{question.details.source}:</i>} &quot;{question.details.title}&quot;</span>
         case 'basic':
+        case 'mcq':
+        case 'nagui':
             return <span>{showType && emoji}{topicToEmoji(question.topic)} {question.details.source && <i>{question.details.source}:</i>} &quot;{question.details.title}&quot;</span>
     }
 }
@@ -101,6 +102,8 @@ export function QuestionCardContent({ question }) {
             return <MatchingCardMainContent question={question} />
         case 'mcq':
             return <MCQCardMainContent question={question} />
+        case 'nagui':
+            return <NaguiCardMainContent question={question} />
         case 'basic':
             return <BasicCardMainContent question={question} />
         default:
@@ -332,6 +335,26 @@ const MatchingCardMainContent = ({ question }) => {
 }
 
 const MCQCardMainContent = ({ question }) => {
+    const { note, explanation, choices, answerIdx } = question.details
+
+    return (
+        <div className='flex flex-col w-full space-y-2'>
+            {note && <p className='text-sm md:text-base dark:text-white italic'>{QUESTION_ELEMENT_TO_EMOJI['note']} {note}</p>}
+            <ul>
+                {choices.map((choice, idx) => <li key={idx}
+                    className={clsx(
+                        idx === answerIdx ? 'text-green-500' : 'dark:text-white'
+                    )}>
+                    {MCQ_CHOICES[idx]}. {choice}
+                </li>
+                )}
+            </ul>
+            {explanation && <p className='text-sm md:text-base dark:text-white'>{explanation}</p>}
+        </div >
+    );
+}
+
+const NaguiCardMainContent = ({ question }) => {
     const { note, explanation, choices, answerIdx, duoIdx } = question.details
 
     return (
@@ -344,7 +367,7 @@ const MCQCardMainContent = ({ question }) => {
                         idx === duoIdx && 'text-blue-500',
                         (idx !== answerIdx && idx !== duoIdx) && 'dark:text-white'
                     )}>
-                    {MCQ_CHOICES[idx]}. {choice}
+                    {NAGUI_CHOICES[idx]}. {choice}
                 </li>
                 )}
             </ul>

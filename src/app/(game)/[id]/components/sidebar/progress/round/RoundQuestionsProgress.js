@@ -12,7 +12,7 @@ import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 import { topicToEmoji } from '@/lib/utils/topics'
 import { questionTypeToEmoji, questionTypeToTitle } from '@/lib/utils/question_types'
 import { blindtestTypeToEmoji } from '@/lib/utils/question/blindtest'
-import { mcqTypeToEmoji } from '@/lib/utils/question/mcq'
+import { naguiTypeToEmoji } from '@/lib/utils/question/nagui'
 
 import { CircularProgress, Accordion, AccordionSummary, AccordionDetails, Typography, Divider } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
@@ -121,7 +121,7 @@ export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({ gam
     const showComplete = myRole === 'organizer' || (isCurrent && game.status === 'question_end') || hasEnded || (game.status === 'round_end')
 
     const winnerPlayerData = (questionType) => {
-        if (questionType === 'mcq') {
+        if (questionType === 'mcq' || questionType === 'nagui') {
             if (!realtime.correct)
                 return null
             return players.find(player => player.id === realtime.playerId)
@@ -132,7 +132,7 @@ export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({ gam
     }
 
     const winnerTeamData = (questionType) => {
-        if (questionType === 'mcq') {
+        if (questionType === 'mcq' || questionType === 'nagui') {
             if (!realtime.correct)
                 return null
             return teams.find(team => team.id === realtime.teamId)
@@ -232,8 +232,6 @@ function RoundQuestionSummary({ roundType, question, order, lang = DEFAULT_LOCAL
             return <span className='text-lg'>{blindtestTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong></span>
         case 'matching':
             return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong> ({question.details.numCols} col)</span>
-        case 'mcq':
-            return <span className='text-lg'>{mcqTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong></span>
         default:
             return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong></span>
     }
@@ -247,9 +245,10 @@ function QuestionTitle({ question }) {
         case 'image':
         case 'quote':
             return <></>
-        case 'mcq':
         case 'basic':
-            return <MCQTitle question={question} />
+        case 'mcq':
+        case 'nagui':
+            return <QuestionTitleWithSource question={question} />
         default:
             return (
                 <Typography>
@@ -259,7 +258,7 @@ function QuestionTitle({ question }) {
     }
 }
 
-function MCQTitle({ question }) {
+function QuestionTitleWithSource({ question }) {
     return (
         <Typography>
             <i><strong>{question.details.source}</strong></i>: &quot;{question.details.title}&quot;

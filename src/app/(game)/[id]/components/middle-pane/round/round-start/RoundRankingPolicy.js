@@ -31,6 +31,7 @@ function RoundRankingPolicyTitle({ round }) {
         case 'emoji':
         case 'enum':
         case 'basic':
+        case 'nagui':
             return <RiddleRoundRankingPolicyTitle round={round} />
         case 'quote':
             return <QuoteRoundRankingPolicyTitle round={round} />

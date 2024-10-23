@@ -12,7 +12,6 @@ import LoadingScreen from '../LoadingScreen';
 import { DataGrid } from '@mui/x-data-grid';
 import { QUOTE_ELEMENTS_SORT_ORDER, QUOTE_ELEMENT_TO_EMOJI } from '@/lib/utils/question/quote';
 import { QUESTION_ELEMENT_TO_TITLE } from '@/lib/utils/question/question';
-import { MCQ_TYPE_TO_EMOJI, MCQ_TYPE_TO_TITLE } from '@/lib/utils/question/mcq';
 
 
 const CLUE = {
@@ -184,9 +183,8 @@ const quoteQuestionColumns = [
 
 
 const mcqQuestionRow = (question) => {
-    const { subtype, answerIdx, choices, explanation, note, source, title } = question.details
+    const { answerIdx, choices, explanation, note, source, title } = question.details
     return {
-        subtype: MCQ_TYPE_TO_EMOJI[subtype],
         answer: choices[answerIdx],
         // explanation,
         // note,
@@ -195,13 +193,31 @@ const mcqQuestionRow = (question) => {
     }
 }
 const mcqQuestionColumns = [
-    { field: 'subtype', headerName: 'Type', width: 75 },
     { field: 'source', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['source'], width: 200 },
     { field: 'title', headerName: 'Question', width: 500 },
     // { field: 'note', headerName: 'Note', width: MCQ_NOTE_MAX_LENGTH * 6 },
     { field: 'answer', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['answer'], width: 250 },
     // { field: 'explanation', headerName: 'Explanation', width: 130 },
 ]
+
+const naguiQuestionRow = (question) => {
+    const { answerIdx, choices, explanation, note, source, title } = question.details
+    return {
+        answer: choices[answerIdx],
+        // explanation,
+        // note,
+        source,
+        title,
+    }
+}
+const naguiQuestionColumns = [
+    { field: 'source', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['source'], width: 200 },
+    { field: 'title', headerName: 'Question', width: 500 },
+    // { field: 'note', headerName: 'Note', width: NAGUI_NOTE_MAX_LENGTH * 6 },
+    { field: 'answer', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['answer'], width: 250 },
+    // { field: 'explanation', headerName: 'Explanation', width: 130 },
+]
+
 
 const basicQuestionRow = (question) => {
     const { answer, explanation, note, source, title } = question.details
@@ -232,6 +248,7 @@ const questionTypeToRow = {
     'matching': matchingQuestionRow,
     'quote': quoteQuestionRow,
     'mcq': mcqQuestionRow,
+    'nagui': naguiQuestionRow,
     'basic': basicQuestionRow
 }
 
@@ -245,6 +262,7 @@ const questionTypeToColumns = {
     'matching': matchingQuestionColumns,
     'quote': quoteQuestionColumns,
     'mcq': mcqQuestionColumns,
+    'nagui': naguiQuestionColumns,
     'basic': basicQuestionColumns
 }
 

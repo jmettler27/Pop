@@ -8,15 +8,15 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import EndQuestionButton from '@/app/(game)/[id]/components/bottom-pane/question/question-active/EndQuestionButton'
 import ResetQuestionButton from '@/app/(game)/[id]/components/bottom-pane/question/question-active/ResetQuestionButton'
 
-import { handleHideAnswer } from '@/app/(game)/lib/question/mcq'
+import { handleNaguiHideAnswer } from '@/app/(game)/lib/question/nagui'
 import { GameChooserHelperText } from '@/app/(game)/[id]/components/GameChooserTeamAnnouncement'
-import MCQPlayerOptionHelperText from './MCQPlayerOptionHelperText'
+import NaguiPlayerOptionHelperText from './NaguiPlayerOptionHelperText'
 import { useAsyncAction } from '@/lib/utils/async'
 import { DEFAULT_LOCALE } from '@/lib/utils/locales'
 import { INVALIDATE_ANSWER, VALIDATE_ANSWER } from '@/lib/utils/question/question'
 
 
-export default function MCQOrganizerController({ realtime }) {
+export default function NaguiOrganizerController({ realtime }) {
     return (
         <div className='flex flex-col h-full w-full items-center justify-around'>
             {/* <BuzzerHeadPlayer realtime={realtime} />
@@ -25,20 +25,23 @@ export default function MCQOrganizerController({ realtime }) {
                 <span className='2xl:text-4xl font-bold'><GameChooserHelperText chooserTeamId={realtime.teamId} /></span>
             )}
             {realtime.option !== null && (
-                <span className='2xl:text-4xl'><MCQPlayerOptionHelperText realtime={realtime} /></span>
+                <span className='2xl:text-4xl'><NaguiPlayerOptionHelperText realtime={realtime} /></span>
             )}
-            {realtime.option === 'hide' && <MCQOrganizerHideAnswerController realtime={realtime} />}
-            <MCQOrganizerQuestionController />
+            {realtime.option === 'hide' && <NaguiOrganizerHideAnswerController realtime={realtime} />}
+            <div className='flex flex-row w-full justify-end'>
+                <ResetQuestionButton />
+                <EndQuestionButton />
+            </div>
         </div>
     )
 }
 
 
-function MCQOrganizerHideAnswerController({ realtime, lang = DEFAULT_LOCALE }) {
+function NaguiOrganizerHideAnswerController({ realtime, lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
 
     const [handleClick, isHandling] = useAsyncAction(async (correct) => {
-        await handleHideAnswer(game.id, game.currentRound, game.currentQuestion, realtime.playerId, realtime.teamId, correct)
+        await handleNaguiHideAnswer(game.id, game.currentRound, game.currentQuestion, realtime.playerId, realtime.teamId, correct)
     })
 
     {/* Validate or invalidate the player's answer */ }
@@ -70,15 +73,4 @@ function MCQOrganizerHideAnswerController({ realtime, lang = DEFAULT_LOCALE }) {
             </Button>
         </ButtonGroup>
     </>
-}
-
-
-
-function MCQOrganizerQuestionController() {
-    return (
-        <div className='flex flex-row w-full justify-end'>
-            <ResetQuestionButton />
-            <EndQuestionButton />
-        </div>
-    )
 }

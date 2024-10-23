@@ -37,6 +37,7 @@ export const ROUND_TYPE_TO_TITLE = {
         'odd_one_out': "Odd One Out",
         'matching': "Matchings",
         'mcq': "MCQs",
+        'nagui': "Nagui",
         'basic': "Questions"
     },
     'fr-FR': {
@@ -50,7 +51,8 @@ export const ROUND_TYPE_TO_TITLE = {
         'enum': "Énumérations",
         'odd_one_out': "Coups par coups",
         'matching': "Matchings",
-        'mcq': "QCM",
+        'mcq': "QCMs",
+        'nagui': "Nagui",
         'basic': "Questions"
     }
 }

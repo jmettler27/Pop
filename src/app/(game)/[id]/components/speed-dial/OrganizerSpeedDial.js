@@ -16,7 +16,7 @@ import { Backdrop } from '@mui/material'
 import SoundboardController from '../soundboard/SoundboardController'
 
 
-import { resetGame, updateGameStatus, resumeEditing, endGame } from '@/app/(game)/lib/game'
+import { resetGame, updateGameStatus, resumeEditing, endGame, updateQuestions } from '@/app/(game)/lib/game'
 import { useParams, useRouter } from 'next/navigation'
 
 const StyledSpeedDial = styled(SpeedDial)(({ theme }) => ({
@@ -58,6 +58,7 @@ export default function OrganizerSpeedDial() {
         e.preventDefault()
         switch (name) {
             case 'Share':
+                updateQuestions()
                 break
             case 'Soundboard':
                 handleBackdropOpen()

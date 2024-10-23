@@ -6,13 +6,14 @@ import MatchingBottomPane from './matching/MatchingBottomPane'
 import EnumBottomPane from './enum/EnumBottomPane'
 import OddOneOutBottomPane from './odd_one_out/OddOneOutBottomPane'
 import MCQBottomPane from './mcq/MCQBottomPane'
+import BasicQuestionBottomPane from './basic/BasicQuestionBottomPane'
+import NaguiBottomPane from './nagui/NaguiBottomPane'
 
 import LoadingScreen from '@/app/components/LoadingScreen'
 
 import { QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { doc } from 'firebase/firestore'
 import { useDocumentOnce } from 'react-firebase-hooks/firestore'
-import BasicQuestionBottomPane from './basic/BasicQuestionBottomPane'
 
 export default function QuestionActiveBottomPane({ }) {
     const game = useGameContext();
@@ -47,6 +48,8 @@ export default function QuestionActiveBottomPane({ }) {
             return <MatchingBottomPane />
         case 'mcq':
             return <MCQBottomPane question={question} />
+        case 'nagui':
+            return <NaguiBottomPane />
         case 'basic':
             return <BasicQuestionBottomPane />
     }

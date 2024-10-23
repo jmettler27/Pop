@@ -3,7 +3,7 @@ import { BLINDTEST_THINKING_TIME } from "@/lib/utils/question/blindtest"
 import { EMOJI_THINKING_TIME } from "@/lib/utils/question/emoji"
 import { IMAGE_THINKING_TIME } from "@/lib/utils/question/image"
 import { MATCHING_MAX_NUM_COLS, MATCHING_MAX_NUM_MISTAKES, MATCHING_MIN_NUM_COLS, MATCHING_THINKING_TIME } from "@/lib/utils/question/matching"
-import { MCQ_OPTIONS, MCQ_OPTION_TO_ICON, mcqOptionToTitle } from "@/lib/utils/question/mcq"
+import { NAGUI_OPTIONS, NAGUI_OPTION_TO_ICON, naguiOptionToTitle } from "@/lib/utils/question/nagui"
 import { OOO_THINKING_TIME } from "@/lib/utils/question/odd_one_out"
 import { PROGRESSIVE_CLUES_THINKING_TIME } from "@/lib/utils/question/progressive_clues"
 import { QUOTE_THINKING_TIME } from "@/lib/utils/question/quote"
@@ -28,6 +28,8 @@ export function RoundRules({ round }) {
             return <MatchingRoundRules round={round} />
         case 'mcq':
             return <MCQRoundRules round={round} />
+        case 'nagui':
+            return <NaguiRoundRules round={round} />
         case 'basic':
             return <BasicRoundRules round={round} />
         case 'special':
@@ -153,9 +155,16 @@ function MatchingRoundRules({ round }) {
 
 function MCQRoundRules({ round }) {
     return <>
-        <p className='2xl:text-2xl text-center'>❓ Chaque question est attribuée à une équipe. L&apos;équipe a alors <strong>{MCQ_OPTIONS.length} options</strong> à sa disposition:</p>
+        <p className='2xl:text-2xl text-center'>❓ Chaque question est attribuée à une équipe. L&apos;équipe a alors plusieurs choix de réponses.</p>
+        <p className='2xl:text-2xl text-center'>L&apos;ordre de passage = {round.order > 0 ? `Le classement inversé de la manche ${round.order}` : 'Un ordre aléatoire'}.</p>
+    </>
+}
+
+function NaguiRoundRules({ round }) {
+    return <>
+        <p className='2xl:text-2xl text-center'>❓ Chaque question est attribuée à une équipe. L&apos;équipe a alors <strong>{NAGUI_OPTIONS.length} options</strong> à sa disposition:</p>
         <ol className='2xl:text-2xl border-solid border-blue-500 border-2 p-2'>
-            {MCQ_OPTIONS.map((option, index) => <li key={index}>{MCQ_OPTION_TO_ICON[option]} {mcqOptionToTitle(option, 'fr-FR')} ({round.rewardsPerQuestion[option]} pt{round.rewardsPerQuestion[option] > 1 && 's'})</li>)}
+            {NAGUI_OPTIONS.map((option, index) => <li key={index}>{NAGUI_OPTION_TO_ICON[option]} {naguiOptionToTitle(option, 'fr-FR')} ({round.rewardsPerQuestion[option]} pt{round.rewardsPerQuestion[option] > 1 && 's'})</li>)}
         </ol>
         <p className='2xl:text-2xl text-center'>L&apos;ordre de passage = {round.order > 0 ? `Le classement inversé de la manche ${round.order}` : 'Un ordre aléatoire'}.</p>
     </>
@@ -174,7 +183,6 @@ function BasicRoundRules({ round }) {
 }
 
 
-// Special
 function SpecialRoundRules({ round }) {
     return <>
         <p className='2xl:text-2xl text-center font-bold'>🗣️ Répondez directement aux questions, il n&apos;y a pas de proposition de réponses.</p>
@@ -183,7 +191,6 @@ function SpecialRoundRules({ round }) {
     </>
 }
 
-// Mixed
 function MixedRoundRules({ round }) {
     return <>
         <p className='2xl:text-2xl text-center'>Les règles dépendent du type de la question.</p>
