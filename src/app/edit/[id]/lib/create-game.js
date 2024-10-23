@@ -14,10 +14,10 @@ import {
 
 
 /* ==================================================================================================== */
-export async function createGame(title, type, lang, maxPlayers, organizerName, organizerId) {
+export async function createGame(title, type, lang, maxPlayers, roundScorePolicy, organizerName, organizerId) {
     try {
         const gameId = await runTransaction(firestore, transaction =>
-            createGameTransaction(transaction, title, type, lang, maxPlayers, organizerName, organizerId)
+            createGameTransaction(transaction, title, type, lang, maxPlayers, roundScorePolicy, organizerName, organizerId)
         )
         console.log(`Game ${gameId} created successfully.`)
         return gameId;
@@ -33,6 +33,7 @@ export const createGameTransaction = async (
     type,
     lang,
     maxPlayers,
+    roundScorePolicy,
     organizerName,
     organizerId,
 ) => {
@@ -48,6 +49,7 @@ export const createGameTransaction = async (
         dateStart: null,
         lang,
         maxPlayers,
+        roundScorePolicy,
         status: 'build',
         title,
         type,

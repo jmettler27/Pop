@@ -10,6 +10,7 @@ import { useDocumentData } from 'react-firebase-hooks/firestore'
 
 import { MatchingNode, MatchingEdge, getNode, getNodeText, matchIsComplete } from '@/app/(game)/[id]/components/middle-pane/question/matching/gridUtils';
 import SubmitMatchDialog from '@/app/(game)/[id]/components/middle-pane/question/matching/active-matching/SubmitMatchDialog';
+import { MATCHING_MAX_NUM_MISTAKES } from '@/lib/utils/question/matching';
 
 
 export default function ActiveMatches({ answer, nodePositions, numCols }) {
@@ -60,7 +61,7 @@ const nodeIsMatched = (origRow, foundMatches) =>
 const nodeIsActive = (id, newEdgeSource, edges) =>
     id === newEdgeSource || edges.find((edge) => edge.from === id || edge.to === id);
 
-const nodeIsDisabled = (origRow, foundMatches, edges, numCols, myRole, isChooser) => {
+const nodeIsDisabled = (origRow, foundMatches, edges, numCols, myRole, isChooser, isCanceled) => {
     if (nodeIsMatched(origRow, foundMatches))
         return true;
     if (matchIsComplete(edges, numCols))
@@ -68,7 +69,7 @@ const nodeIsDisabled = (origRow, foundMatches, edges, numCols, myRole, isChooser
     if (myRole === 'organizer')
         return false;
     if (myRole === 'player') {
-        return !isChooser;
+        return isCanceled || !isChooser;
     }
     return true;
 }
@@ -80,27 +81,33 @@ function ActiveMatchingQuestionNodes({ answer, nodePositions, numCols, edges, se
     const myTeam = useTeamContext()
     const myRole = useRoleContext()
 
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion)
     const correctRef = doc(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'questions', game.currentQuestion, 'realtime', 'correct')
     const gameStatesRef = doc(GAMES_COLLECTION_REF, game.id, 'realtime', 'states')
 
+    const [questionRealtimeData, questionRealtimeDataLoading, questionRealtimeDataError] = useDocumentData(questionRealtimeRef)
     const [correctData, correctLoading, correctError] = useDocumentData(correctRef)
     const [gameStates, gameStatesLoading, gameStatesError] = useDocumentData(gameStatesRef)
 
+    if (questionRealtimeDataError) {
+        return <p><strong>Error: {JSON.stringify(questionRealtimeDataError)}</strong></p>
+    }
     if (correctError) {
         return <p><strong>Error: {JSON.stringify(correctError)}</strong></p>
     }
     if (gameStatesError) {
         return <p><strong>Error: {JSON.stringify(gameStatesError)}</strong></p>
     }
-    if (correctLoading || gameStatesLoading) {
+    if (questionRealtimeDataLoading || correctLoading || gameStatesLoading) {
         return <LoadingScreen loadingText="Loading..." />
     }
-    if (!correctData || !gameStates) {
+    if (!questionRealtimeData || !correctData || !gameStates) {
         return <></>
     }
 
     const foundMatches = correctData.correctMatches
     const isChooser = gameStates.chooserOrder[gameStates.chooserIdx] === myTeam
+    const isCanceled = questionRealtimeData.teamNumMistakes[myTeam] >= MATCHING_MAX_NUM_MISTAKES
 
     const addNewEdge = (newEdge) => {
         setEdges((edges) => [...edges, newEdge])
@@ -112,7 +119,7 @@ function ActiveMatchingQuestionNodes({ answer, nodePositions, numCols, edges, se
             e.stopPropagation();
 
             const node = getNode(nodeId, nodePositions)
-            if (nodeIsDisabled(node.origRow, foundMatches, edges, numCols, myRole, isChooser)) {
+            if (nodeIsDisabled(node.origRow, foundMatches, edges, numCols, myRole, isChooser, isCanceled)) {
                 console.log("Node is disabled")
                 return
             }

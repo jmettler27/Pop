@@ -17,3 +17,8 @@ export const HEAD_REWARD_TEXT = {
     'en': "Reward",
     'fr-FR': "Récompense"
 }
+
+export const HEAD_COMPLETION_RATE_TEXT = {
+    'en': "Completion (%)",
+    'fr-FR': "Complétion (%)"
+}

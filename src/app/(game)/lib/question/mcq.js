@@ -1,6 +1,6 @@
 "use server";
 
-import { IMMEDIATE_MCQ_DEFAULT_REWARD, MCQ_CHOICES, MCQ_OPTIONS, CONDITIONAL_MCQ_OPTION_TO_SOUND } from '@/lib/utils/question/mcq';
+import { MCQ_CHOICES, MCQ_OPTIONS, CONDITIONAL_MCQ_OPTION_TO_SOUND } from '@/lib/utils/question/mcq';
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/lib/firebase/firestore';
 import { firestore } from '@/lib/firebase/firebase'
@@ -127,7 +127,7 @@ const selectMCQChoiceTransaction = async (
 
     const { subtype, answerIdx } = questionData.details
     const correct = choiceIdx === answerIdx
-    const reward = subtype === 'immediate' ? (correct ? IMMEDIATE_MCQ_DEFAULT_REWARD : 0) :
+    const reward = subtype === 'immediate' ? (correct ? roundData.rewardsPerQuestion : 0) :
         subtype === 'conditional' && correct ? roundData.rewardsPerQuestion[questionRealtimeData.option] : 0;
     await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, reward)
 

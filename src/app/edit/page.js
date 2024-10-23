@@ -9,16 +9,18 @@ import SubmitFormButton from '@/app/components/forms/SubmitFormButton';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/lib/utils/locales';
 import { stringSchema } from '@/lib/utils/forms';
+import { roundScorePolicySchema } from '@/lib/utils/scores';
 import { IMAGE_TITLE_MAX_LENGTH } from '@/lib/utils/question/image';
 
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation'
 
+import SelectGameType from '@/app/edit/components/SelectGameType';
+import SelectRoundScorePolicy from '@/app/edit/components/SelectRoundScorePolicy';
 import SelectLanguage from '@/app/submit/components/SelectLanguage';
 
 import { useAsyncAction } from '@/lib/utils/async';
 import { GAME_DEFAULT_TYPE, GAME_MAX_NUMBER_OF_PLAYERS, GAME_MIN_NUMBER_OF_PLAYERS, GAME_PARTICIPANT_NAME_MAX_LENGTH, GAME_TITLE_EXAMPLE, GAME_TITLE_MAX_LENGTH, gameTypeSchema } from '@/lib/utils/game';
-import SelectGameType from './components/SelectGameType';
 import { createGame } from './[id]/lib/create-game';
 
 export default function Page({ lang = DEFAULT_LOCALE }) {
@@ -26,8 +28,8 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
     const router = useRouter()
 
     const [createNewGame, isSubmitting] = useAsyncAction(async (values, userId) => {
-        const { title, type, lang, maxPlayers, organizerName } = values;
-        const gameId = await createGame(title, type, lang, maxPlayers, organizerName, userId);
+        const { title, type, lang, maxPlayers, roundScorePolicy, organizerName } = values;
+        const gameId = await createGame(title, 'rounds', lang, maxPlayers, roundScorePolicy, organizerName, userId);
         router.push('/edit/' + gameId);
     });
 
@@ -42,9 +44,10 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
 
     const validationSchema = Yup.object({
         lang: localeSchema(),
-        type: gameTypeSchema(),
+        // type: gameTypeSchema(),
         title: stringSchema(IMAGE_TITLE_MAX_LENGTH),
         maxPlayers: Yup.number().required().integer(),
+        roundScorePolicy: roundScorePolicySchema(),
         organizerName: stringSchema(GAME_PARTICIPANT_NAME_MAX_LENGTH),
         // imageFiles: imageFileSchema(fileRef),
     })
@@ -54,10 +57,11 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
             <h1>{CREATE_GAME[lang]}</h1>
             <Formik
                 initialValues={{
-                    type: GAME_DEFAULT_TYPE,
+                    // type: GAME_DEFAULT_TYPE,
                     lang: DEFAULT_LOCALE,
                     title: '',
                     maxPlayers: GAME_MIN_NUMBER_OF_PLAYERS,
+                    roundScorePolicy: '',
                     organizerName: '',
                     // imageFiles: ''
 
@@ -75,7 +79,7 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
                 <Form>
                     <SelectLanguage labels={SELECT_GAME_LANGUAGE_LABEL} lang={lang} name='lang' validationSchema={validationSchema} />
 
-                    <SelectGameType lang={lang} name='type' validationSchema={validationSchema} />
+                    {/* <SelectGameType lang={lang} name='type' validationSchema={validationSchema} /> */}
 
                     <MyTextInput
                         label={GAME_TITLE_LABEL[lang]}
@@ -92,6 +96,8 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
                         min={GAME_MIN_NUMBER_OF_PLAYERS} max={GAME_MAX_NUMBER_OF_PLAYERS}
                     // validationSchema={validationSchema}
                     />
+
+                    <SelectRoundScorePolicy lang={lang} name='roundScorePolicy' validationSchema={validationSchema} />
 
                     <MyTextInput
                         label={GAME_ORGANIZER_NAME_LABEL[lang]}

@@ -21,12 +21,12 @@ import { switchNextChooserTransaction } from '@/app/(game)/lib/chooser'
 import { addSoundEffectTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { endQuestionTransaction } from '@/app/(game)/lib/question';
-import { increaseRoundTeamScoreTransaction } from '@/app/(game)/lib/scores';
+import { decreaseGlobalTeamScoreTransaction, increaseRoundTeamScoreTransaction } from '@/app/(game)/lib/scores';
 
-import { findMostFrequentValueAndIndices, generateMatch } from '@/lib/utils/question/matching';
+import { findMostFrequentValueAndIndices, generateMatch, matchingTeamIsCanceled } from '@/lib/utils/question/matching';
 import { sortScores } from '@/lib/utils/scores';
 import { sortAscendingRoundScores } from '@/lib/utils/round';
-import { getNextCyclicIndex, shuffle } from '@/lib/utils/arrays';
+import { aggregateTiedTeams, findNextAvailableChooser, shuffle } from '@/lib/utils/arrays';
 
 
 export async function submitMatch(gameId, roundId, questionId, userId, edges, match) {
@@ -107,6 +107,7 @@ const submitMatchTransaction = async (
                 transaction.update(chooserDoc.ref, { status: 'correct' })
             }
 
+            // Log the match
             transaction.update(correctMatchesRef, {
                 correctMatches: arrayUnion({
                     matchIdx: rows[0],
@@ -117,10 +118,7 @@ const submitMatchTransaction = async (
             })
 
             const sortedUniqueRoundScores = sortScores(currentRoundScores, sortAscendingRoundScores('matching'));
-            const roundSortedTeams = sortedUniqueRoundScores.map(score => {
-                const teamsWithThisScore = Object.keys(currentRoundScores).filter(tid => currentRoundScores[tid] === score);
-                return { score, teams: teamsWithThisScore };
-            });
+            const roundSortedTeams = aggregateTiedTeams(sortedUniqueRoundScores, currentRoundScores);
             const newChooserOrder = roundSortedTeams.slice().reverse().flatMap(({ teams }) => shuffle(teams));
             transaction.update(gameStatesRef, {
                 chooserOrder: newChooserOrder,
@@ -128,14 +126,33 @@ const submitMatchTransaction = async (
 
             await addSoundEffectTransaction(transaction, gameId, 'zelda_secret_door')
             await endQuestionTransaction(transaction, gameId, roundId, questionId)
+
         } else {
             // Case 1.1: The matching is correct but not the last one
-            await switchNextChooserTransaction(transaction, gameId)
-            for (const chooserDoc of choosersSnapshot.docs) {
-                transaction.update(chooserDoc.ref, { status: 'correct' })
-            }
-            await addSoundEffectTransaction(transaction, gameId, 'OUI')
 
+            // Switch to the next competing team
+            const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+            const questionRealtimeData = await getDocDataTransaction(transaction, questionRealtimeRef)
+            const { canceled } = questionRealtimeData
+            const { newChooserIdx, newChooserTeamId } = findNextAvailableChooser(chooserIdx, chooserOrder, canceled)
+            const newChoosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', newChooserTeamId)))
+
+            transaction.update(gameStatesRef, {
+                chooserIdx: newChooserIdx
+            })
+
+            for (const newChooserDoc of newChoosersSnapshot.docs) {
+                transaction.update(newChooserDoc.ref, {
+                    status: 'focus'
+                })
+            }
+            if (newChooserTeamId !== teamId) {
+                for (const chooserDoc of choosersSnapshot.docs) {
+                    transaction.update(chooserDoc.ref, { status: 'idle' })
+                }
+            }
+
+            // Log the match
             transaction.update(correctMatchesRef, {
                 correctMatches: arrayUnion({
                     matchIdx: rows[0],
@@ -144,32 +161,52 @@ const submitMatchTransaction = async (
                     timestamp: Timestamp.now(),
                 })
             })
+
+            // Sound effect
+            await addSoundEffectTransaction(transaction, gameId, 'OUI')
         }
     } else {
         // Case 2: The matching is incorrect
+        const gameRef = doc(GAMES_COLLECTION_REF, gameId)
         const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
-        const roundData = await getDocDataTransaction(transaction, roundRef)
+        const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+        const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
+        const [gameData, roundData, questionRealtimeData, roundScoresData] = await Promise.all([
+            getDocDataTransaction(transaction, gameRef),
+            getDocDataTransaction(transaction, roundRef),
+            getDocDataTransaction(transaction, questionRealtimeRef),
+            getDocDataTransaction(transaction, roundScoresRef)
+        ])
+
+        const { roundScorePolicy } = gameData
         const { mistakePenalty: penalty } = roundData
-        await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, penalty)
+        const { teamNumMistakes, canceled } = questionRealtimeData
 
-        for (const chooserDoc of choosersSnapshot.docs) {
-            transaction.update(chooserDoc.ref, { status: 'wrong' })
+        // Increase the number of mistakes of the team
+        const newTeamNumMistakes = { ...teamNumMistakes }
+        newTeamNumMistakes[teamId] = (teamNumMistakes[teamId] || 0) + 1
+
+        // If the team has reached the maximum number of mistakes, cancel it
+        const isCanceled = matchingTeamIsCanceled(teamId, newTeamNumMistakes, roundData.maxMistakes)
+        const newCanceled = isCanceled ? [...canceled, teamId] : canceled;
+
+        if (roundScorePolicy === 'ranking') {
+            // Increase the team's round score to 1
+            await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, penalty)
+        }
+        else if (roundScorePolicy === 'completion_rate') {
+            // Decrease the team's global score by the penalty and increment the number of mistakes of the team in the round
+            await decreaseGlobalTeamScoreTransaction(transaction, gameId, roundId, questionId, penalty, teamId)
         }
 
-        const newChooserIdx = getNextCyclicIndex(chooserIdx, chooserOrder.length)
-        transaction.update(gameStatesRef, {
-            chooserIdx: newChooserIdx
+        // Update the mistake and canceled information
+        transaction.update(questionRealtimeRef, {
+            teamNumMistakes: newTeamNumMistakes,
+            canceled: newCanceled
         })
-        const newChooserTeamId = chooserOrder[newChooserIdx]
-        const newChoosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', newChooserTeamId)))
-        for (const newChooserDoc of newChoosersSnapshot.docs) {
-            transaction.update(newChooserDoc.ref, {
-                status: 'focus'
-            })
-        }
 
-        await addWrongAnswerSoundToQueueTransaction(transaction, gameId)
 
+        // Log the match
         const numCols = rows.length
         if (numCols > 2) {
             const [colIndices, rowIdx] = findMostFrequentValueAndIndices(rows)
@@ -195,6 +232,50 @@ const submitMatchTransaction = async (
                 timestamp: Timestamp.now(),
             }),
         })
+
+        // Switch to the next competing team, or end the question if all teams have been canceled
+
+        if (newCanceled.length < chooserOrder.length) {
+            // There are still competing teams => Set focus to the next competing team
+
+            const { newChooserIdx, newChooserTeamId } = findNextAvailableChooser(chooserIdx, chooserOrder, newCanceled)
+            const newChoosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', newChooserTeamId)))
+
+            transaction.update(gameStatesRef, {
+                chooserIdx: newChooserIdx
+            })
+            for (const newChooserDoc of newChoosersSnapshot.docs) {
+                transaction.update(newChooserDoc.ref, {
+                    status: 'focus'
+                })
+            }
+
+            for (const chooserDoc of choosersSnapshot.docs) {
+                transaction.update(chooserDoc.ref, { status: isCanceled ? 'wrong' : 'idle' })
+            }
+
+            await addSoundEffectTransaction(transaction, gameId, isCanceled ? 'zelda_wind_waker_kaboom' : 'zelda_wind_waker_sploosh')
+
+        } else {
+            // All teams have been canceled => End the question
+
+            const { scores: currentRoundScores } = roundScoresData
+            const sortedUniqueRoundScores = sortScores(currentRoundScores, sortAscendingRoundScores('matching'));
+            const roundSortedTeams = aggregateTiedTeams(sortedUniqueRoundScores, currentRoundScores);
+            const newChooserOrder = roundSortedTeams.slice().reverse().flatMap(({ teams }) => shuffle(teams));
+            transaction.update(gameStatesRef, {
+                chooserOrder: newChooserOrder,
+            })
+
+            for (const chooserDoc of choosersSnapshot.docs) {
+                transaction.update(chooserDoc.ref, { status: 'wrong' })
+            }
+
+            await addSoundEffectTransaction(transaction, gameId, 'zelda_wind_waker_game_over')
+
+            await endQuestionTransaction(transaction, gameId, roundId, questionId)
+        }
+
     }
     // await updateTimerStateTransaction(transaction, gameId, 'reset')
 }
@@ -253,6 +334,12 @@ export async function resetMatchingQuestion(gameId, roundId, questionId) {
         chooserIdx: 0,
     })
 
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    batch.update(questionRealtimeRef, {
+        teamNumMistakes: {},
+        canceled: [],
+    })
+
     const correctMatchesRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct')
     batch.set(correctMatchesRef, {
         correctMatches: [],
@@ -275,6 +362,12 @@ export const resetMatchingQuestionTransaction = async (transaction, gameId, roun
     const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
     transaction.update(gameStatesRef, {
         chooserIdx: 0,
+    })
+
+    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
+    transaction.update(questionRealtimeRef, {
+        teamNumMistakes: {},
+        canceled: [],
     })
 
     const correctMatchesRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'correct')

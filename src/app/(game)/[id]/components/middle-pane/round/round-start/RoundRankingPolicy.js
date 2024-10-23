@@ -1,12 +1,12 @@
 import { rankingToEmoji, numberToKeycapEmoji } from '@/lib/utils/emojis'
 
-export function RoundRewards({ round }) {
+export function RoundRankingPolicy({ round }) {
     switch (round.type) {
         case 'special':
-            return <ThemesRoundRewards round={round} />
+            return <SpecialRoundRankingPolicy round={round} />
         default: return (
             <div className='flex flex-col items-center justify-start space-y-4 p-2'>
-                <RoundRewardsTitle round={round} />
+                <RoundRankingPolicyTitle round={round} />
                 <div className='flex flex-col items-center justify-start'>
                     <p className='2xl:text-2xl'>Le barème</p>
                     <ol className='2xl:text-2xl border-solid border-yellow-500 border-2 p-2'>
@@ -23,7 +23,7 @@ export function RoundRewards({ round }) {
     }
 }
 
-function RoundRewardsTitle({ round }) {
+function RoundRankingPolicyTitle({ round }) {
     switch (round.type) {
         case 'progressive_clues':
         case 'image':
@@ -31,43 +31,45 @@ function RoundRewardsTitle({ round }) {
         case 'emoji':
         case 'enum':
         case 'basic':
-            return <RiddleRoundRewardsTitle round={round} />
+            return <RiddleRoundRankingPolicyTitle round={round} />
         case 'quote':
-            return <QuoteRoundRewardsTitle round={round} />
+            return <QuoteRoundRankingPolicyTitle round={round} />
         case 'odd_one_out':
-            return <OddOneOutRoundRewardsTitle round={round} />
+            return <OddOneOutRoundRankingPolicyTitle round={round} />
         case 'matching':
-            return <MatchingRoundRewardsTitle round={round} />
+            return <MatchingRoundRankingPolicyTitle round={round} />
         case 'mcq':
-            return <MCQRoundRewardsTitle round={round} />
+            return <MCQRoundRankingPolicyTitle round={round} />
         default:
             return <></>
     }
 }
 
-function RiddleRoundRewardsTitle({ round }) {
+function RiddleRoundRankingPolicyTitle({ round }) {
     return <h1 className='2xl:text-3xl'><span className='font-bold'>{round.rewardsPerQuestion} point</span> par bonne réponse</h1>
 }
 
-function QuoteRoundRewardsTitle({ round }) {
+function QuoteRoundRankingPolicyTitle({ round }) {
     return <h1 className='2xl:text-3xl'><span className='font-bold'>{round.rewardsPerElement} point</span> par bon élément trouvé</h1>
 }
 
-function OddOneOutRoundRewardsTitle({ round }) {
-    return <h1 className='2xl:text-3xl'><span className='font-bold'>{round.mistakePenalty} point</span> par intrus trouvé</h1>
+function OddOneOutRoundRankingPolicyTitle({ round }) {
+    const { mistakePenalty } = round
+    return <h1 className='2xl:text-3xl'><span className='font-bold'>{mistakePenalty} point{Math.abs(mistakePenalty) > 1 ? 's' : ''}</span> par intrus trouvé</h1>
 }
 
-function MatchingRoundRewardsTitle({ round }) {
-    return <h1 className='2xl:text-3xl'><span className='font-bold'>{round.mistakePenalty} point</span> par mauvais lien créé</h1>
+function MatchingRoundRankingPolicyTitle({ round }) {
+    const { mistakePenalty } = round
+    return <h1 className='2xl:text-3xl'><span className='font-bold'>{mistakePenalty} point{Math.abs(mistakePenalty) > 1 ? 's' : ''}</span> par mauvais lien créé</h1>
 }
 
-function MCQRoundRewardsTitle({ round }) {
+function MCQRoundRankingPolicyTitle({ round }) {
     return <>
         <h1 className='2xl:text-3xl text-center'>Un nombre variable de points par bonne réponse</h1>
     </>
 }
 
-function ThemesRoundRewards({ round }) {
+function SpecialRoundRankingPolicy({ round }) {
     return (
         <div className='flex flex-col items-center justify-start space-y-4'>
             <h1 className='2xl:text-3xl text-center'>😨 Vos <strong>points accumulés</strong> jusqu&apos;à présent = votre <strong>nombre de droits à l&apos;erreur</strong></h1>

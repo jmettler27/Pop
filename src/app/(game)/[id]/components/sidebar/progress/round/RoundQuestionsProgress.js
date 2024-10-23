@@ -121,7 +121,7 @@ export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({ gam
     const showComplete = myRole === 'organizer' || (isCurrent && game.status === 'question_end') || hasEnded || (game.status === 'round_end')
 
     const winnerPlayerData = (questionType) => {
-        if (questionType === 'mcq' || questionType === 'basic') {
+        if (questionType === 'mcq') {
             if (!realtime.correct)
                 return null
             return players.find(player => player.id === realtime.playerId)
@@ -132,7 +132,7 @@ export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({ gam
     }
 
     const winnerTeamData = (questionType) => {
-        if (questionType === 'mcq' || questionType === 'basic') {
+        if (questionType === 'mcq') {
             if (!realtime.correct)
                 return null
             return teams.find(team => team.id === realtime.teamId)
