@@ -27,7 +27,7 @@ export default function GameStartMiddlePane({ }) {
     return (
         <div className='flex flex-col h-full items-center justify-center'>
             <div className='flex flex-col h-1/6 items-center justify-center overflow-auto'>
-                <h1 className='2xl:text-6xl font-bold text-yellow-300 italic'>{game.title}</h1>
+                <h1 className='2xl:text-6xl font-bold text-yellow-300 italic px-2'>{game.title}</h1>
             </div>
             <div className='flex flex-col h-5/6 w-full items-center justify-center space-y-4 overflow-auto'>
                 <span className='2xl:text-3xl'>Ce programme à but humoristique et <strong>interactif</strong> vous est présenté par</span>
