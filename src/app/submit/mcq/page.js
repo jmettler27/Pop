@@ -14,7 +14,7 @@ import { DEFAULT_LOCALE, localeSchema } from '@/lib/utils/locales';
 import { topicSchema } from '@/lib/utils/topics';
 import { stringSchema } from '@/lib/utils/forms';
 import {
-    MCQ_CHOICES, MCQ_CHOICES_EXAMPLE, MCQ_CHOICE_MAX_LENGTH, MCQ_NUMBER_OF_CHOICES,
+    MCQ_CHOICES, MCQ_CHOICES_EXAMPLE, MCQ_CHOICE_MAX_LENGTH,
     MCQ_EXPLANATION_EXAMPLE, MCQ_EXPLANATION_MAX_LENGTH,
     MCQ_NOTE_EXAMPLE, MCQ_NOTE_MAX_LENGTH,
     MCQ_SOURCE_EXAMPLE, MCQ_SOURCE_MAX_LENGTH,
@@ -88,7 +88,7 @@ export function SubmitMCQForm({ userId, lang, ...props }) {
                 title: '',
                 note: '',
                 explanation: '',
-                choices: Array(MCQ_NUMBER_OF_CHOICES).fill(''),
+                choices: Array(MCQ_MAX_NUMBER_OF_CHOICES).fill(''),
                 answerIdx: -1,
                 // imageFiles: '',
                 // audioFiles: ''
@@ -125,7 +125,7 @@ export function SubmitMCQForm({ userId, lang, ...props }) {
                         .max(MCQ_MAX_NUMBER_OF_CHOICES, `There must be at most ${MCQ_MAX_NUMBER_OF_CHOICES} choices`),
                     answerIdx: Yup.number()
                         .min(0, "Required.")
-                        .max(MCQ_NUMBER_OF_CHOICES - 1, "Required.")
+                        .max(MCQ_MAX_NUMBER_OF_CHOICES - 1, "Required.")
                         .required("Required."),
                     explanation: stringSchema(MCQ_EXPLANATION_MAX_LENGTH, false),
                 })}

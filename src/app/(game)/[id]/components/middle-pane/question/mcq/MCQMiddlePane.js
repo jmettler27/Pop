@@ -37,5 +37,5 @@ function MCQHeader({ question }) {
 
 function MCQFooter({ question }) {
     const { explanation } = question.details
-    return explanation && <span className='w-[80%] 2xl:text-xl text-center'>{explanation}</span>
+    return explanation && <span className='w-[80%] 2xl:text-xl text-center'>👉 {explanation}</span>
 }

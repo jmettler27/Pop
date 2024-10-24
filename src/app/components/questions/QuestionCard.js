@@ -349,7 +349,7 @@ const MCQCardMainContent = ({ question }) => {
                 </li>
                 )}
             </ul>
-            {explanation && <p className='text-sm md:text-base dark:text-white'>{explanation}</p>}
+            {explanation && <p className='text-sm md:text-base dark:text-white'>👉 {explanation}</p>}
         </div >
     );
 }
@@ -371,7 +371,7 @@ const NaguiCardMainContent = ({ question }) => {
                 </li>
                 )}
             </ul>
-            {explanation && <p className='text-sm md:text-base dark:text-white'>{explanation}</p>}
+            {explanation && <p className='text-sm md:text-base dark:text-white'>👉 {explanation}</p>}
         </div >
     );
 }
@@ -383,7 +383,7 @@ const BasicCardMainContent = ({ question }) => {
         <div className='flex flex-col w-full space-y-2'>
             {note && <p className='text-sm md:text-base dark:text-white italic'>{QUESTION_ELEMENT_TO_EMOJI['note']} {note}</p>}
             <span className='dark:text-white'>{answer}</span>
-            {explanation && <p className='text-sm md:text-base dark:text-white'>{explanation}</p>}
+            {explanation && <p className='text-sm md:text-base dark:text-white'>👉 {explanation}</p>}
         </div >
     );
 }

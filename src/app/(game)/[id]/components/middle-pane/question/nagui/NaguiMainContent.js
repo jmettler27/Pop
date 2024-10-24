@@ -87,8 +87,8 @@ function NaguiMainContentQuestion({ question, randomization }) {
             <div className='flex flex-col h-full w-1/4 items-center justify-center'>
                 <NaguiAnswerImage correct={realtime.correct} />
             </div>
-            {game.status === 'question_end' && <NaguiAnswerChoices question={question} realtime={realtime} randomization={randomization} />}
-            {game.status === 'question_active' && <NaguiChoices question={question} realtime={realtime} randomization={randomization} />}
+            {game.status === 'question_active' && <ActiveNaguiChoices question={question} realtime={realtime} randomization={randomization} />}
+            {game.status === 'question_end' && <EndedNaguiChoices question={question} realtime={realtime} randomization={randomization} />}
             <div className='flex flex-col h-full w-1/4 items-center justify-center'>
                 <NaguiAnswerImage correct={realtime.correct} />
             </div>
@@ -110,7 +110,7 @@ const choiceIsDisabled = (choiceIdx, myRole, isChooser, option, duoIdx, answerId
 import { useAsyncAction } from '@/lib/utils/async'
 
 
-function NaguiChoices({ question, realtime, randomization }) {
+function ActiveNaguiChoices({ question, realtime, randomization }) {
     const game = useGameContext()
     const myTeam = useTeamContext()
     const myRole = useRoleContext()
@@ -161,10 +161,13 @@ import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 import { naguiOptionToEmoji } from '@/lib/utils/question/nagui'
 
-function NaguiAnswerChoices({ question, realtime, randomization }) {
-    const isCorrectAnswer = idx => ((realtime.option === 'hide' && realtime.correct && idx === question.details.answerIdx) || idx === question.details.answerIdx);
-    const isIncorrectChoice = idx => (realtime.option === 'duo' || realtime.option === 'square') && idx === realtime.choiceIdx && idx !== question.details.answerIdx;
-    const isNeutralChoice = idx => ((realtime.option === 'hide' && realtime.correct && idx !== question.details.answerIdx) || (idx !== realtime.choiceIdx && idx !== question.details.answerIdx));
+function EndedNaguiChoices({ question, realtime, randomization }) {
+    const { details: { choices, answerIdx } } = question;
+    const { choiceIdx, correct, playerId } = realtime;
+
+    const isCorrectAnswer = idx => ((option === 'hide' && correct && idx === answerIdx) || idx === answerIdx);
+    const isIncorrectChoice = idx => (option === 'duo' || option === 'square') && idx === choiceIdx && idx !== answerIdx;
+    const isNeutralChoice = idx => ((option === 'hide' && correct && idx !== answerIdx) || (idx !== choiceIdx && idx !== answerIdx));
 
     const getBorderColor = idx => {
         if (isCorrectAnswer(idx)) return 'border-green-500';
@@ -179,13 +182,13 @@ function NaguiAnswerChoices({ question, realtime, randomization }) {
     };
 
     const getListItemIcon = idx => {
-        if (realtime.correct && idx === question.details.answerIdx) {
+        if (correct && idx === answerIdx) {
             return (
                 <ListItemIcon>
                     <Badge
                         overlap='circular'
                         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                        badgeContent={<PlayerAvatar playerId={realtime.playerId} />}
+                        badgeContent={<PlayerAvatar playerId={playerId} />}
                     >
                         <CheckIcon fontSize='medium' color='success' />
                     </Badge>
@@ -193,13 +196,13 @@ function NaguiAnswerChoices({ question, realtime, randomization }) {
             );
         }
 
-        if (realtime.option !== 'hide' && realtime.correct === false && idx === realtime.choiceIdx) {
+        if (option !== 'hide' && correct === false && idx === choiceIdx) {
             return (
                 <ListItemIcon>
                     <Badge
                         overlap='circular'
                         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                        badgeContent={<PlayerAvatar playerId={realtime.playerId} />}
+                        badgeContent={<PlayerAvatar playerId={playerId} />}
                     >
                         <CloseIcon fontSize='medium' color='error' />
                     </Badge>
@@ -212,13 +215,13 @@ function NaguiAnswerChoices({ question, realtime, randomization }) {
         <List className='rounded-lg max-h-full w-1/2 overflow-y-auto mb-3 space-y-3'>
             {randomization.map((origIdx, idx) => (
                 <ListItemButton key={idx}
-                    divider={idx !== question.details.choices.length - 1}
+                    divider={idx !== choices.length - 1}
                     disabled={true}
                     sx={{ '&.Mui-disabled': { opacity: 1 } }}
                     className={clsx('border-4 border-solid rounded-lg', getBorderColor(origIdx))}
                 >
                     <ListItemText
-                        primary={`${NAGUI_CHOICES[idx]}. ${question.details.choices[origIdx]}`}
+                        primary={`${NAGUI_CHOICES[idx]}. ${choices[origIdx]}`}
                         primaryTypographyProps={{ className: clsx('2xl:text-2xl', getTextColor(origIdx)) }}
                     />
                     {getListItemIcon(origIdx)}

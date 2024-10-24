@@ -94,7 +94,7 @@ function BasicQuestionFooter({ question, realtime, lang = DEFAULT_LOCALE }) {
     return (
         <div className='flex flex-col h-full items-center justify-center'>
             <span className="text-4xl">{realtime.correct !== null && <BasicQuestionPlayerAnswerText realtime={realtime} lang={lang} />}</span>
-            {explanation && <span className='2xl:text-2xl'>{explanation}</span>}
+            {explanation && <span className='2xl:text-2xl'>👉 {explanation}</span>}
         </div>
     )
 }

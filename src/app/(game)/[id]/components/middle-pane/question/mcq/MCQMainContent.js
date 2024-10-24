@@ -87,8 +87,8 @@ function MCQMainContentQuestion({ question, randomization }) {
             <div className='flex flex-col h-full w-1/4 items-center justify-center'>
                 <MCQAnswerImage correct={realtime.correct} />
             </div>
-            {game.status === 'question_end' && <MCQAnswerChoices question={question} realtime={realtime} randomization={randomization} />}
-            {game.status === 'question_active' && <MCQChoices question={question} realtime={realtime} randomization={randomization} />}
+            {game.status === 'question_active' && <ActiveMCQChoices question={question} realtime={realtime} randomization={randomization} />}
+            {game.status === 'question_end' && <EndedMCQChoices question={question} realtime={realtime} randomization={randomization} />}
             <div className='flex flex-col h-full w-1/4 items-center justify-center'>
                 <MCQAnswerImage correct={realtime.correct} />
             </div>
@@ -97,16 +97,12 @@ function MCQMainContentQuestion({ question, randomization }) {
 }
 
 
-const choiceIsDisabled = (myRole, isChooser) => {
-    if (!(myRole === 'player' && isChooser))
-        return true
-    return false
-}
+const choiceIsDisabled = (myRole, isChooser) => !(myRole === 'player' && isChooser)
 
 import { useAsyncAction } from '@/lib/utils/async'
 
 
-function MCQChoices({ question, realtime, randomization }) {
+function ActiveMCQChoices({ question, realtime, randomization }) {
     const game = useGameContext()
     const myTeam = useTeamContext()
     const myRole = useRoleContext()
@@ -147,10 +143,13 @@ function MCQChoices({ question, realtime, randomization }) {
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 
-function MCQAnswerChoices({ question, realtime, randomization }) {
-    const isCorrectAnswer = idx => (idx === question.details.answerIdx);
-    const isIncorrectChoice = idx => (realtime.option === 'duo' || realtime.option === 'square') && idx === realtime.choiceIdx && idx !== question.details.answerIdx;
-    const isNeutralChoice = idx => ((idx !== realtime.choiceIdx && idx !== question.details.answerIdx));
+function EndedMCQChoices({ question, realtime, randomization }) {
+    const { details: { choices, answerIdx } } = question;
+    const { choiceIdx, correct, playerId } = realtime;
+
+    const isCorrectAnswer = idx => (idx === answerIdx);
+    const isIncorrectChoice = idx => (idx === choiceIdx && idx !== answerIdx);
+    const isNeutralChoice = idx => (idx !== choiceIdx && idx !== answerIdx);
 
     const getBorderColor = idx => {
         if (isCorrectAnswer(idx)) return 'border-green-500';
@@ -165,13 +164,13 @@ function MCQAnswerChoices({ question, realtime, randomization }) {
     };
 
     const getListItemIcon = idx => {
-        if (realtime.correct && idx === question.details.answerIdx) {
+        if (idx === answerIdx && correct === true) {
             return (
                 <ListItemIcon>
                     <Badge
                         overlap='circular'
                         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                        badgeContent={<PlayerAvatar playerId={realtime.playerId} />}
+                        badgeContent={<PlayerAvatar playerId={playerId} />}
                     >
                         <CheckIcon fontSize='medium' color='success' />
                     </Badge>
@@ -179,13 +178,13 @@ function MCQAnswerChoices({ question, realtime, randomization }) {
             );
         }
 
-        if (realtime.option !== 'hide' && realtime.correct === false && idx === realtime.choiceIdx) {
+        if (idx === choiceIdx && correct === false) {
             return (
                 <ListItemIcon>
                     <Badge
                         overlap='circular'
                         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                        badgeContent={<PlayerAvatar playerId={realtime.playerId} />}
+                        badgeContent={<PlayerAvatar playerId={playerId} />}
                     >
                         <CloseIcon fontSize='medium' color='error' />
                     </Badge>
@@ -198,13 +197,13 @@ function MCQAnswerChoices({ question, realtime, randomization }) {
         <List className='rounded-lg max-h-full w-1/2 overflow-y-auto mb-3 space-y-3'>
             {randomization.map((origIdx, idx) => (
                 <ListItemButton key={idx}
-                    divider={idx !== question.details.choices.length - 1}
+                    divider={idx !== choices.length - 1}
                     disabled={true}
                     sx={{ '&.Mui-disabled': { opacity: 1 } }}
                     className={clsx('border-4 border-solid rounded-lg', getBorderColor(origIdx))}
                 >
                     <ListItemText
-                        primary={`${MCQ_CHOICES[idx]}. ${question.details.choices[origIdx]}`}
+                        primary={`${MCQ_CHOICES[idx]}. ${choices[origIdx]}`}
                         primaryTypographyProps={{ className: clsx('2xl:text-2xl', getTextColor(origIdx)) }}
                     />
                     {getListItemIcon(origIdx)}

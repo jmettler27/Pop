@@ -185,6 +185,7 @@ const quoteQuestionColumns = [
 const mcqQuestionRow = (question) => {
     const { answerIdx, choices, explanation, note, source, title } = question.details
     return {
+        numChoices: choices.length,
         answer: choices[answerIdx],
         // explanation,
         // note,
@@ -192,7 +193,14 @@ const mcqQuestionRow = (question) => {
         title,
     }
 }
+
+const NUM_CHOICES = {
+    'en': "Choices",
+    'fr-FR': "Choix"
+}
+
 const mcqQuestionColumns = [
+    { field: 'numChoices', headerName: NUM_CHOICES[DEFAULT_LOCALE], width: 75 },
     { field: 'source', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['source'], width: 200 },
     { field: 'title', headerName: 'Question', width: 500 },
     // { field: 'note', headerName: 'Note', width: MCQ_NOTE_MAX_LENGTH * 6 },
