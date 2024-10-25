@@ -20,15 +20,13 @@ import {
     collection,
     serverTimestamp,
     arrayRemove,
-    query,
-    where,
-    getDocs
 } from 'firebase/firestore'
 
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { QUOTE_DEFAULT_MAX_TRIES, QUOTE_DEFAULT_REWARDS_PER_ELEMENT } from '@/lib/utils/question/quote';
 import { resetGameChooserTransaction } from '@/app/(game)/lib/chooser';
 import { BASIC_QUESTION_DEFAULT_REWARD } from '@/lib/utils/question/basic';
+import { GAME_ROUND_DEFAULT_REWARDS } from '@/lib/utils/round';
 
 /* ==================================================================================================== */
 export async function addGameRound(gameId, title, type, rewards, rewardsPerQuestion) {
@@ -52,9 +50,10 @@ const addGameRoundTransaction = async (
     gameId,
     title,
     type,
-    rewards,
-    rewardsPerQuestion
 ) => {
+    const gameRef = doc(GAMES_COLLECTION_REF, gameId);
+    const gameData = await getDocDataTransaction(transaction, gameRef);
+
     const initRoundInfo = {
         currentQuestionIdx: 0,
         dateEnd: null,
@@ -62,9 +61,13 @@ const addGameRoundTransaction = async (
         order: null,
         createdAt: serverTimestamp(),
         questions: [],
-        rewards,
         title,
         type,
+    }
+    const { roundScorePolicy } = gameData;
+
+    if (roundScorePolicy === 'ranking') {
+        initRoundInfo.rewards = GAME_ROUND_DEFAULT_REWARDS;
     }
 
     if (type === 'mixed') {
@@ -100,9 +103,9 @@ const addGameRoundTransaction = async (
         initRoundInfo.rewardsPerQuestion = ENUM_DEFAULT_REWARD;
         initRoundInfo.rewardsForBonus = ENUM_DEFAULT_BONUS;
     } else if (type === 'odd_one_out') {
-        initRoundInfo.mistakePenalty = OOO_DEFAULT_MISTAKE_PENALTY;
+        initRoundInfo.mistakePenalty = roundScorePolicy === 'completion_rate' ? -20 : OOO_DEFAULT_MISTAKE_PENALTY;
     } else if (type === 'matching') {
-        initRoundInfo.mistakePenalty = MATCHING_DEFAULT_MISTAKE_PENALTY;
+        initRoundInfo.mistakePenalty = roundScorePolicy === 'completion_rate' ? -5 : MATCHING_DEFAULT_MISTAKE_PENALTY;
         initRoundInfo.maxMistakes = MATCHING_MAX_NUM_MISTAKES;
     } else if (type === 'mcq') {
         initRoundInfo.rewardsPerQuestion = MCQ_DEFAULT_REWARD;
@@ -128,7 +131,6 @@ const addGameRoundTransaction = async (
         scoresProgress: {},
     });
 
-    const gameRef = doc(GAMES_COLLECTION_REF, gameId);
     transaction.update(gameRef, {
         rounds: arrayUnion(roundId)
     });

@@ -20,11 +20,6 @@ export const EMOJI_THINKING_TIME = 15
 /* Validation  */
 import * as Yup from 'yup'
 
-export const subtypeSchema = () => Yup.string()
-    .oneOf(BLINDTEST_TYPES, "Invalid question subtype.")
-    .required("Required.")
-
-
 import emojiRegex from 'emoji-regex';
 const regex = emojiRegex();
 

@@ -16,8 +16,8 @@ import { generateShuffledIndices } from '@/lib/utils/question/odd_one_out'
 import { Avatar, Badge, Button, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 import { clsx } from 'clsx'
 
-import mcq_correct from '../../../../../../../../public/nagui-correct.png';
-import mcq_wrong from '../../../../../../../../public/nagui-wrong.png';
+import mcq_correct from '../../../../../../../../public/mcq-correct.png';
+import mcq_wrong from '../../../../../../../../public/mcq-wrong.png';
 
 import NoteButton from '@/app/(game)/[id]/components/NoteButton'
 

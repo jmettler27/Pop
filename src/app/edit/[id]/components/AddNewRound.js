@@ -68,7 +68,7 @@ function CreateRoundForm({ onClose, lang }) {
     const [submitRound, isSubmitting] = useAsyncAction(async (values) => {
         try {
             const { type, title } = values
-            await addGameRound(gameId, title, type, GAME_ROUND_DEFAULT_REWARDS, 1)
+            await addGameRound(gameId, title, type)
         } catch (error) {
             console.error("There was an error creating the round:", error)
             throw error

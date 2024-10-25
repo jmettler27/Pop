@@ -430,7 +430,7 @@ const endRoundTransaction = async (
     //                                  team1: {round1: global score accumulated at the end of round1, round2: global score accumulated at the end of round2}, 
     //                                  team2: {round1: global score accumulated at the end of round1, round2:global score accumulated at the end of round2}, 
     //                              ...}
-    const { questions: questionIds, type: roundType, rewardsPerQuestion, rewardsForBonus, rewardsPerElement, subtype } = roundData;
+    const { questions: questionIds, type: roundType, rewardsPerQuestion } = roundData;
     const { scores: roundScores, scoresProgress: currentRoundScoresProgress } = roundScoresData; // {team1: roundScore1, team2: roundScore2, ...}
 
 
