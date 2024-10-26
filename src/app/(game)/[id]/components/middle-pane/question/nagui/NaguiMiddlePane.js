@@ -28,9 +28,14 @@ export default function NaguiMiddlePane({ question }) {
 
 function NaguiHeader({ question }) {
     return (
-        <div className='flex flex-row items-center justify-center space-x-1'>
-            <QuestionTypeIcon questionType={question.type} fontSize={50} />
-            <h1 className='2xl:text-4xl'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong>: <i>{question.details.source}</i></h1>
+        <div className='flex flex-col items-center justify-center space-y-2'>
+            <div className='flex flex-row items-center justify-center space-x-1'>
+                <QuestionTypeIcon questionType={question.type} fontSize={40} />
+                <h1 className='2xl:text-5xl'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong></h1>
+            </div>
+            <div className='flex flex-row items-center justify-center space-x-1'>
+                <h2 className='2xl:text-5xl italic'>{question.details.source}</h2>
+            </div>
         </div>
     )
 }

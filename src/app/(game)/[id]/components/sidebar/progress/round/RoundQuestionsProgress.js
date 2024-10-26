@@ -227,7 +227,7 @@ function RoundQuestionSummary({ roundType, question, order, lang = DEFAULT_LOCAL
         case 'progressive_clues':
         case 'image':
         case 'emoji':
-            return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong>: {question.details.title}</span>
+            return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong> - {question.details.title}</span>
         case 'blindtest':
             return <span className='text-lg'>{blindtestTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong></span>
         case 'matching':
@@ -261,7 +261,7 @@ function QuestionTitle({ question }) {
 function QuestionTitleWithSource({ question }) {
     return (
         <Typography>
-            <i><strong>{question.details.source}</strong></i>: &quot;{question.details.title}&quot;
+            <i><strong>{question.details.source}</strong></i> - &quot;{question.details.title}&quot;
         </Typography>
     )
 }

@@ -123,7 +123,7 @@ function RoundAccordion({ gameId, round, teams, hasEnded, isCurrent, lang = DEFA
                     <Typography className={clsx(
                         (isCurrent && !hasEnded) && 'text-orange-300',
                     )}>
-                        <span className='2xl:text-xl'><strong>{ROUND_HEADER_TEXT[lang]} {round.order + 1}</strong>: <i>{round.title}</i></span>
+                        <span className='2xl:text-xl'><strong>{ROUND_HEADER_TEXT[lang]} {round.order + 1}</strong> - <i>{round.title}</i></span>
                     </Typography>
                 </div>
             </AccordionSummary>

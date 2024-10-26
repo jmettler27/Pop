@@ -163,7 +163,7 @@ import { naguiOptionToEmoji } from '@/lib/utils/question/nagui'
 
 function EndedNaguiChoices({ question, realtime, randomization }) {
     const { details: { choices, answerIdx } } = question;
-    const { choiceIdx, correct, playerId } = realtime;
+    const { choiceIdx, correct, playerId, option } = realtime;
 
     const isCorrectAnswer = idx => ((option === 'hide' && correct && idx === answerIdx) || idx === answerIdx);
     const isIncorrectChoice = idx => (option === 'duo' || option === 'square') && idx === choiceIdx && idx !== answerIdx;

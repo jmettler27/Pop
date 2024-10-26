@@ -52,7 +52,7 @@ function MCQAnswerImage({ correct }) {
             alt=''
             width={0}
             height={0}
-            style={{ width: '100%', height: 'auto' }}
+            style={{ width: '70%', height: 'auto' }}
         />
     }
     if (correct === false) {
