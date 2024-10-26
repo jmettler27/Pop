@@ -132,7 +132,7 @@ function RoundAccordion({ gameId, round, teams, hasEnded, isCurrent, lang = DEFA
                 <AccordionDetails>
                     <ol className='list-inside'>
                         {roundSortedTeams
-                            .slice(0, round.rewards.length)
+                            // .slice(0, round.rewards.length)
                             .map((item, idx) => {
                                 const teamNames = teams.filter((team) => item.teams.includes(team.id)).map((team) => team.name)
                                 const teamNamesString = teamNames.slice(0, teamNames.length).join(', ')
