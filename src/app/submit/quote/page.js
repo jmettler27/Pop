@@ -112,8 +112,8 @@ export function SubmitQuoteQuestionForm({ userId, lang, ...props }) {
                     lang: localeSchema(),
                     topic: topicSchema(),
                     quote: stringSchema(QUOTE_MAX_LENGTH),
-                    source: stringSchema(QUOTE_SOURCE_MAX_LENGTH),
-                    author: stringSchema(QUOTE_AUTHOR_MAX_LENGTH)
+                    source: stringSchema(QUOTE_SOURCE_MAX_LENGTH, false),
+                    author: stringSchema(QUOTE_AUTHOR_MAX_LENGTH, false),
                 })}
                 lang={lang}
             />
@@ -287,14 +287,14 @@ function EnterGuessSteps({ onSubmit, validationSchema, lang }) {
 
             <div id="checkbox-group" className='2xl:text-xl'>{QUOTE_ASPECTS_TO_GUESS[lang]}</div>
             <div role="group" aria-labelledby="checkbox-group">
-                <label>
+                {values.source && <label>
                     <Field type="checkbox" name="toGuess" value="source" />
                     {quoteElementToEmoji('source')} {QUOTE_SOURCE[lang]} (&quot;{values.source}&quot;)
-                </label>
-                <label>
+                </label>}
+                {values.author && <label>
                     <Field type="checkbox" name="toGuess" value="author" />
                     {quoteElementToEmoji('author')} {QUOTE_AUTHOR[lang]} (&quot;{values.author}&quot;)
-                </label>
+                </label>}
                 <label>
                     <Field type="checkbox" name="toGuess" value="quote" />
                     {quoteElementToEmoji('quote')} {QUOTE_PARTS[lang]}

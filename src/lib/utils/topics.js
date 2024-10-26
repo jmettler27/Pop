@@ -20,6 +20,8 @@ export const TOPICS = [
     'food',
     'education',
     'transport',
+    'animals',
+    'entertainment',
     'misc'
 ]
 
@@ -44,6 +46,8 @@ export const TOPIC_TO_EMOJI = {
     'education': '🎓',
     'transport': '🚗',
     'philosophy': '🤔',
+    'animals': '🐾',
+    'entertainment': '🎭',
     'misc': '🔄'
 }
 
@@ -69,6 +73,8 @@ export const TOPIC_TO_TITLE = {
         'education': "Education",
         'transport': "Transport",
         'philosophy': "Philosophy",
+        'animals': "Animals",
+        'entertainment': "Entertainment",
         'misc': "Miscellaneous"
     },
     'fr-FR': {
@@ -92,6 +98,8 @@ export const TOPIC_TO_TITLE = {
         'education': "Éducation",
         'transport': "Transports",
         'philosophy': "Philosophie",
+        'animals': "Animaux",
+        'entertainment': "Divertissement",
         'misc': "Divers"
     }
 }

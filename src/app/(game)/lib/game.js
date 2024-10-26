@@ -299,6 +299,21 @@ const endGameTransaction = async (
     transaction,
     gameId
 ) => {
+    const gameScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'scores')
+    const gameScoresData = await getDocDataTransaction(transaction, gameScoresRef)
+    const { gameSortedTeams } = gameScoresData
+    const winningTeamIds = gameSortedTeams[0].teams
+
+    // Update the status of every player to 'correct' if their team has won, 'idle' otherwise
+    const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
+    const playersSnapshot = await getDocs(playersCollectionRef)
+    for (const playerDoc of playersSnapshot.docs) {
+        const playerId = playerDoc.id
+        const playerData = playerDoc.data()
+        const status = winningTeamIds.includes(playerData.teamId) ? 'correct' : 'idle'
+        transaction.update(playerDoc.ref, { status })
+    }
+
     const gameRef = doc(GAMES_COLLECTION_REF, gameId)
     transaction.update(gameRef, {
         dateEnd: serverTimestamp(),
