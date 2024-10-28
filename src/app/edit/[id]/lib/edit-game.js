@@ -24,6 +24,7 @@ import {
 
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { QUOTE_DEFAULT_MAX_TRIES, QUOTE_DEFAULT_REWARDS_PER_ELEMENT } from '@/lib/utils/question/quote';
+import { LABEL_DEFAULT_MAX_TRIES, LABEL_DEFAULT_REWARDS_PER_ELEMENT } from '@/lib/utils/question/label';
 import { resetGameChooserTransaction } from '@/app/(game)/lib/chooser';
 import { BASIC_QUESTION_DEFAULT_REWARD } from '@/lib/utils/question/basic';
 import { GAME_ROUND_DEFAULT_REWARDS } from '@/lib/utils/round';
@@ -99,6 +100,10 @@ const addGameRoundTransaction = async (
         initRoundInfo.rewardsPerElement = QUOTE_DEFAULT_REWARDS_PER_ELEMENT;
         initRoundInfo.invalidateTeam = false;
         initRoundInfo.maxTries = QUOTE_DEFAULT_MAX_TRIES;
+    } else if (type === 'label') {
+        initRoundInfo.rewardsPerQuestion = LABEL_DEFAULT_REWARDS_PER_ELEMENT;
+        initRoundInfo.invalidateTeam = false;
+        initRoundInfo.maxTries = LABEL_DEFAULT_MAX_TRIES;
     } else if (type === 'enum') {
         initRoundInfo.rewardsPerQuestion = ENUM_DEFAULT_REWARD;
         initRoundInfo.rewardsForBonus = ENUM_DEFAULT_BONUS;
@@ -222,6 +227,25 @@ const addGameQuestionTransaction = async (
             buzzed: [],
             canceled: []
         })
+    } else if (questionData.type === 'label') {
+        transaction.set(questionRealtimeRef, {
+            ...commonRealtimeInfo,
+        });
+
+        const { labels } = questionData.details
+
+        const initialRevealed = Array.from({ length: labels.length }, () => ({}));
+
+        transaction.update(questionRealtimeRef, {
+            revealed: initialRevealed
+        })
+
+        const questionRealtimePlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
+        transaction.set(questionRealtimePlayersRef, {
+            buzzed: [],
+            canceled: []
+        })
+
     } else if (questionData.type === 'enum') {
         transaction.set(questionRealtimeRef, {
             ...commonRealtimeInfo,

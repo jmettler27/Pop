@@ -35,6 +35,8 @@ function RoundRankingPolicyTitle({ round }) {
             return <RiddleRoundRankingPolicyTitle round={round} />
         case 'quote':
             return <QuoteRoundRankingPolicyTitle round={round} />
+        case 'label':
+            return <LabelRoundRankingPolicyTitle round={round} />
         case 'odd_one_out':
             return <OddOneOutRoundRankingPolicyTitle round={round} />
         case 'matching':
@@ -51,6 +53,10 @@ function RiddleRoundRankingPolicyTitle({ round }) {
 }
 
 function QuoteRoundRankingPolicyTitle({ round }) {
+    return <h1 className='2xl:text-3xl'><span className='font-bold'>{round.rewardsPerElement} point</span> par bon élément trouvé</h1>
+}
+
+function LabelRoundRankingPolicyTitle({ round }) {
     return <h1 className='2xl:text-3xl'><span className='font-bold'>{round.rewardsPerElement} point</span> par bon élément trouvé</h1>
 }
 

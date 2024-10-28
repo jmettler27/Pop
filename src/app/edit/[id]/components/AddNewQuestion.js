@@ -253,6 +253,7 @@ import { SubmitProgressiveCluesQuestionForm } from '@/app/submit/progressive_clu
 import { SubmitQuoteQuestionForm } from '@/app/submit/quote/page'
 import { SubmitBasicQuestionForm } from '@/app/submit/basic/page';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { SubmitLabelQuestionForm } from '@/app/submit/label/page';
 
 function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
     const { id: gameId } = useParams()
@@ -282,6 +283,8 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
             return <SubmitProgressiveCluesQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case 'quote':
             return <SubmitQuoteQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
+        case 'label':
+            return <SubmitLabelQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
     }
 }
 

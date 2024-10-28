@@ -47,6 +47,7 @@ export function QuestionCardTitle({ question, showType = false, lang = DEFAULT_L
         case 'progressive_clues':
         case 'image':
         case 'emoji':
+        case 'label':
         case 'enum':
         case 'odd_one_out':
             return <span>{showType && emoji}{topicToEmoji(question.topic)} &quot;{question.details.title}&quot;</span>
@@ -94,6 +95,8 @@ export function QuestionCardContent({ question }) {
             return <BlindtestCardMainContent question={question} />
         case 'quote':
             return <QuoteCardMainContent question={question} />
+        case 'label':
+            return <LabelCardMainContent question={question} />
         case 'enum':
             return <EnumCardMainContent question={question} />
         case 'odd_one_out':
@@ -258,6 +261,31 @@ const DisplayedQuote = ({ toGuess, quote, quoteParts }) => {
     return <span>{quote}</span>
 }
 
+
+const LabelCardMainContent = ({ question }) => {
+    const { title, image, labels } = question.details
+
+    return (
+        <div className='flex flex-col w-full space-y-2'>
+            {image && <Image
+                src={image}
+                alt={title}
+                priority={true}
+                height={0}
+                width={0}
+                style={{
+                    width: 'auto',
+                    height: '150px',
+                    objectFit: 'cover',
+                }}
+                className='self-center'
+            />}
+            <ol className='list-decimal py-1 pl-5'>
+                {labels.map((label, idx) => <li className='dark:text-white' key={idx}>{label}</li>)}
+            </ol>
+        </div>
+    );
+}
 
 
 const ENUM_MAX_NUM_ELEMENTS = 10

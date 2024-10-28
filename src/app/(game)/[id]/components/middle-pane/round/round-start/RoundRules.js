@@ -2,6 +2,7 @@ import { BASIC_QUESTION_THINKING_TIME } from "@/lib/utils/question/basic"
 import { BLINDTEST_THINKING_TIME } from "@/lib/utils/question/blindtest"
 import { EMOJI_THINKING_TIME } from "@/lib/utils/question/emoji"
 import { IMAGE_THINKING_TIME } from "@/lib/utils/question/image"
+import { LABEL_THINKING_TIME } from "@/lib/utils/question/label"
 import { MATCHING_MAX_NUM_COLS, MATCHING_MAX_NUM_MISTAKES, MATCHING_MIN_NUM_COLS, MATCHING_THINKING_TIME } from "@/lib/utils/question/matching"
 import { NAGUI_OPTIONS, NAGUI_OPTION_TO_ICON, naguiOptionToTitle } from "@/lib/utils/question/nagui"
 import { OOO_THINKING_TIME } from "@/lib/utils/question/odd_one_out"
@@ -20,6 +21,8 @@ export function RoundRules({ round }) {
             return <BlindtestRoundRules round={round} />
         case 'quote':
             return <QuoteRoundRules round={round} />
+        case 'label':
+            return <LabelRoundRules round={round} />
         case 'odd_one_out':
             return <OddOneOutRoundRules round={round} />
         case 'enum':
@@ -101,6 +104,17 @@ function QuoteRoundRules({ round }) {
             Vous pouvez <span className='font-bold text-blue-400'>annuler votre buzz</span> en <strong>cliquant sur &quot;Annuler&quot;</strong>.</p>
         <p className='2xl:text-2xl text-center'>🥇 Si vous êtes en tête de la file d&apos;attente, proposez votre réponse à l&apos;oral.</p>
         <p className='2xl:text-2xl text-center'>⏳ Vous avez <u><strong>{QUOTE_THINKING_TIME} secondes</strong></u> pour répondre, faute de quoi votre essai sera invalidé !</p>
+        <p className='2xl:text-2xl text-center'>⚠️ Vous disposez de <strong>{round.maxTries} essais par question</strong>.</p>
+        <p className='2xl:text-2xl text-center'>😈 Vous pouvez gagner des points <strong>même si vous ne connaissez pas tous les éléments !</strong></p>
+    </>
+}
+
+function LabelRoundRules({ round }) {
+    return <>
+        <p className='2xl:text-2xl text-center'>💡 Dès que vous avez une idée, <span className='font-bold text-red-500'>buzzez</span> en <strong>cliquant sur &quot;Buzz&quot;</strong>.
+            Vous pouvez <span className='font-bold text-blue-400'>annuler votre buzz</span> en <strong>cliquant sur &quot;Annuler&quot;</strong>.</p>
+        <p className='2xl:text-2xl text-center'>🥇 Si vous êtes en tête de la file d&apos;attente, proposez votre réponse à l&apos;oral.</p>
+        <p className='2xl:text-2xl text-center'>⏳ Vous avez <u><strong>{LABEL_THINKING_TIME} secondes</strong></u> pour répondre, faute de quoi votre essai sera invalidé !</p>
         <p className='2xl:text-2xl text-center'>⚠️ Vous disposez de <strong>{round.maxTries} essais par question</strong>.</p>
         <p className='2xl:text-2xl text-center'>😈 Vous pouvez gagner des points <strong>même si vous ne connaissez pas tous les éléments !</strong></p>
     </>

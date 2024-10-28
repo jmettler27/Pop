@@ -107,6 +107,14 @@ const selectRoundTransaction = async (
                 }, 0);
                 maxPoints = totalNumElements * rewardsPerElement;
                 break;
+            case 'label':
+                const _questions = await Promise.all(questionIds.map(questionId => getDocDataTransaction(transaction, doc(QUESTIONS_COLLECTION_REF, questionId))));
+                // The total number of quote elements to guess in the round
+                const _totalNumElements = _questions.reduce((acc, { details: { labels } }) => {
+                    return acc + labels.length;
+                }, 0);
+                maxPoints = _totalNumElements * rewardsPerElement;
+                break;
             case 'mcq':
                 maxPoints = Math.ceil(numQuestions / numTeams) * rewardsPerQuestion;
                 break;
@@ -121,7 +129,7 @@ const selectRoundTransaction = async (
         return
     }
 
-    if (isRiddle(roundType) || roundType === 'quote' || roundType === 'enum' || roundType === 'mixed') {
+    if (isRiddle(roundType) || ['quote', 'label', 'enum', 'mixed'].includes(roundType)) {
         // Set the status of every player to 'idle'
         const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
         const playersSnapshot = await getDocs(query(playersCollectionRef))

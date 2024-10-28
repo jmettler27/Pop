@@ -5,6 +5,7 @@ export const QUESTION_TYPES = [
     'emoji',
     'blindtest',
     'quote',
+    'label',
     'enum',
     'odd_one_out',
     'matching',
@@ -19,6 +20,7 @@ export const QUESTION_TYPE_TO_EMOJI = {
     'emoji': "😃",
     'blindtest': "🎧",
     'quote': "💬",
+    'label': "🏷️",
     'enum': "🗣️",
     'odd_one_out': "🕵️",
     'matching': "💖",
@@ -34,6 +36,7 @@ export const QUESTION_TYPE_TO_TITLE = {
         'emoji': "Emoji",
         'blindtest': "Blindtest",
         'quote': "Quote",
+        'label': "Labels",
         'enum': "Enumeration",
         'odd_one_out': "Odd One Out",
         'matching': "Matching",
@@ -47,6 +50,7 @@ export const QUESTION_TYPE_TO_TITLE = {
         'emoji': "Emoji",
         'blindtest': "Blindtest",
         'quote': "Réplique",
+        'label': "Étiquettes",
         'enum': "Énumération",
         'odd_one_out': "Coup par coup",
         'matching': "Matching",
@@ -97,7 +101,7 @@ import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import BedroomBabyIcon from '@mui/icons-material/BedroomBaby';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
-
+import LabelIcon from '@mui/icons-material/Label';
 
 export function QuestionTypeIcon({ questionType, fontSize = 'small' }) {
     switch (questionType) {
@@ -121,6 +125,8 @@ export function QuestionTypeIcon({ questionType, fontSize = 'small' }) {
             return <FavoriteIcon sx={{ fontSize }} />
         case 'quote':
             return <FormatQuoteIcon sx={{ fontSize }} />
+        case 'label':
+            return <LabelIcon sx={{ fontSize }} />
         case 'basic':
             return <QuestionMarkIcon sx={{ fontSize }} />
     }

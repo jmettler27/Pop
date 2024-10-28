@@ -13,6 +13,7 @@ import { handleMCQCountdownEndTransaction, resetMCQTransaction } from './questio
 import { handleNaguiCountdownEndTransaction, resetNaguiTransaction } from './question/nagui';
 import { handleMatchingCountdownEndTransaction, resetMatchingQuestionTransaction } from './question/matching';
 import { handleQuoteCountdownEndTransaction, resetQuoteQuestionTransaction } from './question/quote';
+import { resetLabelQuestionTransaction } from './question/label';
 
 import { READY_COUNTDOWN_SECONDS } from '@/lib/utils/time';
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/lib/utils/question/question';
@@ -98,6 +99,9 @@ export const resetQuestionTransaction = async (
             break
         case 'quote':
             await resetQuoteQuestionTransaction(transaction, gameId, roundId, questionId)
+            break
+        case 'label':
+            await resetLabelQuestionTransaction(transaction, gameId, roundId, questionId)
             break
         case 'enum':
             await resetEnumQuestionTransaction(transaction, gameId, roundId, questionId)

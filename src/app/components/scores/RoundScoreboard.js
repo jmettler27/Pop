@@ -27,7 +27,7 @@ export default function RoundScoreboard({ roundScores, teams, lang = DEFAULT_LOC
         return <></>
     }
 
-    const completionRounds = ['progressive_clues', 'image', 'emoji', 'blindtest', 'quote', 'enum', 'mcq', 'nagui', 'basic', 'mixed']
+    const completionRounds = ['progressive_clues', 'image', 'emoji', 'blindtest', 'quote', 'label', 'enum', 'mcq', 'nagui', 'basic', 'mixed']
     const isCompletionRound = completionRounds.includes(round.type)
 
     return (

@@ -35,6 +35,7 @@ const editGameRoundCardNumCols = (roundType) => {
         case 'nagui':
         case 'basic':
         case 'quote':
+        case 'label':
             return 'md:grid-cols-3'
         default:
             return 'md:grid-cols-4'

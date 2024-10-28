@@ -15,6 +15,8 @@ export function RoundDescription({ round }) {
             return <EmojiRoundDescription />
         case 'quote':
             return <QuoteRoundDescription />
+        case 'label':
+            return <LabelRoundDescription />
         case 'odd_one_out':
             return <OddOneOutRoundDescription />
         case 'enum':
@@ -77,6 +79,16 @@ function QuoteRoundDescription({ }) {
         </ul>
         <br />
         <p className='2xl:text-2xl text-center'>🫣 <strong>Un, deux ou trois</strong> de ces éléments sont <strong>cachés</strong>: à vous de les retrouver.</p>
+        <br />
+        <p className='2xl:text-2xl text-center'>👁️ En cas de blocage, les organisateurs peuvent vous <strong>révéler un élément</strong>.</p>
+    </>
+}
+
+function LabelRoundDescription({ }) {
+    return <>
+        <p className='2xl:text-2xl text-center'>Chaque question consiste en une image et des pastilles numérotées</p>
+        <br />
+        <p className='2xl:text-2xl text-center'>🫣 A vous de retrouver les étiquettes correspondant aux pastilles.</p>
         <br />
         <p className='2xl:text-2xl text-center'>👁️ En cas de blocage, les organisateurs peuvent vous <strong>révéler un élément</strong>.</p>
     </>

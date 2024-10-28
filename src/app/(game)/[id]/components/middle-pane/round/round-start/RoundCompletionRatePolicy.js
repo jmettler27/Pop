@@ -23,6 +23,8 @@ function RoundCompletionRatePolicyTitle({ round }) {
             return <RiddleRoundCompletionRatePolicyTitle round={round} />
         case 'quote':
             return <QuoteRoundCompletionRatePolicyTitle round={round} />
+        case 'label':
+            return <LabelRoundCompletionRatePolicyTitle round={round} />
         case 'nagui':
             return <NaguiRoundCompletionRatePolicyTitle round={round} />
         case 'odd_one_out':
@@ -43,6 +45,7 @@ function RoundMaxNumPoints({ round }) {
         case 'enum':
         case 'basic':
         case 'quote':
+        case 'label':
         case 'mcq':
         case 'nagui':
             const { maxPoints } = round
@@ -60,6 +63,10 @@ function RiddleRoundCompletionRatePolicyTitle({ round }) {
 
 function QuoteRoundCompletionRatePolicyTitle({ round }) {
     return <h1 className='2xl:text-3xl text-center'>✨ <span className='text-center text-green-500'><strong>{round.rewardsPerElement} point</strong> par bon élément trouvé</span></h1>
+}
+
+function LabelRoundCompletionRatePolicyTitle({ round }) {
+    return <h1 className='2xl:text-3xl text-center'>✨ <span className='text-center text-green-500'><strong>{round.rewardsPerElement} point</strong> par bonne étiquette trouvée</span></h1>
 }
 
 function OddOneOutRoundCompletionRatePolicyTitle({ round }) {
