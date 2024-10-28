@@ -1,7 +1,7 @@
 "use server";
 
 import { firestore } from '@/lib/firebase/firebase'
-import { collection, doc, getDocs, query, runTransaction, where } from 'firebase/firestore'
+import { collection, doc, getDocs, increment, query, runTransaction, where } from 'firebase/firestore'
 
 import { getNextCyclicIndex, shuffle } from '@/lib/utils/arrays';
 import { getDocDataTransaction } from './utils';
@@ -84,6 +84,48 @@ export const switchNextChooserTransaction = async (
     for (const playerDoc of choosersSnapshot.docs) {
         transaction.update(playerDoc.ref, {
             status: 'focus'
+        })
+    }
+}
+
+/* ==================================================================================================== */
+//  TRANSACTION
+export const updateChooserAndNonChooserStatusesTransaction = async (
+    transaction,
+    gameId,
+    chooserTeamId,
+    chooserStatus,
+    nonChooserStatus
+) => {
+    if (chooserStatus === nonChooserStatus) {
+        throw new Error("The statuses for the choosers and non-choosers must be different.")
+    }
+
+    const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
+    const readyRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready')
+
+
+    const choosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', chooserTeamId)))
+    for (const playerDoc of choosersSnapshot.docs) {
+        transaction.update(playerDoc.ref, {
+            status: chooserStatus
+        })
+    }
+    if (chooserStatus === 'ready') {
+        transaction.update(readyRef, {
+            numReady: increment(choosersSnapshot.size)
+        })
+    }
+
+    const nonChoosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '!=', chooserTeamId)))
+    for (const playerDoc of nonChoosersSnapshot.docs) {
+        transaction.update(playerDoc.ref, {
+            status: nonChooserStatus
+        })
+    }
+    if (nonChooserStatus === 'ready') {
+        transaction.update(readyRef, {
+            numReady: increment(nonChoosersSnapshot.size)
         })
     }
 }

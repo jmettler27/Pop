@@ -17,7 +17,7 @@ import {
 } from 'firebase/firestore'
 
 import { updateTimerStateTransaction } from '@/app/(game)/lib/timer';
-import { switchNextChooserTransaction } from '@/app/(game)/lib/chooser'
+import { switchNextChooserTransaction, updateChooserAndNonChooserStatusesTransaction } from '@/app/(game)/lib/chooser'
 import { addSoundEffectTransaction, addWrongAnswerSoundToQueueTransaction } from '@/app/(game)/lib/sounds';
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { endQuestionTransaction } from '@/app/(game)/lib/question';
@@ -104,7 +104,7 @@ const submitMatchTransaction = async (
             await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, 0)
 
             for (const chooserDoc of choosersSnapshot.docs) {
-                transaction.update(chooserDoc.ref, { status: 'correct' })
+                transaction.update(chooserDoc.ref, { status: 'idle' })
             }
 
             // Log the match

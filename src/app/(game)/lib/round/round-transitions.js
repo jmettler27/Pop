@@ -23,6 +23,7 @@ import { DEFAULT_THINKING_TIME_SECONDS } from '@/lib/utils/question/question';
 import { getDocDataTransaction, updateGameStatusTransaction } from '@/app/(game)/lib/utils';
 import { updateTimerStateTransaction, updateTimerTransaction } from '@/app/(game)/lib/timer';
 import { addSoundEffectTransaction } from '@/app/(game)/lib/sounds';
+import { updateChooserAndNonChooserStatusesTransaction } from '@/app/(game)/lib/chooser';
 
 
 /* ==================================================================================================== */
@@ -200,14 +201,16 @@ const switchRoundQuestionTransaction = async (
     const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
 
     const questionData = await getDocDataTransaction(transaction, questionRef)
-    const defaultThinkingTime = DEFAULT_THINKING_TIME_SECONDS[questionData.type]
+    const { type: questionType } = questionData
+
+    const defaultThinkingTime = DEFAULT_THINKING_TIME_SECONDS[questionType]
 
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
 
     const { chooserOrder, chooserIdx } = gameStatesData
+    const chooserTeamId = chooserOrder[chooserIdx]
 
-    if (questionData.type === 'mcq' || questionData.type === 'nagui') {
-        const chooserTeamId = chooserOrder[chooserIdx]
+    if (['mcq', 'nagui'].includes(questionType)) {
 
         if (questionOrder > 0) {
             const newChooserIdx = getNextCyclicIndex(chooserIdx, chooserOrder.length)
@@ -218,45 +221,28 @@ const switchRoundQuestionTransaction = async (
             transaction.update(questionRealtimeRef, {
                 teamId: newChooserTeamId,
             })
-            const newChoosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', newChooserTeamId)))
-            for (const playerDoc of newChoosersSnapshot.docs) {
-                transaction.update(playerDoc.ref, {
-                    status: 'focus'
-                })
-            }
-            const prevChoosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', chooserTeamId)))
-            for (const playerDoc of prevChoosersSnapshot.docs) {
-                transaction.update(playerDoc.ref, {
-                    status: 'idle'
-                })
-            }
         } else {
             transaction.update(questionRealtimeRef, {
                 teamId: chooserTeamId,
             })
         }
 
+        await updateChooserAndNonChooserStatusesTransaction(transaction, gameId, chooserTeamId, 'focus', 'idle')
+
         // await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: defaultThinkingTime })
         await updateTimerTransaction(transaction, gameId, { status: 'reset', duration: defaultThinkingTime })
-    } else if (questionData.type === 'odd_one_out' || questionData.type === 'matching') {
+    }
+
+    else if (['odd_one_out', 'matching'].includes(questionType)) {
         const newChooserIdx = 0
         const newChooserTeamId = chooserOrder[newChooserIdx]
         transaction.update(gameStatesRef, {
             chooserIdx: newChooserIdx
         })
-        const choosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', newChooserTeamId)))
-        for (const playerDoc of choosersSnapshot.docs) {
-            transaction.update(playerDoc.ref, {
-                status: 'focus'
-            })
-        }
-        const nonChoosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '!=', newChooserTeamId)))
-        for (const playerDoc of nonChoosersSnapshot.docs) {
-            transaction.update(playerDoc.ref, {
-                status: 'idle'
-            })
-        }
-        if (questionData.type === 'matching') {
+
+        await updateChooserAndNonChooserStatusesTransaction(transaction, gameId, newChooserTeamId, 'focus', 'idle')
+
+        if (questionType === 'matching') {
             // await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: defaultThinkingTime * (questionData.details.numCols - 1) })
             await updateTimerTransaction(transaction, gameId, { status: 'reset', duration: defaultThinkingTime * (questionData.details.numCols - 1) })
         } else {
@@ -270,7 +256,7 @@ const switchRoundQuestionTransaction = async (
                 status: 'idle'
             })
         }
-        if (questionData.type === 'enum') {
+        if (questionType === 'enum') {
             // await updateTimerTransaction(transaction, gameId, { status: 'reset', managedBy, duration: questionData.details.thinkingTime })
             await updateTimerTransaction(transaction, gameId, { status: 'reset', duration: questionData.details.thinkingTime })
         }
@@ -280,7 +266,7 @@ const switchRoundQuestionTransaction = async (
         }
     }
 
-    if (questionData.type !== 'blindtest') {
+    if (questionType !== 'blindtest') {
         await addSoundEffectTransaction(transaction, gameId, 'skyrim_skill_increase')
     }
 
@@ -625,6 +611,7 @@ const endRoundTransaction = async (
     transaction.update(gameScoresRef, {
         scores: updatedGlobalScores,
         scoresProgress: updatedGlobalScoresProgress,
+        ...(roundData.order === gameData.rounds.length - 1 && { gameSortedTeams: gameSortedTeams })
     })
 
     // If the round is not the last one, update the running order of teams for the next round

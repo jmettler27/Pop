@@ -99,3 +99,24 @@ export async function addNewQuestion(question) {
         throw error;
     }
 }
+
+// import { getFirestore, collection, query, where, getDocs, documentId } from "firebase/firestore";
+
+// // Initialize Firestore
+// const db = getFirestore();
+
+// // Function to get documents by IDs
+// async function getDocumentsByIds(collectionName, idsArray) {
+//     const colRef = collection(db, collectionName);
+//     const q = query(colRef, where(documentId(), 'in', idsArray));
+//     const querySnapshot = await getDocs(q);
+
+//     const documents = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+//     return documents;
+// }
+
+// // Example usage
+// const idsArray = ['id1', 'id2', 'id3'];
+// getDocumentsByIds('yourCollectionName', idsArray)
+//     .then(docs => console.log(docs))
+//     .catch(error => console.error("Error getting documents: ", error));

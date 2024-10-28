@@ -18,6 +18,7 @@ import { addSoundEffectTransaction, addWrongAnswerSoundToQueueTransaction } from
 import { getDocDataTransaction } from '@/app/(game)/lib/utils';
 import { endQuestionTransaction } from '@/app/(game)/lib/question';
 import { increaseRoundTeamScoreTransaction } from '@/app/(game)/lib/scores';
+import { updateChooserAndNonChooserStatusesTransaction } from '@/app/(game)/lib/chooser';
 
 export async function selectNaguiOption(gameId, roundId, questionId, playerId, optionIdx) {
     if (!gameId) {
@@ -111,16 +112,16 @@ const selectNaguiChoiceTransaction = async (
     teamId,
     choiceIdx
 ) => {
-    const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const choosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)))
+    const gameStatesRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states')
 
     const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
     const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
     const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
 
-    const [questionData, roundData, questionRealtimeData] = await Promise.all([
-        getDocDataTransaction(transaction, questionRef),
+    const [gameStatesData, roundData, questionData, questionRealtimeData] = await Promise.all([
+        getDocDataTransaction(transaction, gameStatesRef),
         getDocDataTransaction(transaction, roundRef),
+        getDocDataTransaction(transaction, questionRef),
         getDocDataTransaction(transaction, questionRealtimeRef),
     ])
 
@@ -129,9 +130,14 @@ const selectNaguiChoiceTransaction = async (
     const reward = correct ? roundData.rewardsPerQuestion[questionRealtimeData.option] : 0;
     await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, reward)
 
-    for (const chooserDoc of choosersSnapshot.docs) {
-        transaction.update(chooserDoc.ref, { status: 'ready' })
-    }
+    const { chooserIdx, chooserOrder } = gameStatesData
+    const newChooserIdx = getNextCyclicIndex(chooserIdx, chooserOrder.length)
+    const newChooserTeamId = chooserOrder[newChooserIdx]
+    // transaction.update(gameStatesRef, {
+    //     chooserIdx: newChooserIdx
+    // })
+
+    await updateChooserAndNonChooserStatusesTransaction(transaction, gameId, newChooserTeamId, 'idle', 'ready')
 
     transaction.update(questionRealtimeRef, { playerId, choiceIdx, reward, correct, })
 

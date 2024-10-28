@@ -99,7 +99,8 @@ const selectProposalTransaction = async (
         // Move the "winner" to the head of the chooser list
         const newChooserOrder = moveToHead(teamId, chooserOrder)
         transaction.update(gameStatesRef, {
-            chooserOrder: newChooserOrder
+            chooserOrder: newChooserOrder,
+            chooserIdx: 0
         })
         transaction.update(questionRealtimeRef, {
             winner: { playerId, teamId }
