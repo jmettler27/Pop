@@ -209,7 +209,7 @@ function GameHomeRoundItem({ round, isDisabled, onSelectRound, locale = DEFAULT_
                 }}
             />
 
-            {(round.type === 'matching' || round.type == 'quote') && <NewReleasesIcon color='warning' fontSize='large' />}
+            {(round.type === 'label') && <NewReleasesIcon color='warning' fontSize='large' />}
         </ListItemButton>
     )
 }

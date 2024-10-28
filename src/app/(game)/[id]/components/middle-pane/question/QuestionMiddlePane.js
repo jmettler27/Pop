@@ -14,6 +14,7 @@ import NaguiMiddlePane from './nagui/NaguiMiddlePane'
 import OddOneOutMiddlePane from './odd_one_out/OddOneOutMiddlePane'
 import MatchingMiddlePane from './matching/MatchingMiddlePane'
 import BasicMiddlePane from './basic/BasicMiddlePane'
+import LabelMiddlePane from './label/LabelMiddlePane'
 
 export default function QuestionMiddlePane() {
     const game = useGameContext()
@@ -38,6 +39,8 @@ export default function QuestionMiddlePane() {
             return <RiddleMiddlePane question={question} />
         case 'quote':
             return <QuoteMiddlePane question={question} />
+        case 'label':
+            return <LabelMiddlePane question={question} />
         case 'enum':
             return <EnumMiddlePane question={question} />
         case 'mcq':

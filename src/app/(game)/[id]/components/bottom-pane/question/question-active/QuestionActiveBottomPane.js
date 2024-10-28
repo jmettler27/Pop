@@ -8,6 +8,7 @@ import OddOneOutBottomPane from './odd_one_out/OddOneOutBottomPane'
 import MCQBottomPane from './mcq/MCQBottomPane'
 import BasicQuestionBottomPane from './basic/BasicQuestionBottomPane'
 import NaguiBottomPane from './nagui/NaguiBottomPane'
+import LabelBottomPane from './label/LabelBottomPane'
 
 import LoadingScreen from '@/app/components/LoadingScreen'
 
@@ -40,6 +41,8 @@ export default function QuestionActiveBottomPane({ }) {
             return <RiddleBottomPane question={question} />
         case 'quote':
             return <QuoteBottomPane question={question} />
+        case 'label':
+            return <LabelBottomPane question={question} />
         case 'enum':
             return <EnumBottomPane question={question} />
         case 'odd_one_out':

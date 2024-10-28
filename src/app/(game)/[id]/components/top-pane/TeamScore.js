@@ -124,6 +124,7 @@ function CompletionRatePolicyTeamRoundActiveScore({ teamId, game }) {
         case 'emoji':
         case 'blindtest':
         case 'quote':
+        case 'label':
         case 'enum':
         case 'mcq':
         case 'nagui':

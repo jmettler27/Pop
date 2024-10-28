@@ -3,6 +3,7 @@ import { BLINDTEST_THINKING_TIME } from "./blindtest";
 import { EMOJI_THINKING_TIME } from "./emoji";
 import { ENUM_MIN_THINKING_SECONDS } from "./enum";
 import { IMAGE_THINKING_TIME } from "./image";
+import { LABEL_THINKING_TIME } from "./label";
 import { MATCHING_THINKING_TIME } from "./matching";
 import { MCQ_THINKING_TIME } from "./mcq";
 import { NAGUI_THINKING_TIME } from "./nagui";
@@ -16,6 +17,7 @@ export const DEFAULT_THINKING_TIME_SECONDS = {
     'emoji': EMOJI_THINKING_TIME,
     'image': IMAGE_THINKING_TIME,
     'quote': QUOTE_THINKING_TIME,
+    'label': LABEL_THINKING_TIME,
     'mcq': MCQ_THINKING_TIME,
     'nagui': NAGUI_THINKING_TIME,
     'basic': BASIC_QUESTION_THINKING_TIME,

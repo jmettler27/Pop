@@ -244,6 +244,7 @@ function QuestionTitle({ question }) {
         case 'emoji':
         case 'image':
         case 'quote':
+        case 'label':
             return <></>
         case 'basic':
         case 'mcq':

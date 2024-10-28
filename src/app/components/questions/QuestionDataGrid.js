@@ -182,6 +182,25 @@ const quoteQuestionColumns = [
 ]
 
 
+const labelQuestionRow = (question) => {
+    const { title, labels } = question.details
+
+    return {
+        numLabels: labels.length,
+        title,
+    }
+}
+
+const NUM_LABELS = {
+    'en': "Labels",
+    'fr-FR': "Étiquettes"
+}
+
+const labelQuestionColumns = [
+    { field: 'numLabels', headerName: NUM_LABELS[DEFAULT_LOCALE], width: 100 },
+    { field: 'title', headerName: 'Question', width: 400 },
+]
+
 const mcqQuestionRow = (question) => {
     const { answerIdx, choices, explanation, note, source, title } = question.details
     return {
@@ -255,6 +274,7 @@ const questionTypeToRow = {
     'odd_one_out': oddOneOutQuestionRow,
     'matching': matchingQuestionRow,
     'quote': quoteQuestionRow,
+    'label': labelQuestionRow,
     'mcq': mcqQuestionRow,
     'nagui': naguiQuestionRow,
     'basic': basicQuestionRow
@@ -269,6 +289,7 @@ const questionTypeToColumns = {
     'odd_one_out': oddOneOutQuestionColumns,
     'matching': matchingQuestionColumns,
     'quote': quoteQuestionColumns,
+    'label': labelQuestionColumns,
     'mcq': mcqQuestionColumns,
     'nagui': naguiQuestionColumns,
     'basic': basicQuestionColumns
