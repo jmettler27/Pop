@@ -1,5 +1,5 @@
 /* Constants */
-export const MAX_IMAGE_SIZE_MB = 2;
+export const MAX_IMAGE_SIZE_MB = 5;
 export const IMAGE_VALID_TYPES = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'avif'];
 
 export const MAX_AUDIO_SIZE_MB = 10;

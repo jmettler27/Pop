@@ -17,7 +17,7 @@ export const LABEL_EXAMPLE = [
 ]
 
 export const LABEL_MIN_NUMBER_OF_LABELS = 2
-export const LABEL_MAX_NUMBER_OF_LABELS = 12
+export const LABEL_MAX_NUMBER_OF_LABELS = 15
 
 
 export const LABEL_DEFAULT_REWARDS_PER_ELEMENT = 1
