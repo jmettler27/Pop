@@ -87,7 +87,7 @@ export function SubmitEnumQuestionForm({ userId, lang, ...props }) {
                 topic: '',
                 title: '',
                 note: '',
-                answer: [''],
+                answer: Array(ENUM_MIN_NUMBER_OF_ANSWERS).fill(''),
                 maxIsKnown: null,
                 thinkingTime: 60,
                 challengeTime: 60,
@@ -257,8 +257,8 @@ function EnterAnswerItemsStep({ onSubmit, validationSchema, lang }) {
 }
 
 const NUM_ANSWERS_ALLOWED = {
-    'en': "Number of items allowed",
-    'fr-FR': "Nombre d'items autorisé",
+    'en': "Number of answers allowed",
+    'fr-FR': "Nombre de réponses autorisé",
 }
 
 const MAX_IS_KNOWN = {

@@ -39,7 +39,9 @@ export const OOO_ITEMS_EXAMPLE = {
         { title: 'American Psycho (2000)', explanation: 'Patrick Bateman' }
     ]
 }
-export const OOO_ITEMS_LENGTH = 10;
+
+export const OOO_MIN_NUMBER_OF_ITEMS = 5;
+export const OOO_MAX_NUMBER_OF_ITEMS = 10;
 export const OOO_ITEM_TITLE_MAX_LENGTH = 75
 export const OOO_ITEM_EXPLANATION_MAX_LENGTH = 150
 

@@ -22,7 +22,7 @@ import { updateTimerStateTransaction, updateTimerTransaction } from '@/app/(game
 import { decreaseGlobalTeamScoreTransaction, increaseRoundTeamScoreTransaction } from '@/app/(game)/lib/scores';
 
 import { moveToHead } from '@/lib/utils/arrays';
-import { OOO_ITEMS_LENGTH } from '@/lib/utils/question/odd_one_out';
+import { OOO_MAX_NUMBER_OF_ITEMS } from '@/lib/utils/question/odd_one_out';
 
 
 export async function selectProposal(gameId, roundId, questionId, playerId, idx) {
@@ -172,7 +172,7 @@ export const handleOOOCountdownEndTransaction = async (
     const selectedIdxsSet = new Set(selectedItems.map(item => item.idx));
 
     const remainingItems = [];
-    for (let i = 0; i < OOO_ITEMS_LENGTH; i++) {
+    for (let i = 0; i < OOO_MAX_NUMBER_OF_ITEMS; i++) {
         if (!selectedIdxsSet.has(i)) {
             remainingItems.push(i);
         }

@@ -15,12 +15,11 @@ import { topicSchema } from '@/lib/utils/topics';
 import { stringSchema } from '@/lib/utils/forms';
 import {
     MCQ_CHOICES, MCQ_CHOICES_EXAMPLE, MCQ_CHOICE_MAX_LENGTH,
+    MCQ_MIN_NUMBER_OF_CHOICES, MCQ_MAX_NUMBER_OF_CHOICES,
     MCQ_EXPLANATION_EXAMPLE, MCQ_EXPLANATION_MAX_LENGTH,
     MCQ_NOTE_EXAMPLE, MCQ_NOTE_MAX_LENGTH,
     MCQ_SOURCE_EXAMPLE, MCQ_SOURCE_MAX_LENGTH,
     MCQ_TITLE_EXAMPLE, MCQ_TITLE_MAX_LENGTH,
-    MCQ_MIN_NUMBER_OF_CHOICES,
-    MCQ_MAX_NUMBER_OF_CHOICES,
 } from '@/lib/utils/question/mcq';
 
 import { useSession } from 'next-auth/react';

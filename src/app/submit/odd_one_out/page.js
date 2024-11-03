@@ -25,10 +25,10 @@ import { DEFAULT_LOCALE, localeSchema } from '@/lib/utils/locales';
 import { topicSchema } from '@/lib/utils/topics';
 import { stringSchema } from '@/lib/utils/forms';
 import {
-    OOO_ITEMS_LENGTH,
     OOO_TITLE_MAX_LENGTH, OOO_TITLE_EXAMPLE,
     OOO_NOTE_MAX_LENGTH, OOO_NOTE_EXAMPLE,
-    OOO_ITEM_TITLE_MAX_LENGTH, OOO_ITEM_EXPLANATION_MAX_LENGTH, OOO_ITEMS_EXAMPLE,
+    OOO_ITEM_TITLE_MAX_LENGTH, OOO_ITEM_EXPLANATION_MAX_LENGTH,
+    OOO_ITEMS_EXAMPLE, OOO_MIN_NUMBER_OF_ITEMS, OOO_MAX_NUMBER_OF_ITEMS
 } from '@/lib/utils/question/odd_one_out';
 
 import { useAsyncAction } from '@/lib/utils/async';
@@ -58,7 +58,8 @@ const oddOneOutItemsSchema = () => Yup.array()
         title: stringSchema(OOO_ITEM_TITLE_MAX_LENGTH),
         explanation: stringSchema(OOO_ITEM_EXPLANATION_MAX_LENGTH)
     }))
-    .length(OOO_ITEMS_LENGTH, `There must be exactly ${OOO_ITEMS_LENGTH} items`)
+    .min(OOO_MIN_NUMBER_OF_ITEMS, `There must be at least ${OOO_MIN_NUMBER_OF_ITEMS} items`)
+    .length(OOO_MAX_NUMBER_OF_ITEMS, `There must be exactly ${OOO_MAX_NUMBER_OF_ITEMS} items`)
     .required("Required.")
 
 
@@ -93,7 +94,7 @@ export function SubmitOOOQuestionForm({ userId, lang, ...props }) {
                 topic: '',
                 title: '',
                 note: '',
-                items: [{ title: '', explanation: '' }],
+                items: Array(OOO_MIN_NUMBER_OF_ITEMS).fill({ title: '', explanation: '' }),
                 answerIdx: -1,
             }}
             onSubmit={async values => {
@@ -125,7 +126,7 @@ export function SubmitOOOQuestionForm({ userId, lang, ...props }) {
                     items: oddOneOutItemsSchema(),
                     answerIdx: Yup.number()
                         .min(0, "Required.")
-                        .max(OOO_ITEMS_LENGTH - 1, "Required.")
+                        .max(OOO_MAX_NUMBER_OF_ITEMS - 1, "Required.")
                         .required("Required."),
                 })}
                 lang={lang}
@@ -188,6 +189,8 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
             onSubmit={onSubmit}
             validationSchema={validationSchema}
         >
+            <p>{NUM_ITEMS_ALLOWED[lang]}: {OOO_MIN_NUMBER_OF_ITEMS}-{OOO_MAX_NUMBER_OF_ITEMS}.</p>
+
             <p>{ENTER_ITEMS[lang]}</p>
 
             <FieldArray name="items">
@@ -260,6 +263,11 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
 
         </WizardStep>
     )
+}
+
+const NUM_ITEMS_ALLOWED = {
+    'en': "Number of proposals allowed",
+    'fr-FR': "Nombre de propositions autorisées"
 }
 
 const ENTER_ITEMS = {
