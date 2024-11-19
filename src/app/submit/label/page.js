@@ -16,8 +16,8 @@ import { topicSchema } from '@/lib/utils/topics';
 import { numCharsIndicator, requiredStringInArrayFieldIndicator, stringSchema } from '@/lib/utils/forms';
 import { getFileFromRef, imageFileSchema } from '@/lib/utils/files';
 import { useAsyncAction } from '@/lib/utils/async';
-import { ADD_ITEM, QUESTION_ITEM, QUESTION_TITLE_LABEL, SUBMIT_QUESTION_BUTTON_LABEL } from '@/lib/utils/submit';
-import { LABEL_MAX_LENGTH, LABEL_MAX_NUMBER_OF_LABELS, LABEL_MIN_NUMBER_OF_LABELS, LABEL_TITLE_MAX_LENGTH, LABEL_TITLE_EXAMPLE, LABEL_EXAMPLE } from '@/lib/utils/question/label';
+import { ADD_ITEM, QUESTION_HINTS_REMARKS, QUESTION_ITEM, QUESTION_TITLE_LABEL, SUBMIT_QUESTION_BUTTON_LABEL } from '@/lib/utils/submit';
+import { LABEL_MAX_LENGTH, LABEL_MAX_NUMBER_OF_LABELS, LABEL_MIN_NUMBER_OF_LABELS, LABEL_TITLE_MAX_LENGTH, LABEL_TITLE_EXAMPLE, LABEL_EXAMPLE, LABEL_NOTE_MAX_LENGTH } from '@/lib/utils/question/label';
 
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation'
@@ -61,7 +61,7 @@ export default function Page({ }) {
 export function SubmitLabelQuestionForm({ userId, lang = DEFAULT_LOCALE, ...props }) {
     const router = useRouter()
 
-    const [submitImageQuestion, isSubmitting] = useAsyncAction(async (values, fileRef) => {
+    const [submitLabelQuestion, isSubmitting] = useAsyncAction(async (values, fileRef) => {
         try {
             // await handleImageFormSubmission(values, session.user.id, fileRef)
             const image = getFileFromRef(fileRef);
@@ -99,6 +99,7 @@ export function SubmitLabelQuestionForm({ userId, lang = DEFAULT_LOCALE, ...prop
         lang: localeSchema(),
         topic: topicSchema(),
         title: stringSchema(LABEL_TITLE_MAX_LENGTH),
+        note: stringSchema(LABEL_NOTE_MAX_LENGTH, false),
         files: imageFileSchema(fileRef, true),
         labels: labelsSchema(),
     })
@@ -109,11 +110,12 @@ export function SubmitLabelQuestionForm({ userId, lang = DEFAULT_LOCALE, ...prop
                 lang: DEFAULT_LOCALE,
                 topic: '',
                 title: '',
+                note: '',
                 files: '',
                 labels: Array(LABEL_MIN_NUMBER_OF_LABELS).fill(''),
             }}
             onSubmit={async values => {
-                await submitImageQuestion(values, fileRef)
+                await submitLabelQuestion(values, fileRef)
                 if (props.inSubmitPage) {
                     router.push('/submit/')
                 } else if (props.inGameEditor) {
@@ -134,6 +136,15 @@ export function SubmitLabelQuestionForm({ userId, lang = DEFAULT_LOCALE, ...prop
                     placeholder={LABEL_TITLE_EXAMPLE[lang]}
                     validationSchema={validationSchema}
                     maxLength={LABEL_TITLE_MAX_LENGTH}
+                />
+
+                <MyTextInput
+                    label={QUESTION_HINTS_REMARKS[lang]}
+                    name='note'
+                    type='text'
+                    placeholder=""
+                    validationSchema={validationSchema}
+                    maxLength={LABEL_NOTE_MAX_LENGTH}
                 />
 
                 <UploadImage fileRef={fileRef} name='files' validationSchema={validationSchema} lang={lang} />

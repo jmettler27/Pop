@@ -653,6 +653,10 @@ const endRoundTransaction = async (
             chooserIdx: 0,
             chooserOrder: newChooserOrder
         })
+    } else {
+        transaction.update(gameScoresRef, {
+            gameSortedTeams
+        })
     }
 
 

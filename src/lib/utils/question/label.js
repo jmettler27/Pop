@@ -6,6 +6,9 @@ export const LABEL_TITLE_EXAMPLE = {
 }
 export const LABEL_TITLE_MAX_LENGTH = 50
 
+export const LABEL_NOTE_EXAMPLE = ""
+export const LABEL_NOTE_MAX_LENGTH = 500
+
 export const LABEL_MAX_LENGTH = 50;
 
 export const LABEL_EXAMPLE = [

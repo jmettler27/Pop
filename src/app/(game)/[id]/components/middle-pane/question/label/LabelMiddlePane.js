@@ -12,6 +12,7 @@ import { doc } from 'firebase/firestore'
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
 import LoadingScreen from '@/app/components/LoadingScreen'
 import { useAsyncAction } from '@/lib/utils/async'
+import NoteButton from '@/app/(game)/[id]/components/NoteButton'
 
 export default function LabelMiddlePane({ question }) {
     return (
@@ -29,12 +30,19 @@ export default function LabelMiddlePane({ question }) {
 
 function LabelQuestionHeader({ question }) {
     return (
-        <div className='flex flex-row items-center justify-center '>
-            <QuestionTypeIcon questionType={question.type} fontSize={50} />
-            <h1 className='2xl:text-5xl'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong></h1>
+        <div className='flex flex-col items-center justify-center space-y-2'>
+            <div className='flex flex-row items-center justify-center space-x-1'>
+                <QuestionTypeIcon questionType={question.type} fontSize={50} />
+                <h1 className='2xl:text-5xl'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder /></strong></h1>
+            </div>
+            <div className='flex flex-row items-center justify-center space-x-1'>
+                <h2 className='2xl:text-4xl'>{question.details.title}</h2>
+                {question.details.note && <NoteButton note={question.details.note} />}
+            </div>
         </div>
     )
 }
+
 
 function LabelMainContent({ question }) {
     const game = useGameContext()

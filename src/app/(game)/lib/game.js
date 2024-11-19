@@ -308,7 +308,6 @@ const endGameTransaction = async (
     const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
     const playersSnapshot = await getDocs(playersCollectionRef)
     for (const playerDoc of playersSnapshot.docs) {
-        const playerId = playerDoc.id
         const playerData = playerDoc.data()
         const status = winningTeamIds.includes(playerData.teamId) ? 'correct' : 'idle'
         transaction.update(playerDoc.ref, { status })
