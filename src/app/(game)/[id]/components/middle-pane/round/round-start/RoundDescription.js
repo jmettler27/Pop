@@ -1,4 +1,4 @@
-import { OOO_ITEMS_LENGTH } from '@/lib/utils/question/odd_one_out'
+import { OOO_MAX_NUMBER_OF_ITEMS } from '@/lib/utils/question/odd_one_out'
 import { MATCHING_MAX_NUM_COLS, MATCHING_MIN_NUM_COLS } from '@/lib/utils/question/matching'
 import { quoteElementToEmoji } from '@/lib/utils/question/quote'
 import { blindtestTypeToEmoji } from '@/lib/utils/question/blindtest'
@@ -96,7 +96,7 @@ function LabelRoundDescription({ }) {
 
 function OddOneOutRoundDescription({ }) {
     return <>
-        <p className='2xl:text-2xl text-center'>🔀 Une liste de <strong>{OOO_ITEMS_LENGTH} propositions</strong>, affichée dans un <strong>ordre aléatoire</strong> pour chaque participant.</p>
+        <p className='2xl:text-2xl text-center'>🔀 Une liste de <strong>{OOO_MAX_NUMBER_OF_ITEMS} propositions</strong>, affichée dans un <strong>ordre aléatoire</strong> pour chaque participant.</p>
         <br />
         <p className='2xl:text-2xl text-center'><span className='text-green-500'>Toutes vraies</span>, <span className='font-bold text-red-500'>sauf une!</span></p>
         <br />

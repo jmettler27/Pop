@@ -16,7 +16,7 @@ import EndQuestionButton from '@/app/(game)/[id]/components/bottom-pane/question
 import ResetQuestionButton from '@/app/(game)/[id]/components/bottom-pane/question/question-active/ResetQuestionButton'
 import ClearBuzzerButton from '@/app/(game)/[id]/components/bottom-pane/question/question-active/riddle/controller/ClearBuzzerButton'
 import BuzzerHeadPlayer from '@/app/(game)/[id]/components/bottom-pane/question/question-active/riddle/controller/BuzzerHeadPlayer'
-import RevealLabelButton from './RevealLabelButton'
+import RevealLabelButton from '@/app/(game)/[id]/components/bottom-pane/question/question-active/label/controller/RevealLabelButton'
 
 import { handleRiddleBuzzerHeadChanged } from '@/app/(game)/lib/question/riddle'
 
@@ -107,13 +107,13 @@ function ValidateAllLabelsButton({ buzzed, revealed, lang = DEFAULT_LOCALE }) {
             onClick={handleValidateAll}
             disabled={atLeastOneRevealed || buzzedIsEmpty || isValidating}
         >
-            {VALIDATE_ALL_QUOTE_ELEMENTS[lang]}
+            {VALIDATE_ALL_LABELS[lang]}
         </Button>
 
     )
 }
 
-const VALIDATE_ALL_QUOTE_ELEMENTS = {
+const VALIDATE_ALL_LABELS = {
     'en': "Validate all",
     'fr-FR': "Tout valider"
 }

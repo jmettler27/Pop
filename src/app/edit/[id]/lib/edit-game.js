@@ -101,7 +101,7 @@ const addGameRoundTransaction = async (
         initRoundInfo.invalidateTeam = false;
         initRoundInfo.maxTries = QUOTE_DEFAULT_MAX_TRIES;
     } else if (type === 'label') {
-        initRoundInfo.rewardsPerQuestion = LABEL_DEFAULT_REWARDS_PER_ELEMENT;
+        initRoundInfo.rewardsPerElement = LABEL_DEFAULT_REWARDS_PER_ELEMENT;
         initRoundInfo.invalidateTeam = false;
         initRoundInfo.maxTries = LABEL_DEFAULT_MAX_TRIES;
     } else if (type === 'enum') {

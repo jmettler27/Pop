@@ -137,6 +137,8 @@ Which aspect(s) of the quote is/are hidden is decided by the user who created th
 Again, each player is given a buzzer button and must give an oral answer.
 The trick in this type of questions is that the players must be able to reconstruct the quote as fast as possible, because the more parts of the quote are revealed, the less points the team will earn.
 
+### 🏷️ Labels (`label`)
+
 ### 🗣️ Enumeration (`enum`)
 
 Each question prompts players to list as many relevant elements as they can in response to the query (e.g., "Name as many Springfield residents as you can in _The Simpsons_").
