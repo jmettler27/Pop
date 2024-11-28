@@ -17,10 +17,10 @@ import NoteButton from '@/app/(game)/[id]/components/NoteButton'
 export default function LabelMiddlePane({ question }) {
     return (
         <div className='flex flex-col h-full items-center'>
-            <div className='flex h-[10%] items-center justify-center'>
+            <div className='flex h-1/5 items-center justify-center'>
                 <LabelQuestionHeader question={question} />
             </div>
-            <div className='flex h-[90%] w-full items-center justify-center'>
+            <div className='flex h-4/5 w-full items-center justify-center'>
                 <LabelMainContent question={question} />
             </div>
         </div>
@@ -67,8 +67,8 @@ function LabelMainContent({ question }) {
             <Box className='flex flex-col h-3/4 max-w-1/2 items-end justify-end'>
                 <FirebaseImage url={image} alt={title} />
             </Box>
-            <Box className='flex flex-col h-3/4 max-w-1/2 items-start justify-center space-y-2'>
-                <ol className='list-decimal pl-10'>
+            <Box className='flex flex-col h-[90%] max-w-1/2 items-start justify-start'>
+                <ol className='list-decimal pl-20 overflow-y-auto space-y-1'>
                     {labels.map((label, idx) => <li key={idx} className='2xl:text-3xl'><DisplayedLabel revealed={revealed} label={label} labelIdx={idx} /></li>)}
                 </ol>
             </Box>

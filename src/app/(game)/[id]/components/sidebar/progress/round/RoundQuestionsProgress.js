@@ -232,6 +232,8 @@ function RoundQuestionSummary({ roundType, question, order, lang = DEFAULT_LOCAL
             return <span className='text-lg'>{blindtestTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong></span>
         case 'matching':
             return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong> ({question.details.numCols} col)</span>
+        case 'label':
+            return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong> ({question.details.labels.length} pts)</span>
         default:
             return <span className='text-lg'>{topicToEmoji(question.topic)} <strong>{questionTypeToTitle(question.type, lang)} {order + 1}</strong></span>
     }
