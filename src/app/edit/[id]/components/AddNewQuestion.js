@@ -252,6 +252,8 @@ import { SubmitOOOQuestionForm } from '@/app/submit/odd_one_out/page'
 import { SubmitProgressiveCluesQuestionForm } from '@/app/submit/progressive_clues/page'
 import { SubmitQuoteQuestionForm } from '@/app/submit/quote/page'
 import { SubmitBasicQuestionForm } from '@/app/submit/basic/page';
+import { SubmitReorderingQuestionForm } from '@/app/submit/reordering/page';
+
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { SubmitLabelQuestionForm } from '@/app/submit/label/page';
 
@@ -285,6 +287,8 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
             return <SubmitQuoteQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case 'label':
             return <SubmitLabelQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
+        case 'reordering':
+            return <SubmitReorderingQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
     }
 }
 

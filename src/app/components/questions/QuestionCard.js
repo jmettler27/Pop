@@ -50,6 +50,7 @@ export function QuestionCardTitle({ question, showType = false, lang = DEFAULT_L
         case 'label':
         case 'enum':
         case 'odd_one_out':
+        case 'reordering':
             return <span>{showType && emoji}{topicToEmoji(question.topic)} &quot;{question.details.title}&quot;</span>
         case 'blindtest':
             return <span>{showType && emoji}{blindtestTypeToEmoji(question.details.subtype)}{topicToEmoji(question.topic)} &quot;{question.details.title}&quot;</span>
@@ -101,6 +102,8 @@ export function QuestionCardContent({ question }) {
             return <EnumCardMainContent question={question} />
         case 'odd_one_out':
             return <OOOCardMainContent question={question} />
+        case 'reordering':
+            return <ReorderingCardMainContent question={question} />
         case 'matching':
             return <MatchingCardMainContent question={question} />
         case 'mcq':
@@ -342,6 +345,27 @@ const OOOCardMainContent = ({ question }) => {
     );
 
 }
+
+const ReorderingCardMainContent = ({ question }) => {
+    const { note, items } = question.details
+
+    return (
+        <div className='flex flex-col w-full space-y-2'>
+            {note && <p className='text-sm md:text-base dark:text-white italic'>{QUESTION_ELEMENT_TO_EMOJI['note']} {note}</p>}
+            <ol className='list-decimal py-1 pl-5'>
+                {items.map((item, idx) => (
+                    <li key={idx} className='hover:font-bold cursor-pointer'>
+                        <Tooltip key={idx} title={item.explanation} placement='right-start' arrow>
+                            <span>{item.title}</span>
+                        </Tooltip>
+                    </li>
+                ))}
+            </ol>
+        </div>
+    );
+
+}
+
 
 const MatchingCardMainContent = ({ question }) => {
     const { note, answer } = question.details

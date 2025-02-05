@@ -264,7 +264,11 @@ const addGameQuestionTransaction = async (
             winner: null,
             selectedItems: [],
         });
-
+    } else if (questionData.type === 'reordering') {
+        transaction.set(questionRealtimeRef, {
+            ...commonRealtimeInfo,
+            orderings: {},
+        });
     } else if (questionData.type === 'matching') {
         transaction.set(questionRealtimeRef, {
             ...commonRealtimeInfo,

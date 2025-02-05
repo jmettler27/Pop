@@ -25,17 +25,17 @@ import { DEFAULT_LOCALE, localeSchema } from '@/lib/utils/locales';
 import { topicSchema } from '@/lib/utils/topics';
 import { stringSchema } from '@/lib/utils/forms';
 import {
-    OOO_TITLE_MAX_LENGTH, OOO_TITLE_EXAMPLE,
-    OOO_NOTE_MAX_LENGTH, OOO_NOTE_EXAMPLE,
-    OOO_ITEM_TITLE_MAX_LENGTH, OOO_ITEM_EXPLANATION_MAX_LENGTH,
-    OOO_ITEMS_EXAMPLE, OOO_MIN_NUMBER_OF_ITEMS, OOO_MAX_NUMBER_OF_ITEMS
-} from '@/lib/utils/question/odd_one_out';
+    REORDERING_TITLE_MAX_LENGTH, REORDERING_TITLE_EXAMPLE,
+    REORDERING_NOTE_MAX_LENGTH, REORDERING_NOTE_EXAMPLE,
+    REORDERING_ITEM_TITLE_MAX_LENGTH, REORDERING_ITEM_EXPLANATION_MAX_LENGTH,
+    REORDERING_ITEMS_EXAMPLE, REORDERING_MIN_NUMBER_OF_ITEMS, REORDERING_MAX_NUMBER_OF_ITEMS
+} from '@/lib/utils/question/reodering';
 
 import { useAsyncAction } from '@/lib/utils/async';
 import { addGameQuestion } from '@/app/edit/[id]/lib/edit-game';
 import { ADD_ITEM, QUESTION_HINTS_REMARKS, QUESTION_ITEM, QUESTION_TITLE_LABEL, SELECT_PROPOSAL } from '@/lib/utils/submit';
 
-const QUESTION_TYPE = 'odd_one_out'
+const QUESTION_TYPE = 'reordering'
 
 export default function Page({ lang = DEFAULT_LOCALE }) {
     const { data: session } = useSession()
@@ -48,25 +48,25 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
     return (
         <>
             <QuestionFormHeader questionType={QUESTION_TYPE} lang={lang} />
-            <SubmitOOOQuestionForm userId={session.user.id} lang={lang} inSubmitPage={true} />
+            <SubmitReorderingQuestionForm userId={session.user.id} lang={lang} inSubmitPage={true} />
         </>
     );
 }
 
-const oddOneOutItemsSchema = () => Yup.array()
+const reorderingItemsSchema = () => Yup.array()
     .of(Yup.object({
-        title: stringSchema(OOO_ITEM_TITLE_MAX_LENGTH),
-        explanation: stringSchema(OOO_ITEM_EXPLANATION_MAX_LENGTH)
+        title: stringSchema(REORDERING_ITEM_TITLE_MAX_LENGTH),
+        explanation: stringSchema(REORDERING_ITEM_EXPLANATION_MAX_LENGTH, false),
     }))
-    .min(OOO_MIN_NUMBER_OF_ITEMS, `There must be at least ${OOO_MIN_NUMBER_OF_ITEMS} items`)
-    .max(OOO_MAX_NUMBER_OF_ITEMS, `There must be at most ${OOO_MAX_NUMBER_OF_ITEMS} items`)
-    .required("Required.")
+    .min(REORDERING_MIN_NUMBER_OF_ITEMS, `There must be at least ${REORDERING_MIN_NUMBER_OF_ITEMS} items`)
+    .max(REORDERING_MAX_NUMBER_OF_ITEMS, `There must be at most ${REORDERING_MAX_NUMBER_OF_ITEMS} items`)
+// .required("Required.")
 
 
-export function SubmitOOOQuestionForm({ userId, lang, ...props }) {
+export function SubmitReorderingQuestionForm({ userId, lang, ...props }) {
     const router = useRouter()
 
-    const [submitOOOQuestion, isSubmitting] = useAsyncAction(async (values) => {
+    const [submitReorderingQuestion, isSubmitting] = useAsyncAction(async (values) => {
         try {
             const { topic, lang, ...details } = values
             const questionId = await addNewQuestion({
@@ -94,11 +94,10 @@ export function SubmitOOOQuestionForm({ userId, lang, ...props }) {
                 topic: '',
                 title: '',
                 note: '',
-                items: Array(OOO_MIN_NUMBER_OF_ITEMS).fill({ title: '', explanation: '' }),
-                answerIdx: -1,
+                items: Array(REORDERING_MIN_NUMBER_OF_ITEMS).fill({ title: '', explanation: '' }),
             }}
             onSubmit={async values => {
-                await submitOOOQuestion(values)
+                await submitReorderingQuestion(values)
                 if (props.inSubmitPage) {
                     router.push('/submit')
                 } else if (props.inGameEditor) {
@@ -113,8 +112,8 @@ export function SubmitOOOQuestionForm({ userId, lang, ...props }) {
                 validationSchema={Yup.object({
                     lang: localeSchema(),
                     topic: topicSchema(),
-                    title: stringSchema(OOO_TITLE_MAX_LENGTH),
-                    note: stringSchema(OOO_NOTE_MAX_LENGTH, false),
+                    title: stringSchema(REORDERING_TITLE_MAX_LENGTH),
+                    note: stringSchema(REORDERING_NOTE_MAX_LENGTH, false),
                 })}
                 lang={lang}
             />
@@ -123,11 +122,7 @@ export function SubmitOOOQuestionForm({ userId, lang, ...props }) {
             <EnterItemsStep
                 onSubmit={() => { }}
                 validationSchema={Yup.object({
-                    items: oddOneOutItemsSchema(),
-                    answerIdx: Yup.number()
-                        .min(0, "Required.")
-                        .max(OOO_MAX_NUMBER_OF_ITEMS - 1, "Required.")
-                        .required("Required."),
+                    items: reorderingItemsSchema(),
                 })}
                 lang={lang}
             />
@@ -149,18 +144,18 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
                 label={QUESTION_TITLE_LABEL[lang]}
                 name='title'
                 type='text'
-                placeholder={OOO_TITLE_EXAMPLE[lang]}
+                placeholder={REORDERING_TITLE_EXAMPLE[lang]}
                 validationSchema={validationSchema}
-                maxLength={OOO_TITLE_MAX_LENGTH}
+                maxLength={REORDERING_TITLE_MAX_LENGTH}
             />
 
             <MyTextInput
                 label={QUESTION_HINTS_REMARKS[lang]}
                 name='note'
                 type='text'
-                placeholder={OOO_NOTE_EXAMPLE[lang]}
+                placeholder={REORDERING_NOTE_EXAMPLE[lang]}
                 validationSchema={validationSchema}
-                maxLength={OOO_NOTE_MAX_LENGTH}
+                maxLength={REORDERING_NOTE_MAX_LENGTH}
             />
 
         </WizardStep>
@@ -182,16 +177,14 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
     const ExplanationError = ({ index }) =>
         typeof errors.items === 'array' && errors.items[index] && <StyledErrorMessage>{errors.items[index].explanation}</StyledErrorMessage>
 
-    const exampleItems = OOO_ITEMS_EXAMPLE[lang]
+    const exampleItems = REORDERING_ITEMS_EXAMPLE[lang]
 
     return (
         <WizardStep
             onSubmit={onSubmit}
             validationSchema={validationSchema}
         >
-            <p>{NUM_ITEMS_ALLOWED[lang]}: {OOO_MIN_NUMBER_OF_ITEMS}-{OOO_MAX_NUMBER_OF_ITEMS}.</p>
-
-            <p>{ENTER_ITEMS[lang]}</p>
+            <p>{NUM_ITEMS_ALLOWED[lang]}: {REORDERING_MIN_NUMBER_OF_ITEMS}-{REORDERING_MAX_NUMBER_OF_ITEMS}.</p>
 
             <FieldArray name="items">
                 {({ remove, push }) => (
@@ -214,7 +207,7 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
                                         type='text'
                                         placeholder={exampleItems[idx % exampleItems.length].title}
                                         validationSchema={validationSchema}
-                                        maxLength={OOO_ITEM_TITLE_MAX_LENGTH}
+                                        maxLength={REORDERING_ITEM_TITLE_MAX_LENGTH}
                                         fieldType='object_in_array'
                                     />
                                     <TitleError index={idx} />
@@ -225,7 +218,7 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
                                         type='text'
                                         placeholder={exampleItems[idx % exampleItems.length].explanation}
                                         validationSchema={validationSchema}
-                                        maxLength={OOO_ITEM_EXPLANATION_MAX_LENGTH}
+                                        maxLength={REORDERING_ITEM_EXPLANATION_MAX_LENGTH}
                                         fieldType='object_in_array'
                                     />
                                     <ExplanationError index={idx} />
@@ -246,21 +239,6 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
 
             <ItemArrayErrors />
 
-            {!errors.items && formik.touched.items && (
-                <MySelect
-                    label={ANSWER_IDX_LABEL[lang]}
-                    name='answerIdx'
-                    validationSchema={validationSchema}
-                    onChange={(e) => formik.setFieldValue('answerIdx', parseInt(e.target.value, 10))}
-                >
-                    <option value="">{SELECT_PROPOSAL[lang]}</option>
-                    {values.items.map((item, index) => (
-                        <option key={index} value={index}>{item.title}</option>
-                    ))}
-
-                </MySelect>
-            )}
-
         </WizardStep>
     )
 }
@@ -268,11 +246,6 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
 const NUM_ITEMS_ALLOWED = {
     'en': "Number of proposals allowed",
     'fr-FR': "Nombre de propositions autorisées"
-}
-
-const ENTER_ITEMS = {
-    'en': "All the proposals must be correct, except for one (the odd one out).",
-    'fr-FR': "Toutes les propositions doivent être correctes, sauf une (l'intrus)."
 }
 
 const PROPOSAL = {
@@ -283,10 +256,4 @@ const PROPOSAL = {
 const EXPLANATION = {
     'en': "Explanation",
     'fr-FR': "Explication"
-}
-
-
-const ANSWER_IDX_LABEL = {
-    'en': "What proposal is the odd one?",
-    'fr-FR': "Qui est l'intrus ?"
 }
