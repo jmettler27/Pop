@@ -47,11 +47,4 @@ export const OOO_ITEM_EXPLANATION_MAX_LENGTH = 150
 
 export const OOO_DEFAULT_MISTAKE_PENALTY = 1
 
-/* In-game logic */
-import { range, shuffle } from '../arrays';
-
-export function generateShuffledIndices(numItems) {
-    return shuffle(range(numItems));
-}
-
 export const OOO_THINKING_TIME = 30

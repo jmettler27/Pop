@@ -36,6 +36,7 @@ const editGameRoundCardNumCols = (roundType) => {
         case 'basic':
         case 'quote':
         case 'label':
+        case 'reordering':
             return 'md:grid-cols-3'
         default:
             return 'md:grid-cols-4'

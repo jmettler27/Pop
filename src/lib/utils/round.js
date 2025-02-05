@@ -37,6 +37,7 @@ export const ROUND_TYPE_TO_TITLE = {
         'enum': "Enumerations",
         'odd_one_out': "Odd One Out",
         'matching': "Matchings",
+        'reordering': "Reorderings",
         'mcq': "MCQs",
         'nagui': "Nagui",
         'basic': "Questions"
@@ -53,6 +54,7 @@ export const ROUND_TYPE_TO_TITLE = {
         'enum': "Énumérations",
         'odd_one_out': "Coups par coups",
         'matching': "Matchings",
+        'reordering': "Ordonnancements",
         'mcq': "QCMs",
         'nagui': "Nagui",
         'basic': "Questions"
@@ -64,6 +66,7 @@ export const sortAscendingRoundScores = (roundType) => {
     switch (roundType) {
         case 'odd_one_out':
         case 'matching':
+        case 'reordering':
             return true;
         default:
             return false;

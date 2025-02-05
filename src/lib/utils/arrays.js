@@ -65,3 +65,12 @@ export function findNextAvailableChooser(chooserIdx, chooserOrder, canceled) {
 
     return { newChooserIdx, newChooserTeamId };
 }
+
+export function generateShuffledIndices(numItems) {
+    return shuffle(range(numItems));
+}
+
+// Counts the number of indices i such that array1[i] !== array2[i]
+export function findArrayMatches(array1, array2) {
+    return array1.reduce((acc, item, idx) => acc + (item === array2[idx]), 0);
+}

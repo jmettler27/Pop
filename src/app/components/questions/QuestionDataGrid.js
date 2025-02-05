@@ -25,6 +25,7 @@ const TITLE = {
     'fr-FR': "Titre"
 }
 
+// PROGRESSIVE CLUES
 const progressiveCluesQuestionRow = (question) => {
     const { title, answer, clues } = question.details
     return {
@@ -38,7 +39,7 @@ const progressiveCluesQuestionColumns = [
     { field: 'answer', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['answer'], width: 250 },
 ]
 
-
+// IMAGE
 const imageQuestionRow = (question) => {
     const { title, answer: { description, source } } = question.details
     return {
@@ -53,7 +54,7 @@ const imageQuestionColumns = [
     { field: 'source', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['source'], width: 250 }
 ]
 
-
+// EMOJI
 const emojiQuestionRow = (question) => {
     const { title, answer, clue } = question.details
     return {
@@ -68,7 +69,7 @@ const emojiQuestionColumns = [
     { field: 'clue', headerName: CLUE[DEFAULT_LOCALE], width: 200 },
 ]
 
-
+// BLINDTEST
 const blindtestQuestionRow = (question) => {
     const { subtype, title, answer } = question.details
     return {
@@ -87,7 +88,7 @@ const blindtestQuestionColumns = [
     { field: 'answer_title', headerName: TITLE[DEFAULT_LOCALE], width: 200 },
 ]
 
-
+// ENUM
 const enumQuestionRow = (question) => {
     const { title, note, answer, maxIsKnown, thinkingTime, challengeTime } = question.details
     return {
@@ -114,7 +115,7 @@ const enumQuestionColumns = [
     { field: 'challengeTime', headerName: 'Challenge (s)', width: 100 },
 ]
 
-
+// ODD ONE OUT
 const oddOneOutQuestionRow = (question) => {
     const { answerIdx, items, title } = question.details
     return {
@@ -131,7 +132,7 @@ const oddOneOutQuestionColumns = [
     { field: 'oddOneOut', headerName: ODD_ONE_OUT[DEFAULT_LOCALE], width: 250 },
 ]
 
-
+// MATCHING
 const matchingQuestionRow = (question) => {
     const { title, numCols, numRows } = question.details
     return {
@@ -150,7 +151,7 @@ const matchingQuestionColumns = [
     { field: 'numRows', headerName: 'Matches', width: 100 },
 ]
 
-
+// QUOTE
 const quoteQuestionRow = (question) => {
     const { author, quote, source, toGuess } = question.details
 
@@ -181,7 +182,7 @@ const quoteQuestionColumns = [
     { field: 'toGuess', headerName: QUOTE_TO_GUESS[DEFAULT_LOCALE], width: 100 },
 ]
 
-
+// LABEL
 const labelQuestionRow = (question) => {
     const { title, labels } = question.details
 
@@ -201,6 +202,19 @@ const labelQuestionColumns = [
     { field: 'title', headerName: 'Question', width: 400 },
 ]
 
+
+// ODD ONE OUT
+const reorderingQuestionRow = (question) => {
+    const { answerIdx, items, title } = question.details
+    return {
+        title,
+    }
+}
+const reorderingQuestionColumns = [
+    { field: 'title', headerName: 'Question', width: 500 },
+]
+
+// MCQ
 const mcqQuestionRow = (question) => {
     const { answerIdx, choices, explanation, note, source, title } = question.details
     return {
@@ -227,6 +241,8 @@ const mcqQuestionColumns = [
     // { field: 'explanation', headerName: 'Explanation', width: 130 },
 ]
 
+
+// NAGUI
 const naguiQuestionRow = (question) => {
     const { answerIdx, choices, explanation, note, source, title } = question.details
     return {
@@ -246,6 +262,7 @@ const naguiQuestionColumns = [
 ]
 
 
+// BASIC
 const basicQuestionRow = (question) => {
     const { answer, explanation, note, source, title } = question.details
     return {
@@ -275,6 +292,7 @@ const questionTypeToRow = {
     'matching': matchingQuestionRow,
     'quote': quoteQuestionRow,
     'label': labelQuestionRow,
+    'reordering': reorderingQuestionRow,
     'mcq': mcqQuestionRow,
     'nagui': naguiQuestionRow,
     'basic': basicQuestionRow
@@ -290,6 +308,7 @@ const questionTypeToColumns = {
     'matching': matchingQuestionColumns,
     'quote': quoteQuestionColumns,
     'label': labelQuestionColumns,
+    'reordering': reorderingQuestionColumns,
     'mcq': mcqQuestionColumns,
     'nagui': naguiQuestionColumns,
     'basic': basicQuestionColumns
