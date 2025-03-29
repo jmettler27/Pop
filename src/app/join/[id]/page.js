@@ -2,6 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import { redirect, useParams, useRouter } from 'next/navigation'
+import React from 'react';
 
 import { Field, useField, useFormikContext } from 'formik';
 import * as Yup from 'yup';
@@ -46,10 +47,10 @@ const JOIN_GAME_HEADER = {
 
 const REGEX_HEX_COLOR = /^#[0-9A-F]{6}$/i
 
-export default function Page({ params, lang = DEFAULT_LOCALE }) {
+export default function Page({ params }) {
     const { data: session } = useSession()
-
-    const gameId = params.id
+    const resolvedParams = React.use(params)
+    const gameId = resolvedParams.id
 
     const [joinGame, isJoining] = useAsyncAction(async (values, user) => {
         try {

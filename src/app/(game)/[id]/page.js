@@ -1,8 +1,8 @@
 'use client'
 
 import { redirect, useParams } from 'next/navigation'
-
 import { useSession } from "next-auth/react"
+import React from 'react'
 
 import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore'
 import { collection, doc } from 'firebase/firestore'
@@ -22,6 +22,8 @@ import Sidebar from '@/app/(game)/[id]/components/sidebar/Sidebar'
 
 export default function Page({ params }) {
     const { data: session } = useSession()
+    const resolvedParams = React.use(params)
+    const gameId = resolvedParams.id
 
     if (!session || !session.user) {
         redirect("/api/auth/signin");
@@ -29,7 +31,6 @@ export default function Page({ params }) {
     const user = session.user
     // const router = useRouter()
 
-    const gameId = params.id
     const [game, gameLoading, gameError] = useDocumentDataOnce(doc(GAMES_COLLECTION_REF, gameId))
     const [organizers, organizersLoading, organizersError] = useCollectionOnce(collection(GAMES_COLLECTION_REF, gameId, 'organizers'))
     const [players, playersLoading, playersError] = useCollectionOnce(collection(GAMES_COLLECTION_REF, gameId, 'players'))

@@ -10,28 +10,25 @@ import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
 import { collection, doc } from 'firebase/firestore';
 import { useCollectionOnce, useDocumentData } from 'react-firebase-hooks/firestore'
 
-
 import { localeToEmoji } from '@/lib/utils/locales';
 import { GAME_MAX_NUMBER_OF_ROUNDS, GAME_TYPE_TO_EMOJI } from '@/lib/utils/game'
 
 import LoadingScreen from '@/app/components/LoadingScreen';
-
 import GameErrorScreen from '@/app/(game)/[id]/components/GameErrorScreen';
-
 import { AddNewRoundButton } from '@/app/edit/[id]/components/AddNewRound'
 import { EditGameRoundCard } from '@/app/edit/[id]/components/EditRoundInGame';
 import { LaunchGameButton } from '@/app/edit/[id]/components/LaunchGameButton';
 
-
 export default function Page({ params }) {
     const { data: session } = useSession()
+    const resolvedParams = React.use(params)
+    const gameId = resolvedParams.id
 
     // Protected route
     if (!session || !session.user) {
         redirect("/api/auth/signin");
     }
 
-    const gameId = params.id
     const user = session.user
 
     const [gameData, gameLoading, gameError] = useDocumentData(doc(GAMES_COLLECTION_REF, gameId))
