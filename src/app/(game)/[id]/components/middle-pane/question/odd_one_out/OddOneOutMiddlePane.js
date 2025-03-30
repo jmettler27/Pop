@@ -16,7 +16,7 @@ import LoadingScreen from '@/app/components/LoadingScreen'
 
 import { topicToEmoji } from '@/lib/utils/topics'
 import { questionTypeToTitle, QuestionTypeIcon } from '@/lib/utils/question_types'
-import { generateShuffledIndices } from '@/lib/utils/question/odd_one_out'
+import { generateShuffledIndices } from '@/lib/utils/arrays'
 
 import { CurrentRoundQuestionOrder } from '@/app/(game)/[id]/components/middle-pane/question/QuestionHeader'
 import NoteButton from '@/app/(game)/[id]/components/NoteButton'

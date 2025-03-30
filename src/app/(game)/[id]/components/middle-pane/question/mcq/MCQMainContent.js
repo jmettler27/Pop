@@ -10,7 +10,7 @@ import LoadingScreen from '@/app/components/LoadingScreen'
 
 import { MCQ_CHOICES } from '@/lib/utils/question/mcq'
 import { selectMCQChoice } from '@/app/(game)/lib/question/mcq'
-import { generateShuffledIndices } from '@/lib/utils/question/odd_one_out'
+import { generateShuffledIndices } from '@/lib/utils/arrays'
 
 
 import { Avatar, Badge, Button, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'

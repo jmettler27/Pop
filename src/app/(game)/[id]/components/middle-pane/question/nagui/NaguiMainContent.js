@@ -10,7 +10,7 @@ import LoadingScreen from '@/app/components/LoadingScreen'
 
 import { NAGUI_CHOICES } from '@/lib/utils/question/nagui'
 import { selectNaguiChoice } from '@/app/(game)/lib/question/nagui'
-import { generateShuffledIndices } from '@/lib/utils/question/odd_one_out'
+import { generateShuffledIndices } from '@/lib/utils/arrays'
 
 
 import { Avatar, Badge, Button, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
