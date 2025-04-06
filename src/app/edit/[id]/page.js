@@ -1,28 +1,36 @@
 'use client'
 
+
+import { gameTypeToEmoji } from '@/backend/models/games/GameType';
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import Game from '@/backend/models/games/Game';
+
+import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
+import GameRepository from '@/backend/repositories/game/GameRepository';
+
+
+import { localeToEmoji } from '@/frontend/utils/locales';
+
+
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { useSession } from 'next-auth/react';
 
 import React from 'react';
 
-import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
-import { collection, doc } from 'firebase/firestore';
-import { useCollectionOnce, useDocumentData } from 'react-firebase-hooks/firestore'
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import GameErrorScreen from '@/frontend/components/game/GameErrorScreen';
+import { AddNewRoundButton } from '@/frontend/components/game-editor/AddNewRound'
+import { EditGameRoundCard } from '@/frontend/components/game-editor/EditRoundInGame';
+import { LaunchGameButton } from '@/frontend/components/game-editor/LaunchGameButton';
 
-import { localeToEmoji } from '@/lib/utils/locales';
-import { GAME_MAX_NUMBER_OF_ROUNDS, GAME_TYPE_TO_EMOJI } from '@/lib/utils/game'
-
-import LoadingScreen from '@/app/components/LoadingScreen';
-import GameErrorScreen from '@/app/(game)/[id]/components/GameErrorScreen';
-import { AddNewRoundButton } from '@/app/edit/[id]/components/AddNewRound'
-import { EditGameRoundCard } from '@/app/edit/[id]/components/EditRoundInGame';
-import { LaunchGameButton } from '@/app/edit/[id]/components/LaunchGameButton';
 
 export default function Page({ params }) {
     const { data: session } = useSession()
     const resolvedParams = React.use(params)
     const gameId = resolvedParams.id
+
+    console.log("Game ID: ", gameId)
 
     // Protected route
     if (!session || !session.user) {
@@ -31,8 +39,11 @@ export default function Page({ params }) {
 
     const user = session.user
 
-    const [gameData, gameLoading, gameError] = useDocumentData(doc(GAMES_COLLECTION_REF, gameId))
-    const [organizers, organizersLoading, organizersError] = useCollectionOnce(collection(GAMES_COLLECTION_REF, gameId, 'organizers'))
+    const gameRepo = new GameRepository(gameId)
+    const organizerRepo = new OrganizerRepository(gameId)
+
+    const { game, loading: gameLoading, error: gameError } = gameRepo.useGame(gameId)
+    const { organizers, loading: organizersLoading, error: organizersError } = organizerRepo.useAllOrganizersOnce()
 
     if (gameError || organizersError) {
         return <GameErrorScreen />
@@ -40,16 +51,18 @@ export default function Page({ params }) {
     if (gameLoading || organizersLoading) {
         return <div className='flex h-screen'><LoadingScreen loadingText='Loading...' /></div>
     }
-    if (!gameData || !organizers) {
+    if (!game || !organizers) {
+        console.log("No game or organizers found")
         return <></>
     }
 
-    const organizerIds = organizers.docs.map(doc => doc.id)
+    console.log("Game: ", game)
+    console.log("Organizers: ", organizers)
+    const organizerIds = organizers.map(o => o.id)
 
     if (!organizerIds.includes(user.id))
         redirect('/')
 
-    const game = { id: gameId, ...gameData }
 
     return (
         <div className='h-screen flex flex-row divide-x divide-solid'>
@@ -59,7 +72,7 @@ export default function Page({ params }) {
                 <div className='flex h-16 items-center border-b'>
                     {/* <Link className='flex items-center gap-2 font-semibold' href='#'> */}
                     {/* <Package2Icon className='h-6 w-6' /> */}
-                    <span className='text-lg md:text-xl'>{GAME_TYPE_TO_EMOJI[game.type]} {localeToEmoji(game.lang)} <strong>{game.title}</strong></span>
+                    <span className='text-lg md:text-xl'>{gameTypeToEmoji(game.type)} {localeToEmoji(game.lang)} <strong>{game.title}</strong></span>
                     {/* </Link> */}
                     {/* <Button className='ml-auto h-8 w-8' size='icon' variant='outline'>
                             <BellIcon className='h-6 w-6' />
@@ -174,15 +187,16 @@ export default function Page({ params }) {
 
 function EditGameRounds({ game }) {
     console.log("RENDERING EditGameRounds")
+    console.log("Game: ", game)
 
     const { rounds: roundIds, status } = game
 
     return (
         <>
             <main className='flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6'>
-                {roundIds.map(roundId => <EditGameRoundCard key={roundId} roundId={roundId} status={status} />)}
-                {status === 'build' && <AddNewRoundButton disabled={roundIds.length >= GAME_MAX_NUMBER_OF_ROUNDS} />}
-                {status === 'build' && <LaunchGameButton />}
+                {roundIds.map(roundId => <EditGameRoundCard key={roundId} roundId={roundId} status={status} gameId={game.id} />)}
+                {status === GameStatus.GAME_EDIT && <AddNewRoundButton disabled={roundIds.length >= Game.MAX_NUM_ROUNDS} />}
+                {status === GameStatus.GAME_EDIT && <LaunchGameButton />}
             </main>
         </>
     )

@@ -1,35 +1,54 @@
 'use client'
 
-import React, { useRef } from 'react';
+import React from 'react';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
-
-import { MyNumberInput, MyTextInput } from '@/app/components/forms/StyledFormComponents'
-import SubmitFormButton from '@/app/components/forms/SubmitFormButton';
-
-import { DEFAULT_LOCALE, localeSchema } from '@/lib/utils/locales';
-import { stringSchema } from '@/lib/utils/forms';
-import { roundScorePolicySchema } from '@/lib/utils/scores';
-import { IMAGE_TITLE_MAX_LENGTH } from '@/lib/utils/question/image';
 
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation'
 
-import SelectGameType from '@/app/edit/components/SelectGameType';
-import SelectRoundScorePolicy from '@/app/edit/components/SelectRoundScorePolicy';
-import SelectLanguage from '@/app/submit/components/SelectLanguage';
+import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
+import { stringSchema } from '@/frontend/utils/forms/forms';
+import useAsyncAction from '@/frontend/hooks/async/useAsyncAction'
 
-import { useAsyncAction } from '@/lib/utils/async';
-import { GAME_DEFAULT_TYPE, GAME_MAX_NUMBER_OF_PLAYERS, GAME_MIN_NUMBER_OF_PLAYERS, GAME_PARTICIPANT_NAME_MAX_LENGTH, GAME_TITLE_EXAMPLE, GAME_TITLE_MAX_LENGTH, gameTypeSchema } from '@/lib/utils/game';
-import { createGame } from './[id]/lib/create-game';
+
+import { MyNumberInput, MyTextInput } from '@/frontend/components/forms/StyledFormComponents'
+import SubmitFormButton from '@/frontend/components/forms/SubmitFormButton';
+import SelectGameType from '@/frontend/components/forms/SelectGameType';
+import SelectRoundScorePolicy from '@/frontend/components/forms/SelectRoundScorePolicy';
+import SelectLanguage from '@/frontend/components/forms/SelectLanguage';
+
+
+import Game from '@/backend/models/games/Game';
+import CreateGameService from '@/backend/services/CreateGameService';
+import { GAME_DEFAULT_TYPE, gameTypeSchema, gameTitleSchema, participantNameSchema } from '@/backend/utils/game';
+import { ScorePolicyType } from '@/backend/models/ScorePolicy';
+
+/* Validation */
+import * as Yup from 'yup';
+
+export const roundScorePolicySchema = () => Yup.string()
+    .oneOf(Object.values(ScorePolicyType), "Invalid round score policy.")
+    .required("Required.")
+
 
 export default function Page({ lang = DEFAULT_LOCALE }) {
     const { data: session } = useSession()
     const router = useRouter()
 
-    const [createNewGame, isSubmitting] = useAsyncAction(async (values, userId) => {
+    const [createNewGame, isSubmitting] = useAsyncAction(async (values, user) => {
         const { title, type, lang, maxPlayers, roundScorePolicy, organizerName } = values;
-        const gameId = await createGame(title, 'rounds', lang, maxPlayers, roundScorePolicy, organizerName, userId);
+        const createGameService = new CreateGameService();
+        const gameId = await createGameService.createGame(
+            title,
+            'rounds',
+            lang,
+            maxPlayers,
+            roundScorePolicy,
+            organizerName,
+            user.id,
+            user.image
+        );
         router.push('/edit/' + gameId);
     });
 
@@ -40,16 +59,17 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
 
     const user = session.user;
 
-    // const fileRef = useRef(null);
-
     const validationSchema = Yup.object({
         lang: localeSchema(),
         // type: gameTypeSchema(),
-        title: stringSchema(IMAGE_TITLE_MAX_LENGTH),
-        maxPlayers: Yup.number().required().integer(),
+        title: gameTitleSchema(),
+        maxPlayers: Yup.number()
+            .required()
+            .integer()
+            .min(Game.MIN_NUM_PLAYERS, `Must have at least ${Game.MIN_NUM_PLAYERS} players`)
+            .max(Game.MAX_NUM_PLAYERS, `Must have at most ${Game.MAX_NUM_PLAYERS} players`),
         roundScorePolicy: roundScorePolicySchema(),
-        organizerName: stringSchema(GAME_PARTICIPANT_NAME_MAX_LENGTH),
-        // imageFiles: imageFileSchema(fileRef),
+        organizerName: participantNameSchema(),
     })
 
     return (
@@ -60,15 +80,13 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
                     // type: GAME_DEFAULT_TYPE,
                     lang: DEFAULT_LOCALE,
                     title: '',
-                    maxPlayers: GAME_MIN_NUMBER_OF_PLAYERS,
+                    maxPlayers: Game.MIN_NUM_PLAYERS,
                     roundScorePolicy: '',
                     organizerName: '',
-                    // imageFiles: ''
-
                 }}
                 onSubmit={async values => {
                     try {
-                        await createNewGame(values, user.id)
+                        await createNewGame(values, user)
                     } catch (error) {
                         console.error("There was an error creating the game:", error)
                         router.push('/')
@@ -85,16 +103,16 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
                         label={GAME_TITLE_LABEL[lang]}
                         name='title'
                         type='text'
-                        placeholder={GAME_TITLE_EXAMPLE}
+                        placeholder={Game.TITLE_EXAMPLE}
                         validationSchema={validationSchema}
-                        maxLength={GAME_TITLE_MAX_LENGTH}
+                        maxLength={Game.TITLE_MAX_LENGTH}
                     />
 
                     <MyNumberInput
                         label={GAME_MAX_PLAYERS_LABEL[lang]}
                         name='maxPlayers'
-                        min={GAME_MIN_NUMBER_OF_PLAYERS} max={GAME_MAX_NUMBER_OF_PLAYERS}
-                    // validationSchema={validationSchema}
+                        min={Game.MIN_NUM_PLAYERS}
+                        max={Game.MAX_NUM_PLAYERS}
                     />
 
                     <SelectRoundScorePolicy lang={lang} name='roundScorePolicy' validationSchema={validationSchema} />
@@ -105,7 +123,7 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
                         type='text'
                         placeholder={user.name}
                         validationSchema={validationSchema}
-                        maxLength={GAME_PARTICIPANT_NAME_MAX_LENGTH}
+                        maxLength={Game.PARTICIPANT_NAME_MAX_LENGTH}
                     />
 
                     <br />
@@ -115,7 +133,6 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
             </Formik >
         </>
     );
-
 }
 
 const CREATE_GAME = {

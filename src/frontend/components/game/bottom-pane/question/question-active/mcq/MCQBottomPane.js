@@ -1,0 +1,106 @@
+import { UserRole } from '@/backend/models/users/User'
+
+import RoundMCQQuestionRepository from '@/backend/repositories/question/game/GameMCQQuestionRepository'
+
+
+import { useGameContext, useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts'
+
+import GameChooserOrder from '@/frontend/components/game/GameChooserOrder'
+import { GameChooserHelperText } from '@/frontend/components/game/GameChooserTeamAnnouncement';
+import EndQuestionButton from '@/frontend/components/game/bottom-pane/question/question-active/EndQuestionButton'
+import ResetQuestionButton from '@/frontend/components/game/bottom-pane/question/question-active/ResetQuestionButton'
+
+import { CircularProgress } from '@mui/material'
+
+
+export default function MCQBottomPane({ baseQuestion }) {
+
+    const { chooserRepo } = useGameRepositoriesContext()
+    const { chooser, loading: chooserLoading, error: chooserError } = chooserRepo.useChooser()
+    if (chooserError) {
+        return <p><strong>Error: {JSON.stringify(chooserError)}</strong></p>
+    }
+    if (chooserLoading) {
+        return <></>
+    }
+    if (!chooser) {
+        return <></>
+    }
+
+    return (
+        <div className='flex flex-row h-full divide-x divide-solid'>
+
+            {/* Left part: controller */}
+            <div className='basis-3/4'>
+                <MCQController chooser={chooser} baseQuestion={baseQuestion} />
+            </div>
+
+            {/* Right part: list of riddle players who buzzed and/or were canceled */}
+            <div className='basis-1/4'>
+                <GameChooserOrder chooser={chooser} />
+            </div>
+        </div>
+    )
+
+}
+
+function MCQController({ chooser, baseQuestion }) {
+    const game = useGameContext()
+    const myRole = useRoleContext()
+
+    const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx]
+
+    const gameQuestionRepo = new RoundMCQQuestionRepository(game.id, game.currentRound)
+    const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion)
+
+    if (gameQuestionError) {
+        return <p><strong>Error: {JSON.stringify(gameQuestionError)}</strong></p>
+    }
+    if (gameQuestionLoading) {
+        return <CircularProgress />
+    }
+    if (!gameQuestion) {
+        return <></>
+    }
+
+    switch (myRole) {
+        case UserRole.ORGANIZER:
+            return <MCQOrganizerController gameQuestion={gameQuestion} />
+        case UserRole.PLAYER:
+            return <MCQPlayerController chooserTeamId={chooserTeamId} gameQuestion={gameQuestion} baseQuestion={baseQuestion} />
+        default:
+            return <MCQSpectatorController chooserTeamId={chooserTeamId} />
+    }
+
+}
+
+function MCQOrganizerController({ gameQuestion }) {
+    return (
+        <div className='flex flex-col h-full w-full items-center justify-around'>
+            {/* <BuzzerHeadPlayer gameQuestion={gameQuestion} />
+            */}
+            <span className='2xl:text-4xl font-bold'><GameChooserHelperText chooserTeamId={gameQuestion.teamId} /></span>
+            <div className='flex flex-row w-full justify-end'>
+                <ResetQuestionButton />
+                <EndQuestionButton />
+            </div>
+        </div>
+    )
+}
+
+
+function MCQPlayerController({ chooserTeamId }) {
+    return (
+        <div className='flex flex-col h-full items-center justify-center'>
+            <span className='2xl:text-4xl font-bold'><GameChooserHelperText chooserTeamId={chooserTeamId} /></span>
+        </div>
+    )
+}
+
+function MCQSpectatorController({ chooserTeamId }) {
+    return (
+        <div className='flex flex-col h-full items-center justify-center'>
+            <span className='2xl:text-4xl font-bold'><GameChooserHelperText chooserTeamId={chooserTeamId} /></span>
+        </div>
+    )
+}

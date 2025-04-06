@@ -2,7 +2,6 @@ import NextAuth from "next-auth"
 
 import GoogleProvider from 'next-auth/providers/google'
 import DiscordProvider from 'next-auth/providers/discord'
-import FacebookProvider from "next-auth/providers/facebook";
 
 import { FirestoreAdapter } from "@auth/firebase-adapter"
 import { cert } from "firebase-admin/app"
@@ -18,10 +17,6 @@ export const authOptions = {
             clientId: process.env.AUTH_DISCORD_ID,
             clientSecret: process.env.AUTH_DISCORD_SECRET,
         }),
-        // FacebookProvider({
-        //     clientId: process.env.FACEBOOK_CLIENT_ID,
-        //     clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-        // })
     ],
     adapter: FirestoreAdapter({
         credential: cert({
