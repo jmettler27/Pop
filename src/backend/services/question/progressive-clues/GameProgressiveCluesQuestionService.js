@@ -1,4 +1,4 @@
-import GameRiddleQuestionService from "@/backend/services/round/riddle/RiddleRoundService";
+import GameRiddleQuestionService from '@/backend/services/question/riddle/GameRiddleQuestionService';
 
 import { firestore } from '@/backend/firebase/firebase'
 import { runTransaction } from 'firebase/firestore'
@@ -24,7 +24,7 @@ export default class GameProgressiveCluesQuestionService extends GameRiddleQuest
 
     /* ====================================================================================================== */
 
-    async revealProgressiveClues(questionId) {
+    async revealClue(questionId) {
         if (!questionId) {
             throw new Error("No question ID has been provided!");
         }
@@ -33,8 +33,7 @@ export default class GameProgressiveCluesQuestionService extends GameRiddleQuest
             await runTransaction(firestore, async (transaction) => {
 
                 const players = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId)
-                const buzzed = players.buzzed
-                const canceled = players.canceled
+                const {buzzed, canceled } = players
 
                 const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId)
                 const round = await this.roundRepo.getRoundTransaction(transaction, roundId)
@@ -46,18 +45,18 @@ export default class GameProgressiveCluesQuestionService extends GameRiddleQuest
                         buzzed: []
                     })
                 }
-                await this.gameQuestionRepo.incrementQuestionCurrentClueIdxTransaction(transaction, questionId)
+                await this.gameQuestionRepo.incrementClueTransaction(transaction, questionId)
             
                 // Decancel players who need it
                 if (canceled?.length > 0) {
                     const targetClueIdx = gameQuestion.currentClueIdx + 1 - round.delay
                     canceled
-                        .filter(cancellation => cancellation.clueIdx === targetClueIdx)
-                        .forEach(cancellation => {
-                            this.playerRepo.updatePlayerStatusTransaction(transaction, cancellation.playerId, PlayerStatus.IDLE)
+                        .filter(c => c.clueIdx === targetClueIdx)
+                        .forEach(c => {
+                            this.playerRepo.updatePlayerStatusTransaction(transaction, c.playerId, PlayerStatus.IDLE)
                         });
                 }
-                // await this.timerRepo.updateTimerStateTransaction(transaction, gameId, TimerStatus.RESET)
+                // await this.timerRepor.resetTimerTransaction(transaction)
                 await this.soundRepo.addSoundTransaction(transaction, 'cartoon_mystery_musical_tone_002')
 
                 console.log("Progressive clues revealed successfully", questionId);

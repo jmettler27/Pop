@@ -6,7 +6,7 @@ import { ReorderingQuestion } from '@/backend/models/questions/Reordering';
 
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
-import { topicSchema } from '@/frontend/utils/topics';
+import { topicSchema } from '@/frontend/utils/forms/topics';
 import { ADD_ITEM, QUESTION_HINTS_REMARKS, QUESTION_ITEM, QUESTION_TITLE_LABEL } from '@/frontend/utils/forms/questions';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction'

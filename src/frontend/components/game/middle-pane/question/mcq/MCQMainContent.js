@@ -1,4 +1,4 @@
-import { selectMCQChoice } from '@/backend/services/question/mcq/actions_old'
+import { selectChoice } from '@/backend/services/question/mcq/actions'
 
 import { GameStatus } from '@/backend/models/games/GameStatus'
 import { UserRole } from '@/backend/models/users/User'
@@ -113,7 +113,7 @@ function ActiveMCQChoices({ question, gameQuestion, randomization }) {
     const isChooser = myTeam === gameQuestion.teamId
 
     const [handleSelectChoice, isSubmitting] = useAsyncAction(async (idx) => {
-        await selectMCQChoice(game.id, game.currentRound, game.currentQuestion, user.id, myTeam, idx)
+        await selectChoice(game.id, game.currentRound, game.currentQuestion, user.id, myTeam, idx)
     })
 
     return (

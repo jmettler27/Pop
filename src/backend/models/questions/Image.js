@@ -43,7 +43,7 @@ export class ImageQuestion extends RiddleQuestion {
 
         this.validateImage(data);
         this.validateTitle(data);
-        this.validateAnswer(data);
+        // this.validateAnswer(data);
 
         return true;
     }
@@ -147,42 +147,35 @@ export class GameImageQuestion extends GameRiddleQuestion {
 
     static validateThinkingTime(data) {
         const thinkingTime = data.thinkingTime;
-        if (!thinkingTime) {
-            throw new Error("Thinking time is required");
-        }
-        if (typeof thinkingTime !== 'number') {
-            throw new Error("Thinking time must be a number");
-        }
-        if (thinkingTime < 0) {
-            throw new Error("Thinking time must be positive");
+        console.log("thinkingTime", thinkingTime)
+        if (thinkingTime) {
+            if (typeof thinkingTime !== 'number') {
+                throw new Error("Thinking time must be a number");
+            }
+            if (thinkingTime < 0) {
+                throw new Error("Thinking time must be positive");
+            }
         }
         return true;
     }
     
     static validateReward(data) {
-        const reward = data.reward;
-        if (!reward) {
-            throw new Error("Reward is required");
-        }
-        if (typeof reward !== 'number') {
-            throw new Error("Reward must be a number");
-        }
-        if (reward < 0) {
-            throw new Error("Reward must be positive");
+        if (data.reward) {
+            if (typeof data.reward !== 'number') {
+                throw new Error("Reward must be a number");
+            }
         }
         return true;
     }
 
     static validateMaxTries(data) {
-        const maxTries = data.maxTries;
-        if (!maxTries) {
-            throw new Error("Max tries is required");
-        }
-        if (typeof maxTries !== 'number') {
-            throw new Error("Max tries must be a number");
-        }
-        if (maxTries < 0) {
-            throw new Error("Max tries must be positive");
+        if (data.maxTries) {
+            if (typeof data.maxTries !== 'number') {
+                throw new Error("Max tries must be a number");
+            }
+            if (data.maxTries < 0) {
+                throw new Error("Max tries must be positive");
+            }
         }
         return true;
     }

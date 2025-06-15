@@ -27,6 +27,32 @@ export default class GameReorderingQuestionService extends GameQuestionService {
 
     /* ============================================================================================================ */
 
-    
+    async submitOrdering(questionId, playerId, teamId, ordering) {
+        if (!questionId) {
+            throw new Error("No question ID has been provided!");
+        }
+
+        if (!playerId) {
+            throw new Error("No player ID has been provided!");
+        }
+
+        if (!teamId) {
+            throw new Error("No team ID has been provided!");
+        }
+
+        if (!ordering) {
+            throw new Error("No ordering has been provided!");
+        }
+
+        try {
+            await runTransaction(firestore, async (transaction) => {
+                console.log("Ordering submitted successfully", questionId, playerId, teamId, ordering)
+            })
+        }
+        catch (error) {
+            console.error("There was an error submitting the ordering:", error);
+            throw error;
+        }
+    }
 }
 

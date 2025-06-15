@@ -1,13 +1,15 @@
+import { addBet } from '@/backend/services/question/enumeration/actions'
+
+import GameEnumerationQuestionRepository from '@/backend/repositories/question/game/GameEnumerationQuestionRepository'
+
 import { TimerStatus } from '@/backend/models/Timer'
 import { UserRole } from '@/backend/models/users/User'
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales'
 import { range } from '@/backend/utils/arrays'
+
+
+import { DEFAULT_LOCALE } from '@/frontend/utils/locales'
     
-import { addPlayerBet } from '@/backend/services/question/enumeration/actions_old'
-
-import RoundEnumerationQuestionRepository from '@/backend/repositories/question/game/GameEnumerationQuestionRepository'
-
 import useAsyncAction from "@/frontend/hooks/async/useAsyncAction"
 
 import { useUserContext, useGameContext, useRoleContext, useTeamContext } from '@/frontend/contexts'
@@ -47,7 +49,7 @@ function AddBetForm({ baseQuestion, status, lang }) {
     const myTeam = useTeamContext()
 
     const [handleBetValidate, isSubmitting] = useAsyncAction(async () => {
-        await addPlayerBet(game.id, game.currentRound, game.currentQuestion, user.id, myTeam, myBet)
+        await addBet(game.id, game.currentRound, game.currentQuestion, user.id, myTeam, myBet)
         setHasValidated(true)
         setDialogOpen(false)
     })
@@ -56,7 +58,7 @@ function AddBetForm({ baseQuestion, status, lang }) {
     const [myBet, setMyBet] = useState(0)
     const [hasValidated, setHasValidated] = useState(false)
 
-    const roundEnumQuestionRepo = new RoundEnumerationQuestionRepository(game.id, game.currentRound)
+    const roundEnumQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound)
     const { players, playersLoading, playersError } = roundEnumQuestionRepo.usePlayers(game.currentQuestion)
 
     if (playersError) {

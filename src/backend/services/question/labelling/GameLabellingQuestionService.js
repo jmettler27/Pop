@@ -39,7 +39,7 @@ export default class GameLabellingQuestionService extends GameQuestionService {
         const buzzed = players.buzzed
 
         if (buzzed.length === 0)
-            await this.timerRepo.updateTimerStateTransaction(transaction, gameId, TimerStatus.RESET)
+            await this.timerRepor.resetTimerTransaction(transaction)
         else
             await this.gameQuestionRepo.cancelPlayerTransaction(transaction, questionId, buzzed[0])
 
@@ -170,7 +170,9 @@ export default class GameLabellingQuestionService extends GameQuestionService {
                 await this.gameQuestionRepo.cancelPlayerTransaction(transaction, questionId, playerId)
                 await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.WRONG)
                 await this.soundRepo.addSoundTransaction(transaction, 'cartoon_mystery_musical_tone_002')
-                await this.timerRepo.updateTimerStateTransaction(transaction, gameId, TimerStatus.RESET)
+                await this.timerRepo.resetTimerTransaction(transaction)
+
+                console.log("Labelling player canceled successfully", questionId, playerId)
             })
         }
 

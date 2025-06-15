@@ -2,6 +2,7 @@ import GameQuestionRepository from '@/backend/repositories/question/game/GameQue
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { Player } from '@/backend/models/users/Player';
+import { increment, serverTimestamp, Timestamp } from 'firebase/firestore';
 
 export default class GameEnumerationQuestionRepository extends GameQuestionRepository {
 
@@ -17,6 +18,37 @@ export default class GameEnumerationQuestionRepository extends GameQuestionRepos
         // return data ? data.map(p => new Player(p)) : [];
         return data
     }
+
+    async addBetTransaction(transaction, questionId, playerId, teamId, bet) {
+        await this.updateTransaction(transaction, [questionId, ...GameEnumerationQuestionRepository.ENUMERATION_PLAYERS_PATH],
+            { 
+                bets: arrayUnion({
+                    playerId,
+                    teamId,
+                    bet,
+                    timestamp: Timestamp.now(),
+                }) 
+            }
+        );
+    }
+
+    async incrementValidItemsTransaction(transaction, questionId) {
+        await this.updateTransaction(transaction, [questionId, ...GameEnumerationQuestionRepository.ENUMERATION_PLAYERS_PATH],
+            {
+                ['challenger.numCorrect']: increment(1)
+            }
+        );
+    }
+
+    async validateItemTransaction(transaction, questionId, itemIdx) {
+        await this.updateTransaction(transaction, [questionId, ...GameEnumerationQuestionRepository.ENUMERATION_PLAYERS_PATH],
+            {
+                ['challenger.numCorrect']: increment(1),
+                [`challenger.cited.${itemIdx}`]: serverTimestamp()            
+            }
+        );
+    }
+
 
     // React hooks
     usePlayers(questionId) {

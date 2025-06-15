@@ -19,6 +19,11 @@ export const endQuestion = async (gameId, roundId, questionId) => {
 
 /* ============================================================================================================ */
 
+export const clearBuzzer = async (gameId, roundId, questionId) => {
+    const service = new GameQuoteQuestionService(gameId, roundId);
+    return service.clearBuzzer(questionId);
+};
+
 export const revealQuoteElement = async (gameId, roundId, questionId, quoteElem, quotePartIdx = null, wholeTeam = false) => {
     const service = new GameQuoteQuestionService(gameId, roundId);
     return service.revealQuoteElement(questionId, quoteElem, quotePartIdx, wholeTeam);
@@ -29,7 +34,7 @@ export const validateAllQuoteElements = async (gameId, roundId, questionId, play
     return service.validateAllQuoteElements(questionId, playerId);
 };
 
-export const cancelQuotePlayer = async (gameId, roundId, questionId, playerId, wholeTeam = false) => {
+export const cancelPlayer = async (gameId, roundId, questionId, playerId, wholeTeam = false) => {
     const service = new GameQuoteQuestionService(gameId, roundId);
-    return service.cancelQuotePlayer(questionId, playerId, wholeTeam);
+    return service.cancelPlayer(questionId, playerId, wholeTeam);
 };

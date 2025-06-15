@@ -6,7 +6,7 @@ import { GameStatus } from '@/backend/models/games/GameStatus'
 import { QuestionType } from '@/backend/models/questions/QuestionType'
 import { UserRole } from '@/backend/models/users/User'
 
-import RoundBasicQuestionRepository from '@/backend/repositories/question/round/RoundBasicQuestionRepository'
+import GameBasicQuestionRepository from '@/backend/repositories/question/game/GameBasicQuestionRepository'
 
 
 import { DEFAULT_LOCALE } from '@/frontend/utils/locales'
@@ -47,7 +47,7 @@ function BasicQuestionMainContent({ baseQuestion }) {
     const game = useGameContext()
     const myRole = useRoleContext()
 
-    const gameQuestionRepo = new RoundBasicQuestionRepository(game.id, game.currentRound)
+    const gameQuestionRepo = new GameBasicQuestionRepository(game.id, game.currentRound)
     const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useGameQuestion(game.currentQuestion)
 
     if (gameQuestionError) {

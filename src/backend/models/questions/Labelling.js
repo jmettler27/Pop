@@ -135,7 +135,7 @@ export class LabellingQuestion extends BaseQuestion {
 
 export class GameLabellingQuestion extends GameQuestion {
 
-    static REWARDS_PER_ELEMENT = 1;
+    static REWARD = 1;
     static MAX_TRIES = 1;
     static THINKING_TIME = 30;
 
@@ -143,6 +143,9 @@ export class GameLabellingQuestion extends GameQuestion {
         super(data);
 
         this.revealed = data.revealed || [];
+        this.reward = data.reward || GameLabellingQuestion.REWARD;
+        this.maxTries = data.maxTries || GameLabellingQuestion.MAX_TRIES;
+        this.thinkingTime = data.thinkingTime || GameLabellingQuestion.THINKING_TIME;
 
         this.constructor.validate(data);
 
@@ -178,57 +181,44 @@ export class GameLabellingQuestion extends GameQuestion {
     }
 
     static validateRevealed(data) {
-        const revealed = data.revealed;
-        if (!revealed) {
-            throw new Error("Labelling question must have revealed");
-        }
-        if (!isArray(revealed)) {
-            throw new Error("Labelling question revealed must be an array");
-        }
-        if (revealed.length !== this.constructor.MAX_TRIES) {
-            throw new Error(`Labelling question must have ${this.constructor.MAX_TRIES} revealed`);
+        const revealed = data.revealed || data.details.revealed;
+        if (revealed) {
+            if (typeof revealed !== 'object') {
+                throw new Error("Revealed must be an object");
+            }
         }
         return true;
     }
 
     static validateReward(data) {
-        const reward = data.reward;
-        if (!reward) {
-            throw new Error("Labelling question must have reward");
-        }
-        if (typeof reward !== 'number') {
-            throw new Error("Labelling question reward must be a number");
-        }
-        if (reward < 0) {
-            throw new Error("Labelling question reward must be positive");
+        if (data.reward) {
+            if (typeof data.reward !== 'number') {
+                throw new Error("Reward must be a number");
+            }
         }
         return true;
     }
 
     static validateMaxTries(data) {
-        const maxTries = data.maxTries;
-        if (!maxTries) {
-            throw new Error("Labelling question must have max tries");
-        }
-        if (typeof maxTries !== 'number') {
-            throw new Error("Labelling question max tries must be a number");
-        }
-        if (maxTries < 0) {
-            throw new Error("Labelling question max tries must be positive");
+        if (data.maxTries) {
+            if (typeof data.maxTries !== 'number') {
+                throw new Error("Max tries must be a number");
+            }
+            if (data.maxTries < 0) {
+                throw new Error("Max tries must be positive");
+            }
         }
         return true;
     }
 
     static validateThinkingTime(data) {
-        const thinkingTime = data.thinkingTime;
-        if (!thinkingTime) {
-            throw new Error("Labelling question must have thinking time");
-        }
-        if (typeof thinkingTime !== 'number') {
-            throw new Error("Labelling question thinking time must be a number");
-        }
-        if (thinkingTime < 0) {
-            throw new Error("Labelling question thinking time must be positive");
+        if (data.thinkingTime) {
+            if (typeof data.thinkingTime !== 'number') {
+                throw new Error("Thinking time must be a number");
+            }
+            if (data.thinkingTime < 0) {
+                throw new Error("Thinking time must be positive");
+            }
         }
         return true;
     }

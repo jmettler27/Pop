@@ -9,7 +9,7 @@ export default class GameProgressiveCluesQuestionRepository extends GameRiddleQu
         super(gameId, roundId, QuestionType.PROGRESSIVE_CLUES);
     }
 
-    async incrementQuestionCurrentClueIdxTransaction(transaction, questionId) {
+    async incrementClueTransaction(transaction, questionId) {
         await this.updateQuestionTransaction(transaction, questionId, {
             currentClueIdx: increment(1)
         });

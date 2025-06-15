@@ -3,7 +3,6 @@ import { PlayerStatus } from "@/backend/models/users/Player";
 
 import RoundService from "@/backend/services/round/RoundService";
 import GameOddOneOutQuestionRepository from "@/backend/repositories/question/game/GameOddOneOutQuestionRepository";
-import { serverTimestamp } from "firebase/database";
 
 export default class OddOneOutRoundService extends RoundService {
 
@@ -33,7 +32,7 @@ export default class OddOneOutRoundService extends RoundService {
             await this.playerRepo.updatePlayerStatusTransaction(transaction, player.id, PlayerStatus.IDLE)
         }
         
-        await this.timerRepo.updateTimerTransaction(transaction, { status: TimerStatus.RESET, duration: gameQuestion.thinkingTime })
+        await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime)
 
         const gameQuestionRepo = new GameOddOneOutQuestionRepository(this.gameId, this.roundId)
         await gameQuestionRepo.startQuestionTransaction(transaction, questionId)

@@ -1,6 +1,18 @@
 import { UserRole } from '@/backend/models/users/User'
 
-import { handleQuestionEnd } from '@/backend/services/round/round-transitions';
+import { handleQuestionEnd as handleBasicQuestionEnd } from '@/backend/services/round/basic/actions'
+import { handleQuestionEnd as handleBlindtestQuestionEnd } from '@/backend/services/round/blindtest/actions'
+import { handleQuestionEnd as handleEmojiQuestionEnd } from '@/backend/services/round/emoji/actions'
+import { handleQuestionEnd as handleEnumQuestionEnd } from '@/backend/services/round/enumeration/actions'
+import { handleQuestionEnd as handleImageQuestionEnd } from '@/backend/services/round/image/actions'
+import { handleQuestionEnd as handleLabellingQuestionEnd } from '@/backend/services/round/labelling/actions'
+import { handleQuestionEnd as handleMatchingQuestionEnd } from '@/backend/services/round/matching/actions'
+import { handleQuestionEnd as handleMCQQuestionEnd } from '@/backend/services/round/mcq/actions'
+import { handleQuestionEnd as handleNaguiQuestionEnd } from '@/backend/services/round/nagui/actions'
+import { handleQuestionEnd as handleOddOneOutQuestionEnd } from '@/backend/services/round/odd-one-out/actions'
+import { handleQuestionEnd as handleProgressiveCluesQuestionEnd } from '@/backend/services/round/progressive-clues/actions'
+import { handleQuestionEnd as handleQuoteQuestionEnd } from '@/backend/services/round/quote/actions'
+import { handleQuestionEnd as handleReorderingQuestionEnd } from '@/backend/services/round/reordering/actions'
 
 
 import { useGameContext, useRoleContext, useGameRepositoriesContext } from '@/frontend/contexts'

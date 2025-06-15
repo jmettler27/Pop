@@ -1,6 +1,7 @@
-import { handleNaguiHideAnswer } from '@/backend/services/question/nagui/actions_old'
+import { handleHideAnswer } from '@/backend/services/question/nagui/actions'
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales'
+import { QuestionType } from '@/backend/models/questions/QuestionType'
+
 import { INVALIDATE_ANSWER, VALIDATE_ANSWER } from '@/backend/utils/question/question'
 
 
@@ -16,7 +17,8 @@ import NaguiPlayerOptionHelperText from '@/frontend/components/game/bottom-pane/
 import { Button, ButtonGroup } from '@mui/material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CancelIcon from '@mui/icons-material/Cancel'
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+
+import { DEFAULT_LOCALE } from '@/frontend/utils/locales'
 
 
 export default function NaguiOrganizerController({ gameQuestion }) {
@@ -32,8 +34,8 @@ export default function NaguiOrganizerController({ gameQuestion }) {
             )}
             {gameQuestion.option === 'hide' && <NaguiOrganizerHideAnswerController gameQuestion={gameQuestion} />}
             <div className='flex flex-row w-full justify-end'>
-                <ResetQuestionButton />
-                <EndQuestionButton />
+                <ResetQuestionButton questionType={QuestionType.NAGUI} />
+                <EndQuestionButton questionType={QuestionType.NAGUI} />
             </div>
         </div>
     )
@@ -44,7 +46,7 @@ function NaguiOrganizerHideAnswerController({ gameQuestion, lang = DEFAULT_LOCAL
     const game = useGameContext()
 
     const [handleClick, isHandling] = useAsyncAction(async (correct) => {
-        await handleNaguiHideAnswer(game.id, game.currentRound, game.currentQuestion, gameQuestion.playerId, gameQuestion.teamId, correct)
+        await handleHideAnswer(game.id, game.currentRound, game.currentQuestion, gameQuestion.playerId, gameQuestion.teamId, correct)
     })
 
     {/* Validate or invalidate the player's answer */ }

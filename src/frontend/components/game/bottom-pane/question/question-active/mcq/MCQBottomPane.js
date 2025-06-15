@@ -81,8 +81,8 @@ function MCQOrganizerController({ gameQuestion }) {
             */}
             <span className='2xl:text-4xl font-bold'><GameChooserHelperText chooserTeamId={gameQuestion.teamId} /></span>
             <div className='flex flex-row w-full justify-end'>
-                <ResetQuestionButton />
-                <EndQuestionButton />
+                <ResetQuestionButton questionType={QuestionType.MCQ} />
+                <EndQuestionButton questionType={QuestionType.MCQ} />
             </div>
         </div>
     )

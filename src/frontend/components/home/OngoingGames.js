@@ -75,11 +75,15 @@ const GameCard = ({
     game,
     lang,
 }) => {
+
+    return <></>
+
     const router = useRouter()
     const { data: session } = useSession()
     const user = session.user
 
     const { organizerRepo, playerRepo } = useGameRepositoriesContext()
+
     const { organizers, loading: organizersLoading, error: organizersError } = organizerRepo.useAllOrganizersOnce()
     const { players, loading: playersLoading, error: playersError } = playerRepo.useAllPlayersOnce()
 

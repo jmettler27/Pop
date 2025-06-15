@@ -230,40 +230,34 @@ export class GameBlindtestQuestion extends GameRiddleQuestion {
     }
 
     static validateThinkingTime(data) {
-        if (!data.thinkingTime) {
-            throw new Error("Thinking time is required");
-        }
-        if (typeof data.thinkingTime !== 'number') {
-            throw new Error("Thinking time must be a number");
-        }
-        if (data.thinkingTime < 0) {
-            throw new Error("Thinking time must be positive");
+        if (data.thinkingTime) {
+            if (typeof data.thinkingTime !== 'number') {
+                throw new Error("Thinking time must be a number");
+            }
+            if (data.thinkingTime < 0) {
+                throw new Error("Thinking time must be positive");
+            }
         }
         return true;
     }
 
     static validateReward(data) {
-        if (!data.reward) {
-            throw new Error("Reward is required");
-        }
-        if (typeof data.reward !== 'number') {
-            throw new Error("Reward must be a number");
-        }
-        if (data.reward < 0) {
-            throw new Error("Reward must be positive");
+        if (data.reward) {
+            if (typeof data.reward !== 'number') {
+                throw new Error("Reward must be a number");
+            }
         }
         return true;
     }
 
     static validateMaxTries(data) {
-        if (!data.maxTries) {
-            throw new Error("Max tries is required");
-        }
-        if (typeof data.maxTries !== 'number') {
-            throw new Error("Max tries must be a number");
-        }
-        if (data.maxTries < 0) {
-            throw new Error("Max tries must be positive");
+        if (data.maxTries) {
+            if (typeof data.maxTries !== 'number') {
+                throw new Error("Max tries must be a number");
+            }
+            if (data.maxTries < 0) {
+                throw new Error("Max tries must be positive");
+            }
         }
         return true;
     }

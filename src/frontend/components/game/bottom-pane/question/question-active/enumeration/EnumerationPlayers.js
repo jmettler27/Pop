@@ -1,7 +1,7 @@
 import { rankingToEmoji } from '@/backend/utils/emojis'
 import { DEFAULT_LOCALE } from '@/frontend/utils/locales'
 
-import RoundEnumerationQuestionRepository from '@/backend/repositories/question/game/GameEnumerationQuestionRepository'
+import GameEnumerationQuestionRepository from '@/backend/repositories/question/game/GameEnumerationQuestionRepository'
 
 
 import { useGameContext } from '@/frontend/contexts'
@@ -12,8 +12,8 @@ import PlayerName from '@/frontend/components/game/PlayerName'
 export default function EnumerationPlayers({ lang = DEFAULT_LOCALE }) {
     const game = useGameContext()
 
-    const roundEnumQuestionRepo = new RoundEnumerationQuestionRepository(game.id, game.currentRound)
-    const { players, playersLoading, playersError } = roundEnumQuestionRepo.usePlayers(game.currentQuestion)
+    const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound)
+    const { players, playersLoading, playersError } = gameQuestionRepo.usePlayers(game.currentQuestion)
 
     if (playersError) {
         return <p><strong>Error: </strong>{JSON.stringify(playersError)}</p>

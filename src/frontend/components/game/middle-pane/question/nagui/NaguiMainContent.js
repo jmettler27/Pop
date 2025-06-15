@@ -1,6 +1,6 @@
-import { selectNaguiChoice } from '@/backend/services/question/nagui/actions_old'
+import { selectChoice } from '@/backend/services/question/nagui/actions'
 
-import RoundNaguiQuestionRepository from '@/backend/repositories/question/game/GameNaguiQuestionRepository'
+import GameNaguiQuestionRepository from '@/backend/repositories/question/game/GameNaguiQuestionRepository'
 
 import { NaguiQuestion, HideNaguiOption, SquareNaguiOption, DuoNaguiOption } from '@/backend/models/questions/Nagui'
 import { GameStatus } from '@/backend/models/games/GameStatus'
@@ -21,6 +21,9 @@ import { useMemo } from 'react'
 import { Avatar, Badge, Button, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 
 import { clsx } from 'clsx'
+
+import CheckIcon from '@mui/icons-material/Check'
+import CloseIcon from '@mui/icons-material/Close'
 
 
 export default function NaguiMainContent({ baseQuestion }) {
@@ -74,7 +77,7 @@ function NaguiAnswerImage({ correct }) {
 function NaguiMainContentQuestion({ baseQuestion, randomization }) {
     const game = useGameContext()
 
-    const gameQuestionRepo = new RoundNaguiQuestionRepository(game.id, game.currentRound)
+    const gameQuestionRepo = new GameNaguiQuestionRepository(game.id, game.currentRound)
     const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion)
     
     if (gameQuestionError) {
@@ -128,7 +131,7 @@ function ActiveNaguiChoices({ baseQuestion, gameQuestion, randomization }) {
     const isChooser = myTeam === gameQuestion.teamId
 
     const [handleSelectChoice, isSubmitting] = useAsyncAction(async (idx) => {
-        await selectNaguiChoice(game.id, game.currentRound, game.currentQuestion, user.id, myTeam, idx)
+        await selectChoice(game.id, game.currentRound, game.currentQuestion, user.id, myTeam, idx)
     })
 
     if (gameQuestion.option === null || gameQuestion.option === HideNa) {
@@ -164,9 +167,7 @@ function ActiveNaguiChoices({ baseQuestion, gameQuestion, randomization }) {
     )
 }
 
-import CheckIcon from '@mui/icons-material/Check'
-import CloseIcon from '@mui/icons-material/Close'
-import RoundNaguiQuestionRepository from '@/backend/repositories/question/game/GameNaguiQuestionRepository'
+
 
 function EndedNaguiChoices({ baseQuestion, gameQuestion, randomization }) {
     const choices = baseQuestion.choices

@@ -2,8 +2,7 @@ import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 
 import RoundFactory from '@/backend/models/rounds/RoundFactory';
 
-import { arrayUnion } from 'firebase/firestore';
-import { serverTimestamp } from 'firebase/database';
+import { serverTimestamp, arrayUnion } from 'firebase/firestore';
 
 export default class RoundRepository extends FirebaseRepository {
     

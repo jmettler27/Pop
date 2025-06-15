@@ -52,7 +52,7 @@ export const clearBuzzer = async (gameId, roundId, questionId) => {
 
 /* ============================================================================================================ */
 
-export const revealProgressiveClue = async (gameId, roundId, questionId) => {
+export const revealClue = async (gameId, roundId, questionId) => {
     const service = new GameProgressiveCluesQuestionService(gameId, roundId);
-    return service.revealProgressiveClue(questionId);
+    return service.revealClue(questionId);
 };

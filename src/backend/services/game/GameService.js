@@ -75,7 +75,7 @@ export default class GameService {
         
                 await this.soundRepo.addSoundTransaction(transaction, 'ui-confirmation-alert-b2')
         
-                await this.timerRepo.updateTimerStateTransaction(transaction, TimerStatus.RESET)
+                await this.timerRepo.resetTimerTransaction(transaction)
 
                 console.log("Game successfully started.", "gameID", this.gameId);
             });

@@ -1,4 +1,3 @@
-import GameQuestionRepositoryFactory from '@/backend/repositories/question/game/GameQuestionRepositoryFactory';
 import RoundRepositoryFactory from '@/backend/repositories/round/RoundRepositoryFactory';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
@@ -11,14 +10,12 @@ import RoundScoreRepository from '@/backend/repositories/score/RoundScoreReposit
 
 import { Round } from '@/backend/models/rounds/Round';
 import { RoundType } from '@/backend/models/rounds/RoundType';
-import { ScorePolicyType } from '@/backend/models/rounds/ScorePolicyType';
+import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { PlayerStatus } from '@/backend/models/users/Player';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { Timer, TimerStatus } from '@/backend/models/Timer';
-import { RoundScorePolicy } from '@/backend/models/ScorePolicy';
 
-import { aggregateTiedTeams, getNextCyclicIndex, shuffle } from '@/backend/utils/arrays';
+import { aggregateTiedTeams, shuffle } from '@/backend/utils/arrays';
 import { isRiddle } from '@/backend/utils/question_types';
 import { sortAscendingRoundScores } from '@/backend/utils/rounds';
 import { sortScores } from '@/backend/utils/scores';
@@ -290,7 +287,7 @@ export default class RoundService {
     
     
         /* ================================ Update the global scores of each team according to their performance in this round ================================ */
-        if (roundScorePolicy === RoundScorePolicy.COMPLETION_RATE) {
+        if (roundScorePolicy === ScorePolicyType.COMPLETION_RATE) {
             const gameQuestions = await Promise.all(questionIds.map(id => this.gameQuestionRepo.getGameQuestionTransaction(transaction, id)));
 
             // Score policy: calculate the "completion rate" of each team w.r.t. the maximum number of points of the round
@@ -350,7 +347,7 @@ export default class RoundService {
                     updateGlobalScores(roundCompletionRates);
                 }
             }
-        } else if (roundScorePolicy === RoundScorePolicy.RANKING) {
+        } else if (roundScorePolicy === ScorePolicyType.RANKING) {
             // Score policy: independently of the performance of each team in the round:
             // - the most performant team(s) get(s) the highest reward
             // - the second most performant team(s) get(s) the second highest reward, 
@@ -497,6 +494,6 @@ export default class RoundService {
         await this.roundRepo.startRoundTransaction(transaction, this.roundId)
         await this.gameRepo.updateGameStatusTransaction(transaction, GameStatus.ROUND_END)
         await this.soundRepo.addSoundTransaction(transaction, 'level-passed')
-        await this.timerRepo.updateTimerStateTransaction(transaction, TimerStatus.RESET)
+        await this.timerRepo.resetTimerTransaction(transaction)
     }
 } 

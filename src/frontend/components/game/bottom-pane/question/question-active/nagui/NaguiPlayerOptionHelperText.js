@@ -7,12 +7,12 @@ import { DEFAULT_LOCALE } from "@/frontend/utils/locales"
 import { useGameRepositoriesContext, useRoleContext } from "@/frontend/contexts"
 
 
-export default function NaguiPlayerOptionHelperText({ realtime, lang = DEFAULT_LOCALE }) {
+export default function NaguiPlayerOptionHelperText({ gameQuestion, lang = DEFAULT_LOCALE }) {
     const myRole = useRoleContext()
 
     const { playerRepo, teamRepo } = useGameRepositoriesContext()
-    const { player, playerLoading, playerError } = playerRepo.usePlayerOnce(realtime.playerId)
-    const { team, teamLoading, teamError } = teamRepo.useTeamOnce(realtime.teamId)
+    const { player, playerLoading, playerError } = playerRepo.usePlayerOnce(gameQuestion.playerId)
+    const { team, teamLoading, teamError } = teamRepo.useTeamOnce(gameQuestion.teamId)
 
     if (playerError) {
         return <p><strong>Error: </strong>{JSON.stringify(playerError)}</p>
@@ -30,7 +30,7 @@ export default function NaguiPlayerOptionHelperText({ realtime, lang = DEFAULT_L
         return <p>Team not found</p>
     }
 
-    return <span><span style={{ color: team.color }}>{player.name}</span> {HAS_CHOSEN_TEXT[lang]} {NaguiOption.prependTypeWithEmoji(realtime.option, lang)}</span>
+    return <span><span style={{ color: team.color }}>{player.name}</span> {HAS_CHOSEN_TEXT[lang]} {NaguiOption.prependTypeWithEmoji(gameQuestion.option, lang)}</span>
 
 }
 

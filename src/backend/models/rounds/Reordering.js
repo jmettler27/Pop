@@ -12,6 +12,18 @@ export class ReorderingRound extends Round {
         this.thinkingTime = data.thinkingTime || ReorderingRound.DEFAULT_THINKING_TIME;
     }
 
+    toObject() {
+        return {
+            ...super.toObject(),
+            type: this.type,
+            thinkingTime: this.thinkingTime
+        };
+    }
+
+    getThinkingTime() {
+        return this.thinkingTime;
+    }
+
     calculateMaxPointsTransaction() {
         // The total number of quote elements to guess in the round
         return this.questions.reduce((acc, { details: { ordering } }) => {

@@ -1,4 +1,4 @@
-import { resetGame, updateGameStatus, resumeEditing, endGame, updateQuestions } from '@/backend/services/game/actions_old'
+import { resetGame, updateGameStatus, resumeEditing, endGame, updateQuestions } from '@/backend/services/game/actions'
 
 import SoundboardController from '@/frontend/components/game/soundboard/SoundboardController'
 

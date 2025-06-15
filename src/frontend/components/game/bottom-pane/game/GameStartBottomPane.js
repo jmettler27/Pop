@@ -1,4 +1,4 @@
-import { startGame } from '@/backend/services/game/transitions'
+import { startGame } from '@/backend/services/game/actions'
 
 import { UserRole } from '@/backend/models/users/User'
 

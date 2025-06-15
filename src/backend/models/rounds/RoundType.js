@@ -76,7 +76,7 @@ export function roundTypeToEmoji(roundType) {
     return RoundTypeToEmoji[roundType]
 }
 
-import { prependWithEmojiAndSpace } from '@/backend/utils/emojis';
+import { prependWithEmojiAndSpace } from '@/backend/utils/strings';
 
 export function prependRoundTypeWithEmoji(roundType, lang = DEFAULT_LOCALE) {
     const emoji = roundTypeToEmoji(roundType)

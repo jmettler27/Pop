@@ -25,23 +25,21 @@ export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questi
     console.log("EditQuestionCard", gameId, roundId, questionId)
 
     const baseQuestionRepo = new BaseQuestionRepository()
-    const gameQuestionRepo = new GameQuestionRepository(gameId, roundId)
-    
-    const { baseQuestion, baseQuestionLoading, baseQuestionError } = baseQuestionRepo.useQuestionOnce(questionId)
-    const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestionOnce(questionId)
+    const { baseQuestion, loading: baseQuestionLoading, error: baseQuestionError } = baseQuestionRepo.useQuestionOnce(questionId)
 
-    if (baseQuestionError || gameQuestionError) {
-        return <p>Error: {JSON.stringify(baseQuestionError || gameQuestionError)}</p>
+    if (baseQuestionError) {
+        return <p>Error: {JSON.stringify(baseQuestionError)}</p>
     }
-    if (baseQuestionLoading || gameQuestionLoading) {
-        return <p>Loading...</p>
+    if (baseQuestionLoading) {
+        return <p>Loading the question...</p>
     }
-    if (!baseQuestion || !gameQuestion) {
+    if (!baseQuestion) {
         return <p>No data...</p>
     }
 
-    console.log("baseQuestion", baseQuestion.type)
-    console.log("gameQuestion", gameQuestion.type)
+    console.log("baseQuestion.type", baseQuestion.type)
+
+
     return (
         <Card>
             <CardHeader className='flex flex-row items-center justify-between'>
@@ -57,41 +55,53 @@ export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questi
 
             <Divider className='my-2 bg-slate-600' />
             <CardFooter>
-                <EditQuestionCardFooter gameQuestion={gameQuestion} />
+                {/* <EditQuestionCardFooter questionId={questionId} questionType={baseQuestion.type} roundId={roundId} /> */}
             </CardFooter>
 
         </Card>
     );
 })
 
-function EditQuestionCardFooter({ gameQuestion }) {
-    const { id: gameId } = useParams()
+// function EditQuestionCardFooter({ questionId, questionType, roundId }) {
+//     const { id: gameId } = useParams()
 
-    const organizerRepo = new OrganizerRepository(gameId)
-    const { organizer, loading, error } = organizerRepo.useOrganizerOnce(gameQuestion.managedBy)
+//     console.log("EditQuestionCardFooter", questionId, questionType, roundId)
 
-    if (error) {
-        return <p>Error: {JSON.stringify(error)}</p>
-    }
-    if (loading) {
-        return <p>Loading the creator...</p>
-    }
-    if (!organizer) {
-        return <p>User not found</p>
-    }
+//     const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(questionType, gameId, roundId)
+//     const organizerRepo = new OrganizerRepository(gameId)
 
-    return (
-        <div className='flex flex-row w-full space-x-2 items-center'>
-            <Avatar src={organizer.image} variant='rounded' sx={{ width: 30, height: 30 }} />
-            <span>Manager: <strong>{organizer.name}</strong></span>
-        </div>
-    )
-}
+//     const { gameQuestion, loading: gameQuestionLoading, error: gameQuestionError } = gameQuestionRepo.useQuestionOnce(questionId)
+//     const { organizer, loading: organizerLoading, error: organizerError } = organizerRepo.useOrganizerOnce(gameQuestion?.managedBy)
+    
+//     console.log("gameQuestion", gameQuestion)
+//     console.log("organizer", organizer)
+
+//     if (gameQuestionLoading || organizerLoading) {
+//         return <p>Loading the question...</p>
+//         }
+//     if (gameQuestionError || organizerError) {
+//         return <p>Error: {JSON.stringify(gameQuestionError || organizerError)}</p>
+//     }
+//     if (!gameQuestion || !organizer) {
+//         return <p>No data...</p>
+//     }
+
+//     console.log("gameQuestion", gameQuestion)
+//     console.log("organizer", organizer)
+
+//     return (
+//         <div className='flex flex-row w-full space-x-2 items-center'>
+//             <Avatar src={organizer.image} variant='rounded' sx={{ width: 30, height: 30 }} />
+//             <span>Manager: <strong>{organizer.name}</strong></span>
+//         </div>
+//     )
+// }
 
 import PersonIcon from '@mui/icons-material/Person';
 import BaseQuestionRepository from '@/backend/repositories/question/base/BaseQuestionRepository';
 import GameQuestionRepository from '@/backend/repositories/question/game/GameQuestionRepository';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/game/GameQuestionRepositoryFactory';
 
 function UpdateCreatorButton({ roundId, questionId }) {
     const { id: gameId } = useParams()

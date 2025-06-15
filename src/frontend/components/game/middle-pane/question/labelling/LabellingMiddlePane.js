@@ -1,6 +1,6 @@
-import { revealLabel } from '@/backend/services/question/labelling/actions_old'
+import { revealLabel } from '@/backend/services/question/labelling/actions'
 
-import RoundLabellingQuestionRepository from '@/backend/repositories/question/round/RoundLabellingQuestionRepository'
+import GameLabellingQuestionRepository from '@/backend/repositories/question/game/GameLabellingQuestionRepository'
 
 import { topicToEmoji } from '@/backend/models/Topic'
 import { QuestionType } from '@/backend/models/questions/QuestionType'
@@ -55,7 +55,7 @@ function LabellingQuestionHeader({ question }) {
 function LabellingMainContent({ question }) {
     const game = useGameContext()
 
-    const gameQuestionRepo = new RoundLabellingQuestionRepository(game.id, game.currentRound)
+    const gameQuestionRepo = new GameLabellingQuestionRepository(game.id, game.currentRound)
     const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useGameQuestion(game.currentQuestion)
     if (gameQuestionError) {
         return <p><strong>Error: {JSON.stringify(gameQuestionError)}</strong></p>

@@ -17,6 +17,7 @@ import GameReorderingQuestionRepository from '@/backend/repositories/question/ga
 export default class GameQuestionRepositoryFactory {
     
     static createRepository(questionType, gameId, roundId) {
+        console.log('createRepository', questionType, gameId, roundId);
         switch (questionType) {
             case QuestionType.BASIC:
                 return new GameBasicQuestionRepository(gameId, roundId);

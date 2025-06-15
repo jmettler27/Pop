@@ -37,7 +37,7 @@ export default class MatchingRoundService extends RoundService {
             await this.playerRepo.updatePlayerStatusTransaction(transaction, player.id, PlayerStatus.IDLE)
         }
         
-        await this.timerRepo.updateTimerTransaction(transaction, { status: TimerStatus.RESET, duration: gameQuestion.thinkingTime * (baseQuestion.numCols - 1) })
+        await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime * (baseQuestion.numCols - 1))
 
         const gameQuestionRepo = new GameMatchingQuestionRepository(this.gameId, this.roundId)
         await gameQuestionRepo.startQuestionTransaction(transaction, questionId)

@@ -56,7 +56,7 @@ export default class RiddleRoundService extends RoundService {
             await this.playerRepo.updatePlayerStatusTransaction(transaction, id, PlayerStatus.IDLE)
         }
 
-        await this.timerRepo.updateTimerTransaction(transaction, { status: TimerStatus.RESET, duration: gameQuestion.thinkingTime })
+        await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime)
         await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase')
 
         const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(this.questionType, this.gameId, this.roundId)
@@ -189,7 +189,7 @@ export default class RiddleRoundService extends RoundService {
                     await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.IDLE);
                 }
                 await this.gameQuestionRepo.clearBuzzerTransaction(transaction, questionId);
-                await this.timerRepo.updateTimerStateTransaction(transaction, TimerStatus.RESET);
+                await this.timerRepo.resetTimerTransaction(transaction);
                 await this.soundRepo.addSoundTransaction(transaction, 'robinet_desert');
 
                 console.log("Buzzer successfully cleared", questionId);

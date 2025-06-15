@@ -22,7 +22,7 @@ export default class EnumerationRoundService extends RoundService {
             await this.playerRepo.updatePlayerStatusTransaction(transaction, id, PlayerStatus.IDLE)
         }
         
-        await this.timerRepo.updateTimerTransaction(transaction, { status: TimerStatus.RESET, duration: baseQuestion.thinkingTime })
+        await this.timerRepo.resetTimerTransaction(transaction, baseQuestion.thinkingTime)
         await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase')
 
         const gameQuestionRepo = new GameEnumerationQuestionRepository(this.gameId, this.roundId)

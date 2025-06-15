@@ -62,6 +62,7 @@ export default class QuestionFactory {
      * @returns {GameQuestion} The game question
      */
     static createGameQuestion(type, data) {
+        console.log('createGameQuestion', type, data);
         switch (type) {
             case QuestionType.BASIC:
                 return new GameBasicQuestion(data);

@@ -1,4 +1,4 @@
-import { selectNaguiOption } from '@/backend/services/question/nagui/actions_old'
+import { selectOption } from '@/backend/services/question/nagui/actions'
 import { HideNaguiOption, SquareNaguiOption, DuoNaguiOption } from '@/backend/models/questions/Nagui'
 
 
@@ -46,7 +46,7 @@ function NaguiChooserController() {
     const user = useUserContext()
 
     const [handleSelectOption, isSelecting] = useAsyncAction(async (optionIdx) => {
-        await selectNaguiOption(game.id, game.currentRound, game.currentQuestion, user.id, optionIdx)
+        await selectOption(game.id, game.currentRound, game.currentQuestion, user.id, optionIdx)
     })
 
     return (

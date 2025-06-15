@@ -1,5 +1,5 @@
 import RoundService from "@/backend/services/round/RoundService";
-import { serverTimestamp } from "firebase/database";
+import { serverTimestamp } from "firebase/firestore";
 import GameNaguiQuestionRepository from "@/backend/repositories/question/game/GameNaguiQuestionRepository";
 
 
@@ -44,7 +44,7 @@ export default class NaguiRoundService extends RoundService {
                 teamId: chooserTeamId,
             })
         }
-        await this.timerRepo.updateTimerTransaction(transaction, { status: TimerStatus.RESET, duration: baseQuestion.thinkingTime })
+        await this.timerRepo.resetTimerTransaction(transaction, baseQuestion.thinkingTime)
         await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase')
 
         const gameQuestionRepo = new GameNaguiQuestionRepository(this.gameId, this.roundId)

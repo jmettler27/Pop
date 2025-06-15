@@ -118,7 +118,7 @@ export function topicToEmoji(topic) {
     return TopicToEmoji[topic];
 }
 
-import { prependWithEmojiAndSpace } from '@/backend/utils/emojis';
+import { prependWithEmojiAndSpace } from '@/backend/utils/strings';
 
 export function prependTopicWithEmoji(topic, locale = DEFAULT_LOCALE) {
     const emoji = topicToEmoji(topic)

@@ -24,6 +24,16 @@ export default class RoundScoreRepository extends FirebaseDocumentRepository {
         });
     }
 
+    async initializeScoresTransaction(transaction) {
+        return await this.setTransaction(transaction, {
+            gameSortedTeams: [],
+            rankingDiffs: {},
+            roundSortedTeams: [],
+            scores: {},
+            scoresProgress: {},
+        });
+    }
+
     async increaseTeamScoreTransaction(transaction, questionId, teamId=null, points=0) {
         const roundScores = await this.getTransaction(transaction)
         const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScores

@@ -5,7 +5,7 @@ import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
 import QuestionFormHeader from '@/frontend/components/forms/QuestionFormHeader';
-import SubmitOOOQuestionForm from '@/frontend/components/forms/submit-question/SubmitOddOneOutQuestionForm';
+import SubmitOddOneOutQuestionForm from '@/frontend/components/forms/submit-question/SubmitOddOneOutQuestionForm';
 
 import { redirect } from 'next/navigation'
 import { useSession } from 'next-auth/react';
@@ -24,7 +24,7 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
     return (
         <>
             <QuestionFormHeader questionType={QUESTION_TYPE} lang={lang} />
-            <SubmitOOOQuestionForm userId={session.user.id} lang={lang} inSubmitPage={true} />
+            <SubmitOddOneOutQuestionForm userId={session.user.id} lang={lang} inSubmitPage={true} />
         </>
     );
 }

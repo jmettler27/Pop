@@ -1,3 +1,4 @@
+
 export default class Team {
 
     static NAME_MIN_LENGTH = 2;

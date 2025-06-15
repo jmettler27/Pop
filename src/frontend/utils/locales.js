@@ -10,7 +10,7 @@ export const LOCALE_TO_TITLE = {
     'fr-FR': "Français (France)"
 }
 
-import { prependWithEmojiAndSpace } from '@/backend/utils/emojis'
+import { prependWithEmojiAndSpace } from '@/backend/utils/strings'
 
 function localeToTitle(locale) {
     return LOCALE_TO_TITLE[locale]

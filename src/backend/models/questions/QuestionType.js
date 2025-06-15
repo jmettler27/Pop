@@ -81,7 +81,7 @@ export function questionTypeToTitle(type, locale = DEFAULT_LOCALE) {
 }
 
 
-import { prependWithEmojiAndSpace } from '@/backend/utils/emojis';
+import { prependWithEmojiAndSpace } from '@/backend/utils/strings';
 
 export function prependQuestionTypeWithEmoji(type, locale = DEFAULT_LOCALE) {
     const emoji = questionTypeToEmoji(type)

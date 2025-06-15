@@ -12,11 +12,13 @@ export class BasicQuestion extends RiddleQuestion {
         super(data);
         this.constructor.validate(data);
 
+
         this.answer = data.answer || data.details.answer;
         this.explanation = data.explanation || data.details.explanation;
         this.note = data.note || data.details.note;
         this.source = data.source || data.details.source;
         this.title = data.title || data.details.title;
+        
     }
 
     getQuestionType() {
@@ -120,6 +122,7 @@ export class GameBasicQuestion extends GameRiddleQuestion {
     static REWARD = 1;
     static THINKING_TIME = 15;
 
+
     constructor(data) {
         super(data);
 
@@ -152,29 +155,24 @@ export class GameBasicQuestion extends GameRiddleQuestion {
     }
 
     static validateReward(data) {
-        const reward = data.reward;
-        if (!reward) {
-            throw new Error("Reward is required");
-        }
-        if (typeof reward !== 'number') {
-            throw new Error("Reward must be a number");
-        }
-        if (reward < 0) {
-            throw new Error("Reward must be positive");
+        if (data.reward) {
+            if (typeof data.reward !== 'number') {
+                throw new Error("Reward must be a number");
+            }
         }
         return true;
     }
 
     static validateThinkingTime(data) {
         const thinkingTime = data.thinkingTime;
-        if (!thinkingTime) {
-            throw new Error("Thinking time is required");
-        }
-        if (typeof thinkingTime !== 'number') {
-            throw new Error("Thinking time must be a number");
-        }
-        if (thinkingTime < 0) {
-            throw new Error("Thinking time must be positive");
+        console.log("thinkingTime", thinkingTime)
+        if (thinkingTime) {
+            if (typeof thinkingTime !== 'number') {
+                throw new Error("Thinking time must be a number");
+            }
+            if (thinkingTime < 0) {
+                throw new Error("Thinking time must be positive");
+            }
         }
         return true;
     }

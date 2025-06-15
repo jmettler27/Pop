@@ -1,4 +1,4 @@
-import { selectProposal } from '@/backend/services/question/odd-one-out/actions_old'
+import { selectProposal } from '@/backend/services/question/odd-one-out/actions'
 
 import RoundOddOneOutQuestionRepository from '@/backend/repositories/question/game/GameOddOneOutQuestionRepository'
 

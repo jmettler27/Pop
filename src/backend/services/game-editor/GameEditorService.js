@@ -6,7 +6,8 @@ import BaseQuestionRepository from "@/backend/repositories/question/base/BaseQue
 import GameQuestionRepositoryFactory from "@/backend/repositories/question/game/GameQuestionRepositoryFactory";
 
 import { firestore } from "@/backend/firebase/firebase";
-import { runTransaction } from "firebase/firestore";
+import { runTransaction, serverTimestamp } from "firebase/firestore";
+import { GameStatus } from "@/backend/models/games/GameStatus";
 
 /**
  * Service for editing a game
@@ -93,7 +94,7 @@ export default class GameEditorService {
                 const questionType = baseQuestion.type;
 
                 const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(questionType, this.gameId, roundId);
-                await gameQuestionRepo.createQuestionTransaction(transaction, questionId, { managedBy: managerId, ...baseQuestion.toObject() });
+                await gameQuestionRepo.createQuestionTransaction(transaction, questionId, managerId, { ...baseQuestion.toObject() });
 
                 await this.roundRepo.addGameQuestionTransaction(transaction, roundId, questionId);
                 
@@ -162,9 +163,16 @@ export default class GameEditorService {
      * Launches a game
      */
     async launchGame() {
-        await this.gameRepo.launchGame(this.gameId);
-
-        console.log("Game launched successfully", "gameId: ", this.gameId);
+        try {
+            await this.gameRepo.updateGame(this.gameId, {
+                launchedAt: serverTimestamp(),
+                status: GameStatus.GAME_START
+            });
+            console.log("Game launched successfully", "gameId: ", this.gameId);
+        } catch (error) {
+            console.error("There was an error launching the game:", error);
+            throw error;
+        }
     }
 }
 

@@ -1,6 +1,6 @@
 import { GameType, isValidGameType } from '@/backend/models/games/GameType';
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { createScorePolicy, isValidRoundScorePolicy } from '@/backend/models/ScorePolicy';
+import { createScorePolicy, isValidScorePolicyType } from '@/backend/models/ScorePolicy';
 
 import { isArray } from '@/backend/utils/arrays';
 

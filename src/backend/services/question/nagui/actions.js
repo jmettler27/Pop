@@ -19,18 +19,18 @@ export const endQuestion = async (gameId, roundId, questionId) => {
 
 /* ============================================================================================================ */
 
-const selectNaguiOption = async (gameId, roundId, questionId, playerId, optionId) => {
+export const selectOption = async (gameId, roundId, questionId, playerId, optionId) => {
     const service = new GameNaguiQuestionService(gameId, roundId);
-    return service.selectNaguiOption(questionId, playerId, optionId);
+    return service.selectOption(questionId, playerId, optionId);
 };
 
-const selectNaguiChoice = async (gameId, roundId, questionId, playerId, teamId, choiceIdx) => {
+export const selectChoice = async (gameId, roundId, questionId, playerId, teamId, choiceIdx) => {
     const service = new GameNaguiQuestionService(gameId, roundId);
-    return service.selectNaguiChoice(questionId, playerId, teamId, choiceIdx);
+    return service.selectChoice(questionId, playerId, teamId, choiceIdx);
 };
 
-const handleNaguiHideAnswer = async (gameId, roundId, questionId, playerId, teamId, correct) => {
+export const handleHideAnswer = async (gameId, roundId, questionId, playerId, teamId, correct) => {
     const service = new GameNaguiQuestionService(gameId, roundId);
-    return service.handleNaguiHideAnswer(questionId, playerId, teamId, correct);
+    return service.handleHideAnswer(questionId, playerId, teamId, correct);
 };
 

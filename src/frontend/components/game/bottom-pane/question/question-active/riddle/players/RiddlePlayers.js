@@ -1,7 +1,7 @@
 import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
 import { useGameRepositoriesContext } from '@/frontend/contexts';
-
+import { rankingToEmoji } from '@/backend/utils/emojis';
 
 export default function RiddlePlayers({ players, lang = DEFAULT_LOCALE }) {
     const { playerRepo } = useGameRepositoriesContext()
@@ -63,8 +63,7 @@ const CANCELED_TEXT = {
     'fr-FR': "Nullos"
 }
 
-import { rankingToEmoji } from '@/backend/utils/emojis';
-import { useGameRepositoriesContext } from '@/frontend/contexts';
+
 
 function getPlayerName(gamePlayers, playerId) {
     return gamePlayers.find(p => p.id === playerId).name

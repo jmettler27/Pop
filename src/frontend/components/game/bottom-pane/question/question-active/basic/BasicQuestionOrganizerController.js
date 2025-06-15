@@ -1,5 +1,4 @@
-
-import { handleBasicAnswer } from '@/backend/services/question/basic/actions_old'
+import { handleAnswer } from '@/backend/services/question/basic/actions'
 import { INVALIDATE_ANSWER, VALIDATE_ANSWER } from '@/backend/utils/question/question'
 
 
@@ -10,11 +9,12 @@ import useAsyncAction from "@/frontend/hooks/async/useAsyncAction"
 import { useGameContext } from '@/frontend/contexts'
 import EndQuestionButton from '@/frontend/components/game/bottom-pane/question/question-active/EndQuestionButton'
 import ResetQuestionButton from '@/frontend/components/game/bottom-pane/question/question-active/ResetQuestionButton'
-import ClearBuzzerButton from '@/frontend/components/game/bottom-pane/question/question-active/riddle/controller/ClearBuzzerButton'
+import ClearBasicBuzzerButton from '@/frontend/components/game/bottom-pane/question/question-active/basic/controller/ClearBasicBuzzerButton'
 
 import { Button, ButtonGroup } from '@mui/material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CancelIcon from '@mui/icons-material/Cancel'
+import { QuestionType } from '@/backend/models/questions/QuestionType'
 
 
 export default function BasicQuestionOrganizerController({ gameQuestion }) {
@@ -32,11 +32,11 @@ function BasicQuestionOrganizerAnswerController({ gameQuestion, lang = DEFAULT_L
     const game = useGameContext()
 
     const [validateBasicAnswer, isValidating] = useAsyncAction(async () => {
-        await handleBasicAnswer(game.id, game.currentRound, game.currentQuestion, gameQuestion.teamId, true)
+        await handleAnswer(game.id, game.currentRound, game.currentQuestion, gameQuestion.teamId, true)
     })
 
     const [invalidateBasicAnswer, isInvalidating] = useAsyncAction(async () => {
-        await handleBasicAnswer(game.id, game.currentRound, game.currentQuestion, gameQuestion.teamId, false)
+        await handleAnswer(game.id, game.currentRound, game.currentQuestion, gameQuestion.teamId, false)
     })
 
     {/* Validate or invalidate the player's answer */ }
@@ -74,9 +74,9 @@ function BasicQuestionOrganizerAnswerController({ gameQuestion, lang = DEFAULT_L
 function QuestionOrganizerController({ }) {
     return (
         <div className='flex flex-row w-full justify-end'>
-            <ResetQuestionButton />
-            <EndQuestionButton />
-            <ClearBuzzerButton />
+            <ResetQuestionButton questionType={QuestionType.BASIC} />
+            <EndQuestionButton questionType={QuestionType.BASIC} />
+            <ClearBasicBuzzerButton />
         </div>
     )
 }

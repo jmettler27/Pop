@@ -25,7 +25,7 @@ export default class LabellingRoundService extends RoundService {
             await this.playerRepo.updatePlayerStatusTransaction(transaction, id, PlayerStatus.IDLE)
         }
 
-        await this.timerRepo.updateTimerTransaction(transaction, { status: TimerStatus.RESET, duration: gameQuestion.thinkingTime })
+        await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime)
         await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase')
 
         const gameQuestionRepo = new GameLabellingQuestionRepository(this.gameId, this.roundId)

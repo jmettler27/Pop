@@ -1,7 +1,7 @@
 import GameQuestionRepository from '@/backend/repositories/question/game/GameQuestionRepository';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { MatchingQuestion } from '@/backend/models/questions/MatchingQuestion';
+import { MatchingQuestion } from '@/backend/models/questions/Matching';
 import { Timestamp } from 'firebase/firestore';
 
 export default class GameMatchingQuestionRepository extends GameQuestionRepository {

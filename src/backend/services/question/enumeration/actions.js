@@ -19,11 +19,10 @@ export const endQuestion = async (gameId, roundId, questionId) => {
 
 /* ============================================================================================================ */
 
-export const addPlayerBet = async (gameId, roundId, questionId, playerId, teamId, bet) => {
+export const addBet = async (gameId, roundId, questionId, playerId, teamId, bet) => {
     const service = new GameEnumerationQuestionService(gameId, roundId);
-    return service.addPlayerBet(questionId, playerId, teamId, bet);
+    return service.addBet(questionId, playerId, teamId, bet);
 };
-
 
 export const endReflection = async (gameId, roundId, questionId) => {
     const service = new GameEnumerationQuestionService(gameId, roundId);
@@ -35,3 +34,7 @@ export const validateItem = async (gameId, roundId, questionId, itemIdx) => {
     return service.validateItem(questionId, itemIdx);
 };
 
+export const incrementValidItems = async (gameId, roundId, questionId, organizerId) => {
+    const service = new GameEnumerationQuestionService(gameId, roundId);
+    return service.incrementValidItems(questionId, organizerId);
+};

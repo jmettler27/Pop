@@ -252,9 +252,9 @@ import SubmitEnumerationQuestionForm from '@/frontend/components/forms/submit-qu
 import SubmitImageQuestionForm from '@/frontend/components/forms/submit-question/SubmitImageQuestionForm'
 import SubmitLabellingQuestionForm from '@/frontend/components/forms/submit-question/SubmitLabellingQuestionForm';
 import SubmitMatchingQuestionForm from '@/frontend/components/forms/submit-question/SubmitMatchingQuestionForm'
-import SubmitMCQForm from '@/frontend/components/forms/submit-question/SubmitMCQForm'
+import SubmitMCQForm from '@/frontend/components/forms/submit-question/SubmitMCQQuestionForm'
 import SubmitNaguiQuestionForm from '@/frontend/components/forms/submit-question/SubmitNaguiQuestionForm'
-import SubmitOOOQuestionForm from '@/frontend/components/forms/submit-question/SubmitOOOQuestionForm'
+import SubmitOddOneOutQuestionForm from '@/frontend/components/forms/submit-question/SubmitOddOneOutQuestionForm'
 import SubmitProgressiveCluesQuestionForm from '@/frontend/components/forms/submit-question/SubmitProgressiveCluesQuestionForm'
 import SubmitQuoteQuestionForm from '@/frontend/components/forms/submit-question/SubmitQuoteQuestionForm'
 import SubmitReorderingQuestionForm from '@/frontend/components/forms/submit-question/SubmitReorderingQuestionForm';
@@ -286,7 +286,7 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
         case QuestionType.NAGUI:
             return <SubmitNaguiQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case QuestionType.ODD_ONE_OUT:
-            return <SubmitOOOQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
+            return <SubmitOddOneOutQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case QuestionType.PROGRESSIVE_CLUES:
             return <SubmitProgressiveCluesQuestionForm userId={userId} lang={DEFAULT_LOCALE} inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
         case QuestionType.QUOTE:

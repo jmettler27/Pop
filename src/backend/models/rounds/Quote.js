@@ -10,11 +10,24 @@ export class QuoteRound extends Round {
     constructor(data) {
         super(data);
         this.type = RoundType.QUOTE;
+
+        
         this.maxTries = data.maxTries || QuoteRound.MAX_TRIES;
         this.invalidateTeam = data.invalidateTeam || QuoteRound.DEFAULT_INVALIDATE_TEAM;
         this.thinkingTime = data.thinkingTime || QuoteRound.DEFAULT_THINKING_TIME;
         this.rewardsPerElement = data.rewardsPerElement || QuoteRound.REWARDS_PER_ELEMENT;
 
+    }
+
+    toObject() {
+        return {
+            ...super.toObject(),
+            type: this.type,
+            maxTries: this.maxTries,
+            invalidateTeam: this.invalidateTeam,
+            thinkingTime: this.thinkingTime,
+            rewardsPerElement: this.rewardsPerElement
+        };
     }
 
     calculateMaxPointsTransaction() {

@@ -21,7 +21,7 @@ import { Timer } from '@/backend/models/Timer';
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question/question';
 
 import { getDocDataTransaction, updateGameStatusTransaction } from '@/backend/services/utils';
-import { updateTimerStateTransaction, updateTimerTransaction } from '@/backend/services/timer/timer';
+import { updateTimerStateTransaction, updateTimerTransaction } from '@/backend/repositories/timer/timer';
 import { addSoundTransaction } from '@/backend/services/sound/sounds';
 
 import { GameStatus } from '@/backend/models/games/GameStatus';
@@ -29,7 +29,7 @@ import { PlayerStatus } from '@/backend/models/users/Player';
 import { RoundType } from '@/backend/models/rounds/RoundType';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { TimerStatus } from '@/backend/models/Timer';
-import { RoundScorePolicy } from '@/backend/models/ScorePolicy';
+import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
 
 
@@ -158,7 +158,7 @@ const endRoundTransaction = async (
 
 
     /* ================================ Update the global scores of each team according to their performance in this round ================================ */
-    if (roundScorePolicy === RoundScorePolicy.COMPLETION_RATE) {
+    if (roundScorePolicy === ScorePolicyType.COMPLETION_RATE) {
         // Score policy: calculate the "completion rate" of each team w.r.t. the maximum number of points of the round
         // This rate (min 0, max 100) is the score that is added to the global score of the team
         // This policy better reflects the performance of each team in the round
@@ -222,7 +222,7 @@ const endRoundTransaction = async (
                 updateGlobalScores(roundCompletionRates);
             }
         }
-    } else if (roundScorePolicy === RoundScorePolicy.RANKING) {
+    } else if (roundScorePolicy === ScorePolicyType.RANKING) {
         // Score policy: independently of the performance of each team in the round:
         // - the most performant team(s) get(s) the highest reward
         // - the second most performant team(s) get(s) the second highest reward, 

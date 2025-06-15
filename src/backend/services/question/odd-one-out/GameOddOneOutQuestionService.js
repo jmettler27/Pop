@@ -7,6 +7,8 @@ import { ScorePolicyType } from "@/backend/models/ScorePolicy";
 import { OddOneOutQuestion } from "@/backend/models/questions/OddOneOut";
 
 import { serverTimestamp } from "firebase/firestore";
+import { TimerStatus } from "@/backend/models/Timer";
+import { PlayerStatus } from "@/backend/models/users/Player";
 
 
 export default class GameOddOneOutQuestionService extends GameQuestionService {
@@ -76,11 +78,12 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
         }
 
 
-        await runTransaction(this.firestore, async (transaction) => {
+        await runTransaction(firestore, async (transaction) => {
             const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction);
             const { chooserOrder, chooserIdx } = await this.chooserRepo.getChooserTransaction(transaction);
 
             const teamId = chooserOrder[chooserIdx];
+            const teamPlayers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId);
 
             if (idx === gameQuestion.answerIdx) {
                 // The selected proposal is the odd one out
@@ -118,7 +121,7 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
                     // The selected proposal is not the last remaining one
                     await this.chooserRepo.switchChooserTransaction(transaction);
                     await this.soundRepo.addSoundTransaction(transaction, 'Bien');
-                    await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.RESET);
+                    await this.timerRepo.resetTimerTransaction(transaction);
                 }
 
                 // Update player statuses
@@ -137,7 +140,7 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
                     }],
                 }
             )
-            await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.RESET);
+            await this.timerRepo.resetTimerTransaction(transaction);
         })
     }
 

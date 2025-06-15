@@ -18,3 +18,8 @@ export const endQuestion = async (gameId, roundId, questionId) => {
 };
 
 /* ============================================================================================================ */
+
+export const submitOrdering = async (gameId, roundId, questionId, playerId, teamId, ordering) => {
+    const service = new GameReorderingQuestionService(gameId, roundId);
+    return service.submitOrdering(questionId, playerId, teamId, ordering);
+};

@@ -1,7 +1,7 @@
 import { BaseQuestion, GameQuestion } from '@/backend/models/questions/Question';
 import { isArray } from '@/backend/utils/arrays';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-// Enumeration questions
+
 export class EnumerationQuestion extends BaseQuestion {
 
     static TITLE_MAX_LENGTH = 75;
@@ -166,9 +166,11 @@ export class GameEnumerationQuestion extends GameQuestion {
     static REWARD = 1;
     static DEFAULT_BONUS = 1;
 
+    static THINKING_TIME = 60;
     static MIN_THINKING_SECONDS = 60;
     static MAX_THINKING_SECONDS = 60 * 5;
 
+    static CHALLENGE_TIME = 30;
     static MIN_CHALLENGE_SECONDS = 30;
     static MAX_CHALLENGE_SECONDS = 60 * 2;
 
@@ -176,6 +178,10 @@ export class GameEnumerationQuestion extends GameQuestion {
         super(data);
 
         this.status = data.status || EnumerationQuestionStatus.REFLECTION;
+        this.reward = data.reward || GameEnumerationQuestion.REWARD;
+        this.rewardsForBonus = data.rewardsForBonus || GameEnumerationQuestion.DEFAULT_BONUS;
+        this.thinkingTime = data.thinkingTime || GameEnumerationQuestion.THINKING_TIME;
+        this.challengeTime = data.challengeTime || GameEnumerationQuestion.CHALLENGE_TIME;
 
         this.constructor.validate(data);
 
@@ -209,71 +215,55 @@ export class GameEnumerationQuestion extends GameQuestion {
     }
 
     static validateStatus(data) {
-        const status = data.status;
-        if (!status) {
-            throw new Error("Status is required");
-        }
-        if (typeof status !== 'string') {
-            throw new Error("Status must be a string");
-        }
-        if (!Object.values(EnumerationQuestionStatus).includes(status)) {
-            throw new Error(`Invalid status: ${status}`);
+        if (data.status) {
+            if (typeof data.status !== 'string') {
+                throw new Error("Status must be a string");
+            }
+            if (!Object.values(EnumerationQuestionStatus).includes(data.status)) {
+                throw new Error(`Invalid status: ${data.status}`);
+            }
         }
         return true;
     }
 
     static validateReward(data) {
-        const reward = data.reward;
-        if (!reward) {
-            throw new Error("Reward is required");
-        }
-        if (typeof reward !== 'number') {
-            throw new Error("Reward must be a number");
-        }
-        if (reward < 0) {
-            throw new Error("Reward must be positive");
+        if (data.reward) {
+            if (typeof data.reward !== 'number') {
+                throw new Error("Reward must be a number");
+            }
         }
         return true;
     }
 
     static validateRewardsForBonus(data) {
-        const rewardsForBonus = data.rewardsForBonus;
-        if (!rewardsForBonus) {
-            throw new Error("Rewards for bonus is required");
-        }
-        if (typeof rewardsForBonus !== 'number') {
-            throw new Error("Rewards for bonus must be a number");
-        }
-        if (rewardsForBonus < 0) {
-            throw new Error("Rewards for bonus must be positive");
+        if (data.rewardsForBonus) {
+            if (typeof data.rewardsForBonus !== 'number') {
+                throw new Error("Rewards for bonus must be a number");
+            }
         }
         return true;
     }
 
     static validateThinkingTime(data) {
-        const thinkingTime = data.thinkingTime;
-        if (!thinkingTime) {
-            throw new Error("Thinking time is required");
-        }
-        if (typeof thinkingTime !== 'number') {
-            throw new Error("Thinking time must be a number");
-        }
-        if (thinkingTime < 0) {
-            throw new Error("Thinking time must be positive");
+        if (data.thinkingTime) {
+            if (typeof data.thinkingTime !== 'number') {
+                throw new Error("Thinking time must be a number");
+            }
+            if (data.thinkingTime < 0) {
+                throw new Error("Thinking time must be positive");
+            }
         }
         return true;
     }
 
     static validateChallengeTime(data) {
-        const challengeTime = data.challengeTime;
-        if (!challengeTime) {
-            throw new Error("Challenge time is required");
-        }
-        if (typeof challengeTime !== 'number') {
-            throw new Error("Challenge time must be a number");
-        }
-        if (challengeTime < 0) {
-            throw new Error("Challenge time must be positive");
+        if (data.challengeTime) {
+            if (typeof data.challengeTime !== 'number') {
+                throw new Error("Challenge time must be a number");
+            }
+            if (data.thinkingTime < 0) {
+                throw new Error("Thinking time must be positive");
+            }
         }
         return true;
     }

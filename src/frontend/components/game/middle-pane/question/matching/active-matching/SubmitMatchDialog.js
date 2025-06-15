@@ -1,4 +1,4 @@
-import { submitMatch } from '@/backend/services/question/matching/actions_old';
+import { submitMatch } from '@/backend/services/question/matching/actions';
 
 import { useUserContext, useGameContext } from '@/frontend/contexts'
 

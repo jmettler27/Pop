@@ -1,6 +1,5 @@
 import RoundService from "@/backend/services/round/RoundService";
 import GameQuoteQuestionRepository from "@/backend/repositories/question/game/GameQuoteQuestionRepository";
-import { serverTimestamp } from "firebase/database";
 
 
 export default class QuoteRoundService extends RoundService {
@@ -33,7 +32,7 @@ export default class QuoteRoundService extends RoundService {
             await this.playerRepo.updatePlayerStatusTransaction(transaction, id, PlayerStatus.IDLE)
         }
 
-        await this.timerRepo.updateTimerTransaction(transaction, { status: TimerStatus.RESET, duration: gameQuestion.thinkingTime })
+        await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime)
         await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase')
 
         const gameQuestionRepo = new GameQuoteQuestionRepository(this.gameId, this.roundId)

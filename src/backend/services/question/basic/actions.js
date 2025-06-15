@@ -24,16 +24,6 @@ export const handleBuzzerHeadChanged = async (gameId, roundId, playerId) => {
     return service.handleBuzzerHeadChanged(playerId);
 };
 
-export const validateAnswer = async (gameId, roundId, questionId, playerId, wholeTeam = false) => {
-    const service = new GameBasicQuestionService(gameId, roundId);
-    return service.validateAnswer(questionId, playerId, wholeTeam);
-};
-
-export const invalidateAnswer = async (gameId, roundId, questionId, playerId) => {
-    const service = new GameBasicQuestionService(gameId, roundId);
-    return service.invalidateAnswer(questionId, playerId);
-};
-
 export const addPlayerToBuzzer = async (gameId, roundId, questionId, playerId) => {
     const service = new GameBasicQuestionService(gameId, roundId);
     return service.addPlayerToBuzzer(questionId, playerId);
@@ -49,3 +39,7 @@ export const clearBuzzer = async (gameId, roundId, questionId) => {
     return service.clearBuzzer(questionId);
 };
 
+export const handleAnswer = async (gameId, roundId, questionId, teamId, correct = false) => {
+    const service = new GameBasicQuestionService(gameId, roundId);
+    return service.handleAnswer(questionId, teamId, correct);
+};

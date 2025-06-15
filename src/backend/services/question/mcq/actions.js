@@ -18,3 +18,8 @@ export const endQuestion = async (gameId, roundId, questionId) => {
 };
 
 /* ============================================================================================================ */
+
+export const selectChoice = async (gameId, roundId, questionId, playerId, teamId, choiceIdx) => {
+    const service = new GameMCQQuestionService(gameId, roundId);
+    return service.selectChoice(questionId, playerId, teamId, choiceIdx);
+};

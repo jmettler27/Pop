@@ -1,4 +1,4 @@
-import { UserRepository } from '@/backend/repositories/user/UserRepository';
+import UserRepository from '@/backend/repositories/user/UserRepository';
 
 import { QuestionType, questionTypeToEmoji } from '@/backend/models/questions/QuestionType';
 import { BlindtestQuestion } from '@/backend/models/questions/Blindtest';
@@ -49,19 +49,19 @@ export function QuestionCardTitle({ baseQuestion, showType = false, lang = DEFAU
     switch (baseQuestion.type) {
         case QuestionType.BLINDTEST:
             return <span>{showType && emoji}{BlindtestQuestion.typeToEmoji(baseQuestion.subtype)}{topicToEmoji(baseQuestion.topic)} &quot;{baseQuestion.title}&quot;</span>
+        case QuestionType.MATCHING:
+            return <span>{showType && emoji}{topicToEmoji(baseQuestion.topic)} <strong>({baseQuestion.numCols} col)</strong> &quot;{baseQuestion.title}&quot;</span>
         case QuestionType.EMOJI:
         case QuestionType.ENUMERATION:
         case QuestionType.IMAGE:
         case QuestionType.LABELLING:
         case QuestionType.ODD_ONE_OUT:
         case QuestionType.PROGRESSIVE_CLUES:
-        case QuestionType.MATCHING:
-            return <span>{showType && emoji}{topicToEmoji(baseQuestion.topic)} <strong>({baseQuestion.numCols} col)</strong> &quot;{baseQuestion.title}&quot;</span>
         case QuestionType.QUOTE:
             return <span>{showType && emoji}{prependTopicWithEmoji(baseQuestion.topic, lang)}</span>
         case QuestionType.REORDERING:
             return <span>{showType && emoji}{topicToEmoji(baseQuestion.topic)} &quot;{baseQuestion.title}&quot;</span>
-            case QuestionType.BASIC:
+        case QuestionType.BASIC:
         case QuestionType.MCQ:
         case QuestionType.NAGUI:
             return <span>{showType && emoji}{topicToEmoji(baseQuestion.topic)} {baseQuestion.source && <i>{baseQuestion.source}:</i>} &quot;{baseQuestion.title}&quot;</span>
@@ -151,8 +151,9 @@ const ProgressiveCluesCardMainContent = ({ baseQuestion }) => {
 
 const ImageCardMainContent = ({ baseQuestion }) => {
     const image = baseQuestion.image
-    const description = baseQuestion.description
-    const source = baseQuestion.source
+    const description = baseQuestion.answer.description
+    const source = baseQuestion.answer.source
+    console.log("baseQuestion", baseQuestion)
     
     return (
         <div className='flex flex-col w-full space-y-2'>

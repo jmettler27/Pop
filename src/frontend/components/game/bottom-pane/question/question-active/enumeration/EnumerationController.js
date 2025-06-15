@@ -1,6 +1,7 @@
 import { EnumerationQuestionStatus } from '@/backend/models/questions/Enumeration'
 
-import RoundEnumerationQuestionRepository from '@/backend/repositories/question/game/GameEnumerationQuestionRepository'
+import GameEnumerationQuestionRepository from '@/backend/repositories/question/game/GameEnumerationQuestionRepository'
+
 
 import { useGameContext, useGameRepositoriesContext } from '@/frontend/contexts'
 
@@ -13,7 +14,7 @@ import { CircularProgress } from '@mui/material'
 export default function EnumerationController({ question }) {
     const game = useGameContext()
 
-    const gameQuestionRepo = new RoundEnumerationQuestionRepository(game.id, game.currentRound)
+    const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound)
     const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion)
 
     const { timerRepo } = useGameRepositoriesContext()

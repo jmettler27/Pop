@@ -5,7 +5,7 @@ import { submitQuestion } from '@/backend/services/question-creator/actions';
 import { addQuestionToRound } from '@/backend/services/game-editor/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
-import { topicSchema } from '@/frontend/utils/topics';
+import { topicSchema } from '@/frontend/utils/forms/topics';
 import { QUESTION_TITLE_LABEL, SUBMIT_QUESTION_BUTTON_LABEL } from '@/frontend/utils/forms/questions';
 import { stringSchema } from '@/frontend/utils/forms/forms';
 import { getFileFromRef, imageFileSchema } from '@/frontend/utils/forms/files';

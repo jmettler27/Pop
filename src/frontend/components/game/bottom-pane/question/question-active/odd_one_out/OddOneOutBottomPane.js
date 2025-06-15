@@ -8,6 +8,7 @@ import GameChooserOrder from '@/frontend/components/game/GameChooserOrder'
 import { GameChooserHelperText } from '@/frontend/components/game/GameChooserTeamAnnouncement';
 import ResetQuestionButton from '@/frontend/components/game/bottom-pane/question/question-active/ResetQuestionButton'
 import EndQuestionButton from '@/frontend/components/game/bottom-pane/question/question-active/EndQuestionButton'
+import { QuestionType } from '@/backend/models/questions/QuestionType';
 
 
 export default function OddOneOutBottomPane({ }) {
@@ -85,8 +86,8 @@ const OOO_NOT_AUTHORIZED = {
 function OddOneOutOrganizerController({ }) {
     return (
         <div className='flex flex-row h-full items-center justify-center'>
-            <ResetQuestionButton />
-            <EndQuestionButton />
+            <ResetQuestionButton questionType={QuestionType.ODD_ONE_OUT} />
+            <EndQuestionButton questionType={QuestionType.ODD_ONE_OUT} />
         </div>
     )
 }

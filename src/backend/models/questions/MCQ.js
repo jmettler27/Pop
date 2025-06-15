@@ -17,6 +17,8 @@ export class MCQQuestion extends BaseQuestion {
         super(data);
         this.constructor.validate(data);
 
+        console.log("data", data)
+
         this.choices = data.choices || data.details.choices;
         this.answerIdx = data.answerIdx || data.details.answerIdx;
         this.source = data.source || data.details.source;
@@ -85,6 +87,8 @@ export class MCQQuestion extends BaseQuestion {
                 throw new Error("MCQ choice must be at most 100 characters");
             }
         }
+
+        const answerIdx = data.answerIdx || data.details.answerIdx;
 
         if (typeof answerIdx !== 'number') {
             throw new Error("MCQ answer index must be a number");

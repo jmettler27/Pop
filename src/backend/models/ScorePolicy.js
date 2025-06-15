@@ -36,7 +36,7 @@ export function scorePolicyTypeToTitle(type, locale = DEFAULT_LOCALE) {
     return ScorePolicyTypeToTitle[locale]?.[type] || type;
 }
 
-import { prependWithEmojiAndSpace } from '@/backend/utils/emojis';
+import { prependWithEmojiAndSpace } from '@/backend/utils/strings';
 
 export function prependScorePolicyTypeWithEmoji(type, locale = DEFAULT_LOCALE) {
     const emoji = scorePolicyTypeToEmoji(type)

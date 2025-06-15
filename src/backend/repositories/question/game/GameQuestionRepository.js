@@ -4,8 +4,7 @@ import QuestionFactory from '@/backend/models/questions/QuestionFactory';
 
 import { firestore } from "@/backend/firebase/firebase";
 
-import { runTransaction } from 'firebase/firestore';
-import { serverTimestamp } from 'firebase/database';
+import { runTransaction, serverTimestamp } from 'firebase/firestore';
 
 export default class GameQuestionRepository extends FirebaseRepository {
 

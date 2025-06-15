@@ -1,7 +1,8 @@
 import { UserRole } from '@/backend/models/users/User'
+import { QuestionType } from '@/backend/models/questions/QuestionType'
 
 import { DEFAULT_LOCALE } from '@/frontend/utils/locales'
-import {  matchingTeamIsCanceled } from '@/backend/utils/question/matching'
+import { GameMatchingQuestion } from '@/backend/models/questions/Matching'
 
 import RoundMatchingQuestionRepository from '@/backend/repositories/question/game/GameMatchingQuestionRepository'
 
@@ -86,7 +87,7 @@ function MatchingPlayerQuestionController({ lang = DEFAULT_LOCALE }) {
     const remainingMistakes = round.maxMistakes - (teamNumMistakes[myTeam] || 0)
     const maxMistakes = round.maxMistakes
 
-    const isCanceled = matchingTeamIsCanceled(myTeam, teamNumMistakes, maxMistakes)
+    const isCanceled = GameMatchingQuestion.matchingTeamIsCanceled(myTeam, teamNumMistakes, maxMistakes)
 
     return isCanceled ?
         <span className='2xl:text-3xl text-red-500'>🙅 {MAX_TRIES_EXCEEDED_TEXT[lang]} ({maxMistakes})</span> :
@@ -103,8 +104,8 @@ const MAX_TRIES_EXCEEDED_TEXT = {
 function MatchingOrganizerQuestionController({ }) {
     return (
         <div className='flex flex-row w-full justify-end'>
-            <ResetQuestionButton />
-            <EndQuestionButton />
+            <ResetQuestionButton questionType={QuestionType.MATCHING} />
+            <EndQuestionButton questionType={QuestionType.MATCHING} />
         </div>
     )
 }

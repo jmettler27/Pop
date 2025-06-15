@@ -1,6 +1,6 @@
 import { UserRole } from '@/backend/models/users/User'
 
-import RoundNaguiQuestionRepository from '@/backend/repositories/question/game/GameNaguiQuestionRepository'
+import GameNaguiQuestionRepository from '@/backend/repositories/question/game/GameNaguiQuestionRepository'
 
 
 import { useGameContext, useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts'
@@ -50,7 +50,7 @@ function NaguiController({ chooser }) {
 
     const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx]
 
-    const gameQuestionRepo = new RoundNaguiQuestionRepository(game.id, game.currentRound)
+    const gameQuestionRepo = new GameNaguiQuestionRepository(game.id, game.currentRound)
     const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion)
 
     if (gameQuestionError) {

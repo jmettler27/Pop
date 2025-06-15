@@ -1,6 +1,6 @@
-import { validateEnumItem } from '@/backend/services/question/enumeration/actions_old'
+import { validateEnumItem } from '@/backend/services/question/enumeration/actions'
 
-import RoundEnumerationQuestionRepository from '@/backend/repositories/question/round/RoundEnumerationQuestionRepository'
+import GameEnumerationQuestionRepository from '@/backend/repositories/question/game/GameEnumerationQuestionRepository'
 
 import { GameStatus } from '@/backend/models/games/GameStatus'
 import { UserRole } from '@/backend/models/users/User'
@@ -78,7 +78,7 @@ function EnumerationQuestionAnswer({ answer }) {
     const { timerRepo } = useGameRepositoriesContext()
     const { timer, timerLoading, timerError } = timerRepo.useTimer(game.id)
 
-    const gameQuestionRepo = new RoundEnumerationQuestionRepository(game.id, game.currentRound)
+    const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound)
     const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useGameQuestion(game.currentQuestion)
 
     const { players, playersLoading, playersError } = gameQuestionRepo.usePlayers(game.currentQuestion)

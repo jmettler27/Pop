@@ -44,7 +44,7 @@ export default class MCQRoundService extends RoundService {
                 teamId: chooserTeamId,
             })
         }
-        await this.timerRepo.updateTimerTransaction(transaction, { status: TimerStatus.RESET, duration: baseQuestion.thinkingTime })
+        await this.timerRepo.resetTimerTransaction(transaction, baseQuestion.thinkingTime)
         await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase')
 
         const gameQuestionRepo = new GameMCQQuestionRepository(this.gameId, this.roundId)

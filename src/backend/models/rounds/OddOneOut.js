@@ -9,8 +9,18 @@ export class OddOneOutRound extends Round {
     constructor(data) {
         super(data);
         this.type = RoundType.ODD_ONE_OUT;
+        
         this.mistakePenalty = data.mistakePenalty || OddOneOutRound.DEFAULT_MISTAKE_PENALTY;
         this.thinkingTime = data.thinkingTime || OddOneOutRound.DEFAULT_THINKING_TIME;
+    }
+
+    toObject() {
+        return {
+            ...super.toObject(),
+            type: this.type,
+            mistakePenalty: this.mistakePenalty,
+            thinkingTime: this.thinkingTime
+        };
     }
 
     getMistakePenalty() {

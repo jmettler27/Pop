@@ -1,6 +1,6 @@
 import { UserRole } from '@/backend/models/users/User'
 
-import RoundEnumerationQuestionRepository from '@/backend/repositories/question/game/GameEnumerationQuestionRepository'
+import GameEnumerationQuestionRepository from '@/backend/repositories/question/game/GameEnumerationQuestionRepository'
 
 
 import { useGameContext, useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts'
@@ -17,7 +17,7 @@ import Box from '@mui/material/Box'
 export default function ChallengerCitationHelper({ }) {
     const game = useGameContext()
 
-    const roundEnumQuestionRepo = new RoundEnumerationQuestionRepository(game.id, game.currentRound)
+    const roundEnumQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound)
     const { players, playersLoading, playersError } = roundEnumQuestionRepo.usePlayers(game.currentQuestion)
 
     if (playersError) {

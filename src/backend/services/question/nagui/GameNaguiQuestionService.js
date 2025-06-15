@@ -66,7 +66,7 @@ export class GameNaguiQuestionService extends GameQuestionService {
 
     /* ============================================================================================================ */
 
-    async selectNaguiOption(questionId, playerId, optionIdx) {
+    async selectOption(questionId, playerId, optionIdx) {
         if (!questionId) {
             throw new Error('No question ID has been provided!');
         }
@@ -78,7 +78,7 @@ export class GameNaguiQuestionService extends GameQuestionService {
         }
 
         try {
-            await runTransaction(this.firestore, async (transaction) => {
+            await runTransaction(firestore, async (transaction) => {
                 const option = NaguiQuestion.OPTIONS[optionIdx]
 
                 await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { playerId, option })
@@ -92,7 +92,7 @@ export class GameNaguiQuestionService extends GameQuestionService {
         }
     }
 
-    async selectNaguiChoice(questionId, playerId, teamId, choiceIdx) {
+    async selectChoice(questionId, playerId, teamId, choiceIdx) {
         if (!questionId) {
             throw new Error('No question ID has been provided!');
         }
@@ -107,12 +107,12 @@ export class GameNaguiQuestionService extends GameQuestionService {
         }
 
         try {
-            await runTransaction(this.firestore, async (transaction) => {
+            await runTransaction(firestore, async (transaction) => {
                 
                 const choosers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId)
-                const baseQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction)
-                const round = await this.roundRepo.getRoundTransaction(transaction)
-                const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction)
+                const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId)
+                const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId)
+                const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId)
                 
                 const correct = baseQuestion.isValidAnswer(choiceIdx)
                 const reward = correct ? round.rewardsPerQuestion[gameQuestion.option] : 0;
@@ -135,10 +135,43 @@ export class GameNaguiQuestionService extends GameQuestionService {
         }
     }
 
-    async handleNaguiHideAnswer(questionId, playerId, teamId, correct) {
+    async handleHideAnswer(questionId, playerId, teamId, correct) {
         if (!questionId) {
             throw new Error('No question ID has been provided!');
         }
-        
+        if (!playerId) {
+            throw new Error('No player ID has been provided!');
+        }
+        if (!teamId) {
+            throw new Error('No team ID has been provided!');
+        }
+        if (correct !== true && correct !== false) {
+            throw new Error('Invalid correct value!');
+        }
+
+        try {
+            await runTransaction(firestore, async (transaction) => {
+
+                const choosers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId)
+                const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId)
+                const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId)
+            
+                const reward = correct ? round.rewardsPerQuestion[gameQuestion.option] : 0
+                await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward)
+                await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { playerId, reward, correct, })
+            
+                for (const chooser of choosers) {
+                    await this.playerRepo.updatePlayerStatusTransaction(transaction, chooser.id, PlayerStatus.READY)
+                }
+
+                await this.soundRepo.addSoundTransaction(transaction, correct ? 'Anime wow' : 'hysterical5')
+                await this.endQuestionTransaction(transaction, questionId)
+
+                console.log('Handled answer to hidden Nagui option', questionId, playerId, teamId, correct)
+            })
+        } catch (error) {
+            console.error('Error handling answer to hidden Nagui option:', error);
+            throw error;
+        }
     }
 }

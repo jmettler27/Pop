@@ -43,7 +43,7 @@ export default class MixedRoundService extends RoundService {
                     teamId: chooserTeamId,
                 })
             }
-            await this.timerRepo.updateTimerTransaction(transaction, { status: TimerStatus.RESET, duration: gameQuestion.thinkingTime })
+            await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime)
         } else if (baseQuestion.type === QuestionType.ODD_ONE_OUT || baseQuestion.type === QuestionType.MATCHING) {
             const newChooserIdx = 0
             const newChooserTeamId = chooserOrder[newChooserIdx]
@@ -61,9 +61,9 @@ export default class MixedRoundService extends RoundService {
                 await this.playerRepo.updatePlayerStatusTransaction(transaction, player.id, PlayerStatus.IDLE)
             }
             if (baseQuestion.type === QuestionType.MATCHING) {
-                await this.timerRepo.updateTimerTransaction(transaction, { status: TimerStatus.RESET, duration: gameQuestion.thinkingTime * (baseQuestion.numCols - 1) })
+                await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime * (baseQuestion.numCols - 1))
             } else {
-                await this.timerRepo.updateTimerTransaction(transaction, { status: TimerStatus.RESET, duration: gameQuestion.thinkingTime })
+                await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime)
             }
         } else {
             const playerIds = await this.playerRepo.getAllIdsTransaction(transaction)
@@ -72,10 +72,10 @@ export default class MixedRoundService extends RoundService {
                 await this.playerRepo.updatePlayerStatusTransaction(transaction, id, PlayerStatus.IDLE)
             }
             if (baseQuestion.type === QuestionType.ENUMERATION) {
-                await this.timerRepo.updateTimerTransaction(transaction, { status: TimerStatus.RESET, duration: baseQuestion.thinkingTime })
+                await this.timerRepo.resetTimerTransaction(transaction, baseQuestion.thinkingTime)
             }
             else {
-                await this.timerRepo.updateTimerTransaction(transaction, { status: TimerStatus.RESET, duration: gameQuestion.thinkingTime })
+                await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime)
             }
         }
     

@@ -1,16 +1,19 @@
-import { handleRiddleBuzzerHeadChanged } from '@/backend/services/question/riddle/actions_old'
-import { cancelQuotePlayer, validateAllQuoteElements } from '@/backend/services/question/quote/actions_old'
+import { handleBuzzerHeadChanged, cancelPlayer, validateAllQuoteElements } from '@/backend/services/question/quote/actions'
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales'
+import GameQuoteQuestionRepository from '@/backend/repositories/question/game/GameQuoteQuestionRepository'
+
 import { isEmpty } from '@/backend/utils/arrays'
 
+
+import { DEFAULT_LOCALE } from '@/frontend/utils/locales'
 
 import useAsyncAction from "@/frontend/hooks/async/useAsyncAction"
 
 import { useGameContext } from '@/frontend/contexts'
+
 import EndQuestionButton from '@/frontend/components/game/bottom-pane/question/question-active/EndQuestionButton'
 import ResetQuestionButton from '@/frontend/components/game/bottom-pane/question/question-active/ResetQuestionButton'
-import ClearBuzzerButton from '@/frontend/components/game/bottom-pane/question/question-active/riddle/controller/ClearBuzzerButton'
+import ClearQuoteBuzzerButton from '@/frontend/components/game/bottom-pane/question/question-active/quote/controller/ClearQuoteBuzzerButton'
 import BuzzerHeadPlayer from '@/frontend/components/game/bottom-pane/question/question-active/riddle/controller/BuzzerHeadPlayer'
 import RevealQuoteElementButton from '@/frontend/components/game/bottom-pane/question/question-active/quote/controller/RevealQuoteElement'
 
@@ -21,7 +24,6 @@ import { useEffect, useRef } from 'react'
 import { Button, ButtonGroup, CircularProgress } from '@mui/material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CancelIcon from '@mui/icons-material/Cancel'
-import RoundQuoteQuestionRepository from '@/backend/repositories/question/game/GameQuoteQuestionRepository'
 
 
 
@@ -39,7 +41,7 @@ export default function QuoteOrganizerController({ question, players }) {
         }
         if (buzzerHead.current !== buzzed[0]) {
             buzzerHead.current = buzzed[0]
-            handleRiddleBuzzerHeadChanged(gameId, buzzerHead.current)
+            handleBuzzerHeadChanged(gameId, buzzerHead.current)
         }
     }, [buzzed])
 
@@ -56,8 +58,8 @@ export default function QuoteOrganizerController({ question, players }) {
 function QuoteOrganizerAnswerController({ buzzed, question }) {
     const game = useGameContext()
 
-    const gameQuestionRepo = new RoundQuoteQuestionRepository(game.id, game.currentRound)
-    const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion()
+    const gameQuestionRepo = new GameQuoteQuestionRepository(game.id, game.currentRound)
+    const { gameQuestion, loading: gameQuestionLoading, error: gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion)
 
 
     if (gameQuestionError) {
@@ -70,7 +72,7 @@ function QuoteOrganizerAnswerController({ buzzed, question }) {
         return <></>
     }
 
-    const revealed = gameQuestion.revealed
+    // const revealed = gameQuestion.revealed
 
     {/* Validate or invalidate the player's answer */ }
     return (
@@ -125,7 +127,7 @@ function CancelQuoteElementButton({ buzzed, lang = DEFAULT_LOCALE }) {
     const buzzedIsEmpty = isEmpty(buzzed)
 
     const [handleCancelQuote, isCanceling] = useAsyncAction(async () => {
-        await cancelQuotePlayer(game.id, game.currentRound, game.currentQuestion, buzzed[0])
+        await cancelPlayer(game.id, game.currentRound, game.currentQuestion, buzzed[0])
     })
 
     return (
@@ -152,9 +154,9 @@ const CANCEL_QUOTE_ELEMENT = {
 function QuoteOrganizerQuestionController({ }) {
     return (
         <div className='flex flex-row w-full justify-end'>
-            <ResetQuestionButton />
-            <EndQuestionButton />
-            <ClearBuzzerButton />
+            <ResetQuestionButton questionType={QuestionType.QUOTE} />
+            <EndQuestionButton questionType={QuestionType.QUOTE} />
+            <ClearQuoteBuzzerButton />
         </div>
     )
 }

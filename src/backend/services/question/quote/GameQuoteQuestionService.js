@@ -37,6 +37,30 @@ export default class GameQuoteQuestionService extends GameQuestionService {
 
     /* ============================================================================================================ */
 
+    async clearBuzzer(questionId) {
+        if (!questionId) {
+            throw new Error("Missing question ID!");
+        }
+
+        try {
+            await runTransaction(async (transaction) => {
+                const players = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
+
+                for (const playerId of players.buzzed) {
+                    await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.IDLE);
+                }
+                await this.gameQuestionRepo.clearBuzzerTransaction(transaction, questionId);
+                await this.timerRepo.resetTimerTransaction(transaction);
+                await this.soundRepo.addSoundTransaction(transaction, 'robinet_desert');
+
+                console.log("Buzzer successfully cleared", questionId);
+            });
+        } catch (error) {
+            console.error("Error clearing buzzer:", error);
+            throw error;
+        }
+    }
+
     async revealQuoteElement(questionId, quoteElem, quotePartIdx = null, wholeTeam = false) {
         if (!questionId) {
             throw new Error("No question ID has been provided!");

@@ -1,6 +1,10 @@
-import { query } from "firebase/database";
-import { collection, getDocs, where } from "firebase/firestore";
 import GameQuestionService from "@/backend/services/question/GameQuestionService";
+import { MCQQuestion } from "@/backend/models/questions/MCQ";
+import { QuestionType } from "@/backend/models/questions/QuestionType";
+import { PlayerStatus } from "@/backend/models/users/Player";
+
+import { runTransaction } from "firebase/firestore";
+
 
 export default class GameMCQQuestionService extends GameQuestionService {
 
@@ -23,16 +27,16 @@ export default class GameMCQQuestionService extends GameQuestionService {
     async handleCountdownEndTransaction(transaction, questionId) {
         await super.handleCountdownEndTransaction(transaction, questionId);
 
-        const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-        const choosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)))
+        const teamId = await this.chooserRepo.getChooserIdTransaction(transaction)
+        const choosers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId)
 
         const correct = false
         const reward = 0
-        await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, reward)
+        await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward)
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { playerId, choiceIdx, reward, correct, });
     
-        for (const chooserDoc of choosersSnapshot.docs) {
-            transaction.update(chooserDoc.ref, { status: PlayerStatus.READY })
+        for (const chooser of choosers) {
+            await this.playerRepo.updatePlayerStatusTransaction(transaction, chooser.id, PlayerStatus.READY)
         }
         
         await this.soundRepo.addWrongAnswerSoundToQueueTransaction(transaction, gameId)
@@ -41,7 +45,7 @@ export default class GameMCQQuestionService extends GameQuestionService {
 
     /* ============================================================================================================ */
 
-    async selectMCQChoice(questionId, playerId, teamId, choiceIdx) {
+    async selectChoice(questionId, playerId, teamId, choiceIdx) {
         if (!questionId) {
             throw new Error("No question ID has been provided!");
         }
@@ -57,18 +61,16 @@ export default class GameMCQQuestionService extends GameQuestionService {
     
         try {
             await runTransaction(firestore, async (transaction) => {
-                const playersCollectionRef = collection(GAMES_COLLECTION_REF, this.gameId, 'players')
-                const choosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)))
-            
+                const choosers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId)
                 const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId)
-                const round = await this.roundRepo.getRoundTransaction(transaction, roundId)
+                const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId)
 
                 const correct = choiceIdx === baseQuestion.answerIdx
                 const reward = correct ? round.rewardsPerQuestion : 0
                 await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward)
             
-                for (const chooserDoc of choosersSnapshot.docs) {
-                    transaction.update(chooserDoc.ref, { status: PlayerStatus.READY })
+                for (const chooser of choosers) {
+                    await this.playerRepo.updatePlayerStatusTransaction(transaction, chooser.id, PlayerStatus.READY)
                 }
 
                 await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { playerId, choiceIdx, reward, correct, })
@@ -76,11 +78,11 @@ export default class GameMCQQuestionService extends GameQuestionService {
                 await this.soundRepo.addSoundTransaction(transaction, correct ? 'Anime wow' : 'hysterical5')
                 await this.endQuestionTransaction(transaction, questionId)
 
-                console.log("Option submitted successfully!")
+                console.log("MCQ choice handled successfully!", questionId, playerId, teamId, choiceIdx)
 
             })
         } catch (error) {
-            console.error("There was an error handling the choice of the player:", error);
+            console.error("There was an error handling the MCQ choice:", error);
             throw error;
         }
     }

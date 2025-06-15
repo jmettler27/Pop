@@ -25,7 +25,7 @@ export default class BasicRoundService extends RoundService {
             await this.playerRepo.updatePlayerStatusTransaction(transaction, id, PlayerStatus.IDLE)
         }
 
-        await this.timerRepo.updateTimerTransaction(transaction, { status: TimerStatus.RESET, duration: gameQuestion.thinkingTime })
+        await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime)
         await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase')
 
         const gameQuestionRepo = new GameBasicQuestionRepository(this.gameId, this.roundId)

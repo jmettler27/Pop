@@ -5,7 +5,7 @@ import { submitQuestion } from '@/backend/services/question-creator/actions';
 import { addQuestionToRound } from '@/backend/services/game-editor/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
-import { topicSchema } from '@/frontend/utils/topics';
+import { topicSchema } from '@/frontend/utils/forms/topics';
 import { QUESTION_ANSWER_LABEL, QUESTION_TITLE_LABEL } from '@/frontend/utils/forms/questions';
 
 
@@ -57,7 +57,7 @@ const PROGRESSIVE_CLUES_CLUES_EXAMPLE =
         "My career reached its critical and commercial peak in the 1990s.",
         "...but it would later be littered with a huge number of B-movies.",
         "I'm part of the Coppola family.",
-        "I played an arms dealer, a biker superhero and a treasure hunter.",
+        "I played an arms dealer, a biker superhero and a treasure hunter...",
         "...named Benjamin Gates.",
         "Nicolas in a cage."
     ],
@@ -70,7 +70,7 @@ const PROGRESSIVE_CLUES_CLUES_EXAMPLE =
         "…mais elle sera plus tard jonchée d’énormément de films de série B.",
         "Je fais partie de la famille Coppola.",
         "J’ai interprété tour à tour un marchand d’armes, un super-héros motard et un chasseur de trésors...",
-        "…nommé Benjamin Gates.",
+        "...nommé Benjamin Gates.",
         "Nicolas dans sa cage."
     ]
 }

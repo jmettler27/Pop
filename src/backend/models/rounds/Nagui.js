@@ -6,4 +6,11 @@ export class NaguiRound extends Round {
         super(data);
         this.type = RoundType.NAGUI;
     }
+
+    toObject() {
+        return {
+            ...super.toObject(),
+            type: this.type,
+        };
+    }
 }

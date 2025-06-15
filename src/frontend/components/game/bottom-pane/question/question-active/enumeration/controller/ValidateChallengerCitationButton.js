@@ -1,4 +1,4 @@
-import { incrementCorrectAnswersCount } from '@/backend/services/question/enumeration/actions_old';
+import { incrementValidItems } from '@/backend/services/question/enumeration/actions';
 
 import { TimerStatus } from '@/backend/models/Timer';
 
@@ -16,7 +16,7 @@ export default function ValidateChallengerCitationButton() {
     const user = useUserContext()
 
     const [handleClick, isSubmitting] = useAsyncAction(async () => {
-        await incrementCorrectAnswersCount(game.id, game.currentRound, game.currentQuestion, user.id)
+        await incrementValidItems(game.id, game.currentRound, game.currentQuestion, user.id)
     })
 
     const { timerRepo } = useGameRepositoriesContext()

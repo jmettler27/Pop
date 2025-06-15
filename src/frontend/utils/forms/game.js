@@ -1,5 +1,5 @@
 import * as Yup from 'yup'
-import { Game } from '@/backend/models/games/Game'
+import Game from '@/backend/models/games/Game'
 
 /**
  * Creates a Yup validation schema for game types

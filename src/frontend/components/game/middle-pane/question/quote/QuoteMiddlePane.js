@@ -1,19 +1,22 @@
-import { useGameContext, useRoleContext } from '@/frontend/contexts'
-import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pane/question/QuestionHeader'
-import { revealQuoteElement } from '@/backend/services/question/quote/actions_old'
-import LoadingScreen from '@/frontend/components/LoadingScreen'
+import { revealQuoteElement } from '@/backend/services/question/quote/actions'
 
-import { isObjectEmpty } from '@/backend/utils/objects'
-import useAsyncAction from "@/frontend/hooks/async/useAsyncAction"
-import { QuestionTypeIcon } from '@/backend/utils/question_types'
-import { QUESTION_ELEMENT_TO_EMOJI } from '@/backend/utils/question/question'
+import GameQuestionRepository from '@/backend/repositories/question/game/GameQuestionRepository'
 
 import { topicToEmoji } from '@/backend/models/Topic'
 import { QuestionType } from '@/backend/models/questions/QuestionType'
 import { GameStatus } from '@/backend/models/games/GameStatus'
 import { UserRole } from '@/backend/models/users/User'
 
-import GameQuestionRepository from '@/backend/repositories/question/game/GameQuestionRepository'
+import { isObjectEmpty } from '@/backend/utils/objects'
+import { QuestionTypeIcon } from '@/backend/utils/question_types'
+import { QUESTION_ELEMENT_TO_EMOJI } from '@/backend/utils/question/question'
+
+
+import useAsyncAction from "@/frontend/hooks/async/useAsyncAction"
+import { useGameContext, useRoleContext } from '@/frontend/contexts'
+import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pane/question/QuestionHeader'
+import LoadingScreen from '@/frontend/components/LoadingScreen'
+
 
 export default function QuoteMiddlePane({ baseQuestion }) {
     return (

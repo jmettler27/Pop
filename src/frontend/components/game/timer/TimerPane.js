@@ -1,6 +1,5 @@
-import { startGame } from "@/backend/services/game/transitions"
+import { startGame } from "@/backend/services/game/actions"
 import { handleQuestionEnd, startRound } from "@/backend/services/round/round-transitions"
-import { handleQuestionActiveCountdownEnd } from "@/backend/services/question/actions"
 
 import { UserRole } from "@/backend/models/users/User"
 
@@ -20,6 +19,7 @@ import { useRef } from "react"
 import { useObject } from 'react-firebase-hooks/database';
 
 import { CircularProgress } from "@mui/material"
+import { GameStatus } from "@/backend/models/games/GameStatus"
 
 
 export default function TimerPane() {

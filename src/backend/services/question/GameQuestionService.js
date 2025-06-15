@@ -39,7 +39,6 @@ export default class GameQuestionService  {
         this.roundId = roundId;
         this.gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(this.questionType, this.gameId, this.roundId);
         
-     
         this.roundScoreRepo = new RoundScoreRepository(this.gameId, this.roundId);
     }
 

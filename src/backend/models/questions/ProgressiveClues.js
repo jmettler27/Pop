@@ -123,18 +123,19 @@ export class ProgressiveCluesQuestion extends RiddleQuestion {
 
 export class GameProgressiveCluesQuestion extends GameRiddleQuestion {
 
-    static THINKING_TIME = 30;
     static REWARD = 1;
-    static DEFAULT_DELAY = 2;
     static MAX_TRIES = 2;
+    static THINKING_TIME = 30;
+    static DEFAULT_DELAY = 2;
 
     constructor(data) {
         super(data);
 
-        this.currentClueIdx = data.currentClueIdx || -1;
-        this.thinkingTime = data.thinkingTime || GameProgressiveCluesQuestion.THINKING_TIME;
         this.reward = data.reward || GameProgressiveCluesQuestion.REWARD;
         this.maxTries = data.maxTries || GameProgressiveCluesQuestion.MAX_TRIES;
+        this.thinkingTime = data.thinkingTime || GameProgressiveCluesQuestion.THINKING_TIME;
+
+        this.currentClueIdx = data.currentClueIdx || -1;
         this.delay = data.delay || GameProgressiveCluesQuestion.DEFAULT_DELAY;
 
         this.constructor.validate(data);

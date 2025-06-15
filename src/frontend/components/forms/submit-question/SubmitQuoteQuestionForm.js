@@ -9,7 +9,7 @@ import { replaceAllNonSpace, replaceSubstrings } from '@/backend/utils/strings';
 
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
-import { topicSchema } from '@/frontend/utils/topics';
+import { topicSchema } from '@/frontend/utils/forms/topics';
 import { stringSchema } from '@/frontend/utils/forms/forms';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction'

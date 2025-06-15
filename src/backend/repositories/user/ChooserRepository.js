@@ -10,6 +10,11 @@ export default class ChooserRepository extends FirebaseDocumentRepository {
         return this.getTransaction(transaction);
     }
 
+    async getChooserIdTransaction(transaction) {
+        const { chooserOrder, chooserIdx } = await this.getChooserTransaction(transaction);
+        return chooserOrder[chooserIdx];
+    }
+
     async resetChoosers() {
         return await this.update({
             chooserIdx: 0
