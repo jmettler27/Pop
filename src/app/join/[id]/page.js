@@ -1,43 +1,47 @@
 'use client'
 
-import { useSession } from 'next-auth/react';
+import JoinGameService from '@/backend/services/JoinGameService';
+
+import { useGameRepositories, useGameData } from '@/backend/repositories/useGameRepositories';
+
+import Game from '@/backend/models/games/Game';
+import Team from '@/backend/models/Team';
+
+
+import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+
+import useAsyncAction from '@/frontend/hooks/async/useAsyncAction'
+
+import MyColorPicker from '@/frontend/components/forms/MyColorPicker';
+import { MyTextInput, MySelect, StyledErrorMessage, MyRadioGroup } from '@/frontend/components/forms/StyledFormComponents'
+import { Wizard, WizardStep } from '@/frontend/components/forms/MultiStepComponents';
+
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import GameErrorScreen from '@/frontend/components/game/GameErrorScreen';
+
+
 import { redirect, useParams, useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react';
+
 import React from 'react';
 
 import { Field, useField, useFormikContext } from 'formik';
 import * as Yup from 'yup';
 
-import { MyTextInput, MySelect, StyledErrorMessage, MyRadioGroup } from '@/app/components/forms/StyledFormComponents'
-import { Wizard, WizardStep } from '@/app/components/forms/MultiStepComponents';
-
-import LoadingScreen from '@/app/components/LoadingScreen';
-import GameErrorScreen from '@/app/(game)/[id]/components/GameErrorScreen';
-
-import { firestore } from '@/lib/firebase/firebase'
-import { GAMES_COLLECTION_REF } from '@/lib/firebase/firestore';
-import { addDoc, collection, doc, query, setDoc, where, serverTimestamp, runTransaction, increment } from 'firebase/firestore'
-import { useCollection, useCollectionOnce, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
-
-import { Button, CircularProgress, IconButton } from '@mui/material';
-
-import {
-    GAME_PARTICIPANT_NAME_MIN_LENGTH, GAME_PARTICIPANT_NAME_MAX_LENGTH,
-    GAME_TEAM_NAME_MIN_LENGTH, GAME_TEAM_MAX_NAME_LENGTH
-} from '@/lib/utils/game'
-import { useAsyncAction } from '@/lib/utils/async';
+import { CircularProgress } from '@mui/material';
 
 
 function JoinGameHeader({ lang = DEFAULT_LOCALE }) {
-    const { id: gameId } = useParams()
-
-    const [game, gameLoading, gameError] = useDocumentDataOnce(doc(GAMES_COLLECTION_REF, gameId))
+    const { id: gameId } = useParams();
+    const { gameRepo } = useGameRepositories(gameId);
+    const { game, loading, error } = gameRepo.useGameOnce(gameId);
 
     return (
         <>
-            {gameError && <p><strong>Error: {JSON.stringify(teamsError)}</strong></p>}
-            {!gameLoading && game && <h1>{JOIN_GAME_HEADER[lang]}: <i>{game.title}</i></h1>}
+            {error && <p><strong>Error: {JSON.stringify(error)}</strong></p>}
+            {!loading && game && <h1>{JOIN_GAME_HEADER[lang]}: <i>{game.title}</i></h1>}
         </>
-    )
+    );
 }
 
 const JOIN_GAME_HEADER = {
@@ -54,52 +58,8 @@ export default function Page({ params, lang = DEFAULT_LOCALE }) {
 
     const [joinGame, isJoining] = useAsyncAction(async (values, user) => {
         try {
-            const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
-            let teamId = values.teamId
-
-            await runTransaction(firestore, async (transaction) => {
-                if (!values.playInTeams) {
-                    /* Single player */
-                    const teamRef = doc(teamsCollectionRef);
-                    transaction.set(teamRef, {
-                        color: values.teamColor,
-                        name: values.playerName,
-                        teamAllowed: false,
-                        createdBy: user.id,
-                        createdAt: serverTimestamp(),
-                    });
-                    teamId = teamRef.id;
-                }
-                else if (!values.joinTeam) {
-                    /* Player that creates a new team */
-                    const teamRef = doc(teamsCollectionRef);
-                    transaction.set(teamRef, {
-                        color: values.teamColor,
-                        name: values.teamName,
-                        teamAllowed: true,
-                        createdBy: user.id,
-                        createdAt: serverTimestamp(),
-                    });
-                    teamId = teamRef.id;
-                }
-
-                /* In any case: create player doc */
-                const playerRef = doc(GAMES_COLLECTION_REF, gameId, 'players', user.id);
-                transaction.set(playerRef, {
-                    image: user.image,
-                    name: values.playerName,
-                    status: 'idle',
-                    teamId,
-                    joinedAt: serverTimestamp(),
-                });
-
-                // Increment the number of players
-                const readyRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'ready')
-                transaction.update(readyRef, {
-                    numPlayers: increment(1),
-                })
-            });
-
+            const joinGameService = new JoinGameService(gameId);
+            await joinGameService.joinGame(values, user);
             router.push(`/${gameId}`);
         } catch (error) {
             console.error("There was an error joining the game:", error)
@@ -108,38 +68,28 @@ export default function Page({ params, lang = DEFAULT_LOCALE }) {
     })
 
     // Protected route
-    if (!session || !session.user) {
-        redirect("/api/auth/signin");
+    if (!session?.user) {
+        redirect("/api/auth/signin")
     }
 
     const user = session.user
     const router = useRouter()
 
-    const [game, gameLoading, gameError] = useDocumentDataOnce(doc(GAMES_COLLECTION_REF, gameId))
-    const [organizers, organizersLoading, organizersError] = useCollectionOnce(collection(GAMES_COLLECTION_REF, gameId, 'organizers'))
-    const [players, playersLoading, playersError] = useCollectionOnce(collection(GAMES_COLLECTION_REF, gameId, 'players'))
+    const { game, organizers, players, loading, error } = useGameData(gameId)
+    
+    if (error) return <GameErrorScreen />
+    if (loading) return <LoadingScreen loadingText="Loading game..." />
+    if (!game) return null
 
-    if (gameError || organizersError || playersError) {
-        return <GameErrorScreen />
-    }
-    if (gameLoading || organizersLoading || playersLoading) {
-        return <div className='flex h-screen'><LoadingScreen loadingText='Loading...' /></div>
-    }
-    if (!game || !organizers || !players) {
-        return <></>
-    }
-
-    const organizerIds = organizers.docs.map(doc => doc.id)
-    if (organizerIds.includes(user.id)) {
+    if (organizers.some(o => o.id === user.id)) {
         redirect(`/${gameId}`)
     }
 
-    const playerIds = players.docs.map(doc => doc.id)
-    if (playerIds.includes(user.id)) {
+    if (players.some(p => p.id === user.id)) {
         redirect(`/${gameId}`)
     }
 
-    if (playerIds.length >= game.maxPlayers) {
+    if (players.length >= game.maxPlayers) {
         redirect('/')
     }
 
@@ -164,8 +114,8 @@ export default function Page({ params, lang = DEFAULT_LOCALE }) {
                     onSubmit={() => { }}
                     validationSchema={Yup.object({
                         playerName: Yup.string()
-                            .min(GAME_PARTICIPANT_NAME_MIN_LENGTH, `Must be ${GAME_PARTICIPANT_NAME_MIN_LENGTH} characters or more!`)
-                            .max(GAME_PARTICIPANT_NAME_MAX_LENGTH, `Must be ${GAME_PARTICIPANT_NAME_MAX_LENGTH} characters or less!`)
+                            .min(Game.PARTICIPANT_NAME_MIN_LENGTH, `Must be ${Game.PARTICIPANT_NAME_MIN_LENGTH} characters or more!`)
+                            .max(Game.PARTICIPANT_NAME_MAX_LENGTH, `Must be ${Game.PARTICIPANT_NAME_MAX_LENGTH} characters or less!`)
                             .required("Required."),
                         playInTeams: Yup.boolean()
                             .nonNullable("Required."),
@@ -194,8 +144,8 @@ export default function Page({ params, lang = DEFAULT_LOCALE }) {
                                 then: (schema) => schema.required("Required."),
                                 otherwise: (schema) => schema.notRequired()
                             })
-                            .min(GAME_TEAM_NAME_MIN_LENGTH, `Must be ${GAME_TEAM_NAME_MIN_LENGTH} characters or more!`)
-                            .max(GAME_TEAM_MAX_NAME_LENGTH, `Must be ${GAME_TEAM_MAX_NAME_LENGTH} characters or less!`),
+                            .min(Team.NAME_MIN_LENGTH, `Must be ${Team.NAME_MIN_LENGTH} characters or more!`)
+                            .max(Team.NAME_MAX_LENGTH, `Must be ${Team.NAME_MAX_LENGTH} characters or less!`),
                         teamColor: Yup.string()
                             .when(['playInTeams', 'joinTeam'], {
                                 is: (playInTeams, joinTeam) => playInTeams && joinTeam,
@@ -209,7 +159,6 @@ export default function Page({ params, lang = DEFAULT_LOCALE }) {
                             )
                     })}
                 />
-
             </Wizard>
         </>
     );
@@ -241,7 +190,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang = DEFAULT_LOCALE }) 
                 type='text'
                 placeholder={PLAYER_NAME_INPUT_PLACEHOLDER[lang]}
                 validationSchema={validationSchema}
-                maxLength={GAME_PARTICIPANT_NAME_MAX_LENGTH}
+                maxLength={Game.PARTICIPANT_NAME_MAX_LENGTH}
             />
 
             <br />
@@ -295,26 +244,20 @@ const ALONE = {
 
 
 function JoinOrCreateTeam({ validationSchema, lang = DEFAULT_LOCALE }) {
-    const { id: gameId } = useParams()
-
+    const { id: gameId } = useParams();
     const formik = useFormikContext();
-    const values = formik.values
-    const errors = formik.errors
+    const values = formik.values;
+    const errors = formik.errors;
 
-    const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
-    const [teamsCollection, teamsLoading, teamsError] = useCollection(query(teamsCollectionRef, where('teamAllowed', '==', true)))
+    const { teamRepo } = useGameRepositories(gameId);
+    const { teams, loading, error } = teamRepo.useJoinableTeams();
 
-    if (teamsError) {
-        return <p><strong>Error: {JSON.stringify(teamsError)}</strong></p>
+    if (error) {
+        return <p><strong>Error: {JSON.stringify(error)}</strong></p>;
     }
-    if (teamsLoading) {
-        return <CircularProgress color='inherit' />
+    if (loading) {
+        return <CircularProgress color='inherit' />;
     }
-    if (!teamsCollection) {
-        return <></>
-    }
-
-    const teams = teamsCollection.docs.map(doc => ({ id: doc.id, ...doc.data() }))
 
     return (
         <>
@@ -326,7 +269,6 @@ function JoinOrCreateTeam({ validationSchema, lang = DEFAULT_LOCALE }) {
                 trueText={JOIN_TEAM[lang]}
                 falseText={CREATE_TEAM[lang]}
                 validationSchema={validationSchema}
-
             />
 
             {values.joinTeam && teams.length > 0 && (
@@ -335,48 +277,41 @@ function JoinOrCreateTeam({ validationSchema, lang = DEFAULT_LOCALE }) {
                     name='teamId'
                     validationSchema={validationSchema}
                     onChange={(e) => {
-                        const teamId = e.target.value
-                        formik.setFieldValue('teamId', teamId)
+                        const teamId = e.target.value;
+                        formik.setFieldValue('teamId', teamId);
                         if (teamId) {
-                            const team = teams.find(doc => doc.id === teamId)
-                            formik.setFieldValue('teamName', team.name)
-                            formik.setFieldValue('teamColor', team.color)
+                            const team = teams.find(t => t.id === teamId);
+                            formik.setFieldValue('teamName', team.name);
+                            formik.setFieldValue('teamColor', team.color);
                         }
                     }}
                 >
                     <option value="">{SELECT_TEAM_FIRST_OPTION[lang]}</option>
-                    {teams.map((doc) => <SelectTeamOption key={doc.id} teamDoc={doc} />)}
+                    {teams.map((team) => (
+                        <SelectTeamOption key={team.id} team={team} />
+                    ))}
                 </MySelect>
             )}
         </>
-    )
+    );
 }
 
-function SelectTeamOption({ teamDoc }) {
-    const { id: gameId } = useParams()
+function SelectTeamOption({ team }) {
+    const { id: gameId } = useParams();
+    const { playerRepo } = useGameRepositories(gameId);
+    const { players, loading, error } = playerRepo.useTeamPlayers(team.id);
 
-    const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
-    const [playersCollection, playersLoading, playersError] = useCollection(query(playersCollectionRef, where('teamId', '==', teamDoc.id)))
-    if (playersError) {
-        return <p><strong>Error: {JSON.stringify(playersError)}</strong></p>
+    if (error) {
+        return <p><strong>Error: {JSON.stringify(error)}</strong></p>;
     }
-    if (playersLoading) {
-        return <option value={teamDoc.id}>&quot;{teamDoc.name}&quot; (loading players...)</option>
-
-    }
-    if (!playersCollection) {
-        return (
-            <option value={teamDoc.id}>&quot;{teamDoc.name}&quot;</option>
-        )
+    if (loading) {
+        return <option value={team.id}>&quot;{team.name}&quot; (loading players...)</option>;
     }
 
-    const playerNames = playersCollection.docs.map(doc => doc.data().name)
-    const playerNamesString = playerNames.join(', ')
-
+    const playerNames = players.map(p => p.name).join(', ');
     return (
-        <option value={teamDoc.id}>&quot;{teamDoc.name}&quot; ({playerNamesString})</option>
-    )
-
+        <option value={team.id}>&quot;{team.name}&quot; ({playerNames})</option>
+    );
 }
 
 
@@ -404,9 +339,6 @@ const SELECT_TEAM_FIRST_OPTION = {
     'en': 'Select a team',
     'fr-FR': 'Sélectionne une équipe',
 }
-
-import MyColorPicker from '@/app/components/forms/MyColorPicker';
-import { DEFAULT_LOCALE } from '@/lib/utils/locales';
 
 
 function CreateTeamStep({ onSubmit, validationSchema, lang = DEFAULT_LOCALE }) {
@@ -438,7 +370,7 @@ function CreateTeamStep({ onSubmit, validationSchema, lang = DEFAULT_LOCALE }) {
                         type='text'
                         placeholder={TEAM_NAME_INPUT_PLACEHOLDER[lang]}
                         validationSchema={validationSchema}
-                        maxLength={GAME_TEAM_MAX_NAME_LENGTH}
+                        maxLength={Team.NAME_MAX_LENGTH}
                     />
 
                     <MyColorPicker label={TEAM_COLOR_PICKER_LABEL[lang]} name='teamColor' validationSchema={validationSchema} />

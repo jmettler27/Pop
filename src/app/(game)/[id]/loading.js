@@ -1,9 +1,5 @@
-import LoadingScreen from '@/app/components/LoadingScreen'
+import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 export default function Loading() {
-    return (
-        <div className='h-screen flex'>
-            <LoadingScreen loadingText="Loading game..." />
-        </div>
-    )
-}
+    return <LoadingScreen loadingText="Loading game..." />;
+} 

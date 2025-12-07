@@ -73,31 +73,6 @@ video {
 
 }
 
-.bg-odd-one-out {
-    background-image: url('../../public/reichmann.png');
-    background-size: 100px 100px;
-    background-repeat: repeat;
-}
-
-.bg-odd-one-out-wrong {
-    background-image: url('../../public/quesada.png');
-    background-size: 100px 100px;
-    background-repeat: repeat;
-}
-
-.bg-odd-one-out-correct {
-    background-image: url('../../public/reichmann_sad.png');
-    background-size: 100px 100px;
-    background-repeat: repeat;
-}
-
-.bg-nagui-wrong {
-    background-image: url('../../public/nagui-wrong.png');
-    background-size: 250px 250px;
-    background-repeat: repeat;
-}
-
-
 .glow-focus {
     text-align: center;
     -webkit-animation: glow-focus 500ms ease-in-out infinite alternate;

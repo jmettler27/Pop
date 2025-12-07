@@ -1,9 +1,9 @@
 import { Inter } from 'next/font/google'
-import './globals.css'
+import '@/app/globals.css'
 
 import { getServerSession } from 'next-auth'
-import { authOptions } from './api/auth/[...nextauth]/route'
-import SessionProvider from "./SessionProvider"
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import SessionProvider from "@/app/SessionProvider"
 
 const inter = Inter({ subsets: ['latin'] })//, display: 'swap' })
 
@@ -13,7 +13,7 @@ export const metadata = {
 }
 
 // https://github.com/mui/material-ui/issues/34898#issuecomment-1568462651
-import ThemeWrapper from './ThemeWrapper'
+import ThemeWrapper from '@/app/ThemeWrapper'
 
 export default async function RootLayout({ children }) {
   const session = await getServerSession(authOptions)
