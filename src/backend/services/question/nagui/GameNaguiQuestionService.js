@@ -10,7 +10,7 @@ import { serverTimestamp } from "firebase/firestore";
 import { PlayerStatus } from "@/backend/models/users/Player";
 
 
-export class GameNaguiQuestionService extends GameQuestionService {
+export default class GameNaguiQuestionService extends GameQuestionService {
 
     constructor(gameId, roundId) {
         super(gameId, roundId, QuestionType.NAGUI);

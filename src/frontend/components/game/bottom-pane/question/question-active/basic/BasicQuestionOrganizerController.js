@@ -9,7 +9,7 @@ import useAsyncAction from "@/frontend/hooks/async/useAsyncAction"
 import { useGameContext } from '@/frontend/contexts'
 import EndQuestionButton from '@/frontend/components/game/bottom-pane/question/question-active/EndQuestionButton'
 import ResetQuestionButton from '@/frontend/components/game/bottom-pane/question/question-active/ResetQuestionButton'
-import ClearBasicBuzzerButton from '@/frontend/components/game/bottom-pane/question/question-active/basic/controller/ClearBasicBuzzerButton'
+import ClearBasicBuzzerButton from '@/frontend/components/game/bottom-pane/question/question-active/basic/ClearBasicBuzzerButton'
 
 import { Button, ButtonGroup } from '@mui/material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'

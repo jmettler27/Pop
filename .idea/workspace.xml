@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="cf58b025-0e55-4f29-9bc5-400203734f55" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/backend/services/round/image/ImageRoundService.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/backend/services/round/image/actions.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/backend/services/round/reordering/ReorderingRoundService.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/backend/services/round/reordering/actions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/edit/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/edit/page.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/backend/services/question/matching/GameMatchingQuestionService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/question/matching/GameMatchingQuestionService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/backend/services/question/nagui/GameNaguiQuestionService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/question/nagui/GameNaguiQuestionService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/backend/services/round/special/actions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/special/actions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/frontend/components/forms/SelectGameType.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/forms/SelectGameType.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/bottom-pane/question/question-active/basic/BasicQuestionOrganizerController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/bottom-pane/question/question-active/basic/BasicQuestionOrganizerController.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitToolBoxStore">
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="main" />
+                    <option name="lastUsedInstant" value="1766836383" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="refactor/model" />
+                    <option name="lastUsedInstant" value="1766836340" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="feature/firebase-emulator" />
+                    <option name="lastUsedInstant" value="1765109590" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="36W2atloINyn23RQlBW8doSUP0E" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;js.debugger.nextJs.config.created.client&quot;: &quot;true&quot;,
+    &quot;js.debugger.nextJs.config.created.server&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/metj/Pop/src/backend/services/round&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\metj\\AppData\\Roaming\\JetBrains\\IntelliJIdea2025.2\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\metj\Pop\src\backend\services\round" />
+    </key>
+  </component>
+  <component name="RunManager" selected="npm.Next.js: server-side">
+    <configuration name="Next.js: debug client-side" type="JavascriptDebugType" uri="http://localhost:3000/">
+      <method v="2" />
+    </configuration>
+    <configuration name="Next.js: server-side" type="js.build_tools.npm">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-26cb7f24e5b0-intellij.indexing.shared.core-IU-253.29346.138" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.29346.138" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="cf58b025-0e55-4f29-9bc5-400203734f55" name="Changes" comment="" />
+      <created>1765108076820</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1765108076820</updated>
+      <workItem from="1765108078090" duration="2180000" />
+      <workItem from="1765110295666" duration="992000" />
+      <workItem from="1765111337230" duration="1025000" />
+      <workItem from="1766836267726" duration="1982000" />
+      <workItem from="1767599435607" duration="90000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+</project>

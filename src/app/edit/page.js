@@ -20,8 +20,8 @@ import SelectLanguage from '@/frontend/components/forms/SelectLanguage';
 
 
 import Game from '@/backend/models/games/Game';
-import CreateGameService from '@/backend/services/CreateGameService';
-import { GAME_DEFAULT_TYPE, gameTypeSchema, gameTitleSchema, participantNameSchema } from '@/backend/utils/game';
+import CreateGameService from '@/backend/services/game-creator/GameCreatorService';
+import { gameTypeSchema, gameTitleSchema, participantNameSchema } from '@/frontend/utils/forms/game';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 
 /* Validation */

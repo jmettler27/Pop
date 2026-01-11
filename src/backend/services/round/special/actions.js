@@ -33,7 +33,7 @@ export const endRound = async (gameId, roundId) => {
 /**
  * special_home -> theme_active (question_active)
  */
-const startTheme = async (gameId, roundId, themeId) => {
+export const startTheme = async (gameId, roundId, themeId) => {
     const service = new SpecialRoundService(gameId, roundId);
     return service.startTheme(themeId);
 };
@@ -43,13 +43,13 @@ const startTheme = async (gameId, roundId, themeId) => {
  * 
  * TODO: make status in a different array and update only this array
  */
-const handlePlayerAnswer = async (gameId, roundId, themeId, sectionId, questionId, playerId, answer) => {
+export const handlePlayerAnswer = async (gameId, roundId, themeId, sectionId, questionId, playerId, answer) => {
     const service = new SpecialRoundService(gameId, roundId);
     return service.handlePlayerAnswer(themeId, sectionId, questionId, playerId, answer);
 };
 
 
-const handleQuestionEndOrganizerContinue = async (gameId, roundId, themeId, sectionId, questionId) => {
+export const handleQuestionEndOrganizerContinue = async (gameId, roundId, themeId, sectionId, questionId) => {
     const service = new SpecialRoundService(gameId, roundId);
     return service.handleQuestionEndOrganizerContinue(themeId, sectionId, questionId);
 };
@@ -57,12 +57,12 @@ const handleQuestionEndOrganizerContinue = async (gameId, roundId, themeId, sect
 /**
  * theme_active (question_end) -> theme_active (question_active)
  */
-const switchThemeNextSection = async (gameId, roundId, themeId) => {
+export const switchThemeNextSection = async (gameId, roundId, themeId) => {
     const service = new SpecialRoundService(gameId, roundId);
     return service.switchThemeNextSection(themeId);
 };
 
-const resetTheme = async (gameId, roundId, themeId) => {
+export const resetTheme = async (gameId, roundId, themeId) => {
     const service = new SpecialRoundService(gameId, roundId);
     return service.resetTheme(themeId);
 };
@@ -70,7 +70,7 @@ const resetTheme = async (gameId, roundId, themeId) => {
 /**
  * theme_active -> theme_end
  */
-const endTheme = async (gameId, roundId, themeId) => {
+export const endTheme = async (gameId, roundId, themeId) => {
     const service = new SpecialRoundService(gameId, roundId);
     return service.endTheme(themeId);
 };
@@ -78,7 +78,7 @@ const endTheme = async (gameId, roundId, themeId) => {
 /**
  * theme_end -> special_home
  */
-const goHome = async (gameId, roundId) => {
+export const goHome = async (gameId, roundId) => {
     const service = new SpecialRoundService(gameId, roundId);
     return service.goHome();
 };

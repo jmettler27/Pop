@@ -11,7 +11,7 @@ import { PlayerStatus } from '@/backend/models/users/Player';
 import { GameMatchingQuestion } from '@/backend/models/questions/Matching';
 
 
-export class GameMatchingQuestionService extends GameQuestionService {
+export default class GameMatchingQuestionService extends GameQuestionService {
 
     constructor(gameId, roundId) {
         super(gameId, roundId);
