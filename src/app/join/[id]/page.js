@@ -47,7 +47,7 @@ const JOIN_GAME_HEADER = {
 
 const REGEX_HEX_COLOR = /^#[0-9A-F]{6}$/i
 
-export default function Page({ params }) {
+export default function Page({ params, lang=DEFAULT_LOCALE }) {
     const { data: session } = useSession()
     const resolvedParams = React.use(params)
     const gameId = resolvedParams.id
