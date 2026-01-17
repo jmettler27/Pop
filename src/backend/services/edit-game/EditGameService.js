@@ -12,10 +12,10 @@ import { GameStatus } from "@/backend/models/games/GameStatus";
 /**
  * Service for editing a game
  */
-export default class GameEditorService {
+export default class EditGameService {
     
     /**
-     * Constructor for the GameEditorService
+     * Constructor for the EditGameService
      * 
      * @param {string} gameId - The ID of the game
      */

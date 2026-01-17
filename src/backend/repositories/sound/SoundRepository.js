@@ -71,7 +71,7 @@ export default class SoundRepository extends FirebaseRepository {
             timestamp: serverTimestamp()
         });
 
-        console.log("Sound added", "gameID", this.gameId, "filename", filename);
+        console.log("Sound added", "game", this.gameId, "filename", filename);
 
         return sound;
     }
@@ -89,7 +89,7 @@ export default class SoundRepository extends FirebaseRepository {
                     await this.deleteTransaction(transaction, sound.id);
                 }
 
-                console.log("All sounds cleared", "gameID", this.gameId);
+                console.log("All sounds cleared", "game", this.gameId);
             });
         } catch (error) {
             console.error("Error clearing sounds", error);

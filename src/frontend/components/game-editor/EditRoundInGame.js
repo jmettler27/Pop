@@ -7,7 +7,7 @@ import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
 import RoundRepository from '@/backend/repositories/round/RoundRepository'
 
-import { removeRoundFromGame } from '@/backend/services/game-editor/edit-game'
+import { removeRoundFromGame } from '@/backend/services/edit-game/edit-game'
 
 import { DIALOG_ACTION_CANCEL, DIALOG_WARNING } from '@/frontend/texts/dialogs'
 

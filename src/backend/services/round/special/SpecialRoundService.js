@@ -27,9 +27,6 @@ import RoundService from '@/backend/services/round/RoundService'
 
 export default class SpecialRoundService extends RoundService {
 
-    constructor(gameId, roundId) {
-        super(gameId, roundId)
-    }
 
     async startRoundTransaction(transaction) {
         // const specialRoundRef = doc(GAMES_COLLECTION_REF, this.gameId, 'rounds', this.roundId)

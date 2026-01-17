@@ -1,10 +1,7 @@
-import RiddleRoundService from "@/backend/services/round/riddle/RiddleRoundService";
+import BuzzerRoundService from "@/backend/services/round/buzzer/BuzzerRoundService";
 
-export default class ImageRoundService extends RiddleRoundService {
+export default class ImageRoundService extends BuzzerRoundService {
 
-    constructor(gameId, roundId) {
-        super(gameId, roundId)
-    }
     
     async calculateMaxPointsTransaction(transaction, round) {
         return round.questions.length * (round.rewardsPerQuestion + round.rewardsForBonus)

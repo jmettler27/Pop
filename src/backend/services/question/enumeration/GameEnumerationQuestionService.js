@@ -1,24 +1,18 @@
 import GameQuestionService from "@/backend/services/question/GameQuestionService";
 
-import {
-    collection,
-    query,
-    where,
-    getDocs,
-    runTransaction,
-    documentId
-} from 'firebase/firestore'
+import {collection, documentId, getDocs, query, runTransaction, where} from 'firebase/firestore'
 
-import { TimerStatus } from '@/backend/models/Timer';
-import { PlayerStatus } from '@/backend/models/users/Player';
-import { EnumerationQuestionStatus, GameEnumerationQuestion } from '@/backend/models/questions/Enumeration';
-import { firestore } from "@/backend/firebase/firebase";
+import {TimerStatus} from '@/backend/models/Timer';
+import {PlayerStatus} from '@/backend/models/users/Player';
+import {EnumerationQuestionStatus, GameEnumerationQuestion} from '@/backend/models/questions/Enumeration';
+import {firestore} from "@/backend/firebase/firebase";
+import {QuestionType} from "@/backend/models/questions/QuestionType";
 
 
 export default class GameEnumerationQuestionService extends GameQuestionService {
  
     constructor(gameId, roundId) {
-        super(gameId, roundId);
+        super(gameId, roundId, QuestionType.ENUMERATION);
     }
 
     async resetQuestionTransaction(transaction, questionId) {
@@ -34,7 +28,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
     
         await this.timerRepo.resetTimerTransaction(transaction)
 
-        await this.playerRepo.updateAllPlayersStatusesTransaction(transaction, PlayerStatus.IDLE)
+        await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE)
 
         await super.resetQuestionTransaction(transaction, questionId)
 

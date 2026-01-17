@@ -9,6 +9,11 @@ export default class UserRepository extends FirebaseRepository {
         super(['users']);
     }
 
+    async getUserTransaction(transaction, userId) {
+        const data = await super.getTransaction(transaction, userId);
+        return data ? new User(data) : null;
+    }
+
     // React hooks for real-time operations
     useUser(id) {
         const { data, loading, error } = super.useDocument(id);

@@ -1,8 +1,7 @@
 import GameQuestionRepository from '@/backend/repositories/question/game/GameQuestionRepository';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { Player } from '@/backend/models/users/Player';
-import { increment, serverTimestamp, Timestamp } from 'firebase/firestore';
+import {QuestionType} from '@/backend/models/questions/QuestionType';
+import {increment, serverTimestamp, Timestamp} from 'firebase/firestore';
 
 export default class GameEnumerationQuestionRepository extends GameQuestionRepository {
 

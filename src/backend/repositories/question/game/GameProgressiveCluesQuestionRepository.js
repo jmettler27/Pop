@@ -1,9 +1,9 @@
 import { QuestionType } from "@/backend/models/questions/QuestionType";
-import GameRiddleQuestionRepository from "@/backend/repositories/question/game/GameRiddleQuestionRepository";
+import GameBuzzerQuestionRepository from "@/backend/repositories/question/game/GameBuzzerQuestionRepository";
 
 import { increment } from "firebase/database";
 
-export default class GameProgressiveCluesQuestionRepository extends GameRiddleQuestionRepository {
+export default class GameProgressiveCluesQuestionRepository extends GameBuzzerQuestionRepository {
     
     constructor(gameId, roundId) {
         super(gameId, roundId, QuestionType.PROGRESSIVE_CLUES);

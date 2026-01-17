@@ -15,12 +15,6 @@ export default class ChooserRepository extends FirebaseDocumentRepository {
         return chooserOrder[chooserIdx];
     }
 
-    async resetChoosers() {
-        return await this.update({
-            chooserIdx: 0
-        });
-    }
-
     async resetChoosersTransaction(transaction) {
         return await this.updateTransaction(transaction, {
             chooserIdx: 0
@@ -53,7 +47,7 @@ export default class ChooserRepository extends FirebaseDocumentRepository {
         });
     }
 
-    async switchChooserTransaction(transaction) {
+    async moveToNextChooserTransaction(transaction) {
         const { chooserOrder, chooserIdx } = await this.getChooserTransaction(transaction);
         const newChooserIdx = (chooserIdx + 1) % chooserOrder.length;
         const newChooserTeamId = chooserOrder[newChooserIdx];

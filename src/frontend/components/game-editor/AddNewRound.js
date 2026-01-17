@@ -1,4 +1,4 @@
-import { addRoundToGame } from '@/backend/services/game-editor/actions'
+import { addRoundToGame } from '@/backend/services/edit-game/actions'
 
 import { Round } from "@/backend/models/rounds/Round"
 

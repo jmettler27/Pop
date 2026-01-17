@@ -8,4 +8,10 @@ export default class GameNaguiQuestionRepository extends GameQuestionRepository 
         super(gameId, roundId, QuestionType.NAGUI);
     }
 
+    async updateQuestionTeamTransaction(transaction, questionId, teamId) {
+        return await this.updateQuestionTransaction(transaction, questionId,{
+            teamId: teamId
+        });
+    }
+
 } 

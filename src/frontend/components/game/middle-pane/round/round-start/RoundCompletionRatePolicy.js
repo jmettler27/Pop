@@ -23,7 +23,7 @@ function RoundCompletionRatePolicyTitle({ round }) {
         case RoundType.IMAGE:
         case RoundType.MCQ:
         case RoundType.PROGRESSIVE_CLUES:
-            return <RiddleRoundCompletionRatePolicyTitle round={round} />
+            return <BuzzerRoundCompletionRatePolicyTitle round={round} />
         case RoundType.LABELLING:
             return <LabellingRoundCompletionRatePolicyTitle round={round} />
         case RoundType.MATCHING:
@@ -59,7 +59,7 @@ function RoundMaxNumPoints({ round }) {
 }
 
 
-function RiddleRoundCompletionRatePolicyTitle({ round }) {
+function BuzzerRoundCompletionRatePolicyTitle({ round }) {
     return <h1 className='2xl:text-3xl text-center'>✨ <span className='text-center text-green-500'><strong>{round.rewardsPerQuestion} point</strong> par bonne réponse</span> </h1>
 }
 

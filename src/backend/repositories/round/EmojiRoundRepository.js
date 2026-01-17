@@ -1,6 +1,6 @@
-import RiddleRoundRepository from '@/backend/repositories/round/RiddleRoundRepository';
+import BuzzerRoundRepository from '@/backend/repositories/round/BuzzerRoundRepository';
 
-export default class EmojiRoundRepository extends RiddleRoundRepository {
+export default class EmojiRoundRepository extends BuzzerRoundRepository {
     
     constructor(gameId) {
         super(gameId);

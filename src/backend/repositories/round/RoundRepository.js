@@ -126,6 +126,18 @@ export default class RoundRepository extends FirebaseRepository {
         });
     }
 
+    /**
+     * Set the current question index of a round within a transaction
+     * @param {Transaction} transaction - The transaction
+     * @param {string} roundId - The ID of the round
+     * @param {number} questionOrder - The question order to set as current
+     */
+    async setCurrentQuestionIdxTransaction(transaction, roundId, questionOrder) {
+        await super.updateTransaction(transaction, roundId, {
+            currentQuestionIdx: questionOrder
+        });
+    }
+
     // React hooks for real-time operations
     /**
      * Get a round by ID

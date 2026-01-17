@@ -23,7 +23,7 @@ import PanToolIcon from '@mui/icons-material/PanTool'
 import clsx from 'clsx'
 
 
-export default function RiddlePlayerController({ players: riddlePlayers }) {
+export default function BuzzerPlayerController({ players: buzzerPlazers }) {
     const game = useGameContext()
     const user = useUserContext()
 
@@ -50,7 +50,7 @@ export default function RiddlePlayerController({ players: riddlePlayers }) {
         return <></>
     }
 
-    const { buzzed, canceled } = riddlePlayers
+    const { buzzed, canceled } = buzzerPlazers
 
     const hasBuzzed = buzzed.includes(user.id)
     const isFirst = hasBuzzed && buzzed[0] === user.id
@@ -105,17 +105,17 @@ const WAITING_FOR_TURN_TEXT = {
     'fr-FR': "Attends ton tour..."
 }
 
-const RIDDLE_IDLE_TEXT = {
+const BUZZER_IDLE_TEXT = {
     'en': "Any idea?",
     'fr-FR': "Une idée?"
 }
 
-const RIDDLE_FIRST_BUZZER_TEXT = {
+const BUZZER_FIRST_BUZZER_TEXT = {
     'en': "We're all ears",
     'fr-FR': "On t'écoute"
 }
 
-const RIDDLE_INCORRECT_ASNWER_TEXT = {
+const BUZZER_INCORRECT_ASNWER_TEXT = {
     'en': "Wrong answer!",
     'fr-FR': "Mauvaise réponse!"
 }
@@ -125,21 +125,21 @@ function BuzzerMessage({ playerStatus, hasExceededMaxTries, round, myCanceledIte
         return <span className='2xl:text-3xl text-red-500'>🤐 {MAX_TRIES_EXCEEDED_TEXT[lang]} ({round.maxTries})</span>
 
     if (playerStatus === PlayerStatus.WRONG) {
-        const message = RIDDLE_INCORRECT_ASNWER_TEXT[lang]
+        const message = BUZZER_INCORRECT_ASNWER_TEXT[lang]
         if (round.type === QuestionType.PROGRESSIVE_CLUES && round.delay && round.delay > 0) {
             return <span className='2xl:text-3xl'>{message} {CANCELED_WARNING_TEXT[lang]} <span className='font-bold text-blue-500'>{remaining > 1 ? numRemainingClues(remaining, lang) : ONE_MORE_WAITING_CLUE_TEXT[lang]}.</span></span>
         }
         return <span className='2xl:text-3xl text-red-500'>{message}</span>
     }
     if (isFirst) {
-        const message = `${RIDDLE_FIRST_BUZZER_TEXT[lang]} 🧐`
+        const message = `${BUZZER_FIRST_BUZZER_TEXT[lang]} 🧐`
         if (myCanceledItems.length === round.maxTries - 1)
             return <span className='2xl:text-3xl'>{message}. <span className='text-red-500'>{LAST_ATTEMPT_TEXT[lang]}</span></span>
         return <span className='2xl:text-3xl'>{message}</span>
     }
     if (hasBuzzed)
         return <span className='2xl:text-3xl'>{WAITING_FOR_TURN_TEXT[lang]}</span>
-    return <span className='2xl:text-3xl'>{RIDDLE_IDLE_TEXT[lang]} 🤔</span>
+    return <span className='2xl:text-3xl'>{BUZZER_IDLE_TEXT[lang]} 🤔</span>
 }
 
 

@@ -1,14 +1,13 @@
- import GameQuestionService from "@/backend/services/question/GameQuestionService";
+import GameQuestionService from "@/backend/services/question/GameQuestionService";
 
 import ChooserRepository from "@/backend/repositories/user/ChooserRepository";
 
-import { QuestionType } from "@/backend/models/questions/QuestionType";
-import { ScorePolicyType } from "@/backend/models/ScorePolicy";
-import { OddOneOutQuestion } from "@/backend/models/questions/OddOneOut";
+import {QuestionType} from "@/backend/models/questions/QuestionType";
+import {ScorePolicyType} from "@/backend/models/ScorePolicy";
+import {OddOneOutQuestion} from "@/backend/models/questions/OddOneOut";
 
-import { serverTimestamp } from "firebase/firestore";
-import { TimerStatus } from "@/backend/models/Timer";
-import { PlayerStatus } from "@/backend/models/users/Player";
+import {serverTimestamp} from "firebase/firestore";
+import {PlayerStatus} from "@/backend/models/users/Player";
 
 
 export default class GameOddOneOutQuestionService extends GameQuestionService {
@@ -52,7 +51,7 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
     async endQuestionTransaction(transaction, questionId) {
         await super.endQuestionTransaction(transaction, questionId);
 
-        // await this.gameQuestionRepo.clearBuzzedPlayers(transaction, questionId);
+        // await this.gameQuestionRepo.clearBuzzedPlayersTransaction(transaction, questionId);
 
         console.log('Ended question', questionId)
     }
@@ -119,7 +118,7 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
                     await this.endQuestionTransaction(transaction, questionId);
                 } else {
                     // The selected proposal is not the last remaining one
-                    await this.chooserRepo.switchChooserTransaction(transaction);
+                    await this.chooserRepo.moveToNextChooserTransaction(transaction);
                     await this.soundRepo.addSoundTransaction(transaction, 'Bien');
                     await this.timerRepo.resetTimerTransaction(transaction);
                 }

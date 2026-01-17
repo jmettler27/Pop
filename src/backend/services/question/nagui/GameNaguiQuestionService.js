@@ -2,12 +2,9 @@ import GameQuestionService from "@/backend/services/question/GameQuestionService
 
 import ChooserRepository from "@/backend/repositories/user/ChooserRepository";
 
-import { QuestionType } from "@/backend/models/questions/QuestionType";
-import { ScorePolicyType } from "@/backend/models/ScorePolicy";
-import { NaguiQuestion } from "@/backend/models/questions/Nagui";
-
-import { serverTimestamp } from "firebase/firestore";
-import { PlayerStatus } from "@/backend/models/users/Player";
+import {QuestionType} from "@/backend/models/questions/QuestionType";
+import {NaguiQuestion} from "@/backend/models/questions/Nagui";
+import {PlayerStatus} from "@/backend/models/users/Player";
 
 
 export default class GameNaguiQuestionService extends GameQuestionService {
@@ -59,7 +56,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
     async endQuestionTransaction(transaction, questionId) {
         await super.endQuestionTransaction(transaction, questionId);
 
-        // await this.gameQuestionRepo.clearBuzzedPlayers(transaction, questionId);
+        // await this.gameQuestionRepo.clearBuzzedPlayersTransaction(transaction, questionId);
 
         console.log('Ended question', questionId)
     }

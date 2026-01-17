@@ -5,9 +5,9 @@ import { Timestamp } from 'firebase/firestore';
 import { arrayUnion, arrayRemove } from 'firebase/firestore';
 
 
-export default class GameRiddleQuestionRepository extends GameQuestionRepository {
+export default class GameBuzzerQuestionRepository extends GameQuestionRepository {
 
-    static RIDDLE_PLAYERS_PATH = ['realtime', 'players'];
+    static BUZZER_PLAYERS_PATH = ['realtime', 'players'];
 
     constructor(gameId, roundId, questionType) {
         super(gameId, roundId, questionType);
@@ -15,7 +15,7 @@ export default class GameRiddleQuestionRepository extends GameQuestionRepository
 
     // Firestore operations
     async getPlayersTransaction(transaction, questionId) {
-        const data = await this.getTransaction(transaction, [questionId, ...GameRiddleQuestionRepository.RIDDLE_PLAYERS_PATH]);
+        const data = await this.getTransaction(transaction, [questionId, ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH]);
         return data ? data.map(p => new Player(p)) : [];
     }
 
@@ -24,7 +24,7 @@ export default class GameRiddleQuestionRepository extends GameQuestionRepository
 
         await this.createTransaction(transaction, 
             { buzzed: [], canceled: [] }, 
-            [questionId, ...GameRiddleQuestionRepository.RIDDLE_PLAYERS_PATH]
+            [questionId, ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH]
         );
     }
 
@@ -34,9 +34,15 @@ export default class GameRiddleQuestionRepository extends GameQuestionRepository
         });
     }
 
+    async resetQuestionWinnerTransaction(transaction, questionId) {
+        await this.updateQuestionTransaction(transaction, questionId, {
+            winner: null
+        });
+    }
+
     async updatePlayersTransaction(transaction, questionId, players) {
         await this.updateTransaction(transaction, 
-            [questionId, ...GameRiddleQuestionRepository.RIDDLE_PLAYERS_PATH], 
+            [questionId, ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH],
             players
         );
     }
@@ -44,7 +50,7 @@ export default class GameRiddleQuestionRepository extends GameQuestionRepository
 
     async resetPlayersTransaction(transaction, questionId) {
         await this.setTransaction(transaction, 
-            [questionId, ...GameRiddleQuestionRepository.RIDDLE_PLAYERS_PATH], 
+            [questionId, ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH],
             { buzzed: [], canceled: [] }
         );
     }
@@ -61,6 +67,14 @@ export default class GameRiddleQuestionRepository extends GameQuestionRepository
             }
         );
     }
+
+    async clearBuzzedPlayersTransaction(transaction, questionId) {
+        await this.updateTransaction(transaction,
+            [questionId, ...GameBuzzerQuestionRepository.QUOTE_PLAYERS_PATH],
+            {buzzed: []}
+        );
+    }
+
 
     async addPlayerToBuzzerTransaction(transaction, questionId, playerId) {
         await this.updatePlayersTransaction(transaction, questionId, 
@@ -82,7 +96,7 @@ export default class GameRiddleQuestionRepository extends GameQuestionRepository
 
     // React hooks
     usePlayers(questionId) {
-        const { data, loading, error } = this.useDocument([questionId, ...GameRiddleQuestionRepository.RIDDLE_PLAYERS_PATH]);
+        const { data, loading, error } = this.useDocument([questionId, ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH]);
         return {
             // players: data ? data.map(p => new Player(p)) : [],
             data,

@@ -1,24 +1,22 @@
-import GameRiddleQuestionService from '@/backend/services/question/riddle/GameRiddleQuestionService';
+import {firestore} from '@/backend/firebase/firebase'
+import {runTransaction} from 'firebase/firestore'
 
-import { firestore } from '@/backend/firebase/firebase'
-import { runTransaction } from 'firebase/firestore'
+import {PlayerStatus} from '@/backend/models/users/Player';
+import {QuestionType} from "@/backend/models/questions/QuestionType";
+import GameBuzzerQuestionService from "@/backend/services/question/GameBuzzerQuestionService";
 
-import { PlayerStatus } from '@/backend/models/users/Player';
 
-
-export default class GameProgressiveCluesQuestionService extends GameRiddleQuestionService {
+export default class GameProgressiveCluesQuestionService extends GameBuzzerQuestionService {
 
     constructor(gameId, roundId) {
-        super(gameId, roundId);
+        super(gameId, roundId, QuestionType.PROGRESSIVE_CLUES);
     }
 
     async resetQuestionTransaction(transaction, questionId) {
-        await super.resetQuestionTransaction(transaction, questionId);
-
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
             currentClueIdx: -1
         });
-
+        await super.resetQuestionTransaction(transaction, questionId);
         console.log("Progressive clues question successfully reset", questionId);
     }
 
@@ -31,7 +29,6 @@ export default class GameProgressiveCluesQuestionService extends GameRiddleQuest
 
         try {
             await runTransaction(firestore, async (transaction) => {
-
                 const players = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId)
                 const {buzzed, canceled } = players
 
@@ -41,9 +38,7 @@ export default class GameProgressiveCluesQuestionService extends GameRiddleQuest
                 // If there is a buzzed player, update his status to idle
                 if (buzzed && buzzed.length > 0) {
                     await this.playerRepo.updatePlayerStatusTransaction(transaction, buzzed[0], PlayerStatus.IDLE)
-                    await this.gameQuestionRepo.updatePlayersTransaction(transaction, questionId, {
-                        buzzed: []
-                    })
+                    await this.gameQuestionRepo.clearBuzzedPlayersTransaction(transaction, questionId)
                 }
                 await this.gameQuestionRepo.incrementClueTransaction(transaction, questionId)
             
@@ -56,7 +51,7 @@ export default class GameProgressiveCluesQuestionService extends GameRiddleQuest
                             this.playerRepo.updatePlayerStatusTransaction(transaction, c.playerId, PlayerStatus.IDLE)
                         });
                 }
-                // await this.timerRepor.resetTimerTransaction(transaction)
+                // await this.timerRepo.resetTimerTransaction(transaction)
                 await this.soundRepo.addSoundTransaction(transaction, 'cartoon_mystery_musical_tone_002')
 
                 console.log("Progressive clues revealed successfully", questionId);

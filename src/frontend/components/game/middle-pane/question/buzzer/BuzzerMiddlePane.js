@@ -9,13 +9,13 @@ import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/Qu
 import { useGameContext, useRoleContext } from '@/frontend/contexts'
 
 import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pane/question/QuestionHeader'
-import RiddleMainContent from '@/frontend/components/game/middle-pane/question/riddle/RiddleMainContent'
-import RiddleAnswer from '@/frontend/components/game/middle-pane/question/riddle/RiddleAnswer'
+import BuzzerMainContent from '@/frontend/components/game/middle-pane/question/buzzer/BuzzerMainContent'
+import BuzzerAnswer from '@/frontend/components/game/middle-pane/question/buzzer/BuzzerAnswer'
 
 import { clsx } from 'clsx'
 
 
-export default function RiddleMiddlePane({ question }) {
+export default function BuzzerMiddlePane({ question }) {
     const myRole = useRoleContext()
     const game = useGameContext()
 
@@ -27,20 +27,20 @@ export default function RiddleMiddlePane({ question }) {
             // question.type === QuestionType.PROGRESSIVE_CLUES && 'bg-progressive-clues',
         )}>
             <div className='flex h-[20%]'>
-                <RiddleQuestionHeader question={question} />
+                <BuzzerQuestionHeader question={question} />
             </div>
             <div className='flex h-[70%] w-full items-center justify-center'>
-                <RiddleMainContent question={question} showComplete={showAnswer} />
+                <BuzzerMainContent question={question} showComplete={showAnswer} />
             </div>
             <div className='flex h-[10%]'>
-                {showAnswer && <RiddleAnswer question={question} />}
+                {showAnswer && <BuzzerAnswer question={question} />}
             </div>
         </div>
     )
 }
 
 
-function RiddleQuestionHeader({ question }) {
+function BuzzerQuestionHeader({ question }) {
     return (
         <div className='flex flex-col items-center justify-around'>
             <div className='flex flex-row items-center justify-center space-x-1'>

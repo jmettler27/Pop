@@ -1,4 +1,4 @@
-import { RiddleQuestion, GameRiddleQuestion } from '@/backend/models/questions/Riddle';
+import { BuzzerQuestion, GameBuzzerQuestion } from '@/backend/models/questions/Buzzer';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
@@ -38,7 +38,7 @@ export class BlindtestType {
 }
 
 // Blindtest question class
-export class BlindtestQuestion extends RiddleQuestion {
+export class BlindtestQuestion extends BuzzerQuestion {
     static TITLE_MAX_LENGTH = 50;
     static ANSWER_TITLE_MAX_LENGTH = 50;
     static ANSWER_SOURCE_MAX_LENGTH = 75;
@@ -192,7 +192,7 @@ export class BlindtestQuestion extends RiddleQuestion {
     }
 }
 
-export class GameBlindtestQuestion extends GameRiddleQuestion {
+export class GameBlindtestQuestion extends GameBuzzerQuestion {
     static THINKING_TIME = 15;
     static REWARD = 1;
     static MAX_TRIES = 2;

@@ -7,14 +7,14 @@ export const resetQuestion = async (gameId, roundId, questionId) => {
     return service.resetQuestion(questionId);
 };
 
-export const handleCountdownEnd = async (gameId, roundId, questionId) => {
-    const service = new GameNaguiQuestionService(gameId, roundId);
-    return service.handleCountdownEnd(questionId);
-};
-
 export const endQuestion = async (gameId, roundId, questionId) => {
     const service = new GameNaguiQuestionService(gameId, roundId);
     return service.endQuestion(questionId);
+};
+
+export const handleCountdownEnd = async (gameId, roundId, questionId) => {
+    const service = new GameNaguiQuestionService(gameId, roundId);
+    return service.handleCountdownEnd(questionId);
 };
 
 /* ============================================================================================================ */

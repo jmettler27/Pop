@@ -1,4 +1,5 @@
 import GameQuestionService from "@/backend/services/question/GameQuestionService";
+import {QuestionType} from "@/backend/models/questions/QuestionType";
 
 
 export default class GameReorderingQuestionService extends GameQuestionService {

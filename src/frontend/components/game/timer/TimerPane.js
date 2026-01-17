@@ -1,5 +1,5 @@
 import { startGame } from "@/backend/services/game/actions"
-import { handleQuestionEnd, startRound } from "@/backend/services/round/round-transitions"
+import { handleQuestionEnd, startRound } from "@/backend/services/round/actions"
 
 import { UserRole } from "@/backend/models/users/User"
 
@@ -178,9 +178,9 @@ function QuestionEndTimerHeader({ lang }) {
         return <></>
     }
 
-    const isRoundEnd = round.currentQuestionIdx === round.questions.length - 1
+    const isRoundOver = round.currentQuestionIdx === round.questions.length - 1
 
-    return <span className='2xl:text-2xl'>{isRoundEnd ? QUESTION_END_COUNTDOWN_ROUND_END_TEXT[lang] : QUESTION_END_COUNTDOWN_NEXT_QUESTION_TEXT[lang]}</span>
+    return <span className='2xl:text-2xl'>{isRoundOver ? QUESTION_END_COUNTDOWN_ROUND_END_TEXT[lang] : QUESTION_END_COUNTDOWN_NEXT_QUESTION_TEXT[lang]}</span>
 }
 
 

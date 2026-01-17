@@ -1,22 +1,19 @@
 import GameQuestionService from "@/backend/services/question/GameQuestionService";
 
-import { firestore } from '@/backend/firebase/firebase'
-import {
-    Timestamp,
-    runTransaction,
-} from 'firebase/firestore'
+import {firestore} from '@/backend/firebase/firebase'
+import {runTransaction, Timestamp,} from 'firebase/firestore'
 
-import { isObjectEmpty } from '@/backend/utils/objects';
-import { range } from '@/backend/utils/arrays';
+import {isObjectEmpty} from '@/backend/utils/objects';
+import {range} from '@/backend/utils/arrays';
 
-import { PlayerStatus } from '@/backend/models/users/Player';
-import { TimerStatus } from '@/backend/models/Timer';
+import {PlayerStatus} from '@/backend/models/users/Player';
+import {QuestionType} from "@/backend/models/questions/QuestionType";
 
 
 export default class GameLabellingQuestionService extends GameQuestionService {
 
     constructor(gameId, roundId) {
-        super(gameId, roundId);
+        super(gameId, roundId, QuestionType.LABELLING);
     }
 
     async resetQuestionTransaction(transaction, questionId) {
@@ -27,7 +24,7 @@ export default class GameLabellingQuestionService extends GameQuestionService {
             revealed: baseQuestion.getInitialRevealed()
         })
 
-        await this.playerRepo.updateAllPlayersStatusesTransaction(transaction, PlayerStatus.IDLE)
+        await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE)
 
         await super.resetQuestionTransaction(transaction, questionId)
 

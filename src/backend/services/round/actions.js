@@ -1,36 +1,25 @@
 "use server";
 
-import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { firestore } from '@/backend/firebase/firebase'
-import {
-    collection,
-    query,
-    where,
-    getDocs,
-    doc,
-    serverTimestamp,
-    runTransaction,
-    limit,
-} from 'firebase/firestore'
+import {GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF} from '@/backend/firebase/firestore';
+import {firestore} from '@/backend/firebase/firebase'
+import {collection, doc, getDocs, limit, query, runTransaction, serverTimestamp, where,} from 'firebase/firestore'
 
-import { aggregateTiedTeams, getNextCyclicIndex, shuffle } from '@/backend/utils/arrays';
-import { isRiddle } from '@/backend/utils/question_types';
-import { sortAscendingRoundScores } from '@/backend/utils/rounds';
-import { sortScores } from '@/backend/utils/scores';
-import { Timer } from '@/backend/models/Timer';
-import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question/question';
+import {aggregateTiedTeams, getNextCyclicIndex, shuffle} from '@/backend/utils/arrays';
+import {isBuzzer} from '@/backend/utils/question_types';
+import {sortAscendingRoundScores} from '@/backend/utils/rounds';
+import {sortScores} from '@/backend/utils/scores';
+import {Timer, TimerStatus} from '@/backend/models/Timer';
+import {DEFAULT_THINKING_TIME_SECONDS} from '@/backend/utils/question/question';
 
-import { getDocDataTransaction, updateGameStatusTransaction } from '@/backend/services/utils';
-import { updateTimerStateTransaction, updateTimerTransaction } from '@/backend/repositories/timer/timer';
-import { addSoundTransaction } from '@/backend/services/sound/sounds';
+import {updateTimerStateTransaction, updateTimerTransaction} from '@/backend/repositories/timer/timer';
+import {getDocDataTransaction, updateGameStatusTransaction} from '@/backend/services/utils';
+import {addSoundTransaction} from '@/backend/services/sound/sounds';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { PlayerStatus } from '@/backend/models/users/Player';
-import { RoundType } from '@/backend/models/rounds/RoundType';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { TimerStatus } from '@/backend/models/Timer';
-import { ScorePolicyType } from '@/backend/models/ScorePolicy';
-import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
+import {GameStatus} from '@/backend/models/games/GameStatus';
+import {PlayerStatus} from '@/backend/models/users/Player';
+import {RoundType} from '@/backend/models/rounds/RoundType';
+import {QuestionType} from '@/backend/models/questions/QuestionType';
+import {ScorePolicyType} from '@/backend/models/ScorePolicy';
 
 
 export async function startRound(gameId, roundId) {
@@ -62,7 +51,7 @@ const startRoundTransaction = async (
 
     await (roundData.type === RoundType.SPECIAL ?
         startSpecialRoundTransaction(transaction, gameId, roundId) :
-        switchRoundQuestionTransaction(transaction, gameId, roundId, 0)
+        moveToNextQuestionTransaction(transaction, gameId, roundId, 0)
     )
 }
 
@@ -90,12 +79,12 @@ const handleQuestionEndTransaction = async (
 ) => {
     const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId)
     const roundData = await getDocDataTransaction(transaction, roundRef)
-    const isRoundEnd = roundData.currentQuestionIdx === roundData.questions.length - 1
+    const isRoundOver = roundData.currentQuestionIdx === roundData.questions.length - 1
 
-    await (isRoundEnd ?
+    await (isRoundOver ?
         endRoundTransaction(transaction, gameId, roundId) : /* End of round */
         // switchRoundNextQuestionTransaction(transaction, gameId, roundId) /* Prepare the next question */
-        switchRoundQuestionTransaction(transaction, gameId, roundId, roundData.currentQuestionIdx + 1)
+        moveToNextQuestionTransaction(transaction, gameId, roundId, roundData.currentQuestionIdx + 1)
     )
 }
 
@@ -374,7 +363,7 @@ const endRoundTransaction = async (
         dateEnd: serverTimestamp(),
     })
     await updateGameStatusTransaction(transaction, gameId, GameStatus.ROUND_END)
-    await addSoundTransaction(transaction, gameId, 'level-passed')
+    await addSoundTransaction(transaction, 'level-passed')
     await updateTimerStateTransaction(transaction, gameId, TimerStatus.RESET)
 }
 
@@ -477,7 +466,7 @@ const handleRoundSelectedTransaction = async (
         return
     }
 
-    if (isRiddle(roundType) || [RoundType.QUOTE, RoundType.LABELLING, RoundType.ENUMERATION, RoundType.MIXED].includes(roundType)) {
+    if (isBuzzer(roundType) || [RoundType.QUOTE, RoundType.LABELLING, RoundType.ENUMERATION, RoundType.MIXED].includes(roundType)) {
         // Set the status of every player to 'idle'
         const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players')
         const playersSnapshot = await getDocs(query(playersCollectionRef))
@@ -526,7 +515,7 @@ const handleRoundSelectedTransaction = async (
         authorized: false
     })
 
-    await addSoundTransaction(transaction, gameId, 'super_mario_odyssey_moon')
+    await addSoundTransaction(transaction, 'super_mario_odyssey_moon')
 
     transaction.update(gameRef, {
         currentRound: roundId,
@@ -535,7 +524,7 @@ const handleRoundSelectedTransaction = async (
     })
 }
 
-const switchRoundQuestionTransaction = async (
+const moveToNextQuestionTransaction = async (
     transaction,
     gameId,
     roundId,
@@ -636,7 +625,7 @@ const switchRoundQuestionTransaction = async (
     }
 
     if (baseQuestion.type !== QuestionType.BLINDTEST) {
-        await addSoundTransaction(transaction, gameId, 'skyrim_skill_increase')
+        await addSoundTransaction(transaction, 'skyrim_skill_increase')
     }
 
     transaction.update(gameQuestionRef, {

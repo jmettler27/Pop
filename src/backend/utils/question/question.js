@@ -28,7 +28,7 @@ export const DEFAULT_THINKING_TIME_SECONDS = {
     [QuestionType.ODD_ONE_OUT]: GameOddOneOutQuestion.THINKING_TIME,
     [QuestionType.ENUMERATION]: GameEnumerationQuestion.THINKING_TIME,
     [QuestionType.REORDERING]: GameReorderingQuestion.THINKING_TIME,
-    [QuestionType.SPECIAL]: 20,
+    // [QuestionType.SPECIAL]: 20,
 }
 
 

@@ -1,4 +1,4 @@
-import { validateEnumItem } from '@/backend/services/question/enumeration/actions'
+import { validateItem } from '@/backend/services/question/enumeration/actions'
 
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/game/GameEnumerationQuestionRepository'
 
@@ -72,7 +72,7 @@ function EnumerationQuestionAnswer({ answer }) {
     const showComplete = (game.status === GameStatus.QUESTION_END || myRole === UserRole.ORGANIZER) // 'player' or 'viewer'
 
     const [handleClick, isSubmitting] = useAsyncAction(async (itemIdx) => {
-        await validateEnumItem(game.id, game.currentRound, game.currentQuestion, itemIdx)
+        await validateItem(game.id, game.currentRound, game.currentQuestion, itemIdx)
     })
 
     const { timerRepo } = useGameRepositoriesContext()

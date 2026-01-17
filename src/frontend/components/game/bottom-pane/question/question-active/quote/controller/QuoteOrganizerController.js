@@ -14,7 +14,7 @@ import { useGameContext } from '@/frontend/contexts'
 import EndQuestionButton from '@/frontend/components/game/bottom-pane/question/question-active/EndQuestionButton'
 import ResetQuestionButton from '@/frontend/components/game/bottom-pane/question/question-active/ResetQuestionButton'
 import ClearQuoteBuzzerButton from '@/frontend/components/game/bottom-pane/question/question-active/quote/controller/ClearQuoteBuzzerButton'
-import BuzzerHeadPlayer from '@/frontend/components/game/bottom-pane/question/question-active/riddle/controller/BuzzerHeadPlayer'
+import BuzzerHeadPlayer from '@/frontend/components/game/bottom-pane/question/question-active/buzzer/controller/BuzzerHeadPlayer'
 import RevealQuoteElementButton from '@/frontend/components/game/bottom-pane/question/question-active/quote/controller/RevealQuoteElement'
 
 import { useParams } from 'next/navigation'

@@ -1,20 +1,10 @@
-import { TimerStatus } from "@/backend/models/Timer";
 import GameBasicQuestionRepository from "@/backend/repositories/question/game/GameBasicQuestionRepository";
-import RoundService from "@/backend/services/round/RoundService";
+import BuzzerRoundService from "@/backend/services/round/buzzer/BuzzerRoundService";
 
-export default class BasicRoundService extends RoundService {
-
-    constructor(gameId, roundId) {
-        super(gameId, roundId)
-    }
+export default class BasicRoundService extends BuzzerRoundService {
 
     async calculateMaxPointsTransaction(transaction, round) {
         return round.questions.length * (round.rewardsPerQuestion + round.rewardsForBonus)
-    }
-
-    async getRound() {
-        const round = await this.roundRepo.getRound(this.roundId)
-        return round
     }
 
     async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {
@@ -26,10 +16,10 @@ export default class BasicRoundService extends RoundService {
         }
 
         await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime)
-        await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase')
+        await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon')
 
-        const gameQuestionRepo = new GameBasicQuestionRepository(this.gameId, this.roundId)
-        await gameQuestionRepo.startQuestionTransaction(transaction, questionId)
+        // const gameQuestionRepo = new GameBasicQuestionRepository(this.gameId, this.roundId)
+        // await gameQuestionRepo.startQuestionTransaction(transaction, questionId)
     }
     
 }

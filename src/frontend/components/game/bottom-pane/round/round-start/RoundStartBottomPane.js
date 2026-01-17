@@ -1,5 +1,5 @@
 import { UserRole } from '@/backend/models/users/User'
-import { startRound } from '@/backend/services/round/round-transitions';
+import { startRound } from '@/backend/services/round/actions';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction'
 

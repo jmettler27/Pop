@@ -8,4 +8,10 @@ export default class GameMCQQuestionRepository extends GameQuestionRepository {
         super(gameId, roundId, QuestionType.MCQ);
     }
 
+    async updateQuestionTeamTransaction(transaction, questionId, teamId) {
+        return await this.updateQuestionTransaction(transaction, questionId,{
+            teamId: teamId
+        });
+    }
+
 } 

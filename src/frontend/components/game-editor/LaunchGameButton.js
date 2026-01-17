@@ -1,4 +1,4 @@
-import { launchGame } from "@/backend/services/game-editor/actions";
+import { launchGame } from "@/backend/services/edit-game/actions";
 
 
 import useAsyncAction from "@/frontend/hooks/async/useAsyncAction"

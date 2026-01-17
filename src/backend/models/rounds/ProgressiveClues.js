@@ -1,7 +1,7 @@
-import { RiddleRound } from '@/backend/models/rounds/Riddle';
+import { BuzzerRound } from '@/backend/models/rounds/Buzzer';
 import { RoundType } from '@/backend/models/rounds/RoundType';
 
-export class ProgressiveCluesRound extends RiddleRound {
+export class ProgressiveCluesRound extends BuzzerRound {
 
     static DEFAULT_DELAY = 2
 

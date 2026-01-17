@@ -1,8 +1,8 @@
-import { RiddleQuestion, GameRiddleQuestion } from '@/backend/models/questions/Riddle';
+import { BuzzerQuestion, GameBuzzerQuestion } from '@/backend/models/questions/Buzzer';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
 // Image questions
-export class ImageQuestion extends RiddleQuestion {
+export class ImageQuestion extends BuzzerQuestion {
 
     static TITLE_MAX_LENGTH = 75;
     static ANSWER_SOURCE_MAX_LENGTH = 75;
@@ -107,7 +107,7 @@ export class ImageQuestion extends RiddleQuestion {
 
 }
 
-export class GameImageQuestion extends GameRiddleQuestion {
+export class GameImageQuestion extends GameBuzzerQuestion {
 
     static THINKING_TIME = 15;
     static REWARD = 1;

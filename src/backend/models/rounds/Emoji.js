@@ -1,7 +1,7 @@
-import { RiddleRound } from '@/backend/models/rounds/Riddle';
+import { BuzzerRound } from '@/backend/models/rounds/Buzzer';
 import { RoundType } from '@/backend/models/rounds/RoundType';
 
-export class EmojiRound extends RiddleRound {
+export class EmojiRound extends BuzzerRound {
     
     constructor(data) {
         super(data);

@@ -6,9 +6,9 @@ import RoundQuoteQuestionRepository from '@/backend/repositories/question/game/G
 import { useGameContext, useRoleContext } from '@/frontend/contexts'
 
 import QuoteOrganizerController from '@/frontend/components/game/bottom-pane/question/question-active/quote/controller/QuoteOrganizerController'
-import RiddleSpectatorController from '@/frontend/components/game/bottom-pane/question/question-active/riddle/controller/RiddleSpectatorController'
-import RiddlePlayerController from '@/frontend/components/game/bottom-pane/question/question-active/riddle/controller/RiddlePlayerController'
-import RiddlePlayers from '@/frontend/components/game/bottom-pane/question/question-active/riddle/players/RiddlePlayers'
+import BuzzerSpectatorController from '@/frontend/components/game/bottom-pane/question/question-active/buzzer/controller/BuzzerSpectatorController'
+import BuzzerPlayerController from '@/frontend/components/game/bottom-pane/question/question-active/buzzer/controller/BuzzerPlayerController'
+import BuzzerPlayers from '@/frontend/components/game/bottom-pane/question/question-active/buzzer/players/BuzzerPlayers'
 
 
 export default function QuoteBottomPane({ baseQuestion }) {
@@ -37,7 +37,7 @@ export default function QuoteBottomPane({ baseQuestion }) {
 
             {/* Right part: list of Quote players who buzzed and/or were canceled */}
             <div className='basis-1/4'>
-                <RiddlePlayers players={players} />
+                <BuzzerPlayers players={players} />
             </div>
         </div>
     )
@@ -48,10 +48,10 @@ function QuoteController({ baseQuestion, players }) {
 
     switch (myRole) {
         case UserRole.PLAYER:
-            return <RiddlePlayerController players={players} />
+            return <BuzzerPlayerController players={players} />
         case UserRole.ORGANIZER:
             return <QuoteOrganizerController baseQuestion={baseQuestion} players={players} />
         default:
-            return <RiddleSpectatorController players={players} />
+            return <BuzzerSpectatorController players={players} />
     }
 }

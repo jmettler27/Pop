@@ -1,9 +1,9 @@
-import { RiddleQuestion, GameRiddleQuestion } from '@/backend/models/questions/Riddle';
+import { BuzzerQuestion, GameBuzzerQuestion } from '@/backend/models/questions/Buzzer';
 import { isArray } from '@/backend/utils/arrays';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
 // Progressive Clues questions
-export class ProgressiveCluesQuestion extends RiddleQuestion {
+export class ProgressiveCluesQuestion extends BuzzerQuestion {
 
     static TITLE_MAX_LENGTH = 50;
     static ANSWER_TITLE_MAX_LENGTH = 100;
@@ -121,7 +121,7 @@ export class ProgressiveCluesQuestion extends RiddleQuestion {
 
 }
 
-export class GameProgressiveCluesQuestion extends GameRiddleQuestion {
+export class GameProgressiveCluesQuestion extends GameBuzzerQuestion {
 
     static REWARD = 1;
     static MAX_TRIES = 2;

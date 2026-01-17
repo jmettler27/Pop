@@ -2,7 +2,7 @@ import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
 import { QuestionType, questionTypeToEmoji } from '@/backend/models/questions/QuestionType'
 
-import { addQuestionToRound } from '@/backend/services/game-editor/actions'
+import { addQuestionToRound } from '@/backend/services/edit-game/actions'
 
 
 import { useState } from 'react'

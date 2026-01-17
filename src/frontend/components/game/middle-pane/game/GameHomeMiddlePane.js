@@ -1,4 +1,4 @@
-import { handleRoundSelected } from '@/backend/services/round/round-transitions'
+import { handleRoundSelected } from '@/backend/services/game/actions'
 
 import { UserRole } from '@/backend/models/users/User'
 

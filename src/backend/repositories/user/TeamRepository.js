@@ -1,6 +1,7 @@
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 
 import Team from '@/backend/models/Team';
+import {shuffle} from "@/backend/utils/arrays";
 
 
 export default class TeamRepository extends FirebaseRepository {
@@ -30,6 +31,13 @@ export default class TeamRepository extends FirebaseRepository {
         return new Team(team);
     }
 
+    async createTeamTransaction(transaction, data, id = null) {
+        Team.validateName(data.name);
+        Team.validateColor(data.color);
+        const team = await super.createTransaction(transaction, data, id);
+        return new Team(team);
+    }
+
     async update(id, data) {
         if (data.name) Team.validateName(data.name);
         if (data.color) Team.validateColor(data.color);
@@ -38,8 +46,13 @@ export default class TeamRepository extends FirebaseRepository {
     }
 
     async getNumTeams(transaction) {
-        const data = await super.getNumDocuments(transaction);
-        return data;
+        return await super.getNumDocuments(transaction);
+    }
+
+    async getShuffledTeamIds(transaction) {
+        const teams = await this.getAllTransaction(transaction);
+        const teamIds = teams.map(t => t.id);
+        return shuffle(teamIds)
     }
 
     // React hooks for real-time operations

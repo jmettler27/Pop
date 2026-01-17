@@ -35,7 +35,7 @@ export default function MCQBottomPane({ baseQuestion }) {
                 <MCQController chooser={chooser} baseQuestion={baseQuestion} />
             </div>
 
-            {/* Right part: list of riddle players who buzzed and/or were canceled */}
+            {/* Right part: list of buzzer players who buzzed and/or were canceled */}
             <div className='basis-1/4'>
                 <GameChooserOrder chooser={chooser} />
             </div>

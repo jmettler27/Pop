@@ -1,9 +1,9 @@
-import { handleBuzzerHeadChanged as handleBasicBuzzerHeadChanged, invalidateAnswer as invalidateBasicAnswer, validateAnswer as validateBasicAnswer } from '@/backend/services/question/basic/actions'
+// import { handleBuzzerHeadChanged as handleBasicBuzzerHeadChanged, invalidateAnswer as invalidateBasicAnswer, validateAnswer as validateBasicAnswer } from '@/backend/services/question/basic/actions'
 import { handleBuzzerHeadChanged as handleBlindtestBuzzerHeadChanged, invalidateAnswer as invalidateBlindtestAnswer, validateAnswer as validateBlindtestAnswer } from '@/backend/services/question/blindtest/actions'
 import { handleBuzzerHeadChanged as handleEmojiBuzzerHeadChanged, invalidateAnswer as invalidateEmojiAnswer, validateAnswer as validateEmojiAnswer } from '@/backend/services/question/emoji/actions'
 import { handleBuzzerHeadChanged as handleImageBuzzerHeadChanged, invalidateAnswer as invalidateImageAnswer, validateAnswer as validateImageAnswer } from '@/backend/services/question/image/actions'
 import { handleBuzzerHeadChanged as handleProgressiveCluesBuzzerHeadChanged, invalidateAnswer as invalidateProgressiveCluesAnswer, validateAnswer as validateProgressiveCluesAnswer } from '@/backend/services/question/progressive-clues/actions'
-import { handleBuzzerHeadChanged as handleQuoteBuzzerHeadChanged, invalidateAnswer as invalidateQuoteAnswer, validateAnswer as validateQuoteAnswer } from '@/backend/services/question/quote/actions'
+import { handleBuzzerHeadChanged as handleQuoteBuzzerHeadChanged } from '@/backend/services/question/quote/actions'
 
 import { QuestionType } from '@/backend/models/questions/QuestionType'
 
@@ -18,8 +18,8 @@ import { useGameContext } from '@/frontend/contexts'
 
 import EndQuestionButton from '@/frontend/components/game/bottom-pane/question/question-active/EndQuestionButton'
 import ResetQuestionButton from '@/frontend/components/game/bottom-pane/question/question-active/ResetQuestionButton'
-import ClearBuzzerButton from '@/frontend/components/game/bottom-pane/question/question-active/riddle/controller/ClearBuzzerButton'
-import BuzzerHeadPlayer from '@/frontend/components/game/bottom-pane/question/question-active/riddle/controller/BuzzerHeadPlayer'
+import ClearBuzzerButton from '@/frontend/components/game/bottom-pane/question/question-active/buzzer/controller/ClearBuzzerButton'
+import BuzzerHeadPlayer from '@/frontend/components/game/bottom-pane/question/question-active/buzzer/controller/BuzzerHeadPlayer'
 
 import useAsyncAction from "@/frontend/hooks/async/useAsyncAction"
 
@@ -35,7 +35,7 @@ import { useParams } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 
 
-export default function RiddleOrganizerController({ baseQuestion, players: questionPlayers }) {
+export default function BuzzerOrganizerController({ baseQuestion, players: questionPlayers }) {
     const { id: gameId } = useParams()
 
     /* Set the state 'focus' to the playerId which is the first element of the buzzed list */
@@ -74,15 +74,15 @@ export default function RiddleOrganizerController({ baseQuestion, players: quest
     return (
         <div className='flex flex-col h-full w-full items-center justify-around'>
             <BuzzerHeadPlayer buzzed={buzzed} />
-            <RiddleOrganizerAnswerController buzzed={buzzed} questionType={baseQuestion.type} />
-            <RiddleOrganizerQuestionController baseQuestion={baseQuestion} />
+            <BuzzerOrganizerAnswerController buzzed={buzzed} questionType={baseQuestion.type} />
+            <BuzzerOrganizerQuestionController baseQuestion={baseQuestion} />
         </div>
     )
 }
 
 
 
-function RiddleOrganizerAnswerController({ buzzed, lang = DEFAULT_LOCALE, questionType }) {
+function BuzzerOrganizerAnswerController({ buzzed, lang = DEFAULT_LOCALE, questionType }) {
     const game = useGameContext()
 
     const buzzedIsEmpty = buzzed.length === 0
@@ -90,8 +90,8 @@ function RiddleOrganizerAnswerController({ buzzed, lang = DEFAULT_LOCALE, questi
     const getValidateAnswerAction = () => {
     
         switch (questionType) {
-            case QuestionType.BASIC:
-                return validateBasicAnswer
+            // case QuestionType.BASIC:
+            //     return validateBasicAnswer
             case QuestionType.BLINDTEST:
                 return validateBlindtestAnswer
             case QuestionType.EMOJI:
@@ -100,8 +100,8 @@ function RiddleOrganizerAnswerController({ buzzed, lang = DEFAULT_LOCALE, questi
                 return validateImageAnswer
             case QuestionType.PROGRESSIVE_CLUES:
                 return validateProgressiveCluesAnswer
-            case QuestionType.QUOTE:
-                return validateQuoteAnswer
+            // case QuestionType.QUOTE:
+            //     return validateQuoteAnswer
         }
     
         throw new Error(`Unsupported question type: ${questionType}`)
@@ -109,8 +109,8 @@ function RiddleOrganizerAnswerController({ buzzed, lang = DEFAULT_LOCALE, questi
     
     const getInvalidateAnswerAction = () => {
         switch (questionType) {
-            case QuestionType.BASIC:
-                return invalidateBasicAnswer
+            // case QuestionType.BASIC:
+            //     return invalidateBasicAnswer
             case QuestionType.BLINDTEST:
                 return invalidateBlindtestAnswer
             case QuestionType.EMOJI:
@@ -119,8 +119,8 @@ function RiddleOrganizerAnswerController({ buzzed, lang = DEFAULT_LOCALE, questi
                 return invalidateImageAnswer
             case QuestionType.PROGRESSIVE_CLUES:
                 return invalidateProgressiveCluesAnswer
-            case QuestionType.QUOTE:
-                return invalidateQuoteAnswer
+            // case QuestionType.QUOTE:
+            //     return invalidateQuoteAnswer
         }
 
         throw new Error(`Unsupported question type: ${questionType}`)
@@ -169,7 +169,7 @@ function RiddleOrganizerAnswerController({ buzzed, lang = DEFAULT_LOCALE, questi
     </>
 }
 
-function RiddleOrganizerQuestionController({ baseQuestion }) {
+function BuzzerOrganizerQuestionController({ baseQuestion }) {
     return (
         <div className='flex flex-row w-full justify-end'>
             {/* Next clue */}

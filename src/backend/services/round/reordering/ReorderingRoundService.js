@@ -6,9 +6,6 @@ import GameOddOneOutQuestionRepository from "@/backend/repositories/question/gam
 
 export default class ReorderingRoundService extends RoundService {
 
-    constructor(gameId, roundId) {
-        super(gameId, roundId)
-    }
 
     async calculateMaxPointsTransaction(transaction, round) {
         return round.questions.length * (round.rewardsPerQuestion + round.rewardsForBonus)

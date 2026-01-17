@@ -1,5 +1,5 @@
 import { submitQuestion } from '@/backend/services/question-creator/actions';
-import { addQuestionToRound } from '@/backend/services/game-editor/actions';
+import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { QuoteQuestion } from '@/backend/models/questions/Quote';

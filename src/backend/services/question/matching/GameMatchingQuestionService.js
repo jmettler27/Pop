@@ -2,19 +2,18 @@ import GameQuestionService from '@/backend/services/question/GameQuestionService
 
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 
-import { ScorePolicyType } from '@/backend/models/ScorePolicy';
+import {findNextAvailableChooser} from '@/backend/utils/arrays';
 
-import { findNextAvailableChooser } from '@/backend/utils/arrays';
-
-import { getDocs, query, where } from 'firebase/firestore';
-import { PlayerStatus } from '@/backend/models/users/Player';
-import { GameMatchingQuestion } from '@/backend/models/questions/Matching';
+import {getDocs, query, where} from 'firebase/firestore';
+import {PlayerStatus} from '@/backend/models/users/Player';
+import {GameMatchingQuestion} from '@/backend/models/questions/Matching';
+import {QuestionType} from "@/backend/models/questions/QuestionType";
 
 
 export default class GameMatchingQuestionService extends GameQuestionService {
 
     constructor(gameId, roundId) {
-        super(gameId, roundId);
+        super(gameId, roundId, QuestionType.MATCHING);
         
         this.chooserRepo = new ChooserRepository(gameId);
     }

@@ -1,7 +1,8 @@
 import GameFactory from '@/backend/models/games/GameFactory';
 
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
-import { arrayUnion } from 'firebase/firestore';
+import {arrayUnion} from 'firebase/firestore';
+import {GameStatus} from "@/backend/models/games/GameStatus";
 
 
 export default class GameRepository extends FirebaseRepository {
@@ -51,6 +52,14 @@ export default class GameRepository extends FirebaseRepository {
             rounds: arrayUnion(roundId)
         });
     }
+
+    async setCurrentQuestionTransaction(transaction, gameId, questionId) {
+        await this.updateTransaction(transaction, gameId, {
+            currentQuestion: questionId,
+            status: GameStatus.QUESTION_ACTIVE
+        });
+    }
+
 
     // React hooks for real-time operations
     useGame(id) {

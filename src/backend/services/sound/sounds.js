@@ -57,5 +57,5 @@ const WRONG_ANSWER_SOUNDS = [
 import { getRandomElement } from '@/backend/utils/arrays';
 
 export const addWrongAnswerSoundToQueueTransaction = async (transaction, gameId) => {
-    await addSoundTransaction(transaction, gameId, getRandomElement(WRONG_ANSWER_SOUNDS))
+    await addSoundTransaction(transaction, getRandomElement(WRONG_ANSWER_SOUNDS))
 }

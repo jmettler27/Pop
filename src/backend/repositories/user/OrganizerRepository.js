@@ -18,6 +18,11 @@ export default class OrganizerRepository extends FirebaseRepository {
         return data.map(organizerData => new Organizer(organizerData));
     }
 
+    async getAllOrganizersTransaction(transaction) {
+        const data = await super.getAllTransaction(transaction);
+        return data.map(organizerData => new Organizer(organizerData));
+    }
+
     async createOrganizer(organizerData, id = null) {
         const data = await super.create(organizerData, id);
         return new Organizer(data);

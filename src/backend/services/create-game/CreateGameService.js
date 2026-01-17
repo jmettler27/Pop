@@ -12,7 +12,7 @@ import SoundRepository from "@/backend/repositories/sound/SoundRepository";
 /**
  * Service for creating a new game
  */
-export default class GameCreatorService {
+export default class CreateGameService {
 
     /**
      * Creates a new game

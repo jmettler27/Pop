@@ -1,4 +1,4 @@
-import { removeQuestionFromRound, updateQuestionCreator } from '@/backend/services/game-editor/edit-game'
+import { removeQuestionFromRound, updateQuestionCreator } from '@/backend/services/edit-game/edit-game'
 
 import { useParams } from 'next/navigation'
 

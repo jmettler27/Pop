@@ -1,5 +1,11 @@
 import RoundService from "@/backend/services/round/RoundService";
 import GameQuoteQuestionRepository from "@/backend/repositories/question/game/GameQuoteQuestionRepository";
+import {ScorePolicyType} from "@/backend/models/ScorePolicy";
+import {GameStatus} from "@/backend/models/games/GameStatus";
+import {PlayerStatus} from "@/backend/models/users/Player";
+import {serverTimestamp} from "firebase/firestore";
+import {TimerStatus} from "@/backend/models/Timer";
+import {Timer} from "lucide-react";
 
 
 export default class QuoteRoundService extends RoundService {
@@ -8,9 +14,69 @@ export default class QuoteRoundService extends RoundService {
         super(gameId, roundId);
     }
 
-    async getRound() {
-        return await this.roundRepo.getRound(this.roundId);
+    async handleRoundSelectedTransaction(transaction, roundId, userId) {
+        const round = await this.roundRepo.getRoundTransaction(transaction, roundId)
+        const chooser = await this.chooserRepo.getChooserTransaction(transaction, this.chooserId)
+        const game = await this.gameRepo.getGameTransaction(transaction, this.gameId)
+
+        // const { type: roundType, questions: questionIds, rewardsPerQuestion, rewardsForBonus, rewardsPerElement } = round
+        const { roundScorePolicy, currentRound, currentQuestion } = game
+
+
+        let prevOrder = -1
+        if (currentRound !== null) {
+            const prevRound = await this.roundRepo.getRoundTransaction(transaction, currentRound)
+            prevOrder = prevRound.order
+        }
+        const newOrder = prevOrder + 1
+
+        let maxPoints = null
+        if (roundScorePolicy === ScorePolicyType.COMPLETION_RATE) {
+            maxPoints = await this.calculateMaxPointsTransaction(transaction, round)
+        }
+
+        if (round.dateStart && !round.dateEnd && currentQuestion) {
+            await this.gameRepo.updateGameStatusTransaction(transaction, this.gameId, GameStatus.QUESTION_ACTIVE)
+            return
+        }
+
+        // Set the status of every player to 'idle'
+        await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE);
+
+        await this.roundRepo.updateRoundTransaction(transaction, roundId, {
+            dateStart: serverTimestamp(),
+            order: newOrder,
+            currentQuestionIdx: 0,
+            ...(maxPoints !== null && { maxPoints })
+        })
+
+
+        // If the round requires an order of chooser teams (e.g. OOO, MCQ) and it is the first round, find a random order for the chooser teams
+        if (chooser.chooserOrder.length === 0 || chooser.chooserIdx === null) {
+            const teamIds = await this.teamRepo.getShuffledTeamIds(transaction)
+            await this.chooserRepo.updateChooserOrderTransaction(transaction, teamIds);
+        }
+
+        await this.chooserRepo.resetChoosersTransaction(transaction);
+
+        await this.timerRepo.updateTimerTransaction(transaction, {
+            status: TimerStatus.RESET,
+            duration: Timer.READY_COUNTDOWN_SECONDS,
+            authorized: false
+        })
+
+        await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon')
+
+        await this.gameRepo.updateGameTransaction(transaction, {
+            currentRound: roundId,
+            currentQuestion: null,
+            status: GameStatus.ROUND_START
+        })
+
+        console.log('Round successfully started', 'game', this.gameId,  'round', roundId)
     }
+
+    /* ============================================================================================================ */
 
     async calculateMaxPointsTransaction(transaction, round) {
         const questions = await Promise.all(round.questions.map(id => this.questionRepo.getQuestionTransaction(transaction, id)));
@@ -33,7 +99,7 @@ export default class QuoteRoundService extends RoundService {
         }
 
         await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime)
-        await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase')
+        await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon')
 
         const gameQuestionRepo = new GameQuoteQuestionRepository(this.gameId, this.roundId)
         await gameQuestionRepo.startQuestionTransaction(transaction, questionId)

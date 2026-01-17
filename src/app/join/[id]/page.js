@@ -1,6 +1,6 @@
 'use client'
 
-import JoinGameService from '@/backend/services/JoinGameService';
+import JoinGameService from '@/backend/services/join-game/JoinGameService';
 
 import { useGameRepositories, useGameData } from '@/backend/repositories/useGameRepositories';
 

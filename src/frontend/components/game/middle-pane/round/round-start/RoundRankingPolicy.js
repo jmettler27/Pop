@@ -34,7 +34,7 @@ function RoundRankingPolicyTitle({ round }) {
         case RoundType.ENUMERATION:
         case RoundType.IMAGE:
         case RoundType.NAGUI:
-            return <RiddleRoundRankingPolicyTitle round={round} />
+            return <BuzzerRoundRankingPolicyTitle round={round} />
         case RoundType.LABELLING:
             return <LabelRoundRankingPolicyTitle round={round} />
         case RoundType.MATCHING:
@@ -50,7 +50,7 @@ function RoundRankingPolicyTitle({ round }) {
     }
 }
 
-function RiddleRoundRankingPolicyTitle({ round }) {
+function BuzzerRoundRankingPolicyTitle({ round }) {
     return <h1 className='2xl:text-3xl'><span className='font-bold'>{round.rewardsPerQuestion} point</span> par bonne réponse</h1>
 }
 

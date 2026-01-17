@@ -1,7 +1,7 @@
 import { BaseQuestion, GameQuestion } from '@/backend/models/questions/Question';
 
-// Riddle-based questions (progressive_clues, image, blindtest, emoji, basic)
-export class RiddleQuestion extends BaseQuestion {
+// Buzzer-based questions (progressive_clues, image, blindtest, emoji, basic, quote)
+export class BuzzerQuestion extends BaseQuestion {
 
     constructor(data) {
         super(data);
@@ -9,7 +9,7 @@ export class RiddleQuestion extends BaseQuestion {
 
 }
 
-export class GameRiddleQuestion extends GameQuestion {
+export class GameBuzzerQuestion extends GameQuestion {
     constructor(data) {
         super(data);
 

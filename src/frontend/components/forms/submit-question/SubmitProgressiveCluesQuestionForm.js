@@ -2,7 +2,7 @@ import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { ProgressiveCluesQuestion } from '@/backend/models/questions/ProgressiveClues';
 
 import { submitQuestion } from '@/backend/services/question-creator/actions';
-import { addQuestionToRound } from '@/backend/services/game-editor/actions';
+import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
 import { topicSchema } from '@/frontend/utils/forms/topics';

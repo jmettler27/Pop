@@ -1,9 +1,9 @@
 import GameQuestionService from "@/backend/services/question/GameQuestionService";
-import { MCQQuestion } from "@/backend/models/questions/MCQ";
-import { QuestionType } from "@/backend/models/questions/QuestionType";
-import { PlayerStatus } from "@/backend/models/users/Player";
+import {MCQQuestion} from "@/backend/models/questions/MCQ";
+import {QuestionType} from "@/backend/models/questions/QuestionType";
+import {PlayerStatus} from "@/backend/models/users/Player";
 
-import { runTransaction } from "firebase/firestore";
+import {runTransaction} from "firebase/firestore";
 
 
 export default class GameMCQQuestionService extends GameQuestionService {

@@ -1,5 +1,7 @@
 import StorageRepository from '@/backend/repositories/storage/StorageRepository';
 import { listAll, getDownloadURL } from "firebase/storage";
+import {runTransaction} from "firebase/firestore";
+import {firestore} from "@/backend/firebase/firebase";
 
 /**
  * Repository for sounds
@@ -41,5 +43,16 @@ export default class SoundRepository extends StorageRepository {
             console.error(err);
             return {};
         }
+    }
+
+    async clearSoundsTransaction(transaction) {
+
+        await runTransaction(firestore, async (transaction) => {
+            // const queueSnapshot = await this.soundQueueRepo.getAllTransaction(transaction);
+
+            // for (const doc of queueSnapshot.docs) {
+            //     transaction.delete(doc.ref)
+            // }
+        });
     }
 } 

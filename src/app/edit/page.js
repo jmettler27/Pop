@@ -1,28 +1,25 @@
 'use client'
 
 import React from 'react';
-import { Form, Formik } from 'formik';
-import * as Yup from 'yup';
+import {Form, Formik} from 'formik';
 
-import { useSession } from 'next-auth/react';
-import { redirect, useRouter } from 'next/navigation'
+import {useSession} from 'next-auth/react';
+import {redirect, useRouter} from 'next/navigation'
 
-import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
-import { stringSchema } from '@/frontend/utils/forms/forms';
+import {DEFAULT_LOCALE, localeSchema} from '@/frontend/utils/locales';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction'
 
 
-import { MyNumberInput, MyTextInput } from '@/frontend/components/forms/StyledFormComponents'
+import {MyNumberInput, MyTextInput} from '@/frontend/components/forms/StyledFormComponents'
 import SubmitFormButton from '@/frontend/components/forms/SubmitFormButton';
-import SelectGameType from '@/frontend/components/forms/SelectGameType';
 import SelectRoundScorePolicy from '@/frontend/components/forms/SelectRoundScorePolicy';
 import SelectLanguage from '@/frontend/components/forms/SelectLanguage';
 
 
 import Game from '@/backend/models/games/Game';
-import CreateGameService from '@/backend/services/game-creator/GameCreatorService';
-import { gameTypeSchema, gameTitleSchema, participantNameSchema } from '@/frontend/utils/forms/game';
-import { ScorePolicyType } from '@/backend/models/ScorePolicy';
+import CreateGameService from '@/backend/services/create-game/CreateGameService';
+import {gameTitleSchema, participantNameSchema} from '@/frontend/utils/forms/game';
+import {ScorePolicyType} from '@/backend/models/ScorePolicy';
 
 /* Validation */
 import * as Yup from 'yup';

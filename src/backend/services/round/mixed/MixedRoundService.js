@@ -3,9 +3,6 @@ import RoundService from "@/backend/services/round/RoundService";
 
 export default class MixedRoundService extends RoundService {
 
-    constructor(gameId, roundId) {
-        super(gameId, roundId)
-    }
 
     async calculateMaxPointsTransaction(transaction, round) {
         return round.questions.length * round.rewardsPerQuestion
@@ -80,7 +77,7 @@ export default class MixedRoundService extends RoundService {
         }
     
         if (baseQuestion.type !== QuestionType.BLINDTEST) {
-            await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase')
+            await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon')
         }
 
         const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(baseQuestion.type, this.gameId, this.roundId)

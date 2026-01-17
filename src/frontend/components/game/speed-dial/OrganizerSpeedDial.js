@@ -1,24 +1,22 @@
-import { resetGame, updateGameStatus, resumeEditing, endGame, updateQuestions } from '@/backend/services/game/actions'
+import {resetGame, resumeEditing, returnToGameHome} from '@/backend/services/game/actions'
 
 import SoundboardController from '@/frontend/components/game/soundboard/SoundboardController'
 
-import { useParams, useRouter } from 'next/navigation'
+import {useParams, useRouter} from 'next/navigation'
 
 import * as React from 'react'
 
 import Backdrop from '@mui/material/Backdrop'
-import SpeedDial, { SpeedDialProps } from '@mui/material/SpeedDial'
+import SpeedDial from '@mui/material/SpeedDial'
 import SpeedDialIcon from '@mui/material/SpeedDialIcon'
 import SpeedDialAction from '@mui/material/SpeedDialAction'
-import { styled } from '@mui/material/styles'
+import {styled} from '@mui/material/styles'
 
 import ShareIcon from '@mui/icons-material/Share'
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic'
 import HomeIcon from '@mui/icons-material/Home'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import EditIcon from '@mui/icons-material/Edit';
-
-
 
 const StyledSpeedDial = styled(SpeedDial)(({ theme }) => ({
     position: 'absolute',
@@ -35,7 +33,6 @@ const actions = [
     { icon: <EditIcon />, name: 'Resume editing' },
 
 ]
-
 
 export default function OrganizerSpeedDial() {
     const { id: gameId } = useParams()
@@ -59,14 +56,14 @@ export default function OrganizerSpeedDial() {
         e.preventDefault()
         switch (name) {
             case 'Share':
-                updateQuestions()
+                // updateQuestions()
                 break
             case 'Soundboard':
                 handleBackdropOpen()
                 setComponent(<SoundboardController />)
                 break
             case 'Home':
-                updateGameStatus(gameId, 'game_home')
+                returnToGameHome(gameId)
                 break
             case 'Reset game':
                 resetGame(gameId)
@@ -77,9 +74,6 @@ export default function OrganizerSpeedDial() {
                 break
         }
     }
-
-
-
 
     return (
         <>

@@ -1,8 +1,7 @@
 import GameQuestionRepository from '@/backend/repositories/question/game/GameQuestionRepository';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { Player } from '@/backend/models/users/Player';
-import { arrayUnion, arrayRemove, Timestamp } from 'firebase/firestore';
+import {QuestionType} from '@/backend/models/questions/QuestionType';
+import {arrayRemove, arrayUnion, Timestamp} from 'firebase/firestore';
 
 
 export default class GameLabellingQuestionRepository extends GameQuestionRepository {
@@ -21,11 +20,17 @@ export default class GameLabellingQuestionRepository extends GameQuestionReposit
 
     async createQuestionTransaction(transaction, questionId, managerId, data) {
         await super.createQuestionTransaction(transaction, questionId, managerId, data);
-        await this.createTransaction(transaction, { buzzed: [], canceled: [] }, [questionId, ...GameLabellingQuestionRepository.LABELLING_PLAYERS_PATH]);
+        await this.createTransaction(transaction, {
+            buzzed: [],
+            canceled: []
+        }, [questionId, ...GameLabellingQuestionRepository.LABELLING_PLAYERS_PATH]);
     }
 
     async resetPlayersTransaction(transaction, questionId) {
-        await this.setTransaction(transaction, [questionId, ...GameLabellingQuestionRepository.LABELLING_PLAYERS_PATH], { buzzed: [], canceled: [] });
+        await this.setTransaction(transaction, [questionId, ...GameLabellingQuestionRepository.LABELLING_PLAYERS_PATH], {
+            buzzed: [],
+            canceled: []
+        });
     }
 
     async cancelPlayerTransaction(transaction, questionId, playerId) {
@@ -40,7 +45,11 @@ export default class GameLabellingQuestionRepository extends GameQuestionReposit
 
     // React hooks
     usePlayers(questionId) {
-        const { data, loading, error } = this.useDocument([questionId, ...GameLabellingQuestionRepository.LABELLING_PLAYERS_PATH]);
+        const {
+            data,
+            loading,
+            error
+        } = this.useDocument([questionId, ...GameLabellingQuestionRepository.LABELLING_PLAYERS_PATH]);
         return {
             // players: data ? data.map(p => new Player(p)) : [],
             data,

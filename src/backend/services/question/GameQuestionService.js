@@ -103,15 +103,15 @@ export default class GameQuestionService  {
 
     async endQuestionTransaction(transaction, questionId) {
         // Update game status
-        this.gameRepo.updateGameTransaction(transaction, this.gameId, {
+        await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
             status: GameStatus.QUESTION_END
         });
 
-        this.gameQuestionRepo.updateTransaction(transaction, questionId, {
+        await this.gameQuestionRepo.updateTransaction(transaction, questionId, {
             dateEnd: serverTimestamp(),
         });
 
-        this.timerRepo.prepareTimerForReadyTransaction(transaction);
+        await this.timerRepo.prepareTimerForReadyTransaction(transaction);
     }
 
 
@@ -136,7 +136,7 @@ export default class GameQuestionService  {
     }
 
     async updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId) {
-        this.gameQuestionRepo.updateTransaction(transaction, questionId, {
+        await this.gameQuestionRepo.updateTransaction(transaction, questionId, {
             winner: {
                 playerId,
                 teamId

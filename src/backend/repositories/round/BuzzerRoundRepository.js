@@ -1,13 +1,13 @@
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 
-export default class RiddleRoundRepository extends RoundRepository {
+export default class BuzzerRoundRepository extends RoundRepository {
     
     constructor(gameId) {
         super(gameId);
     }
 
     /**
-     * Get the current clue for a riddle round
+     * Get the current clue for a buzzer round
      * @param {string} roundId - The ID of the round
      * @returns {Promise<number>} The current clue index
      */
@@ -17,7 +17,7 @@ export default class RiddleRoundRepository extends RoundRepository {
     }
 
     /**
-     * Update the current clue for a riddle round
+     * Update the current clue for a buzzer round
      * @param {string} roundId - The ID of the round
      * @param {number} clueIndex - The new clue index
      * @returns {Promise<Round>} The updated round
@@ -27,7 +27,7 @@ export default class RiddleRoundRepository extends RoundRepository {
     }
 
     /**
-     * Get all clues for a riddle round
+     * Get all clues for a buzzer round
      * @param {string} roundId - The ID of the round
      * @returns {Promise<string[]>} The clues
      */
@@ -37,7 +37,7 @@ export default class RiddleRoundRepository extends RoundRepository {
     }
 
     /**
-     * Add a clue to a riddle round
+     * Add a clue to a buzzer round
      * @param {string} roundId - The ID of the round
      * @param {string} clue - The clue to add
      * @returns {Promise<Round>} The updated round

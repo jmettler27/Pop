@@ -3,7 +3,7 @@ import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 import { useGameRepositoriesContext } from '@/frontend/contexts';
 import { rankingToEmoji } from '@/backend/utils/emojis';
 
-export default function RiddlePlayers({ players, lang = DEFAULT_LOCALE }) {
+export default function BuzzerPlayers({ players, lang = DEFAULT_LOCALE }) {
     const { playerRepo } = useGameRepositoriesContext()
     const { gamePlayers, gamePlayersLoading, gamePlayersError } = playerRepo.useAllPlayersOnce()
 

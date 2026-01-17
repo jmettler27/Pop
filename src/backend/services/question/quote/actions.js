@@ -7,17 +7,22 @@ export const resetQuestion = async (gameId, roundId, questionId) => {
     return service.resetQuestion(questionId);
 };
 
-export const handleCountdownEnd = async (gameId, roundId, questionId) => {
-    const service = new GameQuoteQuestionService(gameId, roundId);
-    return service.handleCountdownEnd(questionId);
-};
-
 export const endQuestion = async (gameId, roundId, questionId) => {
     const service = new GameQuoteQuestionService(gameId, roundId);
     return service.endQuestion(questionId);
 };
 
+export const handleCountdownEnd = async (gameId, roundId, questionId) => {
+    const service = new GameQuoteQuestionService(gameId, roundId);
+    return service.handleCountdownEnd(questionId);
+};
+
 /* ============================================================================================================ */
+
+export const handleBuzzerHeadChanged = async (gameId, roundId, questionId, playerId) => {
+    const service = new GameQuoteQuestionService(gameId, roundId);
+    return service.handleBuzzerHeadChanged(questionId, playerId);
+}
 
 export const clearBuzzer = async (gameId, roundId, questionId) => {
     const service = new GameQuoteQuestionService(gameId, roundId);

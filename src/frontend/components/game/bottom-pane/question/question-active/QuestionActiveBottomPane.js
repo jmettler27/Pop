@@ -1,6 +1,6 @@
 import { useGameContext } from '@/frontend/contexts'
 
-import RiddleBottomPane from '@/frontend/components/game/bottom-pane/question/question-active/riddle/RiddleBottomPane'
+import BuzzerBottomPane from '@/frontend/components/game/bottom-pane/question/question-active/buzzer/BuzzerBottomPane'
 import QuoteBottomPane from '@/frontend/components/game/bottom-pane/question/question-active/quote/QuoteBottomPane'
 import MatchingBottomPane from '@/frontend/components/game/bottom-pane/question/question-active/matching/MatchingBottomPane'
 import EnumerationBottomPane from '@/frontend/components/game/bottom-pane/question/question-active/enumeration/EnumerationBottomPane'
@@ -36,7 +36,7 @@ export default function QuestionActiveBottomPane({ }) {
         case QuestionType.IMAGE:
         case QuestionType.BLINDTEST:
         case QuestionType.EMOJI:
-            return <RiddleBottomPane baseQuestion={baseQuestion} />
+            return <BuzzerBottomPane baseQuestion={baseQuestion} />
         case QuestionType.QUOTE:
             return <QuoteBottomPane baseQuestion={baseQuestion} />
         // case QuestionType.LABELLING:

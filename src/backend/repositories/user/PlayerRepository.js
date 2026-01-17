@@ -14,8 +14,18 @@ export default class PlayerRepository extends FirebaseRepository {
         return data ? new Player(data) : null;
     }
 
+    async getPlayerTransaction(transaction, playerId) {
+        const data = await super.getTransaction(transaction, playerId);
+        return data ? new Player(data) : null;
+    }
+
     async getAllPlayers() {
         const data = await super.getAll();
+        return data.map(p => new Player(p));
+    }
+
+    async getAllPlayersTransaction(transaction) {
+        const data = await super.getAllTransaction(transaction);
         return data.map(p => new Player(p));
     }
 
@@ -33,13 +43,20 @@ export default class PlayerRepository extends FirebaseRepository {
         const data = await super.getByQueryTransaction(transaction, { where: { field: 'teamId', operator: '!=', value: teamId } });
         return data.map(p => new Player(p));
     }
-    
 
     async createPlayer(data, playerId = null) {
         if (!data.name) {
             throw new Error("Player name is required");
         }
         const createdData = await super.create(data, playerId);
+        return new Player(createdData);
+    }
+
+    async createPlayerTransaction(transaction, data, playerId = null) {
+        if (!data.name) {
+            throw new Error("Player name is required");
+        }
+        const createdData = await super.createTransaction(transaction, data, playerId);
         return new Player(createdData);
     }
 

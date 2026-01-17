@@ -1,9 +1,9 @@
-import { RiddleQuestion, GameRiddleQuestion } from '@/backend/models/questions/Riddle';
+import { BuzzerQuestion, GameBuzzerQuestion } from '@/backend/models/questions/Buzzer';
 import { emojiCount, onlyEmojis } from '@/backend/utils/emojis';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
 // Emoji questions
-export class EmojiQuestion extends RiddleQuestion {
+export class EmojiQuestion extends BuzzerQuestion {
 
     static TITLE_MAX_LENGTH = 50;
     static CLUE_MIN_LENGTH = 1;
@@ -120,7 +120,7 @@ export class EmojiQuestion extends RiddleQuestion {
     
 }
 
-export class GameEmojiQuestion extends GameRiddleQuestion {
+export class GameEmojiQuestion extends GameBuzzerQuestion {
 
     static REWARD = 1;
     static MAX_TRIES = 2;

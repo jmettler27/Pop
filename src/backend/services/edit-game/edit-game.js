@@ -1,6 +1,6 @@
 "use server";
 
-import { isRiddle } from '@/backend/utils/question_types';
+import { isBuzzer } from '@/backend/utils/question_types';
 
 import { firestore } from '@/backend/firebase/firebase'
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF, USERS_COLLECTION_REF } from '@/backend/firebase/firestore';
@@ -178,16 +178,16 @@ const addQuestionToRoundTransaction = async (
         managedBy: managerId,
     }
 
-    if (isRiddle(baseQuestion.type)) {
-        const initGameRiddleQuestion = {
+    if (isBuzzer(baseQuestion.type)) {
+        const initGameBuzzerQuestion = {
             ...commonGameQuestion,
             winner: null,
         }
         if (baseQuestion.type === QuestionType.PROGRESSIVE_CLUES) {
             // Add the currentClueIdx :-1 
-            initGameRiddleQuestion.currentClueIdx = -1;
+            initGameBuzzerQuestion.currentClueIdx = -1;
         }
-        transaction.set(gameQuestionRef, initGameRiddleQuestion);
+        transaction.set(gameQuestionRef, initGameBuzzerQuestion);
 
         const gameQuestionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players');
         transaction.set(gameQuestionPlayersRef, {
@@ -386,7 +386,7 @@ const removeQuestionFromRoundTransaction = async (
 ) => {
     const type = questionType || (await getDocDataTransaction(transaction, doc(QUESTIONS_COLLECTION_REF, questionId))).type;
 
-    if (isRiddle(type) || type === QuestionType.QUOTE) {
+    if (isBuzzer(type) || type === QuestionType.QUOTE) {
         const gameQuestionPlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players');
         transaction.delete(gameQuestionPlayersRef);
     }

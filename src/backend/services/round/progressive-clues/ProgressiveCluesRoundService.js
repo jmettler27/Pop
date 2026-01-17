@@ -1,9 +1,12 @@
-import RoundService from "@/backend/services/round/RoundService";
+import BuzzerRoundService from "@/backend/services/round/buzzer/BuzzerRoundService";
+import {RoundType} from "@/backend/models/rounds/RoundType";
 
-export default class ProgressiveCluesRoundService extends RoundService {
+export default class ProgressiveCluesRoundService extends BuzzerRoundService {
 
-    constructor(gameId, roundId) {
-        super(gameId, roundId)
+    constructor(gameId) {
+        super(gameId, RoundType.PROGRESSIVE_CLUES);
+
+        // this.baseQuestionRepo = new BaseProgressiveCluesQuestionRepository();
     }
 
     async calculateMaxPointsTransaction(transaction, round) {
