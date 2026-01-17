@@ -1,55 +1,57 @@
-import RoundMatchingQuestionRepository from '@/backend/repositories/question/game/GameMatchingQuestionRepository'
+import RoundMatchingQuestionRepository from '@/backend/repositories/question/game/GameMatchingQuestionRepository';
 
-
-import LoadingScreen from '@/frontend/components/LoadingScreen'
-import { useGameContext } from '@/frontend/contexts'
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { useGameContext } from '@/frontend/contexts';
 
 import { MatchingEdge, getNodeId } from '@/frontend/components/game/middle-pane/question/matching/gridUtils.js';
 import '@/frontend/components/game/middle-pane/question/matching/styles.scss';
 
-
 export default function PartiallyCorrectMatches({ nodePositions }) {
-    console.log("PARTIALLY CORRECT MATCHES RENDERED")
+  console.log('PARTIALLY CORRECT MATCHES RENDERED');
 
-    const game = useGameContext()
+  const game = useGameContext();
 
-    const roundMatchingQuestionRepo = new RoundMatchingQuestionRepository(game.id, game.currentRound)
-    const { partiallyCorrectMatches, loading, error } = roundMatchingQuestionRepo.usePartiallyCorrectMatches(game.currentQuestion)
+  const roundMatchingQuestionRepo = new RoundMatchingQuestionRepository(game.id, game.currentRound);
+  const { partiallyCorrectMatches, loading, error } = roundMatchingQuestionRepo.usePartiallyCorrectMatches(
+    game.currentQuestion
+  );
 
-    if (error) {
-        return <p><strong>Error: {JSON.stringify(error)}</strong></p>
+  if (error) {
+    return (
+      <p>
+        <strong>Error: {JSON.stringify(error)}</strong>
+      </p>
+    );
+  }
+  if (loading) {
+    return <LoadingScreen loadingText="Loading partially correct matches..." />;
+  }
+  if (!partiallyCorrectMatches) {
+    return <></>;
+  }
+  // elem = {uid: ..., teamId: ..., timestamp: ..., colIndices: [...], matchIdx: ...}
+
+  return partiallyCorrectMatches.map((elem, idx) => {
+    const origRow = elem.matchIdx;
+    const colIndices = elem.colIndices;
+
+    // Draw a edge between any two consecutive pairs in colIndices
+    const colIndicesPairs = [];
+    for (let i = 0; i < colIndices.length - 1; i++) {
+      colIndicesPairs.push([colIndices[i], colIndices[i + 1]]);
     }
-    if (loading) {
-        return <LoadingScreen loadingText="Loading partially correct matches..." />
-    }
-    if (!partiallyCorrectMatches) {
-        return <></>
-    }
-    // elem = {uid: ..., teamId: ..., timestamp: ..., colIndices: [...], matchIdx: ...}
 
-
-    return partiallyCorrectMatches.map((elem, idx) => {
-        const origRow = elem.matchIdx
-        const colIndices = elem.colIndices
-
-        // Draw a edge between any two consecutive pairs in colIndices
-        const colIndicesPairs = []
-        for (let i = 0; i < colIndices.length - 1; i++) {
-            colIndicesPairs.push([colIndices[i], colIndices[i + 1]])
+    return colIndicesPairs.map(([col1, col2]) => (
+      <MatchingEdge
+        key={`partially_correct_${origRow}_${col1}_${col2}`}
+        // className='MatchingGrid-edge-partially-correct'
+        className={
+          idx >= partiallyCorrectMatches.length - 1 ? 'MatchingGrid-edge-new-correct' : 'MatchingGrid-edge-correct'
         }
-
-        return (
-            colIndicesPairs.map(([col1, col2]) => (
-                <MatchingEdge
-                    key={`partially_correct_${origRow}_${col1}_${col2}`}
-                    // className='MatchingGrid-edge-partially-correct'
-                    className={idx >= partiallyCorrectMatches.length - 1 ? 'MatchingGrid-edge-new-correct' : 'MatchingGrid-edge-correct'}
-                    sourceId={getNodeId(origRow, col1)}
-                    targetId={getNodeId(origRow, col2)}
-                    nodePositions={nodePositions}
-                />
-            ))
-        )
-    })
-
+        sourceId={getNodeId(origRow, col1)}
+        targetId={getNodeId(origRow, col2)}
+        nodePositions={nodePositions}
+      />
+    ));
+  });
 }

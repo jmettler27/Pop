@@ -3,9 +3,8 @@ import BaseQuestionRepository from '@/backend/repositories/question/base/BaseQue
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { EnumerationQuestion } from '@/backend/models/questions/Enumeration';
 
-
 export default class BaseEnumerationQuestionRepository extends BaseQuestionRepository {
-    constructor() {
-        super(QuestionType.ENUMERATION);
-    }
-}   
+  constructor() {
+    super(QuestionType.ENUMERATION);
+  }
+}

@@ -15,37 +15,36 @@ import BaseQuoteQuestionRepository from '@/backend/repositories/question/base/Ba
 import BaseReorderingQuestionRepository from '@/backend/repositories/question/base/BaseReorderingQuestionRepository';
 
 export default class BaseQuestionRepositoryFactory {
-    
-    static createRepository(questionType) {
-        switch (questionType) {
-            case QuestionType.BASIC:
-                return new BaseBasicQuestionRepository();
-            case QuestionType.BLINDTEST:
-                return new BaseBlindtestQuestionRepository();
-            case QuestionType.EMOJI:
-                return new BaseEmojiQuestionRepository();
-            case QuestionType.ENUMERATION:
-                return new BaseEnumerationQuestionRepository();
-            case QuestionType.IMAGE:
-                return new BaseImageQuestionRepository();
-            case QuestionType.LABELLING:
-                return new BaseLabellingQuestionRepository();
-            case QuestionType.MATCHING:
-                return new BaseMatchingQuestionRepository();
-            case QuestionType.MCQ:
-                return new BaseMCQQuestionRepository();
-            case QuestionType.NAGUI:
-                return new BaseNaguiQuestionRepository();
-            case QuestionType.ODD_ONE_OUT:
-                return new BaseOddOneOutQuestionRepository();
-            case QuestionType.PROGRESSIVE_CLUES:
-                return new BaseProgressiveCluesQuestionRepository();
-            case QuestionType.QUOTE:
-                return new BaseQuoteQuestionRepository();
-            case QuestionType.REORDERING:
-                return new BaseReorderingQuestionRepository();
-            default:
-                throw new Error(`Unknown question type: ${questionType}`);
-        }
+  static createRepository(questionType) {
+    switch (questionType) {
+      case QuestionType.BASIC:
+        return new BaseBasicQuestionRepository();
+      case QuestionType.BLINDTEST:
+        return new BaseBlindtestQuestionRepository();
+      case QuestionType.EMOJI:
+        return new BaseEmojiQuestionRepository();
+      case QuestionType.ENUMERATION:
+        return new BaseEnumerationQuestionRepository();
+      case QuestionType.IMAGE:
+        return new BaseImageQuestionRepository();
+      case QuestionType.LABELLING:
+        return new BaseLabellingQuestionRepository();
+      case QuestionType.MATCHING:
+        return new BaseMatchingQuestionRepository();
+      case QuestionType.MCQ:
+        return new BaseMCQQuestionRepository();
+      case QuestionType.NAGUI:
+        return new BaseNaguiQuestionRepository();
+      case QuestionType.ODD_ONE_OUT:
+        return new BaseOddOneOutQuestionRepository();
+      case QuestionType.PROGRESSIVE_CLUES:
+        return new BaseProgressiveCluesQuestionRepository();
+      case QuestionType.QUOTE:
+        return new BaseQuoteQuestionRepository();
+      case QuestionType.REORDERING:
+        return new BaseReorderingQuestionRepository();
+      default:
+        throw new Error(`Unknown question type: ${questionType}`);
     }
-} 
+  }
+}

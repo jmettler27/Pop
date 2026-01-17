@@ -1,57 +1,59 @@
-import { UserRole } from '@/backend/models/users/User'
+import { UserRole } from '@/backend/models/users/User';
 
-import RoundQuoteQuestionRepository from '@/backend/repositories/question/game/GameQuoteQuestionRepository'
+import RoundQuoteQuestionRepository from '@/backend/repositories/question/game/GameQuoteQuestionRepository';
 
+import { useGameContext, useRoleContext } from '@/frontend/contexts';
 
-import { useGameContext, useRoleContext } from '@/frontend/contexts'
-
-import QuoteOrganizerController from '@/frontend/components/game/bottom-pane/question/question-active/quote/controller/QuoteOrganizerController'
-import BuzzerSpectatorController from '@/frontend/components/game/bottom-pane/question/question-active/buzzer/controller/BuzzerSpectatorController'
-import BuzzerPlayerController from '@/frontend/components/game/bottom-pane/question/question-active/buzzer/controller/BuzzerPlayerController'
-import BuzzerPlayers from '@/frontend/components/game/bottom-pane/question/question-active/buzzer/players/BuzzerPlayers'
-
+import QuoteOrganizerController from '@/frontend/components/game/bottom-pane/question/question-active/quote/controller/QuoteOrganizerController';
+import BuzzerSpectatorController from '@/frontend/components/game/bottom-pane/question/question-active/buzzer/controller/BuzzerSpectatorController';
+import BuzzerPlayerController from '@/frontend/components/game/bottom-pane/question/question-active/buzzer/controller/BuzzerPlayerController';
+import BuzzerPlayers from '@/frontend/components/game/bottom-pane/question/question-active/buzzer/players/BuzzerPlayers';
 
 export default function QuoteBottomPane({ baseQuestion }) {
-    const game = useGameContext()
+  const game = useGameContext();
 
-    const roundQuoteQuestionRepo = new RoundQuoteQuestionRepository(game.id, game.currentRound)
-    const { players, loading, error } = roundQuoteQuestionRepo.usePlayers(game.currentQuestion)
+  const roundQuoteQuestionRepo = new RoundQuoteQuestionRepository(game.id, game.currentRound);
+  const { players, loading, error } = roundQuoteQuestionRepo.usePlayers(game.currentQuestion);
 
-    if (error) {
-        return <p><strong>Error: </strong>{JSON.stringify(error)}</p>
-    }
-    if (loading) {
-        return <></>
-    }
-    if (!players) {
-        return <></>
-    }
-
+  if (error) {
     return (
-        <div className='flex flex-row h-full divide-x divide-solid'>
+      <p>
+        <strong>Error: </strong>
+        {JSON.stringify(error)}
+      </p>
+    );
+  }
+  if (loading) {
+    return <></>;
+  }
+  if (!players) {
+    return <></>;
+  }
 
-            {/* Left part: controller */}
-            <div className='basis-3/4'>
-                <QuoteController baseQuestion={baseQuestion} players={players} />
-            </div>
+  return (
+    <div className="flex flex-row h-full divide-x divide-solid">
+      {/* Left part: controller */}
+      <div className="basis-3/4">
+        <QuoteController baseQuestion={baseQuestion} players={players} />
+      </div>
 
-            {/* Right part: list of Quote players who buzzed and/or were canceled */}
-            <div className='basis-1/4'>
-                <BuzzerPlayers players={players} />
-            </div>
-        </div>
-    )
+      {/* Right part: list of Quote players who buzzed and/or were canceled */}
+      <div className="basis-1/4">
+        <BuzzerPlayers players={players} />
+      </div>
+    </div>
+  );
 }
 
 function QuoteController({ baseQuestion, players }) {
-    const myRole = useRoleContext()
+  const myRole = useRoleContext();
 
-    switch (myRole) {
-        case UserRole.PLAYER:
-            return <BuzzerPlayerController players={players} />
-        case UserRole.ORGANIZER:
-            return <QuoteOrganizerController baseQuestion={baseQuestion} players={players} />
-        default:
-            return <BuzzerSpectatorController players={players} />
-    }
+  switch (myRole) {
+    case UserRole.PLAYER:
+      return <BuzzerPlayerController players={players} />;
+    case UserRole.ORGANIZER:
+      return <QuoteOrganizerController baseQuestion={baseQuestion} players={players} />;
+    default:
+      return <BuzzerSpectatorController players={players} />;
+  }
 }

@@ -1,19 +1,19 @@
-input[type="email"],
-input[type="text"],
-input[type="number"],
+input[type='email'],
+input[type='text'],
+input[type='number'],
 textarea,
 select {
-    width: 400px;
+  width: 400px;
 }
 
 label {
-    margin-top: 1rem;
+  margin-top: 1rem;
 }
 
 label.checkbox {
-    font-weight: normal;
+  font-weight: normal;
 }
 
-button[type="submit"] {
-    margin-top: 1rem;
+button[type='submit'] {
+  margin-top: 1rem;
 }

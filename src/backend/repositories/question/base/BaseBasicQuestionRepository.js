@@ -3,9 +3,8 @@ import BaseQuestionRepository from '@/backend/repositories/question/base/BaseQue
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { BasicQuestion } from '@/backend/models/questions/Basic';
 
-
 export default class BaseBasicQuestionRepository extends BaseQuestionRepository {
-    constructor() {
-        super(QuestionType.BASIC);
-    }
-}   
+  constructor() {
+    super(QuestionType.BASIC);
+  }
+}

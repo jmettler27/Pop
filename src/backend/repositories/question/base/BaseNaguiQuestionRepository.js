@@ -3,9 +3,8 @@ import BaseQuestionRepository from '@/backend/repositories/question/base/BaseQue
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { NaguiQuestion } from '@/backend/models/questions/Nagui';
 
-
 export default class BaseNaguiQuestionRepository extends BaseQuestionRepository {
-    constructor() {
-        super(QuestionType.NAGUI);
-    }
-}   
+  constructor() {
+    super(QuestionType.NAGUI);
+  }
+}

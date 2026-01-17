@@ -3,9 +3,8 @@ import BaseQuestionRepository from '@/backend/repositories/question/base/BaseQue
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { ReorderingQuestion } from '@/backend/models/questions/Reordering';
 
-
 export default class BaseReorderingQuestionRepository extends BaseQuestionRepository {
-    constructor() {
-        super(QuestionType.REORDERING);
-    }
-}   
+  constructor() {
+    super(QuestionType.REORDERING);
+  }
+}

@@ -20,4 +20,4 @@ export class InvalidGameStateError extends GameError {
     this.currentState = currentState;
     this.expectedState = expectedState;
   }
-} 
+}

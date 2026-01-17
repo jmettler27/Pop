@@ -1,11 +1,9 @@
-import GameQuestionRepository from "@/backend/repositories/question/game/GameQuestionRepository";
+import GameQuestionRepository from '@/backend/repositories/question/game/GameQuestionRepository';
 
-import { QuestionType } from "@/backend/models/questions/QuestionType";
+import { QuestionType } from '@/backend/models/questions/QuestionType';
 
 export default class GameBasicQuestionRepository extends GameQuestionRepository {
-    
-    constructor(gameId, roundId) {
-        super(gameId, roundId, QuestionType.BASIC);
-    }
-
+  constructor(gameId, roundId) {
+    super(gameId, roundId, QuestionType.BASIC);
+  }
 }

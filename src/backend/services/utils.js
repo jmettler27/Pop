@@ -1,16 +1,12 @@
-"use server";
+'use server';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { firestore } from '@/backend/firebase/firebase'
-import {
-    getDoc,
-    doc,
-    setDoc,
-} from 'firebase/firestore'
+import { firestore } from '@/backend/firebase/firebase';
+import { getDoc, doc, setDoc } from 'firebase/firestore';
 
 export const getDocDataTransaction = async (transaction, docRef) => {
-    const docSnap = await transaction.get(docRef);
-    return docSnap.data();
+  const docSnap = await transaction.get(docRef);
+  return docSnap.data();
 };
 
 // export const getDocDataTransaction = async (transaction, ...path) => {
@@ -20,26 +16,26 @@ export const getDocDataTransaction = async (transaction, docRef) => {
 // };
 
 export const updateGameStatusTransaction = async (transaction, gameId, status) => {
-    const gameRef = doc(GAMES_COLLECTION_REF, gameId);
-    await transaction.update(gameRef, { status });
-}
+  const gameRef = doc(GAMES_COLLECTION_REF, gameId);
+  await transaction.update(gameRef, { status });
+};
 
 // READ
 // Get document data
 export async function getDocData(...docPath) {
-    try {
-        const docRef = doc(firestore, ...docPath);
-        const docSnapshot = await getDoc(docRef);
-        return docSnapshot.data();
-    } catch (error) {
-        console.error('Error fetching document:', error);
-        throw error;
-    }
+  try {
+    const docRef = doc(firestore, ...docPath);
+    const docSnapshot = await getDoc(docRef);
+    return docSnapshot.data();
+  } catch (error) {
+    console.error('Error fetching document:', error);
+    throw error;
+  }
 }
 
 export async function copyDocument(fromRef, toRef) {
-    const fromDocData = (await getDoc(fromRef)).data()
+  const fromDocData = (await getDoc(fromRef)).data();
 
-    console.log(fromDocData)
-    await setDoc(toRef, fromDocData)
+  console.log(fromDocData);
+  await setDoc(toRef, fromDocData);
 }

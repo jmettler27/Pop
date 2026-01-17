@@ -77,4 +77,4 @@ The backend follows a layered architecture:
 5. Document complex operations and business logic
 6. Write tests for all new functionality
 7. Use environment variables for configuration
-8. Handle errors appropriately with custom error classes 
+8. Handle errors appropriately with custom error classes

@@ -12,136 +12,133 @@ import { firestore } from '@/backend/firebase/firebase';
 import { runTransaction, serverTimestamp } from 'firebase/firestore';
 import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
 
-
-export default class GameQuestionService  {
-
-    constructor(gameId, roundId, questionType) {
-        if (!gameId) {
-            throw new Error("Game ID is required");
-        }
-        if (!roundId) {
-            throw new Error("Round ID is required");
-        }
-        if (!questionType) {
-            throw new Error("Question type is required");
-        }
-
-        this.gameId = gameId;
-        this.gameRepo = new GameRepository();
-        this.playerRepo = new PlayerRepository(this.gameId);
-        this.timerRepo = new TimerRepository(this.gameId);
-        this.soundRepo = new SoundRepository(this.gameId);
-        this.gameScoreRepo = new GameScoreRepository(this.gameId);
-
-        this.questionType = questionType;
-        this.baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(this.questionType);
-
-        this.roundId = roundId;
-        this.gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(this.questionType, this.gameId, this.roundId);
-        
-        this.roundScoreRepo = new RoundScoreRepository(this.gameId, this.roundId);
+export default class GameQuestionService {
+  constructor(gameId, roundId, questionType) {
+    if (!gameId) {
+      throw new Error('Game ID is required');
+    }
+    if (!roundId) {
+      throw new Error('Round ID is required');
+    }
+    if (!questionType) {
+      throw new Error('Question type is required');
     }
 
-    async resetQuestion(questionId) {
-        if (!questionId) {
-            throw new Error("Question ID is required");
-        }
+    this.gameId = gameId;
+    this.gameRepo = new GameRepository();
+    this.playerRepo = new PlayerRepository(this.gameId);
+    this.timerRepo = new TimerRepository(this.gameId);
+    this.soundRepo = new SoundRepository(this.gameId);
+    this.gameScoreRepo = new GameScoreRepository(this.gameId);
 
-        try {
-            await runTransaction(firestore, transaction => this.resetQuestionTransaction(transaction, questionId));
-        }
-        catch (error) {
-            console.error("There was an error resetting the question", error);
-            throw error;
-        }
-    }
-    
-    async resetQuestionTransaction(transaction, questionId) {
-        // this.gameQuestionRepo.updateTransaction(transaction, questionId, {
-        //     winner: null,
-        //     selectedItems: [],
-        // });
-        
-        // if (alone) {
-        //     this.timerRepo.resetTimerTransaction(transaction, questionId);
-        // }
-        throw new Error("Not implemented");
-    }
+    this.questionType = questionType;
+    this.baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(this.questionType);
 
+    this.roundId = roundId;
+    this.gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(
+      this.questionType,
+      this.gameId,
+      this.roundId
+    );
 
-    async handleCountdownEnd(questionId) {
-        if (!questionId) {
-            throw new Error("Question ID is required");
-        }
+    this.roundScoreRepo = new RoundScoreRepository(this.gameId, this.roundId);
+  }
 
-        try {
-            await runTransaction(firestore, transaction => this.handleCountdownEndTransaction(transaction, questionId));
-        }
-        catch (error) {
-            console.error("There was an error handling the countdown end", error);
-            throw error;
-        }
+  async resetQuestion(questionId) {
+    if (!questionId) {
+      throw new Error('Question ID is required');
     }
 
-    async handleCountdownEndTransaction(transaction, questionId) {
-        throw new Error("Not implemented");
+    try {
+      await runTransaction(firestore, (transaction) => this.resetQuestionTransaction(transaction, questionId));
+    } catch (error) {
+      console.error('There was an error resetting the question', error);
+      throw error;
+    }
+  }
+
+  async resetQuestionTransaction(transaction, questionId) {
+    // this.gameQuestionRepo.updateTransaction(transaction, questionId, {
+    //     winner: null,
+    //     selectedItems: [],
+    // });
+
+    // if (alone) {
+    //     this.timerRepo.resetTimerTransaction(transaction, questionId);
+    // }
+    throw new Error('Not implemented');
+  }
+
+  async handleCountdownEnd(questionId) {
+    if (!questionId) {
+      throw new Error('Question ID is required');
     }
 
-    async endQuestion(questionId) {
-        if (!questionId) {
-            throw new Error("Question ID is required");
-        }
+    try {
+      await runTransaction(firestore, (transaction) => this.handleCountdownEndTransaction(transaction, questionId));
+    } catch (error) {
+      console.error('There was an error handling the countdown end', error);
+      throw error;
+    }
+  }
 
-        try {
-            await runTransaction(firestore, transaction => this.endQuestionTransaction(transaction, questionId));
-        }
-        catch (error) {
-            console.error("There was an error ending the question", error);
-            throw error;
-        }
+  async handleCountdownEndTransaction(transaction, questionId) {
+    throw new Error('Not implemented');
+  }
+
+  async endQuestion(questionId) {
+    if (!questionId) {
+      throw new Error('Question ID is required');
     }
 
-    async endQuestionTransaction(transaction, questionId) {
-        // Update game status
-        await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
-            status: GameStatus.QUESTION_END
-        });
+    try {
+      await runTransaction(firestore, (transaction) => this.endQuestionTransaction(transaction, questionId));
+    } catch (error) {
+      console.error('There was an error ending the question', error);
+      throw error;
+    }
+  }
 
-        await this.gameQuestionRepo.updateTransaction(transaction, questionId, {
-            dateEnd: serverTimestamp(),
-        });
+  async endQuestionTransaction(transaction, questionId) {
+    // Update game status
+    await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
+      status: GameStatus.QUESTION_END,
+    });
 
-        await this.timerRepo.prepareTimerForReadyTransaction(transaction);
+    await this.gameQuestionRepo.updateTransaction(transaction, questionId, {
+      dateEnd: serverTimestamp(),
+    });
+
+    await this.timerRepo.prepareTimerForReadyTransaction(transaction);
+  }
+
+  async updateQuestionWinner(questionId, playerId, teamId) {
+    if (!questionId) {
+      throw new Error('Question ID is required');
+    }
+    if (!playerId) {
+      throw new Error('Player ID is required');
+    }
+    if (!teamId) {
+      throw new Error('Team ID is required');
     }
 
-
-    async updateQuestionWinner(questionId, playerId, teamId) {
-        if (!questionId) {
-            throw new Error("Question ID is required");
-        }
-        if (!playerId) {
-            throw new Error("Player ID is required");
-        }
-        if (!teamId) {
-            throw new Error("Team ID is required");
-        }
-
-        try {
-            await runTransaction(firestore, transaction => this.updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId));
-        }
-        catch (error) {
-            console.error("There was an error updating the question winner", error);
-            throw error;
-        }
+    try {
+      await runTransaction(firestore, (transaction) =>
+        this.updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId)
+      );
+    } catch (error) {
+      console.error('There was an error updating the question winner', error);
+      throw error;
     }
+  }
 
-    async updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId) {
-        await this.gameQuestionRepo.updateTransaction(transaction, questionId, {
-            winner: {
-                playerId,
-                teamId
-            }
-        });
-    }
-
+  async updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId) {
+    await this.gameQuestionRepo.updateTransaction(transaction, questionId, {
+      winner: {
+        playerId,
+        teamId,
+      },
+    });
+  }
 }

@@ -19,18 +19,14 @@ describe('GameService', () => {
 
   describe('startGame', () => {
     it('should throw GameNotFoundError if game does not exist', async () => {
-      await expect(gameService.startGame('non-existent-id'))
-        .rejects
-        .toThrow(GameNotFoundError);
+      await expect(gameService.startGame('non-existent-id')).rejects.toThrow(GameNotFoundError);
     });
 
     it('should throw InvalidGameStateError if game is not in LOBBY state', async () => {
       const game = await gameService.createGame();
       await gameService.updateGameState(game.id, GAME_STATES.PLAYING);
-      
-      await expect(gameService.startGame(game.id))
-        .rejects
-        .toThrow(InvalidGameStateError);
+
+      await expect(gameService.startGame(game.id)).rejects.toThrow(InvalidGameStateError);
     });
   });
-}); 
+});

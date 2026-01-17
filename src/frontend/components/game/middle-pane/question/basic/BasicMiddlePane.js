@@ -1,110 +1,125 @@
-import { QuestionTypeIcon } from '@/backend/utils/question_types'
-import { CORRECT_ANSWER_TEXT, INCORRECT_ANSWER_TEXT } from "@/backend/utils/question/question"
+import { QuestionTypeIcon } from '@/backend/utils/question_types';
+import { CORRECT_ANSWER_TEXT, INCORRECT_ANSWER_TEXT } from '@/backend/utils/question/question';
 
-import { topicToEmoji } from '@/backend/models/Topic'
-import { GameStatus } from '@/backend/models/games/GameStatus'
-import { QuestionType } from '@/backend/models/questions/QuestionType'
-import { UserRole } from '@/backend/models/users/User'
+import { topicToEmoji } from '@/backend/models/Topic';
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { UserRole } from '@/backend/models/users/User';
 
-import GameBasicQuestionRepository from '@/backend/repositories/question/game/GameBasicQuestionRepository'
+import GameBasicQuestionRepository from '@/backend/repositories/question/game/GameBasicQuestionRepository';
 
+import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales'
-
-import LoadingScreen from '@/frontend/components/LoadingScreen'
-import { useGameContext, useRoleContext } from '@/frontend/contexts'
-import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pane/question/QuestionHeader'
-
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { useGameContext, useRoleContext } from '@/frontend/contexts';
+import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pane/question/QuestionHeader';
 
 export default function BasicMiddlePane({ baseQuestion }) {
-
-    return (
-        <div className='flex flex-col h-full items-center'>
-            <div className='flex h-[10%] flex-col items-center justify-center'>
-                <BasicQuestionHeader baseQuestion={baseQuestion} />
-            </div>
-            <div className='flex h-[10%] w-full items-center justify-center space-y-2'>
-                <h2 className='2xl:text-4xl'>{baseQuestion.title}</h2>
-            </div>
-            <div className='flex h-[80%] w-full items-center justify-center'>
-                <BasicQuestionMainContent baseQuestion={baseQuestion} />
-            </div>
-        </div>
-    )
+  return (
+    <div className="flex flex-col h-full items-center">
+      <div className="flex h-[10%] flex-col items-center justify-center">
+        <BasicQuestionHeader baseQuestion={baseQuestion} />
+      </div>
+      <div className="flex h-[10%] w-full items-center justify-center space-y-2">
+        <h2 className="2xl:text-4xl">{baseQuestion.title}</h2>
+      </div>
+      <div className="flex h-[80%] w-full items-center justify-center">
+        <BasicQuestionMainContent baseQuestion={baseQuestion} />
+      </div>
+    </div>
+  );
 }
 
-
 function BasicQuestionHeader({ baseQuestion }) {
-    return (
-        <div className='flex flex-row items-center justify-center space-x-1'>
-            <QuestionTypeIcon questionType={baseQuestion.type} fontSize={50} />
-            <h1 className='2xl:text-4xl'>{topicToEmoji(baseQuestion.topic)} <strong>{QuestionType.typeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder /></strong> - {baseQuestion.source}</h1>
-        </div>
-    )
+  return (
+    <div className="flex flex-row items-center justify-center space-x-1">
+      <QuestionTypeIcon questionType={baseQuestion.type} fontSize={50} />
+      <h1 className="2xl:text-4xl">
+        {topicToEmoji(baseQuestion.topic)}{' '}
+        <strong>
+          {QuestionType.typeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
+        </strong>{' '}
+        - {baseQuestion.source}
+      </h1>
+    </div>
+  );
 }
 
 function BasicQuestionMainContent({ baseQuestion }) {
-    const game = useGameContext()
-    const myRole = useRoleContext()
+  const game = useGameContext();
+  const myRole = useRoleContext();
 
-    const gameQuestionRepo = new GameBasicQuestionRepository(game.id, game.currentRound)
-    const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useGameQuestion(game.currentQuestion)
+  const gameQuestionRepo = new GameBasicQuestionRepository(game.id, game.currentRound);
+  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useGameQuestion(
+    game.currentQuestion
+  );
 
-    if (gameQuestionError) {
-        return <p><strong>Error: {JSON.stringify(gameQuestionError)}</strong></p>
-    }
-    if (gameQuestionLoading) {
-        return <LoadingScreen loadingText='Loading...' />
-    }
-    if (!gameQuestion) {
-        return <></>
-    }
-
+  if (gameQuestionError) {
     return (
-        <div className='flex flex-col h-full w-full'>
-            <div className='flex h-[80%] w-full items-center justify-center'>
-                <BasicQuestionAnswer baseQuestion={baseQuestion} gameQuestion={gameQuestion} />
-            </div>
-            <div className='flex h-[20%] w-full items-center justify-center'>
-                {(game.status === GameStatus.QUESTION_END || myRole === UserRole.ORGANIZER) && <BasicQuestionFooter baseQuestion={baseQuestion} gameQuestion={gameQuestion} />}
-            </div>
-        </div>
-    )
+      <p>
+        <strong>Error: {JSON.stringify(gameQuestionError)}</strong>
+      </p>
+    );
+  }
+  if (gameQuestionLoading) {
+    return <LoadingScreen loadingText="Loading..." />;
+  }
+  if (!gameQuestion) {
+    return <></>;
+  }
+
+  return (
+    <div className="flex flex-col h-full w-full">
+      <div className="flex h-[80%] w-full items-center justify-center">
+        <BasicQuestionAnswer baseQuestion={baseQuestion} gameQuestion={gameQuestion} />
+      </div>
+      <div className="flex h-[20%] w-full items-center justify-center">
+        {(game.status === GameStatus.QUESTION_END || myRole === UserRole.ORGANIZER) && (
+          <BasicQuestionFooter baseQuestion={baseQuestion} gameQuestion={gameQuestion} />
+        )}
+      </div>
+    </div>
+  );
 }
 
 function BasicQuestionAnswer({ baseQuestion, gameQuestion }) {
-    const game = useGameContext()
-    const myRole = useRoleContext()
+  const game = useGameContext();
+  const myRole = useRoleContext();
 
-    const statusToColor = (correct) => {
-        if (correct === true) // Question has been answered correctly
-            return 'text-green-600'
-        else if (correct === false) // Question has been answered incorrectly
-            return 'text-red-600'
-        else // Question not answered yet
-            return (myRole === UserRole.ORGANIZER) && 'text-orange-300'
-    }
+  const statusToColor = (correct) => {
+    if (correct === true)
+      // Question has been answered correctly
+      return 'text-green-600';
+    else if (correct === false)
+      // Question has been answered incorrectly
+      return 'text-red-600'; // Question not answered yet
+    else return myRole === UserRole.ORGANIZER && 'text-orange-300';
+  };
 
-    return (game.status === GameStatus.QUESTION_END || myRole === UserRole.ORGANIZER) && <span className={`2xl:text-4xl font-bold ${statusToColor(gameQuestion.correct)}`}>{baseQuestion.answer}</span>
-
+  return (
+    (game.status === GameStatus.QUESTION_END || myRole === UserRole.ORGANIZER) && (
+      <span className={`2xl:text-4xl font-bold ${statusToColor(gameQuestion.correct)}`}>{baseQuestion.answer}</span>
+    )
+  );
 }
 
-
-
 function BasicQuestionFooter({ baseQuestion, gameQuestion, lang = DEFAULT_LOCALE }) {
-    const explanation = baseQuestion.explanation
+  const explanation = baseQuestion.explanation;
 
-    return (
-        <div className='flex flex-col h-full items-center justify-center'>
-            <span className="text-4xl">{gameQuestion.correct !== null && <BasicQuestionPlayerAnswerText gameQuestion={gameQuestion} lang={lang} />}</span>
-            {explanation && <span className='2xl:text-2xl'>👉 {explanation}</span>}
-        </div>
-    )
+  return (
+    <div className="flex flex-col h-full items-center justify-center">
+      <span className="text-4xl">
+        {gameQuestion.correct !== null && <BasicQuestionPlayerAnswerText gameQuestion={gameQuestion} lang={lang} />}
+      </span>
+      {explanation && <span className="2xl:text-2xl">👉 {explanation}</span>}
+    </div>
+  );
 }
 
 function BasicQuestionPlayerAnswerText({ gameQuestion, lang = DEFAULT_LOCALE }) {
-    return (gameQuestion.correct) ?
-        <span className="text-green-500">{CORRECT_ANSWER_TEXT[lang]}</span> :
-        <span className="text-red-500">{INCORRECT_ANSWER_TEXT[lang]}</span>
-
+  return gameQuestion.correct ? (
+    <span className="text-green-500">{CORRECT_ANSWER_TEXT[lang]}</span>
+  ) : (
+    <span className="text-red-500">{INCORRECT_ANSWER_TEXT[lang]}</span>
+  );
 }
