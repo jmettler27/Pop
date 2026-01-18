@@ -1,9 +1,8 @@
-import GameQuestionRepository from '@/backend/repositories/question/game/GameQuestionRepository';
-
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { arrayRemove, arrayUnion, Timestamp } from 'firebase/firestore';
+import GameBuzzerQuestionRepository from '@/backend/repositories/question/game/GameBuzzerQuestionRepository';
 
-export default class GameQuoteQuestionRepository extends GameQuestionRepository {
+export default class GameQuoteQuestionRepository extends GameBuzzerQuestionRepository {
   static QUOTE_PLAYERS_PATH = ['realtime', 'players'];
 
   constructor(gameId, roundId) {
@@ -26,6 +25,12 @@ export default class GameQuoteQuestionRepository extends GameQuestionRepository 
       questionId,
       ...GameQuoteQuestionRepository.QUOTE_PLAYERS_PATH,
     ]);
+  }
+
+  async updateQuestionRevealedElementsTransaction(transaction, questionId, revealed) {
+    return await this.updateQuestionTransaction(transaction, questionId, {
+      revealed,
+    });
   }
 
   async updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId) {

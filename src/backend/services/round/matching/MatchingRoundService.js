@@ -90,7 +90,7 @@ export default class MatchingRoundService extends RoundService {
     await this.readyRepo.resetReadyTransaction(transaction);
   }
 
-  /* ============================================================================================================ */
+  /* =============================================================================================================== */
 
   async calculateMaxPointsTransaction(transaction, round) {
     return round.questions.length * (round.rewardsPerQuestion + round.rewardsForBonus);

@@ -137,7 +137,7 @@ export default class RoundService {
     const currentGlobalScoresProgress = gameScoresData.scoresProgress;
 
     const roundScores = roundScoresData.scores;
-    const currentRoundScoresProgress = roundScoresData.scoresProgress;
+    const currRoundScoresProgress = roundScoresData.scoresProgress;
 
     // currentGlobalScores:         {team1: globalScore1, team2: globalScore2, ...}
     // currentGlobalScoresProgress: {
@@ -260,7 +260,7 @@ export default class RoundService {
     // Result: filledRoundProgress = {team1: {question1: score1, question2: score2, ...}, team2: {question1: score1, question2: score2, ...}, ...}
     let filledRoundProgress = {};
     Object.keys(roundScores).forEach((teamId) => {
-      const teamRoundProgress = currentRoundScoresProgress[teamId] || {};
+      const teamRoundProgress = currRoundScoresProgress[teamId] || {};
       let teamScores = {};
       for (const [idx, questionId] of questionIds.entries()) {
         const scoreAtQuestion = teamRoundProgress[questionId] || null;
@@ -481,7 +481,7 @@ export default class RoundService {
     // console.log('Round successfully started', 'game', this.gameId,  'round', roundId)
   }
 
-  /* ============================================================================================================ */
+  /* =============================================================================================================== */
 
   async calculateMaxPointsTransaction(transaction, round) {
     throw new Error('Not implemented');

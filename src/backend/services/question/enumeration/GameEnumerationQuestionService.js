@@ -29,7 +29,15 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
 
     await super.resetQuestionTransaction(transaction, questionId);
 
-    console.log('Enumeration question successfully reset', questionId);
+    console.log(
+      'Enumeration question successfully reset',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId
+    );
   }
 
   async handleCountdownEndTransaction(transaction, questionId) {
@@ -51,7 +59,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
     const { challenger } = questionPlayers;
     const { teamId, playerId, numCorrect, bet } = challenger;
 
-    const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScores;
+    const { scores: currRoundScores, scoresProgress: currRoundProgress } = roundScores;
 
     const challengers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId);
     const spectators = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId);
@@ -65,10 +73,10 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
       }
       const newRoundScores = {};
       const newRoundProgress = {};
-      newRoundScores[teamId] = currentRoundScores[teamId] || 0;
+      newRoundScores[teamId] = currRoundScores[teamId] || 0;
       newRoundProgress[teamId] = {
-        ...currentRoundProgress[teamId],
-        [questionId]: currentRoundScores[teamId] || 0,
+        ...currRoundProgress[teamId],
+        [questionId]: currRoundScores[teamId] || 0,
       };
 
       const spectatorsSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '!=', teamId)));
@@ -82,10 +90,10 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
       for (const spectatorTeamDoc of spectatorTeamsSnapshot.docs) {
         const stid = spectatorTeamDoc.id;
         newRoundProgress[stid] = {
-          ...currentRoundProgress[stid],
-          [questionId]: currentRoundScores[stid] + reward,
+          ...currRoundProgress[stid],
+          [questionId]: currRoundScores[stid] + reward,
         };
-        newRoundScores[stid] = currentRoundScores[stid] + reward;
+        newRoundScores[stid] = currRoundScores[stid] + reward;
       }
 
       await this.roundScoreRepo.updateScoresTransaction(transaction, roundId, {
@@ -109,10 +117,18 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
 
     await super.endQuestionTransaction(transaction, questionId);
 
-    console.log('Enumeration question successfully ended', questionId);
+    console.log(
+      'Enumeration question successfully ended',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId
+    );
   }
 
-  /* ============================================================================================================ */
+  /* =============================================================================================================== */
 
   async addBet(questionId, playerId, teamId, bet) {
     if (!questionId) {
@@ -137,7 +153,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
         await this.gameQuestionRepo.addBetTransaction(transaction, questionId, playerId, teamId, bet);
       });
     } catch (error) {
-      console.error('There was an error adding the bet:', error);
+      console.error('Failed to add the bet:', error);
       throw error;
     }
   }
@@ -150,7 +166,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
     try {
       await runTransaction(firestore, (transaction) => this.endReflectionTransaction(transaction, questionId));
     } catch (error) {
-      console.error('There was an error ending the enum reflection:', error);
+      console.error('Failed to end the enum reflection:', error);
       throw error;
     }
   }
@@ -205,7 +221,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
         console.log('Item validated successfully', questionId, itemIdx);
       });
     } catch (error) {
-      console.error('There was an error validating the item:', error);
+      console.error('Failed to validate the item:', error);
       throw error;
     }
   }
@@ -226,7 +242,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
         console.log('Valid items incremented successfully', questionId, organizerId);
       });
     } catch (error) {
-      console.error('There was an error incrementing the valid items:', error);
+      console.error('Failed to increment the valid items:', error);
       throw error;
     }
   }

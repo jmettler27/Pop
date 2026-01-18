@@ -20,7 +20,19 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     try {
       await runTransaction(firestore, async (transaction) => this.resetQuestionTransaction(transaction, questionId));
     } catch (error) {
-      console.error('There was an error resetting the question', error);
+      console.error(
+        'Failed to reset buzzer question',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'type',
+        this.questionType,
+        'err',
+        error
+      );
       throw error;
     }
   }
@@ -42,9 +54,33 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
           dateEnd: serverTimestamp(),
         });
         await this.timerRepo.prepareTimerForReadyTransaction(transaction);
+
+        console.log(
+          'Buzzer question successfully reset',
+          'game',
+          this.gameId,
+          'round',
+          this.roundId,
+          'question',
+          questionId,
+          'type',
+          this.questionType
+        );
       });
     } catch (error) {
-      console.error('There was an error ending the question', error);
+      console.error(
+        'Failed to end buzzer question',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'type',
+        this.questionType,
+        'err',
+        error
+      );
       throw error;
     }
   }
@@ -57,23 +93,36 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     try {
       await runTransaction(firestore, (transaction) => this.handleCountdownEndTransaction(transaction, questionId));
     } catch (error) {
-      console.error('There was an error handling the countdown end', error);
+      console.error(
+        'Failed to handle question countdown',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'type',
+        this.questionType,
+        'err',
+        error
+      );
       throw error;
     }
   }
 
   async handleCountdownEndTransaction(transaction, questionId) {
-    // throw new Error("Not implemented");
+    const players = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
+    const buzzed = players.buzzed;
 
-    const players = await this.gameQuestionRepo.getPlayersTransaction(transaction);
-    const { buzzed, canceled } = players;
-
-    if (buzzed.length === 0) await this.timerRepo.prepareTimerForReadyTransaction(transaction);
-    // await updateTimerStateTransaction(transaction, gameId, 'reset')
-    else await invalidateBuzzerAnswerTransaction(transaction, gameId, roundId, questionId, buzzed[0], questionType);
+    if (buzzed.length === 0) {
+      await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.RESET);
+      // await this.timerRepo.prepareTimerForReadyTransaction(transaction);
+    } else {
+      await this.invalidateAnswerTransaction(transaction, questionId, buzzed[0]);
+    }
   }
 
-  /* ============================================================================================================ */
+  /* =============================================================================================================== */
   async handleBuzzerHeadChanged(questionId, playerId) {
     if (!questionId) {
       throw new Error('Question ID is required');
@@ -85,11 +134,36 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     try {
       await runTransaction(firestore, async (transaction) => {
         await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.FOCUS);
-        // await updateTimerStateTransaction(transaction, gameId, 'start')
-        await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.START);
+        // await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.START);
+
+        console.log(
+          'Buzzer head change successfully handled',
+          'game',
+          this.gameId,
+          'round',
+          this.roundId,
+          'question',
+          questionId,
+          'type',
+          this.questionType,
+          'player',
+          playerId
+        );
       });
     } catch (error) {
-      console.error('There was an error handling the buzzer head change', error);
+      console.error(
+        'Failed to handle buzzer head change',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'type',
+        this.questionType,
+        'err',
+        error
+      );
       throw error;
     }
   }
@@ -106,9 +180,37 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
       await runTransaction(firestore, async (transaction) => {
         await this.gameQuestionRepo.addPlayerToBuzzerTransaction(transaction, questionId, playerId);
         await this.soundRepo.addSoundTransaction(transaction, 'sfx-menu-validate');
+
+        console.log(
+          'Player successfully added to buzzer',
+          'game',
+          this.gameId,
+          'round',
+          this.roundId,
+          'question',
+          questionId,
+          'type',
+          this.questionType,
+          'player',
+          playerId
+        );
       });
     } catch (error) {
-      console.error('There was an error adding the player to the buzzer', error);
+      console.error(
+        'Failed to add player to buzzer',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'type',
+        this.questionType,
+        'player',
+        playerId,
+        'err',
+        error
+      );
       throw error;
     }
   }
@@ -131,9 +233,36 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
         // if (buzzed[0] === playerId) {
         //     await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.RESET);
         // }
+        console.log(
+          'Player successfully removed from buzzer',
+          'game',
+          this.gameId,
+          'round',
+          this.roundId,
+          'question',
+          questionId,
+          'type',
+          this.questionType,
+          'player',
+          playerId
+        );
       });
     } catch (error) {
-      console.error('There was an error removing the player from the buzzer', error);
+      console.error(
+        'Failed to remove player from buzzer',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'type',
+        this.questionType,
+        'player',
+        playerId,
+        'err',
+        error
+      );
       throw error;
     }
   }
@@ -154,14 +283,39 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
         await this.gameQuestionRepo.clearBuzzedPlayersTransaction(transaction, questionId);
         await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.RESET);
         await this.soundRepo.addSoundTransaction(transaction, 'robinet_desert');
+
+        console.log(
+          'Buzzer cleared successfully',
+          'game',
+          this.gameId,
+          'round',
+          this.roundId,
+          'question',
+          questionId,
+          'type',
+          this.questionType
+        );
       });
     } catch (error) {
-      console.error('There was an error clearing the buzzer', error);
+      console.error(
+        'Failed to clear buzzer',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'type',
+        this.questionType,
+        'err',
+        error
+      );
+
       throw error;
     }
   }
 
-  async validateAnswer(questionId, playerId, wholeTeam = false) {
+  async validateAnswer(questionId, playerId) {
     if (!questionId) {
       throw new Error('Question ID is required');
     }
@@ -171,15 +325,29 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
 
     try {
       await runTransaction(firestore, (transaction) =>
-        this.validateAnswerTransaction(transaction, questionId, playerId, wholeTeam)
+        this.validateAnswerTransaction(transaction, questionId, playerId)
       );
     } catch (error) {
-      console.error('There was an error validating the answer', error);
+      console.log(
+        'Failed to validate answer to buzzer question',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'type',
+        this.questionType,
+        'player',
+        playerId,
+        'err',
+        error
+      );
       throw error;
     }
   }
 
-  async validateAnswerTransaction(transaction, questionId, playerId, wholeTeam) {
+  async validateAnswerTransaction(transaction, questionId, playerId) {
     // Update the winner team scores
     const player = await this.playerRepo.getPlayerTransaction(transaction);
     const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
@@ -194,11 +362,26 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
 
     // Update the question winner team
     await this.gameQuestionRepo.updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId);
-    await this.soundRepo.addSoundTransaction(transaction, 'Anime_wow');
+    await this.soundRepo.addSoundTransaction(transaction, 'Anime wow');
+
     await this.endQuestionTransaction(transaction, questionId);
+
+    console.log(
+      'Answer to buzzer question successfully validated',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId,
+      'type',
+      this.questionType,
+      'player',
+      playerId
+    );
   }
 
-  async invalidateAnswer(questionId, playerId, wholeTeam = false) {
+  async invalidateAnswer(questionId, playerId) {
     if (!questionId) {
       throw new Error('Question ID is required');
     }
@@ -208,17 +391,33 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
 
     try {
       await runTransaction(firestore, (transaction) =>
-        this.invalidateAnswerTransaction(transaction, questionId, playerId, wholeTeam)
+        this.invalidateAnswerTransaction(transaction, questionId, playerId)
       );
     } catch (error) {
-      console.error('There was an error invalidating the answer', error);
+      console.log(
+        'Failed to invalidate answer to buzzer question',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'type',
+        this.questionType,
+        'player',
+        playerId,
+        'err',
+        error
+      );
       throw error;
     }
   }
 
-  async invalidateAnswerTransaction(transaction, questionId, playerId, wholeTeam) {
+  async invalidateAnswerTransaction(transaction, questionId, playerId) {
     const gameQuestion = await this.gameQuestionRepo.getQuestion(questionId);
     const clueIdx = gameQuestion.currentClueIdx || 0;
+
+    await this.gameQuestionRepo.cancelPlayerTransaction(transaction, questionId, playerId);
 
     await this.gameQuestionRepo.updatePlayersTransaction(transaction, questionId, {
       canceled: arrayUnion({
@@ -239,7 +438,23 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     //     await removeBuzzedPlayer(gameId, roundId, questionId, playerId)
     //     updatePlayerStatus(gameId, playerId, 'wrong')
     // }
+
+    console.log(
+      'Answer to buzzer question successfully invalidated',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId,
+      'type',
+      this.questionType,
+      'player',
+      playerId
+    );
   }
+
+  /* =============================================================================================================== */
 
   // async updateQuestionWinner(questionId, playerId, teamId) {
   //     if (!questionId) {
@@ -256,7 +471,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
   //         await runTransaction(firestore, transaction => this.updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId));
   //     }
   //     catch (error) {
-  //         console.error("There was an error updating the question winner", error);
+  //         console.error("Failed to updating the question winner", error);
   //         throw error;
   //     }
   // }

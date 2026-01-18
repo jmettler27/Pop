@@ -17,7 +17,7 @@ export const handleCountdownEnd = async (gameId, roundId, questionId) => {
   return service.handleCountdownEnd(questionId);
 };
 
-/* ============================================================================================================ */
+/* =============================================================================================================== */
 
 export const addBet = async (gameId, roundId, questionId, playerId, teamId, bet) => {
   const service = new GameEnumerationQuestionService(gameId, roundId);

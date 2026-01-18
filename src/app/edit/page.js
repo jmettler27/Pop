@@ -81,7 +81,7 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
           try {
             await createNewGame(values, user);
           } catch (error) {
-            console.error('There was an error creating the game:', error);
+            console.error('Failed to create the game:', error);
             router.push('/');
           }
         }}

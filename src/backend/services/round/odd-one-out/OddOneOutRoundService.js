@@ -84,7 +84,7 @@ export default class OddOneOutRoundService extends RoundService {
     await this.readyRepo.resetReadyTransaction(transaction);
   }
 
-  /* ============================================================================================================ */
+  /* =============================================================================================================== */
 
   async calculateMaxPointsTransaction(transaction, round) {
     return round.questions.length * (round.rewardsPerQuestion + round.rewardsForBonus);

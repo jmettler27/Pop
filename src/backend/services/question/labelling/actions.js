@@ -17,11 +17,11 @@ export const handleCountdownEnd = async (gameId, roundId, questionId) => {
   return service.handleCountdownEnd(questionId);
 };
 
-/* ============================================================================================================ */
+/* =============================================================================================================== */
 
-export const revealLabel = async (gameId, roundId, questionId, labelIdx, wholeTeam = false) => {
+export const revealLabel = async (gameId, roundId, questionId, labelIdx) => {
   const service = new GameLabellingQuestionService(gameId, roundId);
-  return service.revealLabel(questionId, labelIdx, wholeTeam);
+  return service.revealLabel(questionId, labelIdx);
 };
 
 export const validateAllLabels = async (gameId, roundId, questionId, playerId) => {
@@ -29,7 +29,7 @@ export const validateAllLabels = async (gameId, roundId, questionId, playerId) =
   return service.validateAllLabels(questionId, playerId);
 };
 
-export const cancelPlayerLabel = async (gameId, roundId, questionId, playerId, wholeTeam = false) => {
+export const cancelPlayer = async (gameId, roundId, questionId, playerId) => {
   const service = new GameLabellingQuestionService(gameId, roundId);
-  return service.cancelPlayer(questionId, playerId, wholeTeam);
+  return service.cancelPlayer(questionId, playerId);
 };

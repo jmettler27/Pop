@@ -87,7 +87,7 @@ export default class GameService {
         console.log('Game successfully started.', 'game', this.gameId);
       });
     } catch (error) {
-      console.error('There was an error starting the game:', error);
+      console.error('Failed to start the game:', error);
       throw error;
     }
   }
@@ -155,7 +155,7 @@ export default class GameService {
         console.log('Game successfully reset.', 'game', this.gameId);
       });
     } catch (error) {
-      console.error('There was an error resetting the game:', error);
+      console.error('Failed to reset the game:', error);
       throw error;
     }
   }

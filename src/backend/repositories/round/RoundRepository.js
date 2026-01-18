@@ -56,7 +56,7 @@ export default class RoundRepository extends FirebaseRepository {
       const createData = await super.create(round.toObject());
       return RoundFactory.createRound(roundType, createData);
     } catch (error) {
-      console.error('There was an error creating the round:', error);
+      console.error('Failed to create the round:', error);
       throw error;
     }
   }
@@ -74,7 +74,7 @@ export default class RoundRepository extends FirebaseRepository {
       const roundData = await super.createTransaction(transaction, round.toObject());
       return RoundFactory.createRound(roundType, roundData);
     } catch (error) {
-      console.error('There was an error creating the round:', error);
+      console.error('Failed to create the round:', error);
       throw error;
     }
   }

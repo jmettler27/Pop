@@ -4,7 +4,7 @@ import { PlayerStatus } from '@/backend/models/users/Player';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/game/GameQuestionRepositoryFactory';
 import { TimerStatus } from '@/backend/models/Timer';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
-import { Timer } from 'lucide-react';
+import { Timer } from '@/backend/models/Timer';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question/question';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
@@ -91,7 +91,7 @@ export default class BuzzerRoundService extends RoundService {
     await this.readyRepo.resetReadyTransaction(transaction);
   }
 
-  /* ============================================================================================================ */
+  /* =============================================================================================================== */
 
   async calculateMaxPointsTransaction(transaction, round) {
     return round.questions.length * (round.rewardsPerQuestion + round.rewardsForBonus);
@@ -112,5 +112,5 @@ export default class BuzzerRoundService extends RoundService {
     await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
   }
 
-  /* ============================================================================================================ */
+  /* =============================================================================================================== */
 }

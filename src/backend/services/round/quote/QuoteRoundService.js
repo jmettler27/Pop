@@ -5,7 +5,7 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import { serverTimestamp } from 'firebase/firestore';
 import { TimerStatus } from '@/backend/models/Timer';
-import { Timer } from 'lucide-react';
+import { Timer } from '@/backend/models/Timer';
 
 export default class QuoteRoundService extends RoundService {
   constructor(gameId, roundId) {
@@ -72,7 +72,7 @@ export default class QuoteRoundService extends RoundService {
     console.log('Round successfully started', 'game', this.gameId, 'round', roundId);
   }
 
-  /* ============================================================================================================ */
+  /* =============================================================================================================== */
 
   async calculateMaxPointsTransaction(transaction, round) {
     const questions = await Promise.all(

@@ -17,7 +17,7 @@ export const handleCountdownEnd = async (gameId, roundId, questionId) => {
   return service.handleCountdownEnd(questionId);
 };
 
-/* ============================================================================================================ */
+/* =============================================================================================================== */
 
 export const selectOption = async (gameId, roundId, questionId, playerId, optionId) => {
   const service = new GameNaguiQuestionService(gameId, roundId);

@@ -17,7 +17,7 @@ export const handleCountdownEnd = async (gameId, roundId, questionId) => {
   return service.handleCountdownEnd(questionId);
 };
 
-/* ============================================================================================================ */
+/* =============================================================================================================== */
 
 export const submitOrdering = async (gameId, roundId, questionId, playerId, teamId, ordering) => {
   const service = new GameReorderingQuestionService(gameId, roundId);

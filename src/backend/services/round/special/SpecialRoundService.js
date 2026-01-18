@@ -66,7 +66,7 @@ export default class SpecialRoundService extends RoundService {
     //     console.log("Special theme successfully started.");
     // }
     // catch (error) {
-    //     console.error("There was an error starting the special theme:", error);
+    //     console.error("Failed to start the special theme:", error);
     //     throw error;
     // }
   }
@@ -168,7 +168,7 @@ export default class SpecialRoundService extends RoundService {
     //     });
     // }
     // catch (error) {
-    //     console.error("There was an error handling the special player answer:", error);
+    //     console.error("Failed to handle special player answer:", error);
     //     throw error;
     // }
   }
@@ -230,7 +230,7 @@ export default class SpecialRoundService extends RoundService {
     //     });
     // }
     // catch (error) {
-    //     console.error("There was an error handling the special question_end:", error);
+    //     console.error("Failed to handle special question_end:", error);
     //     throw error;
     // }
   }
@@ -262,7 +262,7 @@ export default class SpecialRoundService extends RoundService {
     //     });
     // }
     // catch (error) {
-    //     console.error("There was an error switching to the next section of the special theme:", error);
+    //     console.error("Failed to switching to the next section of the special theme:", error);
     //     throw error;
     // }
   }
@@ -338,7 +338,7 @@ export default class SpecialRoundService extends RoundService {
     //     });
     // }
     // catch (error) {
-    //     console.error("There was an error ending the special theme:", error);
+    //     console.error("Failed to end the special theme:", error);
     //     throw error;
     // }
   }

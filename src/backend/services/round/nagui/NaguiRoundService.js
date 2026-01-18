@@ -5,7 +5,7 @@ import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { getNextCyclicIndex, shuffle } from '@/backend/utils/arrays';
 import { TimerStatus } from '@/backend/models/Timer';
-import { Timer } from 'lucide-react';
+import { Timer } from '@/backend/models/Timer';
 import { HideNaguiOption } from '@/backend/models/questions/Nagui';
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question/question';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
@@ -109,7 +109,7 @@ export default class NaguiRoundService extends RoundService {
     await this.readyRepo.resetReadyTransaction(transaction);
   }
 
-  /* ============================================================================================================ */
+  /* =============================================================================================================== */
 
   async calculateMaxPointsTransaction(transaction, round) {
     const numTeams = await this.teamRepo.getNumTeams(transaction);

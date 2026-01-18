@@ -72,7 +72,7 @@ export default function Page({ params, lang = DEFAULT_LOCALE }) {
       await joinGameService.joinGame(values, user);
       router.push(`/${gameId}`);
     } catch (error) {
-      console.error('There was an error joining the game:', error);
+      console.error('Failed to join the game:', error);
       router.push('/');
     }
   });

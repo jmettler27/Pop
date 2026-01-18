@@ -4,11 +4,10 @@ import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import UserRepository from '@/backend/repositories/user/UserRepository';
 
-import { PlayerStatus } from '@/backend/models/users/Player';
-import { firestore } from '@/backend/firebase/firebase';
+import {PlayerStatus} from '@/backend/models/users/Player';
+import {firestore} from '@/backend/firebase/firebase';
 
-import { runTransaction, serverTimestamp } from 'firebase/firestore';
-import { increment } from 'firebase/database';
+import {runTransaction, serverTimestamp} from 'firebase/firestore';
 
 export default class JoinGameService {
   constructor(gameId) {
@@ -71,9 +70,7 @@ export default class JoinGameService {
         );
 
         // Increment the number of players
-        await this.readyRepo.updateTransaction(transaction, {
-          numPlayers: increment(1),
-        });
+        await this.readyRepo.incrementReadyTransaction(transaction);
       });
     } catch (error) {
       console.error('Error joining game:', error);

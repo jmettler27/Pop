@@ -6,6 +6,7 @@ import { firestore } from '@/backend/firebase/firebase';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { isObjectEmpty } from '@/backend/utils/objects';
 import GameBuzzerQuestionService from '@/backend/services/question/GameBuzzerQuestionService';
+import {TimerStatus} from "@/backend/models/Timer";
 
 export default class GameQuoteQuestionService extends GameBuzzerQuestionService {
   constructor(gameId, roundId) {
@@ -13,104 +14,117 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
   }
 
   async resetQuestionTransaction(transaction, questionId) {
-    // await this.gameQuestionRepo.resetPlayersTransaction(transaction, questionId);
-    // await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE)
-    // await super.resetQuestionTransaction(transaction, questionId);
-
     const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
     const toGuess = baseQuestion.toGuess;
 
-    // const questionRef = doc(QUESTIONS_COLLECTION_REF, questionId)
-    // const questionData = await getDocDataTransaction(transaction, questionRef)
-    // const { toGuess } = questionData.details
-    //
-    // const questionRealtimePlayersRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId, 'realtime', 'players')
-    // transaction.set(questionRealtimePlayersRef, {
-    //     buzzed: [],
-    //     canceled: []
-    // })
-    //
-    // const initialRevealed = toGuess.reduce((acc, elem) => {
-    //     acc[elem] = {}
-    //     return acc
-    // }, {})
-    // if (toGuess.includes('quote')) {
-    //     const { quoteParts } = questionData.details
-    //     initialRevealed['quote'] = quoteParts.reduce((acc, _, idx) => {
-    //         acc[idx] = {}
-    //         return acc
-    //     }, {})
-    // }
-    // const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId)
-    // transaction.update(questionRealtimeRef, {
-    //     revealed: initialRevealed
-    // })
+    await this.gameQuestionRepo.resetPlayersTransaction(transaction, questionId);
 
-    console.log('Reset quote question', questionId);
+    const initialRevealed = toGuess.reduce((acc, elem) => {
+      acc[elem] = {};
+      return acc;
+    }, {});
+    if (toGuess.includes('quote')) {
+      initialRevealed['quote'] = baseQuestion.quoteParts.reduce((acc, _, idx) => {
+        acc[idx] = {};
+        return acc;
+      }, {});
+    }
+    await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
+      revealed: initialRevealed,
+    });
+
+    console.log(
+      'Quote question successfully reset',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId
+    );
   }
 
   async endQuestionTransaction(transaction, questionId) {
     await super.endQuestionTransaction(transaction, questionId);
-
     await this.gameQuestionRepo.clearBuzzedPlayersTransaction(transaction, questionId);
 
-    console.log('Ended question', questionId);
+    console.log(
+      'Quote question successfully ended',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId
+    );
   }
 
   async handleCountdownEndTransaction(transaction, questionId) {
-    await super.handleCountdownEndTransaction(transaction, questionId);
+    const players = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
+    const buzzed = players.buzzed;
 
-    await this.gameQuestionRepo.clearBuzzedPlayersTransaction(transaction, questionId);
-
-    console.log('Ended question countdown', questionId);
+    if (buzzed.length === 0) {
+      await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.RESET);
+      // await this.timerRepo.prepareTimerForReadyTransaction(transaction);
+    } else {
+      await this.cancelPlayerTransaction(transaction, questionId, buzzed[0]);
+    }
   }
 
-  /* ============================================================================================================ */
-  async handleBuzzerHeadChanged(questionId, playerId) {
+
+  /* =============================================================================================================== */
+
+  /**
+   *
+   * @param questionId
+   * @param playerId
+   * @returns {Promise<void>}
+   */
+  async cancelPlayer(questionId, playerId) {
     if (!questionId) {
-      throw new Error('Missing question ID!');
-    }
-    if (!playerId) {
-      throw new Error('Missing player ID!');
+      throw new Error('No question ID has been provided!');
     }
 
     try {
-      await runTransaction(firestore, async (transaction) => {
-        await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.FOCUS);
-        // await this.timerRepo.startTimerTransaction(transaction);
-        console.log('Buzzer head successfully changed', questionId, playerId);
-      });
+      await runTransaction(firestore, async (transaction) => await this.cancelPlayerTransaction(transaction, questionId, playerId));
     } catch (error) {
-      console.error('Error changing buzzer head:', error);
+      console.error(
+          'Failed to cancel quote player',
+          'game',
+          this.gameId,
+          'round',
+          this.roundId,
+          'question',
+          questionId,
+          'player',
+          playerId,
+          'err',
+          error
+      );
       throw error;
     }
   }
 
-  async clearBuzzer(questionId) {
-    if (!questionId) {
-      throw new Error('Missing question ID!');
-    }
+  async cancelPlayerTransaction(transaction, questionId, playerId) {
+    await this.gameQuestionRepo.cancelPlayerTransaction(transaction, questionId, playerId);
+    await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.WRONG);
+    await this.soundRepo.addSoundTransaction(transaction, 'cartoon_mystery_musical_tone_002');
+    // this.timerRepo.updateTimerStateTransaction(transaction, gameId, TimerStatus.RESET)
 
-    try {
-      await runTransaction(firestore, async (transaction) => {
-        const players = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
-
-        for (const playerId of players.buzzed) {
-          await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.IDLE);
-        }
-        await this.gameQuestionRepo.clearBuzzerTransaction(transaction, questionId);
-        await this.timerRepo.resetTimerTransaction(transaction);
-        await this.soundRepo.addSoundTransaction(transaction, 'robinet_desert');
-
-        console.log('Buzzer successfully cleared', questionId);
-      });
-    } catch (error) {
-      console.error('Error clearing buzzer:', error);
-      throw error;
-    }
+    console.log(
+        'Quote player canceled successfully cleared successfully',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'type',
+        this.questionType
+    );
   }
 
-  /* ============================================================================================================ */
+  /* =============================================================================================================== */
 
   /**
    * Reveals a quote element
@@ -118,10 +132,9 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
    * @param questionId the question ID
    * @param quoteElem the quote element to reveal
    * @param quotePartIdx the quote part index (if quoteElem is 'quote')
-   * @param wholeTeam whether to reveal for the whole team
    * @returns {Promise<void>}
    */
-  async revealQuoteElement(questionId, quoteElem, quotePartIdx = null, wholeTeam = false) {
+  async revealQuoteElement(questionId, quoteElem, quotePartIdx = null) {
     if (!questionId) {
       throw new Error('No question ID has been provided!');
     }
@@ -134,7 +147,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
     try {
       await runTransaction(firestore, async (transaction) => {
         const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
-        const round = await this.roundRepo.getRoundTransaction(transaction, baseQuestion.roundId);
+        const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
         const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
         const questionPlayers = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
 
@@ -171,15 +184,25 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
         const temp2 = quoteParts.every((_, idx) => newRevealedQuote[idx] && !isObjectEmpty(newRevealedQuote[idx]));
         const allRevealed = temp1 && temp2;
 
-        await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
-          revealed: newRevealed,
-        });
+        await this.gameQuestionRepo.updateQuestionRevealedElementsTransaction(transaction, questionId, newRevealed);
 
         // If all revealed
         if (allRevealed) {
           await this.soundRepo.addSoundTransaction(transaction, 'Anime wow');
           await this.endQuestionTransaction(transaction, questionId);
-          console.log('All revealed');
+          console.log(
+            'All quote element successfully revealed',
+            'game',
+            this.gameId,
+            'round',
+            this.roundId,
+            'question',
+            questionId,
+            'quoteElem',
+            quoteElem,
+            'quotePartIdx',
+            quotePartIdx
+          );
           return;
         }
         await this.soundRepo.addSoundTransaction(
@@ -187,10 +210,36 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
           playerId ? 'super_mario_world_coin' : 'cartoon_mystery_musical_tone_002'
         );
 
-        console.log('Revealed quote element', quoteElem, quotePartIdx);
+        console.log(
+          'Quote element successfully revealed',
+          'game',
+          this.gameId,
+          'round',
+          this.roundId,
+          'question',
+          questionId,
+          'quoteElem',
+          quoteElem,
+          'quotePartIdx',
+          quotePartIdx
+        );
       });
     } catch (error) {
-      console.error('There was an error revealing the quote element', error);
+      console.log(
+        'Failed to reveal quote element',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'quoteElem',
+        quoteElem,
+        'quotePartIdx',
+        quotePartIdx,
+        'err',
+        error
+      );
       throw error;
     }
   }
@@ -245,46 +294,38 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
         await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, points);
 
         await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.CORRECT);
-
-        await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
-          revealed: newRevealed,
-        });
-
+        await this.gameQuestionRepo.updateQuestionRevealedElementsTransaction(transaction, questionId, newRevealed);
         await this.soundRepo.addSoundTransaction(transaction, 'Anime wow');
         await this.endQuestionTransaction(transaction, questionId);
 
-        console.log('All quote elements validated');
+        console.log(
+          'All quote elements validated successfully',
+          'game',
+          this.gameId,
+          'round',
+          this.roundId,
+          'question',
+          questionId,
+          'player',
+          playerId
+        );
       });
     } catch (error) {
-      console.error('There was an error validating the quote element', error);
+      console.error(
+        'Failed to validate all quote elements',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'player',
+        playerId,
+        'err',
+        error
+      );
       throw error;
     }
   }
 
-  /**
-   *
-   * @param questionId
-   * @param playerId
-   * @param wholeTeam
-   * @returns {Promise<void>}
-   */
-  async cancelPlayer(questionId, playerId, wholeTeam = false) {
-    if (!questionId) {
-      throw new Error('No question ID has been provided!');
-    }
-
-    try {
-      await runTransaction(firestore, async (transaction) => {
-        await this.gameQuestionRepo.cancelPlayerTransaction(transaction, questionId, playerId);
-        await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.WRONG);
-        await this.soundRepo.addSoundTransaction(transaction, 'cartoon_mystery_musical_tone_002');
-        // this.timerRepo.updateTimerStateTransaction(transaction, gameId, TimerStatus.RESET)
-
-        console.log(`Player ${playerId} was canceled successfully.`);
-      });
-    } catch (error) {
-      console.error('There was an error adding a canceled player:', error);
-      throw error;
-    }
-  }
 }

@@ -5,6 +5,8 @@ import { arrayUnion } from 'firebase/firestore';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
 export default class GameRepository extends FirebaseRepository {
+  static ORGANIZERS_PATH = ['organizers'];
+
   constructor() {
     super('games');
   }
@@ -55,6 +57,11 @@ export default class GameRepository extends FirebaseRepository {
       status: GameStatus.QUESTION_ACTIVE,
     });
   }
+
+  // async createOrganizerTransaction(transaction, gameId, data, organizerId=null) {
+  //   return await this.createTransaction(transaction, data, [gameId, ...GameRepository.ORGANIZERS_PATH, organizerId]);
+  // }
+  //
 
   // React hooks for real-time operations
   useGame(id) {

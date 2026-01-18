@@ -17,7 +17,7 @@ export const handleCountdownEnd = async (gameId, roundId, questionId) => {
   return service.handleCountdownEnd(questionId);
 };
 
-/* ============================================================================================================ */
+/* =============================================================================================================== */
 
 export const handleBuzzerHeadChanged = async (gameId, roundId, playerId) => {
   const service = new GameBasicQuestionService(gameId, roundId);

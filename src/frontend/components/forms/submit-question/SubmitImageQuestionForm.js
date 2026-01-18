@@ -77,7 +77,7 @@ export default function SubmitImageQuestionForm({ userId, lang = DEFAULT_LOCALE,
         await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
       }
     } catch (error) {
-      console.error('There was an error submitting your question:', error);
+      console.error('Failed to submit your question:', error);
     }
   });
 

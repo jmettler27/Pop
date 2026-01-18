@@ -50,27 +50,27 @@ export default class ScoreService {
     }
   }
 
-  async increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, points) {
-    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores');
-    const roundScoresData = await getDocDataTransaction(transaction, roundScoresRef);
-
-    const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScoresData;
-
-    // Update progress for all teams
-    const newRoundProgress = {};
-    for (const tid of Object.keys(currentRoundScores)) {
-      newRoundProgress[tid] = {
-        ...currentRoundProgress[tid],
-        [questionId]: currentRoundScores[tid] + (tid === teamId) * points,
-      };
-    }
-
-    // Update scores
-    transaction.update(roundScoresRef, {
-      [`scores.${teamId}`]: increment(points),
-      scoresProgress: newRoundProgress,
-    });
-  }
+  // async increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, points) {
+  //   const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores');
+  //   const roundScoresData = await getDocDataTransaction(transaction, roundScoresRef);
+  //
+  //   const { scores: currRoundScores, scoresProgress: currRoundProgress } = roundScoresData;
+  //
+  //   // Update progress for all teams
+  //   const newRoundProgress = {};
+  //   for (const tid of Object.keys(currRoundScores)) {
+  //     newRoundProgress[tid] = {
+  //       ...currRoundProgress[tid],
+  //       [questionId]: currRoundScores[tid] + (tid === teamId) * points,
+  //     };
+  //   }
+  //
+  //   // Update scores
+  //   transaction.update(roundScoresRef, {
+  //     [`scores.${teamId}`]: increment(points),
+  //     scoresProgress: newRoundProgress,
+  //   });
+  // }
 
   // Private methods
   async getInitTeamScores(gameId) {

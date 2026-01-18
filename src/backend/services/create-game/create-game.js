@@ -19,7 +19,7 @@ export async function createGame(title, type, lang, maxPlayers, roundScorePolicy
     console.log(`Game ${gameId} created successfully.`);
     return gameId;
   } catch (error) {
-    console.error('There was an error creating the game: ', error);
+    console.error('Failed to create the game: ', error);
     throw error;
   }
 }

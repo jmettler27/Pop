@@ -1,8 +1,6 @@
 import GameQuestionRepository from '@/backend/repositories/question/game/GameQuestionRepository';
-import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { Player } from '@/backend/models/users/Player';
 
 export default class GameOddOneOutQuestionRepository extends GameQuestionRepository {
   static ODD_ONE_OUT_PLAYERS_PATH = ['realtime', 'players'];
@@ -18,6 +16,13 @@ export default class GameOddOneOutQuestionRepository extends GameQuestionReposit
     ]);
     // return data ? data.map(p => new Player(p)) : [];
     return data;
+  }
+
+  async resetQuestionTransaction(transaction, questionId) {
+    await this.updateQuestionTransaction(transaction, questionId, {
+      winner: null,
+      selectedItems: [],
+    });
   }
 
   usePlayers(questionId) {

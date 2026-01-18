@@ -77,7 +77,7 @@ function CreateRoundForm({ onClose, lang }) {
       const { type, title } = values;
       await addRoundToGame(gameId, title, type);
     } catch (error) {
-      console.error('There was an error creating the round:', error);
+      console.error('Failed to create the round:', error);
       throw error;
     }
     onClose();

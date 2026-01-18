@@ -1,5 +1,7 @@
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
+import {QuestionType} from '@/backend/models/questions/QuestionType';
+import {runTransaction} from "firebase/firestore";
+import {firestore} from "@/backend/firebase/firebase";
 
 export default class GameReorderingQuestionService extends GameQuestionService {
   constructor(gameId, roundId) {
@@ -9,13 +11,29 @@ export default class GameReorderingQuestionService extends GameQuestionService {
   async resetQuestionTransaction(transaction, questionId) {
     await super.resetQuestionTransaction(transaction, questionId);
 
-    console.log('Reordering question successfully reset', questionId);
+    console.log(
+      'Reordering question successfully reset',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId
+    );
   }
 
   async endQuestionTransaction(transaction, questionId) {
     await super.endQuestionTransaction(transaction, questionId);
 
-    console.log('Reordering question successfully ended', questionId);
+    console.log(
+      'Reordering question successfully ended',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId
+    );
   }
 
   async handleCountdownEndTransaction(transaction, questionId) {
@@ -24,7 +42,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
     console.log('Reordering question countdown end successfully handled', questionId);
   }
 
-  /* ============================================================================================================ */
+  /* =============================================================================================================== */
 
   async submitOrdering(questionId, playerId, teamId, ordering) {
     if (!questionId) {
@@ -48,7 +66,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
         console.log('Ordering submitted successfully', questionId, playerId, teamId, ordering);
       });
     } catch (error) {
-      console.error('There was an error submitting the ordering:', error);
+      console.error('Failed to submit the ordering:', error);
       throw error;
     }
   }

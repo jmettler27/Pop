@@ -56,7 +56,7 @@ export default class GameBuzzerQuestionRepository extends GameQuestionRepository
     });
   }
 
-  async cancelPlayerTransaction(transaction, questionId, playerId, clueIdx) {
+  async cancelPlayerTransaction(transaction, questionId, playerId, clueIdx = 0) {
     await this.updatePlayersTransaction(transaction, questionId, {
       canceled: arrayUnion({
         clueIdx,
@@ -68,7 +68,7 @@ export default class GameBuzzerQuestionRepository extends GameQuestionRepository
   }
 
   async clearBuzzedPlayersTransaction(transaction, questionId) {
-    await this.updateTransaction(transaction, [questionId, ...GameBuzzerQuestionRepository.QUOTE_PLAYERS_PATH], {
+    await this.updateTransaction(transaction, [questionId, ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH], {
       buzzed: [],
     });
   }

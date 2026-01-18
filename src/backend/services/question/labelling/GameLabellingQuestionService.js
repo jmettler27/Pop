@@ -26,7 +26,15 @@ export default class GameLabellingQuestionService extends GameQuestionService {
 
     await super.resetQuestionTransaction(transaction, questionId);
 
-    console.log('Labelling question successfully reset', questionId);
+    console.log(
+      'Labelling question successfully reset',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId
+    );
   }
 
   async handleCountdownEndTransaction(transaction, questionId) {
@@ -42,15 +50,15 @@ export default class GameLabellingQuestionService extends GameQuestionService {
   async endQuestionTransaction(transaction, questionId) {
     await super.endQuestionTransaction(transaction, questionId);
 
-    console.log('Labelling question successfully ended', questionId);
+    console.log('Labelling question successfully ended', 'game', gameId, questionId);
   }
 
-  /* ============================================================================================================ */
+  /* =============================================================================================================== */
 
   /**
    * When the organizer reveals a label.
    */
-  async revealLabel(questionId, labelIdx, wholeTeam = false) {
+  async revealLabel(questionId, labelIdx) {
     if (!questionId) {
       throw new Error('No question ID has been provided!');
     }
@@ -87,9 +95,7 @@ export default class GameLabellingQuestionService extends GameQuestionService {
           return newRevealed[index] && !isObjectEmpty(newRevealed[index]);
         });
 
-        await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
-          revealed: newRevealed,
-        });
+        await this.gameQuestionRepo.updateQuestionRevealedElementsTransaction(transaction, questionId, newRevealed);
 
         // If all revealed
         if (allRevealed) {
@@ -105,7 +111,7 @@ export default class GameLabellingQuestionService extends GameQuestionService {
         console.log('Labelling question label revealed successfully', questionId, labelIdx);
       });
     } catch (error) {
-      console.error('There was an error revealing the label', error);
+      console.error('Failed to reveal the label', error);
       throw error;
     }
   }
@@ -138,9 +144,7 @@ export default class GameLabellingQuestionService extends GameQuestionService {
 
         await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.CORRECT);
 
-        await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
-          revealed: newRevealed,
-        });
+        await this.gameQuestionRepo.updateQuestionRevealedElementsTransaction(transaction, questionId, newRevealed);
 
         await this.soundRepo.addSoundTransaction(transaction, 'Anime wow');
         await this.endQuestionTransaction(transaction, questionId);
@@ -148,12 +152,12 @@ export default class GameLabellingQuestionService extends GameQuestionService {
         console.log('Labelling question all labels validated successfully', questionId);
       });
     } catch (error) {
-      console.error('There was an error validating all labels', error);
+      console.error('Failed to validate all labels', error);
       throw error;
     }
   }
 
-  async cancelPlayer(questionId, playerId, wholeTeam = false) {
+  async cancelPlayer(questionId, playerId) {
     if (!questionId) {
       throw new Error('No question ID has been provided!');
     }
@@ -171,7 +175,7 @@ export default class GameLabellingQuestionService extends GameQuestionService {
         console.log('Labelling player canceled successfully', questionId, playerId);
       });
     } catch (error) {
-      console.error('There was an error canceling the player', error);
+      console.error('Failed to cancel the player', error);
       throw error;
     }
   }

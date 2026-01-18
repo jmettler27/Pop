@@ -27,8 +27,8 @@ export default class GameScoreRepository extends FirebaseDocumentRepository {
 
   async increaseTeamScoreTransaction(transaction, roundId, teamId = null, points = 0) {
     const gameScores = await this.getTransaction(transaction);
-    const { scores: currentGameScores, scoresProgress: currentGameProgress } = gameScores;
-
+    const currentGameScores = gameScores.scores;
+    const currentGameProgress = gameScores.scoresProgress;
     const newGameProgress = {};
     for (const tid of Object.keys(currentGameScores)) {
       newGameProgress[tid] = {

@@ -5,7 +5,7 @@ import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import { serverTimestamp } from 'firebase/firestore';
-import { Timer } from 'lucide-react';
+import { Timer } from '@/backend/models/Timer';
 import { getNextCyclicIndex, shuffle } from '@/backend/utils/arrays';
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question/question';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
@@ -108,7 +108,7 @@ export default class MCQRoundService extends RoundService {
     await this.readyRepo.resetReadyTransaction(transaction);
   }
 
-  /* ============================================================================================================ */
+  /* =============================================================================================================== */
 
   async calculateMaxPointsTransaction(transaction, round) {
     const numTeams = await this.teamRepo.getNumTeams(transaction);

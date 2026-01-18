@@ -17,7 +17,7 @@ export const handleCountdownEnd = async (gameId, roundId, questionId) => {
   return service.handleCountdownEnd(questionId);
 };
 
-/* ============================================================================================================ */
+/* =============================================================================================================== */
 
 export const handleBuzzerHeadChanged = async (gameId, roundId, questionId, playerId) => {
   const service = new GameQuoteQuestionService(gameId, roundId);
@@ -35,10 +35,9 @@ export const revealQuoteElement = async (
   questionId,
   quoteElem,
   quotePartIdx = null,
-  wholeTeam = false
 ) => {
   const service = new GameQuoteQuestionService(gameId, roundId);
-  return service.revealQuoteElement(questionId, quoteElem, quotePartIdx, wholeTeam);
+  return service.revealQuoteElement(questionId, quoteElem, quotePartIdx);
 };
 
 export const validateAllQuoteElements = async (gameId, roundId, questionId, playerId) => {
@@ -46,7 +45,7 @@ export const validateAllQuoteElements = async (gameId, roundId, questionId, play
   return service.validateAllQuoteElements(questionId, playerId);
 };
 
-export const cancelPlayer = async (gameId, roundId, questionId, playerId, wholeTeam = false) => {
+export const cancelPlayer = async (gameId, roundId, questionId, playerId) => {
   const service = new GameQuoteQuestionService(gameId, roundId);
-  return service.cancelPlayer(questionId, playerId, wholeTeam);
+  return service.cancelPlayer(questionId, playerId);
 };

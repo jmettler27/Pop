@@ -1,13 +1,18 @@
+import { runTransaction } from 'firebase/firestore';
+import { firestore } from '@/backend/firebase/firebase';
+
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
 
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 
-import { findNextAvailableChooser } from '@/backend/utils/arrays';
-
-import { getDocs, query, where } from 'firebase/firestore';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import { GameMatchingQuestion } from '@/backend/models/questions/Matching';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { ScorePolicyType } from '@/backend/models/ScorePolicy';
+
+import { sortAscendingRoundScores } from '@/backend/utils/rounds';
+import { sortScores } from '@/backend/utils/scores';
+import { aggregateTiedTeams, findNextAvailableChooser, shuffle } from '@/backend/utils/arrays';
 
 export default class GameMatchingQuestionService extends GameQuestionService {
   constructor(gameId, roundId) {
@@ -18,13 +23,32 @@ export default class GameMatchingQuestionService extends GameQuestionService {
 
   async resetQuestionTransaction(transaction, questionId) {
     const chooser = await this.chooserRepo.resetChoosersTransaction(transaction);
-
     await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
+
     await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, chooser.teamId, PlayerStatus.IDLE);
+    // await super.resetQuestionTransaction(transaction, questionId);
+    console.log(
+      'Matching question successfully reset',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId
+    );
+  }
 
-    await super.resetQuestionTransaction(transaction, questionId);
-
-    console.log('Matching question successfully reset', questionId);
+  async endQuestionTransaction(transaction, questionId) {
+    await super.endQuestionTransaction(transaction, questionId);
+    console.log(
+      'Matching question successfully ended',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId
+    );
   }
 
   async handleCountdownEndTransaction(transaction, questionId) {
@@ -42,17 +66,18 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     );
 
     await this.submitMatchTransaction(transaction, questionId, 'system', null, match);
-
-    console.log('Matching question countdown end successfully handled', questionId);
+    console.log(
+      'Matching question countdown end successfully handled',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId
+    );
   }
 
-  async endQuestionTransaction(transaction, questionId) {
-    await super.endQuestionTransaction(transaction, questionId);
-
-    console.log('Matching question successfully ended', questionId);
-  }
-
-  /* ============================================================================================================ */
+  /* =============================================================================================================== */
 
   async submitMatch(questionId, userId, edges, match) {
     if (!questionId) {
@@ -67,10 +92,20 @@ export default class GameMatchingQuestionService extends GameQuestionService {
 
     try {
       await runTransaction(firestore, (transaction) =>
-        submitMatchTransaction(transaction, questionId, userId, edges, match)
+        this.submitMatchTransaction(transaction, questionId, userId, edges, match)
       );
     } catch (error) {
-      console.error('There was an error handling the matching submission:', error);
+      console.error(
+        'Failed to submit the match',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'err',
+        error
+      );
       throw error;
     }
   }
@@ -90,30 +125,27 @@ export default class GameMatchingQuestionService extends GameQuestionService {
 
     const isCorrect = rows.every((row) => row === rows[0]);
 
-    const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players');
-    const choosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)));
-
-    const correctMatchesRef = doc(
-      GAMES_COLLECTION_REF,
-      gameId,
-      'rounds',
-      roundId,
-      'questions',
-      questionId,
-      'realtime',
-      'correct'
-    );
-    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores');
-
     if (isCorrect) {
-      // Case 1: The matching is correct
       await this.handleCorrectMatchTransaction(transaction, questionId, userId, teamId, rows);
     } else {
-      // Case 2: The matching is incorrect
       await this.handleIncorrectMatchTransaction(transaction, questionId, userId, teamId, rows);
     }
-    // await updateTimerStateTransaction(transaction, gameId, TimerStatus.RESET)
-    console.log('Matching submission handled successfully.');
+    // await this.timerRepo.resetTimerTransaction(transaction)
+    console.log(
+      'Match successfully submitted',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId,
+      'user',
+      userId,
+      'team',
+      teamId,
+      'rows',
+      rows
+    );
   }
 
   async handleCorrectMatchTransaction(transaction, questionId, userId, teamId, rows) {
@@ -125,7 +157,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     if (isLastCorrectMatch) {
       // Case 1.2: It is the last correct matching
       const roundScores = await this.roundRepo.getRoundScoresTransaction(transaction, this.gameId, this.roundId);
-      const { scores: currentRoundScores } = roundScores;
+      const { scores: currRoundScores } = roundScores;
       await this.roundRepo.increaseRoundTeamScoreTransaction(
         transaction,
         this.gameId,
@@ -135,107 +167,87 @@ export default class GameMatchingQuestionService extends GameQuestionService {
         0
       );
 
-      for (const chooserDoc of choosersSnapshot.docs) {
-        transaction.update(chooserDoc.ref, { status: 'correct' });
-      }
+      await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, teamId, PlayerStatus.CORRECT);
+      await this.gameQuestionRepo.addCorrectMatchTransaction(transaction, questionId, rows[0], userId, teamId);
 
-      // Log the match
-      transaction.update(correctMatchesRef, {
-        correctMatches: arrayUnion({
-          matchIdx: rows[0],
-          userId,
-          teamId,
-          timestamp: Timestamp.now(),
-        }),
-      });
-
-      const sortedUniqueRoundScores = sortScores(currentRoundScores, sortAscendingRoundScores('matching'));
-      const roundSortedTeams = aggregateTiedTeams(sortedUniqueRoundScores, currentRoundScores);
+      const sortedUniqueRoundScores = sortScores(currRoundScores, sortAscendingRoundScores('matching'));
+      const roundSortedTeams = aggregateTiedTeams(sortedUniqueRoundScores, currRoundScores);
       const newChooserOrder = roundSortedTeams
         .slice()
         .reverse()
         .flatMap(({ teams }) => shuffle(teams));
-      transaction.update(gameStatesRef, {
-        chooserOrder: newChooserOrder,
-      });
-
-      await addSoundEffectTransaction(transaction, gameId, 'zelda_secret_door');
-      await endQuestionTransaction(transaction, gameId, roundId, questionId);
+      await this.chooserRepo.updateChooserOrderTransaction(transaction, newChooserOrder);
+      await this.soundRepo.addSoundTransaction(transaction, 'zelda_secret_door');
+      await this.endQuestionTransaction(transaction, questionId);
     } else {
       // Case 1.1: The matching is correct but not the last one
 
       // Switch to the next competing team
-      const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId);
-      const questionRealtimeData = await getDocDataTransaction(transaction, questionRealtimeRef);
-      const { canceled } = questionRealtimeData;
+      const gameQuestion = this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+      const canceled = gameQuestion.canceled;
+      const { chooserOrder, chooserIdx } = await this.chooserRepo.getChooserTransaction(transaction, this.gameId);
+
       const { newChooserIdx, newChooserTeamId } = findNextAvailableChooser(chooserIdx, chooserOrder, canceled);
-      const newChoosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', newChooserTeamId)));
+      await this.chooserRepo.updateTeamPlayersStatusTransaction(transaction, newChooserIdx);
 
-      transaction.update(gameStatesRef, {
-        chooserIdx: newChooserIdx,
-      });
-
-      for (const newChooserDoc of newChoosersSnapshot.docs) {
-        transaction.update(newChooserDoc.ref, {
-          status: 'focus',
-        });
-      }
+      await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, newChooserTeamId, PlayerStatus.FOCUS);
       if (newChooserTeamId !== teamId) {
-        for (const chooserDoc of choosersSnapshot.docs) {
-          transaction.update(chooserDoc.ref, { status: 'idle' });
-        }
+        await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, teamId, PlayerStatus.IDLE);
       }
 
-      // Log the match
-      transaction.update(correctMatchesRef, {
-        correctMatches: arrayUnion({
-          matchIdx: rows[0],
-          userId,
-          teamId,
-          timestamp: Timestamp.now(),
-        }),
-      });
-
-      // Sound effect
-      await addSoundEffectTransaction(transaction, gameId, 'OUI');
+      await this.gameQuestionRepo.addCorrectMatchTransaction(transaction, questionId, rows[0], userId, teamId);
+      await this.soundRepo.addSoundTransaction(transaction, 'OUI');
     }
+
+    console.log(
+      'Correct match successfully handled',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId,
+      'user',
+      userId,
+      'team',
+      teamId,
+      'rows',
+      rows
+    );
   }
 
+  // Case 2: The matching is incorrect
   async handleIncorrectMatchTransaction(transaction, questionId, userId, teamId, rows) {
-    // Case 2: The matching is incorrect
-    const gameRef = doc(GAMES_COLLECTION_REF, gameId);
-    const roundRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId);
-    const questionRealtimeRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId);
-    const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores');
-    const [gameData, roundData, questionRealtimeData, roundScoresData] = await Promise.all([
-      getDocDataTransaction(transaction, gameRef),
-      getDocDataTransaction(transaction, roundRef),
-      getDocDataTransaction(transaction, questionRealtimeRef),
-      getDocDataTransaction(transaction, roundScoresRef),
-    ]);
+    const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
+    const { chooserOrder, chooserIdx } = await this.chooserRepo.getChooserTransaction(transaction, this.gameId);
+    const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+    const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction);
 
-    const { roundScorePolicy } = gameData;
-    const { mistakePenalty: penalty } = roundData;
-    const { teamNumMistakes, canceled } = questionRealtimeData;
+    const roundScorePolicy = game.roundScorePolicy;
+    const penalty = round.mistakePenalty;
+    const maxMistakes = round.maxMistakes;
+    const teamNumMistakes = gameQuestion.teamNumMistakes;
+    const canceled = gameQuestion.canceled;
 
     // Increase the number of mistakes of the team
     const newTeamNumMistakes = { ...teamNumMistakes };
     newTeamNumMistakes[teamId] = (teamNumMistakes[teamId] || 0) + 1;
 
     // If the team has reached the maximum number of mistakes, cancel it
-    const isCanceled = matchingTeamIsCanceled(teamId, newTeamNumMistakes, roundData.maxMistakes);
+    const isCanceled = GameMatchingQuestion.matchingTeamIsCanceled(teamId, newTeamNumMistakes, maxMistakes);
     const newCanceled = isCanceled ? [...canceled, teamId] : canceled;
 
-    if (roundScorePolicy === 'ranking') {
+    if (roundScorePolicy === ScorePolicyType.RANKING) {
       // Increase the team's round score to 1
-      await increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, penalty);
-    } else if (roundScorePolicy === 'completion_rate') {
+      await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, penalty);
+    } else if (roundScorePolicy === ScorePolicyType.COMPLETION_RATE) {
       // Decrease the team's global score by the penalty and increment the number of mistakes of the team in the round
-      await decreaseGlobalTeamScoreTransaction(transaction, gameId, roundId, questionId, penalty, teamId);
+      await this.decreaseGlobalTeamScoreTransaction(transaction, questionId, penalty, teamId);
     }
 
     // Update the mistake and canceled information
-    transaction.update(questionRealtimeRef, {
+    await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
       teamNumMistakes: newTeamNumMistakes,
       canceled: newCanceled,
     });
@@ -245,93 +257,63 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     if (numCols > 2) {
       const [colIndices, rowIdx] = findMostFrequentValueAndIndices(rows);
       if (colIndices.length > 0 && rowIdx !== null) {
-        const partiallyCorrectMatchesRef = doc(
-          GAMES_COLLECTION_REF,
-          gameId,
-          'rounds',
-          roundId,
-          'questions',
+        await this.gameQuestionRepo.addPartiallyCorrectMatchTransaction(
+          transaction,
           questionId,
-          'realtime',
-          'partially_correct'
+          colIndices,
+          rowIdx,
+          userId,
+          teamId
         );
-        transaction.update(partiallyCorrectMatchesRef, {
-          partiallyCorrectMatches: arrayUnion({
-            colIndices,
-            matchIdx: rowIdx,
-            userId,
-            teamId,
-            timestamp: Timestamp.now(),
-          }),
-        });
       }
     }
-    const incorrectMatchesRef = doc(
-      GAMES_COLLECTION_REF,
-      gameId,
-      'rounds',
-      roundId,
-      'questions',
-      questionId,
-      'realtime',
-      'incorrect'
-    );
-    transaction.update(incorrectMatchesRef, {
-      incorrectMatches: arrayUnion({
-        match: rows,
-        userId,
-        teamId,
-        timestamp: Timestamp.now(),
-      }),
-    });
+    await this.gameQuestionRepo.addIncorrectMatchTransaction(transaction, questionId, rows, userId, teamId);
 
     // Switch to the next competing team, or end the question if all teams have been canceled
 
+    // There are still competing teams => Set focus to the next competing team
     if (newCanceled.length < chooserOrder.length) {
-      // There are still competing teams => Set focus to the next competing team
-
       const { newChooserIdx, newChooserTeamId } = findNextAvailableChooser(chooserIdx, chooserOrder, newCanceled);
-      const newChoosersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', newChooserTeamId)));
-
-      transaction.update(gameStatesRef, {
-        chooserIdx: newChooserIdx,
-      });
-      for (const newChooserDoc of newChoosersSnapshot.docs) {
-        transaction.update(newChooserDoc.ref, {
-          status: 'focus',
-        });
-      }
-
-      for (const chooserDoc of choosersSnapshot.docs) {
-        transaction.update(chooserDoc.ref, { status: isCanceled ? 'wrong' : 'idle' });
-      }
-
-      await addSoundEffectTransaction(
+      await this.chooserRepo.updateChooserIndexTransaction(transaction, newChooserIdx);
+      await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, newChooserTeamId, PlayerStatus.FOCUS);
+      await this.playerRepo.updateTeamPlayersStatusTransaction(
         transaction,
-        gameId,
+        teamId,
+        isCanceled ? PlayerStatus.WRONG : PlayerStatus.IDLE
+      );
+      await this.soundRepo.addSoundTransaction(
+        transaction,
         isCanceled ? 'zelda_wind_waker_kaboom' : 'zelda_wind_waker_sploosh'
       );
     } else {
       // All teams have been canceled => End the question
-
-      const { scores: currentRoundScores } = roundScoresData;
-      const sortedUniqueRoundScores = sortScores(currentRoundScores, sortAscendingRoundScores('matching'));
-      const roundSortedTeams = aggregateTiedTeams(sortedUniqueRoundScores, currentRoundScores);
+      const { scores: currRoundScores } = roundScores;
+      const sortedUniqueRoundScores = sortScores(currRoundScores, sortAscendingRoundScores('matching'));
+      const roundSortedTeams = aggregateTiedTeams(sortedUniqueRoundScores, currRoundScores);
       const newChooserOrder = roundSortedTeams
         .slice()
         .reverse()
         .flatMap(({ teams }) => shuffle(teams));
-      transaction.update(gameStatesRef, {
-        chooserOrder: newChooserOrder,
-      });
-
-      for (const chooserDoc of choosersSnapshot.docs) {
-        transaction.update(chooserDoc.ref, { status: 'wrong' });
-      }
-
-      await addSoundEffectTransaction(transaction, gameId, 'zelda_wind_waker_game_over');
-
-      await endQuestionTransaction(transaction, gameId, roundId, questionId);
+      await this.chooserRepo.updateChooserOrderTransaction(transaction, newChooserOrder);
+      await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, teamId, PlayerStatus.WRONG);
+      await this.soundRepo.addSoundTransaction(transaction, 'zelda_wind_waker_game_over');
+      await this.endQuestionTransaction(transaction, questionId);
     }
+
+    console.log(
+      'Incorrect match successfully handled',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId,
+      'user',
+      userId,
+      'team',
+      teamId,
+      'rows',
+      rows
+    );
   }
 }

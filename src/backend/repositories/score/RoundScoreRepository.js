@@ -1,4 +1,5 @@
 import FirebaseDocumentRepository from '@/backend/repositories/FirebaseDocumentRepository';
+import { increment } from 'firebase/database';
 
 export default class RoundScoreRepository extends FirebaseDocumentRepository {
   constructor(gameId, roundId) {
@@ -13,16 +14,6 @@ export default class RoundScoreRepository extends FirebaseDocumentRepository {
     return await this.updateTransaction(transaction, scores);
   }
 
-  async resetScoresTransaction(transaction) {
-    return await this.updateTransaction(transaction, {
-      scores: initTeamRoundScores,
-      scoresProgress: {},
-      teamsScoresSequences: {},
-      roundSortedTeams: [],
-      gameSortedTeams: [],
-    });
-  }
-
   async initializeScoresTransaction(transaction) {
     return await this.setTransaction(transaction, {
       gameSortedTeams: [],
@@ -33,23 +24,37 @@ export default class RoundScoreRepository extends FirebaseDocumentRepository {
     });
   }
 
+  async resetScoresTransaction(transaction, initTeamRoundScores) {
+    return await this.updateTransaction(transaction, {
+      scores: initTeamRoundScores,
+      scoresProgress: {},
+      teamsScoresSequences: {},
+      roundSortedTeams: [],
+      gameSortedTeams: [],
+    });
+  }
+
   async increaseTeamScoreTransaction(transaction, questionId, teamId = null, points = 0) {
     const roundScores = await this.getTransaction(transaction);
-    const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScores;
+    const { scores: currRoundScores, scoresProgress: currRoundProgress } = roundScores;
 
+    // Update progress for all teams
     const newRoundProgress = {};
-    for (const tid of Object.keys(currentRoundScores)) {
+    for (const tid of Object.keys(currRoundScores)) {
       newRoundProgress[tid] = {
-        ...currentRoundProgress[tid],
-        [questionId]: currentRoundScores[tid] + (tid === teamId) * points,
+        ...currRoundProgress[tid],
+        [questionId]: currRoundScores[tid] + (tid === teamId) * points,
       };
     }
 
+    // Update scores
     await this.updateTransaction(transaction, {
       [`scores.${teamId}`]: increment(points),
       scoresProgress: newRoundProgress,
     });
   }
+
+  /* =============================================================================================================== */
 
   // React hooks for real-time operations
   useScores() {

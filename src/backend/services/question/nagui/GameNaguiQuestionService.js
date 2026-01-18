@@ -3,8 +3,11 @@ import GameQuestionService from '@/backend/services/question/GameQuestionService
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { NaguiQuestion } from '@/backend/models/questions/Nagui';
+import { NAGUI_OPTION_TO_SOUND, NaguiQuestion } from '@/backend/models/questions/Nagui';
 import { PlayerStatus } from '@/backend/models/users/Player';
+
+import { runTransaction } from 'firebase/firestore';
+import { firestore } from '@/backend/firebase/firebase';
 
 export default class GameNaguiQuestionService extends GameQuestionService {
   constructor(gameId, roundId) {
@@ -14,26 +17,42 @@ export default class GameNaguiQuestionService extends GameQuestionService {
   }
 
   async resetQuestionTransaction(transaction, questionId) {
-    await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
-      playerId: null,
-      teamId: null,
-      option: null,
-      reward: null,
-      correct: null,
-    });
+    // await this.gameQuestionRepo.resetPlayersTransaction(transaction, questionId);
+    // await this.gameQuestionRepo.resetQuestionWinnerTransaction(transaction, questionId);
+    await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
+    console.log(
+      'Nagui question successfully reset',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId
+    );
+  }
 
-    await super.resetQuestionTransaction(transaction, questionId);
-
-    console.log('Resetted question', questionId);
+  async endQuestionTransaction(transaction, questionId) {
+    await super.endQuestionTransaction(transaction, questionId);
+    console.log(
+      'Nagui question successfully ended',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId
+    );
   }
 
   async handleCountdownEndTransaction(transaction, questionId) {
-    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction);
-    const teamId = gameQuestion.teamId;
+    // await super.handleCountdownEndTransaction(transaction, questionId);
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+    const teamId = await this.chooserRepo.getChooserIdTransaction(transaction);
+    const playerId = gameQuestion.playerId;
+    const choiceIdx = gameQuestion.choiceIdx;
 
-    const choosers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId);
+    await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, teamId, PlayerStatus.READY);
 
-    const choiceIdx = null;
     const correct = false;
     const reward = 0;
     await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward);
@@ -44,24 +63,21 @@ export default class GameNaguiQuestionService extends GameQuestionService {
       correct,
     });
 
-    for (const chooser of choosers) {
-      await this.playerRepo.updatePlayerStatusTransaction(transaction, chooser.id, PlayerStatus.READY);
-    }
-    await this.soundRepo.addSoundTransaction(transaction, 'hysterical5');
+    await this.soundRepo.addWrongAnswerSoundToQueueTransaction(transaction);
     await this.endQuestionTransaction(transaction, questionId);
 
-    console.log('Ended question countdown', questionId);
+    console.log(
+      'Nagui question countdown end successfully handled',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId
+    );
   }
 
-  async endQuestionTransaction(transaction, questionId) {
-    await super.endQuestionTransaction(transaction, questionId);
-
-    // await this.gameQuestionRepo.clearBuzzedPlayersTransaction(transaction, questionId);
-
-    console.log('Ended question', questionId);
-  }
-
-  /* ============================================================================================================ */
+  /* =============================================================================================================== */
 
   async selectOption(questionId, playerId, optionIdx) {
     if (!questionId) {
@@ -70,21 +86,45 @@ export default class GameNaguiQuestionService extends GameQuestionService {
     if (!playerId) {
       throw new Error('No player ID has been provided!');
     }
-    if (optionIdx < 0 || optionIdx >= NaguiQuestion.MAX_NUM_OPTIONS) {
+    if (optionIdx < 0 || optionIdx >= NaguiQuestion.OPTIONS.length) {
       throw new Error('Invalid option index!');
     }
 
     try {
       await runTransaction(firestore, async (transaction) => {
         const option = NaguiQuestion.OPTIONS[optionIdx];
-
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { playerId, option });
         await this.soundRepo.addSoundTransaction(transaction, NAGUI_OPTION_TO_SOUND[option]);
-
-        console.log('Selected Nagui option', questionId, optionIdx);
+        console.log(
+          'Nagui option successfully selected',
+          'game',
+          this.gameId,
+          'round',
+          this.roundId,
+          'question',
+          questionId,
+          'player',
+          playerId,
+          'option',
+          optionIdx
+        );
       });
     } catch (error) {
-      console.error('Error selecting Nagui option:', error);
+      console.error(
+        'Failed to select the Nagui option',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'player',
+        playerId,
+        'option',
+        optionIdx,
+        'err',
+        error
+      );
       throw error;
     }
   }
@@ -99,25 +139,24 @@ export default class GameNaguiQuestionService extends GameQuestionService {
     if (!teamId) {
       throw new Error('No team ID has been provided!');
     }
-    if (choiceIdx < 0 || choiceIdx >= NaguiQuestion.MAX_NUM_CHOICES) {
+    if (choiceIdx < 0 || choiceIdx >= NaguiQuestion.MAX_CHOICES) {
       throw new Error('Invalid choice index!');
     }
 
     try {
       await runTransaction(firestore, async (transaction) => {
-        const choosers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId);
         const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
         const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
         const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
 
-        const correct = baseQuestion.isValidAnswer(choiceIdx);
+        await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, teamId, PlayerStatus.READY);
+
+        const answerIdx = baseQuestion.answerIdx;
+        const correct = choiceIdx === answerIdx;
+        // const correct = baseQuestion.isValidAnswer(choiceIdx);
         const reward = correct ? round.rewardsPerQuestion[gameQuestion.option] : 0;
+
         await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward);
-
-        for (const chooser of choosers) {
-          await this.playerRepo.updatePlayerStatusTransaction(transaction, chooser.id, PlayerStatus.READY);
-        }
-
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
           playerId,
           choiceIdx,
@@ -126,11 +165,40 @@ export default class GameNaguiQuestionService extends GameQuestionService {
         });
         await this.soundRepo.addSoundTransaction(transaction, correct ? 'Anime wow' : 'hysterical5');
         await this.endQuestionTransaction(transaction, questionId);
-
-        console.log('Selected Nagui choice', questionId, choiceIdx);
+        console.log(
+          'Nagui choice selection successfully handled',
+          'game',
+          this.gameId,
+          'round',
+          this.roundId,
+          'question',
+          questionId,
+          'player',
+          playerId,
+          'team',
+          teamId,
+          'choice',
+          choiceIdx
+        );
       });
     } catch (error) {
-      console.error('Error selecting Nagui choice:', error);
+      console.error(
+        'Failed to select Nagui choice',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'player',
+        playerId,
+        'team',
+        teamId,
+        'choice',
+        choiceIdx,
+        'err',
+        error
+      );
       throw error;
     }
   }
@@ -151,25 +219,51 @@ export default class GameNaguiQuestionService extends GameQuestionService {
 
     try {
       await runTransaction(firestore, async (transaction) => {
-        const choosers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId);
         const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
         const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
-
         const reward = correct ? round.rewardsPerQuestion[gameQuestion.option] : 0;
+
+        await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, teamId, PlayerStatus.READY);
+
         await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward);
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { playerId, reward, correct });
-
-        for (const chooser of choosers) {
-          await this.playerRepo.updatePlayerStatusTransaction(transaction, chooser.id, PlayerStatus.READY);
-        }
-
         await this.soundRepo.addSoundTransaction(transaction, correct ? 'Anime wow' : 'hysterical5');
         await this.endQuestionTransaction(transaction, questionId);
 
-        console.log('Handled answer to hidden Nagui option', questionId, playerId, teamId, correct);
+        console.log(
+          'Answer to hidden Nagui option successfully handled',
+          'game',
+          this.gameId,
+          'round',
+          this.roundId,
+          'question',
+          questionId,
+          'player',
+          playerId,
+          'team',
+          teamId,
+          'correct',
+          correct
+        );
       });
     } catch (error) {
-      console.error('Error handling answer to hidden Nagui option:', error);
+      console.error(
+        'Failed to handle answer to hidden Nagui option',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'player',
+        playerId,
+        'team',
+        teamId,
+        'correct',
+        correct,
+        'err',
+        error
+      );
       throw error;
     }
   }

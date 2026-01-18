@@ -76,7 +76,7 @@ export default function SubmitBlindtestQuestionForm({ userId, lang, ...props }) 
         await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
       }
     } catch (error) {
-      console.error('There was an error submitting your question:', error);
+      console.error('Failed to submit your question:', error);
     }
   });
 

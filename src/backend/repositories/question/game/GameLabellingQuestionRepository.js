@@ -31,6 +31,12 @@ export default class GameLabellingQuestionRepository extends GameQuestionReposit
     );
   }
 
+  async updateQuestionRevealedElementsTransaction(transaction, questionId, revealed) {
+    return await this.updateQuestionTransaction(transaction, questionId, {
+      revealed,
+    });
+  }
+
   async resetPlayersTransaction(transaction, questionId) {
     await this.setTransaction(transaction, [questionId, ...GameLabellingQuestionRepository.LABELLING_PLAYERS_PATH], {
       buzzed: [],
@@ -38,8 +44,16 @@ export default class GameLabellingQuestionRepository extends GameQuestionReposit
     });
   }
 
+  async updatePlayersTransaction(transaction, questionId, players) {
+    await this.updateTransaction(
+      transaction,
+      [questionId, ...GameLabellingQuestionRepository.BUZZER_PLAYERS_PATH],
+      players
+    );
+  }
+
   async cancelPlayerTransaction(transaction, questionId, playerId) {
-    await this.updateTransaction(transaction, [questionId, ...GameLabellingQuestionRepository.LABELLING_PLAYERS_PATH], {
+    await this.updatePlayersTransaction(transaction, questionId, {
       canceled: arrayUnion({
         playerId,
         timestamp: Timestamp.now(),

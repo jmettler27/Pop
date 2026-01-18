@@ -2,6 +2,7 @@ import { BaseQuestion, GameQuestion } from '@/backend/models/questions/Question'
 import { isArray } from '@/backend/utils/arrays';
 import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { prependWithEmojiAndSpace } from '@/backend/utils/strings';
 
 export class NaguiOption {
   static TYPE_TO_TITLE = {
@@ -365,3 +366,9 @@ export class GameNaguiQuestion extends GameQuestion {
     this.teamId = null;
   }
 }
+
+export const NAGUI_OPTION_TO_SOUND = {
+  hide: 'hide',
+  square: 'square',
+  duo: 'duo',
+};

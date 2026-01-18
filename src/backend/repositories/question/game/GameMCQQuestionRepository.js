@@ -12,4 +12,13 @@ export default class GameMCQQuestionRepository extends GameQuestionRepository {
       teamId: teamId,
     });
   }
+
+  async resetQuestionTransaction(transaction, questionId) {
+    return this.setQuestionTransaction(transaction, questionId, {
+      playerId: null,
+      teamId: null,
+      reward: null,
+      correct: null,
+    });
+  }
 }

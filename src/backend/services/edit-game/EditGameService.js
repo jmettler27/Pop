@@ -63,7 +63,7 @@ export default class EditGameService {
         console.log(`Game ${this.gameId}: Round created successfully.`);
       });
     } catch (error) {
-      console.error('There was an error creating the round:', error);
+      console.error('Failed to create the round:', error);
       throw error;
     }
   }
@@ -101,7 +101,7 @@ export default class EditGameService {
         console.log(`Game ${this.gameId}: Question added to round ${roundId} successfully.`);
       });
     } catch (error) {
-      console.error('There was an error adding the question:', error);
+      console.error('Failed to add the question:', error);
       throw error;
     }
   }
@@ -122,7 +122,7 @@ export default class EditGameService {
         await this.gameRepo.removeRoundTransaction(transaction, this.gameId, roundId);
       });
     } catch (error) {
-      console.error('There was an error removing the round:', error);
+      console.error('Failed to remove the round:', error);
       throw error;
     }
 
@@ -156,16 +156,16 @@ export default class EditGameService {
     );
   }
 
-  /**
-   * Adds an organizer to a game
-   *
-   * @param {string} organizerId - The ID of the organizer
-   */
-  async addOrganizerToGame(organizerId) {
-    await this.gameRepo.addOrganizer(this.gameId, organizerId);
-
-    console.log('Organizer added successfully', 'gameId: ', this.gameId, 'organizerId: ', organizerId);
-  }
+  // /**
+  //  * Adds an organizer to a game
+  //  *
+  //  * @param {string} organizerId - The ID of the organizer
+  //  */
+  // async addOrganizerToGame(organizerId) {
+  //   await this.gameRepo.addOrganizer(this.gameId, organizerId);
+  //
+  //   console.log('Organizer added successfully', 'gameId: ', this.gameId, 'organizerId: ', organizerId);
+  // }
 
   /**
    * Launches a game
@@ -178,7 +178,7 @@ export default class EditGameService {
       });
       console.log('Game launched successfully', 'gameId: ', this.gameId);
     } catch (error) {
-      console.error('There was an error launching the game:', error);
+      console.error('Failed to launch the game:', error);
       throw error;
     }
   }

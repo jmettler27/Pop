@@ -12,4 +12,14 @@ export default class GameNaguiQuestionRepository extends GameQuestionRepository 
       teamId: teamId,
     });
   }
+
+  async resetQuestionTransaction(transaction, questionId) {
+    return this.setQuestionTransaction(transaction, questionId, {
+      playerId: null,
+      teamId: null,
+      option: null,
+      reward: null,
+      correct: null,
+    });
+  }
 }

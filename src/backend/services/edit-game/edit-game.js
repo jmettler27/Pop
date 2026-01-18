@@ -26,7 +26,7 @@ export async function addRoundToGame(gameId, title, type) {
     await runTransaction(firestore, (transaction) => addRoundToGameTransaction(transaction, gameId, title, type));
     console.log(`Game ${gameId}: Round created successfully.`);
   } catch (error) {
-    console.error('There was an error creating the round:', error);
+    console.error('Failed to create the round:', error);
     throw error;
   }
 }
@@ -143,7 +143,7 @@ export async function addQuestionToRound(gameId, roundId, questionId, managerId)
     );
     console.log(`Game ${gameId}, Round ${roundId}: Realtime info of ${questionId} added successfully.`);
   } catch (error) {
-    console.error('There was an error adding the question:', error);
+    console.error('Failed to add the question:', error);
     throw error;
   }
 }
@@ -370,7 +370,7 @@ export async function removeRoundFromGame(gameId, roundId) {
     await runTransaction(firestore, (transaction) => removeRoundFromGameTransaction(transaction, gameId, roundId));
     console.log(`Game ${gameId}: Realtime info of ${roundId} removed successfully.`);
   } catch (error) {
-    console.error('There was an error removing the question:', error);
+    console.error('Failed to remove the question:', error);
     throw error;
   }
 }
@@ -402,7 +402,7 @@ export async function removeQuestionFromRound(gameId, roundId, questionId, quest
     );
     console.log(`Game ${gameId}, Round ${roundId}: Realtime info of ${questionId} removed successfully.`);
   } catch (error) {
-    console.error('There was an error removing the question:', error);
+    console.error('Failed to remove the question:', error);
     throw error;
   }
 }
@@ -492,7 +492,7 @@ export async function updateQuestionCreator(gameId, roundId, questionId, userId)
     );
     console.log(`Game ${gameId}, Round ${roundId}: Realtime info of ${questionId} removed successfully.`);
   } catch (error) {
-    console.error('There was an error removing the question:', error);
+    console.error('Failed to remove the question:', error);
     throw error;
   }
 }
@@ -521,7 +521,7 @@ export async function addGameOrganizer(gameId, organizerId) {
     await runTransaction(firestore, (transaction) => addGameOrganizerTransaction(transaction, gameId, organizerId));
     console.log(`Game ${gameId}: Organizer ${organizerId} added successfully.`);
   } catch (error) {
-    console.error('There was an error adding the organizer:', error);
+    console.error('Failed to add the organizer:', error);
     throw error;
   }
 }
@@ -549,7 +549,7 @@ export async function launchGame(gameId) {
     await runTransaction(firestore, (transaction) => launchGameTransaction(transaction, gameId));
     console.log(`Game ${gameId}: Launched successfully.`);
   } catch (error) {
-    console.error('There was an error launching the game:', error);
+    console.error('Failed to launch the game:', error);
     throw error;
   }
 }

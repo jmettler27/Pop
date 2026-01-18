@@ -45,7 +45,7 @@ export default class GameQuestionRepository extends FirebaseRepository {
         await this.createQuestionTransaction(transaction, this.questionType, questionId, managerId, data);
       });
     } catch (error) {
-      console.error('There was an error creating the question:', error);
+      console.error('Failed to create the question:', error);
       throw error;
     }
   }
@@ -68,7 +68,7 @@ export default class GameQuestionRepository extends FirebaseRepository {
       const createData = await super.createTransaction(transaction, question.toObject(), questionId);
       return QuestionFactory.createGameQuestion(this.questionType, createData);
     } catch (error) {
-      console.error('There was an error creating the question:', error);
+      console.error('Failed to create the question:', error);
       throw error;
     }
   }
@@ -79,7 +79,7 @@ export default class GameQuestionRepository extends FirebaseRepository {
         await this.deleteQuestionTransaction(transaction, questionId);
       });
     } catch (error) {
-      console.error('There was an error deleting the question:', error);
+      console.error('Failed to delete the question:', error);
       throw error;
     }
   }
@@ -93,7 +93,7 @@ export default class GameQuestionRepository extends FirebaseRepository {
     try {
       await super.deleteTransaction(transaction, questionId);
     } catch (error) {
-      console.error('There was an error deleting the question:', error);
+      console.error('Failed to delete the question:', error);
       throw error;
     }
   }
@@ -138,13 +138,34 @@ export default class GameQuestionRepository extends FirebaseRepository {
    * @returns {GameQuestion}
    */
   async setQuestionTransaction(transaction, questionId, data) {
-    const setData = await super.setTransaction(transaction, questionId, data);
+    const setData = await this.setTransaction(transaction, questionId, data);
     return setData ? QuestionFactory.createGameQuestion(this.questionType, setData) : null;
   }
 
   async startQuestionTransaction(transaction, questionId) {
-    await super.updateTransaction(transaction, questionId, {
+    return this.updateQuestionTransaction(transaction, questionId, {
       dateStart: serverTimestamp(),
+    });
+  }
+
+  async endQuestionTransaction(transaction, questionId) {
+    return this.updateQuestionTransaction(transaction, questionId, {
+      dateEnd: serverTimestamp(),
+    });
+  }
+
+  async updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId) {
+    return this.updateQuestionTransaction(transaction, questionId, {
+      winner: {
+        playerId,
+        teamId,
+      },
+    });
+  }
+
+  async resetQuestionWinnerTransaction(transaction, questionId) {
+    return this.updateQuestionTransaction(transaction, questionId, {
+      winner: null,
     });
   }
 

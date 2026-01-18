@@ -1,5 +1,5 @@
 import GameBasicQuestionRepository from '@/backend/repositories/question/game/GameBasicQuestionRepository';
-import BuzzerRoundService from '@/backend/services/round/buzzer/BuzzerRoundService';
+import BuzzerRoundService from '@/backend/services/round/BuzzerRoundService';
 
 export default class BasicRoundService extends BuzzerRoundService {
   async calculateMaxPointsTransaction(transaction, round) {

@@ -15,7 +15,16 @@ export default class GameProgressiveCluesQuestionService extends GameBuzzerQuest
       currentClueIdx: -1,
     });
     await super.resetQuestionTransaction(transaction, questionId);
-    console.log('Progressive clues question successfully reset', questionId);
+
+    console.log(
+      'Progressive clues question successfully reset',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId
+    );
   }
 
   /* ====================================================================================================== */
@@ -51,11 +60,20 @@ export default class GameProgressiveCluesQuestionService extends GameBuzzerQuest
         }
         // await this.timerRepo.resetTimerTransaction(transaction)
         await this.soundRepo.addSoundTransaction(transaction, 'cartoon_mystery_musical_tone_002');
-
-        console.log('Progressive clues revealed successfully', questionId);
+        console.log('Clue revealed successfully', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
       });
     } catch (error) {
-      console.error('There was an error revealing the progressive clues', error);
+      console.error(
+        'Failed to reveal clue',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'err',
+        error
+      );
       throw error;
     }
   }

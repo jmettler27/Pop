@@ -84,18 +84,9 @@ export default class PlayerRepository extends FirebaseRepository {
   }
 
   async updateTeamPlayersStatusTransaction(transaction, teamId, status) {
-    const players = await super
-      .getByQueryTransaction(transaction, {
-        where: {
-          field: 'teamId',
-          operator: '==',
-          value: teamId,
-        },
-      })
-      .map((p) => Player(p));
-
-    for (const player of players) {
-      await this.updatePlayerTransaction(transaction, player.id, { status });
+    const players = await this.getPlayersByTeamIdTransaction(transaction, teamId);
+    for (const p of players) {
+      await this.updatePlayerTransaction(transaction, p.id, { status });
     }
   }
 

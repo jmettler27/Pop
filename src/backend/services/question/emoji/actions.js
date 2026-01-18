@@ -17,7 +17,7 @@ export const handleCountdownEnd = async (gameId, roundId, questionId) => {
   return service.handleCountdownEnd(questionId);
 };
 
-/* ============================================================================================================ */
+/* =============================================================================================================== */
 
 export const handleBuzzerHeadChanged = async (gameId, roundId, questionId, playerId) => {
   const service = new GameEmojiQuestionService(gameId, roundId);
@@ -39,9 +39,9 @@ export const clearBuzzer = async (gameId, roundId, questionId) => {
   return service.clearBuzzer(questionId);
 };
 
-export const validateAnswer = async (gameId, roundId, questionId, playerId, wholeTeam = false) => {
+export const validateAnswer = async (gameId, roundId, questionId, playerId) => {
   const service = new GameEmojiQuestionService(gameId, roundId);
-  return service.validateAnswer(questionId, playerId, wholeTeam);
+  return service.validateAnswer(questionId, playerId);
 };
 
 export const invalidateAnswer = async (gameId, roundId, questionId, playerId) => {

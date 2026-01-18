@@ -1,4 +1,4 @@
-import BuzzerRoundService from '@/backend/services/round/buzzer/BuzzerRoundService';
+import BuzzerRoundService from '@/backend/services/round/BuzzerRoundService';
 import { RoundType } from '@/backend/models/rounds/RoundType';
 
 export default class ProgressiveCluesRoundService extends BuzzerRoundService {

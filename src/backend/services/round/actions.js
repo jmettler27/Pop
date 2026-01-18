@@ -33,7 +33,7 @@ export async function startRound(gameId, roundId) {
     await runTransaction(firestore, async (transaction) => startRoundTransaction(transaction, gameId, roundId));
     console.log('Round successfully started.');
   } catch (error) {
-    console.error('There was an error starting the round:', error);
+    console.error('Failed to start the round:', error);
     throw error;
   }
 }
@@ -57,7 +57,7 @@ export async function handleQuestionEnd(gameId, roundId) {
   try {
     await runTransaction(firestore, async (transaction) => handleQuestionEndTransaction(transaction, gameId, roundId));
   } catch (error) {
-    console.error('There was an error handling the end of the question:', error);
+    console.error('Failed to handle end of the question:', error);
     throw error;
   }
 }
@@ -83,7 +83,7 @@ export async function endRound(gameId, roundId) {
     await runTransaction(firestore, (transaction) => endRoundTransaction(transaction, gameId, roundId));
     console.log('Round successfully ended.');
   } catch (error) {
-    console.error('There was an error ending the round:', error);
+    console.error('Failed to end the round:', error);
     throw error;
   }
 }
@@ -108,7 +108,7 @@ const endRoundTransaction = async (transaction, gameId, roundId) => {
   //                                  team2: {round1: global score accumulated at the end of round1, round2:global score accumulated at the end of round2},
   //                              ...}
   const { questions: questionIds, type: roundType, rewardsPerQuestion } = roundData;
-  const { scores: roundScores, scoresProgress: currentRoundScoresProgress } = roundScoresData; // {team1: roundScore1, team2: roundScore2, ...}
+  const { scores: roundScores, scoresProgress: currRoundScoresProgress } = roundScoresData; // {team1: roundScore1, team2: roundScore2, ...}
 
   let newChooserOrder;
   let roundSortedTeams;
@@ -227,7 +227,7 @@ const endRoundTransaction = async (transaction, gameId, roundId) => {
   // Result: filledRoundProgress = {team1: {question1: score1, question2: score2, ...}, team2: {question1: score1, question2: score2, ...}, ...}
   let filledRoundProgress = {};
   Object.keys(roundScores).forEach((teamId) => {
-    const teamRoundProgress = currentRoundScoresProgress[teamId] || {};
+    const teamRoundProgress = currRoundScoresProgress[teamId] || {};
     let teamScores = {};
     for (const [idx, questionId] of questionIds.entries()) {
       const scoreAtQuestion = teamRoundProgress[questionId] || null;
@@ -358,7 +358,7 @@ export async function handleRoundSelected(gameId, roundId, userId) {
     );
     console.log('Round successfully started.');
   } catch (error) {
-    console.error('There was an error starting the round:', error);
+    console.error('Failed to start the round:', error);
     throw error;
   }
 }
