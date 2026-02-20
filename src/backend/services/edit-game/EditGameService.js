@@ -156,6 +156,33 @@ export default class EditGameService {
     );
   }
 
+  /**
+   * Reorders questions in a round
+   *
+   * @param {string} roundId - The ID of the round
+   * @param {Object} roundData - The complete round data with updated questions array
+   */
+  async updateRound(roundId, roundData) {
+    if (!roundId) {
+      throw new Error('Round ID is required');
+    }
+    if (!roundData || typeof roundData !== 'object') {
+      throw new Error('Round data object is required');
+    }
+
+    await this.roundRepo.updateRound(roundId, roundData);
+
+    console.log(
+      'Round updated successfully',
+      'gameId: ',
+      this.gameId,
+      'roundId: ',
+      roundId,
+      'newOrder: ',
+      roundData.questions
+    );
+  }
+
   // /**
   //  * Adds an organizer to a game
   //  *

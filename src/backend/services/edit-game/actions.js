@@ -22,6 +22,11 @@ export const removeQuestionFromRound = async (gameId, roundId, questionId) => {
   return service.removeQuestionFromRound(roundId, questionId);
 };
 
+export const updateRound = async (gameId, roundId, roundData) => {
+  const service = new EditGameService(gameId);
+  return service.updateRound(roundId, roundData);
+};
+
 // export const addOrganizerToGame = async (gameId, organizerId) => {
 //   const service = new EditGameService(gameId);
 //   return service.addOrganizerToGame(organizerId);
