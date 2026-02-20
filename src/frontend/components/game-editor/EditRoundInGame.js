@@ -39,12 +39,15 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
+  Tooltip,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 import clsx from 'clsx';
 
@@ -78,7 +81,7 @@ const editGameRoundCardNumCols = (roundType) => {
   }
 };
 
-export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, status, gameId }) {
+export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, status, gameId, forceCollapse = false }) {
   // <div className='border-dashed border-4 p-2 w-[30%] h-full overflow-auto'>
 
   const roundRepo = new RoundRepository(gameId);
@@ -86,6 +89,12 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
 
   const [isReorderMode, setIsReorderMode] = useState(false);
   const [reorderedQuestions, setReorderedQuestions] = useState([]);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // Sync with forceCollapse prop
+  useEffect(() => {
+    setIsCollapsed(forceCollapse);
+  }, [forceCollapse]);
 
   if (error) {
     return (
@@ -129,22 +138,40 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+    <Card className="border-0 shadow-xl bg-white dark:bg-slate-900 rounded-2xl overflow-hidden">
+      <CardHeader className="flex flex-row items-center justify-between pb-4 space-y-0 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-900 border-b border-slate-200 dark:border-slate-700">
         <div className="flex flex-col gap-1">
-          <CardTitle className="2xl:text-2xl">
-            {roundTypeToEmoji(round.type)} <i>{round.title}</i>
+          <CardTitle className="text-lg 2xl:text-xl font-bold flex items-center gap-2">
+            <span className="text-3xl">{roundTypeToEmoji(round.type)}</span>
+            <i className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{round.title}</i>
           </CardTitle>
           <RoundTopicDistribution round={round} />
         </div>
         <div className="flex flex-row gap-2">
+          <Tooltip title={isCollapsed ? "Expand" : "Collapse"}>
+            <IconButton
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className="hover:scale-110 transition-transform"
+              color="info"
+            >
+              {isCollapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+            </IconButton>
+          </Tooltip>
           {status === GameStatus.GAME_EDIT && (
             <>
-              <IconButton color={isReorderMode ? 'warning' : 'info'} onClick={handleToggleReorderMode}>
+              <IconButton
+                color={isReorderMode ? 'warning' : 'info'}
+                onClick={handleToggleReorderMode}
+                className="hover:scale-110 transition-transform"
+              >
                 {isReorderMode ? <CloseIcon /> : <SwapVertIcon />}
               </IconButton>
               {isReorderMode && (
-                <IconButton color="success" onClick={handleConfirmReorder}>
+                <IconButton
+                  color="success"
+                  onClick={handleConfirmReorder}
+                  className="hover:scale-110 transition-transform"
+                >
                   <CheckIcon />
                 </IconButton>
               )}
@@ -153,25 +180,28 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
           )}
         </div>
       </CardHeader>
-      <CardContent>
-        <EditGameRoundQuestionCards
-          round={round}
-          status={status}
-          isReorderMode={isReorderMode}
-          reorderedQuestions={reorderedQuestions}
-          setReorderedQuestions={setReorderedQuestions}
-        />
-        {status === GameStatus.GAME_EDIT &&
-          !isReorderMode &&
-          (round.type === RoundType.MIXED ? (
-            <AddQuestionToMixedRoundButton
-              roundId={round.id}
-              disabled={round.questions.length >= Round.MAX_NUM_QUESTIONS}
-            />
-          ) : (
-            <AddQuestionToRoundButton round={round} disabled={round.questions.length >= Round.MAX_NUM_QUESTIONS} />
-          ))}
-      </CardContent>
+      {!isCollapsed && (
+        <CardContent className="p-6 bg-gradient-to-br from-slate-50/50 to-transparent dark:from-slate-900/50">
+          <EditGameRoundQuestionCards
+            round={round}
+            status={status}
+            isReorderMode={isReorderMode}
+            reorderedQuestions={reorderedQuestions}
+            setReorderedQuestions={setReorderedQuestions}
+            roundCollapsed={isCollapsed}
+          />
+          {status === GameStatus.GAME_EDIT &&
+            !isReorderMode &&
+            (round.type === RoundType.MIXED ? (
+              <AddQuestionToMixedRoundButton
+                roundId={round.id}
+                disabled={round.questions.length >= Round.MAX_NUM_QUESTIONS}
+              />
+            ) : (
+              <AddQuestionToRoundButton round={round} disabled={round.questions.length >= Round.MAX_NUM_QUESTIONS} />
+            ))}
+        </CardContent>
+      )}
     </Card>
   );
 });
@@ -200,13 +230,13 @@ function SortableQuestionCard({ roundId, questionId, questionOrder, status }) {
 
   return (
     <div ref={setNodeRef} style={style} className="relative">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between gap-2">
-          <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing flex-shrink-0">
-            <DragIndicatorIcon className="text-gray-400" />
+      <Card className="border border-slate-200 dark:border-slate-700 shadow-md hover:shadow-lg transition-all duration-200 bg-white dark:bg-slate-800 rounded-xl">
+        <CardHeader className="flex flex-row items-center justify-between gap-3 py-3 px-4">
+          <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing flex-shrink-0 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg p-1 transition-colors">
+            <DragIndicatorIcon className="text-slate-400 dark:text-slate-500" />
           </div>
-          <CardTitle className="text-base md:text-lg dark:text-white flex-grow">
-            <span className="mr-2 font-bold">#{questionOrder + 1}</span>
+          <CardTitle className="text-base md:text-lg dark:text-white flex-grow font-medium">
+            <span className="mr-2 font-bold text-blue-600 dark:text-blue-400">#{questionOrder + 1}</span>
             <QuestionCardTitle baseQuestion={baseQuestion} showType={true} />
           </CardTitle>
         </CardHeader>
@@ -257,23 +287,28 @@ function RoundTopicDistribution({ round }) {
   return (
     <div className="flex flex-wrap items-center gap-2 text-sm" suppressHydrationWarning>
       {/* Total questions badge */}
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full font-semibold bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+      <span className="inline-flex items-center px-3 py-1.5 rounded-full font-semibold bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md">
+        <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
         {totalQuestions} {totalQuestions === 1 ? 'question' : 'questions'}
       </span>
 
       {/* Topic distribution badges */}
       {isMounted && Object.entries(topics).length > 0 && (
         <>
-          <span className="text-gray-400 dark:text-gray-500">•</span>
-          {Object.entries(topics).map(([topic, count]) => (
-            <span
-              key={topic}
-              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-medium bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 text-purple-900 dark:text-purple-200 shadow-sm"
-            >
-              <span className="text-base">{topicToEmoji(topic)}</span>
-              <span className="text-xs font-semibold">{count}</span>
-            </span>
-          ))}
+          <span className="text-slate-300 dark:text-slate-600 text-lg">•</span>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(topics).map(([topic, count]) => (
+              <span
+                key={topic}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md hover:shadow-lg transition-shadow"
+              >
+                <span className="text-lg">{topicToEmoji(topic)}</span>
+                <span className="text-xs font-bold">{count}</span>
+              </span>
+            ))}
+          </div>
         </>
       )}
     </div>
@@ -329,7 +364,7 @@ function EditGameRoundQuestionCards({ round, status, isReorderMode, reorderedQue
   }
 
   return (
-    <div className={clsx('grid', 'gap-4', editGameRoundCardNumCols(round.type))}>
+    <div className={clsx('grid', 'gap-4', 'items-start', editGameRoundCardNumCols(round.type))}>
       {questionIds.map((questionId, idx) => (
         <EditQuestionCard
           key={questionId}

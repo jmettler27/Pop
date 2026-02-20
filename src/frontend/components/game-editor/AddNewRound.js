@@ -32,10 +32,15 @@ export function AddNewRoundButton({ disabled, lang = DEFAULT_LOCALE }) {
     <>
       <div className="flex flex-col h-full">
         <Button
-          className=""
+          className="rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
           size="large"
           variant="outlined"
-          style={{ border: '2.5px dashed', fontSize: '1rem' }}
+          color="primary"
+          style={{
+            border: '2.5px dashed',
+            fontSize: '1rem',
+            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05))'
+          }}
           startIcon={<AddCircleOutlineIcon />}
           disabled={disabled}
           onClick={() => setDialogOpen(true)}

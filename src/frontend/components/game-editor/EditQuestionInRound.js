@@ -14,12 +14,15 @@ import { DIALOG_ACTION_CANCEL, DIALOG_WARNING } from '@/frontend/texts/dialogs';
 import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
 import { Avatar, Button, Divider } from '@mui/material';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Tooltip } from '@mui/material';
 
 import DeleteIcon from '@mui/icons-material/Delete';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questionId, questionOrder, status }) {
   const { id: gameId } = useParams();
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   console.log('EditQuestionCard', gameId, roundId, questionId);
 
@@ -43,62 +46,36 @@ export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questi
   console.log('baseQuestion.type', baseQuestion.type);
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+    <Card className="border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800 rounded-xl overflow-hidden group hover:scale-[1.02]">
+      <CardHeader className={`flex flex-row items-center justify-between bg-gradient-to-r from-slate-50 to-blue-50/50 dark:from-slate-800 dark:to-slate-900 py-2 px-3 ${!isCollapsed ? 'border-b border-slate-200 dark:border-slate-700' : ''}`}>
         {/* <span className='text-base md:text-lg dark:text-white'>#{questionOrder + 1}</span> */}
-        <CardTitle className="text-base md:text-lg dark:text-white">
+        <CardTitle className="text-sm md:text-base dark:text-white font-semibold">
           <QuestionCardTitle baseQuestion={baseQuestion} showType={true} />
         </CardTitle>
-        {status === 'build' && <RemoveQuestionFromRoundButton roundId={roundId} questionId={questionId} />}
+        <div className="flex gap-1">
+          <Tooltip title={isCollapsed ? "Expand" : "Collapse"}>
+            <IconButton
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              size="small"
+              color="info"
+              className="hover:scale-110 transition-transform"
+            >
+              {isCollapsed ? <ExpandMoreIcon fontSize="small" /> : <ExpandLessIcon fontSize="small" />}
+            </IconButton>
+          </Tooltip>
+          {status === 'build' && <RemoveQuestionFromRoundButton roundId={roundId} questionId={questionId} />}
+        </div>
         {/* <UpdateCreatorButton roundId={roundId} questionId={questionId} /> */}
       </CardHeader>
 
-      <CardContent className="flex flex-col justify-center items-center w-full">
-        <QuestionCardContent baseQuestion={baseQuestion} />
-      </CardContent>
-
-      <Divider className="my-2 bg-slate-600" />
-      <CardFooter>
-        {/* <EditQuestionCardFooter questionId={questionId} questionType={baseQuestion.type} roundId={roundId} /> */}
-      </CardFooter>
+      {!isCollapsed && (
+        <CardContent className="flex flex-col justify-center items-center w-full p-4 bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-800 dark:to-slate-900/50">
+          <QuestionCardContent baseQuestion={baseQuestion} />
+        </CardContent>
+      )}
     </Card>
   );
 });
-
-// function EditQuestionCardFooter({ questionId, questionType, roundId }) {
-//     const { id: gameId } = useParams()
-
-//     console.log("EditQuestionCardFooter", questionId, questionType, roundId)
-
-//     const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(questionType, gameId, roundId)
-//     const organizerRepo = new OrganizerRepository(gameId)
-
-//     const { gameQuestion, loading: gameQuestionLoading, error: gameQuestionError } = gameQuestionRepo.useQuestionOnce(questionId)
-//     const { organizer, loading: organizerLoading, error: organizerError } = organizerRepo.useOrganizerOnce(gameQuestion?.managedBy)
-
-//     console.log("gameQuestion", gameQuestion)
-//     console.log("organizer", organizer)
-
-//     if (gameQuestionLoading || organizerLoading) {
-//         return <p>Loading the question...</p>
-//         }
-//     if (gameQuestionError || organizerError) {
-//         return <p>Error: {JSON.stringify(gameQuestionError || organizerError)}</p>
-//     }
-//     if (!gameQuestion || !organizer) {
-//         return <p>No data...</p>
-//     }
-
-//     console.log("gameQuestion", gameQuestion)
-//     console.log("organizer", organizer)
-
-//     return (
-//         <div className='flex flex-row w-full space-x-2 items-center'>
-//             <Avatar src={organizer.image} variant='rounded' sx={{ width: 30, height: 30 }} />
-//             <span>Manager: <strong>{organizer.name}</strong></span>
-//         </div>
-//     )
-// }
 
 import PersonIcon from '@mui/icons-material/Person';
 import BaseQuestionRepository from '@/backend/repositories/question/base/BaseQuestionRepository';

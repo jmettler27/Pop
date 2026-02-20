@@ -63,14 +63,14 @@ export default function Page({ params }) {
   if (!organizerIds.includes(user.id)) redirect('/');
 
   return (
-    <div className="h-screen flex flex-row divide-x divide-solid">
+    <div className="h-full flex flex-row">
       {/* Left bar */}
-      <div className="flex flex-col h-full w-1/6 bg-gray-100/40 lg:block dark:bg-gray-800/40 gap-2">
-        <div className="flex h-16 items-center border-b">
+      <div className="flex flex-col h-full w-64 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 border-r border-slate-200 dark:border-slate-800">
+        <div className="flex h-20 items-center px-6 border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
           {/* <Link className='flex items-center gap-2 font-semibold' href='#'> */}
           {/* <Package2Icon className='h-6 w-6' /> */}
-          <span className="text-lg md:text-xl">
-            {gameTypeToEmoji(game.type)} {localeToEmoji(game.lang)} <strong>{game.title}</strong>
+          <span className="text-lg md:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            {gameTypeToEmoji(game.type)} {localeToEmoji(game.lang)} {game.title}
           </span>
           {/* </Link> */}
           {/* <Button className='ml-auto h-8 w-8' size='icon' variant='outline'>
@@ -80,14 +80,14 @@ export default function Page({ params }) {
         </div>
 
         {/* Left bar */}
-        <div className="flex-1 overflow-auto py-2">
-          <nav className="grid items-start px-4 text-sm font-medium">
+        <div className="flex-1 overflow-auto py-4">
+          <nav className="grid items-start px-3 text-sm font-medium gap-1">
             <Link
               href="/"
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+              className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-700 transition-all hover:bg-blue-50 hover:text-blue-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-blue-400 group"
               prefetch={false}
             >
-              <HomeIcon className="h-6 w-6" />
+              <HomeIcon className="h-5 w-5 group-hover:scale-110 transition-transform" />
               Home
             </Link>
             {/* <Link
@@ -112,9 +112,9 @@ export default function Page({ params }) {
                         </Link> */}
             <Link
               href={'/edit/' + gameId + '/analytics'}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
+              className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-700 transition-all hover:bg-blue-50 hover:text-blue-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-blue-400 group"
             >
-              <LineChartIcon className="h-6 w-6" />
+              <LineChartIcon className="h-5 w-5 group-hover:scale-110 transition-transform" />
               Analytics
             </Link>
           </nav>
@@ -122,9 +122,9 @@ export default function Page({ params }) {
       </div>
 
       {/* Main content */}
-      <div className="flex flex-col h-full w-5/6">
+      <div className="flex flex-col h-full flex-1 bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
         {/* Search bar + user menu */}
-        <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
+        <header className="flex h-20 items-center gap-4 border-b border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md px-8 shadow-sm">
           <Link className="lg:hidden" href="#">
             <Package2Icon className="h-6 w-6" />
             <span className="sr-only">Home</span>
@@ -187,15 +187,45 @@ function EditGameRounds({ game }) {
   console.log('Game: ', game);
 
   const { rounds: roundIds, status } = game;
+  const [allCollapsed, setAllCollapsed] = React.useState(false);
+
+  const toggleAllCollapse = () => {
+    setAllCollapsed(!allCollapsed);
+  };
 
   return (
     <>
-      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
-        {roundIds.map((roundId) => (
-          <EditGameRoundCard key={roundId} roundId={roundId} status={status} gameId={game.id} />
-        ))}
-        {status === GameStatus.GAME_EDIT && <AddNewRoundButton disabled={roundIds.length >= Game.MAX_NUM_ROUNDS} />}
-        {status === GameStatus.GAME_EDIT && <LaunchGameButton />}
+      <main className="flex flex-1 flex-col gap-6 p-8 overflow-auto">
+        {/* Collapse All Button */}
+        <div className="flex justify-end">
+          <button
+            onClick={toggleAllCollapse}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors text-slate-700 dark:text-slate-300 font-medium"
+          >
+            {allCollapsed ? (
+              <>
+                <ChevronDownIcon className="h-5 w-5" />
+                Expand All
+              </>
+            ) : (
+              <>
+                <ChevronUpIcon className="h-5 w-5" />
+                Collapse All
+              </>
+            )}
+          </button>
+        </div>
+        <div className="space-y-6">
+          {roundIds.map((roundId) => (
+            <EditGameRoundCard key={roundId} roundId={roundId} status={status} gameId={game.id} forceCollapse={allCollapsed} />
+          ))}
+        </div>
+        {status === GameStatus.GAME_EDIT && (
+          <div className="flex gap-4 sticky bottom-0 bg-gradient-to-t from-slate-50 dark:from-slate-950 pt-6 pb-4">
+            <AddNewRoundButton disabled={roundIds.length >= Game.MAX_NUM_ROUNDS} />
+            <LaunchGameButton />
+          </div>
+        )}
       </main>
     </>
   );
@@ -300,6 +330,44 @@ function LineChartIcon(props) {
     >
       <path d="M3 3v18h18" />
       <path d="m19 9-5 5-4-4-3 3" />
+    </svg>
+  );
+}
+
+function ChevronDownIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  );
+}
+
+function ChevronUpIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="18 15 12 9 6 15" />
     </svg>
   );
 }
