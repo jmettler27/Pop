@@ -151,6 +151,7 @@ export default class FirebaseRepository extends IRepository {
    * @returns {Promise<Object>} The created document data with ID
    */
   async createTransaction(transaction, data, idOrPath = null) {
+    console.log('createTransaction', data, idOrPath);
     const docRef = idOrPath ? this.getDocumentRef(idOrPath) : doc(this.collectionRef);
     await transaction.set(docRef, data);
     return { id: docRef.id, ...data };

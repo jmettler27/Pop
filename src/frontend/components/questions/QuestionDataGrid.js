@@ -10,16 +10,15 @@ import {
 } from '@/backend/models/questions/Quote';
 import { topicToEmoji } from '@/backend/models/Topic';
 
-import { QUESTIONS_COLLECTION_REF, USERS_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { query, where } from 'firebase/firestore';
-import { useCollection, useCollectionOnce } from 'react-firebase-hooks/firestore';
-
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 import { DEFAULT_LOCALE, localeToEmoji } from '@/frontend/utils/locales';
 
 import { Avatar } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import React, { useState } from 'react';
+
+import BaseQuestionRepository from '@/backend/repositories/question/base/BaseQuestionRepository';
 
 const CLUE = {
   en: 'Clue',
@@ -33,7 +32,9 @@ const TITLE = {
 
 // PROGRESSIVE CLUES
 const progressiveCluesQuestionRow = (question) => {
-  const { title, answer, clues } = question.details;
+  const title = question.title;
+  const answer = question.answer;
+  const clues = question.clues;
   return {
     title,
     answer: answer.title,
@@ -46,10 +47,9 @@ const progressiveCluesQuestionColumns = [
 
 // IMAGE
 const imageQuestionRow = (question) => {
-  const {
-    title,
-    answer: { description, source },
-  } = question.details;
+  const title = question.title;
+  const description = question.answer.description;
+  const source = question.answer.source;
   return {
     title,
     description,
@@ -64,7 +64,9 @@ const imageQuestionColumns = [
 
 // EMOJI
 const emojiQuestionRow = (question) => {
-  const { title, answer, clue } = question.details;
+  const title = question.title;
+  const answer = question.answer;
+  const clue = question.clue;
   return {
     title,
     answer: answer.title,
@@ -79,7 +81,9 @@ const emojiQuestionColumns = [
 
 // BLINDTEST
 const blindtestQuestionRow = (question) => {
-  const { subtype, title, answer } = question.details;
+  const subtype = question.subtype;
+  const title = question.title;
+  const answer = question.answer;
   return {
     subtype: BlindtestQuestion.typeToEmoji(subtype),
     title,
@@ -98,7 +102,12 @@ const blindtestQuestionColumns = [
 
 // ENUM
 const enumQuestionRow = (question) => {
-  const { title, note, answer, maxIsKnown, thinkingTime, challengeTime } = question.details;
+  const title = question.title;
+  const note = question.note;
+  const answer = question.answer;
+  const maxIsKnown = question.maxIsKnown;
+  const thinkingTime = question.thinkingTime;
+  const challengeTime = question.challengeTime;
   return {
     title,
     note,
@@ -125,7 +134,9 @@ const enumQuestionColumns = [
 
 // ODD ONE OUT
 const oddOneOutQuestionRow = (question) => {
-  const { answerIdx, items, title } = question.details;
+  const answerIdx = question.answerIdx;
+  const items = question.items;
+  const title = question.title;
   return {
     title,
     oddOneOut: items[answerIdx].title,
@@ -142,7 +153,9 @@ const oddOneOutQuestionColumns = [
 
 // MATCHING
 const matchingQuestionRow = (question) => {
-  const { title, numCols, numRows } = question.details;
+  const title = question.title;
+  const numCols = question.numCols;
+  const numRows = question.numRows;
   return {
     title,
     numCols,
@@ -161,7 +174,10 @@ const matchingQuestionColumns = [
 
 // QUOTE
 const quoteQuestionRow = (question) => {
-  const { author, quote, source, toGuess } = question.details;
+  const author = question.author;
+  const quote = question.quote;
+  const source = question.source;
+  const toGuess = question.toGuess;
 
   const sortedToGuess = toGuess.sort((a, b) => {
     return QuoteQuestion.ELEMENTS_SORT_ORDER.indexOf(a) - QuoteQuestion.ELEMENTS_SORT_ORDER.indexOf(b);
@@ -192,7 +208,8 @@ const quoteQuestionColumns = [
 
 // LABEL
 const labelQuestionRow = (question) => {
-  const { title, labels } = question.details;
+  const title = question.title;
+  const labels = question.labels;
 
   return {
     numLabels: labels.length,
@@ -212,7 +229,9 @@ const labelQuestionColumns = [
 
 // ODD ONE OUT
 const reorderingQuestionRow = (question) => {
-  const { answerIdx, items, title } = question.details;
+  const answerIdx = question.answerIdx;
+  const items = question.items;
+  const title = question.title;
   return {
     title,
   };
@@ -221,7 +240,12 @@ const reorderingQuestionColumns = [{ field: 'title', headerName: 'Question', wid
 
 // MCQ
 const mcqQuestionRow = (question) => {
-  const { answerIdx, choices, explanation, note, source, title } = question.details;
+  const answerIdx = question.answerIdx;
+  const choices = question.choices;
+  const explanation = question.explanation;
+  const note = question.note;
+  const source = question.source;
+  const title = question.title;
   return {
     numChoices: choices.length,
     answer: choices[answerIdx],
@@ -248,7 +272,12 @@ const mcqQuestionColumns = [
 
 // NAGUI
 const naguiQuestionRow = (question) => {
-  const { answerIdx, choices, explanation, note, source, title } = question.details;
+  const answerIdx = question.answerIdx;
+  const choices = question.choices;
+  const explanation = question.explanation;
+  const note = question.note;
+  const source = question.source;
+  const title = question.title;
   return {
     answer: choices[answerIdx],
     // explanation,
@@ -267,7 +296,11 @@ const naguiQuestionColumns = [
 
 // BASIC
 const basicQuestionRow = (question) => {
-  const { answer, explanation, note, source, title } = question.details;
+  const answer = question.answer;
+  const explanation = question.explanation;
+  const note = question.note;
+  const source = question.source;
+  const title = question.title;
   return {
     answer,
     // explanation,
@@ -286,6 +319,7 @@ const basicQuestionColumns = [
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import UserRepository from '@/backend/repositories/user/UserRepository';
+import BaseQuestionRepositoryFactory from '@/backend/repositories/question/base/BaseQuestionRepositoryFactory';
 
 const questionTypeToRow = {
   [QuestionType.PROGRESSIVE_CLUES]: progressiveCluesQuestionRow,
@@ -368,13 +402,20 @@ const questionRow = (question, users) => {
 export function SearchQuestionDataGrid({
   questionType,
   questionSelectionModel = [],
-  onQuestionSelectionModelChange = () => {},
+  onQuestionSelectionModelChange = () => { },
 }) {
   const userRepo = new UserRepository();
   const { users, loading: usersLoading, error: usersError } = userRepo.useAllUsersOnce();
 
-  const q = query(QUESTIONS_COLLECTION_REF, where('type', '==', questionType), where('approved', '==', true));
-  const [questionsCollection, questionsLoading, questionsError] = useCollectionOnce(q);
+  // Use BaseQuestionRepository with questionType
+  const questionRepo = new BaseQuestionRepository(questionType);
+  const { baseQuestions, baseQuestionsLoading, baseQuestionsError } = questionRepo.useQuestionsOnce(true);
+
+  const [paginationModel, setPaginationModel] = useState({
+    pageSize: 20,
+    page: 0,
+  });
+
   if (usersError) {
     return (
       <p>
@@ -382,31 +423,62 @@ export function SearchQuestionDataGrid({
       </p>
     );
   }
-  if (questionsError) {
+  if (baseQuestionsError) {
     return (
       <p>
-        <strong>Error: {JSON.stringify(questionsError)}</strong>
+        <strong>Error: {JSON.stringify(baseQuestionsError)}</strong>
       </p>
     );
   }
-  if (usersLoading || questionsLoading) {
+  if (usersLoading || baseQuestionsLoading) {
     return <LoadingScreen loadingText="Loading questions and users..." />;
   }
-  if (!users || !questionsCollection) {
+  if (!users || !baseQuestions) {
     return <></>;
   }
-  const questions = questionsCollection.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-  const rows = questions.map((question) => questionRow(question, users));
+  console.log('Loaded questions:', baseQuestions);
+
+  const rows = baseQuestions.map((question) => questionRow(question, users));
   const columns = questionColumns(questionType);
 
   return (
-    <div className="h-full overflow-y-auto flex flex-col">
+    <div style={{ height: '100%', width: '100%' }}>
       <DataGrid
         rows={rows}
         columns={columns}
         onRowSelectionModelChange={onQuestionSelectionModelChange}
         rowSelectionModel={questionSelectionModel}
+        pageSizeOptions={[10, 20, 50, 100]}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        checkboxSelection
+        disableSelectionOnClick
+        density="compact"
+        slots={{
+          toolbar: GridToolbar,
+        }}
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true,
+            quickFilterProps: { debounceMs: 500 },
+          },
+        }}
+        sx={{
+          '& .MuiDataGrid-root': {
+            border: 'none',
+          },
+          '& .MuiDataGrid-cell': {
+            borderBottom: '1px solid #e0e0e0',
+          },
+          '& .MuiDataGrid-columnHeader': {
+            backgroundColor: '#f5f5f5',
+            fontWeight: 'bold',
+          },
+          '& .MuiDataGrid-footerContainer': {
+            backgroundColor: '#f5f5f5',
+          },
+        }}
       />
     </div>
   );

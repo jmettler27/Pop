@@ -112,8 +112,9 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
 
   const handleToggleReorderMode = () => {
     if (!isReorderMode) {
-      // Entering reorder mode - sync with current round questions
+      // Entering reorder mode - sync with current round questions and expand the card
       setReorderedQuestions([...round.questions]);
+      setIsCollapsed(false);
     }
     setIsReorderMode(!isReorderMode);
   };

@@ -2,6 +2,9 @@ import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 
 import QuestionFactory from '@/backend/models/questions/QuestionFactory';
 
+import { query, where } from 'firebase/firestore';
+import { useCollectionOnce } from 'react-firebase-hooks/firestore';
+
 export default class BaseQuestionRepository extends FirebaseRepository {
   /**
    * Constructor for the BaseQuestionRepository class.
@@ -116,7 +119,28 @@ export default class BaseQuestionRepository extends FirebaseRepository {
       baseQuestionError: error,
     };
   }
+
+  useQuestionsOnce(approved = true) {
+    // Build query with multiple where clauses for type and approved status
+    const q = query(
+      this.collectionRef,
+      where('type', '==', this.questionType),
+      where('approved', '==', approved)
+    );
+
+    const [data, loading, error] = useCollectionOnce(q);
+
+    return {
+      baseQuestions: data?.docs.map((doc) => {
+        const docData = { id: doc.id, ...doc.data() };
+        return QuestionFactory.createBaseQuestion(docData.type, docData);
+      }) || null,
+      baseQuestionsLoading: loading,
+      baseQuestionsError: error,
+    };
+  }
 }
+
 
 //function applyQuestionQueryFilters(q, { lang, topic, type, keyword, sort, approved = true }) {
 //    if (approved) {

@@ -21,6 +21,7 @@ import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 
 /* Validation */
 import * as Yup from 'yup';
+import { GameType } from '@/backend/models/games/GameType';
 
 export const roundScorePolicySchema = () =>
   Yup.string().oneOf(Object.values(ScorePolicyType), 'Invalid round score policy.').required('Required.');
@@ -32,16 +33,18 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
   const [createNewGame, isSubmitting] = useAsyncAction(async (values, user) => {
     const { title, type, lang, maxPlayers, roundScorePolicy, organizerName } = values;
     const createGameService = new CreateGameService();
-    const gameId = await createGameService.createGame(
+    const data = {
       title,
-      'rounds',
+      type: GameType.ROUNDS,
       lang,
       maxPlayers,
       roundScorePolicy,
       organizerName,
-      user.id,
-      user.image
-    );
+      organizerId: user.id,
+      organizerImage: user.image,
+    };
+
+    const gameId = await createGameService.createGame(data);
     router.push('/edit/' + gameId);
   });
 
