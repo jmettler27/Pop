@@ -16,7 +16,7 @@ import { DEFAULT_LOCALE, localeToEmoji } from '@/frontend/utils/locales';
 
 import { Avatar } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 
 import BaseQuestionRepository from '@/backend/repositories/question/base/BaseQuestionRepository';
 
@@ -399,17 +399,21 @@ const questionRow = (question, users) => {
   return { ...commonInfo, ...typeSpecificInfo };
 };
 
-export function SearchQuestionDataGrid({
+function SearchQuestionDataGridImpl({
   questionType,
   questionSelectionModel = [],
-  onQuestionSelectionModelChange = () => { },
+  onQuestionSelectionModelChange = () => {},
 }) {
-  const userRepo = new UserRepository();
+  // Create repository instances with memoization to prevent unnecessary recreations
+  const userRepo = useMemo(() => new UserRepository(), []);
   const { users, loading: usersLoading, error: usersError } = userRepo.useAllUsersOnce();
 
-  // Use BaseQuestionRepository with questionType
-  const questionRepo = new BaseQuestionRepository(questionType);
+  // Memoize repository instance based on questionType to prevent re-fetching when other props change
+  const questionRepo = useMemo(() => new BaseQuestionRepository(questionType), [questionType]);
   const { baseQuestions, baseQuestionsLoading, baseQuestionsError } = questionRepo.useQuestionsOnce(true);
+
+  // Stabilize callback reference to prevent unnecessary child re-renders
+  const memoizedOnSelectionChange = useCallback(onQuestionSelectionModelChange, [onQuestionSelectionModelChange]);
 
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 20,
@@ -447,7 +451,7 @@ export function SearchQuestionDataGrid({
       <DataGrid
         rows={rows}
         columns={columns}
-        onRowSelectionModelChange={onQuestionSelectionModelChange}
+        onRowSelectionModelChange={memoizedOnSelectionChange}
         rowSelectionModel={questionSelectionModel}
         pageSizeOptions={[10, 20, 50, 100]}
         paginationModel={paginationModel}
@@ -483,3 +487,13 @@ export function SearchQuestionDataGrid({
     </div>
   );
 }
+
+// Memoize the component to prevent re-renders when parent state changes
+// Only re-renders when props actually change
+export const SearchQuestionDataGrid = React.memo(SearchQuestionDataGridImpl, (prevProps, nextProps) => {
+  return (
+    prevProps.questionType === nextProps.questionType &&
+    prevProps.questionSelectionModel === nextProps.questionSelectionModel &&
+    prevProps.onQuestionSelectionModelChange === nextProps.onQuestionSelectionModelChange
+  );
+});

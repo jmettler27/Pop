@@ -145,7 +145,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
           <Tooltip title={roundTypeToTitle(round.type, DEFAULT_LOCALE)}>
             <span className="text-xl shrink-0">{roundTypeToEmoji(round.type)}</span>
           </Tooltip>
-          <CardTitle className="text-sm md:text-base font-semibold flex items-center gap-2 min-w-0">
+          <CardTitle className="text-base md:text-lg font-semibold flex items-center gap-2 min-w-0">
             <i className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent pr-1">
               {round.title}
             </i>
@@ -155,7 +155,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
           </div>
         </div>
         <div className="flex flex-row gap-2">
-          <Tooltip title={isCollapsed ? "Expand" : "Collapse"}>
+          <Tooltip title={isCollapsed ? 'Expand' : 'Collapse'}>
             <IconButton
               onClick={() => setIsCollapsed(!isCollapsed)}
               className="hover:scale-110 transition-transform"
@@ -244,7 +244,11 @@ function SortableQuestionCard({ roundId, questionId, questionOrder, status }) {
     <div ref={setNodeRef} style={style} className="relative">
       <Card className="border border-slate-200 dark:border-slate-700 shadow-md hover:shadow-lg transition-all duration-200 bg-white dark:bg-slate-800 rounded-xl">
         <CardHeader className="flex flex-row items-center justify-between gap-3 py-3 px-4">
-          <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing flex-shrink-0 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg p-1 transition-colors">
+          <div
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing flex-shrink-0 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg p-1 transition-colors"
+          >
             <DragIndicatorIcon className="text-slate-400 dark:text-slate-500" />
           </div>
           <CardTitle className="text-base md:text-lg dark:text-white flex-grow font-medium">
@@ -301,7 +305,12 @@ function RoundTopicDistribution({ round }) {
       {/* Total questions badge */}
       <span className="inline-flex items-center px-3 py-1.5 rounded-full font-semibold bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md">
         <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          />
         </svg>
         {totalQuestions} {totalQuestions === 1 ? 'question' : 'questions'}
       </span>

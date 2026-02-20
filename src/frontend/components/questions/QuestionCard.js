@@ -109,7 +109,7 @@ function QuestionCardFooter({ baseQuestion, lang = DEFAULT_LOCALE }) {
   }
 
   return (
-    <p className="text-xs sm:text-sm lg:text-base dark:text-white">
+    <p className="text-xs sm:text-sm 2xl:text-base dark:text-white">
       {LOCALE_TO_EMOJI[baseQuestion.lang]} {QUESTION_ELEMENT_TO_TITLE[lang]['createdBy']} <strong>{user.name}</strong> (
       {timestampToDate(baseQuestion.createdAt, lang)})
     </p>
@@ -171,12 +171,12 @@ const ProgressiveCluesCardMainContent = ({ baseQuestion }) => {
           className="self-center"
         />
       )}
-      <span className="text-xs sm:text-sm lg:text-base dark:text-white">
+      <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
         <strong>{title}</strong>
       </span>
       <ol className="list-decimal py-1 pl-5">
         {clues.map((clue, idx) => (
-          <li className="dark:text-white" key={idx}>
+          <li className="text-xs sm:text-sm 2xl:text-base dark:text-white" key={idx}>
             {clue}
           </li>
         ))}
@@ -207,11 +207,11 @@ const ImageCardMainContent = ({ baseQuestion }) => {
         className="self-center"
       />
       {description && (
-        <span className="text-xs sm:text-sm lg:text-base dark:text-white">
+        <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
           {QUESTION_ELEMENT_TO_EMOJI['description']} {description}
         </span>
       )}
-      <span className="text-xs sm:text-sm lg:text-base dark:text-white">
+      <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
         {QUESTION_ELEMENT_TO_EMOJI['source']} <i>{source}</i>
       </span>
     </div>
@@ -241,7 +241,7 @@ const EmojiCardMainContent = ({ baseQuestion }) => {
         />
       )}
       <span className="text-2xl sm:text-3xl self-center">{clue}</span>
-      <span className="text-xs sm:text-sm lg:text-base dark:text-white">
+      <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
         <strong>{title}</strong>
       </span>
     </div>
@@ -273,16 +273,16 @@ const BlindtestCardMainContent = ({ baseQuestion }) => {
           className="self-center"
         />
       )}
-      <span className="text-xs sm:text-sm lg:text-base dark:text-white">
+      <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
         <strong>{title}</strong>
       </span>
       {author && (
-        <span className="text-xs sm:text-sm lg:text-base dark:text-white">
+        <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
           {QUESTION_ELEMENT_TO_EMOJI['author']} {author}
         </span>
       )}
       {source && (
-        <span className="text-xs sm:text-sm lg:text-base dark:text-white">
+        <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
           {QUESTION_ELEMENT_TO_EMOJI['source']} <i>{source}</i>
         </span>
       )}
@@ -300,16 +300,16 @@ const QuoteCardMainContent = ({ baseQuestion }) => {
 
   return (
     <div className="flex flex-col w-full space-y-2">
-      <blockquote className="text-xs sm:text-sm lg:text-base dark:text-white">
+      <blockquote className="text-xs sm:text-sm 2xl:text-base dark:text-white">
         &quot;{<DisplayedQuote toGuess={toGuess} quote={quote} quoteParts={quoteParts} />}&quot;
       </blockquote>
       {author && (
-        <span className="text-xs sm:text-sm lg:text-base dark:text-white">
+        <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
           {QUESTION_ELEMENT_TO_EMOJI['author']} {<DisplayedAuthor toGuess={toGuess} author={author} />}
         </span>
       )}
       {source && (
-        <span className="text-xs sm:text-sm lg:text-base dark:text-white">
+        <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
           {QUESTION_ELEMENT_TO_EMOJI['source']} <i>{<DisplayedSource toGuess={toGuess} source={source} />}</i>
         </span>
       )}
@@ -381,7 +381,7 @@ const LabellingCardMainContent = ({ baseQuestion }) => {
       )}
       <ol className="list-decimal py-1 pl-5">
         {labels.map((label, idx) => (
-          <li className="dark:text-white" key={idx}>
+          <li className="text-xs sm:text-sm 2xl:text-base dark:text-white" key={idx}>
             {label}
           </li>
         ))}
@@ -405,11 +405,11 @@ const EnumCardMainContent = ({ baseQuestion, lang = DEFAULT_LOCALE }) => {
     <>
       <div className="flex flex-col w-full space-y-2">
         {note && (
-          <p className="text-xs sm:text-sm lg:text-base dark:text-white italic">
+          <p className="text-xs sm:text-sm 2xl:text-base dark:text-white italic">
             {QUESTION_ELEMENT_TO_EMOJI['note']} {note}
           </p>
         )}
-        <span className="text-xs sm:text-sm lg:text-base dark:text-white">
+        <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
           <strong>
             {!maxIsKnown && '>='} {totalNumElements}
           </strong>{' '}
@@ -417,12 +417,12 @@ const EnumCardMainContent = ({ baseQuestion, lang = DEFAULT_LOCALE }) => {
         </span>
         <ul className="list-disc py-1 pl-5">
           {answer.slice(0, ENUM_MAX_NUM_ELEMENTS).map((element, idx) => (
-            <li className="dark:text-white" key={idx}>
+            <li className="text-xs sm:text-sm 2xl:text-base dark:text-white" key={idx}>
               {element}
             </li>
           ))}
           {(totalNumElements > ENUM_MAX_NUM_ELEMENTS || !maxIsKnown) && (
-            <li className="dark:text-white" key={ENUM_MAX_NUM_ELEMENTS}>
+            <li className="text-xs sm:text-sm 2xl:text-base dark:text-white" key={ENUM_MAX_NUM_ELEMENTS}>
               ...
             </li>
           )}
@@ -430,10 +430,10 @@ const EnumCardMainContent = ({ baseQuestion, lang = DEFAULT_LOCALE }) => {
       </div>
       <Divider className="my-2 bg-slate-600" />
       <div className="flex flex-col w-full">
-        <span className="text-xs sm:text-sm lg:text-base dark:text-white">
+        <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
           🤔 {ENUM_THINKING[lang]}: <strong>{thinkingTime}s</strong>
         </span>
-        <span className="text-xs sm:text-sm lg:text-base dark:text-white">
+        <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
           🗣️ {ENUM_ENUMERATION[lang]}: <strong>{challengeTime}s</strong>
         </span>
       </div>
@@ -459,7 +459,7 @@ const OOOCardMainContent = ({ baseQuestion }) => {
   return (
     <div className="flex flex-col w-full space-y-2">
       {note && (
-        <p className="text-xs sm:text-sm lg:text-base dark:text-white italic">
+        <p className="text-xs sm:text-sm 2xl:text-base dark:text-white italic">
           {QUESTION_ELEMENT_TO_EMOJI['note']} {note}
         </p>
       )}
@@ -486,7 +486,7 @@ const ReorderingCardMainContent = ({ baseQuestion }) => {
   return (
     <div className="flex flex-col w-full space-y-2">
       {note && (
-        <p className="text-xs sm:text-sm lg:text-base dark:text-white italic">
+        <p className="text-xs sm:text-sm 2xl:text-base dark:text-white italic">
           {QUESTION_ELEMENT_TO_EMOJI['note']} {note}
         </p>
       )}
@@ -510,13 +510,13 @@ const MatchingCardMainContent = ({ baseQuestion }) => {
   return (
     <div className="flex flex-col w-full space-y-2">
       {note && (
-        <p className="text-xs sm:text-sm lg:text-base dark:text-white italic">
+        <p className="text-xs sm:text-sm 2xl:text-base dark:text-white italic">
           {QUESTION_ELEMENT_TO_EMOJI['note']} {note}
         </p>
       )}
       <ul className="list-disc py-1 pl-5">
         {Object.values(answer).map((match, idx) => (
-          <li key={idx} className="dark:text-white">
+          <li key={idx} className="text-xs sm:text-sm 2xl:text-base dark:text-white">
             {match.join(' - ')}
           </li>
         ))}
@@ -534,18 +534,24 @@ const MCQCardMainContent = ({ baseQuestion }) => {
   return (
     <div className="flex flex-col w-full space-y-2">
       {note && (
-        <p className="text-xs sm:text-sm lg:text-base dark:text-white italic">
+        <p className="text-xs sm:text-sm 2xl:text-base dark:text-white italic">
           {QUESTION_ELEMENT_TO_EMOJI['note']} {note}
         </p>
       )}
       <ul>
         {choices.map((choice, idx) => (
-          <li key={idx} className={clsx(idx === answerIdx ? 'text-green-500' : 'dark:text-white')}>
+          <li
+            key={idx}
+            className={clsx(
+              idx === answerIdx ? 'text-green-500' : 'dark:text-white',
+              'text-xs sm:text-sm 2xl:text-base'
+            )}
+          >
             {MCQQuestion.CHOICES[idx]}. {choice}
           </li>
         ))}
       </ul>
-      {explanation && <p className="text-xs sm:text-sm lg:text-base dark:text-white">👉 {explanation}</p>}
+      {explanation && <p className="text-xs sm:text-sm 2xl:text-base dark:text-white">👉 {explanation}</p>}
     </div>
   );
 };
@@ -560,7 +566,7 @@ const NaguiCardMainContent = ({ baseQuestion }) => {
   return (
     <div className="flex flex-col w-full space-y-2">
       {note && (
-        <p className="text-xs sm:text-sm lg:text-base dark:text-white italic">
+        <p className="text-xs sm:text-sm 2xl:text-base dark:text-white italic">
           {QUESTION_ELEMENT_TO_EMOJI['note']} {note}
         </p>
       )}
@@ -578,7 +584,7 @@ const NaguiCardMainContent = ({ baseQuestion }) => {
           </li>
         ))}
       </ul>
-      {explanation && <p className="text-xs sm:text-sm lg:text-base dark:text-white">👉 {explanation}</p>}
+      {explanation && <p className="text-xs sm:text-sm 2xl:text-base dark:text-white">👉 {explanation}</p>}
     </div>
   );
 };
@@ -591,12 +597,12 @@ const BasicCardMainContent = ({ baseQuestion }) => {
   return (
     <div className="flex flex-col w-full space-y-2">
       {note && (
-        <p className="text-xs sm:text-sm lg:text-base dark:text-white italic">
+        <p className="text-xs sm:text-sm 2xl:text-base dark:text-white italic">
           {QUESTION_ELEMENT_TO_EMOJI['note']} {note}
         </p>
       )}
-      <span className="text-xs sm:text-sm lg:text-base dark:text-white">{answer}</span>
-      {explanation && <p className="text-xs sm:text-sm lg:text-base dark:text-white">👉 {explanation}</p>}
+      <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">{answer}</span>
+      {explanation && <p className="text-xs sm:text-sm 2xl:text-base dark:text-white">👉 {explanation}</p>}
     </div>
   );
 };

@@ -39,7 +39,7 @@ export function AddNewRoundButton({ disabled, lang = DEFAULT_LOCALE }) {
           style={{
             border: '2.5px dashed',
             fontSize: '1rem',
-            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05))'
+            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05))',
           }}
           startIcon={<AddCircleOutlineIcon />}
           disabled={disabled}

@@ -14,7 +14,15 @@ import { DIALOG_ACTION_CANCEL, DIALOG_WARNING } from '@/frontend/texts/dialogs';
 import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
 import { Avatar, Button, Divider } from '@mui/material';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Tooltip } from '@mui/material';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  Tooltip,
+} from '@mui/material';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -45,13 +53,15 @@ export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questi
 
   return (
     <Card className="border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800 rounded-xl overflow-hidden group hover:scale-[1.02]">
-      <CardHeader className={`flex flex-row items-center justify-between bg-gradient-to-r from-slate-50 to-blue-50/50 dark:from-slate-800 dark:to-slate-900 py-2 px-3 ${!isCollapsed ? 'border-b border-slate-200 dark:border-slate-700' : ''}`}>
+      <CardHeader
+        className={`flex flex-row items-center justify-between bg-gradient-to-r from-slate-50 to-blue-50/50 dark:from-slate-800 dark:to-slate-900 py-2 px-3 ${!isCollapsed ? 'border-b border-slate-200 dark:border-slate-700' : ''}`}
+      >
         {/* <span className='text-base md:text-lg dark:text-white'>#{questionOrder + 1}</span> */}
         <CardTitle className="text-sm md:text-base dark:text-white font-semibold">
           <QuestionCardTitle baseQuestion={baseQuestion} showType={true} />
         </CardTitle>
         <div className="flex gap-1">
-          <Tooltip title={isCollapsed ? "Expand" : "Collapse"}>
+          <Tooltip title={isCollapsed ? 'Expand' : 'Collapse'}>
             <IconButton
               onClick={() => setIsCollapsed(!isCollapsed)}
               size="small"

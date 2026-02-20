@@ -217,11 +217,17 @@ function EditGameRounds({ game }) {
         </div>
         <div className="space-y-6">
           {roundIds.map((roundId) => (
-            <EditGameRoundCard key={roundId} roundId={roundId} status={status} gameId={game.id} forceCollapse={allCollapsed} />
+            <EditGameRoundCard
+              key={roundId}
+              roundId={roundId}
+              status={status}
+              gameId={game.id}
+              forceCollapse={allCollapsed}
+            />
           ))}
         </div>
         {status === GameStatus.GAME_EDIT && (
-          <div className="flex gap-4 sticky bottom-0 bg-gradient-to-t from-slate-50 dark:from-slate-950 pt-6 pb-4">
+          <div className="fixed bottom-0 left-64 right-0 flex justify-center items-center gap-4 bg-gradient-to-t from-slate-50/60 to-slate-50/40 dark:from-slate-950/60 dark:to-slate-950/40 border-t border-slate-200 dark:border-slate-800 backdrop-blur-sm p-4 shadow-lg">
             <AddNewRoundButton disabled={roundIds.length >= Game.MAX_NUM_ROUNDS} />
             <LaunchGameButton />
           </div>

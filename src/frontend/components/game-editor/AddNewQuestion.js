@@ -4,7 +4,7 @@ import { QuestionType, questionTypeToEmoji } from '@/backend/models/questions/Qu
 
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 import { useParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -433,12 +433,14 @@ function SearchQuestionDialog({ roundId, questionType, onDialogClose }) {
 
   // console.log("Question selection model", questionSelectionModel)
 
-  const onNewQuestionSelectionModelChange = (newRowSelectionModel) => {
+  // Memoize callback to work with memoized SearchQuestionDataGrid
+  // Prevents unnecessary re-fetching when dialog state changes
+  const onNewQuestionSelectionModelChange = useCallback((newRowSelectionModel) => {
     setSelectedQuestionModel(newRowSelectionModel);
     if (newRowSelectionModel.length > 0) {
       setValidationDialogOpen(true);
     }
-  };
+  }, []);
   return (
     <>
       <SearchQuestionDataGrid
