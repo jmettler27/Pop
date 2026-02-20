@@ -32,7 +32,18 @@ export function LaunchGameButton({ lang = DEFAULT_LOCALE }) {
 
   return (
     <div className="flex flex-col h-full">
-      <Button variant="contained" color="warning" startIcon={<RocketLaunchIcon />} onClick={() => setDialogOpen(true)}>
+      <Button
+        variant="contained"
+        color="warning"
+        size="large"
+        className="rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+        style={{
+          background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+          fontWeight: 'bold'
+        }}
+        startIcon={<RocketLaunchIcon />}
+        onClick={() => setDialogOpen(true)}
+      >
         {LAUNCH_GAME_TITLE[lang]}
       </Button>
 

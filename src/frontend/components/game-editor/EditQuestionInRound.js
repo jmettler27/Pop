@@ -37,13 +37,11 @@ export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questi
     return <p>Error: {JSON.stringify(baseQuestionError)}</p>;
   }
   if (baseQuestionLoading) {
-    return <p>Loading the question...</p>;
+    return <QuestionCardSkeleton />;
   }
   if (!baseQuestion) {
-    return <p>No data...</p>;
+    return <QuestionCardSkeleton />;
   }
-
-  console.log('baseQuestion.type', baseQuestion.type);
 
   return (
     <Card className="border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800 rounded-xl overflow-hidden group hover:scale-[1.02]">
@@ -76,6 +74,25 @@ export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questi
     </Card>
   );
 });
+
+function QuestionCardSkeleton() {
+  return (
+    <Card className="border border-slate-200 dark:border-slate-700 shadow-lg bg-white dark:bg-slate-800 rounded-xl overflow-hidden">
+      <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-slate-50 to-blue-50/50 dark:from-slate-800 dark:to-slate-900 py-2 px-3 border-b border-slate-200 dark:border-slate-700">
+        <div className="h-4 w-2/3 rounded bg-slate-200 dark:bg-slate-700 animate-pulse" />
+        <div className="flex gap-1">
+          <div className="h-7 w-7 rounded-full bg-slate-200 dark:bg-slate-700 animate-pulse" />
+          <div className="h-7 w-7 rounded-full bg-slate-200 dark:bg-slate-700 animate-pulse" />
+        </div>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3 p-4 bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-800 dark:to-slate-900/50">
+        <div className="h-36 w-full rounded-lg bg-slate-200 dark:bg-slate-700 animate-pulse" />
+        <div className="h-4 w-5/6 rounded bg-slate-200 dark:bg-slate-700 animate-pulse" />
+        <div className="h-4 w-2/3 rounded bg-slate-200 dark:bg-slate-700 animate-pulse" />
+      </CardContent>
+    </Card>
+  );
+}
 
 import PersonIcon from '@mui/icons-material/Person';
 import BaseQuestionRepository from '@/backend/repositories/question/base/BaseQuestionRepository';

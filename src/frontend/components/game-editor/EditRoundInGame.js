@@ -2,7 +2,7 @@
 
 import { topicToEmoji } from '@/backend/models/Topic';
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { RoundType, roundTypeToEmoji } from '@/backend/models/rounds/RoundType';
+import { RoundType, roundTypeToEmoji, roundTypeToTitle } from '@/backend/models/rounds/RoundType';
 import { Round } from '@/backend/models/rounds/Round';
 
 import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
@@ -139,13 +139,19 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
 
   return (
     <Card className="border-0 shadow-xl bg-white dark:bg-slate-900 rounded-2xl overflow-hidden">
-      <CardHeader className="flex flex-row items-center justify-between pb-4 space-y-0 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-900 border-b border-slate-200 dark:border-slate-700">
-        <div className="flex flex-col gap-1">
-          <CardTitle className="text-lg 2xl:text-xl font-bold flex items-center gap-2">
-            <span className="text-3xl">{roundTypeToEmoji(round.type)}</span>
-            <i className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{round.title}</i>
+      <CardHeader className="flex flex-row items-center justify-between pb-2 pt-3 space-y-0 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-900 border-b border-slate-200 dark:border-slate-700">
+        <div className="flex flex-row items-center gap-5 min-w-0">
+          <Tooltip title={roundTypeToTitle(round.type, DEFAULT_LOCALE)}>
+            <span className="text-xl shrink-0">{roundTypeToEmoji(round.type)}</span>
+          </Tooltip>
+          <CardTitle className="text-sm md:text-base font-semibold flex items-center gap-2 min-w-0">
+            <i className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent pr-1">
+              {round.title}
+            </i>
           </CardTitle>
-          <RoundTopicDistribution round={round} />
+          <div className="hidden sm:flex ml-2">
+            <RoundTopicDistribution round={round} />
+          </div>
         </div>
         <div className="flex flex-row gap-2">
           <Tooltip title={isCollapsed ? "Expand" : "Collapse"}>
@@ -159,13 +165,15 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
           </Tooltip>
           {status === GameStatus.GAME_EDIT && (
             <>
-              <IconButton
-                color={isReorderMode ? 'warning' : 'info'}
-                onClick={handleToggleReorderMode}
-                className="hover:scale-110 transition-transform"
-              >
-                {isReorderMode ? <CloseIcon /> : <SwapVertIcon />}
-              </IconButton>
+              <Tooltip title={isReorderMode ? 'Stop reordering' : 'Reorder questions'}>
+                <IconButton
+                  color={isReorderMode ? 'warning' : 'info'}
+                  onClick={handleToggleReorderMode}
+                  className="hover:scale-110 transition-transform"
+                >
+                  {isReorderMode ? <CloseIcon /> : <SwapVertIcon />}
+                </IconButton>
+              </Tooltip>
               {isReorderMode && (
                 <IconButton
                   color="success"
@@ -180,6 +188,9 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
           )}
         </div>
       </CardHeader>
+      <div className="sm:hidden px-4 pt-2">
+        <RoundTopicDistribution round={round} />
+      </div>
       {!isCollapsed && (
         <CardContent className="p-6 bg-gradient-to-br from-slate-50/50 to-transparent dark:from-slate-900/50">
           <EditGameRoundQuestionCards
@@ -397,9 +408,11 @@ function RemoveRoundFromGameButton({ roundId, lang = DEFAULT_LOCALE }) {
 
   return (
     <>
-      <IconButton color="error" onClick={() => setDialogOpen(true)} disabled={isRemoving}>
-        <DeleteIcon />
-      </IconButton>
+      <Tooltip title="Delete round">
+        <IconButton color="error" onClick={() => setDialogOpen(true)} disabled={isRemoving}>
+          <DeleteIcon />
+        </IconButton>
+      </Tooltip>
 
       <Dialog disableEscapeKeyDown open={dialogOpen} onClose={onDialogClose}>
         <DialogTitle>{REMOVE_ROUND_FROM_GAME_DIALOG_TITLE[lang]}</DialogTitle>
