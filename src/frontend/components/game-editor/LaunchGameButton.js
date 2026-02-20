@@ -39,7 +39,7 @@ export function LaunchGameButton({ lang = DEFAULT_LOCALE }) {
         className="rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
         style={{
           background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-          fontWeight: 'bold'
+          fontWeight: 'bold',
         }}
         startIcon={<RocketLaunchIcon />}
         onClick={() => setDialogOpen(true)}
