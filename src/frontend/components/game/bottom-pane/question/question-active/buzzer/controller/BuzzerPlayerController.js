@@ -15,12 +15,10 @@ import {
   removePlayerFromBuzzer as removeProgressiveCluesPlayerFromBuzzer,
 } from '@/backend/services/question/progressive-clues/actions';
 
-import GameQuestionRepository from '@/backend/repositories/question/game/GameQuestionRepository';
-
 import { PlayerStatus } from '@/backend/models/users/Player';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
-import { useUserContext, useGameContext, useGameRepositoriesContext } from '@/frontend/contexts';
+import { useGameContext, useGameRepositoriesContext, useUserContext } from '@/frontend/contexts';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
@@ -31,13 +29,18 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import PanToolIcon from '@mui/icons-material/PanTool';
 
 import clsx from 'clsx';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/game/GameQuestionRepositoryFactory';
 
 export default function BuzzerPlayerController({ players: buzzerPlazers }) {
   const game = useGameContext();
   const user = useUserContext();
 
   const { playerRepo, roundRepo } = useGameRepositoriesContext();
-  const gameQuestionRepo = new GameQuestionRepository(game.id, game.currentRound);
+  const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(
+    game.currentQuestionType,
+    game.id,
+    game.currentRound
+  );
 
   const { player, loading: playerLoading, error: playerError } = playerRepo.usePlayer(user.id);
   const { round, loading: roundLoading, error: roundError } = roundRepo.useRound(game.currentRound);

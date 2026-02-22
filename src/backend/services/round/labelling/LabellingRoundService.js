@@ -70,6 +70,7 @@ export default class LabellingRoundService extends RoundService {
     await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
       currentRound: roundId,
       currentQuestion: null,
+      currentQuestionType: this.roundType,
       status: GameStatus.ROUND_START,
     });
 
@@ -77,6 +78,8 @@ export default class LabellingRoundService extends RoundService {
   }
 
   async moveToNextQuestionTransaction(transaction, roundId, questionOrder) {
+    const gameQuestionRepo = new GameLabellingQuestionRepository(this.gameId, this.roundId);
+
     /* Game: fetch next question and reset every player's state */
     const playerIds = await this.playerRepo.getAllPlayerIds();
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
@@ -86,9 +89,9 @@ export default class LabellingRoundService extends RoundService {
     await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
     await this.timerRepo.resetTimerTransaction(transaction, defaultThinkingTime);
     await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
-    await this.gameQuestionRepo.startQuestionTransaction(transaction, questionId);
-    await this.roundRepo.setCurrentQuestionIdxTransaction(questionOrder);
-    await this.gameRepo.setCurrentQuestionTransaction(this.gameId, questionId);
+    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
+    await this.roundRepo.setCurrentQuestionIdxTransaction(transaction, roundId, questionOrder);
+    await this.gameRepo.setCurrentQuestionTransaction(transaction, this.gameId, questionId, this.roundType);
     await this.readyRepo.resetReadyTransaction(transaction);
   }
 
@@ -106,7 +109,9 @@ export default class LabellingRoundService extends RoundService {
   }
 
   async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {
-    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+    const gameQuestionRepo = new GameLabellingQuestionRepository(this.gameId, this.roundId);
+
+    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     const playerIds = await this.playerRepo.getAllIdsTransaction(transaction);
 
     for (const id of playerIds) {
@@ -116,7 +121,6 @@ export default class LabellingRoundService extends RoundService {
     await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
     await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon');
 
-    const gameQuestionRepo = new GameLabellingQuestionRepository(this.gameId, this.roundId);
     await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
   }
 }

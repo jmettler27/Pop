@@ -71,6 +71,7 @@ export default class NaguiRoundService extends RoundService {
     await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
       currentRound: roundId,
       currentQuestion: null,
+      currentQuestionType: null,
       status: GameStatus.ROUND_START,
     });
 
@@ -78,6 +79,8 @@ export default class NaguiRoundService extends RoundService {
   }
 
   async moveToNextQuestionTransaction(transaction, roundId, questionOrder) {
+    const gameQuestionRepo = new GameNaguiQuestionRepository(this.gameId, this.roundId);
+
     /* Game: fetch next question and reset every player's state */
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     const chooser = await this.chooserRepo.getChooserTransaction(transaction, this.gameId);
@@ -92,7 +95,7 @@ export default class NaguiRoundService extends RoundService {
       const newChooserIdx = getNextCyclicIndex(chooserIdx, chooserOrder.length);
       const newChooserTeamId = chooserOrder[newChooserIdx];
       await this.chooserRepo.updateChooserIndexTransaction(transaction, newChooserIdx);
-      await this.gameQuestionRepo.updateQuestionTeamTransaction(transaction, questionId, newChooserTeamId);
+      await gameQuestionRepo.updateQuestionTeamTransaction(transaction, questionId, newChooserTeamId);
       await this.playerRepo.updateTeamAndOtherTeamsPlayersStatus(
         newChooserTeamId,
         PlayerStatus.FOCUS,
@@ -100,16 +103,16 @@ export default class NaguiRoundService extends RoundService {
       );
     } else {
       const chooserTeamId = chooserOrder[chooserIdx];
-      await this.gameQuestionRepo.updateQuestionTeamTransaction(transaction, questionId, chooserTeamId);
+      await gameQuestionRepo.updateQuestionTeamTransaction(transaction, questionId, chooserTeamId);
     }
 
     // await this.timerRepo.resetTimerTransaction(transaction, { status: TimerStatus.RESET, managedBy, duration: defaultThinkingTime })
     await this.timerRepo.resetTimerTransaction(transaction, defaultThinkingTime);
 
     await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
-    await this.gameQuestionRepo.startQuestionTransaction(transaction, questionId);
-    await this.roundRepo.setCurrentQuestionIdxTransaction(questionOrder);
-    await this.gameRepo.setCurrentQuestionTransaction(this.gameId, questionId);
+    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
+    await this.roundRepo.setCurrentQuestionIdxTransaction(transaction, roundId, questionOrder);
+    await this.gameRepo.setCurrentQuestionTransaction(transaction, this.gameId, questionId, this.roundType);
     await this.readyRepo.resetReadyTransaction(transaction);
   }
 
@@ -121,6 +124,8 @@ export default class NaguiRoundService extends RoundService {
   }
 
   async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {
+    const gameQuestionRepo = new GameNaguiQuestionRepository(this.gameId, this.roundId);
+
     const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
 
     const chooser = await this.chooserRepo.getChooserTransaction(transaction);
@@ -136,7 +141,7 @@ export default class NaguiRoundService extends RoundService {
       await this.chooserRepo.updateChooserTransaction(transaction, {
         chooserIdx: newChooserIdx,
       });
-      await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
+      await gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
         teamId: newChooserTeamId,
       });
       for (const player of newChoosers) {
@@ -146,14 +151,13 @@ export default class NaguiRoundService extends RoundService {
         await this.playerRepo.updatePlayerStatusTransaction(transaction, player.id, PlayerStatus.IDLE);
       }
     } else {
-      await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
+      await gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
         teamId: chooserTeamId,
       });
     }
     await this.timerRepo.resetTimerTransaction(transaction, baseQuestion.thinkingTime);
     await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon');
 
-    const gameQuestionRepo = new GameNaguiQuestionRepository(this.gameId, this.roundId);
     await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
   }
 }

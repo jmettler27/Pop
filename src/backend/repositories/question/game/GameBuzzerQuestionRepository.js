@@ -97,8 +97,7 @@ export default class GameBuzzerQuestionRepository extends GameQuestionRepository
       ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH,
     ]);
     return {
-      // players: data ? data.map(p => new Player(p)) : [],
-      data,
+      players: data,
       loading,
       error,
     };

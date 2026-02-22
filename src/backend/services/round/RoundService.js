@@ -140,10 +140,11 @@ export default class RoundService {
   async handleQuestionEndTransaction(transaction, roundId, questionId) {
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     const isRoundOver = round.currentQuestionIdx === round.questions.length - 1;
+    console.log('Handling question end for round', roundId, 'question', questionId, 'isRoundOver', isRoundOver);
 
     isRoundOver
       ? await this.endRoundTransaction(transaction, roundId)
-      : await this.roundRepo.moveToNextQuestionTransaction(transaction, roundId, round.currentQuestionIdx + 1);
+      : await this.moveToNextQuestionTransaction(transaction, roundId, round.currentQuestionIdx + 1);
     // const round = await this.roundRepo.getRound(roundId)
     // await (round.isLastQuestion() ?
     //         this.endRoundTransaction(transaction) : /* End of round */

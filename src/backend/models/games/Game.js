@@ -40,6 +40,7 @@ export default class Game {
     this.dateStart = data.dateStart;
 
     this.currentQuestion = data.currentQuestion;
+    this.currentQuestionType = data.currentQuestionType;
   }
 
   toObject() {
@@ -54,6 +55,7 @@ export default class Game {
       dateEnd: this.dateEnd,
       dateStart: this.dateStart,
       currentQuestion: this.currentQuestion,
+      currentQuestionType: this.currentQuestionType,
     };
   }
 

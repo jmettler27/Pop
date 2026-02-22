@@ -15,6 +15,7 @@ export default class GameRepository extends FirebaseRepository {
     await this.updateGame(gameId, {
       currentRound: null,
       currentQuestion: null,
+      currentQuestionType: null,
       dateEnd: null,
       dateStart: null,
       status: GameStatus.GAME_START,
@@ -25,6 +26,7 @@ export default class GameRepository extends FirebaseRepository {
     await this.updateGameTransaction(transaction, gameId, {
       currentRound: null,
       currentQuestion: null,
+      currentQuestionType: null,
       dateEnd: null,
       dateStart: null,
       status: GameStatus.GAME_START,
@@ -74,9 +76,10 @@ export default class GameRepository extends FirebaseRepository {
     });
   }
 
-  async setCurrentQuestionTransaction(transaction, gameId, questionId) {
+  async setCurrentQuestionTransaction(transaction, gameId, questionId, questionType) {
     await this.updateTransaction(transaction, gameId, {
       currentQuestion: questionId,
+      currentQuestionType: questionType,
       status: GameStatus.QUESTION_ACTIVE,
     });
   }

@@ -5,7 +5,7 @@ import { getRandomElement } from '@/backend/utils/arrays';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { UserRole } from '@/backend/models/users/User';
 
-import { useUserContext, useGameContext, useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
+import { useGameContext, useGameRepositoriesContext, useRoleContext, useUserContext } from '@/frontend/contexts';
 
 import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
@@ -15,6 +15,7 @@ import { useParams } from 'next/navigation';
 
 import { Button, CircularProgress } from '@mui/material';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
+import { PlayerStatus } from '@/backend/models/users/Player';
 
 export default function ReadyPlayerController({ isLastQuestion, lang = DEFAULT_LOCALE }) {
   const { id: gameId } = useParams();

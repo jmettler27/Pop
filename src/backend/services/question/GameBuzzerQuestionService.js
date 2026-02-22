@@ -324,22 +324,28 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
 
   async validateAnswerTransaction(transaction, questionId, playerId) {
     // Update the winner team scores
-    const player = await this.playerRepo.getPlayerTransaction(transaction);
+    console.log('this.playerRepo.getPlayerTransaction', questionId, playerId);
+    const player = await this.playerRepo.getPlayerTransaction(transaction, playerId);
+    console.log(' this.roundRepo.getRoundTransaction', this.roundId);
     const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
 
     const teamId = player.teamId;
     const points = round.rewardsPerQuestion;
 
+    console.log('roundScoreRepo.increaseTeamScoreTransaction', questionId, teamId, points);
     await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, points);
 
     // Update the winner player status
-    await this.playerRepo.updatePlayerStatusTransaction(transaction, questionId, PlayerStatus.CORRECT);
+    console.log('this.playerRepo.updatePlayerStatusTransaction', questionId);
+    await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.CORRECT);
 
     // Update the question winner team
+    console.log('this.gameQuestionRepo.updateQuestionWinnerTransaction', questionId, playerId, teamId);
     await this.gameQuestionRepo.updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId);
     await this.soundRepo.addSoundTransaction(transaction, 'Anime wow');
 
     await this.endQuestionTransaction(transaction, questionId);
+    console.log('this.endQuestionTransaction', questionId);
 
     console.log(
       'Answer to buzzer question successfully validated',

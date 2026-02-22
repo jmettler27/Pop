@@ -11,7 +11,7 @@ import RoundScoreRepository from '@/backend/repositories/score/RoundScoreReposit
 import { firestore } from '@/backend/firebase/firebase';
 import { runTransaction, serverTimestamp } from 'firebase/firestore';
 import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
-import { increment } from 'firebase/database';
+import { increment } from 'firebase/firestore';
 
 export default class GameQuestionService {
   constructor(gameId, roundId, questionType) {

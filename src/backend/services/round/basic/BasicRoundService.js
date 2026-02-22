@@ -7,7 +7,9 @@ export default class BasicRoundService extends BuzzerRoundService {
   }
 
   async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {
-    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+    const gameQuestionRepo = new GameBasicQuestionRepository(this.gameId, this.roundId);
+
+    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     const playerIds = await this.playerRepo.getAllIdsTransaction(transaction);
 
     for (const id of playerIds) {
@@ -17,7 +19,6 @@ export default class BasicRoundService extends BuzzerRoundService {
     await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
     await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon');
 
-    // const gameQuestionRepo = new GameBasicQuestionRepository(this.gameId, this.roundId)
     // await gameQuestionRepo.startQuestionTransaction(transaction, questionId)
   }
 }

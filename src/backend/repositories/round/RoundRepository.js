@@ -69,8 +69,7 @@ export default class RoundRepository extends FirebaseRepository {
    * @returns {Promise<Round>} The round
    */
   async updateRound(roundId, data) {
-    const roundData = await super.update(roundId, data);
-    return RoundFactory.createRound(roundData.type, roundData);
+    await super.update(roundId, data);
   }
 
   /**
@@ -81,8 +80,7 @@ export default class RoundRepository extends FirebaseRepository {
    * @returns {Promise<Round>} The round
    */
   async updateRoundTransaction(transaction, roundId, data) {
-    const roundData = await super.updateTransaction(transaction, roundId, data);
-    return RoundFactory.createRound(roundData.type, roundData);
+    await super.updateTransaction(transaction, roundId, data);
   }
 
   /**
@@ -92,7 +90,7 @@ export default class RoundRepository extends FirebaseRepository {
    * @param {string} questionId - The ID of the question
    */
   async addGameQuestionTransaction(transaction, roundId, questionId) {
-    await super.updateTransaction(transaction, roundId, {
+    await this.updateRoundTransaction(transaction, roundId, {
       questions: arrayUnion(questionId),
     });
   }
@@ -103,7 +101,7 @@ export default class RoundRepository extends FirebaseRepository {
    * @param {string} roundId - The ID of the round
    */
   async startRoundTransaction(transaction, roundId) {
-    await super.updateTransaction(transaction, roundId, {
+    await this.updateRoundTransaction(transaction, roundId, {
       dateStart: serverTimestamp(),
     });
   }
@@ -115,7 +113,7 @@ export default class RoundRepository extends FirebaseRepository {
    * @param {number} questionOrder - The question order to set as current
    */
   async setCurrentQuestionIdxTransaction(transaction, roundId, questionOrder) {
-    await super.updateTransaction(transaction, roundId, {
+    await this.updateRoundTransaction(transaction, roundId, {
       currentQuestionIdx: questionOrder,
     });
   }

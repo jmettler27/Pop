@@ -74,6 +74,7 @@ export default class BuzzerRoundService extends RoundService {
     await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
       currentRound: roundId,
       currentQuestion: null,
+      currentQuestionType: this.roundType,
       status: GameStatus.ROUND_START,
     });
 
@@ -81,19 +82,32 @@ export default class BuzzerRoundService extends RoundService {
   }
 
   async moveToNextQuestionTransaction(transaction, roundId, questionOrder) {
+    console.log('moveToNextQuestionTransaction called with roundId', roundId, 'questionOrder', questionOrder);
+
+    const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(this.roundType, this.gameId, roundId);
+
     /* Game: fetch next question and reset every player's state */
     const playerIds = await this.playerRepo.getAllPlayerIds();
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     const questionId = round.questions[questionOrder];
-    const defaultThinkingTime = DEFAULT_THINKING_TIME_SECONDS[QuestionType.MATCHING];
+    const defaultThinkingTime = round.thinkingTime;
+    console.log('Moving to next question', questionId, 'with thinking time', defaultThinkingTime);
 
+    console.log("Updating players' status to idle and resetting timer for next question");
     await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
+    console.log('Players status updated to idle');
     await this.timerRepo.resetTimerTransaction(transaction, defaultThinkingTime);
+    console.log('Timer reset for next question');
     await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
-    await this.gameQuestionRepo.startQuestionTransaction(transaction, questionId);
-    await this.roundRepo.setCurrentQuestionIdxTransaction(questionOrder);
-    await this.gameRepo.setCurrentQuestionTransaction(this.gameId, questionId);
+    console.log('Sound added for next question');
+    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
+    console.log('Game question transaction started for next question', questionId);
+    await this.roundRepo.setCurrentQuestionIdxTransaction(transaction, roundId, questionOrder);
+    console.log('Current question index updated for next question', questionOrder);
+    await this.gameRepo.setCurrentQuestionTransaction(transaction, this.gameId, questionId, this.roundType);
+    console.log('Current question updated in game for next question', questionId);
     await this.readyRepo.resetReadyTransaction(transaction);
+    console.log('Ready state reset for next question');
   }
 
   /* =============================================================================================================== */
@@ -103,7 +117,9 @@ export default class BuzzerRoundService extends RoundService {
   }
 
   async prepareQuestionStartTransaction(transaction, roundId, questionId, questionOrder) {
-    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+    const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(this.roundType, this.gameId, roundId);
+
+    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     const playerIds = await this.playerRepo.getAllIdsTransaction(transaction);
 
     for (const id of playerIds) {
@@ -113,7 +129,6 @@ export default class BuzzerRoundService extends RoundService {
     await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
     await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon');
 
-    const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(this.roundType, this.gameId, roundId);
     await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
   }
 

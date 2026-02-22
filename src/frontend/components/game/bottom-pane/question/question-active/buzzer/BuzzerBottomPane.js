@@ -1,19 +1,24 @@
 import { UserRole } from '@/backend/models/users/User';
 
-import RoundBuzzerQuestionRepository from '@/backend/repositories/question/game/GameBuzzerQuestionRepository';
-
 import { useGameContext, useRoleContext } from '@/frontend/contexts';
 
 import BuzzerPlayerController from '@/frontend/components/game/bottom-pane/question/question-active/buzzer/controller/BuzzerPlayerController';
 import BuzzerOrganizerController from '@/frontend/components/game/bottom-pane/question/question-active/buzzer/controller/BuzzerOrganizerController';
 import BuzzerSpectatorController from '@/frontend/components/game/bottom-pane/question/question-active/buzzer/controller/BuzzerSpectatorController';
 import BuzzerPlayers from '@/frontend/components/game/bottom-pane/question/question-active/buzzer/players/BuzzerPlayers';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/game/GameQuestionRepositoryFactory';
 
 export default function BuzzerBottomPane({ baseQuestion }) {
   const game = useGameContext();
+  console.log('BuzzerBottomPane game', game, baseQuestion);
 
-  const roundBuzzerQuestionRepo = new RoundBuzzerQuestionRepository(game.id, game.currentRound);
-  const { players, playersLoading, playersError } = roundBuzzerQuestionRepo.usePlayers(game.currentQuestion);
+  const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(
+    baseQuestion.type,
+    game.id,
+    game.currentRound
+  );
+
+  const { players, loading: playersLoading, error: playersError } = gameQuestionRepo.usePlayers(game.currentQuestion);
 
   if (playersError) {
     return (

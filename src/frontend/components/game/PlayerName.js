@@ -1,7 +1,7 @@
 import { UserRole } from '@/backend/models/users/User';
 
-import { useState, useEffect } from 'react';
-import { useRoleContext } from '@/frontend/contexts';
+import { useEffect, useState } from 'react';
+import { useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
 
 import { useParams } from 'next/navigation';
 
@@ -14,7 +14,7 @@ export default function PlayerName({ playerId, teamColor = true }) {
   const myRole = useRoleContext();
 
   const { playerRepo } = useGameRepositoriesContext();
-  const { player, playerLoading, playerError } = playerRepo.usePlayerOnce(playerId);
+  const { player, loading: playerLoading, error: playerError } = playerRepo.usePlayerOnce(playerId);
 
   const [team, setTeam] = useState(null);
   const [teamLoading, setTeamLoading] = useState(true);

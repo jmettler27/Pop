@@ -61,3 +61,8 @@ export const handleRoundSelected = async (gameId, roundId, userId, roundType) =>
   const roundService = RoundServiceFactory.createService(roundType, gameId);
   await roundService.handleRoundSelected(roundId, userId);
 };
+
+export const handleQuestionEnd = async (gameId, roundId, questionId, roundType) => {
+  const roundService = RoundServiceFactory.createService(roundType, gameId);
+  await roundService.handleQuestionEnd(roundId, questionId);
+};

@@ -5,16 +5,16 @@ import ImageMainContent from '@/frontend/components/game/middle-pane/question/bu
 import BlindtestMainContent from '@/frontend/components/game/middle-pane/question/buzzer/main-content/BlindtestMainContent';
 import EmojiMainContent from '@/frontend/components/game/middle-pane/question/buzzer/main-content/EmojiMainContent';
 
-export default function BuzzerMainContent({ question, showComplete }) {
-  switch (question.type) {
+export default function BuzzerMainContent({ baseQuestion, showComplete }) {
+  switch (baseQuestion.type) {
     case QuestionType.PROGRESSIVE_CLUES:
-      return <ProgressiveCluesMainContent question={question} showComplete={showComplete} />;
+      return <ProgressiveCluesMainContent question={baseQuestion} showComplete={showComplete} />;
     case QuestionType.IMAGE:
-      return <ImageMainContent question={question} />;
+      return <ImageMainContent baseQuestion={baseQuestion} />;
     case QuestionType.BLINDTEST:
-      return <BlindtestMainContent question={question} />;
+      return <BlindtestMainContent baseQuestion={baseQuestion} />;
     case QuestionType.EMOJI:
-      return <EmojiMainContent question={question} />;
+      return <EmojiMainContent baseQuestion={baseQuestion} />;
     default:
       return <p>Unknown round type</p>;
   }

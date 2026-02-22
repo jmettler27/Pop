@@ -1,20 +1,8 @@
 import { UserRole } from '@/backend/models/users/User';
 
-import { handleQuestionEnd as handleBasicQuestionEnd } from '@/backend/services/round/basic/actions';
-import { handleQuestionEnd as handleBlindtestQuestionEnd } from '@/backend/services/round/blindtest/actions';
-import { handleQuestionEnd as handleEmojiQuestionEnd } from '@/backend/services/round/emoji/actions';
-import { handleQuestionEnd as handleEnumQuestionEnd } from '@/backend/services/round/enumeration/actions';
-import { handleQuestionEnd as handleImageQuestionEnd } from '@/backend/services/round/image/actions';
-import { handleQuestionEnd as handleLabellingQuestionEnd } from '@/backend/services/round/labelling/actions';
-import { handleQuestionEnd as handleMatchingQuestionEnd } from '@/backend/services/round/matching/actions';
-import { handleQuestionEnd as handleMCQQuestionEnd } from '@/backend/services/round/mcq/actions';
-import { handleQuestionEnd as handleNaguiQuestionEnd } from '@/backend/services/round/nagui/actions';
-import { handleQuestionEnd as handleOddOneOutQuestionEnd } from '@/backend/services/round/odd-one-out/actions';
-import { handleQuestionEnd as handleProgressiveCluesQuestionEnd } from '@/backend/services/round/progressive-clues/actions';
-import { handleQuestionEnd as handleQuoteQuestionEnd } from '@/backend/services/round/quote/actions';
-import { handleQuestionEnd as handleReorderingQuestionEnd } from '@/backend/services/round/reordering/actions';
+import { handleQuestionEnd } from '@/backend/services/game/actions';
 
-import { useGameContext, useRoleContext, useGameRepositoriesContext } from '@/frontend/contexts';
+import { useGameContext, useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
@@ -47,25 +35,25 @@ export default function QuestionEndBottomPane({}) {
 
   const isLastQuestion = round.currentQuestionIdx === round.questions.length - 1;
 
-  return <QuestionEndController isLastQuestion={isLastQuestion} />;
+  return <QuestionEndController round={round} isLastQuestion={isLastQuestion} />;
 }
 
-function QuestionEndController({ isLastQuestion }) {
+function QuestionEndController({ round, isLastQuestion }) {
   const myRole = useRoleContext();
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-5">
       <ReadyPlayerController isLastQuestion={isLastQuestion} />
-      {myRole === UserRole.ORGANIZER && <QuestionEndOrganizerButton isLastQuestion={isLastQuestion} />}
+      {myRole === UserRole.ORGANIZER && <QuestionEndOrganizerButton round={round} isLastQuestion={isLastQuestion} />}
     </div>
   );
 }
 
-function QuestionEndOrganizerButton({ isLastQuestion, lang = DEFAULT_LOCALE }) {
+function QuestionEndOrganizerButton({ round, isLastQuestion, lang = DEFAULT_LOCALE }) {
   const game = useGameContext();
 
   const [handleContinueClick, isEnding] = useAsyncAction(async () => {
-    await handleQuestionEnd(game.id, game.currentRound, game.currentQuestion);
+    await handleQuestionEnd(game.id, game.currentRound, game.currentQuestion, round.type);
   });
 
   return (

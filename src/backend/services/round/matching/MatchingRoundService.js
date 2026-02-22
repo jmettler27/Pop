@@ -55,6 +55,7 @@ export default class MatchingRoundService extends RoundService {
     await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
       currentRound: roundId,
       currentQuestion: null,
+      currentQuestionType: this.roundType,
       status: GameStatus.ROUND_START,
     });
 
@@ -62,6 +63,8 @@ export default class MatchingRoundService extends RoundService {
   }
 
   async moveToNextQuestionTransaction(transaction, roundId, questionOrder) {
+    const gameQuestionRepo = new GameMatchingQuestionRepository(this.gameId, roundId);
+
     /* Game: fetch next question and reset every player's state */
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     const chooser = await this.chooserRepo.getChooserTransaction(transaction, this.gameId);
@@ -79,9 +82,9 @@ export default class MatchingRoundService extends RoundService {
     await this.timerRepo.resetTimerTransaction(transaction, defaultThinkingTime * (baseQuestion.numCols - 1));
 
     await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
-    await this.gameQuestionRepo.startQuestionTransaction(transaction, questionId);
-    await this.roundRepo.setCurrentQuestionIdxTransaction(questionOrder);
-    await this.gameRepo.setCurrentQuestionTransaction(this.gameId, questionId);
+    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
+    await this.roundRepo.setCurrentQuestionIdxTransaction(transaction, roundId, questionOrder);
+    await this.gameRepo.setCurrentQuestionTransaction(transaction, this.gameId, questionId, this.roundType);
     await this.readyRepo.resetReadyTransaction(transaction);
   }
 
@@ -92,8 +95,10 @@ export default class MatchingRoundService extends RoundService {
   }
 
   async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {
+    const gameQuestionRepo = new GameMatchingQuestionRepository(this.gameId, roundId);
+
     const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
-    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
 
     const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     const newChooserIdx = 0;
@@ -114,7 +119,6 @@ export default class MatchingRoundService extends RoundService {
 
     await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime * (baseQuestion.numCols - 1));
 
-    const gameQuestionRepo = new GameMatchingQuestionRepository(this.gameId, this.roundId);
     await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
   }
 }

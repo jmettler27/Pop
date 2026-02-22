@@ -1,5 +1,5 @@
 import FirebaseDocumentRepository from '@/backend/repositories/FirebaseDocumentRepository';
-import { increment } from 'firebase/database';
+import { increment } from 'firebase/firestore';
 
 export default class RoundScoreRepository extends FirebaseDocumentRepository {
   constructor(gameId, roundId) {

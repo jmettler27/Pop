@@ -19,9 +19,9 @@ export const handleCountdownEnd = async (gameId, roundId, questionId) => {
 
 /* =============================================================================================================== */
 
-export const handleBuzzerHeadChanged = async (gameId, roundId, playerId) => {
+export const handleBuzzerHeadChanged = async (gameId, roundId, questionId, playerId) => {
   const service = new GameProgressiveCluesQuestionService(gameId, roundId);
-  return service.handleBuzzerHeadChanged(playerId);
+  return service.handleBuzzerHeadChanged(questionId, playerId);
 };
 
 export const addPlayerToBuzzer = async (gameId, roundId, questionId, playerId) => {

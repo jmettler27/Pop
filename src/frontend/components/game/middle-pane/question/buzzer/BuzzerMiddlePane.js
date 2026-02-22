@@ -13,7 +13,7 @@ import BuzzerAnswer from '@/frontend/components/game/middle-pane/question/buzzer
 
 import { clsx } from 'clsx';
 
-export default function BuzzerMiddlePane({ question }) {
+export default function BuzzerMiddlePane({ baseQuestion }) {
   const myRole = useRoleContext();
   const game = useGameContext();
 
@@ -27,30 +27,30 @@ export default function BuzzerMiddlePane({ question }) {
       )}
     >
       <div className="flex h-[20%]">
-        <BuzzerQuestionHeader question={question} />
+        <BuzzerQuestionHeader baseQuestion={baseQuestion} />
       </div>
       <div className="flex h-[70%] w-full items-center justify-center">
-        <BuzzerMainContent question={question} showComplete={showAnswer} />
+        <BuzzerMainContent baseQuestion={baseQuestion} showComplete={showAnswer} />
       </div>
-      <div className="flex h-[10%]">{showAnswer && <BuzzerAnswer question={question} />}</div>
+      <div className="flex h-[10%]">{showAnswer && <BuzzerAnswer baseQuestion={baseQuestion} />}</div>
     </div>
   );
 }
 
-function BuzzerQuestionHeader({ question }) {
+function BuzzerQuestionHeader({ baseQuestion }) {
   return (
     <div className="flex flex-col items-center justify-around">
       <div className="flex flex-row items-center justify-center space-x-1">
-        <QuestionTypeIcon questionType={question.type} fontSize={40} />
+        <QuestionTypeIcon questionType={baseQuestion.type} fontSize={40} />
         <h1 className="2xl:text-5xl">
-          {topicToEmoji(question.topic)}{' '}
+          {topicToEmoji(baseQuestion.topic)}{' '}
           <strong>
-            {questionTypeToTitle(question.type)} <CurrentRoundQuestionOrder />
+            {questionTypeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
           </strong>
         </h1>
       </div>
       <div className="flex flex-row items-center justify-center space-x-1">
-        <h2 className="2xl:text-5xl">{question.title}</h2>
+        <h2 className="2xl:text-5xl">{baseQuestion.title}</h2>
       </div>
     </div>
   );
@@ -58,16 +58,16 @@ function BuzzerQuestionHeader({ question }) {
   return (
     <div className="flex flex-col items-center justify-center space-y-2">
       <div className="flex flex-row items-center justify-center space-x-1">
-        <QuestionTypeIcon questionType={question.type} fontSize={50} />
+        <QuestionTypeIcon questionType={baseQuestion.type} fontSize={50} />
         <h1 className="2xl:text-5xl">
-          {question.type === 'blindtest' && BlindtestQuestion.typeToEmoji(question.subtype)}
-          {topicToEmoji(question.topic)}{' '}
+          {baseQuestion.type === 'blindtest' && BlindtestQuestion.typeToEmoji(baseQuestion.subtype)}
+          {topicToEmoji(baseQuestion.topic)}{' '}
           <strong>
-            {QuestionType.typeToTitle(question.type)} <CurrentRoundQuestionOrder />
+            {QuestionType.typeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
           </strong>
         </h1>
       </div>
-      <h2 className="2xl:text-4xl">{question.title}</h2>
+      <h2 className="2xl:text-4xl">{baseQuestion.title}</h2>
     </div>
   );
 }

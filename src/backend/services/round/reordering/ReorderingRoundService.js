@@ -14,7 +14,9 @@ export default class ReorderingRoundService extends RoundService {
   }
 
   async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {
-    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+    const gameQuestionRepo = new GameReorderingQuestionRepository(this.gameId, this.roundId);
+
+    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
 
     const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     const newChooserTeamId = chooser.chooserOrder[0];
@@ -33,7 +35,6 @@ export default class ReorderingRoundService extends RoundService {
 
     await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
 
-    const gameQuestionRepo = new GameOddOneOutQuestionRepository(this.gameId, this.roundId);
     await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
   }
 }

@@ -1,19 +1,18 @@
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
-import RoundBuzzerQuestionRepository from '@/backend/repositories/question/game/GameBuzzerQuestionRepository';
-
 import { getRandomElement } from '@/backend/utils/arrays';
 import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
 import { useGameContext } from '@/frontend/contexts';
-import PlayerName, { WinnerName } from '@/frontend/components/game/PlayerName';
+import { WinnerName } from '@/frontend/components/game/PlayerName';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/game/GameQuestionRepositoryFactory';
 
 export default function BuzzerAnswer({ baseQuestion }) {
   return (
     <div className="flex flex-col h-full items-center">
       <BuzzerAnswerText baseQuestion={baseQuestion} />
-      <BuzzerWinnerInfo />
+      <BuzzerWinnerInfo baseQuestion={baseQuestion} lang={DEFAULT_LOCALE} />
     </div>
   );
 }
@@ -29,13 +28,15 @@ function BuzzerAnswerText({ baseQuestion }) {
   }
 }
 
-function BuzzerWinnerInfo({ lang = DEFAULT_LOCALE }) {
+function BuzzerWinnerInfo({ baseQuestion, lang = DEFAULT_LOCALE }) {
   const game = useGameContext();
 
-  const roundBuzzerQuestionRepo = new RoundBuzzerQuestionRepository(game.id, game.currentRound);
-  const { gameQuestion, gameQuestionLoading, gameQuestionError } = roundBuzzerQuestionRepo.useQuestion(
-    game.currentQuestion
+  const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(
+    baseQuestion.type,
+    game.id,
+    game.currentRound
   );
+  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
   if (gameQuestionError) {
     return (

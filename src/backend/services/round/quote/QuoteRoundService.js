@@ -68,6 +68,7 @@ export default class QuoteRoundService extends RoundService {
     await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
       currentRound: roundId,
       currentQuestion: null,
+      currentQuestionType: this.roundType,
       status: GameStatus.ROUND_START,
     });
 
@@ -91,7 +92,9 @@ export default class QuoteRoundService extends RoundService {
   }
 
   async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {
-    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+    const gameQuestionRepo = new GameQuoteQuestionRepository(this.gameId, this.roundId);
+
+    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     const playerIds = await this.playerRepo.getAllIdsTransaction(transaction);
 
     for (const id of playerIds) {
@@ -101,7 +104,6 @@ export default class QuoteRoundService extends RoundService {
     await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
     await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon');
 
-    const gameQuestionRepo = new GameQuoteQuestionRepository(this.gameId, this.roundId);
     await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
   }
 }

@@ -69,6 +69,7 @@ export default class EnumerationRoundService extends RoundService {
     await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
       currentRound: roundId,
       currentQuestion: null,
+      currentQuestionType: this.roundType,
       status: GameStatus.ROUND_START,
     });
 
@@ -76,6 +77,8 @@ export default class EnumerationRoundService extends RoundService {
   }
 
   async moveToNextQuestionTransaction(transaction, roundId, questionOrder) {
+    const gameQuestionRepo = new GameEnumerationQuestionRepository(this.gameId, roundId);
+
     /* Game: fetch next question and reset every player's state */
     const playerIds = await this.playerRepo.getAllPlayerIds();
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
@@ -89,9 +92,9 @@ export default class EnumerationRoundService extends RoundService {
     await this.timerRepo.resetTimerTransaction(transaction, baseQuestion.thinkingTime);
 
     await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
-    await this.gameQuestionRepo.startQuestionTransaction(transaction, questionId);
-    await this.roundRepo.setCurrentQuestionIdxTransaction(questionOrder);
-    await this.gameRepo.setCurrentQuestionTransaction(this.gameId, questionId);
+    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
+    await this.roundRepo.setCurrentQuestionIdxTransaction(transaction, roundId, questionOrder);
+    await this.gameRepo.setCurrentQuestionTransaction(transaction, this.gameId, questionId, this.roundType);
     await this.readyRepo.resetReadyTransaction(transaction);
   }
 
@@ -102,6 +105,8 @@ export default class EnumerationRoundService extends RoundService {
   }
 
   async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {
+    const gameQuestionRepo = new GameEnumerationQuestionRepository(this.gameId, this.roundId);
+
     const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
     const playerIds = await this.playerRepo.getAllIdsTransaction(transaction);
 
@@ -112,7 +117,6 @@ export default class EnumerationRoundService extends RoundService {
     await this.timerRepo.resetTimerTransaction(transaction, baseQuestion.thinkingTime);
     await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon');
 
-    const gameQuestionRepo = new GameEnumerationQuestionRepository(this.gameId, this.roundId);
     await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
   }
 }

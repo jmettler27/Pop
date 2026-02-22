@@ -12,8 +12,14 @@ export default class MixedRoundService extends RoundService {
   }
 
   async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {
+    const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(
+      baseQuestion.type,
+      this.gameId,
+      this.roundId
+    );
+
     const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
-    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
 
     const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     const { chooserOrder, chooserIdx } = chooser;
@@ -29,7 +35,7 @@ export default class MixedRoundService extends RoundService {
         await this.chooserRepo.updateChooserTransaction(transaction, {
           chooserIdx: newChooserIdx,
         });
-        await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
+        await gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
           teamId: newChooserTeamId,
         });
         for (const player of newChoosers) {
@@ -39,7 +45,7 @@ export default class MixedRoundService extends RoundService {
           await this.playerRepo.updatePlayerStatusTransaction(transaction, player.id, PlayerStatus.IDLE);
         }
       } else {
-        await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
+        await gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
           teamId: chooserTeamId,
         });
       }
@@ -82,11 +88,6 @@ export default class MixedRoundService extends RoundService {
       await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon');
     }
 
-    const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(
-      baseQuestion.type,
-      this.gameId,
-      this.roundId
-    );
     await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
   }
 }

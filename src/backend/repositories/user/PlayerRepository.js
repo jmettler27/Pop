@@ -70,18 +70,15 @@ export default class PlayerRepository extends FirebaseRepository {
   }
 
   async updatePlayer(playerId, data) {
-    const updatedData = await super.update(playerId, data);
-    return new Player(updatedData);
+    await super.update(playerId, data);
   }
 
   async updatePlayerTransaction(transaction, playerId, data) {
-    const updatedData = await super.updateTransaction(transaction, playerId, data);
-    return new Player(updatedData);
+    await super.updateTransaction(transaction, playerId, data);
   }
 
   async updatePlayerStatusTransaction(transaction, playerId, status) {
-    const updatedData = await this.updatePlayerTransaction(transaction, playerId, { status });
-    return new Player(updatedData);
+    await this.updatePlayerTransaction(transaction, playerId, { status });
   }
 
   async updateAllPlayersStatus(status, playerIds) {

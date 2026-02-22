@@ -263,6 +263,7 @@ export default class FirebaseRepository extends IRepository {
    */
   useDocument(idOrPath) {
     const docRef = this.getDocumentRef(idOrPath);
+    console.log('useDocument', docRef);
     const [data, loading, error] = useDocumentData(docRef);
     return {
       data: data ? { id: docRef.id, ...data } : null,

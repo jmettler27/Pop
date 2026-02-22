@@ -17,13 +17,12 @@ import {
 import {
   handleBuzzerHeadChanged as handleProgressiveCluesBuzzerHeadChanged,
   invalidateAnswer as invalidateProgressiveCluesAnswer,
+  revealClue,
   validateAnswer as validateProgressiveCluesAnswer,
 } from '@/backend/services/question/progressive-clues/actions';
 import { handleBuzzerHeadChanged as handleQuoteBuzzerHeadChanged } from '@/backend/services/question/quote/actions';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-
-import { revealClue } from '@/backend/services/question/progressive-clues/actions';
 import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/game/GameProgressiveCluesQuestionRepository';
 
 import { INVALIDATE_ANSWER, VALIDATE_ANSWER } from '@/backend/utils/question/question';
@@ -50,6 +49,7 @@ import { useEffect, useRef } from 'react';
 
 export default function BuzzerOrganizerController({ baseQuestion, players: questionPlayers }) {
   const { id: gameId } = useParams();
+  const game = useGameContext();
 
   /* Set the state 'focus' to the playerId which is the first element of the buzzed list */
   const { buzzed } = questionPlayers;
@@ -57,8 +57,8 @@ export default function BuzzerOrganizerController({ baseQuestion, players: quest
 
   const getHandleBuzzerHeadChangedAction = () => {
     switch (baseQuestion.type) {
-      case QuestionType.BASIC:
-        return handleBasicBuzzerHeadChanged;
+      // case QuestionType.BASIC:
+      //   return handleBasicBuzzerHeadChanged;
       case QuestionType.BLINDTEST:
         return handleBlindtestBuzzerHeadChanged;
       case QuestionType.EMOJI:
@@ -80,7 +80,7 @@ export default function BuzzerOrganizerController({ baseQuestion, players: quest
     if (buzzerHead.current !== buzzed[0]) {
       buzzerHead.current = buzzed[0];
       const handleBuzzerHeadChangedAction = getHandleBuzzerHeadChangedAction();
-      handleBuzzerHeadChangedAction(gameId, buzzerHead.current);
+      handleBuzzerHeadChangedAction(gameId, game.currentRound, game.currentQuestion, buzzerHead.current);
     }
   }, [buzzed]);
 
@@ -137,6 +137,7 @@ function BuzzerOrganizerAnswerController({ buzzed, lang = DEFAULT_LOCALE, questi
   };
 
   const [handleValidate, isValidating] = useAsyncAction(async () => {
+    console.log('HANDLE VALIDATE');
     const validateAnswerAction = getValidateAnswerAction();
     await validateAnswerAction(game.id, game.currentRound, game.currentQuestion, buzzed[0]);
   });

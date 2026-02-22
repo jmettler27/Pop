@@ -54,6 +54,7 @@ export default class OddOneOutRoundService extends RoundService {
     await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
       currentRound: roundId,
       currentQuestion: null,
+      currentQuestionType: this.roundType,
       status: GameStatus.ROUND_START,
     });
 
@@ -61,6 +62,8 @@ export default class OddOneOutRoundService extends RoundService {
   }
 
   async moveToNextQuestionTransaction(transaction, roundId, questionOrder) {
+    const gameQuestionRepo = new GameOddOneOutQuestionRepository(this.gameId, this.roundId);
+
     /* Game: fetch next question and reset every player's state */
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     const chooser = await this.chooserRepo.getChooserTransaction(transaction, this.gameId);
@@ -79,16 +82,17 @@ export default class OddOneOutRoundService extends RoundService {
     await this.timerRepo.resetTimerTransaction(transaction, defaultThinkingTime);
 
     await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
-    await this.gameQuestionRepo.startQuestionTransaction(transaction, questionId);
-    await this.roundRepo.setCurrentQuestionIdxTransaction(questionOrder);
-    await this.gameRepo.setCurrentQuestionTransaction(this.gameId, questionId);
+    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
+    await this.roundRepo.setCurrentQuestionIdxTransaction(transaction, roundId, questionOrder);
+    await this.gameRepo.setCurrentQuestionTransaction(transaction, this.gameId, questionId, this.roundType);
     await this.readyRepo.resetReadyTransaction(transaction);
   }
 
   /* =============================================================================================================== */
 
   async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {
-    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+    const gameQuestionRepo = new GameOddOneOutQuestionRepository(this.gameId, this.roundId);
+    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
 
     const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     const newChooserTeamId = chooser.chooserOrder[0];
@@ -107,7 +111,6 @@ export default class OddOneOutRoundService extends RoundService {
 
     await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
 
-    const gameQuestionRepo = new GameOddOneOutQuestionRepository(this.gameId, this.roundId);
     await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
   }
 }

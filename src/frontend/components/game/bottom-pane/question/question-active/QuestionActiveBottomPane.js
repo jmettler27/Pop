@@ -8,17 +8,31 @@ import OddOneOutBottomPane from '@/frontend/components/game/bottom-pane/question
 import MCQBottomPane from '@/frontend/components/game/bottom-pane/question/question-active/mcq/MCQBottomPane';
 import BasicQuestionBottomPane from '@/frontend/components/game/bottom-pane/question/question-active/basic/BasicQuestionBottomPane';
 import NaguiBottomPane from '@/frontend/components/game/bottom-pane/question/question-active/nagui/NaguiBottomPane';
-//import LabelBottomPane from '@/app/(game)/[id]/components/bottom-pane/question/question-active/labelling/LabelBottomPane'
-
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-import BaseQuestionRepository from '@/backend/repositories/question/base/BaseQuestionRepository';
+import BaseQuestionRepositoryFactory from '@/backend/repositories/question/base/BaseQuestionRepositoryFactory';
 
 export default function QuestionActiveBottomPane({}) {
   const game = useGameContext();
+  console.log(
+    'QUESTION ACTIVE BOTTOM PANE',
+    game.currentQuestionType,
+    ' - ',
+    game.currentQuestion,
+    ' - ',
+    game.currentRound,
+    ' -'
+  );
 
-  const baseQuestionRepo = new BaseQuestionRepository();
+  if (!game.currentQuestionType) {
+    return <></>;
+  }
+  if (!game.currentQuestion) {
+    return <></>;
+  }
+
+  const baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(game.currentQuestionType);
   const { baseQuestion, baseQuestionLoading, baseQuestionError } = baseQuestionRepo.useQuestionOnce(
     game.currentQuestion
   );
@@ -36,6 +50,7 @@ export default function QuestionActiveBottomPane({}) {
   if (!baseQuestion) {
     return <></>;
   }
+  console.log('baseQuestion', baseQuestion);
 
   switch (baseQuestion.type) {
     case QuestionType.PROGRESSIVE_CLUES:

@@ -1,7 +1,7 @@
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import GameBuzzerQuestionRepository from '@/backend/repositories/question/game/GameBuzzerQuestionRepository';
 
-import { increment } from 'firebase/database';
+import { increment } from 'firebase/firestore';
 
 export default class GameProgressiveCluesQuestionRepository extends GameBuzzerQuestionRepository {
   constructor(gameId, roundId) {
