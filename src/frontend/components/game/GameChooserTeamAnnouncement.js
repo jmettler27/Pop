@@ -3,7 +3,7 @@ import { UserRole } from '@/backend/models/users/User';
 
 import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
-import { useGameContext, useTeamContext, useRoleContext, useGameRepositoriesContext } from '@/frontend/contexts';
+import { useGameContext, useGameRepositoriesContext, useRoleContext, useTeamContext } from '@/frontend/contexts';
 
 export default function GameChooserTeamAnnouncement({}) {
   const game = useGameContext();
@@ -35,7 +35,7 @@ export function GameChooserHelperText({ chooserTeamId, lang = DEFAULT_LOCALE }) 
   const myTeam = useTeamContext();
   const myRole = useRoleContext();
 
-  const { teamRepo, playerRepo } = useGameRepositoriesContext();
+  const { teamRepo, playerRepo, chooserRepo } = useGameRepositoriesContext();
 
   const { team, loading: teamLoading, error: teamError } = teamRepo.useTeam(chooserTeamId);
   const { players, loading: playersLoading, error: playersError } = playerRepo.useTeamPlayers(chooserTeamId);
@@ -69,8 +69,8 @@ export function GameChooserHelperText({ chooserTeamId, lang = DEFAULT_LOCALE }) 
     if (lang === 'fr-FR')
       return (
         <span>
-          🫵 C&apos;est à <span style={{ color: chooserTeam.color }}>{teamHasManyPlayers ? 'ton équipe' : 'toi'}</span>{' '}
-          de {chooserActionText}{' '}
+          🫵 C&apos;est à <span style={{ color: team.color }}>{teamHasManyPlayers ? 'ton équipe' : 'toi'}</span> de{' '}
+          {chooserActionText}{' '}
         </span>
       );
     if (lang === 'en') return <span>🫵 It&apos;s your turn to {chooserActionText}</span>;
@@ -79,30 +79,27 @@ export function GameChooserHelperText({ chooserTeamId, lang = DEFAULT_LOCALE }) 
     if (lang === 'fr-FR')
       return (
         <span>
-          C&apos;est à l&apos;équipe <span style={{ color: chooserTeam.color }}>{chooserTeam.name}</span> de{' '}
-          {chooserActionText}
+          C&apos;est à l&apos;équipe <span style={{ color: team.color }}>{team.name}</span> de {chooserActionText}
         </span>
       );
     if (lang === 'en')
       return (
         <span>
-          It&apos;s Team <span style={{ color: chooserTeam.color }}>{chooserTeam.name}</span>&apos;s turn to{' '}
-          {chooserActionText}
+          It&apos;s Team <span style={{ color: team.color }}>{team.name}</span>&apos;s turn to {chooserActionText}
         </span>
       );
   }
-  const chooserPlayerName = choosers.docs[0].data().name;
+  const chooserPlayerName = team.name;
   if (lang === 'fr-FR')
     return (
       <span>
-        C&apos;est à <span style={{ color: chooserTeam.color }}>{chooserPlayerName}</span> de {chooserActionText}
+        C&apos;est à <span style={{ color: team.color }}>{chooserPlayerName}</span> de {chooserActionText}
       </span>
     );
   if (lang === 'en')
     return (
       <span>
-        It&apos;s <span style={{ color: chooserTeam.color }}>{chooserPlayerName}</span>&apos;s turn to{' '}
-        {chooserActionText}
+        It&apos;s <span style={{ color: team.color }}>{chooserPlayerName}</span>&apos;s turn to {chooserActionText}
       </span>
     );
 }

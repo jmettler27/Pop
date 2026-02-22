@@ -61,8 +61,7 @@ export default class GameService {
         const shuffledTeamIds = shuffle(teamIds);
         const chooserTeamId = shuffledTeamIds[0];
 
-        await this.playerRepo.updateTeamAndOtherTeamsPlayersStatusTransaction(
-          transaction,
+        await this.playerRepo.updateTeamAndOtherTeamsPlayersStatus(
           chooserTeamId,
           PlayerStatus.FOCUS,
           PlayerStatus.IDLE

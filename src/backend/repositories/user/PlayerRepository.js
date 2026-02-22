@@ -30,12 +30,19 @@ export default class PlayerRepository extends FirebaseRepository {
   }
 
   async getPlayersByTeamId(teamId) {
-    const data = await super.getByField(teamId);
+    const data = await super.getByField('teamId', teamId);
     return data.map((p) => new Player(p));
   }
 
   async getPlayersByTeamIdTransaction(transaction, teamId) {
     const data = await super.getByFieldTransaction(transaction, 'teamId', teamId);
+    return data.map((p) => new Player(p));
+  }
+
+  async getAllOtherPlayers(teamId) {
+    const data = await super.getByQuery({
+      where: { field: 'teamId', operator: '!=', value: teamId },
+    });
     return data.map((p) => new Player(p));
   }
 
@@ -102,34 +109,23 @@ export default class PlayerRepository extends FirebaseRepository {
     }
   }
 
-  async updateTeamAndOtherTeamsPlayersStatusTransaction(transaction, teamId, teamStatus, otherTeamsStatus) {
-    const players = await super
-      .getByQueryTransaction(transaction, {
-        where: {
-          field: 'teamId',
-          operator: '==',
-          value: teamId,
-        },
-      })
-      .map((p) => Player(p));
+  async updateTeamAndOtherTeamsPlayersStatus(teamId, teamStatus, otherTeamsStatus) {
+    const players = await this.getPlayersByTeamId(teamId);
+    console.log('PLAYERS', players);
+    const otherPlayers = await this.getAllOtherPlayers(teamId);
+    console.log('OTHER PLAYERS', otherPlayers);
 
-    const otherPlayers = await super
-      .getByQueryTransaction(transaction, {
-        where: {
-          field: 'teamId',
-          operator: '!=',
-          value: teamId,
-        },
-      })
-      .map((p) => Player(p));
+    const batch = writeBatch(firestore);
 
     for (const player of players) {
-      await this.updatePlayerTransaction(transaction, player.id, { status: teamStatus });
+      batch.update(doc(this.collectionRef, player.id), { status: teamStatus });
     }
 
     for (const player of otherPlayers) {
-      await this.updatePlayerTransaction(transaction, player.id, { status: otherTeamsStatus });
+      batch.update(doc(this.collectionRef, player.id), { status: otherTeamsStatus });
     }
+
+    await batch.commit();
   }
 
   // React hooks for real-time operations

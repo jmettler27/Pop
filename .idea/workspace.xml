@@ -5,106 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cf58b025-0e55-4f29-9bc5-400203734f55" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/backend/services/question/GameQuestionServiceFactory.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/backend/services/round/RoundServiceFactory.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/join/[id]/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/join/[id]/page.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/submit/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/submit/page.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/models/questions/ProgressiveClues.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/models/questions/ProgressiveClues.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/models/questions/Question.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/models/questions/Question.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/models/rounds/Round.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/models/rounds/Round.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/FirebaseRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/FirebaseRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/game/GameRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/game/GameRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/question/base/BaseQuestionRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/question/base/BaseQuestionRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/question/game/GameBasicQuestionRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/question/game/GameBasicQuestionRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/question/game/GameBuzzerQuestionRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/question/game/GameBuzzerQuestionRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/question/game/GameEnumerationQuestionRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/question/game/GameEnumerationQuestionRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/question/game/GameLabellingQuestionRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/question/game/GameLabellingQuestionRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/question/game/GameMCQQuestionRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/question/game/GameMCQQuestionRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/question/game/GameMatchingQuestionRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/question/game/GameMatchingQuestionRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/question/game/GameNaguiQuestionRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/question/game/GameNaguiQuestionRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/question/game/GameOddOneOutQuestionRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/question/game/GameOddOneOutQuestionRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/question/game/GameProgressiveCluesQuestionRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/question/game/GameProgressiveCluesQuestionRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/question/game/GameQuestionRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/question/game/GameQuestionRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/question/game/GameQuestionRepositoryFactory.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/question/game/GameQuestionRepositoryFactory.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/round/RoundRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/round/RoundRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/score/GameScoreRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/score/GameScoreRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/score/RoundScoreRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/score/RoundScoreRepository.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/backend/repositories/sound/SoundRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/sound/SoundRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/storage/SoundRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/storage/SoundRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/user/ChooserRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/user/ChooserRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/user/OrganizerRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/user/OrganizerRepository.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/backend/repositories/user/PlayerRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/user/PlayerRepository.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/backend/repositories/user/ReadyRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/user/ReadyRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/user/TeamRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/user/TeamRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/create-game/CreateGameService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/create-game/CreateGameService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/backend/services/game/GameService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/game/GameService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/join-game/JoinGameService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/join-game/JoinGameService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/join-game/actions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/join-game/actions.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/player/PlayerService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/player/PlayerService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/question/GameBuzzerQuestionService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/question/GameBuzzerQuestionService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/question/basic/GameBasicQuestionService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/question/basic/GameBasicQuestionService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/question/enumeration/GameEnumerationQuestionService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/question/enumeration/GameEnumerationQuestionService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/question/labelling/GameLabellingQuestionService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/question/labelling/GameLabellingQuestionService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/question/matching/GameMatchingQuestionService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/question/matching/GameMatchingQuestionService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/question/mcq/GameMCQQuestionService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/question/mcq/GameMCQQuestionService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/question/nagui/GameNaguiQuestionService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/question/nagui/GameNaguiQuestionService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/question/progressive-clues/GameProgressiveCluesQuestionService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/question/progressive-clues/GameProgressiveCluesQuestionService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/question/quote/GameQuoteQuestionService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/question/quote/GameQuoteQuestionService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/question/quote/actions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/question/quote/actions.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/question/reordering/GameReorderingQuestionService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/question/reordering/GameReorderingQuestionService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/round/BuzzerRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/BuzzerRoundService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/round/RoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/RoundService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/round/actions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/actions.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/round/basic/BasicRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/basic/BasicRoundService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/round/blindtest/BlindtestRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/blindtest/BlindtestRoundService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/round/emoji/EmojiRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/emoji/EmojiRoundService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/round/enumeration/EnumerationRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/enumeration/EnumerationRoundService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/round/image/ImageRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/image/ImageRoundService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/round/labelling/LabellingRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/labelling/LabellingRoundService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/backend/services/round/matching/MatchingRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/matching/MatchingRoundService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/backend/services/round/mcq/MCQRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/mcq/MCQRoundService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/round/mixed/MixedRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/mixed/MixedRoundService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/backend/services/round/nagui/NaguiRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/nagui/NaguiRoundService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/backend/services/round/odd-one-out/OddOneOutRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/odd-one-out/OddOneOutRoundService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/round/quote/QuoteRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/quote/QuoteRoundService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/round/reordering/ReorderingRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/reordering/ReorderingRoundService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/round/special/SpecialRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/special/SpecialRoundService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/scoring/ScoreService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/score/ScoreService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/scoring/scores.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/score/scores.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/utils/question/question.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/utils/question/question.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/forms/QuestionFormHeader.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/forms/QuestionFormHeader.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/forms/StyledFormComponents.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/forms/StyledFormComponents.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitBasicQuestionForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitBasicQuestionForm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitBlindtestQuestionForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitBlindtestQuestionForm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitEmojiForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitEmojiForm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitEnumerationForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitEnumerationForm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitImageQuestionForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitImageQuestionForm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitLabellingQuestionForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitLabellingQuestionForm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitMatchingQuestionForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitMatchingQuestionForm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitOddOneOutQuestionForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitOddOneOutQuestionForm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitProgressiveCluesQuestionForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitProgressiveCluesQuestionForm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitQuoteQuestionForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitQuoteQuestionForm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitReorderingQuestionForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/forms/submit-question/SubmitReorderingQuestionForm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/GameChooserOrder.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/GameChooserOrder.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/bottom-pane/question/question-active/matching/MatchingBottomPane.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/bottom-pane/question/question-active/matching/MatchingBottomPane.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/game/GameStartMiddlePane.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/game/GameStartMiddlePane.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/question/basic/BasicMiddlePane.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/question/basic/BasicMiddlePane.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/question/buzzer/BuzzerMiddlePane.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/question/buzzer/BuzzerMiddlePane.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/question/buzzer/main-content/ImageMainContent.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/question/buzzer/main-content/ImageMainContent.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/question/labelling/LabellingMiddlePane.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/question/labelling/LabellingMiddlePane.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/question/mcq/MCQMainContent.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/question/mcq/MCQMainContent.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/round/round-start/RoundRankingPolicy.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/round/round-start/RoundRankingPolicy.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/round/round-start/RoundRules.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/round/round-start/RoundRules.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/sidebar/progress/round/RoundQuestionsProgress.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/sidebar/progress/round/RoundQuestionsProgress.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/soundboard/SoundboardController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/soundboard/SoundboardController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/speed-dial/OrganizerSpeedDial.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/speed-dial/OrganizerSpeedDial.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/timer/TimerPane.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/timer/TimerPane.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/home/GamesUnderConstruction.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/home/GamesUnderConstruction.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/home/HomeBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/home/HomeBar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/home/OngoingGames.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/home/OngoingGames.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/scores/GameScoreboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/scores/GameScoreboard.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/scores/RoundScoreboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/scores/RoundScoreboard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/GameChooserTeamAnnouncement.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/GameChooserTeamAnnouncement.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/game/GameHomeMiddlePane.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/game/GameHomeMiddlePane.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -212,7 +123,7 @@
       <workItem from="1771759312757" duration="7544000" />
       <workItem from="1771775486265" duration="45000" />
       <workItem from="1771775589920" duration="456000" />
-      <workItem from="1771776309767" duration="5859000" />
+      <workItem from="1771776309767" duration="7436000" />
     </task>
     <servers />
   </component>

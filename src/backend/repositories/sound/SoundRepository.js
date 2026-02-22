@@ -43,7 +43,7 @@ export default class SoundRepository extends FirebaseRepository {
     }
 
     try {
-      await runTransaction(async (transaction) => await this.addSoundTransaction(transaction, filename));
+      await runTransaction(firestore, async (transaction) => await this.addSoundTransaction(transaction, filename));
     } catch (error) {
       console.error('Error adding sound', error);
       throw error;

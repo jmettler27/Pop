@@ -5,7 +5,7 @@ import { UserRole } from '@/backend/models/users/User';
 import { timestampToHour } from '@/backend/utils/time';
 import { RoundTypeIcon } from '@/backend/utils/rounds';
 
-import { useUserContext, useRoleContext, useTeamContext, useGameRepositoriesContext } from '@/frontend/contexts';
+import { useGameRepositoriesContext, useRoleContext, useTeamContext, useUserContext } from '@/frontend/contexts';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
@@ -14,8 +14,7 @@ import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { useParams } from 'next/navigation';
 
-import { List, ListItemButton, ListItemText, ListItemAvatar, Avatar, Divider } from '@mui/material';
-import NewReleasesIcon from '@mui/icons-material/NewReleases';
+import { Avatar, Divider, List, ListItemAvatar, ListItemButton, ListItemText } from '@mui/material';
 
 export default function GameHomeMiddlePane({}) {
   return (
@@ -48,7 +47,7 @@ function GameHomeRounds() {
 
   const { roundRepo, chooserRepo } = useGameRepositoriesContext();
   const { rounds, loading: roundsLoading, error: roundsError } = roundRepo.useAllRounds();
-  const { isChooser, loading: isChooserLoading, error: isChooserError } = chooserRepo.useIsTeamChooser(myTeam);
+  const { isChooser, loading: isChooserLoading, error: isChooserError } = chooserRepo.useIsChooser(myTeam);
 
   if (roundsError || isChooserError) {
     console.error('GameHomeRounds.error', roundsError || isChooserError);
@@ -204,8 +203,6 @@ function GameHomeRoundItem({ round, isDisabled, onSelectRound, locale = DEFAULT_
           className: 'text-lg',
         }}
       />
-
-      {round.type === RoundType.LABELLING && <NewReleasesIcon color="warning" fontSize="large" />}
     </ListItemButton>
   );
 }

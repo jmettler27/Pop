@@ -93,8 +93,7 @@ export default class NaguiRoundService extends RoundService {
       const newChooserTeamId = chooserOrder[newChooserIdx];
       await this.chooserRepo.updateChooserIndexTransaction(transaction, newChooserIdx);
       await this.gameQuestionRepo.updateQuestionTeamTransaction(transaction, questionId, newChooserTeamId);
-      await this.playerRepo.updateTeamAndOtherTeamsPlayersStatusTransaction(
-        transaction,
+      await this.playerRepo.updateTeamAndOtherTeamsPlayersStatus(
         newChooserTeamId,
         PlayerStatus.FOCUS,
         PlayerStatus.IDLE

@@ -73,12 +73,7 @@ export default class OddOneOutRoundService extends RoundService {
 
     await this.chooserRepo.resetChoosersTransaction(transaction);
     const newChooserTeamId = chooser.chooserOrder[0];
-    await this.playerRepo.updateTeamAndOtherTeamsPlayersStatusTransaction(
-      transaction,
-      newChooserTeamId,
-      PlayerStatus.FOCUS,
-      PlayerStatus.IDLE
-    );
+    await this.playerRepo.updateTeamAndOtherTeamsPlayersStatus(newChooserTeamId, PlayerStatus.FOCUS, PlayerStatus.IDLE);
 
     // await this.timerRepo.resetTimerTransaction(transaction, { status: TimerStatus.RESET, managedBy, duration: defaultThinkingTime })
     await this.timerRepo.resetTimerTransaction(transaction, defaultThinkingTime);
