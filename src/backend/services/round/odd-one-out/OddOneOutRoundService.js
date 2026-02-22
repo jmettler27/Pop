@@ -6,8 +6,13 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 import { serverTimestamp } from 'firebase/firestore';
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question/question';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { RoundType } from '@/backend/models/rounds/RoundType';
 
 export default class OddOneOutRoundService extends RoundService {
+  constructor(gameId) {
+    super(gameId, RoundType.ODD_ONE_OUT);
+  }
+
   async handleRoundSelectedTransaction(transaction, roundId, userId) {
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     const chooser = await this.chooserRepo.getChooserTransaction(transaction, this.chooserId);
@@ -29,6 +34,7 @@ export default class OddOneOutRoundService extends RoundService {
     }
 
     await this.roundRepo.updateRoundTransaction(transaction, roundId, {
+      type: RoundType.ODD_ONE_OUT,
       dateStart: serverTimestamp(),
       order: newOrder,
       currentQuestionIdx: 0,

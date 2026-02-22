@@ -20,6 +20,11 @@ export default class GameBuzzerQuestionRepository extends GameQuestionRepository
     return data ? data.map((p) => new Player(p)) : [];
   }
 
+  async resetQuestionTransaction(transaction, questionId) {
+    await this.resetPlayersTransaction(transaction, questionId);
+    await this.resetQuestionWinnerTransaction(transaction, questionId);
+  }
+
   async createQuestionTransaction(transaction, questionId, managerId, data) {
     await super.createQuestionTransaction(transaction, questionId, managerId, data);
 

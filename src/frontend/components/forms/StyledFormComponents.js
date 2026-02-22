@@ -27,8 +27,8 @@ export function MyTextInput({ label, maxLength, validationSchema, fieldType = 's
         {maxLength > 0 &&
           (props.onlyEmojis ? numEmojisIndicator(field.value, maxLength) : numCharsIndicator(field.value, maxLength))}
       </StyledLabel>
-      <input className="text-input" {...field} {...props} value={field.value || ''} />
-      {meta.touched && meta.error && <div className="error">{meta.error}</div>}
+      <input className="text-input text-xs sm:text-sm md:text-base" {...field} {...props} value={field.value || ''} />
+      {meta.touched && meta.error && <div className="error text-xs sm:text-sm">{meta.error}</div>}
     </>
   );
 }
@@ -37,11 +37,11 @@ export function MyCheckbox({ children, ...props }) {
   const [field, meta] = useField({ ...props, type: 'checkbox' });
   return (
     <>
-      <label className="checkbox">
+      <label className="checkbox text-xs sm:text-sm md:text-base">
         <input {...field} {...props} type="checkbox" value={field.value || ''} />
         {children}
       </label>
-      {meta.touched && meta.error && <div className="error">{meta.error}</div>}
+      {meta.touched && meta.error && <div className="error text-xs sm:text-sm">{meta.error}</div>}
     </>
   );
 }
@@ -49,16 +49,18 @@ export function MyCheckbox({ children, ...props }) {
 // Styled components ....
 const StyledSelect = styled.select`
   color: var(--blue);
+  font-size: clamp(0.75rem, 1vw, 1rem);
 `;
 
 export const StyledErrorMessage = styled.div`
-  font-size: 12px;
+  font-size: clamp(0.75rem, 1vw, 0.875rem);
   color: var(--red-600);
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
   margin-top: 0.25rem;
   &:before {
     content: '❌ ';
-    font-size: 10px;
+    font-size: clamp(0.625rem, 0.8vw, 0.75rem);
   }
   @media (prefers-color-scheme: dark) {
     color: var(--red-300);
@@ -67,6 +69,8 @@ export const StyledErrorMessage = styled.div`
 
 export const StyledLabel = styled.label`
   margin-top: 1rem;
+  font-size: clamp(0.875rem, 1.2vw, 1rem);
+  display: block;
 `;
 
 export function MySelect({ label, validationSchema, ...props }) {
@@ -80,7 +84,7 @@ export function MySelect({ label, validationSchema, ...props }) {
         {requiredFieldIndicator(validationSchema, field.name)}
         {label}
       </StyledLabel>
-      <StyledSelect className="dark:text-white" {...field} {...props} />
+      <StyledSelect className="text-xs sm:text-sm 2xl:text-base dark:text-white" {...field} {...props} />
       {meta.touched && meta.error && <StyledErrorMessage>{meta.error}</StyledErrorMessage>}
     </>
   );

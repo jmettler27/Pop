@@ -1,16 +1,21 @@
-import { TimerStatus } from '@/backend/models/Timer';
+import { Timer, TimerStatus } from '@/backend/models/Timer';
 import GameLabellingQuestionRepository from '@/backend/repositories/question/game/GameLabellingQuestionRepository';
 import RoundService from '@/backend/services/round/RoundService';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { PlayerStatus } from '@/backend/models/users/Player';
-import { Timer } from '@/backend/models/Timer';
 import { serverTimestamp } from 'firebase/firestore';
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question/question';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { RoundType } from '@/backend/models/rounds/RoundType';
 
 export default class LabellingRoundService extends RoundService {
+  constructor(gameId) {
+    super(gameId, RoundType.LABELLING);
+  }
+
   async handleRoundSelectedTransaction(transaction, roundId, userId) {
+    const playerIds = await this.playerRepo.getAllPlayerIds();
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     const chooser = await this.chooserRepo.getChooserTransaction(transaction, this.chooserId);
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
@@ -36,9 +41,10 @@ export default class LabellingRoundService extends RoundService {
     }
 
     // Set the status of every player to 'idle'
-    await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE);
+    await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
 
     await this.roundRepo.updateRoundTransaction(transaction, roundId, {
+      type: RoundType.LABELLING,
       dateStart: serverTimestamp(),
       order: newOrder,
       currentQuestionIdx: 0,
@@ -72,11 +78,12 @@ export default class LabellingRoundService extends RoundService {
 
   async moveToNextQuestionTransaction(transaction, roundId, questionOrder) {
     /* Game: fetch next question and reset every player's state */
+    const playerIds = await this.playerRepo.getAllPlayerIds();
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     const questionId = round.questions[questionOrder];
     const defaultThinkingTime = DEFAULT_THINKING_TIME_SECONDS[QuestionType.MATCHING];
 
-    await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE);
+    await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
     await this.timerRepo.resetTimerTransaction(transaction, defaultThinkingTime);
     await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
     await this.gameQuestionRepo.startQuestionTransaction(transaction, questionId);

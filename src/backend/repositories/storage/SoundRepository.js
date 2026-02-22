@@ -47,7 +47,7 @@ export default class SoundRepository extends StorageRepository {
 
   async clearSoundsTransaction(transaction) {
     await runTransaction(firestore, async (transaction) => {
-      // const queueSnapshot = await this.soundQueueRepo.getAllTransaction(transaction);
+      // const queueSnapshot = await this.soundQueueRepo.getAll();
       // for (const doc of queueSnapshot.docs) {
       //     transaction.delete(doc.ref)
       // }

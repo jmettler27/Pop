@@ -16,10 +16,7 @@ export default class GameBasicQuestionService extends GameQuestionService {
   }
 
   async resetQuestionTransaction(transaction, questionId) {
-    await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
-      teamId: null,
-      correct: null,
-    });
+    await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
 
     console.log(
       'Basic question successfully reset',

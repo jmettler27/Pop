@@ -28,6 +28,13 @@ export default class ChooserRepository extends FirebaseDocumentRepository {
     });
   }
 
+  async updateChooser(data) {
+    return await this.update({
+      chooserIdx: data.chooserIdx,
+      chooserOrder: data.chooserOrder,
+    });
+  }
+
   async updateChooserTransaction(transaction, data) {
     return await this.updateTransaction(transaction, {
       chooserIdx: data.chooserIdx,

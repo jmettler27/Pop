@@ -98,9 +98,6 @@ export function GameUnderConstructionCard({ game, lang = DEFAULT_LOCALE }) {
   }
 
   const isOrganizer = organizers.find((o) => o.id === user.id);
-  if (isOrganizer == null) {
-    return <></>;
-  }
 
   return (
     <Card className="bg-slate-800/50 border border-yellow-600/20 shadow-lg hover:shadow-yellow-500/40 hover:border-yellow-400/60 transition-all duration-300 hover:-translate-y-1 overflow-hidden">

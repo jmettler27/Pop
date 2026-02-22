@@ -25,7 +25,7 @@ export class Question {
     }
 
     this.validateId(data);
-    this.validateType(data);
+    // this.validateType(data);
 
     return true;
   }
@@ -195,7 +195,7 @@ export class GameQuestion extends Question {
 
     //this.validateDateEnd(data);
     //  this.validateDateStart(data);
-    this.validateManager(data);
+    // this.validateManager(data);
     return true;
   }
 

@@ -1,4 +1,5 @@
 import RoundService from '@/backend/services/round/RoundService';
+import { RoundType } from '@/backend/models/rounds/RoundType';
 
 // import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
 // import { firestore } from '@/backend/firebase/firebase'
@@ -24,6 +25,10 @@ import RoundService from '@/backend/services/round/RoundService';
 // import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
 
 export default class SpecialRoundService extends RoundService {
+  constructor(gameId) {
+    super(gameId, RoundType.SPECIAL);
+  }
+
   async startRoundTransaction(transaction) {
     // const specialRoundRef = doc(GAMES_COLLECTION_REF, this.gameId, 'rounds', this.roundId)
     // transaction.update(specialRoundRef, {
@@ -70,6 +75,7 @@ export default class SpecialRoundService extends RoundService {
     //     throw error;
     // }
   }
+
   async startThemeTransaction(transaction, nextThemeId) {
     // const roundRef = doc(GAMES_COLLECTION_REF, this.gameId, 'rounds', this.roundId)
     // const chooserRef = doc(GAMES_COLLECTION_REF, this.gameId, 'realtime', 'states')

@@ -238,13 +238,13 @@ export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({
 
 /* ============================================================================================ */
 function RoundQuestionSummary({ roundType, question, order, lang = DEFAULT_LOCALE }) {
-  if (roundType === 'mixed') {
-    return (
-      <span className="text-lg">
-        {questionTypeToEmoji(question.type)} {topicToEmoji(question.topic)} <strong>Question {order + 1}</strong>
-      </span>
-    );
-  }
+  // if (roundType === 'mixed') {
+  //   return (
+  //     <span className="text-lg">
+  //       {questionTypeToEmoji(question.type)} {topicToEmoji(question.topic)} <strong>Question {order + 1}</strong>
+  //     </span>
+  //   );
+  // }
 
   switch (question.type) {
     case QuestionType.EMOJI:
@@ -256,13 +256,13 @@ function RoundQuestionSummary({ roundType, question, order, lang = DEFAULT_LOCAL
           <strong>
             {questionTypeToTitle(question.type, lang)} {order + 1}
           </strong>{' '}
-          - {question.details.title}
+          - {question.title}
         </span>
       );
     case QuestionType.BLINDTEST:
       return (
         <span className="text-lg">
-          {BlindtestQuestion.typeToEmoji(question.details.subtype)}
+          {BlindtestQuestion.typeToEmoji(question.subtype)}
           {topicToEmoji(question.topic)}{' '}
           <strong>
             {questionTypeToTitle(question.type, lang)} {order + 1}
@@ -276,7 +276,7 @@ function RoundQuestionSummary({ roundType, question, order, lang = DEFAULT_LOCAL
           <strong>
             {questionTypeToTitle(question.type, lang)} {order + 1}
           </strong>{' '}
-          ({question.details.labels.length} pts)
+          ({question.labels.length} pts)
         </span>
       );
     case QuestionType.MATCHING:
@@ -286,7 +286,7 @@ function RoundQuestionSummary({ roundType, question, order, lang = DEFAULT_LOCAL
           <strong>
             {questionTypeToTitle(question.type, lang)} {order + 1}
           </strong>{' '}
-          ({question.details.numCols} col)
+          ({question.numCols} col)
         </span>
       );
     default:
@@ -315,7 +315,7 @@ function QuestionTitle({ question }) {
     case QuestionType.QUOTE:
       return <></>;
     default:
-      return <Typography>&quot;{question.details.title}&quot;</Typography>;
+      return <Typography>&quot;{question.title}&quot;</Typography>;
   }
 }
 
@@ -323,9 +323,9 @@ function QuestionTitleWithSource({ question }) {
   return (
     <Typography>
       <i>
-        <strong>{question.details.source}</strong>
+        <strong>{question.source}</strong>
       </i>{' '}
-      - &quot;{question.details.title}&quot;
+      - &quot;{question.title}&quot;
     </Typography>
   );
 }

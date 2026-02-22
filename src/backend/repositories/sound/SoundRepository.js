@@ -2,6 +2,7 @@ import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 import { runTransaction, serverTimestamp } from 'firebase/firestore';
 
 import { getRandomElement } from '@/backend/utils/arrays';
+import { firestore } from '@/backend/firebase/firebase';
 
 const WRONG_ANSWER_SOUNDS = ['roblox_oof', 'oof', 'terraria_male_damage', 'itai'];
 
@@ -23,7 +24,7 @@ export default class SoundRepository extends FirebaseRepository {
    * @returns {Promise<Object>} The sound
    */
   async initializeSoundsTransaction(transaction) {
-    return await this.setTransaction(transaction, {
+    return await this.createTransaction(transaction, {
       played: false,
       timestamp: serverTimestamp(),
     });
@@ -73,8 +74,8 @@ export default class SoundRepository extends FirebaseRepository {
    */
   async clearSounds() {
     try {
-      await runTransaction(async (transaction) => {
-        const sounds = await this.getAllTransaction(transaction);
+      await runTransaction(firestore, async (transaction) => {
+        const sounds = await this.getAll();
         for (const sound of sounds) {
           await this.deleteTransaction(transaction, sound.id);
         }

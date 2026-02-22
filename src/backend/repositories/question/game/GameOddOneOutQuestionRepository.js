@@ -9,6 +9,13 @@ export default class GameOddOneOutQuestionRepository extends GameQuestionReposit
     super(gameId, roundId, QuestionType.ODD_ONE_OUT);
   }
 
+  async resetQuestionTransaction(transaction, questionId) {
+    await this.updateQuestionTransaction(transaction, questionId, {
+      winner: null,
+      selectedItems: [],
+    });
+  }
+
   async getPlayersTransaction(transaction, questionId) {
     const data = await this.getTransaction(transaction, [
       questionId,
@@ -16,13 +23,6 @@ export default class GameOddOneOutQuestionRepository extends GameQuestionReposit
     ]);
     // return data ? data.map(p => new Player(p)) : [];
     return data;
-  }
-
-  async resetQuestionTransaction(transaction, questionId) {
-    await this.updateQuestionTransaction(transaction, questionId, {
-      winner: null,
-      selectedItems: [],
-    });
   }
 
   usePlayers(questionId) {

@@ -10,7 +10,7 @@ export function RoundRankingPolicy({ round }) {
         <div className="flex flex-col items-center justify-start space-y-4 p-2">
           <RoundRankingPolicyTitle round={round} />
           <div className="flex flex-col items-center justify-start">
-            <p className="2xl:text-2xl">Le barème</p>
+            <p className="text-xs sm:text-sm 2xl:text-base 2xl:text-xl">Le barème</p>
             <ol className="2xl:text-2xl border-solid border-yellow-500 border-2 p-2">
               {round.rewards.map((reward, index) => (
                 <li key={index}>

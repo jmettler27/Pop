@@ -31,9 +31,9 @@ export class Round {
     //}
 
     this.title = data.title;
-    if (!this.title) {
-      throw new Error('Round title is required');
-    }
+    // if (!this.title) {
+    //   throw new Error('Round title is required');
+    // }
 
     // Handle timestamps in a more abstract way
     this.createdAt = data.createdAt || new Date();

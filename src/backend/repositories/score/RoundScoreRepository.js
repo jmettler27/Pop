@@ -24,6 +24,16 @@ export default class RoundScoreRepository extends FirebaseDocumentRepository {
     });
   }
 
+  async resetScores(initTeamRoundScores) {
+    return await this.update({
+      scores: initTeamRoundScores,
+      scoresProgress: {},
+      teamsScoresSequences: {},
+      roundSortedTeams: [],
+      gameSortedTeams: [],
+    });
+  }
+
   async resetScoresTransaction(transaction, initTeamRoundScores) {
     return await this.updateTransaction(transaction, {
       scores: initTeamRoundScores,

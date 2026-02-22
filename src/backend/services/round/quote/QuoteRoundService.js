@@ -4,15 +4,16 @@ import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import { serverTimestamp } from 'firebase/firestore';
-import { TimerStatus } from '@/backend/models/Timer';
-import { Timer } from '@/backend/models/Timer';
+import { Timer, TimerStatus } from '@/backend/models/Timer';
+import { RoundType } from '@/backend/models/rounds/RoundType';
 
 export default class QuoteRoundService extends RoundService {
-  constructor(gameId, roundId) {
-    super(gameId, roundId);
+  constructor(gameId) {
+    super(gameId, RoundType.QUOTE);
   }
 
   async handleRoundSelectedTransaction(transaction, roundId, userId) {
+    const playerIds = await this.playerRepo.getAllPlayerIds();
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     const chooser = await this.chooserRepo.getChooserTransaction(transaction, this.chooserId);
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
@@ -38,9 +39,10 @@ export default class QuoteRoundService extends RoundService {
     }
 
     // Set the status of every player to 'idle'
-    await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE);
+    await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
 
     await this.roundRepo.updateRoundTransaction(transaction, roundId, {
+      type: RoundType.QUOTE,
       dateStart: serverTimestamp(),
       order: newOrder,
       currentQuestionIdx: 0,

@@ -3,18 +3,17 @@ import { PlayerStatus } from '@/backend/models/users/Player';
 import GameMatchingQuestionRepository from '@/backend/repositories/question/game/GameMatchingQuestionRepository';
 
 import RoundService from '@/backend/services/round/RoundService';
-import { collection, doc, getDocs, query, serverTimestamp, where } from 'firebase/firestore';
+import { serverTimestamp } from 'firebase/firestore';
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { getDocDataTransaction } from '@/backend/services/utils';
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question/question';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { getNextCyclicIndex } from '@/backend/utils/arrays';
-import { updateTimerTransaction } from '@/backend/repositories/timer/timer';
-import { TimerStatus } from '@/backend/models/Timer';
-import { addSoundTransaction } from '@/backend/services/sound/sounds';
+import { RoundType } from '@/backend/models/rounds/RoundType';
 
 export default class MatchingRoundService extends RoundService {
+  constructor(gameId) {
+    super(gameId, RoundType.MATCHING);
+  }
+
   async handleRoundSelectedTransaction(transaction, roundId, userId) {
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     const chooser = await this.chooserRepo.getChooserTransaction(transaction, this.chooserId);
@@ -36,6 +35,7 @@ export default class MatchingRoundService extends RoundService {
     }
 
     await this.roundRepo.updateRoundTransaction(transaction, roundId, {
+      type: RoundType.MATCHING,
       dateStart: serverTimestamp(),
       order: newOrder,
       currentQuestionIdx: 0,
@@ -80,8 +80,8 @@ export default class MatchingRoundService extends RoundService {
       PlayerStatus.IDLE
     );
 
-    // await this.timerRepo.resetTimerTransaction(transaction, { status: TimerStatus.RESET, managedBy, duration: defaultThinkingTime * (baseQuestion.details.numCols - 1) })
-    await this.timerRepo.resetTimerTransaction(transaction, defaultThinkingTime * (baseQuestion.details.numCols - 1));
+    // await this.timerRepo.resetTimerTransaction(transaction, { status: TimerStatus.RESET, managedBy, duration: defaultThinkingTime * (baseQuestion.numCols - 1) })
+    await this.timerRepo.resetTimerTransaction(transaction, defaultThinkingTime * (baseQuestion.numCols - 1));
 
     await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
     await this.gameQuestionRepo.startQuestionTransaction(transaction, questionId);

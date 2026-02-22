@@ -11,6 +11,26 @@ export default class GameRepository extends FirebaseRepository {
     super('games');
   }
 
+  async resetGame(gameId) {
+    await this.updateGame(gameId, {
+      currentRound: null,
+      currentQuestion: null,
+      dateEnd: null,
+      dateStart: null,
+      status: GameStatus.GAME_START,
+    });
+  }
+
+  async resetGameTransaction(transaction, gameId) {
+    await this.updateGameTransaction(transaction, gameId, {
+      currentRound: null,
+      currentQuestion: null,
+      dateEnd: null,
+      dateStart: null,
+      status: GameStatus.GAME_START,
+    });
+  }
+
   async getAllGames() {
     const data = await super.getAll();
     return data.map((g) => GameFactory.createGame(g.type, g));
@@ -43,7 +63,10 @@ export default class GameRepository extends FirebaseRepository {
     return data ? GameFactory.createGame(data.type, data) : null;
   }
 
-  async createGameTransaction(transaction, data) {}
+  async createGameTransaction(transaction, data) {
+    const game = await this.createTransaction(transaction, data);
+    return GameFactory.createGame(game.type, game);
+  }
 
   async addRoundTransaction(transaction, gameId, roundId) {
     await this.updateTransaction(transaction, gameId, {

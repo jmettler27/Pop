@@ -45,7 +45,7 @@ export default class GameQuestionRepositoryFactory {
       case QuestionType.REORDERING:
         return new GameReorderingQuestionRepository(gameId, roundId);
       default:
-        throw new Error(`Unknown question type: ${type}`);
+        throw new Error(`Unknown question type: ${questionType}`);
     }
   }
 }

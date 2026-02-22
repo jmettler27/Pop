@@ -10,23 +10,6 @@ export default class GameProgressiveCluesQuestionService extends GameBuzzerQuest
     super(gameId, roundId, QuestionType.PROGRESSIVE_CLUES);
   }
 
-  async resetQuestionTransaction(transaction, questionId) {
-    await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
-      currentClueIdx: -1,
-    });
-    await super.resetQuestionTransaction(transaction, questionId);
-
-    console.log(
-      'Progressive clues question successfully reset',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId
-    );
-  }
-
   /* ====================================================================================================== */
 
   async revealClue(questionId) {

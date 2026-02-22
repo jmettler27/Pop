@@ -51,7 +51,7 @@ export default function SubmitImageQuestionForm({ userId, lang = DEFAULT_LOCALE,
       if (!image) {
         throw new Error('No image file');
       }
-      const { files, topic, lang, ...details } = values;
+      const { files, topic, lang, ...others } = values;
       const { title, answer_description, answer_source } = details;
 
       const questionId = await submitQuestion(

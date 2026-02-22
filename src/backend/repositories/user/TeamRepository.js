@@ -13,15 +13,12 @@ export default class TeamRepository extends FirebaseRepository {
     return data ? new Team(data) : null;
   }
 
-  async getAll() {
+  async getAllTeams() {
     const data = await super.getAll();
     return data.map((t) => new Team(t));
   }
 
-  async getAllTransaction(transaction) {
-    const data = await super.getAllTransaction(transaction);
-    return data.map((t) => new Team(t));
-  }
+  async getAllTeamsTransaction(transaction) {}
 
   async create(data, id = null) {
     Team.validateName(data.name);
@@ -49,7 +46,7 @@ export default class TeamRepository extends FirebaseRepository {
   }
 
   async getShuffledTeamIds(transaction) {
-    const teams = await this.getAllTransaction(transaction);
+    const teams = await this.getAllTeamsTransaction(transaction);
     const teamIds = teams.map((t) => t.id);
     return shuffle(teamIds);
   }

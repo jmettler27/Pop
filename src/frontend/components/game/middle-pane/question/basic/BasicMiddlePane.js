@@ -111,7 +111,7 @@ function BasicQuestionFooter({ baseQuestion, gameQuestion, lang = DEFAULT_LOCALE
       <span className="text-4xl">
         {gameQuestion.correct !== null && <BasicQuestionPlayerAnswerText gameQuestion={gameQuestion} lang={lang} />}
       </span>
-      {explanation && <span className="2xl:text-2xl">👉 {explanation}</span>}
+      {explanation && <span className="text-xs sm:text-sm 2xl:text-base 2xl:text-xl">👉 {explanation}</span>}
     </div>
   );
 }

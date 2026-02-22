@@ -111,7 +111,7 @@ export function HomeBar({ lang = DEFAULT_LOCALE, onLanguageChange }) {
     <AppBar
       position="static"
       sx={{
-        background: 'linear-gradient(135deg, #f97316 0%, #fb923c 50%, #fdba74 100%)',
+        background: 'linear-gradient(135deg, #0ea5e9 0%, #3b82f6 50%, #6366f1 100%)',
         boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
       }}
       enableColorOnDark

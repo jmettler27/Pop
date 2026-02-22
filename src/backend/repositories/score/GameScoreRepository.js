@@ -14,14 +14,27 @@ export default class GameScoreRepository extends FirebaseDocumentRepository {
     return await this.updateTransaction(transaction, scores);
   }
 
+  async setScores(scores) {
+    return await this.set(scores);
+  }
+
   async setScoresTransaction(transaction, scores) {
     return await this.setTransaction(transaction, scores);
   }
 
-  async initializeScoresTransaction(transaction, initTeamGameScores, initTeamGameScoresProgress) {
+  async initializeScores() {
+    return await this.setScores({
+      gameSortedTeams: [],
+      scores: {},
+      scoresProgress: {},
+    });
+  }
+
+  async initializeScoresTransaction(transaction) {
     return await this.setScoresTransaction(transaction, {
-      scores: initTeamGameScores,
-      scoresProgress: initTeamGameScoresProgress,
+      gameSortedTeams: [],
+      scores: {},
+      scoresProgress: {},
     });
   }
 

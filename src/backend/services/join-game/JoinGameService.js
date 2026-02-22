@@ -4,10 +4,10 @@ import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import UserRepository from '@/backend/repositories/user/UserRepository';
 
-import {PlayerStatus} from '@/backend/models/users/Player';
-import {firestore} from '@/backend/firebase/firebase';
+import { PlayerStatus } from '@/backend/models/users/Player';
+import { firestore } from '@/backend/firebase/firebase';
 
-import {runTransaction, serverTimestamp} from 'firebase/firestore';
+import { runTransaction, serverTimestamp } from 'firebase/firestore';
 
 export default class JoinGameService {
   constructor(gameId) {
@@ -33,7 +33,13 @@ export default class JoinGameService {
 
     try {
       await runTransaction(firestore, async (transaction) => {
+        const user = await this.userRepo.getUserTransaction(transaction, userId);
+        if (!user) {
+          throw new Error('User not found');
+        }
+
         if (!data.playInTeams) {
+          console.log('JOIN SOLO', data);
           // Single player
           const team = await this.teamRepo.createTeamTransaction(transaction, {
             color: data.teamColor,
@@ -44,6 +50,7 @@ export default class JoinGameService {
           });
           data.teamId = team.id;
         } else if (!data.joinTeam) {
+          console.log('JOIN TEAM', data);
           // Player that creates a new team
           const team = await this.teamRepo.createTeamTransaction(transaction, {
             color: data.teamColor,
@@ -56,7 +63,6 @@ export default class JoinGameService {
         }
 
         // In any case: create player
-        const user = await this.userRepo.getUserTransaction(transaction, userId);
         await this.playerRepo.createPlayerTransaction(
           transaction,
           {

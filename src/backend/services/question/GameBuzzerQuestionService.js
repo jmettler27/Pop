@@ -13,33 +13,8 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     this.roundRepo = new RoundRepository(gameId);
   }
 
-  async resetQuestion(questionId) {
-    if (!questionId) {
-      throw new Error('Question ID is required');
-    }
-    try {
-      await runTransaction(firestore, async (transaction) => this.resetQuestionTransaction(transaction, questionId));
-    } catch (error) {
-      console.error(
-        'Failed to reset buzzer question',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'type',
-        this.questionType,
-        'err',
-        error
-      );
-      throw error;
-    }
-  }
-
   async resetQuestionTransaction(transaction, questionId) {
-    await this.gameQuestionRepo.resetPlayersTransaction(transaction, questionId);
-    await this.gameQuestionRepo.resetQuestionWinnerTransaction(transaction, questionId);
+    await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
   }
 
   async endQuestion(questionId) {

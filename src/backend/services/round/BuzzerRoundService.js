@@ -2,14 +2,12 @@ import RoundService from '@/backend/services/round/RoundService';
 
 import { PlayerStatus } from '@/backend/models/users/Player';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/game/GameQuestionRepositoryFactory';
-import { TimerStatus } from '@/backend/models/Timer';
+import { Timer, TimerStatus } from '@/backend/models/Timer';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
-import { Timer } from '@/backend/models/Timer';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question/question';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { getDocs, query } from 'firebase/firestore';
-import { updateTimerTransaction } from '@/backend/repositories/timer/timer';
+import { serverTimestamp } from 'firebase/firestore';
 
 export default class BuzzerRoundService extends RoundService {
   constructor(gameId, roundType) {
@@ -17,6 +15,7 @@ export default class BuzzerRoundService extends RoundService {
   }
 
   async handleRoundSelectedTransaction(transaction, roundId, userId) {
+    const playerIds = await this.playerRepo.getAllPlayerIds();
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     const chooser = await this.chooserRepo.getChooserTransaction(transaction, this.chooserId);
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
@@ -42,9 +41,10 @@ export default class BuzzerRoundService extends RoundService {
     }
 
     // Set the status of every player to 'idle'
-    await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE);
+    await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
 
     await this.roundRepo.updateRoundTransaction(transaction, roundId, {
+      type: this.roundType,
       dateStart: serverTimestamp(),
       order: newOrder,
       currentQuestionIdx: 0,
@@ -78,11 +78,12 @@ export default class BuzzerRoundService extends RoundService {
 
   async moveToNextQuestionTransaction(transaction, roundId, questionOrder) {
     /* Game: fetch next question and reset every player's state */
+    const playerIds = await this.playerRepo.getAllPlayerIds();
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     const questionId = round.questions[questionOrder];
     const defaultThinkingTime = DEFAULT_THINKING_TIME_SECONDS[QuestionType.MATCHING];
 
-    await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE);
+    await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
     await this.timerRepo.resetTimerTransaction(transaction, defaultThinkingTime);
     await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
     await this.gameQuestionRepo.startQuestionTransaction(transaction, questionId);

@@ -108,10 +108,10 @@ export default function SubmitOddOneOutQuestionForm({ userId, lang, ...props }) 
 
   const [submitOOOQuestion, isSubmitting] = useAsyncAction(async (values) => {
     try {
-      const { topic, lang, ...details } = values;
+      const { topic, lang, ...others } = values;
       const questionId = await submitQuestion(
         {
-          details: { ...details },
+          details: { ...others },
           type: QUESTION_TYPE,
           topic,
           // subtopics,,

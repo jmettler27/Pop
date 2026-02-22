@@ -69,7 +69,7 @@ export default function SubmitMatchingQuestionForm({ userId, lang, ...props }) {
 
   const [submitMatchingQuestion, isSubmitting] = useAsyncAction(async (values) => {
     try {
-      const { topic, lang, ...details } = values;
+      const { topic, lang, ...others } = values;
       const { matches, title, note, numCols } = details;
       const numRows = matches.length;
 

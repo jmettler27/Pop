@@ -26,6 +26,16 @@ export default class FirebaseRepository extends IRepository {
    */
   constructor(collectionPath) {
     super();
+    if (isArray(collectionPath)) {
+      const invalidSegmentIndex = collectionPath.findIndex(
+        (segment) => typeof segment !== 'string' || segment.trim().length === 0
+      );
+      if (invalidSegmentIndex !== -1) {
+        throw new Error(
+          `Invalid Firestore path segment at index ${invalidSegmentIndex}: ${String(collectionPath[invalidSegmentIndex])}`
+        );
+      }
+    }
     // collectionPath can be either a string or an array of strings
     this.collectionRef = isArray(collectionPath)
       ? collection(firestore, ...collectionPath)
@@ -69,6 +79,74 @@ export default class FirebaseRepository extends IRepository {
     const docRef = this.getDocumentRef(idOrPath);
     const docSnap = await transaction.get(docRef);
     return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null;
+  }
+
+  async getNumDocuments(transaction) {
+    const querySnapshot = await transaction.get(query(this.collectionRef));
+    return querySnapshot.docs.length;
+  }
+
+  async getAll() {
+    const q = query(this.collectionRef);
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  }
+
+  // async getAll() {
+  //   const q = query(this.collectionRef);
+  //   // Fallback for environments where transaction query reads are unstable.
+  //   const querySnapshot = await getDocs(q);
+  //   return querySnapshot.docs.map((doc) => ({
+  //     id: doc.id,
+  //     ...doc.data(),
+  //   }));
+  // }
+
+  async getByQuery(queryOptions = {}) {
+    let q = query(this.collectionRef);
+    if (queryOptions.where) {
+      q = query(q, where(queryOptions.where.field, queryOptions.where.operator, queryOptions.where.value));
+    }
+    if (queryOptions.orderBy) {
+      q = query(q, orderBy(queryOptions.orderBy.field, queryOptions.orderBy.direction));
+    }
+    if (queryOptions.limit) {
+      q = query(q, limit(queryOptions.limit));
+    }
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  }
+
+  async getByQueryTransaction(transaction, queryOptions = {}) {
+    let q = query(this.collectionRef);
+    if (queryOptions.where) {
+      q = query(q, where(queryOptions.where.field, queryOptions.where.operator, queryOptions.where.value));
+    }
+    if (queryOptions.orderBy) {
+      q = query(q, orderBy(queryOptions.orderBy.field, queryOptions.orderBy.direction));
+    }
+    if (queryOptions.limit) {
+      q = query(q, limit(queryOptions.limit));
+    }
+    const querySnapshot = await transaction.get(q);
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  }
+
+  async getByField(field, value) {
+    return this.getByQuery({ where: { field, operator: '==', value } });
+  }
+
+  async getByFieldTransaction(transaction, field, value) {
+    return this.getByQueryTransaction(transaction, { where: { field, operator: '==', value } });
   }
 
   /**
@@ -206,71 +284,6 @@ export default class FirebaseRepository extends IRepository {
       loading,
       error,
     };
-  }
-
-  async getNumDocuments(transaction) {
-    const querySnapshot = await transaction.get(this.collectionRef);
-    return querySnapshot.docs.length;
-  }
-
-  async getAll() {
-    const querySnapshot = await getDocs(this.collectionRef);
-    return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-  }
-
-  async getAllTransaction(transaction) {
-    const querySnapshot = await transaction.get(this.collectionRef);
-    return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-  }
-
-  async getByQuery(queryOptions = {}) {
-    let q = query(this.collectionRef);
-    if (queryOptions.where) {
-      q = query(q, where(queryOptions.where.field, queryOptions.where.operator, queryOptions.where.value));
-    }
-    if (queryOptions.orderBy) {
-      q = query(q, orderBy(queryOptions.orderBy.field, queryOptions.orderBy.direction));
-    }
-    if (queryOptions.limit) {
-      q = query(q, limit(queryOptions.limit));
-    }
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-  }
-
-  async getByQueryTransaction(transaction, queryOptions = {}) {
-    let q = query(this.collectionRef);
-    if (queryOptions.where) {
-      q = query(q, where(queryOptions.where.field, queryOptions.where.operator, queryOptions.where.value));
-    }
-    if (queryOptions.orderBy) {
-      q = query(q, orderBy(queryOptions.orderBy.field, queryOptions.orderBy.direction));
-    }
-    if (queryOptions.limit) {
-      q = query(q, limit(queryOptions.limit));
-    }
-    const querySnapshot = await transaction.get(q);
-    return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-  }
-
-  async getByField(field, value) {
-    return this.getByQuery({ where: { field, operator: '==', value } });
-  }
-
-  async getByFieldTransaction(transaction, field, value) {
-    return this.getByQueryTransaction(transaction, { where: { field, operator: '==', value } });
   }
 
   // React hooks for real-time operations

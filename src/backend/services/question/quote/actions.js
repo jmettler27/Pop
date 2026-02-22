@@ -29,13 +29,7 @@ export const clearBuzzer = async (gameId, roundId, questionId) => {
   return service.clearBuzzer(questionId);
 };
 
-export const revealQuoteElement = async (
-  gameId,
-  roundId,
-  questionId,
-  quoteElem,
-  quotePartIdx = null,
-) => {
+export const revealQuoteElement = async (gameId, roundId, questionId, quoteElem, quotePartIdx = null) => {
   const service = new GameQuoteQuestionService(gameId, roundId);
   return service.revealQuoteElement(questionId, quoteElem, quotePartIdx);
 };

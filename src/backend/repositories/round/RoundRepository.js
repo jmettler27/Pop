@@ -2,7 +2,7 @@ import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 
 import RoundFactory from '@/backend/models/rounds/RoundFactory';
 
-import { serverTimestamp, arrayUnion } from 'firebase/firestore';
+import { arrayUnion, serverTimestamp } from 'firebase/firestore';
 
 export default class RoundRepository extends FirebaseRepository {
   constructor(gameId) {
@@ -42,23 +42,6 @@ export default class RoundRepository extends FirebaseRepository {
   async getRoundsTransaction(transaction, queryOptions) {
     const data = await super.getByQueryTransaction(transaction, queryOptions);
     return data.map((r) => RoundFactory.createRound(r.type, r));
-  }
-
-  /**
-   * Create a round
-   * @param {string} roundType - The type of the round
-   * @param {Object} data - The data of the round
-   * @returns {Promise<Round>} The round
-   */
-  async createRound(roundType, data) {
-    try {
-      const round = RoundFactory.createRound(roundType, { ...data, type: roundType });
-      const createData = await super.create(round.toObject());
-      return RoundFactory.createRound(roundType, createData);
-    } catch (error) {
-      console.error('Failed to create the round:', error);
-      throw error;
-    }
   }
 
   /**
@@ -134,6 +117,26 @@ export default class RoundRepository extends FirebaseRepository {
   async setCurrentQuestionIdxTransaction(transaction, roundId, questionOrder) {
     await super.updateTransaction(transaction, roundId, {
       currentQuestionIdx: questionOrder,
+    });
+  }
+
+  async resetRound(roundId, roundType) {
+    await this.updateRound(roundId, {
+      type: roundType,
+      currentQuestionIdx: 0,
+      dateEnd: null,
+      dateStart: null,
+      order: null,
+    });
+  }
+
+  async resetRoundTransaction(transaction, roundId, roundType) {
+    await this.updateRoundTransaction(transaction, roundId, {
+      type: roundType,
+      currentQuestionIdx: 0,
+      dateEnd: null,
+      dateStart: null,
+      order: null,
     });
   }
 

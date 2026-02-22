@@ -50,7 +50,7 @@ function BuzzerQuestionHeader({ question }) {
         </h1>
       </div>
       <div className="flex flex-row items-center justify-center space-x-1">
-        <h2 className="2xl:text-5xl">{question.details.title}</h2>
+        <h2 className="2xl:text-5xl">{question.title}</h2>
       </div>
     </div>
   );
@@ -60,14 +60,14 @@ function BuzzerQuestionHeader({ question }) {
       <div className="flex flex-row items-center justify-center space-x-1">
         <QuestionTypeIcon questionType={question.type} fontSize={50} />
         <h1 className="2xl:text-5xl">
-          {question.type === 'blindtest' && BlindtestQuestion.typeToEmoji(question.details.subtype)}
+          {question.type === 'blindtest' && BlindtestQuestion.typeToEmoji(question.subtype)}
           {topicToEmoji(question.topic)}{' '}
           <strong>
             {QuestionType.typeToTitle(question.type)} <CurrentRoundQuestionOrder />
           </strong>
         </h1>
       </div>
-      <h2 className="2xl:text-4xl">{question.details.title}</h2>
+      <h2 className="2xl:text-4xl">{question.title}</h2>
     </div>
   );
 }

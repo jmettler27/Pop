@@ -16,15 +16,14 @@ export default class GameLabellingQuestionService extends GameQuestionService {
 
   async resetQuestionTransaction(transaction, questionId) {
     const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
+    const playerIds = await this.playerRepo.getAllPlayerIds();
 
     await this.gameQuestionRepo.resetPlayersTransaction(transaction, questionId);
     await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
       revealed: baseQuestion.getInitialRevealed(),
     });
 
-    await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE);
-
-    await super.resetQuestionTransaction(transaction, questionId);
+    await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
 
     console.log(
       'Labelling question successfully reset',
@@ -41,7 +40,7 @@ export default class GameLabellingQuestionService extends GameQuestionService {
     const players = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
     const buzzed = players.buzzed;
 
-    if (buzzed.length === 0) await this.timerRepor.resetTimerTransaction(transaction);
+    if (buzzed.length === 0) await this.timerRepo.resetTimerTransaction(transaction);
     else await this.gameQuestionRepo.cancelPlayerTransaction(transaction, questionId, buzzed[0]);
 
     console.log('Labelling question countdown end successfully handled', questionId);

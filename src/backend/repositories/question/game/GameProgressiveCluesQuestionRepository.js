@@ -8,6 +8,13 @@ export default class GameProgressiveCluesQuestionRepository extends GameBuzzerQu
     super(gameId, roundId, QuestionType.PROGRESSIVE_CLUES);
   }
 
+  async resetQuestionTransaction(transaction, questionId) {
+    await super.resetQuestionTransaction(transaction, questionId);
+    await this.updateQuestionTransaction(transaction, questionId, {
+      currentClueIdx: -1,
+    });
+  }
+
   async incrementClueTransaction(transaction, questionId) {
     await this.updateQuestionTransaction(transaction, questionId, {
       currentClueIdx: increment(1),

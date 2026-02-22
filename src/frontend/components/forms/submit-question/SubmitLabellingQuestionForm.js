@@ -63,7 +63,7 @@ export default function SubmitLabellingQuestionForm({ userId, lang = DEFAULT_LOC
       if (!image) {
         throw new Error('No image file');
       }
-      const { files, topic, lang, ...details } = values;
+      const { files, topic, lang, ...others } = values;
       const { title, labels } = details;
 
       const questionId = await submitQuestion(

@@ -1,7 +1,8 @@
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
-import { query, where } from 'firebase/firestore';
+import { doc, query, where, writeBatch } from 'firebase/firestore';
 
 import { Player } from '@/backend/models/users/Player';
+import { firestore } from '@/backend/firebase/firebase';
 
 export default class PlayerRepository extends FirebaseRepository {
   constructor(gameId) {
@@ -23,9 +24,9 @@ export default class PlayerRepository extends FirebaseRepository {
     return data.map((p) => new Player(p));
   }
 
-  async getAllPlayersTransaction(transaction) {
-    const data = await super.getAllTransaction(transaction);
-    return data.map((p) => new Player(p));
+  async getAllPlayerIds() {
+    const data = await super.getAll();
+    return data.map((p) => p.id);
   }
 
   async getPlayersByTeamId(teamId) {
@@ -76,11 +77,22 @@ export default class PlayerRepository extends FirebaseRepository {
     return new Player(updatedData);
   }
 
-  async updateAllPlayersStatusTransaction(transaction, status) {
-    const players = await super.getAllTransaction(transaction);
-    for (const player of players) {
-      await this.updatePlayerTransaction(transaction, player.id, { status });
-    }
+  async updateAllPlayersStatus(status, playerIds) {
+    const batch = writeBatch(firestore); // 👈 standalone function
+    playerIds.forEach((id) => batch.update(doc(this.collectionRef, id), { status }));
+    await batch.commit();
+  }
+
+  // async updateAllPlayersStatusTransaction(transaction, status) {
+  //   const players = await super.getAll();
+  //   for (const player of players) {
+  //     await this.updatePlayerTransaction(transaction, player.id, { status });
+  //   }
+  // }
+
+  async updateAllPlayersStatusTransaction(transaction, status, playerIds) {
+    const playerRefs = playerIds.map((id) => doc(this.collectionRef, id));
+    playerRefs.forEach((ref) => transaction.update(ref, { status }));
   }
 
   async updateTeamPlayersStatusTransaction(transaction, teamId, status) {
@@ -190,6 +202,7 @@ export default class PlayerRepository extends FirebaseRepository {
       error,
     };
   }
+
   useTeamPlayers(teamId) {
     const queryBuilder = (collectionRef) => query(collectionRef, where('teamId', '==', teamId));
     const { data, loading, error } = super.useQuery(queryBuilder);

@@ -122,25 +122,21 @@ export default class BaseQuestionRepository extends FirebaseRepository {
 
   useQuestionsOnce(approved = true) {
     // Build query with multiple where clauses for type and approved status
-    const q = query(
-      this.collectionRef,
-      where('type', '==', this.questionType),
-      where('approved', '==', approved)
-    );
+    const q = query(this.collectionRef, where('type', '==', this.questionType), where('approved', '==', approved));
 
     const [data, loading, error] = useCollectionOnce(q);
 
     return {
-      baseQuestions: data?.docs.map((doc) => {
-        const docData = { id: doc.id, ...doc.data() };
-        return QuestionFactory.createBaseQuestion(docData.type, docData);
-      }) || null,
+      baseQuestions:
+        data?.docs.map((doc) => {
+          const docData = { id: doc.id, ...doc.data() };
+          return QuestionFactory.createBaseQuestion(docData.type, docData);
+        }) || null,
       baseQuestionsLoading: loading,
       baseQuestionsError: error,
     };
   }
 }
-
 
 //function applyQuestionQueryFilters(q, { lang, topic, type, keyword, sort, approved = true }) {
 //    if (approved) {

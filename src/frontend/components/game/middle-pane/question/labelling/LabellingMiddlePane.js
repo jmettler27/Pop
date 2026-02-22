@@ -46,8 +46,8 @@ function LabellingQuestionHeader({ question }) {
         </h1>
       </div>
       <div className="flex flex-row items-center justify-center space-x-1">
-        <h2 className="2xl:text-4xl">{question.details.title}</h2>
-        {question.details.note && <NoteButton note={question.details.note} />}
+        <h2 className="2xl:text-4xl">{question.title}</h2>
+        {question.note && <NoteButton note={question.note} />}
       </div>
     </div>
   );
@@ -75,7 +75,9 @@ function LabellingMainContent({ question }) {
   }
 
   const { revealed } = gameQuestion;
-  const { title, image, labels } = question.details;
+  const title = question.title;
+  const image = question.image;
+  const labels = question.labels;
 
   return (
     <Box className="flex flex-row h-full w-[90%] items-center justify-center space-x-8">

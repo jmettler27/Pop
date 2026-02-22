@@ -14,20 +14,11 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
   }
 
   async resetQuestionTransaction(transaction, questionId) {
-    await this.gameQuestionRepo.setPlayersTransaction(transaction, questionId, {
-      bets: [],
-    });
+    const playerIds = await this.playerRepo.getAllPlayerIds();
 
-    await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
-      status: EnumerationQuestionStatus.REFLECTION,
-      winner: null,
-    });
-
+    await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
     await this.timerRepo.resetTimerTransaction(transaction);
-
-    await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE);
-
-    await super.resetQuestionTransaction(transaction, questionId);
+    await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
 
     console.log(
       'Enumeration question successfully reset',

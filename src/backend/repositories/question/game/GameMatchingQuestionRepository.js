@@ -107,18 +107,17 @@ export default class GameMatchingQuestionRepository extends GameQuestionReposito
       teamNumMistakes: {},
       canceled: [],
     });
-    await this.setTransaction(transaction, { correctMatches: [] }, [
-      questionId,
-      ...GameMatchingQuestionRepository.CORRECT_MATCHES_PATH,
-    ]);
-    await this.setTransaction(transaction, { incorrectMatches: [] }, [
-      questionId,
-      ...GameMatchingQuestionRepository.INCORRECT_MATCHES_PATH,
-    ]);
-    await this.setTransaction(transaction, { partiallyCorrectMatches: [] }, [
-      questionId,
-      ...GameMatchingQuestionRepository.PARTIALLY_CORRECT_MATCHES_PATH,
-    ]);
+    await this.setTransaction(transaction, [questionId, ...GameMatchingQuestionRepository.CORRECT_MATCHES_PATH], {
+      correctMatches: [],
+    });
+    await this.setTransaction(transaction, [questionId, ...GameMatchingQuestionRepository.INCORRECT_MATCHES_PATH], {
+      incorrectMatches: [],
+    });
+    await this.setTransaction(
+      transaction,
+      [questionId, ...GameMatchingQuestionRepository.PARTIALLY_CORRECT_MATCHES_PATH],
+      { partiallyCorrectMatches: [] }
+    );
   }
 
   // React hooks

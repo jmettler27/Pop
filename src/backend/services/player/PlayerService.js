@@ -1,14 +1,14 @@
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 
-import {firestore} from '@/backend/firebase/firebase';
-import {runTransaction} from 'firebase/firestore';
+import { firestore } from '@/backend/firebase/firebase';
+import { runTransaction } from 'firebase/firestore';
 
-import {Timer, TimerStatus} from '@/backend/models/Timer';
-import {PlayerStatus} from '@/backend/models/users/Player';
+import { Timer, TimerStatus } from '@/backend/models/Timer';
+import { PlayerStatus } from '@/backend/models/users/Player';
 
 import TimerRepository from '@/backend/repositories/timer/TimerRepository';
 import SoundRepository from '@/backend/repositories/sound/SoundRepository';
-import ReadyRepository from "@/backend/repositories/user/ReadyRepository";
+import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 
 export default class PlayerService {
   constructor(gameId) {
@@ -69,21 +69,10 @@ export default class PlayerService {
         await this.timerRepo.updateTransaction(transaction, { authorized: newVal });
         if (newVal === true) await this.soundRepo.addSoundTransaction(transaction, 'minecraft_button_plate');
 
-        console.log(
-            'Players authorization successfully toggled',
-            'game',
-            this.gameId,
-            'authorized',
-            newVal
-        );
-          }
-      );
+        console.log('Players authorization successfully toggled', 'game', this.gameId, 'authorized', newVal);
+      });
     } catch (error) {
-      console.error(
-          'Failed to toggle players authorization',
-          'game',
-          this.gameId,
-      );
+      console.error('Failed to toggle players authorization', 'game', this.gameId);
       throw error;
     }
   }

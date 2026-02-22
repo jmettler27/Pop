@@ -2,6 +2,7 @@ import GameQuestionRepository from '@/backend/repositories/question/game/GameQue
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { increment, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { EnumerationQuestionStatus } from '@/backend/models/questions/Enumeration';
 
 export default class GameEnumerationQuestionRepository extends GameQuestionRepository {
   static ENUMERATION_PLAYERS_PATH = ['realtime', 'players'];
@@ -11,6 +12,17 @@ export default class GameEnumerationQuestionRepository extends GameQuestionRepos
   }
 
   // Firestore operations
+  async resetQuestionTransaction(transaction, questionId) {
+    await this.setPlayersTransaction(transaction, questionId, {
+      bets: [],
+    });
+
+    await this.updateQuestionTransaction(transaction, questionId, {
+      status: EnumerationQuestionStatus.REFLECTION,
+      winner: null,
+    });
+  }
+
   async getPlayersTransaction(transaction, questionId) {
     const data = await this.getTransaction(transaction, [
       questionId,
@@ -18,6 +30,14 @@ export default class GameEnumerationQuestionRepository extends GameQuestionRepos
     ]);
     // return data ? data.map(p => new Player(p)) : [];
     return data;
+  }
+
+  async setPlayersTransaction(transaction, questionId, data) {
+    await this.setTransaction(
+      transaction,
+      [questionId, ...GameEnumerationQuestionRepository.ENUMERATION_PLAYERS_PATH],
+      data
+    );
   }
 
   async addBetTransaction(transaction, questionId, playerId, teamId, bet) {

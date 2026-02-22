@@ -574,10 +574,10 @@ const moveToNextQuestionTransaction = async (transaction, gameId, roundId, quest
       });
     }
     if (baseQuestion.type === QuestionType.MATCHING) {
-      // await updateTimerTransaction(transaction, gameId, { status: TimerStatus.RESET, managedBy, duration: defaultThinkingTime * (baseQuestion.details.numCols - 1) })
+      // await updateTimerTransaction(transaction, gameId, { status: TimerStatus.RESET, managedBy, duration: defaultThinkingTime * (baseQuestion.numCols - 1) })
       await updateTimerTransaction(transaction, gameId, {
         status: TimerStatus.RESET,
-        duration: defaultThinkingTime * (baseQuestion.details.numCols - 1),
+        duration: defaultThinkingTime * (baseQuestion.numCols - 1),
       });
     } else {
       // await updateTimerTransaction(transaction, gameId, { status: TimerStatus.RESET, managedBy, duration: defaultThinkingTime })
@@ -591,10 +591,10 @@ const moveToNextQuestionTransaction = async (transaction, gameId, roundId, quest
       });
     }
     if (baseQuestion.type === QuestionType.ENUMERATION) {
-      // await updateTimerTransaction(transaction, gameId, { status: TimerStatus.RESET, managedBy, duration: baseQuestion.details.thinkingTime })
+      // await updateTimerTransaction(transaction, gameId, { status: TimerStatus.RESET, managedBy, duration: baseQuestion.thinkingTime })
       await updateTimerTransaction(transaction, gameId, {
         status: TimerStatus.RESET,
-        duration: baseQuestion.details.thinkingTime,
+        duration: baseQuestion.thinkingTime,
       });
     } else {
       // await updateTimerTransaction(transaction, gameId, { status: TimerStatus.RESET, managedBy, duration: defaultThinkingTime })

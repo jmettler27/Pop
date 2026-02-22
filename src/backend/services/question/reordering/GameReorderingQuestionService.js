@@ -1,7 +1,7 @@
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
-import {QuestionType} from '@/backend/models/questions/QuestionType';
-import {runTransaction} from "firebase/firestore";
-import {firestore} from "@/backend/firebase/firebase";
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { runTransaction } from 'firebase/firestore';
+import { firestore } from '@/backend/firebase/firebase';
 
 export default class GameReorderingQuestionService extends GameQuestionService {
   constructor(gameId, roundId) {
@@ -9,7 +9,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
   }
 
   async resetQuestionTransaction(transaction, questionId) {
-    await super.resetQuestionTransaction(transaction, questionId);
+    await this.gameRepo.resetQuestionTransaction(transaction, questionId);
 
     console.log(
       'Reordering question successfully reset',

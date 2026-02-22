@@ -8,13 +8,16 @@ import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
-import { PlayerStatus } from '@/backend/models/users/Player';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-
-import { getRandomElement, shuffle } from '@/backend/utils/arrays';
+import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
+
+import { PlayerStatus } from '@/backend/models/users/Player';
+import { GameStatus } from '@/backend/models/games/GameStatus';
 import { TimerStatus } from '@/backend/models/Timer';
+import { getRandomElement, shuffle } from '@/backend/utils/arrays';
+import Error from '@/app/error';
+import RoundServiceFactory from '@/backend/services/round/RoundServiceFactory';
 
 export default class GameService {
   constructor(gameId) {
@@ -33,6 +36,7 @@ export default class GameService {
     this.teamRepo = new TeamRepository(gameId);
     this.playerRepo = new PlayerRepository(gameId);
     this.organizerRepo = new OrganizerRepository(gameId);
+    this.roundRepo = new RoundRepository(gameId);
   }
 
   // game_start -> game_home
@@ -42,7 +46,7 @@ export default class GameService {
   async startGame() {
     try {
       await runTransaction(firestore, async (transaction) => {
-        const teams = await this.teamRepo.getAllTransaction(transaction);
+        const teams = await this.teamRepo.getAll();
 
         const { teamIds, initTeamGameScores, initTeamGameScoresProgress } = teams.reduce(
           (acc, team) => {
@@ -93,72 +97,141 @@ export default class GameService {
   }
 
   async resetGame() {
-    try {
-      await runTransaction(firestore, async (transaction) => {
-        const teams = await this.teamRepo.getAllTransaction(transaction);
-        const players = await this.playerRepo.getAllPlayersTransaction(transaction);
-        const organizers = await this.organizerRepo.getAllOrganizersTransaction(transaction);
+    const teams = await this.teamRepo.getAllTeams();
+    const playerIds = await this.playerRepo.getAllPlayerIds();
+    const organizerIds = await this.organizerRepo.getAllOrganizerIds();
 
-        const { teamIds, initTeamGameScores, initTeamGameScoresProgress } = teams.reduce(
-          (acc, team) => {
-            acc.teamIds.push(team.id);
-            acc.initTeamGameScores[team.id] = 0;
-            acc.initTeamGameScoresProgress[team.id] = {};
-            return acc;
-          },
-          { teamIds: [], initTeamGameScores: {}, initTeamGameScoresProgress: {} }
-        );
+    const { teamIds, initTeamGameScores, initTeamGameScoresProgress } = teams.reduce(
+      (acc, team) => {
+        acc.teamIds.push(team.id);
+        acc.initTeamGameScores[team.id] = 0;
+        acc.initTeamGameScoresProgress[team.id] = {};
+        return acc;
+      },
+      { teamIds: [], initTeamGameScores: {}, initTeamGameScoresProgress: {} }
+    );
 
-        // Reset all rounds - assuming a method exists in gameRepo
-        await this.gameRepo.resetAllRoundsTransaction(transaction, this.gameId);
+    // Reset all rounds - assuming a method exists in gameRepo
+    await this.resetAllRounds();
 
-        // Reset game
-        await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
-          currentRound: null,
-          currentQuestion: null,
-          dateEnd: null,
-          dateStart: null,
-          status: GameStatus.GAME_START,
-        });
+    // Reset game
+    await this.gameRepo.resetGame(this.gameId);
 
-        // Reset timer
-        const managerId = getRandomElement(organizers);
-        await this.timerRepo.updateTransaction(transaction, {
-          status: TimerStatus.RESET,
-          duration: 60,
-          forward: false,
-          authorized: false,
-          managedBy: managerId,
-        });
+    // Reset timer
+    const managerId = getRandomElement(organizerIds);
+    await this.timerRepo.update({
+      status: TimerStatus.RESET,
+      duration: 60,
+      forward: false,
+      authorized: false,
+      managedBy: managerId,
+    });
 
-        // Init chooser
-        const shuffledTeamIds = shuffle(teamIds);
-        await this.chooserRepo.updateChooserTransaction(transaction, {
-          chooserIdx: 0,
-          chooserOrder: shuffledTeamIds,
-        });
+    // Init chooser
+    const shuffledTeamIds = shuffle(teamIds);
+    await this.chooserRepo.updateChooser({
+      chooserIdx: 0,
+      chooserOrder: shuffledTeamIds,
+    });
 
-        // Init global scores
-        await this.gameScoreRepo.initializeScoresTransaction(transaction, {
-          scores: initTeamGameScores,
-          scoresProgress: initTeamGameScoresProgress,
-        });
+    // Init global scores
+    await this.gameScoreRepo.setScores({
+      scores: initTeamGameScores,
+      scoresProgress: initTeamGameScoresProgress,
+    });
 
-        await this.readyRepo.updateTransaction(transaction, {
-          numPlayers: players.length,
-          numReady: 0,
-        });
+    await this.readyRepo.set({
+      numPlayers: playerIds.length,
+      numReady: 0,
+    });
 
-        await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE);
-        await this.soundRepo.clearSoundsTransaction(transaction);
+    await this.playerRepo.updateAllPlayersStatus(PlayerStatus.IDLE, playerIds);
+    await this.soundRepo.clearSounds();
 
-        console.log('Game successfully reset.', 'game', this.gameId);
-      });
-    } catch (error) {
-      console.error('Failed to reset the game:', error);
-      throw error;
+    console.log('Game successfully reset', 'game', this.gameId);
+
+    //   try {
+    //     await runTransaction(firestore, async (transaction) => {
+    //       const teams = await this.teamRepo.getAllTeams();
+    //       const players = await this.playerRepo.getAllPlayers();
+    //       const organizers = await this.organizerRepo.getAllOrganizers();
+    //
+    //       const { teamIds, initTeamGameScores, initTeamGameScoresProgress } = teams.reduce(
+    //         (acc, team) => {
+    //           acc.teamIds.push(team.id);
+    //           acc.initTeamGameScores[team.id] = 0;
+    //           acc.initTeamGameScoresProgress[team.id] = {};
+    //           return acc;
+    //         },
+    //         { teamIds: [], initTeamGameScores: {}, initTeamGameScoresProgress: {} },
+    //       );
+    //
+    //       // Reset all rounds - assuming a method exists in gameRepo
+    //       await this.resetAllRoundsTransaction(transaction);
+    //
+    //       // Reset game
+    //       await this.gameRepo.resetGameTransaction(transaction, this.gameId);
+    //
+    //       // Reset timer
+    //       const managerId = getRandomElement(organizers);
+    //       await this.timerRepo.updateTransaction(transaction, {
+    //         status: TimerStatus.RESET,
+    //         duration: 60,
+    //         forward: false,
+    //         authorized: false,
+    //         managedBy: managerId,
+    //       });
+    //
+    //       // Init chooser
+    //       const shuffledTeamIds = shuffle(teamIds);
+    //       await this.chooserRepo.updateChooserTransaction(transaction, {
+    //         chooserIdx: 0,
+    //         chooserOrder: shuffledTeamIds,
+    //       });
+    //
+    //       // Init global scores
+    //       await this.gameScoreRepo.initializeScoresTransaction(transaction, {
+    //         scores: initTeamGameScores,
+    //         scoresProgress: initTeamGameScoresProgress,
+    //       });
+    //
+    //       await this.readyRepo.updateTransaction(transaction, {
+    //         numPlayers: players.length,
+    //         numReady: 0,
+    //       });
+    //
+    //       await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
+    //       await this.soundRepo.clearSoundsTransaction(transaction);
+    //
+    //       console.log('Game successfully reset', 'game', this.gameId);
+    //     });
+    //   } catch (error) {
+    //     console.error('Failed to reset the game:', error);
+    //     throw error;
+    //   }
+    // }
+    //
+  }
+
+  async resetAllRounds() {
+    const rounds = await this.roundRepo.getAllRounds();
+
+    for (const round of rounds) {
+      console.log('RESETTING ROUND', 'ID', round.id, 'TYPE', round.type);
+      const roundService = RoundServiceFactory.createService(round.type, this.gameId);
+      await roundService.resetRound(round.id);
     }
   }
+
+  // async resetAllRoundsTransaction(transaction) {
+  //   const rounds = await this.roundRepo.getAllRounds();
+  //
+  //   for (const round of rounds) {
+  //     console.log('RESETTING ROUND', 'ID', round.id, 'TYPE', round.type);
+  //     const roundService = RoundServiceFactory.createService(round.type, this.gameId);
+  //     await roundService.resetRoundTransaction(transaction, round.id);
+  //   }
+  // }
 
   /**
    * Switch to the game home

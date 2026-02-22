@@ -11,8 +11,6 @@ export class ProgressiveCluesQuestion extends BuzzerQuestion {
   static MAX_NUM_CLUES = 10;
 
   constructor(data) {
-    console.log('data:', data);
-
     super(data);
     this.constructor.validate(data);
 

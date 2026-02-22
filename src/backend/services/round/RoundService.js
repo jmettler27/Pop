@@ -7,6 +7,10 @@ import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
+import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
+import BaseQuestionRepositoryFactory from '@/backend/repositories/question/base/BaseQuestionRepositoryFactory';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/game/GameQuestionRepositoryFactory';
+import GameQuestionServiceFactory from '@/backend/services/question/GameQuestionServiceFactory';
 
 import { Round } from '@/backend/models/rounds/Round';
 import { RoundType } from '@/backend/models/rounds/RoundType';
@@ -21,8 +25,6 @@ import { sortScores } from '@/backend/utils/scores';
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { firestore } from '@/backend/firebase/firebase';
 import { collection, getDocs, query, runTransaction, where } from 'firebase/firestore';
-import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
-import BaseQuestionRepositoryFactory from '@/backend/repositories/question/base/BaseQuestionRepositoryFactory';
 
 export default class RoundService {
   constructor(gameId, roundType) {
@@ -46,11 +48,50 @@ export default class RoundService {
 
     this.roundType = roundType;
     this.roundRepo = RoundRepositoryFactory.createRepository(this.gameId, this.roundType);
-    this.roundScoreRepo = new RoundScoreRepository(this.gameId);
 
     this.baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(this.roundType);
     // this.gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(this.roundType, this.gameId);
   }
+
+  async resetRound(roundId) {
+    const gameQuestionService = GameQuestionServiceFactory.createService(this.roundType, this.gameId, roundId);
+    const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(this.roundType, this.gameId, roundId);
+    const roundScoreRepo = new RoundScoreRepository(this.gameId, roundId);
+
+    const questions = await gameQuestionRepo.getAllQuestions();
+    const initTeamRoundScores = await this.getInitTeamScores();
+
+    for (const question of questions) {
+      await gameQuestionService.resetQuestion(question.id);
+    }
+    await roundScoreRepo.resetScores(initTeamRoundScores);
+    await this.roundRepo.resetRound(roundId, this.roundType);
+  }
+
+  async getInitTeamScores() {
+    const teams = await this.teamRepo.getAllTeams();
+    return Object.fromEntries(teams.map((t) => [t.id, 0]));
+  }
+
+  // async resetRoundTransaction(transaction, roundId) {
+  //   const gameQuestionService = GameQuestionServiceFactory.createService(this.roundType, this.gameId, roundId);
+  //   const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(this.roundType, this.gameId, roundId);
+  //   const roundScoreRepo = new RoundScoreRepository(this.gameId, roundId);
+  //
+  //   const questions = await gameQuestionRepo.getAllQuestions();
+  //   const initTeamRoundScores = await this.getInitTeamScores();
+  //
+  //   for (const question of questions) {
+  //     await gameQuestionService.resetQuestionTransaction(transaction, question.id);
+  //   }
+  //   await roundScoreRepo.resetScoresTransaction(transaction, initTeamRoundScores);
+  //   await this.roundRepo.resetRoundTransaction(transaction, roundId, this.roundType);
+  // }
+  //
+  // async getInitTeamScores() {
+  //   const teams = await this.teamRepo.getAllTeams();
+  //   return Object.fromEntries(teams.map((t) => [t.id, 0]));
+  // }
 
   /**
    * round_start -> question_active
@@ -63,6 +104,7 @@ export default class RoundService {
       throw error;
     }
   }
+
   async startRoundTransaction(transaction, roundId) {
     await this.moveToNextQuestionTransaction(transaction, roundId, 0);
 
@@ -124,6 +166,7 @@ export default class RoundService {
       throw error;
     }
   }
+
   async endRoundTransaction(transaction, roundId) {
     const game = await this.gameRepo.getGame(this.gameId);
     const round = await this.roundRepo.getRound(roundId);
@@ -396,6 +439,7 @@ export default class RoundService {
       throw error;
     }
   }
+
   async handleRoundSelectedTransaction(transaction, roundId, userId) {
     throw new Error('Not implemented');
     // const round = await this.roundRepo.getRoundTransaction(transaction, roundId)

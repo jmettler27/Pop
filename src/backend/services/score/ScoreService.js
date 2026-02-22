@@ -1,18 +1,17 @@
 import { firestore } from '@/backend/firebase/firebase';
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { doc, collection, query, getDocs, where, runTransaction, increment } from 'firebase/firestore';
+import { doc, runTransaction } from 'firebase/firestore';
 
 import Game from '@/backend/models/games/Game';
 
 import { getDocDataTransaction } from '@/backend/services/utils';
-
-import RoundScoreRepository from '@/backend/repositories/scoring/RoundScoreRepository';
-import GameScoreRepository from '@/backend/repositories/scoring/GameScoreRepository';
+import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
+import TeamRepository from '@/backend/repositories/user/TeamRepository';
 
 export default class ScoreService {
-  constructor() {
-    this.roundScoreRepo = new RoundScoreRepository();
-    this.gameScoreRepo = new GameScoreRepository();
+  constructor(gameId) {
+    this.gameScoreRepo = new GameScoreRepository(gameId);
+    this.teamRepo = new TeamRepository(gameId);
   }
 
   async initRoundScores(gameId, roundId) {
@@ -72,18 +71,10 @@ export default class ScoreService {
   //   });
   // }
 
-  // Private methods
-  async getInitTeamScores(gameId) {
-    const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams');
-    const teamsSnapshot = await getDocs(query(teamsCollectionRef));
-
-    const initTeamScores = {};
-    teamsSnapshot.docs.forEach((doc) => {
-      initTeamScores[doc.id] = 0;
-    });
-
-    return initTeamScores;
-  }
+  // async getInitTeamScores() {
+  //   const teams = await this.teamRepo.getAllTeams();
+  //   return Object.fromEntries(teams.map((t) => [t.id, 0]));
+  // }
 
   async updateRoundScores(gameId, roundId, scoresData) {
     const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores');

@@ -142,7 +142,7 @@ function SpectatorTimerPane() {
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-2">
       <TimerHeader />
-      <span className="2xl:text-4xl">
+      <span className="text-2xl sm:text-3xl lg:text-4xl 2xl:text-4xl">
         ⌛ <Timer timer={timer} serverTimeOffset={serverTimeOffset} />
       </span>
     </div>
@@ -154,9 +154,9 @@ function TimerHeader({ lang = DEFAULT_LOCALE }) {
 
   switch (game.status) {
     case GameStatus.GAME_START:
-      return <span className="2xl:text-2xl">{GAME_START_COUNTDOWN_TEXT[lang]}</span>;
+      return <span className="text-xs sm:text-xs lg:text-base 2xl:text-xl">{GAME_START_COUNTDOWN_TEXT[lang]}</span>;
     case GameStatus.ROUND_START:
-      return <span className="2xl:text-2xl">{ROUND_START_COUNTDOWN_TEXT[lang]}</span>;
+      return <span className="text-xs sm:text-xs lg:text-base 2xl:text-xl">{ROUND_START_COUNTDOWN_TEXT[lang]}</span>;
     case GameStatus.QUESTION_END:
       return <QuestionEndTimerHeader lang={lang} />;
     default:
@@ -200,7 +200,7 @@ function QuestionEndTimerHeader({ lang }) {
   const isRoundOver = round.currentQuestionIdx === round.questions.length - 1;
 
   return (
-    <span className="2xl:text-2xl">
+    <span className="text-lg sm:text-xl lg:text-2xl 2xl:text-2xl">
       {isRoundOver ? QUESTION_END_COUNTDOWN_ROUND_END_TEXT[lang] : QUESTION_END_COUNTDOWN_NEXT_QUESTION_TEXT[lang]}
     </span>
   );

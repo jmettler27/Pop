@@ -28,7 +28,9 @@ import { Avatar, Badge, List, ListItemButton, ListItemIcon, ListItemText } from 
 import { clsx } from 'clsx';
 
 export default function MCQMainContent({ question }) {
-  const { title, note, choices } = question.details;
+  const title = question.title;
+  const note = question.note;
+  const choices = question.choices;
 
   // Randomize the order of the choices on the client side
   const randomMapping = useMemo(() => shuffleIndices(choices.length), [choices.length]);
@@ -36,7 +38,7 @@ export default function MCQMainContent({ question }) {
   return (
     <div className="h-full w-full flex flex-col items-center justify-center">
       <div className="h-[25%] w-full flex flex-row items-center justify-center space-x-1">
-        <h2 className="2xl:text-4xl font-bold">{title}</h2>
+        <h2 className="2xl:text-4xl font-bold">{question}</h2>
         {note && <NoteButton note={note} />}
       </div>
       <div className="h-[75%] w-full flex items-center justify-center">
@@ -114,7 +116,7 @@ function ActiveMCQChoices({ question, gameQuestion, randomization }) {
   const myRole = useRoleContext();
   const user = useUserContext();
 
-  const { choices } = question.details;
+  const choices = question.choices;
 
   const isChooser = myTeam === gameQuestion.teamId;
 
@@ -136,7 +138,7 @@ function ActiveMCQChoices({ question, gameQuestion, randomization }) {
           onClick={() => handleSelectChoice(origIdx)}
         >
           <ListItemText
-            primary={`${MCQQuestion.CHOICES[idx]}. ${question.details.choices[origIdx]}`}
+            primary={`${MCQQuestion.CHOICES[idx]}. ${choices[origIdx]}`}
             primaryTypographyProps={{
               className: '2xl:text-2xl',
             }}
@@ -151,9 +153,8 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 
 function EndedMCQChoices({ question, gameQuestion, randomization }) {
-  const {
-    details: { choices, answerIdx },
-  } = question;
+  const choices = question.choices;
+  const answerIdx = question.answerIdx;
   const { choiceIdx, correct, playerId } = gameQuestion;
 
   const isCorrectAnswer = (idx) => idx === answerIdx;

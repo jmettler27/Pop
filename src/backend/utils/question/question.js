@@ -12,6 +12,7 @@ import { GameReorderingQuestion } from '@/backend/models/questions/Reordering';
 import { GameOddOneOutQuestion } from '@/backend/models/questions/OddOneOut';
 import { GameEnumerationQuestion } from '@/backend/models/questions/Enumeration';
 import { GameBasicQuestion } from '@/backend/models/questions/Basic';
+import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
 export const DEFAULT_THINKING_TIME_SECONDS = {
   [QuestionType.PROGRESSIVE_CLUES]: GameProgressiveCluesQuestion.THINKING_TIME,
@@ -110,11 +111,10 @@ export const QUESTION_ELEMENT_TO_EMOJI = {
   note: '⚠️',
 };
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
 export function questionElementToTitle(element, lang = DEFAULT_LOCALE) {
   return QUESTION_ELEMENT_TO_TITLE[lang][element];
 }
+
 export function questionElementToEmoji(element) {
   return QUESTION_ELEMENT_TO_EMOJI[element];
 }

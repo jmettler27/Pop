@@ -87,7 +87,7 @@ export default function OrganizerSpeedDial() {
           <SpeedDialAction
             key={action.name}
             icon={action.icon}
-            tooltipTitle={action.name}
+            tooltipTitle={<span className="text-xs sm:text-sm 2xl:text-base">{action.name}</span>}
             tooltipPlacement="left"
             tooltipOpen
             onClick={(e) => handleClick(e, action.name)}

@@ -303,7 +303,7 @@ function EnumRoundRules({ round }) {
           ses réponses.{' '}
         </li>
       </ol>
-      <p className="2xl:text-2xl">Il y a alors deux issues possibles :</p>
+      <p className="text-xs sm:text-sm 2xl:text-base 2xl:text-xl">Il y a alors deux issues possibles :</p>
       <ul className="2xl:text-2xl list-disc pl-10">
         <li>
           Le pari est <span className="text-green-500 font-bold">réalisé</span>: l&apos;équipe remporte{' '}

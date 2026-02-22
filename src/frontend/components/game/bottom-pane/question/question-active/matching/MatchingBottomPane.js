@@ -168,7 +168,7 @@ function MatchingRunningOrder({ chooser, lang = DEFAULT_LOCALE }) {
 
   return (
     <div className="flex flex-col h-full w-full items-center justify-center">
-      <h2 className="2xl:text-xl 2xl:text-2xl font-bold">
+      <h2 className="2xl:text-2xl font-bold">
         👥 <span className="underline">{RUNNING_ORDER_TEXT[lang]}</span>
       </h2>
 

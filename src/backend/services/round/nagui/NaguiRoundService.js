@@ -4,14 +4,18 @@ import GameNaguiQuestionRepository from '@/backend/repositories/question/game/Ga
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { getNextCyclicIndex, shuffle } from '@/backend/utils/arrays';
-import { TimerStatus } from '@/backend/models/Timer';
-import { Timer } from '@/backend/models/Timer';
+import { Timer, TimerStatus } from '@/backend/models/Timer';
 import { HideNaguiOption } from '@/backend/models/questions/Nagui';
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question/question';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { PlayerStatus } from '@/backend/models/users/Player';
+import { RoundType } from '@/backend/models/rounds/RoundType';
 
 export default class NaguiRoundService extends RoundService {
+  constructor(gameId) {
+    super(gameId, RoundType.NAGUI);
+  }
+
   async handleRoundSelectedTransaction(transaction, roundId, userId) {
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     const chooser = await this.chooserRepo.getChooserTransaction(transaction, this.chooserId);
@@ -40,6 +44,7 @@ export default class NaguiRoundService extends RoundService {
     }
 
     await this.roundRepo.updateRoundTransaction(transaction, roundId, {
+      type: RoundType.NAGUI,
       dateStart: serverTimestamp(),
       order: newOrder,
       currentQuestionIdx: 0,

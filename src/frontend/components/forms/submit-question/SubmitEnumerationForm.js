@@ -149,7 +149,7 @@ export default function SubmitEnumerationQuestionForm({ userId, lang, ...props }
 
   const [submitEnumQuestion, isSubmitting] = useAsyncAction(async (values) => {
     try {
-      const { topic, lang, ...details } = values;
+      const { topic, lang, ...others } = values;
       const { picked, ...rest } = details;
       const questionId = await submitQuestion(
         {

@@ -47,7 +47,7 @@ export default function SubmitBlindtestQuestionForm({ userId, lang, ...props }) 
       }
       const image = getFileFromRef(imageFileRef);
 
-      const { audioFiles, imageFiles, topic, lang, ...details } = values;
+      const { audioFiles, imageFiles, topic, lang, ...others } = values;
       const { title, answer_title, answer_source, answer_author, subtype } = details;
       const questionId = await submitQuestion(
         {

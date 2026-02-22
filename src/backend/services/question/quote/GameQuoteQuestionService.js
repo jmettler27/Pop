@@ -6,7 +6,7 @@ import { firestore } from '@/backend/firebase/firebase';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { isObjectEmpty } from '@/backend/utils/objects';
 import GameBuzzerQuestionService from '@/backend/services/question/GameBuzzerQuestionService';
-import {TimerStatus} from "@/backend/models/Timer";
+import { TimerStatus } from '@/backend/models/Timer';
 
 export default class GameQuoteQuestionService extends GameBuzzerQuestionService {
   constructor(gameId, roundId) {
@@ -71,7 +71,6 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
     }
   }
 
-
   /* =============================================================================================================== */
 
   /**
@@ -86,20 +85,23 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
     }
 
     try {
-      await runTransaction(firestore, async (transaction) => await this.cancelPlayerTransaction(transaction, questionId, playerId));
+      await runTransaction(
+        firestore,
+        async (transaction) => await this.cancelPlayerTransaction(transaction, questionId, playerId)
+      );
     } catch (error) {
       console.error(
-          'Failed to cancel quote player',
-          'game',
-          this.gameId,
-          'round',
-          this.roundId,
-          'question',
-          questionId,
-          'player',
-          playerId,
-          'err',
-          error
+        'Failed to cancel quote player',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'player',
+        playerId,
+        'err',
+        error
       );
       throw error;
     }
@@ -112,15 +114,15 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
     // this.timerRepo.updateTimerStateTransaction(transaction, gameId, TimerStatus.RESET)
 
     console.log(
-        'Quote player canceled successfully cleared successfully',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'type',
-        this.questionType
+      'Quote player canceled successfully cleared successfully',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId,
+      'type',
+      this.questionType
     );
   }
 
@@ -327,5 +329,4 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
       throw error;
     }
   }
-
 }

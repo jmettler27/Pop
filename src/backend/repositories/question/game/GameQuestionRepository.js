@@ -2,9 +2,7 @@ import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 
 import QuestionFactory from '@/backend/models/questions/QuestionFactory';
 
-import { firestore } from '@/backend/firebase/firebase';
-
-import { runTransaction, serverTimestamp } from 'firebase/firestore';
+import { serverTimestamp } from 'firebase/firestore';
 
 export default class GameQuestionRepository extends FirebaseRepository {
   constructor(gameId, roundId, questionType) {
@@ -34,20 +32,21 @@ export default class GameQuestionRepository extends FirebaseRepository {
   }
 
   /**
-   * Create a game question
-   * @param {string} questionId - The ID of the question
-   * @param {string} managerId - The ID of the manager
-   * @param {Object} data - The data of the question
+   * Get all questions in the round
+   * @returns {Promise<GameQuestio[]>} The questions
    */
-  async createGameQuestion(questionId, managerId, data) {
-    try {
-      await runTransaction(firestore, async (transaction) => {
-        await this.createQuestionTransaction(transaction, this.questionType, questionId, managerId, data);
-      });
-    } catch (error) {
-      console.error('Failed to create the question:', error);
-      throw error;
-    }
+  async getAllQuestions() {
+    const data = await super.getAll();
+    return data.map((q) => QuestionFactory.createGameQuestion(q.type, q));
+  }
+
+  async resetQuestionTransaction(transaction, questionId) {
+    throw new Error('Not implemented');
+  }
+
+  async resetAllQuestionsTransaction(transaction) {
+    const questions = await this.getAllQuestions();
+    await Promise.all(questions.map((q) => this.resetQuestionTransaction(transaction, q.id)));
   }
 
   /**
@@ -73,17 +72,6 @@ export default class GameQuestionRepository extends FirebaseRepository {
     }
   }
 
-  async deleteQuestion(questionId) {
-    try {
-      await runTransaction(firestore, async (transaction) => {
-        await this.deleteQuestionTransaction(transaction, questionId);
-      });
-    } catch (error) {
-      console.error('Failed to delete the question:', error);
-      throw error;
-    }
-  }
-
   /**
    * Delete a game question within a transaction
    * @param {Transaction} transaction - The transaction
@@ -99,16 +87,6 @@ export default class GameQuestionRepository extends FirebaseRepository {
   }
 
   /**
-   * Update a game question
-   * @param {string} questionId - The ID of the question
-   * @param {Object} data - The data of the question
-   */
-  async updateQuestion(questionId, data) {
-    const updateData = await super.update(questionId, data);
-    return updateData ? QuestionFactory.createGameQuestion(this.questionType, updateData) : null;
-  }
-
-  /**
    * Update a game question transaction
    * @param {Transaction} transaction - The transaction
    * @param {string} questionId - The ID of the question
@@ -116,18 +94,9 @@ export default class GameQuestionRepository extends FirebaseRepository {
    */
   async updateQuestionTransaction(transaction, questionId, data) {
     const updateData = await super.updateTransaction(transaction, questionId, data);
+    console.log('UPDATE DATA: ', updateData);
+    console.log('QUESTION TYPE: ', this.questionType);
     return updateData ? QuestionFactory.createGameQuestion(this.questionType, updateData) : null;
-  }
-
-  /**
-   * Set a game question
-   * @param {string} questionId - The ID of the question
-   * @param {Object} data - The data of the question
-   * @returns {GameQuestion}
-   */
-  async setQuestion(data, questionId = null) {
-    const setData = await super.set(data, questionId);
-    return setData ? QuestionFactory.createGameQuestion(this.questionType, setData) : null;
   }
 
   /**

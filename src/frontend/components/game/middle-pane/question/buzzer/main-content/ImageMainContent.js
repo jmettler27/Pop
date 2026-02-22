@@ -7,10 +7,10 @@ import { Box } from '@mui/material';
 import NextImage from '@/frontend/components/game/NextImage';
 
 export default function ImageMainContent({ baseQuestion }) {
-  const {
-    image,
-    answer: { description, source },
-  } = baseQuestion.details;
+  const image = baseQuestion.image;
+  const answer = baseQuestion.answer;
+  const description = answer.description;
+  const source = answer.source;
 
   return (
     <Box className="flex flex-row h-full w-[90%] items-center justify-center space-x-8">

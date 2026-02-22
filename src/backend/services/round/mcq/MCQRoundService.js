@@ -1,16 +1,20 @@
-import { TimerStatus } from '@/backend/models/Timer';
+import { Timer, TimerStatus } from '@/backend/models/Timer';
 import RoundService from '@/backend/services/round/RoundService';
 import GameMCQQuestionRepository from '@/backend/repositories/question/game/GameMCQQuestionRepository';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import { serverTimestamp } from 'firebase/firestore';
-import { Timer } from '@/backend/models/Timer';
 import { getNextCyclicIndex, shuffle } from '@/backend/utils/arrays';
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question/question';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { RoundType } from '@/backend/models/rounds/RoundType';
 
 export default class MCQRoundService extends RoundService {
+  constructor(gameId) {
+    super(gameId, RoundType.MCQ);
+  }
+
   async handleRoundSelectedTransaction(transaction, roundId, userId) {
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     const chooser = await this.chooserRepo.getChooserTransaction(transaction, this.chooserId);
@@ -39,6 +43,7 @@ export default class MCQRoundService extends RoundService {
     }
 
     await this.roundRepo.updateRoundTransaction(transaction, roundId, {
+      type: RoundType.MCQ,
       dateStart: serverTimestamp(),
       order: newOrder,
       currentQuestionIdx: 0,

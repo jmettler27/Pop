@@ -69,7 +69,7 @@ export default function Page({ params, lang = DEFAULT_LOCALE }) {
   const [joinGame, isJoining] = useAsyncAction(async (values, user) => {
     try {
       const joinGameService = new JoinGameService(gameId);
-      await joinGameService.joinGame(values, user);
+      await joinGameService.joinGame(user.id, values);
       router.push(`/${gameId}`);
     } catch (error) {
       console.error('Failed to join the game:', error);
@@ -153,13 +153,18 @@ export default function Page({ params, lang = DEFAULT_LOCALE }) {
               })
               .min(Team.NAME_MIN_LENGTH, `Must be ${Team.NAME_MIN_LENGTH} characters or more!`)
               .max(Team.NAME_MAX_LENGTH, `Must be ${Team.NAME_MAX_LENGTH} characters or less!`),
-            teamColor: Yup.string()
-              .when(['playInTeams', 'joinTeam'], {
-                is: (playInTeams, joinTeam) => playInTeams && joinTeam,
-                then: (schema) => schema.required('Required.'),
-                otherwise: (schema) => schema.notRequired(),
-              })
-              .test('is-hex-color', 'Must be a valid hexadecimal color.', (value) => REGEX_HEX_COLOR.test(value)),
+            teamColor: Yup.string().when(['playInTeams', 'joinTeam'], {
+              is: (playInTeams, joinTeam) => !playInTeams || (playInTeams && !joinTeam),
+              then: (schema) =>
+                schema
+                  .required('Required.')
+                  .test(
+                    'is-hex-color',
+                    'Must be a valid hexadecimal color.',
+                    (value) => !value || REGEX_HEX_COLOR.test(value)
+                  ),
+              otherwise: (schema) => schema.notRequired(),
+            }),
           })}
         />
       </Wizard>

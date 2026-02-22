@@ -12,7 +12,6 @@ export default class ReadyRepository extends FirebaseDocumentRepository {
     return await super.setTransaction(transaction, { numPlayers: 0, numReady: 0 });
   }
 
-
   async resetReadyTransaction(transaction) {
     await this.updateTransaction(transaction, { numReady: 0 });
   }

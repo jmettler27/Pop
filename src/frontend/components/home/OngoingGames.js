@@ -11,8 +11,6 @@ import { useCollectionOnce } from 'react-firebase-hooks/firestore';
 
 import { DEFAULT_LOCALE, localeToEmoji } from '@/frontend/utils/locales';
 
-import { useGameRepositoriesContext } from '@/frontend/contexts';
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/card';
 import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from '@/frontend/components/home/GameAvatars';
 import GameErrorScreen from '@/frontend/components/game/GameErrorScreen';
@@ -25,6 +23,8 @@ import LoginIcon from '@mui/icons-material/Login';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import GroupIcon from '@mui/icons-material/Group';
+import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
+import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 
 export default function OngoingGames({ lang = DEFAULT_LOCALE }) {
   const [games, gamesLoading, gamesError] = useCollectionOnce(
@@ -96,7 +96,8 @@ const GameCard = ({ game, lang }) => {
   const { data: session } = useSession();
   const user = session.user;
 
-  const { organizerRepo, playerRepo } = useGameRepositoriesContext();
+  const organizerRepo = new OrganizerRepository(game.id);
+  const playerRepo = new PlayerRepository(game.id);
 
   const { organizers, loading: organizersLoading, error: organizersError } = organizerRepo.useAllOrganizersOnce();
   const { players, loading: playersLoading, error: playersError } = playerRepo.useAllPlayersOnce();
@@ -111,8 +112,8 @@ const GameCard = ({ game, lang }) => {
     return <GameErrorScreen />; // TODO: Change this
   }
 
-  const organizerIds = organizers.docs.map((doc) => doc.id);
-  const playerIds = players.docs.map((doc) => doc.id);
+  const organizerIds = organizers.map((doc) => doc.id);
+  const playerIds = players.map((doc) => doc.id);
 
   const isFull = playerIds.length >= game.maxPlayers;
 

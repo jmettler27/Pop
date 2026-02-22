@@ -95,7 +95,7 @@ export default function SubmitProgressiveCluesQuestionForm({ userId, lang, ...pr
 
   const [submitProgressiveCluesQuestion, isSubmitting] = useAsyncAction(async (values, fileRef) => {
     try {
-      const { files, topic, lang, ...details } = values;
+      const { files, topic, lang, ...others } = values;
       const { title, clues, answer_title } = details;
 
       // Get the file from the ref if it exists

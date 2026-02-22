@@ -36,7 +36,7 @@ export default function GameScoreboard({ roundScores, teams, lang = DEFAULT_LOCA
                 const teamData = teams.find((team) => team.id === teamId);
                 return (
                   <TableRow key={teamId}>
-                    <TableCell className="2xl:text-2xl" sx={{ color: teamData.color }}>
+                    <TableCell className="text-xs sm:text-sm 2xl:text-base 2xl:text-xl" sx={{ color: teamData.color }}>
                       {rankingDiffs && rankingDiffs[teamId] != null && (
                         <RankDifferenceIcon rankDiff={rankingDiffs[teamId]} />
                       )}{' '}

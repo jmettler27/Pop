@@ -67,7 +67,7 @@ export default function SubmitEmojiQuestionForm({ userId, lang, ...props }) {
     try {
       const image = getFileFromRef(fileRef);
 
-      const { topic, lang, ...details } = values;
+      const { topic, lang, ...others } = values;
       const { title, clue, answer_title } = details;
       const questionId = await submitQuestion(
         {

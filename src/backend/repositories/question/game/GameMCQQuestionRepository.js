@@ -14,7 +14,7 @@ export default class GameMCQQuestionRepository extends GameQuestionRepository {
   }
 
   async resetQuestionTransaction(transaction, questionId) {
-    return this.setQuestionTransaction(transaction, questionId, {
+    await this.setQuestionTransaction(transaction, questionId, {
       playerId: null,
       teamId: null,
       reward: null,

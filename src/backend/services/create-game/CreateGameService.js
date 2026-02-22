@@ -14,11 +14,7 @@ import SoundRepository from '@/backend/repositories/sound/SoundRepository';
  */
 export default class CreateGameService {
   /**
-   * Creates a new game
-   *
-   * @param {Object} data - The data of the game
-   *
-   * @returns {Promise<Object>} The game
+   * Creates a new CreateGameService instance
    */
   constructor() {
     this.gameRepo = new GameRepository();
@@ -35,16 +31,31 @@ export default class CreateGameService {
     if (!data) {
       throw new Error('Data is required');
     }
+    console.log('Creating game with data:', data);
 
     try {
-      await runTransaction(firestore, async (transaction) => {
+      return await runTransaction(firestore, async (transaction) => {
         const { title, type, lang, maxPlayers, roundScorePolicy, organizerName, organizerId, organizerImage } = data;
+        console.log('Creating game with data:', {
+          title,
+          type,
+          lang,
+          maxPlayers,
+          roundScorePolicy,
+          organizerName,
+          organizerId,
+          organizerImage,
+        });
 
         const game = await this.gameRepo.createGameTransaction(transaction, data);
         const gameId = game.id;
 
         const organizerRepo = new OrganizerRepository(gameId);
-        await organizerRepo.createOrganizerTransaction(transaction, organizerId, organizerName, organizerImage);
+        await organizerRepo.createOrganizerTransaction(transaction, {
+          id: organizerId,
+          name: organizerName,
+          image: organizerImage,
+        });
 
         const readyRepo = new ReadyRepository(gameId);
         await readyRepo.initializeReadyTransaction(transaction);

@@ -2,9 +2,7 @@ import { runTransaction } from 'firebase/firestore';
 import { firestore } from '@/backend/firebase/firebase';
 
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
-
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
-
 import { PlayerStatus } from '@/backend/models/users/Player';
 import { GameMatchingQuestion } from '@/backend/models/questions/Matching';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
@@ -23,10 +21,11 @@ export default class GameMatchingQuestionService extends GameQuestionService {
 
   async resetQuestionTransaction(transaction, questionId) {
     const chooser = await this.chooserRepo.resetChoosersTransaction(transaction);
+    if (chooser.teamId) {
+      await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, chooser.teamId, PlayerStatus.FOCUS);
+    }
     await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
 
-    await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, chooser.teamId, PlayerStatus.IDLE);
-    // await super.resetQuestionTransaction(transaction, questionId);
     console.log(
       'Matching question successfully reset',
       'game',

@@ -3,7 +3,7 @@ import { prependQuestionTypeWithEmoji } from '@/backend/models/questions/Questio
 
 export default function QuestionFormHeader({ questionType, lang = DEFAULT_LOCALE }) {
   return (
-    <h1>
+    <h1 className="text-lg sm:text-xl xl:text-3xl 2xl:text-4xl font-bold text-white mb-4 drop-shadow-lg">
       {SUBMIT_QUESTION_LABEL[lang]} ({prependQuestionTypeWithEmoji(questionType, lang)})
     </h1>
   );

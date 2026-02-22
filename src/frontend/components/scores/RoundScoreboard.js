@@ -89,7 +89,7 @@ export default function RoundScoreboard({ roundScores, teams, lang = DEFAULT_LOC
                 const hasLostPoints = item.reward < 0;
                 return (
                   <TableRow key={teamId}>
-                    <TableCell className="2xl:text-2xl" sx={{ color: teamData.color }}>
+                    <TableCell className="text-xs sm:text-sm 2xl:text-base 2xl:text-xl" sx={{ color: teamData.color }}>
                       {teamData.name}
                     </TableCell>
 

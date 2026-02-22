@@ -27,7 +27,10 @@ const SoundboardController = memo(function SoundboardController({}) {
   return (
     <>
       <FormControl sx={{ m: 1, minWidth: 150 }}>
-        <InputLabel id="soundboard-input-label" sx={{ color: 'inherit' }}>
+        <InputLabel
+          id="soundboard-input-label"
+          sx={{ color: 'inherit', fontSize: { xs: '0.875rem', sm: '1rem', md: '1.0625rem', xl: '1.125rem' } }}
+        >
           Soundboard
         </InputLabel>
 
@@ -40,6 +43,7 @@ const SoundboardController = memo(function SoundboardController({}) {
           autoWidth
           sx={{
             color: 'inherit',
+            fontSize: { xs: '0.875rem', sm: '1rem', md: '1.0625rem', xl: '1.125rem' },
             '& .MuiOutlinedInput-notchedOutline': {
               borderColor: 'inherit',
             },
@@ -53,7 +57,11 @@ const SoundboardController = memo(function SoundboardController({}) {
           }}
         >
           {Object.values(sounds).map((sound, idx) => (
-            <MenuItem key={idx} value={sound.name}>
+            <MenuItem
+              key={idx}
+              value={sound.name}
+              sx={{ fontSize: { xs: '0.875rem', sm: '1rem', md: '1.0625rem', xl: '1.125rem' } }}
+            >
               {sound.name}
             </MenuItem>
           ))}

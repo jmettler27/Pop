@@ -6,4 +6,11 @@ export default class GameBasicQuestionRepository extends GameQuestionRepository 
   constructor(gameId, roundId) {
     super(gameId, roundId, QuestionType.BASIC);
   }
+
+  async resetQuestionTransaction(transaction, questionId) {
+    return this.updateQuestionTransaction(transaction, questionId, {
+      teamId: null,
+      correct: null,
+    });
+  }
 }
