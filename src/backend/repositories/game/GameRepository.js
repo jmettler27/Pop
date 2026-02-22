@@ -42,15 +42,15 @@ export default class GameRepository extends FirebaseRepository {
   }
 
   async updateGame(gameId, data) {
-    return super.update(gameId, data);
+    await super.update(gameId, data);
   }
 
   async updateGameTransaction(transaction, gameId, data) {
-    return super.updateTransaction(transaction, gameId, data);
+    await super.updateTransaction(transaction, gameId, data);
   }
 
   async updateGameStatusTransaction(transaction, gameId, status) {
-    return super.updateTransaction(transaction, gameId, { status });
+    await super.updateTransaction(transaction, gameId, { status });
   }
 
   async getGame(gameId) {

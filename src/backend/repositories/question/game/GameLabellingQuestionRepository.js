@@ -32,7 +32,7 @@ export default class GameLabellingQuestionRepository extends GameQuestionReposit
   }
 
   async updateQuestionRevealedElementsTransaction(transaction, questionId, revealed) {
-    return await this.updateQuestionTransaction(transaction, questionId, {
+    await this.updateQuestionTransaction(transaction, questionId, {
       revealed,
     });
   }

@@ -11,11 +11,11 @@ export default class RoundScoreRepository extends FirebaseDocumentRepository {
   }
 
   async updateScoresTransaction(transaction, scores) {
-    return await this.updateTransaction(transaction, scores);
+    await this.updateTransaction(transaction, scores);
   }
 
   async initializeScoresTransaction(transaction) {
-    return await this.setTransaction(transaction, {
+    await this.setTransaction(transaction, {
       gameSortedTeams: [],
       rankingDiffs: {},
       roundSortedTeams: [],
@@ -25,7 +25,7 @@ export default class RoundScoreRepository extends FirebaseDocumentRepository {
   }
 
   async resetScores(initTeamRoundScores) {
-    return await this.update({
+    await this.update({
       scores: initTeamRoundScores,
       scoresProgress: {},
       teamsScoresSequences: {},
@@ -35,7 +35,7 @@ export default class RoundScoreRepository extends FirebaseDocumentRepository {
   }
 
   async resetScoresTransaction(transaction, initTeamRoundScores) {
-    return await this.updateTransaction(transaction, {
+    await this.updateTransaction(transaction, {
       scores: initTeamRoundScores,
       scoresProgress: {},
       teamsScoresSequences: {},

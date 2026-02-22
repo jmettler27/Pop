@@ -11,19 +11,19 @@ export default class GameScoreRepository extends FirebaseDocumentRepository {
   }
 
   async updateScoresTransaction(transaction, scores) {
-    return await this.updateTransaction(transaction, scores);
+    await this.updateTransaction(transaction, scores);
   }
 
   async setScores(scores) {
-    return await this.set(scores);
+    await this.set(scores);
   }
 
   async setScoresTransaction(transaction, scores) {
-    return await this.setTransaction(transaction, scores);
+    await this.setTransaction(transaction, scores);
   }
 
   async initializeScores() {
-    return await this.setScores({
+    await this.setScores({
       gameSortedTeams: [],
       scores: {},
       scoresProgress: {},
@@ -31,7 +31,7 @@ export default class GameScoreRepository extends FirebaseDocumentRepository {
   }
 
   async initializeScoresTransaction(transaction) {
-    return await this.setScoresTransaction(transaction, {
+    await this.setScoresTransaction(transaction, {
       gameSortedTeams: [],
       scores: {},
       scoresProgress: {},

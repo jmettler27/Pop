@@ -71,7 +71,7 @@ function ProgressiveCluesRoundRules({ round }) {
       <p className="2xl:text-2xl text-center">
         ⏳ Vous avez{' '}
         <u>
-          <strong>{ProgressiveCluesQuestion.THINKING_TIME} secondes</strong>
+          <strong>{round.thinkingTime} secondes</strong>
         </u>{' '}
         pour répondre, faute de quoi votre essai sera invalidé !
       </p>
@@ -107,7 +107,7 @@ function EmojiRoundRules({ round }) {
       <p className="2xl:text-2xl text-center">
         ⏳ Vous avez{' '}
         <u>
-          <strong>{EmojiQuestion.THINKING_TIME} secondes</strong>
+          <strong>{round.thinkingTime} secondes</strong>
         </u>{' '}
         pour répondre, faute de quoi votre essai sera invalidé !
       </p>
@@ -143,7 +143,7 @@ function ImageRoundRules({ round }) {
       <p className="2xl:text-2xl text-center">
         ⏳ Vous avez{' '}
         <u>
-          <strong>{ImageQuestion.THINKING_TIME} secondes</strong>
+          <strong>{round.thinkingTime} secondes</strong>
         </u>{' '}
         pour répondre, faute de quoi votre essai sera invalidé !
       </p>
@@ -179,7 +179,7 @@ function BlindtestRoundRules({ round }) {
       <p className="2xl:text-2xl text-center">
         ⏳ Vous avez{' '}
         <u>
-          <strong>{BlindtestQuestion.THINKING_TIME} secondes</strong>
+          <strong>{round.thinkingTime} secondes</strong>
         </u>{' '}
         pour répondre, faute de quoi votre essai sera invalidé !
       </p>
@@ -205,7 +205,7 @@ function QuoteRoundRules({ round }) {
       <p className="2xl:text-2xl text-center">
         ⏳ Vous avez{' '}
         <u>
-          <strong>{QuoteQuestion.THINKING_TIME} secondes</strong>
+          <strong>{round.thinkingTime} secondes</strong>
         </u>{' '}
         pour répondre, faute de quoi votre essai sera invalidé !
       </p>
@@ -234,7 +234,7 @@ function LabellingRoundRules({ round }) {
       <p className="2xl:text-2xl text-center">
         ⏳ Vous avez{' '}
         <u>
-          <strong>{LabellingQuestion.THINKING_TIME} secondes</strong>
+          <strong>{round.thinkingTime} secondes</strong>
         </u>{' '}
         pour répondre, faute de quoi votre essai sera invalidé !
       </p>
@@ -420,7 +420,7 @@ function BasicRoundRules({ round }) {
       <p className="2xl:text-2xl text-center">
         ⏳ Vous avez{' '}
         <u>
-          <strong>{BasicQuestion.THINKING_TIME} secondes</strong>
+          <strong>{round.thinkingTime} secondes</strong>
         </u>{' '}
         pour répondre, faute de quoi votre essai sera invalidé !
       </p>

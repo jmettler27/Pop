@@ -7,8 +7,4 @@ export default class ProgressiveCluesRoundService extends BuzzerRoundService {
 
     // this.baseQuestionRepo = new BaseProgressiveCluesQuestionRepository();
   }
-
-  async calculateMaxPointsTransaction(transaction, round) {
-    return round.questions.length * (round.rewardsPerQuestion + round.rewardsForBonus);
-  }
 }

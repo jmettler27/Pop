@@ -11,15 +11,15 @@ export default class ScoreRepository extends FirebaseDocumentRepository {
   }
 
   async updateScoresTransaction(transaction, scores) {
-    return await this.updateTransaction(transaction, scores);
+    await this.updateTransaction(transaction, scores);
   }
 
   async setScoresTransaction(transaction, scores) {
-    return await this.setTransaction(transaction, scores);
+    await this.setTransaction(transaction, scores);
   }
 
   async initializeScoresTransaction(transaction, data) {
-    return await this.setScoresTransaction(transaction, data);
+    await this.setScoresTransaction(transaction, data);
   }
 
   async increaseTeamScoreTransaction(transaction, roundId, teamId = null, points = 0) {

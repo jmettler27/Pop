@@ -516,7 +516,7 @@ export default class RoundService {
     //
     // await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon')
     //
-    // await this.gameRepo.updateGameTransaction(transaction, {
+    // await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
     //     currentRound: roundId,
     //     currentQuestion: null,
     //     status: GameStatus.ROUND_START

@@ -6,10 +6,6 @@ export default class BasicRoundService extends BuzzerRoundService {
     super(gameId, RoundType.BASIC);
   }
 
-  async calculateMaxPointsTransaction(transaction, round) {
-    return round.questions.length * (round.rewardsPerQuestion + round.rewardsForBonus);
-  }
-
   async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {
     const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     const playerIds = await this.playerRepo.getAllIdsTransaction(transaction);

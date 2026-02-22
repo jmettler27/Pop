@@ -52,7 +52,7 @@ export default class MatchingRoundService extends RoundService {
 
     await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon');
 
-    await this.gameRepo.updateGameTransaction(transaction, {
+    await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
       currentRound: roundId,
       currentQuestion: null,
       status: GameStatus.ROUND_START,
@@ -88,7 +88,7 @@ export default class MatchingRoundService extends RoundService {
   /* =============================================================================================================== */
 
   async calculateMaxPointsTransaction(transaction, round) {
-    return round.questions.length * (round.rewardsPerQuestion + round.rewardsForBonus);
+    return round.questions.length * round.rewardsPerQuestion;
   }
 
   async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {

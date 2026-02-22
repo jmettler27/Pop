@@ -8,7 +8,7 @@ export default class GameMCQQuestionRepository extends GameQuestionRepository {
   }
 
   async updateQuestionTeamTransaction(transaction, questionId, teamId) {
-    return await this.updateQuestionTransaction(transaction, questionId, {
+    await this.updateQuestionTransaction(transaction, questionId, {
       teamId: teamId,
     });
   }

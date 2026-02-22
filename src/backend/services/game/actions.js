@@ -1,6 +1,7 @@
 'use server';
 
 import GameService from '@/backend/services/game/GameService';
+import RoundServiceFactory from '@/backend/services/round/RoundServiceFactory';
 
 /**
  *
@@ -56,7 +57,7 @@ export const endGame = async (gameId) => {
 // ROUND MANAGEMENT ACTIONS
 // ==================================================================================================================
 
-export const handleRoundSelected = async (gameId, roundId, userId) => {
-  const service = new GameService(gameId);
-  return service.handleRoundSelected(roundId, userId);
+export const handleRoundSelected = async (gameId, roundId, userId, roundType) => {
+  const roundService = RoundServiceFactory.createService(roundType, gameId);
+  await roundService.handleRoundSelected(roundId, userId);
 };

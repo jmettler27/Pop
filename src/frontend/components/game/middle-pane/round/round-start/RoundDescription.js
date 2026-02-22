@@ -1,16 +1,7 @@
-import { BasicQuestion } from '@/backend/models/questions/Basic';
-import { BlindtestQuestion } from '@/backend/models/questions/Blindtest';
-import { EnumerationQuestion } from '@/backend/models/questions/Enumeration';
-import { LabellingQuestion } from '@/backend/models/questions/Labelling';
+import { BlindtestQuestion, BlindtestType } from '@/backend/models/questions/Blindtest';
 import { MatchingQuestion } from '@/backend/models/questions/Matching';
-import { MCQQuestion } from '@/backend/models/questions/MCQ';
 import { OddOneOutQuestion } from '@/backend/models/questions/OddOneOut';
-import {
-  QuoteQuestion,
-  QuotePartElement,
-  QuoteAuthorElement,
-  QuoteSourceElement,
-} from '@/backend/models/questions/Quote';
+import { QuoteAuthorElement, QuotePartElement, QuoteSourceElement } from '@/backend/models/questions/Quote';
 
 import { RoundType } from '@/backend/models/rounds/RoundType';
 
@@ -63,8 +54,8 @@ function BlindtestRoundDescription({}) {
   return (
     <>
       <p className="2xl:text-2xl text-center">
-        👂 Écoutez la musique ({BlindtestQuestion.typeToEmoji(BlindtestQuestion.TYPE_SONG)}) ou le son (
-        {BlindtestQuestion.typeToEmoji(BlindtestQuestion.TYPE_SOUND)}), et répondez à la question.
+        👂 Écoutez la musique ({BlindtestQuestion.typeToEmoji(BlindtestType.SONG)}) ou le son (
+        {BlindtestQuestion.typeToEmoji(BlindtestType.SOUND)}), et répondez à la question.
       </p>
       <br></br>
       <p className="2xl:text-2xl text-center">

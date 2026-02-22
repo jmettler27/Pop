@@ -28,7 +28,7 @@ export default class GameQuoteQuestionRepository extends GameBuzzerQuestionRepos
   }
 
   async updateQuestionRevealedElementsTransaction(transaction, questionId, revealed) {
-    return await this.updateQuestionTransaction(transaction, questionId, {
+    await this.updateQuestionTransaction(transaction, questionId, {
       revealed,
     });
   }

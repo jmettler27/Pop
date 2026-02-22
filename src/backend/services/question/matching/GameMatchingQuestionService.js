@@ -21,7 +21,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
 
   async resetQuestionTransaction(transaction, questionId) {
     const chooser = await this.chooserRepo.resetChoosersTransaction(transaction);
-    if (chooser.teamId) {
+    if (chooser && chooser.teamId) {
       await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, chooser.teamId, PlayerStatus.FOCUS);
     }
     await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);

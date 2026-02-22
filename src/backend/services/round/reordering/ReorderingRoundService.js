@@ -10,7 +10,7 @@ export default class ReorderingRoundService extends RoundService {
   }
 
   async calculateMaxPointsTransaction(transaction, round) {
-    return round.questions.length * (round.rewardsPerQuestion + round.rewardsForBonus);
+    return round.questions.length * round.rewardsPerQuestion;
   }
 
   async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {

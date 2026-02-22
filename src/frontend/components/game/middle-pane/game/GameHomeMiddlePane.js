@@ -1,5 +1,3 @@
-import { handleRoundSelected } from '@/backend/services/game/actions';
-
 import { UserRole } from '@/backend/models/users/User';
 
 import { timestampToHour } from '@/backend/utils/time';
@@ -15,6 +13,8 @@ import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 import { useParams } from 'next/navigation';
 
 import { Avatar, Divider, List, ListItemAvatar, ListItemButton, ListItemText } from '@mui/material';
+import { RoundType } from '@/backend/models/rounds/RoundType';
+import { handleRoundSelected } from '@/backend/services/game/actions';
 
 export default function GameHomeMiddlePane({}) {
   return (
@@ -41,8 +41,8 @@ function GameHomeRounds() {
   const myTeam = useTeamContext();
   const user = useUserContext();
 
-  const [handleSelect, isHandling] = useAsyncAction(async (roundId) => {
-    await handleRoundSelected(gameId, roundId, user.id);
+  const [handleSelect, isHandling] = useAsyncAction(async (roundId, roundType) => {
+    await handleRoundSelected(gameId, roundId, user.id, roundType);
   });
 
   const { roundRepo, chooserRepo } = useGameRepositoriesContext();
@@ -107,7 +107,7 @@ function GameHomeRounds() {
               <GameHomeRoundItem
                 round={round}
                 isDisabled={isHandling || roundIsDisabled(round.id)}
-                onSelectRound={() => handleSelect(round.id)}
+                onSelectRound={() => handleSelect(round.id, round.type)}
               />
               {idx < activeNonSpecialRounds.length - 1 && <Divider variant="inset" component="li" />}
             </div>
@@ -122,7 +122,7 @@ function GameHomeRounds() {
               <GameHomeRoundItem
                 round={round}
                 isDisabled={isHandling || roundIsDisabled(round.id)}
-                onSelectRound={() => handleSelect(round.id)}
+                onSelectRound={() => handleSelect(round.id.round.type)}
               />
               {idx < endedNonSpecialRounds.length - 1 && <Divider variant="inset" component="li" />}
             </div>
@@ -136,7 +136,7 @@ function GameHomeRounds() {
             key={specialRound.id}
             round={specialRound}
             isDisabled={isHandling || myRole !== UserRole.ORGANIZER}
-            onSelectRound={() => handleSelect(specialRound.id)}
+            onSelectRound={() => handleSelect(specialRound.id, RoundType.SPECIAL)}
           />
         )}
       </List>

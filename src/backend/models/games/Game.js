@@ -133,7 +133,7 @@ export class GameRounds extends Game {
     this.constructor.validate(data);
 
     this.rounds = data.rounds || [];
-    this.roundScorePolicy = createScorePolicy(data.roundScorePolicy);
+    this.roundScorePolicy = data.roundScorePolicy;
     this.currentRound = data.currentRound;
   }
 

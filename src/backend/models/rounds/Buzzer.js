@@ -11,6 +11,7 @@ export class BuzzerRound extends Round {
 
     this.rewardsPerQuestion = data.rewardsPerQuestion || BuzzerRound.REWARDS_PER_QUESTION;
     this.maxTries = data.maxTries || BuzzerRound.MAX_TRIES;
+    this.maxPoints = data.maxPoints || null;
     this.invalidateTeam = data.invalidateTeam || BuzzerRound.DEFAULT_INVALIDATE_TEAM;
     this.thinkingTime = data.thinkingTime || BuzzerRound.DEFAULT_THINKING_TIME;
   }
@@ -20,6 +21,7 @@ export class BuzzerRound extends Round {
       ...super.toObject(),
       rewardsPerQuestion: this.rewardsPerQuestion,
       maxTries: this.maxTries,
+      maxPoints: this.maxPoints,
       invalidateTeam: this.invalidateTeam,
       thinkingTime: this.thinkingTime,
     };

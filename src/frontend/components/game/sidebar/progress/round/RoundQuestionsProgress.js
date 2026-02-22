@@ -1,27 +1,25 @@
-import { QuestionType, questionTypeToEmoji, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
+import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { UserRole } from '@/backend/models/users/User';
 import { topicToEmoji } from '@/backend/models/Topic';
 import { BlindtestQuestion } from '@/backend/models/questions/Blindtest';
 
-import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { doc, collection } from 'firebase/firestore';
-import { useCollectionOnce, useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
-
 import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
-import { useRoleContext, useGameRepositoriesContext } from '@/frontend/contexts';
+import { useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
 
 import { QuestionCardContent } from '@/frontend/components/questions/QuestionCard';
 
 import { useParams } from 'next/navigation';
 
-import { useState, useEffect, memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 
-import { CircularProgress, Accordion, AccordionSummary, AccordionDetails, Typography, Divider } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, CircularProgress, Divider, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import clsx from 'clsx';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/game/GameQuestionRepositoryFactory';
+import BaseQuestionRepositoryFactory from '@/backend/repositories/question/base/BaseQuestionRepositoryFactory';
 
 export default function RoundQuestionsProgress({ game, round }) {
   const [expandedId, setExpandedId] = useState(game.currentQuestion);
@@ -111,15 +109,14 @@ export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({
   teams,
   players,
 }) {
-  console.log('RoundQuestionAccordion', questionId, order, expanded);
   const { id: gameId } = useParams();
   const myRole = useRoleContext();
 
-  const gameQuestionRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'questions', questionId);
-  const [gameQuestion, gameQuestionLoading, gameQuestionError] = useDocumentData(gameQuestionRef);
+  const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(roundType, gameId, roundId);
+  const baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(roundType);
 
-  const baseQuestionRef = doc(QUESTIONS_COLLECTION_REF, questionId);
-  const [baseQuestion, baseQuestionLoading, baseQuestionError] = useDocumentDataOnce(baseQuestionRef);
+  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(questionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = baseQuestionRepo.useQuestionOnce(questionId);
 
   if (gameQuestionError) {
     return (
@@ -227,7 +224,7 @@ export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({
       {showComplete && (
         <AccordionDetails>
           <QuestionTitle question={baseQuestion} />
-          <QuestionCardContent question={baseQuestion} />
+          <QuestionCardContent baseQuestion={baseQuestion} />
           <Divider className="my-2 bg-slate-600" />
           <QuestionWinner question={baseQuestion} winnerPlayer={winnerPlayer} winnerTeam={winnerTeam} game={game} />
         </AccordionDetails>

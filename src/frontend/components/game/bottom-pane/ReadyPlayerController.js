@@ -103,7 +103,7 @@ function ReadyPlayerHeader({ isLastQuestion, lang = DEFAULT_LOCALE }) {
 
   return (
     <span className="2xl:text-4xl">
-      {WAITING_FOR_PLAYERS_TEXT[lang]} ({numReady}/{numPlayers})
+      {WAITING_FOR_PLAYERS_TEXT[lang]} ({ready.numReady}/{ready.numPlayers})
     </span>
   );
 }

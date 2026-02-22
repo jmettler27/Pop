@@ -21,7 +21,9 @@ export default class BuzzerRoundService extends RoundService {
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
 
     // const { type: roundType, questions: questionIds, rewardsPerQuestion, rewardsForBonus, rewardsPerElement } = round
-    const { roundScorePolicy, currentRound, currentQuestion } = game;
+    const roundScorePolicy = game.roundScorePolicy;
+    const currentQuestion = game.currentQuestion;
+    const currentRound = game.currentRound;
 
     let prevOrder = -1;
     if (currentRound !== null) {
@@ -31,11 +33,13 @@ export default class BuzzerRoundService extends RoundService {
     const newOrder = prevOrder + 1;
 
     let maxPoints = null;
-    if (roundScorePolicy === ScorePolicyType.COMPLETION_RATE) {
+    if (roundScorePolicy == ScorePolicyType.COMPLETION_RATE) {
       maxPoints = await this.calculateMaxPointsTransaction(transaction, round);
+      console.log('Calculated max points', maxPoints);
     }
 
     if (round.dateStart && !round.dateEnd && currentQuestion) {
+      console.log('RETURNING EARLY - round already started');
       await this.gameRepo.updateGameStatusTransaction(transaction, this.gameId, GameStatus.QUESTION_ACTIVE);
       return;
     }
@@ -67,7 +71,7 @@ export default class BuzzerRoundService extends RoundService {
 
     await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon');
 
-    await this.gameRepo.updateGameTransaction(transaction, {
+    await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
       currentRound: roundId,
       currentQuestion: null,
       status: GameStatus.ROUND_START,
@@ -95,7 +99,7 @@ export default class BuzzerRoundService extends RoundService {
   /* =============================================================================================================== */
 
   async calculateMaxPointsTransaction(transaction, round) {
-    return round.questions.length * (round.rewardsPerQuestion + round.rewardsForBonus);
+    return round.questions.length * round.rewardsPerQuestion;
   }
 
   async prepareQuestionStartTransaction(transaction, roundId, questionId, questionOrder) {

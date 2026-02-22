@@ -16,40 +16,40 @@ export default class ChooserRepository extends FirebaseDocumentRepository {
   }
 
   async resetChoosersTransaction(transaction) {
-    return await this.updateTransaction(transaction, {
+    await this.updateTransaction(transaction, {
       chooserIdx: 0,
     });
   }
 
   async initializeChoosersTransaction(transaction, chooserOrder) {
-    return await this.setTransaction(transaction, {
+    await this.setTransaction(transaction, {
       chooserIdx: 0,
       chooserOrder,
     });
   }
 
   async updateChooser(data) {
-    return await this.update({
+    await this.update({
       chooserIdx: data.chooserIdx,
       chooserOrder: data.chooserOrder,
     });
   }
 
   async updateChooserTransaction(transaction, data) {
-    return await this.updateTransaction(transaction, {
+    await this.updateTransaction(transaction, {
       chooserIdx: data.chooserIdx,
       chooserOrder: data.chooserOrder,
     });
   }
 
   async updateChooserOrderTransaction(transaction, order) {
-    return await this.updateTransaction(transaction, {
+    await this.updateTransaction(transaction, {
       chooserOrder: order,
     });
   }
 
   async updateChooserIndexTransaction(transaction, chooserIdx) {
-    return await this.updateTransaction(transaction, {
+    await this.updateTransaction(transaction, {
       chooserIdx,
     });
   }

@@ -54,10 +54,6 @@ export default class SpecialRoundService extends RoundService {
     // }
   }
 
-  async calculateMaxPointsTransaction(transaction, round) {
-    return round.questions.length * (round.rewardsPerQuestion + round.rewardsForBonus);
-  }
-
   /* ==================================================================================================== */
 
   async startTheme(nextThemeId) {

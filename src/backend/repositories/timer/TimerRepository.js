@@ -10,7 +10,7 @@ export default class TimerRepository extends FirebaseDocumentRepository {
   }
 
   async createTimerState(organizerId) {
-    return await this.set({
+    await this.set({
       authorized: false,
       duration: Timer.READY_COUNTDOWN_SECONDS,
       forward: false,
@@ -19,8 +19,12 @@ export default class TimerRepository extends FirebaseDocumentRepository {
     });
   }
 
+  async updateTimerTransaction(transaction, data) {
+    return await super.updateTransaction(transaction, data);
+  }
+
   async initializeTimerTransaction(transaction, organizerId) {
-    return await super.setTransaction(transaction, {
+    await super.setTransaction(transaction, {
       authorized: false,
       duration: Timer.READY_COUNTDOWN_SECONDS,
       forward: false,
@@ -31,7 +35,7 @@ export default class TimerRepository extends FirebaseDocumentRepository {
   }
 
   async updateTimerStatusTransaction(transaction, status, duration = 30) {
-    return await this.updateTransaction(transaction, {
+    await this.updateTimerTransaction(transaction, {
       status,
       duration,
       timestamp: serverTimestamp(),
@@ -39,41 +43,41 @@ export default class TimerRepository extends FirebaseDocumentRepository {
   }
 
   async startTimerTransaction(transaction, duration = 30) {
-    return await this.updateTimerStatusTransaction(transaction, TimerStatus.START, duration);
+    await this.updateTimerStatusTransaction(transaction, TimerStatus.START, duration);
   }
 
   async pauseTimerTransaction(transaction) {
-    return await this.updateTimerStatusTransaction(transaction, TimerStatus.STOP);
+    await this.updateTimerStatusTransaction(transaction, TimerStatus.STOP);
   }
 
   async resetTimerTransaction(transaction, duration = 30) {
-    return await this.updateTimerStatusTransaction(transaction, TimerStatus.RESET, duration);
+    await this.updateTimerStatusTransaction(transaction, TimerStatus.RESET, duration);
   }
 
   async endTimerTransaction(transaction) {
-    return await this.updateTimerStatusTransaction(transaction, TimerStatus.END);
+    await this.updateTimerStatusTransaction(transaction, TimerStatus.END);
   }
 
   async setDuration(duration) {
-    return await this.update({
+    await this.update({
       duration,
     });
   }
 
   async setForward(forward) {
-    return await this.update({
+    await this.update({
       forward,
     });
   }
 
   async setAuthorized(authorized) {
-    return await this.update({
+    await this.update({
       authorized,
     });
   }
 
   async prepareTimerForReadyTransaction(transaction) {
-    return await this.updateTransaction(transaction, {
+    await this.updateTimerTransaction(transaction, {
       status: TimerStatus.RESET,
       duration: Timer.READY_COUNTDOWN_SECONDS,
       authorized: false,

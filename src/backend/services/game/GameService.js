@@ -74,10 +74,10 @@ export default class GameService {
 
         await this.chooserRepo.initializeChoosersTransaction(transaction, shuffledTeamIds);
 
-        await this.gameScoreRepo.initializeScoresTransaction(transaction, {
-          scores: initTeamGameScores,
-          scoresProgress: initTeamGameScoresProgress,
-        });
+        // await this.gameScoreRepo.initializeScoresTransaction(transaction, {
+        //   scores: initTeamGameScores,
+        //   scoresProgress: initTeamGameScoresProgress,
+        // });
 
         await this.readyRepo.updateReadyTransaction(transaction, {
           numReady: 0,

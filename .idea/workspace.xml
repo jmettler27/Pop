@@ -5,17 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cf58b025-0e55-4f29-9bc5-400203734f55" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/sound/SoundRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/sound/SoundRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/user/PlayerRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/user/PlayerRepository.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/repositories/user/ReadyRepository.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/repositories/user/ReadyRepository.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/backend/services/game/GameService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/game/GameService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/round/matching/MatchingRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/matching/MatchingRoundService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/round/mcq/MCQRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/mcq/MCQRoundService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/round/nagui/NaguiRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/nagui/NaguiRoundService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/services/round/odd-one-out/OddOneOutRoundService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/services/round/odd-one-out/OddOneOutRoundService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/GameChooserTeamAnnouncement.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/GameChooserTeamAnnouncement.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/game/GameHomeMiddlePane.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/game/GameHomeMiddlePane.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/bottom-pane/ReadyPlayerController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/bottom-pane/ReadyPlayerController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/round/round-start/RoundDescription.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/components/game/middle-pane/round/round-start/RoundDescription.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,7 +115,7 @@
       <workItem from="1771759312757" duration="7544000" />
       <workItem from="1771775486265" duration="45000" />
       <workItem from="1771775589920" duration="456000" />
-      <workItem from="1771776309767" duration="7436000" />
+      <workItem from="1771776309767" duration="12471000" />
     </task>
     <servers />
   </component>
@@ -142,6 +134,12 @@
           <url>file://$PROJECT_DIR$/src/backend/repositories/game/GameRepository.js</url>
           <line>28</line>
           <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/frontend/components/game/GameChooserTeamAnnouncement.js</url>
+          <line>91</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
