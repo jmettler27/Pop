@@ -66,6 +66,7 @@ export default function PlayerName({ playerId, teamColor = true }) {
 }
 
 export function WinnerName({ playerId, teamId }) {
+  console.log('WinnerName - playerId:', playerId, 'teamId:', teamId);
   const myRole = useRoleContext();
 
   const { playerRepo, teamRepo } = useGameRepositoriesContext();

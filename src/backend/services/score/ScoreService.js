@@ -41,7 +41,7 @@ export default class ScoreService {
 
     try {
       await runTransaction(firestore, (transaction) =>
-        this.increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, points)
+        this.increaseTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, points)
       );
     } catch (error) {
       console.error('Error increasing team score:', error);
@@ -49,7 +49,7 @@ export default class ScoreService {
     }
   }
 
-  // async increaseRoundTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, points) {
+  // async increaseTeamScoreTransaction(transaction, gameId, roundId, questionId, teamId, points) {
   //   const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores');
   //   const roundScoresData = await getDocDataTransaction(transaction, roundScoresRef);
   //

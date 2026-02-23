@@ -73,7 +73,7 @@ export default class GameQuoteQuestionRepository extends GameBuzzerQuestionRepos
   }
 
   // React hooks
-  usePlayers(questionId) {
+  useQuestionPlayers(questionId) {
     const { data, loading, error } = this.useDocument([questionId, ...GameQuoteQuestionRepository.QUOTE_PLAYERS_PATH]);
     return {
       // players: data ? data.map(p => new Player(p)) : [],

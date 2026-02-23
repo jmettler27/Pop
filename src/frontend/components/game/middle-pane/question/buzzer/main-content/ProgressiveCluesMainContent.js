@@ -1,12 +1,12 @@
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
 import { useGameContext } from '@/frontend/contexts';
-import GameQuestionRepository from '@/backend/repositories/question/game/GameQuestionRepository';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import NextImage from '@/frontend/components/game/NextImage';
 import { Box } from '@mui/material';
 import { clsx } from 'clsx';
+import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/game/GameProgressiveCluesQuestionRepository';
 
 export default function ProgressiveCluesMainContent({ baseQuestion, showComplete }) {
   const game = useGameContext();
@@ -24,7 +24,7 @@ export default function ProgressiveCluesMainContent({ baseQuestion, showComplete
 function ProgressiveClues({ baseQuestion, showComplete }) {
   const game = useGameContext();
 
-  const gameQuestionRepo = new GameQuestionRepository(game.id, game.currentRound);
+  const gameQuestionRepo = new GameProgressiveCluesQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
   if (gameQuestionError) {

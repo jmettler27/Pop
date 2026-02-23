@@ -10,19 +10,20 @@ export default function ActiveMatchingQuestionGrid({ answer, nodePositions, numC
 
   const colIndices = range(numCols - 1); // [0] or [0, 1]
 
+  console.log('ActiveMatchingQuestionGrid', answer, nodePositions, colIndices, numCols);
   return (
     <svg viewBox="0 0 100 100" width="100%" height="100%">
       {/* Draw nodes */}
       {/* Draw user provided edges */}
       <ActiveMatches answer={answer} nodePositions={nodePositions} numCols={numCols} />
 
-      {/* Draw the matches that were correctly found by users */}
+      {/* Draw the matches that users correctly found */}
       <CorrectMatches nodePositions={nodePositions} colIndices={colIndices} />
 
-      {/* Draw the matches that were incorrectly found by users */}
+      {/* Draw the matches that users incorrectly found */}
       <IncorrectMatches nodePositions={nodePositions} colIndices={colIndices} />
 
-      {/* Draw the matches that were partially found by users */}
+      {/* Draw the matches that users partially found */}
       <PartiallyCorrectMatches nodePositions={nodePositions} />
     </svg>
   );

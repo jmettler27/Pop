@@ -3,7 +3,7 @@ import { QuestionTypeIcon } from '@/backend/utils/question_types';
 import { topicToEmoji } from '@/backend/models/Topic';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { UserRole } from '@/backend/models/users/User';
-import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
+import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 
 import { useGameContext, useRoleContext } from '@/frontend/contexts';
 
@@ -52,22 +52,6 @@ function BuzzerQuestionHeader({ baseQuestion }) {
       <div className="flex flex-row items-center justify-center space-x-1">
         <h2 className="2xl:text-5xl">{baseQuestion.title}</h2>
       </div>
-    </div>
-  );
-
-  return (
-    <div className="flex flex-col items-center justify-center space-y-2">
-      <div className="flex flex-row items-center justify-center space-x-1">
-        <QuestionTypeIcon questionType={baseQuestion.type} fontSize={50} />
-        <h1 className="2xl:text-5xl">
-          {baseQuestion.type === 'blindtest' && BlindtestQuestion.typeToEmoji(baseQuestion.subtype)}
-          {topicToEmoji(baseQuestion.topic)}{' '}
-          <strong>
-            {QuestionType.typeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
-          </strong>
-        </h1>
-      </div>
-      <h2 className="2xl:text-4xl">{baseQuestion.title}</h2>
     </div>
   );
 }

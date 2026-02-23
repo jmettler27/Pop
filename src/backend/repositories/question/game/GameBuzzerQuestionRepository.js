@@ -13,11 +13,7 @@ export default class GameBuzzerQuestionRepository extends GameQuestionRepository
 
   // Firestore operations
   async getPlayersTransaction(transaction, questionId) {
-    const data = await this.getTransaction(transaction, [
-      questionId,
-      ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH,
-    ]);
-    return data ? data.map((p) => new Player(p)) : [];
+    return await this.getTransaction(transaction, [questionId, ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH]);
   }
 
   async resetQuestionTransaction(transaction, questionId) {
@@ -47,6 +43,7 @@ export default class GameBuzzerQuestionRepository extends GameQuestionRepository
   }
 
   async updatePlayersTransaction(transaction, questionId, players) {
+    console.log('Updating players for question', questionId, 'with players', players);
     await this.updateTransaction(
       transaction,
       [questionId, ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH],
@@ -91,13 +88,13 @@ export default class GameBuzzerQuestionRepository extends GameQuestionRepository
   }
 
   // React hooks
-  usePlayers(questionId) {
+  useQuestionPlayers(questionId) {
     const { data, loading, error } = this.useDocument([
       questionId,
       ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH,
     ]);
     return {
-      players: data,
+      questionPlayers: data,
       loading,
       error,
     };

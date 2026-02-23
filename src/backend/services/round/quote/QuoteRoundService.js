@@ -15,7 +15,7 @@ export default class QuoteRoundService extends RoundService {
   async handleRoundSelectedTransaction(transaction, roundId, userId) {
     const playerIds = await this.playerRepo.getAllPlayerIds();
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
-    const chooser = await this.chooserRepo.getChooserTransaction(transaction, this.chooserId);
+    const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
 
     // const { type: roundType, questions: questionIds, rewardsPerQuestion, rewardsForBonus, rewardsPerElement } = round
@@ -75,18 +75,22 @@ export default class QuoteRoundService extends RoundService {
     console.log('Round successfully started', 'game', this.gameId, 'round', roundId);
   }
 
+  async moveToNextQuestionTransaction(transaction, roundId, questionOrder) {}
+
   /* =============================================================================================================== */
 
   async calculateMaxPointsTransaction(transaction, round) {
     const questions = await Promise.all(
-      round.questions.map((id) => this.questionRepo.getQuestionTransaction(transaction, id))
+      round.questions.map((id) => this.baseQuestionRepo.getQuestionTransaction(transaction, id))
     );
+    console.log('questions', questions);
 
     const totalNumElements = questions.reduce((acc, baseQuestion) => {
       const toGuess = baseQuestion.toGuess;
       const quoteParts = baseQuestion.quoteParts;
       return acc + toGuess.length + (toGuess.includes('quote') ? quoteParts.length - 1 : 0);
     }, 0);
+    console.log('totalNumElements', totalNumElements);
 
     return totalNumElements * round.rewardsPerElement;
   }

@@ -1,5 +1,4 @@
 import { UserRole } from '@/backend/models/users/User';
-import GameQuestionRepository from '@/backend/repositories/question/game/GameQuestionRepository';
 
 import { useGameContext, useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
 import GameChooserOrder from '@/frontend/components/game/GameChooserOrder';
@@ -7,6 +6,7 @@ import { GameChooserHelperText } from '@/frontend/components/game/GameChooserTea
 import BasicQuestionOrganizerController from '@/frontend/components/game/bottom-pane/question/question-active/basic/BasicQuestionOrganizerController';
 
 import { CircularProgress } from '@mui/material';
+import GameBasicQuestionRepository from '@/backend/repositories/question/game/GameBasicQuestionRepository';
 
 export default function BasicQuestionBottomPane({}) {
   const { chooserRepo } = useGameRepositoriesContext();
@@ -41,7 +41,7 @@ function BasicQuestionController({}) {
   const game = useGameContext();
   const myRole = useRoleContext();
 
-  const gameQuestionRepo = new GameQuestionRepository(game.id, game.currentRound);
+  const gameQuestionRepo = new GameBasicQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useDocument(game.currentQuestion);
 
   if (gameQuestionError) {

@@ -63,7 +63,7 @@ export default class GameLabellingQuestionRepository extends GameQuestionReposit
   }
 
   // React hooks
-  usePlayers(questionId) {
+  useQuestionPlayers(questionId) {
     const { data, loading, error } = this.useDocument([
       questionId,
       ...GameLabellingQuestionRepository.LABELLING_PLAYERS_PATH,

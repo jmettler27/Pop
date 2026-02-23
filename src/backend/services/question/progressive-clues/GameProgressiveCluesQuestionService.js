@@ -23,7 +23,7 @@ export default class GameProgressiveCluesQuestionService extends GameBuzzerQuest
         const { buzzed, canceled } = players;
 
         const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
-        const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
+        const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
 
         // If there is a buzzed player, update his status to idle
         if (buzzed && buzzed.length > 0) {

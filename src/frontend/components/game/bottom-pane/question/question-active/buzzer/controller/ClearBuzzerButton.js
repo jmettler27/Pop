@@ -1,10 +1,4 @@
-import { clearBuzzer as clearBlindtestBuzzer } from '@/backend/services/question/blindtest/actions';
-import { clearBuzzer as clearEmojiBuzzer } from '@/backend/services/question/emoji/actions';
-import { clearBuzzer as clearImageBuzzer } from '@/backend/services/question/image/actions';
-import { clearBuzzer as clearProgressiveCluesBuzzer } from '@/backend/services/question/progressive-clues/actions';
-
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-
+import { clearBuzzer } from '@/backend/services/question/buzzer/actions';
 import { useGameContext } from '@/frontend/contexts';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
@@ -24,24 +18,8 @@ import ClearAllIcon from '@mui/icons-material/ClearAll';
 export default function ClearBuzzerButton({ lang = DEFAULT_LOCALE, questionType }) {
   const game = useGameContext();
 
-  const getClearBuzzerAction = () => {
-    switch (questionType) {
-      case QuestionType.BLINDTEST:
-        return clearBlindtestBuzzer;
-      case QuestionType.EMOJI:
-        return clearEmojiBuzzer;
-      case QuestionType.IMAGE:
-        return clearImageBuzzer;
-      case QuestionType.PROGRESSIVE_CLUES:
-        return clearProgressiveCluesBuzzer;
-    }
-
-    throw new Error(`Unsupported question type: ${questionType}`);
-  };
-
   const [handleClick, isClearing] = useAsyncAction(async () => {
-    const clearBuzzerAction = getClearBuzzerAction();
-    await clearBuzzerAction(game.id, game.currentRound, game.currentQuestion);
+    await clearBuzzer(game.currentQuestionType, game.id, game.currentRound, game.currentQuestion);
   });
 
   return (

@@ -25,8 +25,8 @@ export default class GameOddOneOutQuestionRepository extends GameQuestionReposit
     return data;
   }
 
-  usePlayers(questionId) {
-    const { data, loading, error } = super.usePlayers(questionId);
+  useQuestionPlayers(questionId) {
+    const { data, loading, error } = super.useQuestionPlayers(questionId);
     return {
       // players: data ? data.map(p => new Player(p)) : [],
       data,

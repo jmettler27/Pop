@@ -77,7 +77,7 @@ export default class GameEnumerationQuestionRepository extends GameQuestionRepos
   }
 
   // React hooks
-  usePlayers(questionId) {
+  useQuestionPlayers(questionId) {
     const { data, loading, error } = this.useDocument([
       questionId,
       ...GameEnumerationQuestionRepository.ENUMERATION_PLAYERS_PATH,

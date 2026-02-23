@@ -82,7 +82,7 @@ export default class PlayerRepository extends FirebaseRepository {
   }
 
   async updateAllPlayersStatus(status, playerIds) {
-    const batch = writeBatch(firestore); // 👈 standalone function
+    const batch = writeBatch(firestore);
     playerIds.forEach((id) => batch.update(doc(this.collectionRef, id), { status }));
     await batch.commit();
   }
@@ -104,6 +104,15 @@ export default class PlayerRepository extends FirebaseRepository {
     for (const p of players) {
       await this.updatePlayerTransaction(transaction, p.id, { status });
     }
+  }
+
+  async updateTeamPlayersStatus(teamId, status) {
+    const players = await this.getPlayersByTeamId(teamId);
+    const batch = writeBatch(firestore);
+    for (const player of players) {
+      batch.update(doc(this.collectionRef, player.id), { status });
+    }
+    await batch.commit();
   }
 
   async updateTeamAndOtherTeamsPlayersStatus(teamId, teamStatus, otherTeamsStatus) {

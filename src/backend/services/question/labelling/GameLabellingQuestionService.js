@@ -66,7 +66,7 @@ export default class GameLabellingQuestionService extends GameQuestionService {
       await runTransaction(firestore, async (transaction) => {
         const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
         const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
-        const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
+        const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
         const questionPlayers = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
 
         const playerId = questionPlayers.buzzed[0] || null;
@@ -80,11 +80,7 @@ export default class GameLabellingQuestionService extends GameQuestionService {
         /* Update the winner team scores */
         if (playerId) {
           const player = await this.playerRepo.getPlayerTransaction(transaction, playerId);
-          await this.roundScoreRepo.increaseRoundTeamScoreTransaction(
-            transaction,
-            player.teamId,
-            round.rewardsPerElement
-          );
+          await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, player.teamId, round.rewardsPerElement);
           await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.CORRECT);
         }
 
@@ -127,7 +123,7 @@ export default class GameLabellingQuestionService extends GameQuestionService {
       await runTransaction(firestore, async (transaction) => {
         const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
         const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
-        const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
+        const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
         const player = await this.playerRepo.getPlayerTransaction(transaction, playerId);
 
         const newRevealed = gameQuestion.revealed;
@@ -139,7 +135,7 @@ export default class GameLabellingQuestionService extends GameQuestionService {
         /* Update the winner team scores */
         const multiplier = baseQuestion.labels.length;
         const points = round.rewardsPerElement * multiplier;
-        await this.roundScoreRepo.increaseRoundTeamScoreTransaction(transaction, player.teamId, points);
+        await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, player.teamId, points);
 
         await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.CORRECT);
 

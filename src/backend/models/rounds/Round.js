@@ -42,7 +42,7 @@ export class Round {
 
     this.order = data.order || null;
     this.questions = data.questions || [];
-    this.currentQuestionIdx = this.questions.length > 0 ? 0 : null;
+    this.currentQuestionIdx = data.currentQuestionIdx;
 
     if (data.scorePolicy === ScorePolicyType.RANKING) {
       this.rewards = data.rewards;

@@ -148,7 +148,7 @@ export default class GameQuestionService {
   }
 
   /* ==================================================================================================== */
-  // export const increaseRoundTeamScoreTransaction = async (
+  // export const increaseTeamScoreTransaction = async (
   //     transaction,
   //     gameId,
   //     roundId,

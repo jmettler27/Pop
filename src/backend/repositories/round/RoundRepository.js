@@ -39,7 +39,12 @@ export default class RoundRepository extends FirebaseRepository {
     return data.map((r) => RoundFactory.createRound(r.type, r));
   }
 
-  async getRoundsTransaction(transaction, queryOptions) {
+  async getRounds(queryOptions = {}) {
+    const data = await super.getByQuery(queryOptions);
+    return data.map((r) => RoundFactory.createRound(r.type, r));
+  }
+
+  async getRoundsTransaction(transaction, queryOptions = {}) {
     const data = await super.getByQueryTransaction(transaction, queryOptions);
     return data.map((r) => RoundFactory.createRound(r.type, r));
   }
@@ -103,6 +108,12 @@ export default class RoundRepository extends FirebaseRepository {
   async startRoundTransaction(transaction, roundId) {
     await this.updateRoundTransaction(transaction, roundId, {
       dateStart: serverTimestamp(),
+    });
+  }
+
+  async endRoundTransaction(transaction, roundId) {
+    await this.updateRoundTransaction(transaction, roundId, {
+      dateEnd: serverTimestamp(),
     });
   }
 
@@ -180,7 +191,7 @@ export default class RoundRepository extends FirebaseRepository {
     };
   }
 
-  useRoundsOnce(queryOptions = {}) {
+  useAllRoundsOnce(queryOptions = {}) {
     const { data, loading, error } = super.useCollectionOnce(queryOptions);
     return {
       rounds: data.map((r) => RoundFactory.createRound(r.type, r)),

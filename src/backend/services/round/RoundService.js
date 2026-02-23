@@ -73,32 +73,12 @@ export default class RoundService {
     return Object.fromEntries(teams.map((t) => [t.id, 0]));
   }
 
-  // async resetRoundTransaction(transaction, roundId) {
-  //   const gameQuestionService = GameQuestionServiceFactory.createService(this.roundType, this.gameId, roundId);
-  //   const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(this.roundType, this.gameId, roundId);
-  //   const roundScoreRepo = new RoundScoreRepository(this.gameId, roundId);
-  //
-  //   const questions = await gameQuestionRepo.getAllQuestions();
-  //   const initTeamRoundScores = await this.getInitTeamScores();
-  //
-  //   for (const question of questions) {
-  //     await gameQuestionService.resetQuestionTransaction(transaction, question.id);
-  //   }
-  //   await roundScoreRepo.resetScoresTransaction(transaction, initTeamRoundScores);
-  //   await this.roundRepo.resetRoundTransaction(transaction, roundId, this.roundType);
-  // }
-  //
-  // async getInitTeamScores() {
-  //   const teams = await this.teamRepo.getAllTeams();
-  //   return Object.fromEntries(teams.map((t) => [t.id, 0]));
-  // }
-
   /**
    * round_start -> question_active
    */
-  async startRound() {
+  async startRound(roundId) {
     try {
-      await runTransaction(firestore, (transaction) => startRoundTransaction(transaction));
+      await runTransaction(firestore, (transaction) => this.startRoundTransaction(transaction, roundId));
     } catch (error) {
       console.error('Error starting round:', error);
       throw error;
@@ -140,7 +120,6 @@ export default class RoundService {
   async handleQuestionEndTransaction(transaction, roundId, questionId) {
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     const isRoundOver = round.currentQuestionIdx === round.questions.length - 1;
-    console.log('Handling question end for round', roundId, 'question', questionId, 'isRoundOver', isRoundOver);
 
     isRoundOver
       ? await this.endRoundTransaction(transaction, roundId)
@@ -169,11 +148,14 @@ export default class RoundService {
   }
 
   async endRoundTransaction(transaction, roundId) {
-    const game = await this.gameRepo.getGame(this.gameId);
-    const round = await this.roundRepo.getRound(roundId);
+    const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(this.roundType, this.gameId, roundId);
+    const roundScoreRepo = new RoundScoreRepository(this.gameId, roundId);
 
-    const gameScoresData = await this.gameScoreRepo.getScores(this.gameId);
-    const roundScoresData = await this.roundScoreRepo.getScores(roundId);
+    const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
+    const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
+
+    const gameScoresData = await this.gameScoreRepo.getScoresTransaction(transaction, this.gameId);
+    const roundScoresData = await roundScoreRepo.getScoresTransaction(transaction, roundId);
 
     const roundScorePolicy = game.roundScorePolicy;
 
@@ -206,7 +188,7 @@ export default class RoundService {
     /* ================================ Update the global scores of each team according to their performance in this round ================================ */
     if (roundScorePolicy === ScorePolicyType.COMPLETION_RATE) {
       const gameQuestions = await Promise.all(
-        questionIds.map((id) => this.gameQuestionRepo.getGameQuestionTransaction(transaction, id))
+        questionIds.map((id) => gameQuestionRepo.getQuestionTransaction(transaction, id))
       );
 
       // Score policy: calculate the "completion rate" of each team w.r.t. the maximum number of points of the round
@@ -358,14 +340,24 @@ export default class RoundService {
     // This element is useful only for visualization purposes in the summary shown at the end of the round
     let rankingDiffs = null;
     if (round.order > 0) {
-      const prevRound = await this.roundRepo.getRoundsTransaction({
+      const prevRounds = await this.roundRepo.getRounds({
         where: {
           field: 'order',
           operator: '==',
           value: round.order - 1,
         },
         limit: 1,
-      })[0];
+      });
+      if (prevRounds.length === 0) {
+        throw new Error('Previous round not found');
+      }
+      const prevRound = prevRounds[0];
+
+      if (!prevRound) {
+        throw new Error('Previous round not found');
+      }
+      console.log('prevRound', prevRound);
+
       const prevRoundScoreRepo = new RoundScoreRepository(this.gameId, prevRound.id);
       const prevRoundScores = await prevRoundScoreRepo.getScoresTransaction(transaction);
 
@@ -373,7 +365,7 @@ export default class RoundService {
     }
 
     /* =================================== WRITES =================================== */
-    await this.roundScoreRepo.updateScoresTransaction(transaction, {
+    await roundScoreRepo.updateScoresTransaction(transaction, {
       roundSortedTeams,
       gameSortedTeams,
       rankingDiffs,
@@ -387,10 +379,10 @@ export default class RoundService {
     });
 
     // If the round is not the last one, update the running order of teams for the next round
-    if (round.order < gameData.rounds.length - 1) {
+    if (round.order < game.rounds.length - 1) {
       // The first team in the running order - the "chooser" team - chooses the next round, hence the status 'focus'
       // All other teams are set to 'idle'
-      const playersCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'players');
+      const playersCollectionRef = collection(GAMES_COLLECTION_REF, this.gameId, 'players');
       for (const [idx, teamId] of newChooserOrder.entries()) {
         const playersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)));
         for (const playerDoc of playersSnapshot.docs) {
@@ -406,14 +398,14 @@ export default class RoundService {
         chooserOrder: newChooserOrder,
       });
     } else {
-      await this.gameScoreRepo.updateGameScoresTransaction(transaction, {
+      await this.gameScoreRepo.updateScoresTransaction(transaction, {
         gameSortedTeams,
       });
     }
 
     await this.readyRepo.resetReadyTransaction(transaction);
-    await this.roundRepo.startRoundTransaction(transaction, roundId);
-    await this.gameRepo.updateGameStatusTransaction(transaction, GameStatus.ROUND_END);
+    await this.roundRepo.endRoundTransaction(transaction, roundId);
+    await this.gameRepo.updateGameStatusTransaction(transaction, this.gameId, GameStatus.ROUND_END);
     await this.soundRepo.addSoundTransaction(transaction, 'level-passed');
     await this.timerRepo.resetTimerTransaction(transaction);
   }
@@ -443,87 +435,6 @@ export default class RoundService {
 
   async handleRoundSelectedTransaction(transaction, roundId, userId) {
     throw new Error('Not implemented');
-    // const round = await this.roundRepo.getRoundTransaction(transaction, roundId)
-    // const chooser = await this.chooserRepo.getChooserTransaction(transaction, this.chooserId)
-    // const game = await this.gameRepo.getGameTransaction(transaction, this.gameId)
-    //
-    // const { type: roundType, questions: questionIds, rewardsPerQuestion, rewardsForBonus, rewardsPerElement } = round
-    // const { roundScorePolicy, currentRound, currentQuestion } = game
-    //
-    //
-    // let prevOrder = -1
-    // if (currentRound !== null) {
-    //     const prevRound = await this.roundRepo.getRoundTransaction(transaction, currentRound)
-    //     prevOrder = prevRound.order
-    // }
-    // const newOrder = prevOrder + 1
-    //
-    // let maxPoints = null
-    // if (roundScorePolicy === ScorePolicyType.COMPLETION_RATE) {
-    //     maxPoints = await this.calculateMaxPointsTransaction(transaction, round)
-    // }
-    //
-    // if (round.dateStart && !round.dateEnd && currentQuestion) {
-    //     await this.gameRepo.updateGameStatusTransaction(transaction, this.gameId, GameStatus.QUESTION_ACTIVE)
-    //     return
-    // }
-    //
-    // if (isBuzzer(roundType) || [RoundType.QUOTE, RoundType.LABELLING, RoundType.ENUMERATION, RoundType.MIXED].includes(roundType)) {
-    //     // Set the status of every player to 'idle'
-    //     const playersCollectionRef = collection(GAMES_COLLECTION_REF, this.gameId, 'players')
-    //     const playersSnapshot = await getDocs(query(playersCollectionRef))
-    //
-    //     for (const playerDoc of playersSnapshot.docs) {
-    //         await this.playerRepo.updatePlayerStatusTransaction(transaction, playerDoc.id, PlayerStatus.IDLE)
-    //     }
-    // }
-    //
-    // if (roundType === RoundType.MCQ || roundType === RoundType.NAGUI) {
-    //     const shuffledQuestionIds = shuffle(questionIds)
-    //     await this.roundRepo.updateRoundTransaction(transaction, {
-    //         questions: shuffledQuestionIds
-    //     })
-    // }
-    //
-    // await this.roundRepo.updateRoundTransaction(transaction, roundId, {
-    //     dateStart: serverTimestamp(),
-    //     order: newOrder,
-    //     ...(roundType !== RoundType.SPECIAL ? { currentQuestionIdx: 0 } : {}),
-    //     ...(maxPoints !== null && { maxPoints })
-    // })
-    //
-    //
-    // // If the round requires an order of chooser teams (e.g. OOO, MCQ) and it is the first round, find a random order for the chooser teams
-    // if (chooser.chooserOrder.length === 0 || chooser.chooserIdx === null) {
-    //     const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams')
-    //     const teamsSnapshot = await getDocs(query(teamsCollectionRef))
-    //     const teamIds = teamsSnapshot.docs.map(doc => doc.id)
-    //     // const teamIds = await this.teamRepo.getAllIdsTransaction(transaction)
-    //
-    //     await this.chooserRepo.updateChooserTransaction(transaction, {
-    //         chooserOrder: shuffle(teamIds),
-    //     })
-    // }
-    //
-    // await this.chooserRepo.updateChooserTransaction(transaction, {
-    //     chooserIdx: 0,
-    // })
-    //
-    // await this.timerRepo.updateTimerTransaction(transaction, {
-    //     status: TimerStatus.RESET,
-    //     duration: Timer.READY_COUNTDOWN_SECONDS,
-    //     authorized: false
-    // })
-    //
-    // await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon')
-    //
-    // await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
-    //     currentRound: roundId,
-    //     currentQuestion: null,
-    //     status: GameStatus.ROUND_START
-    // })
-    //
-    // console.log('Round successfully started', 'game', this.gameId,  'round', roundId)
   }
 
   /* =============================================================================================================== */

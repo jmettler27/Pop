@@ -3,32 +3,32 @@ import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 import { useGameRepositoriesContext } from '@/frontend/contexts';
 import { rankingToEmoji } from '@/backend/utils/emojis';
 
-export default function BuzzerPlayers({ players, lang = DEFAULT_LOCALE }) {
+export default function BuzzerPlayers({ questionPlayers, lang = DEFAULT_LOCALE }) {
   const { playerRepo } = useGameRepositoriesContext();
-  const { gamePlayers, gamePlayersLoading, gamePlayersError } = playerRepo.useAllPlayersOnce();
+  const { players, loading, error } = playerRepo.useAllPlayersOnce();
 
-  if (gamePlayersError) {
+  if (error) {
     return (
       <p>
-        <strong>Error: {JSON.stringify(gamePlayersError)}</strong>
+        <strong>Error: {JSON.stringify(error)}</strong>
       </p>
     );
   }
-  if (gamePlayersLoading) {
+  if (loading) {
     return <></>;
   }
-  if (!gamePlayers) {
-    return <></>;
-  }
-  if (gamePlayersLoading) {
-    return <></>;
-  }
-  if (!gamePlayers) {
+  if (!players) {
+    console.error('BuzzerPlayers: players is null or undefined');
     return <></>;
   }
 
-  const buzzed = players.buzzed;
-  const canceled = players.canceled;
+  console.log('BuzzerPlayers', { players, questionPlayers });
+
+  const buzzed = questionPlayers.buzzed;
+  const canceled = questionPlayers.canceled;
+  console.log('questionPlayers', players);
+  console.log('BUZZED', buzzed);
+  console.log('CANCELED', canceled);
 
   return (
     <div className="flex flex-row h-full w-full">
@@ -36,7 +36,7 @@ export default function BuzzerPlayers({ players, lang = DEFAULT_LOCALE }) {
       <div className="flex flex-col h-full w-1/2 justify-start p-2">
         <h2 className="font-bold text-xl">{BUZZED_TEXT[lang]}</h2>
         {buzzed && buzzed.length > 0 ? (
-          <BuzzedPlayers buzzed={buzzed} gamePlayers={gamePlayers} />
+          <BuzzedPlayers buzzed={buzzed} players={players} />
         ) : (
           <p className="2xl:text-xl italic opacity-50">{NO_BUZZERS[lang]}</p>
         )}
@@ -46,7 +46,7 @@ export default function BuzzerPlayers({ players, lang = DEFAULT_LOCALE }) {
       {canceled && canceled.length > 0 && (
         <div className="flex flex-col h-full w-1/2 justify-start p-2">
           <h2 className="font-bold text-xl">{CANCELED_TEXT[lang]}</h2>
-          <CanceledPlayers canceled={canceled} gamePlayers={gamePlayers} />
+          <CanceledPlayers canceled={canceled} players={players} />
         </div>
       )}
     </div>
@@ -68,28 +68,29 @@ const CANCELED_TEXT = {
   'fr-FR': 'Nullos',
 };
 
-function getPlayerName(gamePlayers, playerId) {
-  return gamePlayers.find((p) => p.id === playerId).name;
+function getPlayerName(players, playerId) {
+  return players.find((p) => p.id === playerId).name;
 }
 
-function BuzzedPlayers({ buzzed, gamePlayers }) {
+function BuzzedPlayers({ buzzed, players }) {
   return (
     <ol className="overflow-auto">
       {buzzed.map((playerId, index) => (
         <li key={index} className="2xl:text-xl">
-          {rankingToEmoji(index)} {getPlayerName(gamePlayers, playerId)}
+          {rankingToEmoji(index)} {getPlayerName(players, playerId)}
         </li>
       ))}
     </ol>
   );
 }
 
-function CanceledPlayers({ canceled, gamePlayers }) {
+function CanceledPlayers({ canceled, players }) {
+  console.log('CanceledPlayers', { canceled, players });
   return (
     <ol className="overflow-auto">
       {canceled.map((item, index) => (
         <li key={index} className="2xl:text-xl">
-          💩 {getPlayerName(gamePlayers, item.playerId)} {item.clueIdx >= 0 && `(#${item.clueIdx + 1})`}
+          💩 {getPlayerName(players, item.playerId)} {item.clueIdx >= 0 && `(#${item.clueIdx + 1})`}
         </li>
       ))}
     </ol>

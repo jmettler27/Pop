@@ -312,6 +312,37 @@ export class GameMatchingQuestion extends GameQuestion {
     return newMatch;
   }
 
+  // From a JS array of 3 elements, I want to calculate the largest sub-sequence of same values and return
+  //-  the array of indices of those values
+  // - The value itself
+  // For instance, if the array is [4, 0, 0] the result should be [1, 2] and 4. If the array is [8, 8, 3] the result should be [0, 1] and 8.
+  // If the array is [4, 9,4] the result should be [0, 2] and 4
+  // If the array is [0, 4, 75] the result should be [] and null
+  static findMostFrequentValueAndIndices(arr) {
+    const indicesByValue = arr.reduce((acc, value, index) => {
+      if (!acc[value]) {
+        acc[value] = [];
+      }
+      acc[value].push(index);
+      return acc;
+    }, {});
+
+    let mostFrequentValue = null;
+    let mostFrequentIndices = [];
+
+    for (const [value, indices] of Object.entries(indicesByValue)) {
+      if (indices.length > mostFrequentIndices.length) {
+        mostFrequentValue = Number(value);
+        mostFrequentIndices = indices;
+      }
+    }
+
+    if (mostFrequentIndices.length > 1) {
+      return [mostFrequentIndices, mostFrequentValue];
+    }
+    return [[], null];
+  }
+
   static edgesToString(edges, answer) {
     const uniqueStringsSet = new Set();
     edges.forEach((edge) => {

@@ -56,6 +56,10 @@ function BuzzerWinnerInfo({ baseQuestion, lang = DEFAULT_LOCALE }) {
     return <></>;
   }
 
+  if (!gameQuestion.winner || !gameQuestion.winner.playerId || !gameQuestion.winner.teamId) {
+    return <></>;
+  }
+
   return (
     <span className="2xl:text-3xl">
       {BUZZER_WINNER_TEXT[lang]}{' '}

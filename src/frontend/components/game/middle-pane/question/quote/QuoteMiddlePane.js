@@ -1,9 +1,7 @@
 import { revealQuoteElement } from '@/backend/services/question/quote/actions';
 
-import GameQuestionRepository from '@/backend/repositories/question/game/GameQuestionRepository';
-
 import { topicToEmoji } from '@/backend/models/Topic';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { UserRole } from '@/backend/models/users/User';
 
@@ -15,6 +13,7 @@ import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 import { useGameContext, useRoleContext } from '@/frontend/contexts';
 import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pane/question/QuestionHeader';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import GameQuoteQuestionRepository from '@/backend/repositories/question/game/GameQuoteQuestionRepository';
 
 export default function QuoteMiddlePane({ baseQuestion }) {
   return (
@@ -36,7 +35,7 @@ function QuoteQuestionHeader({ baseQuestion }) {
       <h1 className="2xl:text-5xl">
         {topicToEmoji(baseQuestion.topic)}{' '}
         <strong>
-          {QuestionType.typeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
+          {questionTypeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
         </strong>
       </h1>
     </div>
@@ -46,7 +45,7 @@ function QuoteQuestionHeader({ baseQuestion }) {
 function QuoteMainContent({ baseQuestion }) {
   const game = useGameContext();
 
-  const gameQuestionRepo = new GameQuestionRepository(game.id, game.currentRound);
+  const gameQuestionRepo = new GameQuoteQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
   if (gameQuestionError) {

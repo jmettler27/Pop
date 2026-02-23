@@ -16,7 +16,7 @@ export default class EnumerationRoundService extends RoundService {
   async handleRoundSelectedTransaction(transaction, roundId, userId) {
     const playerIds = await this.playerRepo.getAllPlayerIds();
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
-    const chooser = await this.chooserRepo.getChooserTransaction(transaction, this.chooserId);
+    const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
 
     // const { type: roundType, questions: questionIds, rewardsPerQuestion, rewardsForBonus, rewardsPerElement } = round

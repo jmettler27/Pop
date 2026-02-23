@@ -2,7 +2,7 @@ import GameQuestionRepository from '@/backend/repositories/question/game/GameQue
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { MatchingQuestion } from '@/backend/models/questions/Matching';
-import { Timestamp } from 'firebase/firestore';
+import { arrayUnion, Timestamp } from 'firebase/firestore';
 
 export default class GameMatchingQuestionRepository extends GameQuestionRepository {
   static CORRECT_MATCHES_PATH = ['realtime', 'correct'];

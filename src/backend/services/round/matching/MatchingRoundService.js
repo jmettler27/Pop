@@ -16,7 +16,7 @@ export default class MatchingRoundService extends RoundService {
 
   async handleRoundSelectedTransaction(transaction, roundId, userId) {
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
-    const chooser = await this.chooserRepo.getChooserTransaction(transaction, this.chooserId);
+    const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
 
     const currentRound = game.currentRound;

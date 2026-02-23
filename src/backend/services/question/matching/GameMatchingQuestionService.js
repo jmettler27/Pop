@@ -11,6 +11,7 @@ import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { sortAscendingRoundScores } from '@/backend/utils/rounds';
 import { sortScores } from '@/backend/utils/scores';
 import { aggregateTiedTeams, findNextAvailableChooser, shuffle } from '@/backend/utils/arrays';
+import MatchingRoundRepository from '@/backend/repositories/round/MatchingRoundRepository';
 
 export default class GameMatchingQuestionService extends GameQuestionService {
   constructor(gameId, roundId) {
@@ -22,7 +23,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
   async resetQuestionTransaction(transaction, questionId) {
     const chooser = await this.chooserRepo.resetChoosersTransaction(transaction);
     if (chooser && chooser.teamId) {
-      await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, chooser.teamId, PlayerStatus.FOCUS);
+      await this.playerRepo.updateTeamPlayersStatus(chooser.teamId, PlayerStatus.FOCUS);
     }
     await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
 
@@ -155,18 +156,11 @@ export default class GameMatchingQuestionService extends GameQuestionService {
 
     if (isLastCorrectMatch) {
       // Case 1.2: It is the last correct matching
-      const roundScores = await this.roundRepo.getRoundScoresTransaction(transaction, this.gameId, this.roundId);
+      const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction, this.gameId, this.roundId);
       const { scores: currRoundScores } = roundScores;
-      await this.roundRepo.increaseRoundTeamScoreTransaction(
-        transaction,
-        this.gameId,
-        this.roundId,
-        questionId,
-        teamId,
-        0
-      );
+      await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, 0);
 
-      await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, teamId, PlayerStatus.CORRECT);
+      await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.CORRECT);
       await this.gameQuestionRepo.addCorrectMatchTransaction(transaction, questionId, rows[0], userId, teamId);
 
       const sortedUniqueRoundScores = sortScores(currRoundScores, sortAscendingRoundScores('matching'));
@@ -187,11 +181,10 @@ export default class GameMatchingQuestionService extends GameQuestionService {
       const { chooserOrder, chooserIdx } = await this.chooserRepo.getChooserTransaction(transaction, this.gameId);
 
       const { newChooserIdx, newChooserTeamId } = findNextAvailableChooser(chooserIdx, chooserOrder, canceled);
-      await this.chooserRepo.updateTeamPlayersStatusTransaction(transaction, newChooserIdx);
-
-      await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, newChooserTeamId, PlayerStatus.FOCUS);
+      await this.chooserRepo.updateChooserIndexTransaction(transaction, newChooserIdx);
+      await this.playerRepo.updateTeamPlayersStatus(newChooserTeamId, PlayerStatus.FOCUS);
       if (newChooserTeamId !== teamId) {
-        await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, teamId, PlayerStatus.IDLE);
+        await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.IDLE);
       }
 
       await this.gameQuestionRepo.addCorrectMatchTransaction(transaction, questionId, rows[0], userId, teamId);
@@ -217,9 +210,11 @@ export default class GameMatchingQuestionService extends GameQuestionService {
 
   // Case 2: The matching is incorrect
   async handleIncorrectMatchTransaction(transaction, questionId, userId, teamId, rows) {
+    const roundRepo = new MatchingRoundRepository(this.gameId);
+
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
     const { chooserOrder, chooserIdx } = await this.chooserRepo.getChooserTransaction(transaction, this.gameId);
-    const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
+    const round = await roundRepo.getRoundTransaction(transaction, this.roundId);
     const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction);
 
@@ -254,7 +249,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     // Log the match
     const numCols = rows.length;
     if (numCols > 2) {
-      const [colIndices, rowIdx] = findMostFrequentValueAndIndices(rows);
+      const [colIndices, rowIdx] = GameMatchingQuestion.findMostFrequentValueAndIndices(rows);
       if (colIndices.length > 0 && rowIdx !== null) {
         await this.gameQuestionRepo.addPartiallyCorrectMatchTransaction(
           transaction,
@@ -274,12 +269,9 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     if (newCanceled.length < chooserOrder.length) {
       const { newChooserIdx, newChooserTeamId } = findNextAvailableChooser(chooserIdx, chooserOrder, newCanceled);
       await this.chooserRepo.updateChooserIndexTransaction(transaction, newChooserIdx);
-      await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, newChooserTeamId, PlayerStatus.FOCUS);
-      await this.playerRepo.updateTeamPlayersStatusTransaction(
-        transaction,
-        teamId,
-        isCanceled ? PlayerStatus.WRONG : PlayerStatus.IDLE
-      );
+
+      await this.playerRepo.updateTeamPlayersStatus(newChooserTeamId, PlayerStatus.FOCUS);
+      await this.playerRepo.updateTeamPlayersStatus(teamId, isCanceled ? PlayerStatus.WRONG : PlayerStatus.IDLE);
       await this.soundRepo.addSoundTransaction(
         transaction,
         isCanceled ? 'zelda_wind_waker_kaboom' : 'zelda_wind_waker_sploosh'
@@ -294,7 +286,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
         .reverse()
         .flatMap(({ teams }) => shuffle(teams));
       await this.chooserRepo.updateChooserOrderTransaction(transaction, newChooserOrder);
-      await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, teamId, PlayerStatus.WRONG);
+      await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.WRONG);
       await this.soundRepo.addSoundTransaction(transaction, 'zelda_wind_waker_game_over');
       await this.endQuestionTransaction(transaction, questionId);
     }

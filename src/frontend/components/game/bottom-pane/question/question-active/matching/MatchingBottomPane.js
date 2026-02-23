@@ -18,16 +18,16 @@ import clsx from 'clsx';
 
 export default function MatchingBottomPane({}) {
   const { chooserRepo } = useGameRepositoriesContext();
-  const { chooser, loading: chooserLoading, error: chooserError } = chooserRepo.useCurrentChooser();
+  const { chooser, loading, error } = chooserRepo.useChooser();
 
-  if (chooserError) {
+  if (error) {
     return (
       <p>
-        <strong>Error: {JSON.stringify(chooserError)}</strong>
+        <strong>Error: {JSON.stringify(error)}</strong>
       </p>
     );
   }
-  if (chooserLoading) {
+  if (loading) {
     return <></>;
   }
   if (!chooser) {
@@ -135,8 +135,8 @@ function MatchingRunningOrder({ chooser, lang = DEFAULT_LOCALE }) {
   const gameQuestionRepo = new RoundMatchingQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  const { teamsRepo } = useGameRepositoriesContext();
-  const { teams, teamsLoading, teamsError } = teamsRepo.useTeams();
+  const { teamRepo } = useGameRepositoriesContext();
+  const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeams();
 
   if (gameQuestionError) {
     return (
@@ -194,8 +194,7 @@ function MatchingRunningOrder({ chooser, lang = DEFAULT_LOCALE }) {
 }
 
 function getTeamName(teams, teamId) {
-  return teams.docs.find((doc) => doc.id === teamId).data().name;
-  // return teams.find(team => team.id === teamId).name
+  return teams.find((t) => t.id === teamId).name;
 }
 
 const RUNNING_ORDER_TEXT = {

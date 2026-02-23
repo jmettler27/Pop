@@ -43,8 +43,8 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
   }
 
   async endQuestionTransaction(transaction, questionId) {
-    const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
-    const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction, roundId);
+    const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
+    const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction, this.roundId);
     const questionPlayers = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
 
     const { challenger } = questionPlayers;
@@ -87,14 +87,14 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
         newRoundScores[stid] = currRoundScores[stid] + reward;
       }
 
-      await this.roundScoreRepo.updateScoresTransaction(transaction, roundId, {
+      await this.roundScoreRepo.updateScoresTransaction(transaction, this.roundId, {
         scores: newRoundScores,
         scoresProgress: newRoundProgress,
       });
     } else {
       // The challenger succeeded in its challenge
       const reward = round.rewardsPerQuestion + (numCorrect > bet) * round.rewardsForBonus;
-      await this.roundScoreRepo.increaseRoundTeamScoreTransaction(transaction, teamId, reward);
+      await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, teamId, reward);
 
       for (const challenger of challengers) {
         await this.playerRepo.updatePlayerStatusTransaction(transaction, challenger.id, PlayerStatus.CORRECT);

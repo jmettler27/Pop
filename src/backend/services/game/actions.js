@@ -2,6 +2,7 @@
 
 import GameService from '@/backend/services/game/GameService';
 import RoundServiceFactory from '@/backend/services/round/RoundServiceFactory';
+import GameQuestionServiceFactory from '@/backend/services/question/GameQuestionServiceFactory';
 
 /**
  *
@@ -65,4 +66,14 @@ export const handleRoundSelected = async (gameId, roundId, userId, roundType) =>
 export const handleQuestionEnd = async (gameId, roundId, questionId, roundType) => {
   const roundService = RoundServiceFactory.createService(roundType, gameId);
   await roundService.handleQuestionEnd(roundId, questionId);
+};
+
+export const endQuestion = async (gameId, roundId, questionId, questionType) => {
+  const gameQuestionService = GameQuestionServiceFactory.createService(questionType, gameId, roundId);
+  await gameQuestionService.endQuestion(questionId);
+};
+
+export const resetQuestion = async (gameId, roundId, questionId, questionType) => {
+  const gameQuestionService = GameQuestionServiceFactory.createService(questionType, gameId, roundId);
+  await gameQuestionService.resetQuestion(questionId);
 };

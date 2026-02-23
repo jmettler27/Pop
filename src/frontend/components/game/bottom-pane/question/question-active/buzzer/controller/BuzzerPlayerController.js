@@ -1,20 +1,4 @@
-import {
-  addPlayerToBuzzer as addBlindtestPlayerToBuzzer,
-  removePlayerFromBuzzer as removeBlindtestPlayerFromBuzzer,
-} from '@/backend/services/question/blindtest/actions';
-import {
-  addPlayerToBuzzer as addEmojiPlayerToBuzzer,
-  removePlayerFromBuzzer as removeEmojiPlayerFromBuzzer,
-} from '@/backend/services/question/emoji/actions';
-import {
-  addPlayerToBuzzer as addImagePlayerToBuzzer,
-  removePlayerFromBuzzer as removeImagePlayerFromBuzzer,
-} from '@/backend/services/question/image/actions';
-import {
-  addPlayerToBuzzer as addProgressiveCluesPlayerToBuzzer,
-  removePlayerFromBuzzer as removeProgressiveCluesPlayerFromBuzzer,
-} from '@/backend/services/question/progressive-clues/actions';
-
+import { addPlayerToBuzzer, removePlayerFromBuzzer } from '@/backend/services/question/buzzer/actions';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
@@ -31,7 +15,7 @@ import PanToolIcon from '@mui/icons-material/PanTool';
 import clsx from 'clsx';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/game/GameQuestionRepositoryFactory';
 
-export default function BuzzerPlayerController({ players: buzzerPlazers }) {
+export default function BuzzerPlayerController({ questionPlayers: buzzerPlazers }) {
   const game = useGameContext();
   const user = useUserContext();
 
@@ -219,24 +203,8 @@ function BuzzerButton({ isDisabled, questionType }) {
   const user = useUserContext();
 
   const [handleBuzz, isBuzzing] = useAsyncAction(async () => {
-    const addPlayerToBuzzerAction = getAddPlayerToBuzzerAction();
-    await addPlayerToBuzzerAction(game.id, game.currentRound, game.currentQuestion, user.id);
+    await addPlayerToBuzzer(questionType, game.id, game.currentRound, game.currentQuestion, user.id);
   });
-
-  const getAddPlayerToBuzzerAction = () => {
-    switch (questionType) {
-      case QuestionType.BLINDTEST:
-        return addBlindtestPlayerToBuzzer;
-      case QuestionType.EMOJI:
-        return addEmojiPlayerToBuzzer;
-      case QuestionType.IMAGE:
-        return addImagePlayerToBuzzer;
-      case QuestionType.PROGRESSIVE_CLUES:
-        return addProgressiveCluesPlayerToBuzzer;
-    }
-
-    throw new Error(`Unsupported question type: ${questionType}`);
-  };
 
   return (
     <Button
@@ -258,24 +226,8 @@ function BuzzerResetButton({ isDisabled, questionType }) {
   const user = useUserContext();
 
   const [handleResetBuzz, isResetting] = useAsyncAction(async () => {
-    const removePlayerFromBuzzerAction = getRemovePlayerFromBuzzerAction();
-    await removePlayerFromBuzzerAction(game.id, game.currentRound, game.currentQuestion, user.id);
+    await removePlayerFromBuzzer(questionType, game.id, game.currentRound, game.currentQuestion, user.id);
   });
-
-  const getRemovePlayerFromBuzzerAction = () => {
-    switch (questionType) {
-      case QuestionType.BLINDTEST:
-        return removeBlindtestPlayerFromBuzzer;
-      case QuestionType.EMOJI:
-        return removeEmojiPlayerFromBuzzer;
-      case QuestionType.IMAGE:
-        return removeImagePlayerFromBuzzer;
-      case QuestionType.PROGRESSIVE_CLUES:
-        return removeProgressiveCluesPlayerFromBuzzer;
-    }
-
-    throw new Error(`Unsupported question type: ${questionType}`);
-  };
 
   return (
     <Tooltip title="Annuler" placement="right">

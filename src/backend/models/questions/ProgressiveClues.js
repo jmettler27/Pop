@@ -129,10 +129,10 @@ export class GameProgressiveCluesQuestion extends GameBuzzerQuestion {
     this.maxTries = data.maxTries || GameProgressiveCluesQuestion.MAX_TRIES;
     this.thinkingTime = data.thinkingTime || GameProgressiveCluesQuestion.THINKING_TIME;
 
-    this.currentClueIdx = data.currentClueIdx || -1;
+    this.currentClueIdx = data.currentClueIdx;
     this.delay = data.delay || GameProgressiveCluesQuestion.DEFAULT_DELAY;
 
-    this.constructor.validate(data);
+    // this.constructor.validate(data);
   }
 
   toObject() {

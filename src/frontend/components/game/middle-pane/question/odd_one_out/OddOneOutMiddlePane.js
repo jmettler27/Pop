@@ -11,11 +11,11 @@ import { shuffleIndices } from '@/backend/utils/arrays';
 import { QuestionTypeIcon } from '@/backend/utils/question_types';
 
 import {
-  useUserContext,
   useGameContext,
   useGameRepositoriesContext,
   useRoleContext,
   useTeamContext,
+  useUserContext,
 } from '@/frontend/contexts';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
@@ -23,18 +23,18 @@ import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pan
 import NoteButton from '@/frontend/components/game/NoteButton';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Avatar,
   Badge,
   List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Avatar,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Typography,
 } from '@mui/material';
 
@@ -43,6 +43,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { clsx } from 'clsx';
+import Image from 'next/image';
 
 export default function OddOneOutMiddlePane({ baseQuestion }) {
   // Randomize the order of the items on the client side
@@ -255,8 +256,6 @@ function SelectedProposalPlayerAvatar({ playerId }) {
     player && <Avatar alt={player.name} src={player.image} sx={{ width: 25, height: 25 }} />
   );
 }
-
-import Image from 'next/image';
 
 function OddOneOutAnswerImage({ correct }) {
   if (correct === true) {

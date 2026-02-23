@@ -1,5 +1,5 @@
 import { topicToEmoji } from '@/backend/models/Topic';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { UserRole } from '@/backend/models/users/User';
 
@@ -38,7 +38,7 @@ function NaguiHeader({ baseQuestion }) {
         <h1 className="2xl:text-5xl">
           {topicToEmoji(baseQuestion.topic)}{' '}
           <strong>
-            {QuestionType.typeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
+            {questionTypeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
           </strong>
         </h1>
       </div>

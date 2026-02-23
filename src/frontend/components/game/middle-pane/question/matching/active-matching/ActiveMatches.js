@@ -6,17 +6,18 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import '@/frontend/components/game/middle-pane/question/matching/styles.scss';
 
 import {
-  MatchingNode,
-  MatchingEdge,
   getNode,
   getNodeText,
+  MatchingEdge,
+  MatchingNode,
   matchIsComplete,
 } from '@/frontend/components/game/middle-pane/question/matching/gridUtils';
 import SubmitMatchDialog from '@/frontend/components/game/middle-pane/question/matching/active-matching/SubmitMatchDialog';
 
 import { useState } from 'react';
 
-import { useGameContext, useRoleContext, useTeamContext } from '@/frontend/contexts';
+import { useGameContext, useGameRepositoriesContext, useRoleContext, useTeamContext } from '@/frontend/contexts';
+import GameMatchingQuestionRepository from '@/backend/repositories/question/game/GameMatchingQuestionRepository';
 
 export default function ActiveMatches({ answer, nodePositions, numCols }) {
   console.log('ACTIVE MATCHES RENDERED');
@@ -91,16 +92,18 @@ function ActiveMatchingQuestionNodes({
   const myTeam = useTeamContext();
   const myRole = useRoleContext();
 
-  const { isChooser, loading: isChooserLoading, error: isChooserError } = gameQuestionRepo.useIsChooser(myTeam);
+  const { chooserRepo } = useGameRepositoriesContext();
 
-  const gameQuestionRepo = new RoundMatchingQuestionRepository(game.id, game.currentRound);
+  const { isChooser, loading: isChooserLoading, error: isChooserError } = chooserRepo.useIsChooser(myTeam);
+
+  const gameQuestionRepo = new GameMatchingQuestionRepository(game.id, game.currentRound);
   const {
     isCanceled,
     loading: isCanceledLoading,
     error: isCanceledError,
   } = gameQuestionRepo.useIsCanceled(game.currentQuestion, myTeam);
   const {
-    correctMatches,
+    correctMatches: foundMatches,
     loading: correctMatchesLoading,
     error: correctMatchesError,
   } = gameQuestionRepo.useCorrectMatches(game.currentQuestion);
@@ -131,7 +134,7 @@ function ActiveMatchingQuestionNodes({
     return <LoadingScreen loadingText="Loading..." />;
   }
 
-  if (!isChooser || !isCanceled || !correctMatches) {
+  if (!foundMatches) {
     return <></>;
   }
 
@@ -145,7 +148,7 @@ function ActiveMatchingQuestionNodes({
       e.stopPropagation();
 
       const node = getNode(nodeId, nodePositions);
-      if (nodeIsDisabled(node.origRow, correctMatches, edges, numCols, myRole, isChooser, isCanceled)) {
+      if (nodeIsDisabled(node.origRow, foundMatches, edges, numCols, myRole, isChooser, isCanceled)) {
         console.log('Node is disabled');
         return;
       }
@@ -158,7 +161,7 @@ function ActiveMatchingQuestionNodes({
         return;
       }
 
-      // The selected node is not the same as the source node
+      // The selected node is different from the source node
       console.log('The selected node is not the same as the source node');
       const targetNode = node;
 
@@ -187,14 +190,14 @@ function ActiveMatchingQuestionNodes({
         }
       }
 
-      // The user has selected a node that is not in the directly adjacent right-hand column
+      // The user has selected a node not in the directly adjacent right-hand column
       // if (sourceNode.col === targetNode.col || Math.abs(targetNode.col - sourceNode.col) > 1) {
       if (targetNode.col !== sourceNode.col + 1) {
         console.log('The user has selected a node that is not in the directly adjacent right-hand column');
         return;
       }
 
-      // The user has selected a node that is in the directly adjacent right-hand column
+      // The user has selected a node in the directly adjacent right-hand column
       console.log('The user has selected a node that is in the directly adjacent right-hand column');
       addNewEdge({ from: newEdgeSource, to: nodeId });
 

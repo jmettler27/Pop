@@ -29,7 +29,7 @@ export default class SpecialRoundService extends RoundService {
     super(gameId, RoundType.SPECIAL);
   }
 
-  async startRoundTransaction(transaction) {
+  async startRoundTransaction(transaction, roundId) {
     // const specialRoundRef = doc(GAMES_COLLECTION_REF, this.gameId, 'rounds', this.roundId)
     // transaction.update(specialRoundRef, {
     //     dateStart: serverTimestamp(),

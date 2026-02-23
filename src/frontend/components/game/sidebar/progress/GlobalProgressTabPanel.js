@@ -30,7 +30,7 @@ const GameRoundsProgressHeader = memo(function GameRoundsProgressHeader({ gameTi
 
 const GameRoundsProgress = memo(function GameRoundsProgress({ gameId }) {
   const { teamRepo, roundRepo } = useGameRepositoriesContext();
-  const { startedRounds, roundsLoading, roundsError } = roundRepo.useRoundsOnce({
+  const { startedRounds, roundsLoading, roundsError } = roundRepo.useAllRoundsOnce({
     where: { field: 'order', operator: '!=', value: null },
     orderBy: { field: 'order', direction: 'asc' },
   });

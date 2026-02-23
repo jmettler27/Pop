@@ -8,7 +8,7 @@ import EmojiMainContent from '@/frontend/components/game/middle-pane/question/bu
 export default function BuzzerMainContent({ baseQuestion, showComplete }) {
   switch (baseQuestion.type) {
     case QuestionType.PROGRESSIVE_CLUES:
-      return <ProgressiveCluesMainContent question={baseQuestion} showComplete={showComplete} />;
+      return <ProgressiveCluesMainContent baseQuestion={baseQuestion} showComplete={showComplete} />;
     case QuestionType.IMAGE:
       return <ImageMainContent baseQuestion={baseQuestion} />;
     case QuestionType.BLINDTEST:

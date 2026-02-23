@@ -1,7 +1,7 @@
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
 import { firestore } from '@/backend/firebase/firebase';
-import { arrayRemove, arrayUnion, runTransaction, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { runTransaction, serverTimestamp } from 'firebase/firestore';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import { TimerStatus } from '@/backend/models/Timer';
@@ -324,28 +324,22 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
 
   async validateAnswerTransaction(transaction, questionId, playerId) {
     // Update the winner team scores
-    console.log('this.playerRepo.getPlayerTransaction', questionId, playerId);
     const player = await this.playerRepo.getPlayerTransaction(transaction, playerId);
-    console.log(' this.roundRepo.getRoundTransaction', this.roundId);
     const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
 
     const teamId = player.teamId;
     const points = round.rewardsPerQuestion;
 
-    console.log('roundScoreRepo.increaseTeamScoreTransaction', questionId, teamId, points);
     await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, points);
 
     // Update the winner player status
-    console.log('this.playerRepo.updatePlayerStatusTransaction', questionId);
     await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.CORRECT);
 
     // Update the question winner team
-    console.log('this.gameQuestionRepo.updateQuestionWinnerTransaction', questionId, playerId, teamId);
     await this.gameQuestionRepo.updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId);
     await this.soundRepo.addSoundTransaction(transaction, 'Anime wow');
 
     await this.endQuestionTransaction(transaction, questionId);
-    console.log('this.endQuestionTransaction', questionId);
 
     console.log(
       'Answer to buzzer question successfully validated',
@@ -398,17 +392,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     const gameQuestion = await this.gameQuestionRepo.getQuestion(questionId);
     const clueIdx = gameQuestion.currentClueIdx || 0;
 
-    await this.gameQuestionRepo.cancelPlayerTransaction(transaction, questionId, playerId);
-
-    await this.gameQuestionRepo.updatePlayersTransaction(transaction, questionId, {
-      canceled: arrayUnion({
-        clueIdx,
-        playerId,
-        timestamp: Timestamp.now(),
-      }),
-      buzzed: arrayRemove(playerId),
-    });
-
+    await this.gameQuestionRepo.cancelPlayerTransaction(transaction, questionId, playerId, clueIdx);
     await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.WRONG);
     await this.soundRepo.addWrongAnswerSoundToQueueTransaction(transaction);
     // await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.RESET)
@@ -434,35 +418,4 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
       playerId
     );
   }
-
-  /* =============================================================================================================== */
-
-  // async updateQuestionWinner(questionId, playerId, teamId) {
-  //     if (!questionId) {
-  //         throw new Error("Question ID is required");
-  //     }
-  //     if (!playerId) {
-  //         throw new Error("Player ID is required");
-  //     }
-  //     if (!teamId) {
-  //         throw new Error("Team ID is required");
-  //     }
-  //
-  //     try {
-  //         await runTransaction(firestore, transaction => this.updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId));
-  //     }
-  //     catch (error) {
-  //         console.error("Failed to updating the question winner", error);
-  //         throw error;
-  //     }
-  // }
-
-  // async updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId) {
-  //     await this.gameQuestionRepo.updateTransaction(transaction, questionId, {
-  //         winner: {
-  //             playerId,
-  //             teamId
-  //         }
-  //     });
-  // }
 }

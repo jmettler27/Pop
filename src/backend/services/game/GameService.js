@@ -148,68 +148,6 @@ export default class GameService {
     await this.soundRepo.clearSounds();
 
     console.log('Game successfully reset', 'game', this.gameId);
-
-    //   try {
-    //     await runTransaction(firestore, async (transaction) => {
-    //       const teams = await this.teamRepo.getAllTeams();
-    //       const players = await this.playerRepo.getAllPlayers();
-    //       const organizers = await this.organizerRepo.getAllOrganizers();
-    //
-    //       const { teamIds, initTeamGameScores, initTeamGameScoresProgress } = teams.reduce(
-    //         (acc, team) => {
-    //           acc.teamIds.push(team.id);
-    //           acc.initTeamGameScores[team.id] = 0;
-    //           acc.initTeamGameScoresProgress[team.id] = {};
-    //           return acc;
-    //         },
-    //         { teamIds: [], initTeamGameScores: {}, initTeamGameScoresProgress: {} },
-    //       );
-    //
-    //       // Reset all rounds - assuming a method exists in gameRepo
-    //       await this.resetAllRoundsTransaction(transaction);
-    //
-    //       // Reset game
-    //       await this.gameRepo.resetGameTransaction(transaction, this.gameId);
-    //
-    //       // Reset timer
-    //       const managerId = getRandomElement(organizers);
-    //       await this.timerRepo.updateTransaction(transaction, {
-    //         status: TimerStatus.RESET,
-    //         duration: 60,
-    //         forward: false,
-    //         authorized: false,
-    //         managedBy: managerId,
-    //       });
-    //
-    //       // Init chooser
-    //       const shuffledTeamIds = shuffle(teamIds);
-    //       await this.chooserRepo.updateChooserTransaction(transaction, {
-    //         chooserIdx: 0,
-    //         chooserOrder: shuffledTeamIds,
-    //       });
-    //
-    //       // Init global scores
-    //       await this.gameScoreRepo.initializeScoresTransaction(transaction, {
-    //         scores: initTeamGameScores,
-    //         scoresProgress: initTeamGameScoresProgress,
-    //       });
-    //
-    //       await this.readyRepo.updateTransaction(transaction, {
-    //         numPlayers: players.length,
-    //         numReady: 0,
-    //       });
-    //
-    //       await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
-    //       await this.soundRepo.clearSoundsTransaction(transaction);
-    //
-    //       console.log('Game successfully reset', 'game', this.gameId);
-    //     });
-    //   } catch (error) {
-    //     console.error('Failed to reset the game:', error);
-    //     throw error;
-    //   }
-    // }
-    //
   }
 
   async resetAllRounds() {
@@ -221,16 +159,6 @@ export default class GameService {
       await roundService.resetRound(round.id);
     }
   }
-
-  // async resetAllRoundsTransaction(transaction) {
-  //   const rounds = await this.roundRepo.getAllRounds();
-  //
-  //   for (const round of rounds) {
-  //     console.log('RESETTING ROUND', 'ID', round.id, 'TYPE', round.type);
-  //     const roundService = RoundServiceFactory.createService(round.type, this.gameId);
-  //     await roundService.resetRoundTransaction(transaction, round.id);
-  //   }
-  // }
 
   /**
    * Switch to the game home

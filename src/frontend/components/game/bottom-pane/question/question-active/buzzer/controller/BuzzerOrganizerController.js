@@ -1,28 +1,9 @@
-// import { handleBuzzerHeadChanged as handleBasicBuzzerHeadChanged, invalidateAnswer as invalidateBasicAnswer, validateAnswer as validateBasicAnswer } from '@/backend/services/question/basic/actions'
-import {
-  handleBuzzerHeadChanged as handleBlindtestBuzzerHeadChanged,
-  invalidateAnswer as invalidateBlindtestAnswer,
-  validateAnswer as validateBlindtestAnswer,
-} from '@/backend/services/question/blindtest/actions';
-import {
-  handleBuzzerHeadChanged as handleEmojiBuzzerHeadChanged,
-  invalidateAnswer as invalidateEmojiAnswer,
-  validateAnswer as validateEmojiAnswer,
-} from '@/backend/services/question/emoji/actions';
-import {
-  handleBuzzerHeadChanged as handleImageBuzzerHeadChanged,
-  invalidateAnswer as invalidateImageAnswer,
-  validateAnswer as validateImageAnswer,
-} from '@/backend/services/question/image/actions';
-import {
-  handleBuzzerHeadChanged as handleProgressiveCluesBuzzerHeadChanged,
-  invalidateAnswer as invalidateProgressiveCluesAnswer,
-  revealClue,
-  validateAnswer as validateProgressiveCluesAnswer,
-} from '@/backend/services/question/progressive-clues/actions';
+import { handleBuzzerHeadChanged, invalidateAnswer, validateAnswer } from '@/backend/services/question/buzzer/actions';
 import { handleBuzzerHeadChanged as handleQuoteBuzzerHeadChanged } from '@/backend/services/question/quote/actions';
+import { revealClue } from '@/backend/services/question/progressive-clues/actions';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+
 import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/game/GameProgressiveCluesQuestionRepository';
 
 import { INVALIDATE_ANSWER, VALIDATE_ANSWER } from '@/backend/utils/question/question';
@@ -47,30 +28,13 @@ import { useParams } from 'next/navigation';
 
 import { useEffect, useRef } from 'react';
 
-export default function BuzzerOrganizerController({ baseQuestion, players: questionPlayers }) {
+export default function BuzzerOrganizerController({ baseQuestion, questionPlayers: questionPlayers }) {
   const { id: gameId } = useParams();
   const game = useGameContext();
 
   /* Set the state 'focus' to the playerId which is the first element of the buzzed list */
   const { buzzed } = questionPlayers;
   const buzzerHead = useRef();
-
-  const getHandleBuzzerHeadChangedAction = () => {
-    switch (baseQuestion.type) {
-      // case QuestionType.BASIC:
-      //   return handleBasicBuzzerHeadChanged;
-      case QuestionType.BLINDTEST:
-        return handleBlindtestBuzzerHeadChanged;
-      case QuestionType.EMOJI:
-        return handleEmojiBuzzerHeadChanged;
-      case QuestionType.IMAGE:
-        return handleImageBuzzerHeadChanged;
-      case QuestionType.PROGRESSIVE_CLUES:
-        return handleProgressiveCluesBuzzerHeadChanged;
-      case QuestionType.QUOTE:
-        return handleQuoteBuzzerHeadChanged;
-    }
-  };
 
   useEffect(() => {
     if (!buzzed || buzzed.length === 0) {
@@ -79,8 +43,13 @@ export default function BuzzerOrganizerController({ baseQuestion, players: quest
     }
     if (buzzerHead.current !== buzzed[0]) {
       buzzerHead.current = buzzed[0];
-      const handleBuzzerHeadChangedAction = getHandleBuzzerHeadChangedAction();
-      handleBuzzerHeadChangedAction(gameId, game.currentRound, game.currentQuestion, buzzerHead.current);
+      // const handleBuzzerHeadChangedAction = getHandleBuzzerHeadChangedAction();
+      // handleBuzzerHeadChangedAction(gameId, game.currentRound, game.currentQuestion, buzzerHead.current);
+      if (baseQuestion.type !== QuestionType.QUOTE) {
+        handleBuzzerHeadChanged(baseQuestion.type, gameId, game.currentRound, game.currentQuestion, buzzerHead.current);
+      } else {
+        handleQuoteBuzzerHeadChanged(gameId, game.currentRound, game.currentQuestion, buzzerHead.current);
+      }
     }
   }, [buzzed]);
 
@@ -98,53 +67,13 @@ function BuzzerOrganizerAnswerController({ buzzed, lang = DEFAULT_LOCALE, questi
 
   const buzzedIsEmpty = buzzed.length === 0;
 
-  const getValidateAnswerAction = () => {
-    switch (questionType) {
-      // case QuestionType.BASIC:
-      //     return validateBasicAnswer
-      case QuestionType.BLINDTEST:
-        return validateBlindtestAnswer;
-      case QuestionType.EMOJI:
-        return validateEmojiAnswer;
-      case QuestionType.IMAGE:
-        return validateImageAnswer;
-      case QuestionType.PROGRESSIVE_CLUES:
-        return validateProgressiveCluesAnswer;
-      // case QuestionType.QUOTE:
-      //     return validateQuoteAnswer
-    }
-
-    throw new Error(`Unsupported question type: ${questionType}`);
-  };
-
-  const getInvalidateAnswerAction = () => {
-    switch (questionType) {
-      // case QuestionType.BASIC:
-      //     return invalidateBasicAnswer
-      case QuestionType.BLINDTEST:
-        return invalidateBlindtestAnswer;
-      case QuestionType.EMOJI:
-        return invalidateEmojiAnswer;
-      case QuestionType.IMAGE:
-        return invalidateImageAnswer;
-      case QuestionType.PROGRESSIVE_CLUES:
-        return invalidateProgressiveCluesAnswer;
-      // case QuestionType.QUOTE:
-      //     return invalidateQuoteAnswer
-    }
-
-    throw new Error(`Unsupported question type: ${questionType}`);
-  };
-
   const [handleValidate, isValidating] = useAsyncAction(async () => {
     console.log('HANDLE VALIDATE');
-    const validateAnswerAction = getValidateAnswerAction();
-    await validateAnswerAction(game.id, game.currentRound, game.currentQuestion, buzzed[0]);
+    await validateAnswer(game.currentQuestionType, game.id, game.currentRound, game.currentQuestion, buzzed[0]);
   });
 
   const [handleInvalidate, isInvalidating] = useAsyncAction(async () => {
-    const invalidateAnswerAction = getInvalidateAnswerAction();
-    await invalidateAnswerAction(game.id, game.currentRound, game.currentQuestion, buzzed[0]);
+    await invalidateAnswer(game.currentQuestionType, game.id, game.currentRound, game.currentQuestion, buzzed[0]);
   });
 
   {

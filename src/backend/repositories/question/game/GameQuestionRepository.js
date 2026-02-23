@@ -93,10 +93,7 @@ export default class GameQuestionRepository extends FirebaseRepository {
    * @param {Object} data - The data of the question
    */
   async updateQuestionTransaction(transaction, questionId, data) {
-    const updateData = await super.updateTransaction(transaction, questionId, data);
-    console.log('UPDATE DATA: ', updateData);
-    console.log('QUESTION TYPE: ', this.questionType);
-    return updateData ? QuestionFactory.createGameQuestion(this.questionType, updateData) : null;
+    await super.updateTransaction(transaction, questionId, data);
   }
 
   /**

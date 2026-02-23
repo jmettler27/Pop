@@ -11,7 +11,7 @@ export default function EnumerationPlayers({ lang = DEFAULT_LOCALE }) {
   const game = useGameContext();
 
   const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound);
-  const { players, playersLoading, playersError } = gameQuestionRepo.usePlayers(game.currentQuestion);
+  const { players, playersLoading, playersError } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
 
   if (playersError) {
     return (

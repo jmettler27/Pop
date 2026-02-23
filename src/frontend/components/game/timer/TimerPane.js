@@ -1,5 +1,6 @@
 import { startGame } from '@/backend/services/game/actions';
-import { handleQuestionEnd, startRound } from '@/backend/services/round/actions';
+import { handleQuestionEnd } from '@/backend/services/game/actions';
+import { startRound } from '@/backend/services/round/actions';
 
 import { UserRole } from '@/backend/models/users/User';
 

@@ -9,7 +9,7 @@ export const handleRoundSelected = async (gameId, roundId, userId) => {
 
 export const startRound = async (gameId, roundId) => {
   const service = new BasicRoundService(gameId);
-  return service.startRound();
+  return service.startRound(roundId);
 };
 
 export const handleQuestionEnd = async (gameId, roundId, questionId) => {

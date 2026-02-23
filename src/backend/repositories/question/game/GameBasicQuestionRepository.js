@@ -8,7 +8,7 @@ export default class GameBasicQuestionRepository extends GameQuestionRepository 
   }
 
   async resetQuestionTransaction(transaction, questionId) {
-    return this.updateQuestionTransaction(transaction, questionId, {
+    await this.updateQuestionTransaction(transaction, questionId, {
       teamId: null,
       correct: null,
     });
