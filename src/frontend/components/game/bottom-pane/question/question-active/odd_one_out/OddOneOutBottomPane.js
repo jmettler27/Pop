@@ -50,7 +50,7 @@ function OddOneOutController({ chooser }) {
         <GameChooserHelperText chooserTeamId={chooserTeamId} />
       </span>
       {myRole === UserRole.ORGANIZER && <OddOneOutOrganizerController />}
-      {myRole == UserRole.PLAYER && myTeam === chooserTeamId && <OddOneOutChooserController />}
+      {myRole === UserRole.PLAYER && myTeam === chooserTeamId && <OddOneOutChooserController />}
     </div>
   );
 }

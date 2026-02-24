@@ -12,6 +12,8 @@ import { firestore } from '@/backend/firebase/firebase';
 import { runTransaction, serverTimestamp } from 'firebase/firestore';
 import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
 import { increment } from 'firebase/firestore';
+import RoundRepository from '@/backend/repositories/round/RoundRepository';
+import RoundQuestionRepositoryFactory from '@/backend/repositories/round/RoundRepositoryFactory';
 
 export default class GameQuestionService {
   constructor(gameId, roundId, questionType) {
@@ -36,6 +38,7 @@ export default class GameQuestionService {
     this.baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(questionType);
 
     this.roundId = roundId;
+    this.roundRepo = RoundQuestionRepositoryFactory.createRepository(questionType, gameId);
     this.roundScoreRepo = new RoundScoreRepository(gameId, roundId);
     this.gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(questionType, gameId, roundId);
   }

@@ -95,7 +95,6 @@ export default function RevealQuoteElementButton({ buzzed, baseQuestion, gameQue
                   <RevealQuoteElementItemButton
                     key={idx}
                     gameQuestion={gameQuestion}
-                    revealed={revealed}
                     quoteElement={author}
                     quoteElementStr={QuoteAuthorElement.TYPE}
                     onClick={() => handleRevealQuoteElement(QuoteAuthorElement.TYPE)}
@@ -106,7 +105,6 @@ export default function RevealQuoteElementButton({ buzzed, baseQuestion, gameQue
                   <RevealQuoteElementItemButton
                     key={idx}
                     gameQuestion={gameQuestion}
-                    revealed={revealed}
                     quoteElement={source}
                     quoteElementStr={QuoteSourceElement.TYPE}
                     onClick={() => handleRevealQuoteElement(QuoteSourceElement.TYPE)}
@@ -117,7 +115,6 @@ export default function RevealQuoteElementButton({ buzzed, baseQuestion, gameQue
                   <RevealQuotePartItemButton
                     key={idx}
                     gameQuestion={gameQuestion}
-                    revealed={revealed}
                     quote={quote}
                     quoteParts={quoteParts}
                     setQuotePartIdx={setQuotePartIdx}
@@ -213,7 +210,7 @@ function RevealQuoteElementDialog({
     onDialogClose();
   });
 
-  const elementToReveal = baseQuestion.details[quoteElem];
+  const elementToReveal = baseQuestion.toObject().details[quoteElem];
   const elementToRevealText = () => {
     if (quoteElem === 'quote' && quotePartIdx !== null && !isEmpty(quoteParts)) {
       const quotePart = quoteParts[quotePartIdx];

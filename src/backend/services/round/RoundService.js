@@ -47,7 +47,7 @@ export default class RoundService {
     this.readyRepo = new ReadyRepository(this.gameId);
 
     this.roundType = roundType;
-    this.roundRepo = RoundRepositoryFactory.createRepository(this.gameId, this.roundType);
+    this.roundRepo = RoundRepositoryFactory.createRepository(this.roundType, this.gameId);
 
     this.baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(this.roundType);
     // this.gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(this.roundType, this.gameId);
@@ -124,7 +124,6 @@ export default class RoundService {
     isRoundOver
       ? await this.endRoundTransaction(transaction, roundId)
       : await this.moveToNextQuestionTransaction(transaction, roundId, round.currentQuestionIdx + 1);
-    // const round = await this.roundRepo.getRound(roundId)
     // await (round.isLastQuestion() ?
     //         this.endRoundTransaction(transaction) : /* End of round */
     //         this.moveToNextQuestionTransaction(transaction, round.currentQuestionIdx + 1) /* Prepare the next question */
@@ -311,6 +310,7 @@ export default class RoundService {
       acc[teamId] = questionIds.map((questionId) => teamProgress[questionId]);
       return acc;
     }, {});
+    console.log('teamsScoresSequences', teamsScoresSequences);
 
     /* ================================================ GLOBAL PROGRESS ================================================ */
 
@@ -440,10 +440,6 @@ export default class RoundService {
   /* =============================================================================================================== */
 
   async calculateMaxPointsTransaction(transaction, round) {
-    throw new Error('Not implemented');
-  }
-
-  async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {
     throw new Error('Not implemented');
   }
 }

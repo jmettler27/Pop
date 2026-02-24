@@ -1,5 +1,4 @@
 import { handleBuzzerHeadChanged, invalidateAnswer, validateAnswer } from '@/backend/services/question/buzzer/actions';
-import { handleBuzzerHeadChanged as handleQuoteBuzzerHeadChanged } from '@/backend/services/question/quote/actions';
 import { revealClue } from '@/backend/services/question/progressive-clues/actions';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';

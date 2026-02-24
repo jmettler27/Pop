@@ -1,20 +1,16 @@
-import RoundMatchingQuestionRepository from '@/backend/repositories/question/game/GameMatchingQuestionRepository';
+import GameMatchingQuestionRepository from '@/backend/repositories/question/game/GameMatchingQuestionRepository';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { useGameContext } from '@/frontend/contexts';
 
-import { MatchingEdge, getNodeId } from '@/frontend/components/game/middle-pane/question/matching/gridUtils.js';
+import { getNodeId, MatchingEdge } from '@/frontend/components/game/middle-pane/question/matching/gridUtils.js';
 import '@/frontend/components/game/middle-pane/question/matching/styles.scss';
 
 export default function PartiallyCorrectMatches({ nodePositions }) {
-  console.log('PARTIALLY CORRECT MATCHES RENDERED');
-
   const game = useGameContext();
 
-  const roundMatchingQuestionRepo = new RoundMatchingQuestionRepository(game.id, game.currentRound);
-  const { partiallyCorrectMatches, loading, error } = roundMatchingQuestionRepo.usePartiallyCorrectMatches(
-    game.currentQuestion
-  );
+  const gameQuestionRepo = new GameMatchingQuestionRepository(game.id, game.currentRound);
+  const { partiallyCorrectMatches, loading, error } = gameQuestionRepo.usePartiallyCorrectMatches(game.currentQuestion);
 
   if (error) {
     return (

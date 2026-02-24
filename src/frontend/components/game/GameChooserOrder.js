@@ -40,8 +40,7 @@ export default function GameChooserOrder({ chooser, lang = DEFAULT_LOCALE }) {
 }
 
 function getTeamName(teams, teamId) {
-  return teams.docs.find((doc) => doc.id === teamId).data().name;
-  // return teams.find(team => team.id === teamId).name
+  return teams.find((t) => t.id === teamId).name;
 }
 
 const RUNNING_ORDER_TEXT = {

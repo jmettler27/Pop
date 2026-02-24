@@ -27,12 +27,15 @@ import { useEffect, useRef } from 'react';
 import { Button, ButtonGroup, CircularProgress } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
 
-export default function QuoteOrganizerController({ question, players }) {
+export default function QuoteOrganizerController({ baseQuestion, questionPlayers }) {
   const { id: gameId } = useParams();
 
+  const game = useGameContext();
+
   /* Set the state 'focus' to the playerId which is the first element of the buzzed list */
-  const { buzzed } = players;
+  const { buzzed } = questionPlayers;
   const buzzerHead = useRef();
 
   useEffect(() => {
@@ -42,20 +45,20 @@ export default function QuoteOrganizerController({ question, players }) {
     }
     if (buzzerHead.current !== buzzed[0]) {
       buzzerHead.current = buzzed[0];
-      handleBuzzerHeadChanged(gameId, buzzerHead.current);
+      handleBuzzerHeadChanged(gameId, game.currentRound, game.currentQuestion, buzzerHead.current);
     }
   }, [buzzed]);
 
   return (
     <div className="flex flex-col h-full w-full items-center justify-around">
       <BuzzerHeadPlayer buzzed={buzzed} />
-      <QuoteOrganizerAnswerController buzzed={buzzed} question={question} />
+      <QuoteOrganizerAnswerController buzzed={buzzed} baseQuestion={baseQuestion} />
       <QuoteOrganizerQuestionController />
     </div>
   );
 }
 
-function QuoteOrganizerAnswerController({ buzzed, question }) {
+function QuoteOrganizerAnswerController({ buzzed, baseQuestion }) {
   const game = useGameContext();
 
   const gameQuestionRepo = new GameQuoteQuestionRepository(game.id, game.currentRound);
@@ -95,7 +98,7 @@ function QuoteOrganizerAnswerController({ buzzed, question }) {
       >
         <ValidateAllQuoteElementsButton buzzed={buzzed} gameQuestion={gameQuestion} />
         <CancelQuoteElementButton buzzed={buzzed} />
-        <RevealQuoteElementButton buzzed={buzzed} question={question} gameQuestion={gameQuestion} />
+        <RevealQuoteElementButton buzzed={buzzed} baseQuestion={baseQuestion} gameQuestion={gameQuestion} />
       </ButtonGroup>
     </>
   );

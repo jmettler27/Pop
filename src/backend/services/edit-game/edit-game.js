@@ -7,7 +7,6 @@ import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF, USERS_COLLECTION_REF } 
 import { doc, arrayUnion, runTransaction, collection, serverTimestamp, arrayRemove } from 'firebase/firestore';
 
 import { getDocDataTransaction } from '@/backend/services/utils';
-import { resetGameChooserTransaction } from '@/backend/services/chooser/chooser';
 
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { EnumerationQuestionStatus } from '@/backend/models/questions/Enumeration';
@@ -561,5 +560,20 @@ const launchGameTransaction = async (transaction, gameId) => {
   transaction.update(gameRef, {
     launchedAt: serverTimestamp(),
     status: GameStatus.GAME_START,
+  });
+};
+
+const resetGameChooserTransaction = async (transaction, gameId) => {
+  const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams');
+  const teamsSnapshot = await getDocs(query(teamsCollectionRef));
+
+  // Create an array of random ids for the teams
+  const teamIds = teamsSnapshot.docs.map((doc) => doc.id);
+  const shuffledTeamIds = shuffle(teamIds);
+
+  const chooserRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states');
+  transaction.update(chooserRef, {
+    chooserIdx: 0,
+    chooserOrder: shuffledTeamIds,
   });
 };

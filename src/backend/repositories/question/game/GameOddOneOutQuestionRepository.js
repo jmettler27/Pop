@@ -16,15 +16,6 @@ export default class GameOddOneOutQuestionRepository extends GameQuestionReposit
     });
   }
 
-  async getPlayersTransaction(transaction, questionId) {
-    const data = await this.getTransaction(transaction, [
-      questionId,
-      ...GameOddOneOutQuestionRepository.ODD_ONE_OUT_PLAYERS_PATH,
-    ]);
-    // return data ? data.map(p => new Player(p)) : [];
-    return data;
-  }
-
   useQuestionPlayers(questionId) {
     const { data, loading, error } = super.useQuestionPlayers(questionId);
     return {

@@ -117,9 +117,7 @@ export default class PlayerRepository extends FirebaseRepository {
 
   async updateTeamAndOtherTeamsPlayersStatus(teamId, teamStatus, otherTeamsStatus) {
     const players = await this.getPlayersByTeamId(teamId);
-    console.log('PLAYERS', players);
     const otherPlayers = await this.getAllOtherPlayers(teamId);
-    console.log('OTHER PLAYERS', otherPlayers);
 
     const batch = writeBatch(firestore);
 

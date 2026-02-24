@@ -1,6 +1,6 @@
 import { UserRole } from '@/backend/models/users/User';
 
-import RoundQuoteQuestionRepository from '@/backend/repositories/question/game/GameQuoteQuestionRepository';
+import GameQuoteQuestionRepository from '@/backend/repositories/question/game/GameQuoteQuestionRepository';
 
 import { useGameContext, useRoleContext } from '@/frontend/contexts';
 
@@ -12,8 +12,8 @@ import BuzzerPlayers from '@/frontend/components/game/bottom-pane/question/quest
 export default function QuoteBottomPane({ baseQuestion }) {
   const game = useGameContext();
 
-  const roundQuoteQuestionRepo = new RoundQuoteQuestionRepository(game.id, game.currentRound);
-  const { players, loading, error } = roundQuoteQuestionRepo.usePlayers(game.currentQuestion);
+  const gameQuestionRepo = new GameQuoteQuestionRepository(game.id, game.currentRound);
+  const { data: questionPlayers, loading, error } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
 
   if (error) {
     return (
@@ -26,7 +26,7 @@ export default function QuoteBottomPane({ baseQuestion }) {
   if (loading) {
     return <></>;
   }
-  if (!players) {
+  if (!questionPlayers) {
     return <></>;
   }
 
@@ -34,26 +34,26 @@ export default function QuoteBottomPane({ baseQuestion }) {
     <div className="flex flex-row h-full divide-x divide-solid">
       {/* Left part: controller */}
       <div className="basis-3/4">
-        <QuoteController baseQuestion={baseQuestion} players={players} />
+        <QuoteController baseQuestion={baseQuestion} questionPlayers={questionPlayers} />
       </div>
 
       {/* Right part: list of Quote players who buzzed and/or were canceled */}
       <div className="basis-1/4">
-        <BuzzerPlayers players={players} />
+        <BuzzerPlayers questionPlayers={questionPlayers} />
       </div>
     </div>
   );
 }
 
-function QuoteController({ baseQuestion, players }) {
+function QuoteController({ baseQuestion, questionPlayers }) {
   const myRole = useRoleContext();
 
   switch (myRole) {
     case UserRole.PLAYER:
-      return <BuzzerPlayerController players={players} />;
+      return <BuzzerPlayerController questionPlayers={questionPlayers} />;
     case UserRole.ORGANIZER:
-      return <QuoteOrganizerController baseQuestion={baseQuestion} players={players} />;
+      return <QuoteOrganizerController baseQuestion={baseQuestion} questionPlayers={questionPlayers} />;
     default:
-      return <BuzzerSpectatorController players={players} />;
+      return <BuzzerSpectatorController questionPlayers={questionPlayers} />;
   }
 }

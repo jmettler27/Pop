@@ -103,20 +103,4 @@ export default class EnumerationRoundService extends RoundService {
   async calculateMaxPointsTransaction(transaction, round) {
     return round.questions.length * (round.rewardsPerQuestion + round.rewardsForBonus);
   }
-
-  async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {
-    const gameQuestionRepo = new GameEnumerationQuestionRepository(this.gameId, this.roundId);
-
-    const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
-    const playerIds = await this.playerRepo.getAllIdsTransaction(transaction);
-
-    for (const id of playerIds) {
-      await this.playerRepo.updatePlayerStatusTransaction(transaction, id, PlayerStatus.IDLE);
-    }
-
-    await this.timerRepo.resetTimerTransaction(transaction, baseQuestion.thinkingTime);
-    await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon');
-
-    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
-  }
 }

@@ -82,8 +82,6 @@ export default class BuzzerRoundService extends RoundService {
   }
 
   async moveToNextQuestionTransaction(transaction, roundId, questionOrder) {
-    console.log('moveToNextQuestionTransaction called with roundId', roundId, 'questionOrder', questionOrder);
-
     const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(this.roundType, this.gameId, roundId);
 
     /* Game: fetch next question and reset every player's state */
@@ -91,45 +89,20 @@ export default class BuzzerRoundService extends RoundService {
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     const questionId = round.questions[questionOrder];
     const defaultThinkingTime = round.thinkingTime;
-    console.log('Moving to next question', questionId, 'with thinking time', defaultThinkingTime);
 
-    console.log("Updating players' status to idle and resetting timer for next question");
     await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
-    console.log('Players status updated to idle');
     await this.timerRepo.resetTimerTransaction(transaction, defaultThinkingTime);
-    console.log('Timer reset for next question');
     await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
-    console.log('Sound added for next question');
     await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
-    console.log('Game question transaction started for next question', questionId);
     await this.roundRepo.setCurrentQuestionIdxTransaction(transaction, roundId, questionOrder);
-    console.log('Current question index updated for next question', questionOrder);
     await this.gameRepo.setCurrentQuestionTransaction(transaction, this.gameId, questionId, this.roundType);
-    console.log('Current question updated in game for next question', questionId);
     await this.readyRepo.resetReadyTransaction(transaction);
-    console.log('Ready state reset for next question');
   }
 
   /* =============================================================================================================== */
 
   async calculateMaxPointsTransaction(transaction, round) {
     return round.questions.length * round.rewardsPerQuestion;
-  }
-
-  async prepareQuestionStartTransaction(transaction, roundId, questionId, questionOrder) {
-    const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(this.roundType, this.gameId, roundId);
-
-    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
-    const playerIds = await this.playerRepo.getAllIdsTransaction(transaction);
-
-    for (const id of playerIds) {
-      await this.playerRepo.updatePlayerStatusTransaction(transaction, id, PlayerStatus.IDLE);
-    }
-
-    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
-    await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon');
-
-    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
   }
 
   /* =============================================================================================================== */

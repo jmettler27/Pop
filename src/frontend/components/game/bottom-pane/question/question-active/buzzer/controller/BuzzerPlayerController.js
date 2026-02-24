@@ -15,7 +15,7 @@ import PanToolIcon from '@mui/icons-material/PanTool';
 import clsx from 'clsx';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/game/GameQuestionRepositoryFactory';
 
-export default function BuzzerPlayerController({ questionPlayers: buzzerPlazers }) {
+export default function BuzzerPlayerController({ questionPlayers }) {
   const game = useGameContext();
   const user = useUserContext();
 
@@ -65,7 +65,7 @@ export default function BuzzerPlayerController({ questionPlayers: buzzerPlazers 
     return <></>;
   }
 
-  const { buzzed, canceled } = buzzerPlazers;
+  const { buzzed, canceled } = questionPlayers;
 
   const hasBuzzed = buzzed.includes(user.id);
   const isFirst = hasBuzzed && buzzed[0] === user.id;

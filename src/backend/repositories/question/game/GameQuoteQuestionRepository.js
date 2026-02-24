@@ -63,7 +63,7 @@ export default class GameQuoteQuestionRepository extends GameBuzzerQuestionRepos
   }
 
   async cancelPlayerTransaction(transaction, questionId, playerId) {
-    await this.updateTransaction(transaction, [questionId, ...GameQuoteQuestionRepository.LABELLING_PLAYERS_PATH], {
+    await this.updateTransaction(transaction, [questionId, ...GameQuoteQuestionRepository.QUOTE_PLAYERS_PATH], {
       canceled: arrayUnion({
         playerId,
         timestamp: Timestamp.now(),

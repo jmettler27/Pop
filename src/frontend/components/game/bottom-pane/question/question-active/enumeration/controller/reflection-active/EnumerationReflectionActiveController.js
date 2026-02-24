@@ -11,7 +11,7 @@ import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
-import { useUserContext, useGameContext, useRoleContext, useTeamContext } from '@/frontend/contexts';
+import { useGameContext, useRoleContext, useTeamContext, useUserContext } from '@/frontend/contexts';
 
 import { DIALOG_ACTION_CANCEL, DIALOG_ACTION_VALIDATE, DIALOG_TITLE, DIALOG_WARNING } from '@/frontend/texts/dialogs';
 
@@ -19,16 +19,16 @@ import { useState } from 'react';
 
 import {
   Button,
-  DialogContentText,
-  InputLabel,
-  MenuItem,
-  FormControl,
-  Select,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
+  DialogContentText,
   DialogTitle,
-  CircularProgress,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
 } from '@mui/material';
 
 export default function EnumerationReflectionActiveController({ baseQuestion, timer, lang = DEFAULT_LOCALE }) {
@@ -66,8 +66,8 @@ function AddBetForm({ baseQuestion, status, lang }) {
   const [myBet, setMyBet] = useState(0);
   const [hasValidated, setHasValidated] = useState(false);
 
-  const roundEnumQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound);
-  const { players, playersLoading, playersError } = roundEnumQuestionRepo.usePlayers(game.currentQuestion);
+  const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound);
+  const { players, playersLoading, playersError } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
 
   if (playersError) {
     return (

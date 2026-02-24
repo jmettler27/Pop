@@ -1,18 +1,17 @@
-import RoundMatchingQuestionRepository from '@/backend/repositories/question/game/GameMatchingQuestionRepository';
-
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 import { useGameContext } from '@/frontend/contexts';
 
-import { MatchingEdge, getNodeId } from '@/frontend/components/game/middle-pane/question/matching/gridUtils.js';
+import { getNodeId, MatchingEdge } from '@/frontend/components/game/middle-pane/question/matching/gridUtils.js';
 import '@/frontend/components/game/middle-pane/question/matching/styles.scss';
+import GameMCQQuestionRepository from '@/backend/repositories/question/game/GameMCQQuestionRepository';
 
 export default function CorrectMatches({ nodePositions, colIndices }) {
   console.log('CORRECT MATCHES RENDERED');
 
   const game = useGameContext();
 
-  const roundMatchingQuestionRepo = new RoundMatchingQuestionRepository(game.id, game.currentRound);
+  const roundMatchingQuestionRepo = new GameMCQQuestionRepository(game.id, game.currentRound);
   const { correctMatches, loading, error } = roundMatchingQuestionRepo.useCorrectMatches(game.currentQuestion);
 
   if (error) {

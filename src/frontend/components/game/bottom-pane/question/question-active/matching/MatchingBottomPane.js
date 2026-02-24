@@ -4,7 +4,7 @@ import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 import { GameMatchingQuestion } from '@/backend/models/questions/Matching';
 
-import RoundMatchingQuestionRepository from '@/backend/repositories/question/game/GameMatchingQuestionRepository';
+import GameMatchingQuestionRepository from '@/backend/repositories/question/game/GameMatchingQuestionRepository';
 
 import { useGameContext, useGameRepositoriesContext, useRoleContext, useTeamContext } from '@/frontend/contexts';
 
@@ -69,7 +69,7 @@ function MatchingPlayerQuestionController({ lang = DEFAULT_LOCALE }) {
   const { roundRepo } = useGameRepositoriesContext();
   const { round, roundLoading, roundError } = roundRepo.useRound(game.currentRound);
 
-  const gameQuestionRepo = new RoundMatchingQuestionRepository(game.id, game.currentRound);
+  const gameQuestionRepo = new GameMatchingQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
   if (roundError) {
@@ -132,7 +132,7 @@ function MatchingOrganizerQuestionController({}) {
 function MatchingRunningOrder({ chooser, lang = DEFAULT_LOCALE }) {
   const game = useGameContext();
 
-  const gameQuestionRepo = new RoundMatchingQuestionRepository(game.id, game.currentRound);
+  const gameQuestionRepo = new GameMatchingQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
   const { teamRepo } = useGameRepositoriesContext();

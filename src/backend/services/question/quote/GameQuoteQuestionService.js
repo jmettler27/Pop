@@ -72,6 +72,50 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
   }
 
   /* =============================================================================================================== */
+  async handleBuzzerHeadChanged(questionId, playerId) {
+    if (!questionId) {
+      throw new Error('Question ID is required');
+    }
+    if (!playerId) {
+      throw new Error('Player ID is required');
+    }
+
+    try {
+      await runTransaction(firestore, async (transaction) => {
+        await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.FOCUS);
+        // await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.START);
+
+        console.log(
+          'Buzzer head change successfully handled',
+          'game',
+          this.gameId,
+          'round',
+          this.roundId,
+          'question',
+          questionId,
+          'type',
+          this.questionType,
+          'player',
+          playerId
+        );
+      });
+    } catch (error) {
+      console.error(
+        'Failed to handle buzzer head change',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'type',
+        this.questionType,
+        'err',
+        error
+      );
+      throw error;
+    }
+  }
 
   /**
    *
@@ -263,7 +307,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
     try {
       await runTransaction(firestore, async (transaction) => {
         const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
-        const round = await this.roundRepo.getRoundTransaction(transaction, baseQuestion.roundId);
+        const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
         const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
         const player = await this.playerRepo.getPlayerTransaction(transaction, playerId);
 

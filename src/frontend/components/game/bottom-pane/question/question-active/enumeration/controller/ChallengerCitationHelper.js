@@ -16,7 +16,7 @@ export default function ChallengerCitationHelper({}) {
   const game = useGameContext();
 
   const roundEnumQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound);
-  const { players, playersLoading, playersError } = roundEnumQuestionRepo.usePlayers(game.currentQuestion);
+  const { players, playersLoading, playersError } = roundEnumQuestionRepo.useQuestionPlayers(game.currentQuestion);
 
   if (playersError) {
     return (

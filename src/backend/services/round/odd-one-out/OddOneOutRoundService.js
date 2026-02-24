@@ -62,7 +62,7 @@ export default class OddOneOutRoundService extends RoundService {
   }
 
   async moveToNextQuestionTransaction(transaction, roundId, questionOrder) {
-    const gameQuestionRepo = new GameOddOneOutQuestionRepository(this.gameId, this.roundId);
+    const gameQuestionRepo = new GameOddOneOutQuestionRepository(this.gameId, roundId);
 
     /* Game: fetch next question and reset every player's state */
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
@@ -89,28 +89,4 @@ export default class OddOneOutRoundService extends RoundService {
   }
 
   /* =============================================================================================================== */
-
-  async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {
-    const gameQuestionRepo = new GameOddOneOutQuestionRepository(this.gameId, this.roundId);
-    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
-
-    const chooser = await this.chooserRepo.getChooserTransaction(transaction);
-    const newChooserTeamId = chooser.chooserOrder[0];
-
-    const choosers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, newChooserTeamId);
-    const nonChoosers = await this.playerRepo.getAllOtherPlayersTransaction(transaction, newChooserTeamId);
-
-    await this.chooserRepo.resetChoosersTransaction(transaction);
-
-    for (const player of choosers) {
-      await this.playerRepo.updatePlayerStatusTransaction(transaction, player.id, PlayerStatus.FOCUS);
-    }
-    for (const player of nonChoosers) {
-      await this.playerRepo.updatePlayerStatusTransaction(transaction, player.id, PlayerStatus.IDLE);
-    }
-
-    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
-
-    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
-  }
 }

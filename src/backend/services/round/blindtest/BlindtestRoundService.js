@@ -11,7 +11,6 @@ export default class BlindtestRoundService extends BuzzerRoundService {
   }
 
   async moveToNextQuestionTransaction(transaction, roundId, questionOrder) {
-    console.log('BLINDTEST moveToNextQuestionTransaction called with roundId', roundId, 'questionOrder', questionOrder);
     const gameQuestionRepo = new GameBlindtestQuestionRepository(this.gameId, roundId);
 
     /* Game: fetch next question and reset every player's state */

@@ -93,32 +93,4 @@ export default class MatchingRoundService extends RoundService {
   async calculateMaxPointsTransaction(transaction, round) {
     return round.questions.length * round.rewardsPerQuestion;
   }
-
-  async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {
-    const gameQuestionRepo = new GameMatchingQuestionRepository(this.gameId, roundId);
-
-    const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
-    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
-
-    const chooser = await this.chooserRepo.getChooserTransaction(transaction);
-    const newChooserIdx = 0;
-    const newChooserTeamId = chooser.chooserOrder[newChooserIdx];
-
-    const choosers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, newChooserTeamId);
-    const nonChoosers = await this.playerRepo.getAllOtherPlayersTransaction(transaction, newChooserTeamId);
-
-    await this.chooserRepo.updateChooserTransaction(transaction, {
-      chooserIdx: newChooserIdx,
-    });
-    for (const player of choosers) {
-      await this.playerRepo.updatePlayerStatusTransaction(transaction, player.id, PlayerStatus.FOCUS);
-    }
-    for (const player of nonChoosers) {
-      await this.playerRepo.updatePlayerStatusTransaction(transaction, player.id, PlayerStatus.IDLE);
-    }
-
-    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime * (baseQuestion.numCols - 1));
-
-    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
-  }
 }

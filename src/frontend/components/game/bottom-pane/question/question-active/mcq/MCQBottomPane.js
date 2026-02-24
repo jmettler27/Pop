@@ -1,6 +1,6 @@
 import { UserRole } from '@/backend/models/users/User';
 
-import RoundMCQQuestionRepository from '@/backend/repositories/question/game/GameMCQQuestionRepository';
+import GameMCQQuestionRepository from '@/backend/repositories/question/game/GameMCQQuestionRepository';
 
 import { useGameContext, useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
 
@@ -10,6 +10,7 @@ import EndQuestionButton from '@/frontend/components/game/bottom-pane/question/q
 import ResetQuestionButton from '@/frontend/components/game/bottom-pane/question/question-active/ResetQuestionButton';
 
 import { CircularProgress } from '@mui/material';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
 
 export default function MCQBottomPane({ baseQuestion }) {
   const { chooserRepo } = useGameRepositoriesContext();
@@ -49,7 +50,7 @@ function MCQController({ chooser, baseQuestion }) {
 
   const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx];
 
-  const gameQuestionRepo = new RoundMCQQuestionRepository(game.id, game.currentRound);
+  const gameQuestionRepo = new GameMCQQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
   if (gameQuestionError) {

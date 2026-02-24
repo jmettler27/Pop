@@ -6,6 +6,7 @@ import { PlayerStatus } from '@/backend/models/users/Player';
 import { serverTimestamp } from 'firebase/firestore';
 import { Timer, TimerStatus } from '@/backend/models/Timer';
 import { RoundType } from '@/backend/models/rounds/RoundType';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/game/GameQuestionRepositoryFactory';
 
 export default class QuoteRoundService extends RoundService {
   constructor(gameId) {
@@ -75,7 +76,23 @@ export default class QuoteRoundService extends RoundService {
     console.log('Round successfully started', 'game', this.gameId, 'round', roundId);
   }
 
-  async moveToNextQuestionTransaction(transaction, roundId, questionOrder) {}
+  async moveToNextQuestionTransaction(transaction, roundId, questionOrder) {
+    const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(this.roundType, this.gameId, roundId);
+
+    /* Game: fetch next question and reset every player's state */
+    const playerIds = await this.playerRepo.getAllPlayerIds();
+    const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
+    const questionId = round.questions[questionOrder];
+    const defaultThinkingTime = round.thinkingTime;
+
+    await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
+    await this.timerRepo.resetTimerTransaction(transaction, defaultThinkingTime);
+    await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
+    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
+    await this.roundRepo.setCurrentQuestionIdxTransaction(transaction, roundId, questionOrder);
+    await this.gameRepo.setCurrentQuestionTransaction(transaction, this.gameId, questionId, this.roundType);
+    await this.readyRepo.resetReadyTransaction(transaction);
+  }
 
   /* =============================================================================================================== */
 
@@ -83,31 +100,13 @@ export default class QuoteRoundService extends RoundService {
     const questions = await Promise.all(
       round.questions.map((id) => this.baseQuestionRepo.getQuestionTransaction(transaction, id))
     );
-    console.log('questions', questions);
 
     const totalNumElements = questions.reduce((acc, baseQuestion) => {
       const toGuess = baseQuestion.toGuess;
       const quoteParts = baseQuestion.quoteParts;
       return acc + toGuess.length + (toGuess.includes('quote') ? quoteParts.length - 1 : 0);
     }, 0);
-    console.log('totalNumElements', totalNumElements);
 
     return totalNumElements * round.rewardsPerElement;
-  }
-
-  async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {
-    const gameQuestionRepo = new GameQuoteQuestionRepository(this.gameId, this.roundId);
-
-    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
-    const playerIds = await this.playerRepo.getAllIdsTransaction(transaction);
-
-    for (const id of playerIds) {
-      await this.playerRepo.updatePlayerStatusTransaction(transaction, id, PlayerStatus.IDLE);
-    }
-
-    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
-    await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon');
-
-    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
   }
 }

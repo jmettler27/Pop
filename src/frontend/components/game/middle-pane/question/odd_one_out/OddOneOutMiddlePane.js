@@ -1,6 +1,6 @@
 import { selectProposal } from '@/backend/services/question/odd-one-out/actions';
 
-import RoundOddOneOutQuestionRepository from '@/backend/repositories/question/game/GameOddOneOutQuestionRepository';
+import GameOddOneOutQuestionRepository from '@/backend/repositories/question/game/GameOddOneOutQuestionRepository';
 
 import { UserRole } from '@/backend/models/users/User';
 import { GameStatus } from '@/backend/models/games/GameStatus';
@@ -46,6 +46,8 @@ import { clsx } from 'clsx';
 import Image from 'next/image';
 
 export default function OddOneOutMiddlePane({ baseQuestion }) {
+  console.log('BASE QUESTION', baseQuestion);
+
   // Randomize the order of the items on the client side
   const randomMapping = useMemo(() => shuffleIndices(baseQuestion.items.length), [baseQuestion.items.length]);
 
@@ -85,10 +87,10 @@ function OddOneOutMainContent({ baseQuestion, randomization }) {
   const game = useGameContext();
   const myTeam = useTeamContext();
 
-  const oddOneOutRepo = new RoundOddOneOutQuestionRepository(game.id, game.currentRound);
+  const gameQuestionRepo = new GameOddOneOutQuestionRepository(game.id, game.currentRound);
   const { chooserRepo, timerRepo } = useGameRepositoriesContext();
 
-  const { gameQuestion, gameQuestionLoading, gameQuestionError } = oddOneOutRepo.useQuestion(game.currentQuestion);
+  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
   const { isChooser, chooserLoading, chooserError } = chooserRepo.useIsChooser(myTeam);
   const { timer, timerLoading, timerError } = timerRepo.useTimer();
 
@@ -116,7 +118,7 @@ function OddOneOutMainContent({ baseQuestion, randomization }) {
   if (gameQuestionLoading || chooserLoading || timerLoading) {
     return <LoadingScreen />;
   }
-  if (!gameQuestion || !isChooser || !timer) {
+  if (!gameQuestion || !timer) {
     return <></>;
   }
 

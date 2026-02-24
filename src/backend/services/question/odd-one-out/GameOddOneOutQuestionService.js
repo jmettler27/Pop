@@ -6,10 +6,10 @@ import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { OddOneOutQuestion } from '@/backend/models/questions/OddOneOut';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { PlayerStatus } from '@/backend/models/users/Player';
-import { getRandomIndex, moveToHead } from '@/backend/utils/arrays';
+import { getNextCyclicIndex, getRandomIndex, moveToHead } from '@/backend/utils/arrays';
 
 import { firestore } from '@/backend/firebase/firebase';
-import { runTransaction, serverTimestamp } from 'firebase/firestore';
+import { runTransaction, Timestamp } from 'firebase/firestore';
 
 export default class GameOddOneOutQuestionService extends GameQuestionService {
   constructor(gameId, roundId) {
@@ -84,13 +84,16 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
   }
 
   async selectProposalTransaction(transaction, questionId, playerId, idx) {
+    const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
+    const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
+    const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
     const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     const { chooserOrder, chooserIdx } = await this.chooserRepo.getChooserTransaction(transaction);
 
     const teamId = chooserOrder[chooserIdx];
-    const teamPlayers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId);
+    const teamPlayers = await this.playerRepo.getPlayersByTeamId(teamId);
 
-    if (idx === gameQuestion.answerIdx) {
+    if (idx === baseQuestion.answerIdx) {
       // The selected proposal is the odd one out
       const roundScorePolicy = game.roundScorePolicy;
       const mistakePenalty = round.mistakePenalty;
@@ -98,12 +101,7 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
       if (roundScorePolicy === ScorePolicyType.RANKING) {
         await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, mistakePenalty);
       } else if (roundScorePolicy === ScorePolicyType.COMPLETION_RATE) {
-        await this.roundScoreRepo.decreaseGlobalTeamScoreTransaction(transaction, questionId, mistakePenalty, teamId);
-      }
-
-      // Update player statuses
-      for (const player of teamPlayers) {
-        await this.playerRepo.updatePlayerStatusTransaction(transaction, player.id, PlayerStatus.WRONG);
+        await this.decreaseGlobalTeamScoreTransaction(transaction, questionId, mistakePenalty, teamId);
       }
 
       // Move winner to head of chooser list
@@ -111,28 +109,38 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
       await this.chooserRepo.updateChooserOrderTransaction(transaction, newChooserOrder);
 
       // Update question winner and end question
-      await this.updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId);
+      await this.gameQuestionRepo.updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId);
       await this.soundRepo.addSoundTransaction(transaction, 'hysterical5');
       await this.endQuestionTransaction(transaction, questionId);
     } else {
       // The selected proposal is correct
       const newNumClicked = gameQuestion.selectedItems.length + 1;
 
-      if (newNumClicked === gameQuestion.items.length - 1) {
+      if (newNumClicked === baseQuestion.items.length - 1) {
         // No one selected the odd one out
         await this.soundRepo.addSoundTransaction(transaction, 'zelda_secret_door');
         await this.endQuestionTransaction(transaction, questionId);
       } else {
         // The selected proposal is not the last remaining one
-        await this.chooserRepo.moveToNextChooserTransaction(transaction);
+        const newChooserIdx = getNextCyclicIndex(chooserIdx, chooserOrder.length);
+        await this.chooserRepo.updateChooserIndexTransaction(transaction, newChooserIdx);
+        const newChooserTeamId = chooserOrder[newChooserIdx];
+        const newChooserTeamPlayers = await this.playerRepo.getPlayersByTeamId(newChooserTeamId);
+        await this.playerRepo.updateAllPlayersStatusTransaction(
+          transaction,
+          PlayerStatus.FOCUS,
+          newChooserTeamPlayers.map((p) => p.id)
+        );
         await this.soundRepo.addSoundTransaction(transaction, 'Bien');
         await this.timerRepo.resetTimerTransaction(transaction);
       }
 
       // Update player statuses
-      for (const player of teamPlayers) {
-        await this.playerRepo.updatePlayerStatusTransaction(transaction, player.id, PlayerStatus.IDLE);
-      }
+      await this.playerRepo.updateAllPlayersStatusTransaction(
+        transaction,
+        PlayerStatus.IDLE,
+        teamPlayers.map((p) => p.id)
+      );
     }
 
     // Update selected items and timer
@@ -142,7 +150,7 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
         {
           idx,
           playerId,
-          timestamp: serverTimestamp(),
+          timestamp: Timestamp.now(),
         },
       ],
     });

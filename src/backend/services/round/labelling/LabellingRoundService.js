@@ -107,20 +107,4 @@ export default class LabellingRoundService extends RoundService {
     }, 0);
     return totalNumElements * round.rewardsPerElement;
   }
-
-  async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {
-    const gameQuestionRepo = new GameLabellingQuestionRepository(this.gameId, this.roundId);
-
-    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
-    const playerIds = await this.playerRepo.getAllIdsTransaction(transaction);
-
-    for (const id of playerIds) {
-      await this.playerRepo.updatePlayerStatusTransaction(transaction, id, PlayerStatus.IDLE);
-    }
-
-    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
-    await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon');
-
-    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
-  }
 }

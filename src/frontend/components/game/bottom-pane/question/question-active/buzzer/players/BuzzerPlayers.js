@@ -22,13 +22,7 @@ export default function BuzzerPlayers({ questionPlayers, lang = DEFAULT_LOCALE }
     return <></>;
   }
 
-  console.log('BuzzerPlayers', { players, questionPlayers });
-
-  const buzzed = questionPlayers.buzzed;
-  const canceled = questionPlayers.canceled;
-  console.log('questionPlayers', players);
-  console.log('BUZZED', buzzed);
-  console.log('CANCELED', canceled);
+  const { buzzed, canceled } = questionPlayers;
 
   return (
     <div className="flex flex-row h-full w-full">

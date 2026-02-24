@@ -6,6 +6,19 @@ import { isObjectEmpty } from '@/backend/utils/objects';
 import { prependWithEmojiAndSpace } from '@/backend/utils/strings';
 import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
+export const QUOTE_ELEMENT_TO_TITLE = {
+  en: {
+    source: 'Source',
+    author: 'Author',
+    quote: 'Quote part',
+  },
+  'fr-FR': {
+    source: 'Source',
+    author: 'Auteur',
+    quote: 'Partie de la réplique',
+  },
+};
+
 // Source quote element
 export class QuoteSourceElement {
   static TYPE = 'source';
@@ -67,9 +80,9 @@ export class QuotePartElement {
     return this.TYPE_TO_EMOJI;
   }
 
-  static elementToTitle(lang = DEFAULT_LOCALE) {
-    return this.TYPE_TO_TITLE[lang];
-  }
+  // static elementToTitle(lang = DEFAULT_LOCALE) {
+  //   return this.TYPE_TO_TITLE[lang];
+  // }
 
   static prependElementWithEmoji(lang = DEFAULT_LOCALE) {
     return prependWithEmojiAndSpace(this.elementToEmoji(), this.elementToTitle(lang));
@@ -94,6 +107,10 @@ export class QuoteQuestion extends BaseQuestion {
     this.quoteParts = data.quoteParts || data.details.quoteParts;
     this.source = data.source || data.details.source;
     this.toGuess = data.toGuess || data.details.toGuess;
+  }
+
+  static elementToTitle(element, lang = DEFAULT_LOCALE) {
+    return QUOTE_ELEMENT_TO_TITLE[lang][element];
   }
 
   getQuestionType() {
@@ -207,10 +224,6 @@ export class QuoteQuestion extends BaseQuestion {
       this.toGuess.every((elem) => revealed[elem] && Object.keys(revealed[elem]).length > 0) &&
       this.quoteParts.every((_, idx) => revealed.quote[idx] && Object.keys(revealed.quote[idx]).length > 0)
     );
-  }
-
-  calculatePoints(rewardsPerElement) {
-    return this.toGuess.length * rewardsPerElement;
   }
 }
 

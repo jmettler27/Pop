@@ -12,29 +12,4 @@ export default class ReorderingRoundService extends RoundService {
   async calculateMaxPointsTransaction(transaction, round) {
     return round.questions.length * round.rewardsPerQuestion;
   }
-
-  async prepareQuestionStartTransaction(transaction, questionId, questionOrder) {
-    const gameQuestionRepo = new GameReorderingQuestionRepository(this.gameId, this.roundId);
-
-    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
-
-    const chooser = await this.chooserRepo.getChooserTransaction(transaction);
-    const newChooserTeamId = chooser.chooserOrder[0];
-
-    const choosers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, newChooserTeamId);
-    const nonChoosers = await this.playerRepo.getAllOtherPlayersTransaction(transaction, newChooserTeamId);
-
-    await this.chooserRepo.resetChoosersTransaction(transaction);
-
-    for (const player of choosers) {
-      await this.playerRepo.updatePlayerStatusTransaction(transaction, player.id, PlayerStatus.FOCUS);
-    }
-    for (const player of nonChoosers) {
-      await this.playerRepo.updatePlayerStatusTransaction(transaction, player.id, PlayerStatus.IDLE);
-    }
-
-    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
-
-    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
-  }
 }

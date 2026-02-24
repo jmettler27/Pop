@@ -17,7 +17,7 @@ import SpecialRoundRepository from '@/backend/repositories/round/SpecialRoundRep
 import MixedRoundRepository from '@/backend/repositories/round/MixedRoundRepository';
 
 export default class RoundRepositoryFactory {
-  static createRepository(gameId, roundType) {
+  static createRepository(roundType, gameId) {
     switch (roundType) {
       case RoundType.BASIC:
         return new BasicRoundRepository(gameId);

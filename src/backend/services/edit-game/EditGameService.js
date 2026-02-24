@@ -53,6 +53,7 @@ export default class EditGameService {
         const round = await this.roundRepo.createRoundTransaction(transaction, roundType, {
           title: roundTitle,
           scorePolicy: roundScorePolicy.type,
+          currentQuestionIdx: 0,
         });
 
         const roundScoreRepo = new RoundScoreRepository(this.gameId, round.id);
