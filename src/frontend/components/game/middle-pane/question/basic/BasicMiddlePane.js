@@ -50,9 +50,7 @@ function BasicQuestionMainContent({ baseQuestion }) {
   const myRole = useRoleContext();
 
   const gameQuestionRepo = new GameBasicQuestionRepository(game.id, game.currentRound);
-  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useGameQuestion(
-    game.currentQuestion
-  );
+  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
   if (gameQuestionError) {
     return (

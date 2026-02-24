@@ -1,4 +1,4 @@
-import { resetQuestion } from '@/backend/services/game/actions';
+import { resetQuestion } from '@/backend/services/question/actions';
 
 import { useGameContext, useGameRepositoriesContext } from '@/frontend/contexts';
 

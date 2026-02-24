@@ -5,7 +5,7 @@ import GameEnumerationQuestionRepository from '@/backend/repositories/question/g
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { UserRole } from '@/backend/models/users/User';
 import { TimerStatus } from '@/backend/models/Timer';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { EnumerationQuestionStatus } from '@/backend/models/questions/Enumeration';
 import { topicToEmoji } from '@/backend/models/Topic';
 
@@ -23,53 +23,55 @@ import { CircularProgress } from '@mui/material';
 
 import clsx from 'clsx';
 
-export default function EnumerationMiddlePane({ question }) {
+export default function EnumerationMiddlePane({ baseQuestion }) {
   return (
     <div className="flex flex-col h-full">
       <div className="h-1/6 flex flex-col items-center justify-center">
-        <EnumerationQuestionHeader question={question} />
+        <EnumerationQuestionHeader baseQuestion={baseQuestion} />
         {/* {question.indication && <QuestionIndication indication={question.indication} />} */}
-        <EnumerationQuestionObjective question={question} />
+        <EnumerationQuestionObjective baseQuestion={baseQuestion} />
       </div>
       <div className="h-5/6 w-full overflow-auto">
-        <EnumerationQuestionAnswer answer={question.answer} />
+        <EnumerationQuestionAnswer answer={baseQuestion.answer} />
       </div>
     </div>
   );
 }
 
-function EnumerationQuestionHeader({ question }) {
+function EnumerationQuestionHeader({ baseQuestion }) {
   return (
     <div className="flex flex-col items-center justify-center space-y-2">
       <div className="flex flex-row items-center justify-center space-x-1">
-        <QuestionTypeIcon questionType={question.type} fontSize={40} />
+        <QuestionTypeIcon questionType={baseQuestion.type} fontSize={40} />
         <h1 className="2xl:text-5xl">
-          {topicToEmoji(question.topic)}{' '}
+          {topicToEmoji(baseQuestion.topic)}{' '}
           <strong>
-            {QuestionType.typeToTitle(question.type)} <CurrentRoundQuestionOrder />
+            {questionTypeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
           </strong>
         </h1>
       </div>
       <div className="flex flex-row items-center justify-center space-x-1">
-        <h2 className="2xl:text-4xl">{question.title}</h2>
-        {question.note && <NoteButton note={question.note} />}
+        <h2 className="2xl:text-4xl">{baseQuestion.title}</h2>
+        {baseQuestion.note && <NoteButton note={baseQuestion.note} />}
       </div>
     </div>
   );
 }
 
-function EnumerationQuestionObjective({ question, lang = DEFAULT_LOCALE }) {
+function EnumerationQuestionObjective({ baseQuestion, lang = DEFAULT_LOCALE }) {
   switch (lang) {
     case 'en':
       return (
         <span className="2xl:text-3xl text-yellow-300">
-          There are {question.maxIsKnown ? 'exactly' : 'at least'} <strong>{question.answer.length}</strong> answers
+          There are {baseQuestion.maxIsKnown ? 'exactly' : 'at least'} <strong>{baseQuestion.answer.length}</strong>{' '}
+          answers
         </span>
       );
     case 'fr-FR':
       return (
         <span className="2xl:text-3xl text-yellow-300">
-          Il y a {question.maxIsKnown ? 'exactement' : 'au moins'} <strong>{question.answer.length}</strong> réponses
+          Il y a {baseQuestion.maxIsKnown ? 'exactement' : 'au moins'} <strong>{baseQuestion.answer.length}</strong>{' '}
+          réponses
         </span>
       );
   }
@@ -89,11 +91,17 @@ function EnumerationQuestionAnswer({ answer }) {
   const { timer, timerLoading, timerError } = timerRepo.useTimer(game.id);
 
   const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound);
-  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useGameQuestion(
-    game.currentQuestion
-  );
+  const {
+    gameQuestion,
+    loading: gameQuestionLoading,
+    error: gameQuestionError,
+  } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  const { players, playersLoading, playersError } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
+  const {
+    data: questionPlayers,
+    loading: playersLoading,
+    error: playersError,
+  } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
 
   if (timerError) {
     return (
@@ -122,14 +130,14 @@ function EnumerationQuestionAnswer({ answer }) {
   if (timerLoading || gameQuestionLoading || playersLoading) {
     return <CircularProgress />;
   }
-  if (!timer || !gameQuestion || !players) {
+  if (!timer || !gameQuestion || !questionPlayers) {
     return <></>;
   }
 
   return (
     <ul className="list-disc pl-10 h-full w-full flex flex-col flex-wrap overflow-auto items-center justify-center">
       {answer.map((item, index) => {
-        const isCited = players.challenger?.cited[index] !== undefined;
+        const isCited = questionPlayers.challenger?.cited[index] !== undefined;
 
         const isSelectable =
           !isSubmitting &&

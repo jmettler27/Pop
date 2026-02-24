@@ -19,8 +19,8 @@ export default class GameProgressiveCluesQuestionService extends GameBuzzerQuest
 
     try {
       await runTransaction(firestore, async (transaction) => {
-        const players = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
-        const { buzzed, canceled } = players;
+        const questionPlayers = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
+        const { buzzed, canceled } = questionPlayers;
 
         const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
         const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);

@@ -74,7 +74,7 @@ function MCQMainContentQuestion({ question, randomization }) {
   const game = useGameContext();
 
   const gameQuestionRepo = new RoundMCQQuestionRepository(game.id, game.currentRound);
-  const { gameQuestion, loading, error } = gameQuestionRepo.useGameQuestion(game.currentQuestion);
+  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
   if (error) {
     return (

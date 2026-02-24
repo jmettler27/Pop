@@ -14,7 +14,7 @@ import { useParams } from 'next/navigation';
 
 import { Avatar, Divider, List, ListItemAvatar, ListItemButton, ListItemText } from '@mui/material';
 import { RoundType } from '@/backend/models/rounds/RoundType';
-import { handleRoundSelected } from '@/backend/services/game/actions';
+import { handleRoundSelected } from '@/backend/services/round/actions';
 
 export default function GameHomeMiddlePane({}) {
   return (
@@ -42,7 +42,7 @@ function GameHomeRounds() {
   const user = useUserContext();
 
   const [handleSelect, isHandling] = useAsyncAction(async (roundId, roundType) => {
-    await handleRoundSelected(gameId, roundId, user.id, roundType);
+    await handleRoundSelected(roundType, gameId, roundId, user.id);
   });
 
   const { roundRepo, chooserRepo } = useGameRepositoriesContext();

@@ -18,7 +18,7 @@ export default function BuzzerBottomPane({ baseQuestion }) {
     game.currentRound
   );
 
-  const { questionPlayers, loading, error } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
+  const { data: questionPlayers, loading, error } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
 
   if (error) {
     return (

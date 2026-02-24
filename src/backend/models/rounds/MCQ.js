@@ -9,6 +9,7 @@ export class MCQRound extends Round {
     super(data);
     this.type = RoundType.MCQ;
 
+    this.maxPoints = data.maxPoints || null;
     this.rewardsPerQuestion = data.rewardsPerQuestion || MCQRound.REWARDS_PER_QUESTION;
     this.thinkingTime = data.thinkingTime || MCQRound.DEFAULT_THINKING_TIME;
   }

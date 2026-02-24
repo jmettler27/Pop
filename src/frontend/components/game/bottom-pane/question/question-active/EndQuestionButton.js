@@ -1,4 +1,4 @@
-import { endQuestion } from '@/backend/services/game/actions';
+import { endQuestion } from '@/backend/services/question/actions';
 
 import { useGameContext } from '@/frontend/contexts';
 

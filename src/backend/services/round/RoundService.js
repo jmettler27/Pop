@@ -153,8 +153,11 @@ export default class RoundService {
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
 
-    const gameScoresData = await this.gameScoreRepo.getScoresTransaction(transaction, this.gameId);
-    const roundScoresData = await roundScoreRepo.getScoresTransaction(transaction, roundId);
+    const gameScoresData = await this.gameScoreRepo.getScoresTransaction(transaction);
+    const roundScoresData = await roundScoreRepo.getScoresTransaction(transaction);
+
+    console.log('gameScoresData', gameScoresData);
+    console.log('roundScoresData', roundScoresData);
 
     const roundScorePolicy = game.roundScorePolicy;
 

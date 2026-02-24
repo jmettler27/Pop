@@ -15,8 +15,12 @@ import Box from '@mui/material/Box';
 export default function ChallengerCitationHelper({}) {
   const game = useGameContext();
 
-  const roundEnumQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound);
-  const { players, playersLoading, playersError } = roundEnumQuestionRepo.useQuestionPlayers(game.currentQuestion);
+  const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound);
+  const {
+    data: questionPlayers,
+    loading: playersLoading,
+    error: playersError,
+  } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
 
   if (playersError) {
     return (
@@ -29,11 +33,11 @@ export default function ChallengerCitationHelper({}) {
   if (playersLoading) {
     return <></>;
   }
-  if (!players) {
+  if (!questionPlayers) {
     return <></>;
   }
 
-  const { challenger } = players;
+  const { challenger } = questionPlayers;
 
   return (
     <div className="flex flex-col w-full items-center justify-center">
@@ -45,7 +49,7 @@ export default function ChallengerCitationHelper({}) {
 
 function ChallengerName({ challengerId }) {
   const { playerRepo } = useGameRepositoriesContext();
-  const { player, playerLoading, playerError } = playerRepo.usePlayer(challengerId);
+  const { player, loading: playerLoading, error: playerError } = playerRepo.usePlayer(challengerId);
 
   if (playerError) {
     return (

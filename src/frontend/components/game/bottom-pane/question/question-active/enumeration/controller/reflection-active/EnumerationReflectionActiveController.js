@@ -34,6 +34,8 @@ import {
 export default function EnumerationReflectionActiveController({ baseQuestion, timer, lang = DEFAULT_LOCALE }) {
   const myRole = useRoleContext();
 
+  console.log('EnumerationReflectionActiveController', { baseQuestion, timer, myRole });
+
   switch (myRole) {
     case UserRole.PLAYER:
       return <EnumPlayerReflectionActive baseQuestion={baseQuestion} timer={timer} lang={lang} />;
@@ -56,6 +58,8 @@ function AddBetForm({ baseQuestion, status, lang }) {
   const user = useUserContext();
   const myTeam = useTeamContext();
 
+  console.log('AddBetForm', { baseQuestion, status, lang, user, myTeam });
+
   const [handleBetValidate, isSubmitting] = useAsyncAction(async () => {
     await addBet(game.id, game.currentRound, game.currentQuestion, user.id, myTeam, myBet);
     setHasValidated(true);
@@ -67,7 +71,11 @@ function AddBetForm({ baseQuestion, status, lang }) {
   const [hasValidated, setHasValidated] = useState(false);
 
   const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound);
-  const { players, playersLoading, playersError } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
+  const {
+    data: questionPlayers,
+    loading: playersLoading,
+    error: playersError,
+  } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
 
   if (playersError) {
     return (
@@ -80,11 +88,11 @@ function AddBetForm({ baseQuestion, status, lang }) {
   if (playersLoading) {
     return <CircularProgress />;
   }
-  if (!players) {
+  if (!questionPlayers) {
     return <></>;
   }
 
-  const hasBet = players.bets.some((bet) => bet.playerId == user.id);
+  const hasBet = questionPlayers.bets.some((bet) => bet.playerId == user.id);
   const selectorDisabled = status !== TimerStatus.START || hasValidated || hasBet;
 
   const handleSelectorChange = (event) => {

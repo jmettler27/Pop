@@ -44,11 +44,11 @@ export class Round {
     this.questions = data.questions || [];
     this.currentQuestionIdx = data.currentQuestionIdx;
 
-    if (data.scorePolicy === ScorePolicyType.RANKING) {
-      this.rewards = data.rewards;
-    } else if (data.scorePolicy === ScorePolicyType.COMPLETION_RATE) {
-      this.maxPoints = data.maxPoints;
-    }
+    // if (data.scorePolicy === ScorePolicyType.RANKING) {
+    //   this.rewards = data.rewards;
+    // } else if (data.scorePolicy === ScorePolicyType.COMPLETION_RATE) {
+    //   this.maxPoints = data.maxPoints;
+    // }
   }
 
   toObject() {

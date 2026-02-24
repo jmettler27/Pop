@@ -60,37 +60,12 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     }
   }
 
-  async handleCountdownEnd(questionId) {
-    if (!questionId) {
-      throw new Error('Question ID is required');
-    }
-
-    try {
-      await runTransaction(firestore, (transaction) => this.handleCountdownEndTransaction(transaction, questionId));
-    } catch (error) {
-      console.error(
-        'Failed to handle question countdown',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'type',
-        this.questionType,
-        'err',
-        error
-      );
-      throw error;
-    }
-  }
-
   async handleCountdownEndTransaction(transaction, questionId) {
-    const players = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
-    const buzzed = players.buzzed;
+    const questionPlayers = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
+    const { buzzed } = questionPlayers;
 
     if (buzzed.length === 0) {
-      await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.RESET);
+      await this.timerRepo.resetTimerTransaction(transaction);
       // await this.timerRepo.prepareTimerForReadyTransaction(transaction);
     } else {
       await this.invalidateAnswerTransaction(transaction, questionId, buzzed[0]);
@@ -206,7 +181,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
         // const players = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
         // const { buzzed } = players;
         // if (buzzed[0] === playerId) {
-        //     await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.RESET);
+        //     await this.timerRepo.resetTimerTransaction(transaction);
         // }
         console.log(
           'Player successfully removed from buzzer',
@@ -249,14 +224,14 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
 
     try {
       await runTransaction(firestore, async (transaction) => {
-        const players = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
-        const { buzzed } = players;
+        const questionPlayers = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
+        const { buzzed } = questionPlayers;
 
         for (const playerId of buzzed) {
           await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.IDLE);
         }
         await this.gameQuestionRepo.clearBuzzedPlayersTransaction(transaction, questionId);
-        await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.RESET);
+        await this.timerRepo.resetTimerTransaction(transaction);
         await this.soundRepo.addSoundTransaction(transaction, 'robinet_desert');
 
         console.log(

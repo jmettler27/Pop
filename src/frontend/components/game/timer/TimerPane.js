@@ -1,5 +1,6 @@
 import { startGame } from '@/backend/services/game/actions';
-import { handleQuestionEnd } from '@/backend/services/game/actions';
+import { handleQuestionEnd } from '@/backend/services/round/actions';
+import { handleCountdownEnd } from '@/backend/services/question/actions';
 import { startRound } from '@/backend/services/round/actions';
 
 import { UserRole } from '@/backend/models/users/User';
@@ -35,10 +36,7 @@ function OrganizerTimerPane() {
 
   const handleTimerEnd = async (timer) => {
     console.log('Last executed:', lastExecuted.current?.toLocaleString());
-    if (lastExecuted.current && Date.now() - lastExecuted.current <= 1000) {
-      console.log('HANDLE TIMER END: RETURN');
-      return;
-    }
+
     if (timer.managedBy !== user.id) {
       console.log('HANDLE TIMER END: NOT MANAGED BY ME');
       return;
@@ -52,13 +50,13 @@ function OrganizerTimerPane() {
         await startGame(game.id);
         break;
       case GameStatus.ROUND_START:
-        await startRound(game.id, game.currentRound);
+        await startRound(game.currentQuestionType, game.id, game.currentRound);
         break;
       case GameStatus.QUESTION_ACTIVE:
-        // await handleQuestionActiveCountdownEnd(game.id, game.currentRound, game.currentQuestion)
+        await handleCountdownEnd(game.currentQuestionType, game.id, game.currentRound, game.currentQuestion);
         break;
       case GameStatus.QUESTION_END:
-        await handleQuestionEnd(game.id, game.currentRound);
+        await handleQuestionEnd(game.currentQuestionType, game.id, game.currentRound, game.currentQuestion);
         break;
     }
   };

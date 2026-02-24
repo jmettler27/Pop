@@ -9,11 +9,15 @@ import EnumerationChallengeActiveController from '@/frontend/components/game/bot
 
 import { CircularProgress } from '@mui/material';
 
-export default function EnumerationController({ question }) {
+export default function EnumerationController({ baseQuestion }) {
   const game = useGameContext();
 
   const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound);
-  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
+  const {
+    gameQuestion,
+    loading: gameQuestionLoading,
+    error: gameQuestionError,
+  } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
   const { timerRepo } = useGameRepositoriesContext();
   const { timer, timerLoading, timerError } = timerRepo.useTimer();
@@ -43,7 +47,7 @@ export default function EnumerationController({ question }) {
 
   switch (gameQuestion.status) {
     case EnumerationQuestionStatus.REFLECTION:
-      return <EnumerationReflectionActiveController question={question} timer={timer} />;
+      return <EnumerationReflectionActiveController baseQuestion={baseQuestion} timer={timer} />;
     case EnumerationQuestionStatus.CHALLENGE:
       return <EnumerationChallengeActiveController />;
   }

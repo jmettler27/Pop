@@ -1,7 +1,7 @@
 import GameQuestionRepository from '@/backend/repositories/question/game/GameQuestionRepository';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { increment, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { arrayUnion, increment, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { EnumerationQuestionStatus } from '@/backend/models/questions/Enumeration';
 
 export default class GameEnumerationQuestionRepository extends GameQuestionRepository {
@@ -24,12 +24,18 @@ export default class GameEnumerationQuestionRepository extends GameQuestionRepos
   }
 
   async getPlayersTransaction(transaction, questionId) {
-    const data = await this.getTransaction(transaction, [
+    return await this.getTransaction(transaction, [
       questionId,
       ...GameEnumerationQuestionRepository.ENUMERATION_PLAYERS_PATH,
     ]);
-    // return data ? data.map(p => new Player(p)) : [];
-    return data;
+  }
+
+  async updatePlayersTransaction(transaction, questionId, players) {
+    await this.updateTransaction(
+      transaction,
+      [questionId, ...GameEnumerationQuestionRepository.ENUMERATION_PLAYERS_PATH],
+      players
+    );
   }
 
   async setPlayersTransaction(transaction, questionId, data) {

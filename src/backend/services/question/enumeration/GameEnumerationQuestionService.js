@@ -1,6 +1,6 @@
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
 
-import { collection, documentId, getDocs, query, runTransaction, where } from 'firebase/firestore';
+import { runTransaction } from 'firebase/firestore';
 
 import { TimerStatus } from '@/backend/models/Timer';
 import { PlayerStatus } from '@/backend/models/users/Player';
@@ -33,7 +33,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
 
   async handleCountdownEndTransaction(transaction, questionId) {
     const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
-    const { status } = gameQuestion;
+    const status = gameQuestion.status;
     if (status === EnumerationQuestionStatus.REFLECTION) {
       await this.endReflectionTransaction(transaction, questionId);
     } else if (status === EnumerationQuestionStatus.CHALLENGE) {
@@ -44,7 +44,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
 
   async endQuestionTransaction(transaction, questionId) {
     const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
-    const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction, this.roundId);
+    const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction);
     const questionPlayers = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
 
     const { challenger } = questionPlayers;
@@ -52,16 +52,20 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
 
     const { scores: currRoundScores, scoresProgress: currRoundProgress } = roundScores;
 
-    const challengers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId);
-    const spectators = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId);
+    const challengers = await this.playerRepo.getPlayersByTeamId(teamId);
+    const spectators = await this.playerRepo.getAllOtherPlayers(teamId);
 
     if (numCorrect < bet) {
       // The challenger did not succeed in its challenge
+      const spectatorTeams = await this.teamRepo.getOtherTeams(teamId);
       const reward = round.rewardsPerQuestion;
 
-      for (const challenger of challengers) {
-        await this.playerRepo.updatePlayerStatusTransaction(transaction, challenger.id, PlayerStatus.WRONG);
-      }
+      await this.playerRepo.updateAllPlayersStatusTransaction(
+        transaction,
+        PlayerStatus.WRONG,
+        challengers.map((c) => c.id)
+      );
+
       const newRoundScores = {};
       const newRoundProgress = {};
       newRoundScores[teamId] = currRoundScores[teamId] || 0;
@@ -70,16 +74,14 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
         [questionId]: currRoundScores[teamId] || 0,
       };
 
-      const spectatorsSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '!=', teamId)));
-      for (const spectatorDoc of spectatorsSnapshot.docs) {
-        transaction.update(spectatorDoc.ref, {
-          status: PlayerStatus.CORRECT,
-        });
-      }
-      const teamsCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'teams');
-      const spectatorTeamsSnapshot = await getDocs(query(teamsCollectionRef, where(documentId(), '!=', teamId)));
-      for (const spectatorTeamDoc of spectatorTeamsSnapshot.docs) {
-        const stid = spectatorTeamDoc.id;
+      await this.playerRepo.updateAllPlayersStatusTransaction(
+        transaction,
+        PlayerStatus.CORRECT,
+        spectators.map((s) => s.id)
+      );
+
+      for (const spectatorTeam of spectatorTeams) {
+        const stid = spectatorTeam.id;
         newRoundProgress[stid] = {
           ...currRoundProgress[stid],
           [questionId]: currRoundScores[stid] + reward,
@@ -87,23 +89,21 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
         newRoundScores[stid] = currRoundScores[stid] + reward;
       }
 
-      await this.roundScoreRepo.updateScoresTransaction(transaction, this.roundId, {
+      await this.roundScoreRepo.updateScoresTransaction(transaction, {
         scores: newRoundScores,
         scoresProgress: newRoundProgress,
       });
     } else {
       // The challenger succeeded in its challenge
       const reward = round.rewardsPerQuestion + (numCorrect > bet) * round.rewardsForBonus;
-      await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, teamId, reward);
+      await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward);
 
-      for (const challenger of challengers) {
-        await this.playerRepo.updatePlayerStatusTransaction(transaction, challenger.id, PlayerStatus.CORRECT);
-      }
-
-      await this.gameQuestionRepo.updateQuestionWinnerTransaction(transaction, questionId, {
-        playerId,
-        teamId,
-      });
+      await this.playerRepo.updateAllPlayersStatusTransaction(
+        transaction,
+        PlayerStatus.CORRECT,
+        challengers.map((c) => c.id)
+      );
+      await this.gameQuestionRepo.updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId);
     }
 
     await super.endQuestionTransaction(transaction, questionId);
@@ -125,15 +125,12 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
     if (!questionId) {
       throw new Error('No question ID has been provided!');
     }
-
     if (!playerId) {
       throw new Error('No player ID has been provided!');
     }
-
     if (!teamId) {
       throw new Error('No team ID has been provided!');
     }
-
     if (bet < 0) {
       throw new Error('The bet must be positive!');
     }
@@ -163,16 +160,16 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
   }
 
   async endReflectionTransaction(transaction, questionId) {
-    const players = await this.playerRepo.getPlayersTransaction(transaction, questionId);
+    const questionPlayers = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
 
     /* No player made a bet */
-    if (players.bets.length === 0) {
+    if (questionPlayers.bets.length === 0) {
       await this.endQuestionTransaction(transaction, questionId);
     } else {
       const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
 
       // Calculate the 'challenger' of this question (the best player)
-      const [playerId, teamId, bet] = GameEnumerationQuestion.findHighestBidder(players.bets);
+      const [playerId, teamId, bet] = GameEnumerationQuestion.findHighestBidder(questionPlayers.bets);
       await this.gameQuestionRepo.updatePlayersTransaction(transaction, questionId, {
         challenger: {
           playerId,

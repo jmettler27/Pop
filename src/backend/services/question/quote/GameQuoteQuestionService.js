@@ -60,11 +60,11 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
   }
 
   async handleCountdownEndTransaction(transaction, questionId) {
-    const players = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
-    const buzzed = players.buzzed;
+    const questionPlayers = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
+    const { buzzed } = questionPlayers;
 
     if (buzzed.length === 0) {
-      await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.RESET);
+      await this.timerRepo.resetTimerTransaction(transaction);
       // await this.timerRepo.prepareTimerForReadyTransaction(transaction);
     } else {
       await this.cancelPlayerTransaction(transaction, questionId, buzzed[0]);

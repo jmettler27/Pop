@@ -5,6 +5,8 @@ export class NaguiRound extends Round {
   constructor(data) {
     super(data);
     this.type = RoundType.NAGUI;
+
+    this.maxPoints = data.maxPoints || null;
   }
 
   toObject() {

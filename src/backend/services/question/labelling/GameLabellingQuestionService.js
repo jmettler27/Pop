@@ -37,19 +37,24 @@ export default class GameLabellingQuestionService extends GameQuestionService {
   }
 
   async handleCountdownEndTransaction(transaction, questionId) {
-    const players = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
-    const buzzed = players.buzzed;
+    const questionPlayers = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
+    const { buzzed } = questionPlayers.buzzed;
 
-    if (buzzed.length === 0) await this.timerRepo.resetTimerTransaction(transaction);
-    else await this.gameQuestionRepo.cancelPlayerTransaction(transaction, questionId, buzzed[0]);
+    if (buzzed.length === 0) {
+      await this.timerRepo.resetTimerTransaction(transaction);
+    } else {
+      await this.gameQuestionRepo.cancelPlayerTransaction(transaction, questionId, buzzed[0]);
+    }
 
-    console.log('Labelling question countdown end successfully handled', questionId);
-  }
-
-  async endQuestionTransaction(transaction, questionId) {
-    await super.endQuestionTransaction(transaction, questionId);
-
-    console.log('Labelling question successfully ended', 'game', gameId, questionId);
+    console.log(
+      'Labelling question countdown end successfully handled',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId
+    );
   }
 
   /* =============================================================================================================== */
@@ -80,7 +85,12 @@ export default class GameLabellingQuestionService extends GameQuestionService {
         /* Update the winner team scores */
         if (playerId) {
           const player = await this.playerRepo.getPlayerTransaction(transaction, playerId);
-          await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, player.teamId, round.rewardsPerElement);
+          await this.roundScoreRepo.increaseTeamScoreTransaction(
+            transaction,
+            questionId,
+            player.teamId,
+            round.rewardsPerElement
+          );
           await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.CORRECT);
         }
 
@@ -135,7 +145,7 @@ export default class GameLabellingQuestionService extends GameQuestionService {
         /* Update the winner team scores */
         const multiplier = baseQuestion.labels.length;
         const points = round.rewardsPerElement * multiplier;
-        await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, player.teamId, points);
+        await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, player.teamId, points);
 
         await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.CORRECT);
 

@@ -11,7 +11,11 @@ export default function EnumerationPlayers({ lang = DEFAULT_LOCALE }) {
   const game = useGameContext();
 
   const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound);
-  const { players, playersLoading, playersError } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
+  const {
+    data: questionPlayers,
+    loading: playersLoading,
+    error: playersError,
+  } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
 
   if (playersError) {
     return (
@@ -24,11 +28,11 @@ export default function EnumerationPlayers({ lang = DEFAULT_LOCALE }) {
   if (playersLoading) {
     return <></>;
   }
-  if (!players) {
+  if (!questionPlayers) {
     return <></>;
   }
 
-  const bets = players.bets.sort((a, b) => b.bet - a.bet);
+  const bets = questionPlayers.bets.sort((a, b) => b.bet - a.bet);
 
   return (
     <div className="flex flex-row h-full w-full">

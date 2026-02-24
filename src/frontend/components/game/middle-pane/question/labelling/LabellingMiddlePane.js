@@ -57,9 +57,7 @@ function LabellingMainContent({ question }) {
   const game = useGameContext();
 
   const gameQuestionRepo = new GameLabellingQuestionRepository(game.id, game.currentRound);
-  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useGameQuestion(
-    game.currentQuestion
-  );
+  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
   if (gameQuestionError) {
     return (
       <p>

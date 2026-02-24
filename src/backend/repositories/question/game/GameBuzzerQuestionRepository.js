@@ -43,7 +43,6 @@ export default class GameBuzzerQuestionRepository extends GameQuestionRepository
   }
 
   async updatePlayersTransaction(transaction, questionId, players) {
-    console.log('Updating players for question', questionId, 'with players', players);
     await this.updateTransaction(
       transaction,
       [questionId, ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH],

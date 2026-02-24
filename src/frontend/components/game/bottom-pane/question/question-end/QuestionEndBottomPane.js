@@ -1,6 +1,6 @@
 import { UserRole } from '@/backend/models/users/User';
 
-import { handleQuestionEnd } from '@/backend/services/game/actions';
+import { handleQuestionEnd } from '@/backend/services/round/actions';
 
 import { useGameContext, useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
 
@@ -53,7 +53,7 @@ function QuestionEndOrganizerButton({ round, isLastQuestion, lang = DEFAULT_LOCA
   const game = useGameContext();
 
   const [handleContinueClick, isEnding] = useAsyncAction(async () => {
-    await handleQuestionEnd(game.id, game.currentRound, game.currentQuestion, round.type);
+    await handleQuestionEnd(round.type, game.id, game.currentRound, game.currentQuestion);
   });
 
   return (

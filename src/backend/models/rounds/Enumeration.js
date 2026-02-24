@@ -12,6 +12,7 @@ export class EnumerationRound extends Round {
     super(data);
     this.type = RoundType.ENUMERATION;
 
+    this.maxPoints = data.maxPoints || null;
     this.rewardsPerQuestion = data.rewardsPerQuestion || EnumerationRound.REWARDS_PER_QUESTION;
     this.reflectionTime = data.reflectionTime || EnumerationRound.DEFAULT_REFLECTION_TIME;
     this.challengeTime = data.challengeTime || EnumerationRound.DEFAULT_CHALLENGE_TIME;

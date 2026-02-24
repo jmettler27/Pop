@@ -41,7 +41,7 @@ function RoundStartOrganizerButton({ lang = DEFAULT_LOCALE }) {
   const game = useGameContext();
 
   const [handleContinueClick, isHandling] = useAsyncAction(async () => {
-    await startRound(game.id, game.currentRound, game.currentQuestionType);
+    await startRound(game.currentQuestionType, game.id, game.currentRound);
   });
 
   return (

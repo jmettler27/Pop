@@ -45,10 +45,15 @@ export default class TeamRepository extends FirebaseRepository {
     return await super.getNumDocuments(transaction);
   }
 
-  async getShuffledTeamIds(transaction) {
-    const teams = await this.getAllTeamsTransaction(transaction);
+  async getShuffledTeamIds() {
+    const teams = await this.getAllTeams();
     const teamIds = teams.map((t) => t.id);
     return shuffle(teamIds);
+  }
+
+  async getOtherTeams(teamId) {
+    const teams = await this.getAllTeams();
+    return teams.filter((t) => t.id !== teamId);
   }
 
   // React hooks for real-time operations

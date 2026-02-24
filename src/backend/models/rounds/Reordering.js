@@ -8,6 +8,7 @@ export class ReorderingRound extends Round {
     super(data);
     this.type = RoundType.REORDERING;
 
+    this.maxPoints = data.maxPoints || null;
     this.thinkingTime = data.thinkingTime || ReorderingRound.DEFAULT_THINKING_TIME;
   }
 

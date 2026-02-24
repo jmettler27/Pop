@@ -11,12 +11,7 @@ export default class GameQuoteQuestionRepository extends GameBuzzerQuestionRepos
 
   // Firestore operations
   async getPlayersTransaction(transaction, questionId) {
-    const data = await this.getTransaction(transaction, [
-      questionId,
-      ...GameQuoteQuestionRepository.QUOTE_PLAYERS_PATH,
-    ]);
-    // return data ? data.map(p => new Player(p)) : [];
-    return data;
+    return await this.getTransaction(transaction, [questionId, ...GameQuoteQuestionRepository.QUOTE_PLAYERS_PATH]);
   }
 
   async createQuestionTransaction(transaction, questionId, managerId, data) {
@@ -59,16 +54,6 @@ export default class GameQuoteQuestionRepository extends GameBuzzerQuestionRepos
   async clearBuzzedPlayersTransaction(transaction, questionId) {
     await this.updateTransaction(transaction, [questionId, ...GameQuoteQuestionRepository.QUOTE_PLAYERS_PATH], {
       buzzed: [],
-    });
-  }
-
-  async cancelPlayerTransaction(transaction, questionId, playerId) {
-    await this.updateTransaction(transaction, [questionId, ...GameQuoteQuestionRepository.QUOTE_PLAYERS_PATH], {
-      canceled: arrayUnion({
-        playerId,
-        timestamp: Timestamp.now(),
-      }),
-      buzzed: arrayRemove(playerId),
     });
   }
 

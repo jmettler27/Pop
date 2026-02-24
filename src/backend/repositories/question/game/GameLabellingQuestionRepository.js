@@ -11,12 +11,10 @@ export default class GameLabellingQuestionRepository extends GameQuestionReposit
   }
 
   async getPlayersTransaction(transaction, questionId) {
-    const data = await this.getTransaction(transaction, [
+    return await this.getTransaction(transaction, [
       questionId,
       ...GameLabellingQuestionRepository.LABELLING_PLAYERS_PATH,
     ]);
-    // return data ? data.map(p => new Player(p)) : [];
-    return data;
   }
 
   async createQuestionTransaction(transaction, questionId, managerId, data) {
