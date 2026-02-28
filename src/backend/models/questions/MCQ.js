@@ -167,7 +167,7 @@ export class GameMCQQuestion extends GameQuestion {
 
     this.correct = data.correct || null;
     this.choiceIdx = data.choiceIdx || null;
-    this.playerID = data.playerID || null;
+    this.playerId = data.playerId || null;
     this.reward = data.reward || null;
     this.teamId = data.teamId || null;
   }
@@ -177,7 +177,7 @@ export class GameMCQQuestion extends GameQuestion {
       ...super.toObject(),
       correct: this.correct,
       choiceIdx: this.choiceIdx,
-      playerID: this.playerID,
+      playerId: this.playerId,
       reward: this.reward,
       teamId: this.teamId,
     };
@@ -220,9 +220,9 @@ export class GameMCQQuestion extends GameQuestion {
   }
 
   static validatePlayerID(data) {
-    const playerID = data.playerID;
-    if (playerID) {
-      if (typeof playerID !== 'string') {
+    const playerId = data.playerId;
+    if (playerId) {
+      if (typeof playerId !== 'string') {
         throw new Error('MCQ player ID must be a string');
       }
     }
@@ -254,7 +254,7 @@ export class GameMCQQuestion extends GameQuestion {
 
     this.correct = null;
     this.choiceIdx = null;
-    this.playerID = null;
+    this.playerId = null;
     this.reward = null;
     this.teamId = null;
   }

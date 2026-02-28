@@ -6,7 +6,7 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import NextImage from '@/frontend/components/game/NextImage';
 import { Box } from '@mui/material';
 import { clsx } from 'clsx';
-import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/game/GameProgressiveCluesQuestionRepository';
+import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/GameProgressiveCluesQuestionRepository';
 
 export default function ProgressiveCluesMainContent({ baseQuestion, showComplete }) {
   const game = useGameContext();

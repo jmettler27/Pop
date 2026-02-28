@@ -1,4 +1,4 @@
-import GameMatchingQuestionRepositoru from '@/backend/repositories/question/game/GameMatchingQuestionRepository';
+import GameMatchingQuestionRepositoru from '@/backend/repositories/question/GameMatchingQuestionRepository';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
@@ -12,7 +12,7 @@ export default function IncorrectMatches({ nodePositions, colIndices }) {
 
   const game = useGameContext();
 
-  const gameQuestionRepo = GameMatchingQuestionRepositoru(game.id, game.currentRound);
+  const gameQuestionRepo = new GameMatchingQuestionRepositoru(game.id, game.currentRound);
   const { incorrectMatches, loading, error } = gameQuestionRepo.useIncorrectMatches(game.currentQuestion);
 
   if (error) {

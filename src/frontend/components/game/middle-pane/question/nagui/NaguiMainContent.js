@@ -1,6 +1,6 @@
 import { selectChoice } from '@/backend/services/question/nagui/actions';
 
-import GameNaguiQuestionRepository from '@/backend/repositories/question/game/GameNaguiQuestionRepository';
+import GameNaguiQuestionRepository from '@/backend/repositories/question/GameNaguiQuestionRepository';
 
 import { NaguiQuestion, HideNaguiOption, SquareNaguiOption, DuoNaguiOption } from '@/backend/models/questions/Nagui';
 import { GameStatus } from '@/backend/models/games/GameStatus';
@@ -33,7 +33,7 @@ import CloseIcon from '@mui/icons-material/Close';
 export default function NaguiMainContent({ baseQuestion }) {
   const title = baseQuestion.title;
   const note = baseQuestion.note;
-  const choices = baseQuestion.items;
+  const choices = baseQuestion.choices;
 
   // Randomize the order of the choices on the client side
   const randomMapping = useMemo(() => shuffleIndices(choices.length), [choices.length]);
@@ -132,7 +132,7 @@ function ActiveNaguiChoices({ baseQuestion, gameQuestion, randomization }) {
   const myRole = useRoleContext();
   const user = useUserContext();
 
-  const choices = baseQuestion.items;
+  const choices = baseQuestion.choices;
   const answerIdx = baseQuestion.answerIdx;
   const duoIdx = baseQuestion.duoIdx;
 
@@ -142,12 +142,11 @@ function ActiveNaguiChoices({ baseQuestion, gameQuestion, randomization }) {
     await selectChoice(game.id, game.currentRound, game.currentQuestion, user.id, myTeam, idx);
   });
 
-  if (gameQuestion.option === null || gameQuestion.option === HideNa) {
+  if (gameQuestion.option === null || gameQuestion.option === HideNaguiOption.TYPE) {
     // return <Image src={nagui_correct.src} height={'70%'} />
     return (
       <span className="2xl:text-6xl">
-        {NaguiQuestion.OPTION_TO_EMOJI[HideNa]} {NaguiQuestion.OPTION_TO_EMOJI['square']}{' '}
-        {NaguiQuestion.OPTION_TO_EMOJI['duo']} ?
+        {HideNaguiOption.TYPE_TO_EMOJI} {SquareNaguiOption.TYPE_TO_EMOJI} {DuoNaguiOption.TYPE_TO_EMOJI} ?
       </span>
     );
   }

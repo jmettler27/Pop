@@ -1,7 +1,7 @@
 import { PlayerStatus } from '@/backend/models/users/Player';
 
 import RoundService from '@/backend/services/round/RoundService';
-import GameOddOneOutQuestionRepository from '@/backend/repositories/question/game/GameOddOneOutQuestionRepository';
+import GameOddOneOutQuestionRepository from '@/backend/repositories/question/GameOddOneOutQuestionRepository';
 import { RoundType } from '@/backend/models/rounds/RoundType';
 
 export default class ReorderingRoundService extends RoundService {

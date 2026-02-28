@@ -1,6 +1,6 @@
 import { Timer, TimerStatus } from '@/backend/models/Timer';
 import RoundService from '@/backend/services/round/RoundService';
-import GameMCQQuestionRepository from '@/backend/repositories/question/game/GameMCQQuestionRepository';
+import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { PlayerStatus } from '@/backend/models/users/Player';
@@ -70,7 +70,7 @@ export default class MCQRoundService extends RoundService {
     await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
       currentRound: roundId,
       currentQuestion: null,
-      currentQuestionType: null,
+      currentQuestionType: this.roundType,
       status: GameStatus.ROUND_START,
     });
 
@@ -78,11 +78,11 @@ export default class MCQRoundService extends RoundService {
   }
 
   async moveToNextQuestionTransaction(transaction, roundId, questionOrder) {
-    const gameQuestionRepo = new GameMCQQuestionRepository(this.gameId, this.roundId);
+    const gameQuestionRepo = new GameMCQQuestionRepository(this.gameId, roundId);
 
     /* Game: fetch next question and reset every player's state */
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
-    const chooser = await this.chooserRepo.getChooserTransaction(transaction, this.gameId);
+    const chooser = await this.chooserRepo.getChooserTransaction(transaction);
 
     const questionId = round.questions[questionOrder];
     const defaultThinkingTime = DEFAULT_THINKING_TIME_SECONDS[QuestionType.MCQ];

@@ -1,5 +1,3 @@
-import GameQuestionService from '@/backend/services/question/GameQuestionService';
-
 import { firestore } from '@/backend/firebase/firebase';
 import { runTransaction, Timestamp } from 'firebase/firestore';
 
@@ -8,8 +6,9 @@ import { range } from '@/backend/utils/arrays';
 
 import { PlayerStatus } from '@/backend/models/users/Player';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import GameBuzzerQuestionService from '@/backend/services/question/GameBuzzerQuestionService';
 
-export default class GameLabellingQuestionService extends GameQuestionService {
+export default class GameLabellingQuestionService extends GameBuzzerQuestionService {
   constructor(gameId, roundId) {
     super(gameId, roundId, QuestionType.LABELLING);
   }
@@ -32,7 +31,7 @@ export default class GameLabellingQuestionService extends GameQuestionService {
       'round',
       this.roundId,
       'question',
-      questionId
+      questionId,
     );
   }
 
@@ -53,7 +52,7 @@ export default class GameLabellingQuestionService extends GameQuestionService {
       'round',
       this.roundId,
       'question',
-      questionId
+      questionId,
     );
   }
 
@@ -89,7 +88,7 @@ export default class GameLabellingQuestionService extends GameQuestionService {
             transaction,
             questionId,
             player.teamId,
-            round.rewardsPerElement
+            round.rewardsPerElement,
           );
           await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.CORRECT);
         }
@@ -110,7 +109,7 @@ export default class GameLabellingQuestionService extends GameQuestionService {
         }
         await this.soundRepo.addSoundTransaction(
           transaction,
-          playerId ? 'super_mario_world_coin' : 'cartoon_mystery_musical_tone_002'
+          playerId ? 'super_mario_world_coin' : 'cartoon_mystery_musical_tone_002',
         );
 
         console.log('Labelling question label revealed successfully', questionId, labelIdx);

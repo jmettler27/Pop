@@ -1,4 +1,4 @@
-import BaseQuestionRepositoryFactory from '@/backend/repositories/question/base/BaseQuestionRepositoryFactory';
+import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import QuestionImageRepository from '@/backend/repositories/storage/QuestionImageRepository';
 import QuestionAudioRepository from '@/backend/repositories/storage/QuestionAudioRepository';
 

@@ -1,5 +1,5 @@
 import { Timer, TimerStatus } from '@/backend/models/Timer';
-import GameLabellingQuestionRepository from '@/backend/repositories/question/game/GameLabellingQuestionRepository';
+import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
 import RoundService from '@/backend/services/round/RoundService';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { GameStatus } from '@/backend/models/games/GameStatus';
@@ -78,7 +78,7 @@ export default class LabellingRoundService extends RoundService {
   }
 
   async moveToNextQuestionTransaction(transaction, roundId, questionOrder) {
-    const gameQuestionRepo = new GameLabellingQuestionRepository(this.gameId, this.roundId);
+    const gameQuestionRepo = new GameLabellingQuestionRepository(this.gameId, roundId);
 
     /* Game: fetch next question and reset every player's state */
     const playerIds = await this.playerRepo.getAllPlayerIds();

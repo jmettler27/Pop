@@ -99,7 +99,7 @@ export default class PlayerRepository extends FirebaseRepository {
     playerRefs.forEach((ref) => transaction.update(ref, { status }));
   }
 
-  async updateTeamPlayersStatusTransaction(transaction, teamId, status) {
+  async updateTeamPlayersStatus( teamId, status) {
     const players = await this.getPlayersByTeamIdTransaction(transaction, teamId);
     for (const p of players) {
       await this.updatePlayerTransaction(transaction, p.id, { status });

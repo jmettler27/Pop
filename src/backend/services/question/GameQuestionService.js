@@ -3,8 +3,8 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import TimerRepository from '@/backend/repositories/timer/TimerRepository';
-import GameQuestionRepositoryFactory from '@/backend/repositories/question/game/GameQuestionRepositoryFactory';
-import BaseQuestionRepositoryFactory from '@/backend/repositories/question/base/BaseQuestionRepositoryFactory';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
+import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import SoundRepository from '@/backend/repositories/sound/SoundRepository';
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 

@@ -13,7 +13,7 @@ import QuoteMiddlePane from '@/frontend/components/game/middle-pane/question/quo
 import BuzzerMiddlePane from '@/frontend/components/game/middle-pane/question/buzzer/BuzzerMiddlePane';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-import BaseQuestionRepository from '@/backend/repositories/question/base/BaseQuestionRepository';
+import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 
 export default function QuestionMiddlePane() {
   const game = useGameContext();

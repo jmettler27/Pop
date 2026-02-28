@@ -1,7 +1,7 @@
 import { PlayerStatus } from '@/backend/models/users/Player';
 
 import RoundService from '@/backend/services/round/RoundService';
-import GameOddOneOutQuestionRepository from '@/backend/repositories/question/game/GameOddOneOutQuestionRepository';
+import GameOddOneOutQuestionRepository from '@/backend/repositories/question/GameOddOneOutQuestionRepository';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { serverTimestamp } from 'firebase/firestore';
 import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question/question';
@@ -66,7 +66,7 @@ export default class OddOneOutRoundService extends RoundService {
 
     /* Game: fetch next question and reset every player's state */
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
-    const chooser = await this.chooserRepo.getChooserTransaction(transaction, this.gameId);
+    const chooser = await this.chooserRepo.getChooserTransaction(transaction);
 
     const questionId = round.questions[questionOrder];
     const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);

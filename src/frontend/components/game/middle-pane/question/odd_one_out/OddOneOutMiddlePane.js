@@ -1,6 +1,6 @@
 import { selectProposal } from '@/backend/services/question/odd-one-out/actions';
 
-import GameOddOneOutQuestionRepository from '@/backend/repositories/question/game/GameOddOneOutQuestionRepository';
+import GameOddOneOutQuestionRepository from '@/backend/repositories/question/GameOddOneOutQuestionRepository';
 
 import { UserRole } from '@/backend/models/users/User';
 import { GameStatus } from '@/backend/models/games/GameStatus';
@@ -251,10 +251,11 @@ function ProposalItem({
 
 function SelectedProposalPlayerAvatar({ playerId }) {
   const { playerRepo } = useGameRepositoriesContext();
-  const { player, playerLoading, playerError } = playerRepo.usePlayerOnce(playerId);
+  const { player, loading, error } = playerRepo.usePlayerOnce(playerId);
+  console.log('SELECTED PROPOSAL PLAYER', playerId, player, loading, error);
   return (
-    !playerError &&
-    !playerLoading &&
+    !error &&
+    !loading &&
     player && <Avatar alt={player.name} src={player.image} sx={{ width: 25, height: 25 }} />
   );
 }

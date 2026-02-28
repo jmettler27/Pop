@@ -18,7 +18,7 @@ import { Avatar } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import React, { useState, useMemo, useCallback } from 'react';
 
-import BaseQuestionRepository from '@/backend/repositories/question/base/BaseQuestionRepository';
+import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 
 const CLUE = {
   en: 'Clue',
@@ -319,7 +319,7 @@ const basicQuestionColumns = [
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import UserRepository from '@/backend/repositories/user/UserRepository';
-import BaseQuestionRepositoryFactory from '@/backend/repositories/question/base/BaseQuestionRepositoryFactory';
+import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 
 const questionTypeToRow = {
   [QuestionType.PROGRESSIVE_CLUES]: progressiveCluesQuestionRow,
@@ -402,7 +402,7 @@ const questionRow = (question, users) => {
 function SearchQuestionDataGridImpl({
   questionType,
   questionSelectionModel = [],
-  onQuestionSelectionModelChange = () => {},
+  onQuestionSelectionModelChange = () => { },
 }) {
   // Create repository instances with memoization to prevent unnecessary recreations
   const userRepo = useMemo(() => new UserRepository(), []);

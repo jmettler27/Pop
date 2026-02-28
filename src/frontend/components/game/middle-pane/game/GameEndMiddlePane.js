@@ -6,6 +6,7 @@ import { useGameRepositoriesContext } from '@/frontend/contexts';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import GameScoreboard from '@/frontend/components/scores/GameScoreboard';
 import GameScoresChart from '@/frontend/components/scores/GameScoresChart';
+import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 
 export default function GameEndMiddlePane({ lang = DEFAULT_LOCALE }) {
   const game = useGameContext();
@@ -33,18 +34,21 @@ function GameEndBody() {
   const game = useGameContext();
 
   const { roundRepo, teamRepo, scoreRepo } = useGameRepositoriesContext();
+  const roundScoreRepo = new RoundScoreRepository(game.id, game.currentRound);
 
   const {
     round: finalRound,
     loading: finalRoundLoading,
     error: finalRoundError,
   } = roundRepo.useRoundOnce(game.currentRound);
+
   const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeams();
+
   const {
     roundScores,
     loading: roundScoresLoading,
     error: roundScoresError,
-  } = scoreRepo.useRoundScoresOnce(game.currentRound);
+  } = roundScoreRepo.useScoresOnce();
 
   if (finalRoundError || teamsError || roundScoresError) {
     return (

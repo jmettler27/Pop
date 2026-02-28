@@ -232,15 +232,15 @@ export class NaguiQuestion extends BaseQuestion {
   }
 
   static typeToEmoji(type) {
-    return this.TYPES[type].typeToEmoji();
+    return this.OPTIONS[type].TYPE_TO_EMOJI;
   }
 
   static typeToTitle(type, lang = DEFAULT_LOCALE) {
-    return this.TYPES[type].typeToTitle(lang);
+    return this.OPTIONS[type].TYPE_TO_TITLE[lang];
   }
 
   static prependTypeWithEmoji(type, lang = DEFAULT_LOCALE) {
-    return this.TYPES[type].prependTypeWithEmoji(lang);
+    return `${this.OPTIONS[type].TYPE_TO_EMOJI} ${this.OPTIONS[type].TYPE_TO_TITLE[lang]}`;
   }
 }
 
@@ -251,15 +251,18 @@ export class GameNaguiQuestion extends GameQuestion {
     duo: 2,
   };
 
+  static NAGUI_OPTIONS = ['hide', 'square', 'duo'];
+
+
   static THINKING_TIME = 20;
 
   constructor(data) {
     super(data);
-    this.constructor.validate(data);
+    // this.constructor.validate(data);
 
     this.correct = data.correct || null;
     this.option = data.option || null;
-    this.playerID = data.playerID || null;
+    this.playerId = data.playerId || null;
     this.reward = data.reward || null;
     this.teamId = data.teamId || null;
   }
@@ -269,7 +272,7 @@ export class GameNaguiQuestion extends GameQuestion {
       ...super.toObject(),
       correct: this.correct,
       option: this.option,
-      playerID: this.playerID,
+      playerId: this.playerId,
       reward: this.reward,
       teamId: this.teamId,
     };
@@ -315,10 +318,10 @@ export class GameNaguiQuestion extends GameQuestion {
   }
 
   static validatePlayerID(data) {
-    const playerID = data.playerID;
-    if (playerID) {
-      if (typeof playerID !== 'string') {
-        throw new Error('Nagui playerID must be a string');
+    const playerId = data.playerId;
+    if (playerId) {
+      if (typeof playerId !== 'string') {
+        throw new Error('Nagui playerId must be a string');
       }
     }
     return true;
@@ -361,14 +364,15 @@ export class GameNaguiQuestion extends GameQuestion {
     super.reset();
     this.correct = null;
     this.option = null;
-    this.playerID = null;
+    this.playerId = null;
     this.reward = null;
     this.teamId = null;
   }
 }
 
+
 export const NAGUI_OPTION_TO_SOUND = {
-  hide: 'hide',
-  square: 'square',
-  duo: 'duo',
+  hide: 'quest_ce_que_laudace',
+  square: 'cest_carre',
+  duo: 'cest_lheure_du_duo',
 };

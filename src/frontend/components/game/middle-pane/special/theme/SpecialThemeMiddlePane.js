@@ -4,8 +4,8 @@ import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/fireba
 import { doc } from 'firebase/firestore';
 import { useDocumentData, useDocumentOnce } from 'react-firebase-hooks/firestore';
 
-import SpecialThemeActiveMiddlePane from '@/frontend/components/game/middle-pane/special/theme/theme-active/SpecialThemeActiveMiddlePane';
-import SpecialThemeEndMiddlePane from '@/frontend/components/game/middle-pane/special/theme/theme-end/SpecialThemeEndMiddlePane';
+import SpecialThemeActiveMiddlePane from '@/frontend/components/game/middle-pane/special/theme/SpecialThemeActiveMiddlePane';
+import SpecialThemeEndMiddlePane from '@/frontend/components/game/middle-pane/special/theme/SpecialThemeEndMiddlePane';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 import { SpecialRoundStatus } from '@/backend/models/rounds/Special';

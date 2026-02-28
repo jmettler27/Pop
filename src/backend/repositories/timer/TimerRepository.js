@@ -70,7 +70,7 @@ export default class TimerRepository extends FirebaseDocumentRepository {
     });
   }
 
-  async setAuthorized(authorized) {
+  async updateAuthorized(authorized) {
     await this.update({
       authorized,
     });

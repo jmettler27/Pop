@@ -18,9 +18,7 @@ export default class TeamRepository extends FirebaseRepository {
     return data.map((t) => new Team(t));
   }
 
-  async getAllTeamsTransaction(transaction) {}
-
-  async create(data, id = null) {
+  async createTeam(data, id = null) {
     Team.validateName(data.name);
     Team.validateColor(data.color);
     const team = await super.create(data, id);
@@ -34,11 +32,8 @@ export default class TeamRepository extends FirebaseRepository {
     return new Team(team);
   }
 
-  async update(id, data) {
-    if (data.name) Team.validateName(data.name);
-    if (data.color) Team.validateColor(data.color);
-    const team = await super.update(id, data);
-    return new Team(team);
+  async updateTeam(id, data) {
+    await super.update(id, data);
   }
 
   async getNumTeams(transaction) {

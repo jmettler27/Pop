@@ -4,15 +4,15 @@ import { useGameContext } from '@/frontend/contexts';
 
 import { getNodeId, MatchingEdge } from '@/frontend/components/game/middle-pane/question/matching/gridUtils.js';
 import '@/frontend/components/game/middle-pane/question/matching/styles.scss';
-import GameMCQQuestionRepository from '@/backend/repositories/question/game/GameMCQQuestionRepository';
+import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 
 export default function CorrectMatches({ nodePositions, colIndices }) {
   console.log('CORRECT MATCHES RENDERED');
 
   const game = useGameContext();
 
-  const roundMatchingQuestionRepo = new GameMCQQuestionRepository(game.id, game.currentRound);
-  const { correctMatches, loading, error } = roundMatchingQuestionRepo.useCorrectMatches(game.currentQuestion);
+  const gameQuestionRepo = new GameMatchingQuestionRepository(game.id, game.currentRound);
+  const { correctMatches, loading, error } = gameQuestionRepo.useCorrectMatches(game.currentQuestion);
 
   if (error) {
     return (

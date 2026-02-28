@@ -3,7 +3,12 @@ import GameQuestionService from '@/backend/services/question/GameQuestionService
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { NAGUI_OPTION_TO_SOUND, NaguiQuestion } from '@/backend/models/questions/Nagui';
+import {
+  GameNaguiQuestion,
+  NAGUI_OPTION_TO_SOUND,
+  NAGUI_OPTIONS,
+  NaguiQuestion,
+} from '@/backend/models/questions/Nagui';
 import { PlayerStatus } from '@/backend/models/users/Player';
 
 import { runTransaction } from 'firebase/firestore';
@@ -49,7 +54,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
     const playerId = gameQuestion.playerId;
     const choiceIdx = gameQuestion.choiceIdx;
 
-    await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, teamId, PlayerStatus.READY);
+    await this.playerRepo.updateTeamPlayersStatus( teamId, PlayerStatus.READY);
 
     const correct = false;
     const reward = 0;
@@ -90,7 +95,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
 
     try {
       await runTransaction(firestore, async (transaction) => {
-        const option = NaguiQuestion.OPTIONS[optionIdx];
+        const option = GameNaguiQuestion.NAGUI_OPTIONS[optionIdx];
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { playerId, option });
         await this.soundRepo.addSoundTransaction(transaction, NAGUI_OPTION_TO_SOUND[option]);
         console.log(
@@ -147,7 +152,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
         const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
         const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
 
-        await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, teamId, PlayerStatus.READY);
+        await this.playerRepo.updateTeamPlayersStatus( teamId, PlayerStatus.READY);
 
         const answerIdx = baseQuestion.answerIdx;
         const correct = choiceIdx === answerIdx;
@@ -221,7 +226,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
         const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
         const reward = correct ? round.rewardsPerQuestion[gameQuestion.option] : 0;
 
-        await this.playerRepo.updateTeamPlayersStatusTransaction(transaction, teamId, PlayerStatus.READY);
+        await this.playerRepo.updateTeamPlayersStatus( teamId, PlayerStatus.READY);
 
         await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward);
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { playerId, reward, correct });

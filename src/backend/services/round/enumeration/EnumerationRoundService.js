@@ -1,6 +1,6 @@
 import { Timer, TimerStatus } from '@/backend/models/Timer';
 
-import GameEnumerationQuestionRepository from '@/backend/repositories/question/game/GameEnumerationQuestionRepository';
+import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 import RoundService from '@/backend/services/round/RoundService';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { GameStatus } from '@/backend/models/games/GameStatus';

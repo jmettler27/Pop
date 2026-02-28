@@ -1,6 +1,7 @@
 import { BaseQuestion, GameQuestion } from '@/backend/models/questions/Question';
 import { isArray } from '@/backend/utils/arrays';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { isObjectEmpty } from '@/backend/utils/objects';
 
 // Label questions
 export class LabellingQuestion extends BaseQuestion {
@@ -161,6 +162,15 @@ export class GameLabellingQuestion extends GameQuestion {
     return QuestionType.LABELLING;
   }
 
+  atLeastOneLabelIsRevealed() {
+    return this.revealed.some((r) => !isObjectEmpty(r));
+  }
+
+  labelIsRevealed(labelIdx) {
+    const r = this.revealed[labelIdx];
+    return r && !isObjectEmpty(r);
+  }
+
   getInitialRevealed() {
     return Array.from({ length: this.labels.length }, () => ({}));
   }
@@ -225,13 +235,5 @@ export class GameLabellingQuestion extends GameQuestion {
   }
 }
 
-// import { isObjectEmpty } from "@/backend/utils";
 
-// export function labelIsRevealed(revealed, labelIdx) {
-//     const revealedObj = revealed[labelIdx]
-//     return revealedObj && !isObjectEmpty(revealedObj)
-// }
 
-// export function atLeastOneLabelIsRevealed(revealed) {
-//     return revealed.some(revealedObj => !isObjectEmpty(revealedObj))
-// }

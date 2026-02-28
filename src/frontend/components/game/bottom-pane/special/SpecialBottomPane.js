@@ -5,7 +5,7 @@ import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import GameChooserTeamAnnouncement from '@/frontend/components/game/GameChooserTeamAnnouncement';
 import GameChooserOrder from '@/frontend/components/game/GameChooserOrder';
-import SpecialThemeBottomPane from '@/frontend/components/game/bottom-pane/special/theme/SpecialThemeBottomPane';
+import SpecialThemeBottomPane from '@/frontend/components/game/bottom-pane/special/SpecialThemeBottomPane';
 
 export default function SpecialBottomPane() {
   return (

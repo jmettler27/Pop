@@ -111,7 +111,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
   }
 
   async submitMatchTransaction(transaction, questionId, userId, edges, match) {
-    const { chooserOrder, chooserIdx } = await this.chooserRepo.getChooserTransaction(transaction, this.gameId);
+    const { chooserOrder, chooserIdx } = await this.chooserRepo.getChooserTransaction(transaction);
     const teamId = chooserOrder[chooserIdx];
 
     // edges is an array of numCols objects of the form {from: origRow0_col0, to: origRow1_col1}
@@ -178,7 +178,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
       // Switch to the next competing team
       const gameQuestion = this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
       const canceled = gameQuestion.canceled;
-      const { chooserOrder, chooserIdx } = await this.chooserRepo.getChooserTransaction(transaction, this.gameId);
+      const { chooserOrder, chooserIdx } = await this.chooserRepo.getChooserTransaction(transaction);
 
       const { newChooserIdx, newChooserTeamId } = findNextAvailableChooser(chooserIdx, chooserOrder, canceled);
       await this.chooserRepo.updateChooserIndexTransaction(transaction, newChooserIdx);
@@ -213,7 +213,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     const roundRepo = new MatchingRoundRepository(this.gameId);
 
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
-    const { chooserOrder, chooserIdx } = await this.chooserRepo.getChooserTransaction(transaction, this.gameId);
+    const { chooserOrder, chooserIdx } = await this.chooserRepo.getChooserTransaction(transaction);
     const round = await roundRepo.getRoundTransaction(transaction, this.roundId);
     const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction);

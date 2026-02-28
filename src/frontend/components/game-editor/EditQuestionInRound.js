@@ -105,10 +105,10 @@ function QuestionCardSkeleton() {
 }
 
 import PersonIcon from '@mui/icons-material/Person';
-import BaseQuestionRepository from '@/backend/repositories/question/base/BaseQuestionRepository';
-import GameQuestionRepository from '@/backend/repositories/question/game/GameQuestionRepository';
+import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
+import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
-import GameQuestionRepositoryFactory from '@/backend/repositories/question/game/GameQuestionRepositoryFactory';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 
 function UpdateCreatorButton({ roundId, questionId }) {
   const { id: gameId } = useParams();

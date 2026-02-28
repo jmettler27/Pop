@@ -3,7 +3,7 @@ import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question/question
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import { RoundType } from '@/backend/models/rounds/RoundType';
-import GameBlindtestQuestionRepository from '@/backend/repositories/question/game/GameBlindtestQuestionRepository';
+import GameBlindtestQuestionRepository from '@/backend/repositories/question/GameBlindtestQuestionRepository';
 
 export default class BlindtestRoundService extends BuzzerRoundService {
   constructor(gameId) {

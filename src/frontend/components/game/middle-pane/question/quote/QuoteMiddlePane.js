@@ -13,7 +13,7 @@ import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 import { useGameContext, useRoleContext } from '@/frontend/contexts';
 import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pane/question/QuestionHeader';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import GameQuoteQuestionRepository from '@/backend/repositories/question/game/GameQuoteQuestionRepository';
+import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 
 export default function QuoteMiddlePane({ baseQuestion }) {
   return (

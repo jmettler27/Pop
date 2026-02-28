@@ -18,8 +18,8 @@ import { Accordion, AccordionDetails, AccordionSummary, CircularProgress, Divide
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import clsx from 'clsx';
-import GameQuestionRepositoryFactory from '@/backend/repositories/question/game/GameQuestionRepositoryFactory';
-import BaseQuestionRepositoryFactory from '@/backend/repositories/question/base/BaseQuestionRepositoryFactory';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
+import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 
 export default function RoundQuestionsProgress({ game, round }) {
   const [expandedId, setExpandedId] = useState(game.currentQuestion);

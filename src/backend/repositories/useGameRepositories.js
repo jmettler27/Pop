@@ -62,23 +62,3 @@ export function useGameData(gameId) {
   };
 }
 
-// Hook for components that need real-time player states
-export function usePlayerStates() {
-  const { id: gameId } = useParams();
-  const repositories = useGameRepositories(gameId);
-  return repositories.playerRepo.usePlayerStates();
-}
-
-// Hook for components that need team data
-export function useTeamsData() {
-  const { id: gameId } = useParams();
-  const repositories = useGameRepositories(gameId);
-  return repositories.teamRepo.useAllTeams();
-}
-
-// Hook for components that need scores
-export function useScoresData() {
-  const { id: gameId } = useParams();
-  const repositories = useGameRepositories(gameId);
-  return repositories.scoreRepo.useScores();
-}

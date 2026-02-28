@@ -256,7 +256,7 @@ function SelectQuestionTypeButton({ type, handleListItemClick, lang = DEFAULT_LO
 }
 
 // New question
-import BaseQuestionRepository from '@/backend/repositories/question/base/BaseQuestionRepository';
+import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 
 import SubmitBasicQuestionForm from '@/frontend/components/forms/submit-question/SubmitBasicQuestionForm';
 import SubmitBlindtestQuestionForm from '@/frontend/components/forms/submit-question/SubmitBlindtestQuestionForm';

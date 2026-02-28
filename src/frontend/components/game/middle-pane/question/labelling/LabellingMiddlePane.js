@@ -1,9 +1,9 @@
 import { revealLabel } from '@/backend/services/question/labelling/actions';
 
-import GameLabellingQuestionRepository from '@/backend/repositories/question/game/GameLabellingQuestionRepository';
+import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
 
 import { topicToEmoji } from '@/backend/models/Topic';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { UserRole } from '@/backend/models/users/User';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
@@ -20,40 +20,40 @@ import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pan
 
 import { Box } from '@mui/material';
 
-export default function LabellingMiddlePane({ question }) {
+export default function LabellingMiddlePane({ baseQuestion }) {
   return (
     <div className="flex flex-col h-full items-center">
       <div className="flex h-1/5 items-center justify-center">
-        <LabellingQuestionHeader question={question} />
+        <LabellingQuestionHeader baseQuestion={baseQuestion} />
       </div>
       <div className="flex h-4/5 w-full items-center justify-center">
-        <LabellingMainContent question={question} />
+        <LabellingMainContent baseQuestion={baseQuestion} />
       </div>
     </div>
   );
 }
 
-function LabellingQuestionHeader({ question }) {
+function LabellingQuestionHeader({ baseQuestion }) {
   return (
     <div className="flex flex-col items-center justify-center space-y-2">
       <div className="flex flex-row items-center justify-center space-x-1">
-        <QuestionTypeIcon questionType={question.type} fontSize={50} />
+        <QuestionTypeIcon questionType={baseQuestion.type} fontSize={50} />
         <h1 className="2xl:text-5xl">
-          {topicToEmoji(question.topic)}{' '}
+          {topicToEmoji(baseQuestion.topic)}{' '}
           <strong>
-            {QuestionType.typeToTitle(question.type)} <CurrentRoundQuestionOrder />
+            {questionTypeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
           </strong>
         </h1>
       </div>
       <div className="flex flex-row items-center justify-center space-x-1">
-        <h2 className="2xl:text-4xl">{question.title}</h2>
-        {question.note && <NoteButton note={question.note} />}
+        <h2 className="2xl:text-4xl">{baseQuestion.title}</h2>
+        {baseQuestion.note && <NoteButton note={baseQuestion.note} />}
       </div>
     </div>
   );
 }
 
-function LabellingMainContent({ question }) {
+function LabellingMainContent({ baseQuestion }) {
   const game = useGameContext();
 
   const gameQuestionRepo = new GameLabellingQuestionRepository(game.id, game.currentRound);
@@ -73,9 +73,9 @@ function LabellingMainContent({ question }) {
   }
 
   const { revealed } = gameQuestion;
-  const title = question.title;
-  const image = question.image;
-  const labels = question.labels;
+  const title = baseQuestion.title;
+  const image = baseQuestion.image;
+  const labels = baseQuestion.labels;
 
   return (
     <Box className="flex flex-row h-full w-[90%] items-center justify-center space-x-8">

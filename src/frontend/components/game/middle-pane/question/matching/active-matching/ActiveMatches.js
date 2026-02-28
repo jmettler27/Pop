@@ -15,7 +15,7 @@ import SubmitMatchDialog from '@/frontend/components/game/middle-pane/question/m
 import { useState } from 'react';
 
 import { useGameContext, useGameRepositoriesContext, useRoleContext, useTeamContext } from '@/frontend/contexts';
-import GameMatchingQuestionRepository from '@/backend/repositories/question/game/GameMatchingQuestionRepository';
+import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 
 export default function ActiveMatches({ answer, nodePositions, numCols }) {
   console.log('ACTIVE MATCHES RENDERED');

@@ -4,8 +4,8 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 import { useGameContext, useGameRepositoriesContext } from '@/frontend/contexts';
 
-import RoundStartBottomPane from '@/frontend/components/game/bottom-pane/round/round-start/RoundStartBottomPane';
-import RoundEndBottomPane from '@/frontend/components/game/bottom-pane/round/round-end/RoundEndBottomPane';
+import RoundStartBottomPane from '@/frontend/components/game/bottom-pane/round/RoundStartBottomPane';
+import RoundEndBottomPane from '@/frontend/components/game/bottom-pane/round/RoundEndBottomPane';
 
 export default function RoundBottomPane() {
   const game = useGameContext();

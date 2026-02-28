@@ -6,7 +6,7 @@ import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
 import { useGameContext } from '@/frontend/contexts';
 import { WinnerName } from '@/frontend/components/game/PlayerName';
-import GameQuestionRepositoryFactory from '@/backend/repositories/question/game/GameQuestionRepositoryFactory';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 
 export default function BuzzerAnswer({ baseQuestion }) {
   return (

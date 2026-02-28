@@ -1,6 +1,6 @@
 import { PlayerStatus } from '@/backend/models/users/Player';
 
-import GameMatchingQuestionRepository from '@/backend/repositories/question/game/GameMatchingQuestionRepository';
+import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 
 import RoundService from '@/backend/services/round/RoundService';
 import { serverTimestamp } from 'firebase/firestore';
@@ -67,7 +67,7 @@ export default class MatchingRoundService extends RoundService {
 
     /* Game: fetch next question and reset every player's state */
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
-    const chooser = await this.chooserRepo.getChooserTransaction(transaction, this.gameId);
+    const chooser = await this.chooserRepo.getChooserTransaction(transaction);
 
     const questionId = round.questions[questionOrder];
     const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);

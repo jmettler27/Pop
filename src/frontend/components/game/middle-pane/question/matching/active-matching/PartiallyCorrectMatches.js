@@ -1,4 +1,4 @@
-import GameMatchingQuestionRepository from '@/backend/repositories/question/game/GameMatchingQuestionRepository';
+import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { useGameContext } from '@/frontend/contexts';

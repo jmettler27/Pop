@@ -1,6 +1,6 @@
 import { validateItem } from '@/backend/services/question/enumeration/actions';
 
-import GameEnumerationQuestionRepository from '@/backend/repositories/question/game/GameEnumerationQuestionRepository';
+import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { UserRole } from '@/backend/models/users/User';

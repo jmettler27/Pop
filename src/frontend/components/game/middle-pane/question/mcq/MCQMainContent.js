@@ -27,10 +27,10 @@ import { Avatar, Badge, List, ListItemButton, ListItemIcon, ListItemText } from 
 
 import { clsx } from 'clsx';
 
-export default function MCQMainContent({ question }) {
-  const title = question.title;
-  const note = question.note;
-  const choices = question.choices;
+export default function MCQMainContent({ baseQuestion }) {
+  const title = baseQuestion.title;
+  const note = baseQuestion.note;
+  const choices = baseQuestion.choices;
 
   // Randomize the order of the choices on the client side
   const randomMapping = useMemo(() => shuffleIndices(choices.length), [choices.length]);
@@ -38,11 +38,11 @@ export default function MCQMainContent({ question }) {
   return (
     <div className="h-full w-full flex flex-col items-center justify-center">
       <div className="h-[25%] w-full flex flex-row items-center justify-center space-x-1">
-        <h2 className="2xl:text-4xl font-bold">{question}</h2>
+        <h2 className="2xl:text-4xl font-bold">{title}</h2>
         {note && <NoteButton note={note} />}
       </div>
       <div className="h-[75%] w-full flex items-center justify-center">
-        <MCQMainContentQuestion question={question} randomization={randomMapping} />
+        <MCQMainContentQuestion baseQuestion={baseQuestion} randomization={randomMapping} />
       </div>
     </div>
   );
@@ -70,10 +70,10 @@ function MCQAnswerImage({ correct }) {
   return <></>;
 }
 
-function MCQMainContentQuestion({ question, randomization }) {
+function MCQMainContentQuestion({ baseQuestion, randomization }) {
   const game = useGameContext();
 
-  const gameQuestionRepo = new RoundMCQQuestionRepository(game.id, game.currentRound);
+  const gameQuestionRepo = new GameMCQQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
   if (error) {
@@ -96,10 +96,10 @@ function MCQMainContentQuestion({ question, randomization }) {
         <MCQAnswerImage correct={gameQuestion.correct} />
       </div>
       {game.status === GameStatus.QUESTION_ACTIVE && (
-        <ActiveMCQChoices question={question} gameQuestion={gameQuestion} randomization={randomization} />
+        <ActiveMCQChoices baseQuestion={baseQuestion} gameQuestion={gameQuestion} randomization={randomization} />
       )}
       {game.status === GameStatus.QUESTION_END && (
-        <EndedMCQChoices question={question} gameQuestion={gameQuestion} randomization={randomization} />
+        <EndedMCQChoices baseQuestion={baseQuestion} gameQuestion={gameQuestion} randomization={randomization} />
       )}
       <div className="flex flex-col h-full w-1/4 items-center justify-center">
         <MCQAnswerImage correct={gameQuestion.correct} />
@@ -110,13 +110,13 @@ function MCQMainContentQuestion({ question, randomization }) {
 
 const choiceIsDisabled = (myRole, isChooser) => !(myRole === UserRole.PLAYER && isChooser);
 
-function ActiveMCQChoices({ question, gameQuestion, randomization }) {
+function ActiveMCQChoices({ baseQuestion, gameQuestion, randomization }) {
   const game = useGameContext();
   const myTeam = useTeamContext();
   const myRole = useRoleContext();
   const user = useUserContext();
 
-  const choices = question.choices;
+  const choices = baseQuestion.choices;
 
   const isChooser = myTeam === gameQuestion.teamId;
 
@@ -151,10 +151,11 @@ function ActiveMCQChoices({ question, gameQuestion, randomization }) {
 
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
 
-function EndedMCQChoices({ question, gameQuestion, randomization }) {
-  const choices = question.choices;
-  const answerIdx = question.answerIdx;
+function EndedMCQChoices({ baseQuestion, gameQuestion, randomization }) {
+  const choices = baseQuestion.choices;
+  const answerIdx = baseQuestion.answerIdx;
   const { choiceIdx, correct, playerId } = gameQuestion;
 
   const isCorrectAnswer = (idx) => idx === answerIdx;

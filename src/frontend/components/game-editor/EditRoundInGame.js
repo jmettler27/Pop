@@ -60,7 +60,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import BaseQuestionRepository from '@/backend/repositories/question/base/BaseQuestionRepository';
+import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 
 const editGameRoundCardNumCols = (roundType) => {
   switch (roundType) {

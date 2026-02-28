@@ -6,7 +6,7 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { UserRole } from '@/backend/models/users/User';
 
-import GameBasicQuestionRepository from '@/backend/repositories/question/game/GameBasicQuestionRepository';
+import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
 
 import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 

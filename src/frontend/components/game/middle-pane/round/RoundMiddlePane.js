@@ -7,8 +7,8 @@ import { useGameContext, useGameRepositoriesContext } from '@/frontend/contexts'
 import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import RoundStartBody from '@/frontend/components/game/middle-pane/round/round-start/RoundStartBody';
-import RoundEndBody from '@/frontend/components/game/middle-pane/round/round-end/RoundEndBody';
+import RoundStartBody from '@/frontend/components/game/middle-pane/round/RoundStartBody';
+import RoundEndBody from '@/frontend/components/game/middle-pane/round/RoundEndBody';
 
 import { useParams } from 'next/navigation';
 

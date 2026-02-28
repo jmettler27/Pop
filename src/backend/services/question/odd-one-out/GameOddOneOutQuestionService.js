@@ -154,7 +154,7 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
         },
       ],
     });
-    await this.timerRepo.resetTimerTransaction(transaction);
+    await this.timerRepo.updateAuthorized(false);
 
     console.log(
       'OOO proposal successfully selected',

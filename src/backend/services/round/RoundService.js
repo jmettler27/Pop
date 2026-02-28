@@ -8,8 +8,8 @@ import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
-import BaseQuestionRepositoryFactory from '@/backend/repositories/question/base/BaseQuestionRepositoryFactory';
-import GameQuestionRepositoryFactory from '@/backend/repositories/question/game/GameQuestionRepositoryFactory';
+import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import GameQuestionServiceFactory from '@/backend/services/question/GameQuestionServiceFactory';
 
 import { Round } from '@/backend/models/rounds/Round';
@@ -436,13 +436,13 @@ export default class RoundService {
     }
   }
 
-  async handleRoundSelectedTransaction(transaction, roundId, userId) {
+  async handleRoundSelectedTransaction(transaction, roundId, userId, numTeams) {
     throw new Error('Not implemented');
   }
 
   /* =============================================================================================================== */
 
-  async calculateMaxPointsTransaction(transaction, round) {
+  async calculateMaxPointsTransaction(transaction, round, numTeams) {
     throw new Error('Not implemented');
   }
 }

@@ -81,11 +81,6 @@ export default class FirebaseRepository extends IRepository {
     return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null;
   }
 
-  async getNumDocuments(transaction) {
-    const querySnapshot = await transaction.get(query(this.collectionRef));
-    return querySnapshot.docs.length;
-  }
-
   async getAll() {
     const q = query(this.collectionRef);
     const querySnapshot = await getDocs(q);
@@ -93,6 +88,11 @@ export default class FirebaseRepository extends IRepository {
       id: doc.id,
       ...doc.data(),
     }));
+  }
+
+  async getNumDocuments() {
+    const data = await this.getAll();
+    return data.length;
   }
 
   // async getAll() {

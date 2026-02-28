@@ -2,8 +2,8 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 
 import { useGameContext } from '@/frontend/contexts';
 
-import QuestionActiveBottomPane from '@/frontend/components/game/bottom-pane/question/question-active/QuestionActiveBottomPane';
-import QuestionEndBottomPane from '@/frontend/components/game/bottom-pane/question/question-end/QuestionEndBottomPane';
+import QuestionActiveBottomPane from '@/frontend/components/game/bottom-pane/question/QuestionActiveBottomPane';
+import QuestionEndBottomPane from '@/frontend/components/game/bottom-pane/question/QuestionEndBottomPane';
 import TimerPane from '@/frontend/components/game/timer/TimerPane';
 
 export default function QuestionBottomPane() {
@@ -20,7 +20,7 @@ export default function QuestionBottomPane() {
   );
 }
 
-const SelectedQuestionBottomPane = ({}) => {
+const SelectedQuestionBottomPane = ({ }) => {
   const game = useGameContext();
 
   switch (game.status) {

@@ -18,6 +18,10 @@ export const handleCountdownEnd = async (gameId, roundId, questionId) => {
 };
 
 /* =============================================================================================================== */
+export const handleBuzzerHeadChanged = async (gameId, roundId, questionId, playerId) => {
+  const service = new GameLabellingQuestionService(gameId, roundId);
+  return service.handleBuzzerHeadChanged(questionId, playerId);
+};
 
 export const revealLabel = async (gameId, roundId, questionId, labelIdx) => {
   const service = new GameLabellingQuestionService(gameId, roundId);
@@ -33,3 +37,4 @@ export const cancelPlayer = async (gameId, roundId, questionId, playerId) => {
   const service = new GameLabellingQuestionService(gameId, roundId);
   return service.cancelPlayer(questionId, playerId);
 };
+

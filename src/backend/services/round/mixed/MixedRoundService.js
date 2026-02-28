@@ -1,4 +1,4 @@
-import GameQuestionRepositoryFactory from '@/backend/repositories/question/game/GameQuestionRepositoryFactory';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import RoundService from '@/backend/services/round/RoundService';
 import { RoundType } from '@/backend/models/rounds/RoundType';
 
