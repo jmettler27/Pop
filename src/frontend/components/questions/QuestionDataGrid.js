@@ -12,23 +12,21 @@ import { topicToEmoji } from '@/backend/models/Topic';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
-import { DEFAULT_LOCALE, localeToEmoji } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 
-import { Avatar } from '@mui/material';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import React, { useState, useMemo, useCallback } from 'react';
-
-import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
-
-const CLUE = {
-  en: 'Clue',
-  'fr-FR': 'Indice',
-};
-
-const TITLE = {
-  en: 'Title',
-  'fr-FR': 'Titre',
-};
+const messages = defineMessages('frontend.questions.QuestionDataGrid', {
+  clue: 'Clue',
+  title: 'Title',
+  enumAnswers: 'Answers',
+  enumThinking: 'Thinking (s)',
+  oddOneOut: 'Odd one out',
+  matchingColumns: 'Columns',
+  quote: 'Quote',
+  quoteToGuess: 'To guess',
+  numLabels: 'Labels',
+  choices: 'Choices',
+});
 
 // PROGRESSIVE CLUES
 const progressiveCluesQuestionRow = (question) => {
@@ -40,9 +38,13 @@ const progressiveCluesQuestionRow = (question) => {
     answer: answer.title,
   };
 };
-const progressiveCluesQuestionColumns = [
+const progressiveCluesQuestionColumns = (intl) => [
   { field: 'title', headerName: 'Question', width: 150 },
-  { field: 'answer', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['answer'], width: 250 },
+  {
+    field: 'answer',
+    headerName: QUESTION_ELEMENT_TO_TITLE[intl.locale]?.['answer'] ?? QUESTION_ELEMENT_TO_TITLE['en']['answer'],
+    width: 250,
+  },
 ];
 
 // IMAGE
@@ -56,10 +58,14 @@ const imageQuestionRow = (question) => {
     source,
   };
 };
-const imageQuestionColumns = [
+const imageQuestionColumns = (intl) => [
   { field: 'title', headerName: 'Question', width: 250 },
   { field: 'description', headerName: 'Description', width: 250 },
-  { field: 'source', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['source'], width: 250 },
+  {
+    field: 'source',
+    headerName: QUESTION_ELEMENT_TO_TITLE[intl.locale]?.['source'] ?? QUESTION_ELEMENT_TO_TITLE['en']['source'],
+    width: 250,
+  },
 ];
 
 // EMOJI
@@ -73,10 +79,10 @@ const emojiQuestionRow = (question) => {
     clue,
   };
 };
-const emojiQuestionColumns = [
+const emojiQuestionColumns = (intl) => [
   { field: 'title', headerName: 'Question', width: 225 },
-  { field: 'answer', headerName: ANSWER_TEXT[DEFAULT_LOCALE], width: 225 },
-  { field: 'clue', headerName: CLUE[DEFAULT_LOCALE], width: 200 },
+  { field: 'answer', headerName: ANSWER_TEXT[intl.locale] ?? ANSWER_TEXT['en'], width: 225 },
+  { field: 'clue', headerName: intl.formatMessage(messages.clue), width: 200 },
 ];
 
 // BLINDTEST
@@ -92,12 +98,12 @@ const blindtestQuestionRow = (question) => {
     answer_title: answer.title,
   };
 };
-const blindtestQuestionColumns = [
+const blindtestQuestionColumns = (intl) => [
   { field: 'subtype', headerName: 'Type', width: 100 },
   { field: 'title', headerName: 'Question', width: 150 },
   { field: 'answer_source', headerName: QuoteSourceElement.elementToTitle(), width: 200 },
   { field: 'answer_author', headerName: QuoteAuthorElement.elementToTitle(), width: 200 },
-  { field: 'answer_title', headerName: TITLE[DEFAULT_LOCALE], width: 200 },
+  { field: 'answer_title', headerName: intl.formatMessage(messages.title), width: 200 },
 ];
 
 // ENUM
@@ -116,19 +122,11 @@ const enumQuestionRow = (question) => {
     challengeTime,
   };
 };
-const ENUM_NUM_ANSWERS = {
-  en: 'Answers',
-  'fr-FR': 'Réponses',
-};
-const ENUM_THINKING = {
-  en: 'Thinking (s)',
-  'fr-FR': 'Réflexion (s)',
-};
-const enumQuestionColumns = [
+const enumQuestionColumns = (intl) => [
   { field: 'title', headerName: 'Question', width: 400 },
   { field: 'note', headerName: 'Note', width: 250 },
-  { field: 'numAnswers', headerName: ENUM_NUM_ANSWERS[DEFAULT_LOCALE], width: 100 },
-  { field: 'thinkingTime', headerName: ENUM_THINKING[DEFAULT_LOCALE], width: 100 },
+  { field: 'numAnswers', headerName: intl.formatMessage(messages.enumAnswers), width: 100 },
+  { field: 'thinkingTime', headerName: intl.formatMessage(messages.enumThinking), width: 100 },
   { field: 'challengeTime', headerName: 'Challenge (s)', width: 100 },
 ];
 
@@ -142,13 +140,9 @@ const oddOneOutQuestionRow = (question) => {
     oddOneOut: items[answerIdx].title,
   };
 };
-const ODD_ONE_OUT = {
-  en: 'Odd one out',
-  'fr-FR': 'Intrus',
-};
-const oddOneOutQuestionColumns = [
+const oddOneOutQuestionColumns = (intl) => [
   { field: 'title', headerName: 'Question', width: 500 },
-  { field: 'oddOneOut', headerName: ODD_ONE_OUT[DEFAULT_LOCALE], width: 250 },
+  { field: 'oddOneOut', headerName: intl.formatMessage(messages.oddOneOut), width: 250 },
 ];
 
 // MATCHING
@@ -162,13 +156,9 @@ const matchingQuestionRow = (question) => {
     numRows,
   };
 };
-const MATCHING_COLUMNS = {
-  en: 'Columns',
-  'fr-FR': 'Colonnes',
-};
-const matchingQuestionColumns = [
+const matchingQuestionColumns = (intl) => [
   { field: 'title', headerName: 'Question', width: 500 },
-  { field: 'numCols', headerName: MATCHING_COLUMNS[DEFAULT_LOCALE], width: 100 },
+  { field: 'numCols', headerName: intl.formatMessage(messages.matchingColumns), width: 100 },
   { field: 'numRows', headerName: 'Matches', width: 100 },
 ];
 
@@ -191,19 +181,11 @@ const quoteQuestionRow = (question) => {
     toGuess: toGuessWithEmojis,
   };
 };
-const QUOTE = {
-  en: 'Quote',
-  'fr-FR': 'Réplique',
-};
-const QUOTE_TO_GUESS = {
-  en: 'To guess',
-  'fr-FR': 'À deviner',
-};
-const quoteQuestionColumns = [
+const quoteQuestionColumns = (intl) => [
   { field: 'source', headerName: QuoteSourceElement.elementToTitle(), width: 200 },
   { field: 'author', headerName: QuoteAuthorElement.elementToTitle(), width: 200 },
-  { field: 'quote', headerName: QUOTE[DEFAULT_LOCALE], width: 500 },
-  { field: 'toGuess', headerName: QUOTE_TO_GUESS[DEFAULT_LOCALE], width: 100 },
+  { field: 'quote', headerName: intl.formatMessage(messages.quote), width: 500 },
+  { field: 'toGuess', headerName: intl.formatMessage(messages.quoteToGuess), width: 100 },
 ];
 
 // LABEL
@@ -217,13 +199,8 @@ const labelQuestionRow = (question) => {
   };
 };
 
-const NUM_LABELS = {
-  en: 'Labels',
-  'fr-FR': 'Étiquettes',
-};
-
-const labelQuestionColumns = [
-  { field: 'numLabels', headerName: NUM_LABELS[DEFAULT_LOCALE], width: 100 },
+const labelQuestionColumns = (intl) => [
+  { field: 'numLabels', headerName: intl.formatMessage(messages.numLabels), width: 100 },
   { field: 'title', headerName: 'Question', width: 400 },
 ];
 
@@ -256,18 +233,19 @@ const mcqQuestionRow = (question) => {
   };
 };
 
-const NUM_CHOICES = {
-  en: 'Choices',
-  'fr-FR': 'Choix',
-};
-
-const mcqQuestionColumns = [
-  { field: 'numChoices', headerName: NUM_CHOICES[DEFAULT_LOCALE], width: 75 },
-  { field: 'source', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['source'], width: 200 },
+const mcqQuestionColumns = (intl) => [
+  { field: 'numChoices', headerName: intl.formatMessage(messages.choices), width: 75 },
+  {
+    field: 'source',
+    headerName: QUESTION_ELEMENT_TO_TITLE[intl.locale]?.['source'] ?? QUESTION_ELEMENT_TO_TITLE['en']['source'],
+    width: 200,
+  },
   { field: 'title', headerName: 'Question', width: 500 },
-  // { field: 'note', headerName: 'Note', width: MCQ_NOTE_MAX_LENGTH * 6 },
-  { field: 'answer', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['answer'], width: 250 },
-  // { field: 'explanation', headerName: 'Explanation', width: 130 },
+  {
+    field: 'answer',
+    headerName: QUESTION_ELEMENT_TO_TITLE[intl.locale]?.['answer'] ?? QUESTION_ELEMENT_TO_TITLE['en']['answer'],
+    width: 250,
+  },
 ];
 
 // NAGUI
@@ -286,12 +264,18 @@ const naguiQuestionRow = (question) => {
     title,
   };
 };
-const naguiQuestionColumns = [
-  { field: 'source', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['source'], width: 200 },
+const naguiQuestionColumns = (intl) => [
+  {
+    field: 'source',
+    headerName: QUESTION_ELEMENT_TO_TITLE[intl.locale]?.['source'] ?? QUESTION_ELEMENT_TO_TITLE['en']['source'],
+    width: 200,
+  },
   { field: 'title', headerName: 'Question', width: 500 },
-  // { field: 'note', headerName: 'Note', width: NAGUI_NOTE_MAX_LENGTH * 6 },
-  { field: 'answer', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['answer'], width: 250 },
-  // { field: 'explanation', headerName: 'Explanation', width: 130 },
+  {
+    field: 'answer',
+    headerName: QUESTION_ELEMENT_TO_TITLE[intl.locale]?.['answer'] ?? QUESTION_ELEMENT_TO_TITLE['en']['answer'],
+    width: 250,
+  },
 ];
 
 // BASIC
@@ -309,12 +293,18 @@ const basicQuestionRow = (question) => {
     title,
   };
 };
-const basicQuestionColumns = [
-  { field: 'source', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['source'], width: 200 },
+const basicQuestionColumns = (intl) => [
+  {
+    field: 'source',
+    headerName: QUESTION_ELEMENT_TO_TITLE[intl.locale]?.['source'] ?? QUESTION_ELEMENT_TO_TITLE['en']['source'],
+    width: 200,
+  },
   { field: 'title', headerName: 'Question', width: 500 },
-  // { field: 'note', headerName: 'Note', width: MCQ_NOTE_MAX_LENGTH * 6 },
-  { field: 'answer', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['answer'], width: 250 },
-  // { field: 'explanation', headerName: 'Explanation', width: 130 },
+  {
+    field: 'answer',
+    headerName: QUESTION_ELEMENT_TO_TITLE[intl.locale]?.['answer'] ?? QUESTION_ELEMENT_TO_TITLE['en']['answer'],
+    width: 250,
+  },
 ];
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
@@ -372,16 +362,19 @@ const commonQuestionRow = (question, users) => {
   };
 };
 
-const questionColumns = (questionType, lang = DEFAULT_LOCALE) => {
+const questionColumns = (questionType, intl) => {
+  const typeSpecificCols = questionTypeToColumns[questionType];
+  const cols = typeof typeSpecificCols === 'function' ? typeSpecificCols(intl) : typeSpecificCols;
+  const dict = QUESTION_ELEMENT_TO_TITLE[intl.locale] ?? QUESTION_ELEMENT_TO_TITLE['en'];
   return [
     { field: 'id', headerName: 'ID', width: 100 },
     { field: 'lang', headerName: 'Lang', width: 50 },
-    { field: 'topic', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['topic'], width: 75 },
-    ...questionTypeToColumns[questionType],
-    { field: 'createdAt', headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['createdAt'], width: 130 },
+    { field: 'topic', headerName: dict['topic'], width: 75 },
+    ...cols,
+    { field: 'createdAt', headerName: dict['createdAt'], width: 130 },
     {
       field: 'createdBy',
-      headerName: QUESTION_ELEMENT_TO_TITLE[DEFAULT_LOCALE]['createdBy'],
+      headerName: dict['createdBy'],
       width: 130,
       renderCell: (params) => (
         <div className="flex flex-row w-full space-x-2 items-center">
@@ -443,8 +436,9 @@ function SearchQuestionDataGridImpl({
 
   console.log('Loaded questions:', baseQuestions);
 
+  const intl = useIntl();
   const rows = baseQuestions.map((question) => questionRow(question, users));
-  const columns = questionColumns(questionType);
+  const columns = questionColumns(questionType, intl);
 
   return (
     <div style={{ height: '100%', width: '100%' }}>

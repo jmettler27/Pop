@@ -1,5 +1,6 @@
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { useIntl } from 'react-intl';
 
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { UserRole } from '@/backend/models/users/User';
@@ -9,7 +10,7 @@ import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { or, query, where } from 'firebase/firestore';
 import { useCollectionOnce } from 'react-firebase-hooks/firestore';
 
-import { DEFAULT_LOCALE, localeToEmoji } from '@/frontend/utils/locales';
+import { localeToEmoji } from '@/frontend/utils/locales';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/card';
 import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from '@/frontend/components/home/GameAvatars';
@@ -25,8 +26,20 @@ import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import GroupIcon from '@mui/icons-material/Group';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
+import defineMessages from '@/utils/defineMessages';
 
-export default function OngoingGames({ lang = DEFAULT_LOCALE }) {
+const messages = defineMessages('frontend.home.OngoingGames', {
+  title: 'Ongoing games',
+  empty: 'No ongoing games at the moment',
+  organizersShort: 'Organizers',
+  playersShort: 'Players',
+  watchGame: 'Watch',
+  joinGame: 'Join',
+  continueGame: 'Continue',
+});
+
+export default function OngoingGames() {
+  const intl = useIntl();
   const [games, gamesLoading, gamesError] = useCollectionOnce(
     query(
       GAMES_COLLECTION_REF,
@@ -62,17 +75,19 @@ export default function OngoingGames({ lang = DEFAULT_LOCALE }) {
     <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-slate-700 shadow-2xl hover:shadow-orange-500/20 transition-all duration-300">
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 border-b border-slate-700">
         <CardTitle className="text-xs sm:text-sm md:text-md lg:text-base xl:text-xl font-bold bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
-          🕒 {ONGOING_GAMES_CARD_TITLE[lang]} ({sortedOngoingGames.length})
+          🕒 {intl.formatMessage(messages.title)} ({sortedOngoingGames.length})
         </CardTitle>
       </CardHeader>
 
       <CardContent className="pt-6">
         {sortedOngoingGames.length === 0 ? (
-          <div className="text-center py-12 text-slate-400 text-sm sm:text-base">{NO_ONGOING_GAMES[lang]}</div>
+          <div className="text-center py-12 text-slate-400 text-sm sm:text-base">
+            {intl.formatMessage(messages.empty)}
+          </div>
         ) : (
           <div className="grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {sortedOngoingGames.map((game) => (
-              <GameCard key={game.id} game={game} lang={lang} />
+              <GameCard key={game.id} game={game} />
             ))}
           </div>
         )}
@@ -81,17 +96,8 @@ export default function OngoingGames({ lang = DEFAULT_LOCALE }) {
   );
 }
 
-const ONGOING_GAMES_CARD_TITLE = {
-  en: 'Ongoing games',
-  'fr-FR': 'Parties en cours',
-};
-
-const NO_ONGOING_GAMES = {
-  en: 'No ongoing games at the moment',
-  'fr-FR': 'Aucune partie en cours pour le moment',
-};
-
-const GameCard = ({ game, lang }) => {
+const GameCard = ({ game }) => {
+  const intl = useIntl();
   const router = useRouter();
   const { data: session } = useSession();
   const user = session.user;
@@ -127,8 +133,9 @@ const GameCard = ({ game, lang }) => {
   }
 
   const buttonText = () => {
-    if (myRole === UserRole.PLAYER || myRole === UserRole.ORGANIZER) return CONTINUE_GAME[lang];
-    if (myRole === UserRole.SPECTATOR) return isFull ? WATCH_GAME[lang] : JOIN_GAME[lang];
+    if (myRole === UserRole.PLAYER || myRole === UserRole.ORGANIZER) return intl.formatMessage(messages.continueGame);
+    if (myRole === UserRole.SPECTATOR)
+      return isFull ? intl.formatMessage(messages.watchGame) : intl.formatMessage(messages.joinGame);
   };
 
   const ButtonIcon = () => {
@@ -176,7 +183,7 @@ const GameCard = ({ game, lang }) => {
             <div className="flex items-center gap-1">
               <SupervisorAccountIcon sx={{ fontSize: '0.875rem', color: 'rgb(249, 115, 22)' }} />
               <Typography variant="caption" className="text-xs font-medium text-orange-300">
-                {ORGANIZERS_SHORT[lang]}
+                {intl.formatMessage(messages.organizersShort)}
               </Typography>
             </div>
             <div className="flex justify-start w-full">
@@ -189,7 +196,7 @@ const GameCard = ({ game, lang }) => {
             <div className="flex items-center gap-1">
               <GroupIcon sx={{ fontSize: '0.875rem', color: 'rgb(96, 165, 250)' }} />
               <Typography variant="caption" className="text-xs font-medium text-blue-300">
-                {PLAYERS_SHORT[lang]}
+                {intl.formatMessage(messages.playersShort)}
               </Typography>
             </div>
             <div className="flex justify-start w-full">
@@ -228,28 +235,3 @@ const JoinGameButton = styled(Button)(({ theme }) => ({
     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
   },
 }));
-
-const ORGANIZERS_SHORT = {
-  en: 'Organizers',
-  'fr-FR': 'Organisateurs',
-};
-
-const PLAYERS_SHORT = {
-  en: 'Players',
-  'fr-FR': 'Joueurs',
-};
-
-const WATCH_GAME = {
-  en: 'Watch',
-  'fr-FR': 'Regarder',
-};
-
-const JOIN_GAME = {
-  en: 'Join',
-  'fr-FR': 'Rejoindre',
-};
-
-const CONTINUE_GAME = {
-  en: 'Continue',
-  'fr-FR': 'Continuer',
-};

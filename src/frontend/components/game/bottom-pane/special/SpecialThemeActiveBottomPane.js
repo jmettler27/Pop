@@ -12,8 +12,6 @@ import { useUserContext, useGameContext, useRoleContext } from '@/frontend/conte
 
 import { GameChooserHelperText } from '@/frontend/components/game/GameChooserTeamAnnouncement';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { Button, ButtonGroup } from '@mui/material';
@@ -76,7 +74,8 @@ function SpecialThemeActiveOrganizerBottomPane({ theme, gameTheme }) {
   }
 }
 
-function SpecialQuestionActiveOrganizerBottomPane({ gameTheme, lang = DEFAULT_LOCALE }) {
+function SpecialQuestionActiveOrganizerBottomPane({ gameTheme }) {
+  const intl = useIntl();
   const game = useGameContext();
   const user = useUserContext();
 
@@ -95,7 +94,7 @@ function SpecialQuestionActiveOrganizerBottomPane({ gameTheme, lang = DEFAULT_LO
         }}
         disabled={isHandling}
       >
-        {VALIDATE_ANSWER[lang]}
+        {intl.formatMessage(messages.validate)}
       </Button>
 
       {/* Invalidate the player's answer */}
@@ -107,7 +106,7 @@ function SpecialQuestionActiveOrganizerBottomPane({ gameTheme, lang = DEFAULT_LO
         }}
         disabled={isHandling}
       >
-        {INVALIDATE_ANSWER[lang]}
+        {intl.formatMessage(messages.invalidate)}
       </Button>
     </ButtonGroup>
   );

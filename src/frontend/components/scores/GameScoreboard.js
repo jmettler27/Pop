@@ -1,12 +1,13 @@
 import { Fragment } from 'react';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
 
-import { HEAD_RANKING_TEXT, HEAD_SCORE_TEXT, HEAD_TEAM_TEXT } from '@/frontend/components/scores/scoreboardUtils';
+import { scoreboardMessages } from '@/frontend/components/scores/scoreboardUtils';
 
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
-export default function GameScoreboard({ roundScores, teams, lang = DEFAULT_LOCALE }) {
+export default function GameScoreboard({ roundScores, teams }) {
+  const intl = useIntl();
   const gameSortedTeams = roundScores.gameSortedTeams;
   const rankingDiffs = roundScores.rankingDiffs;
 
@@ -16,9 +17,13 @@ export default function GameScoreboard({ roundScores, teams, lang = DEFAULT_LOCA
         {/* Table head */}
         <TableHead>
           <TableRow>
-            <TableCell className="2xl:text-2xl font-bold text-center">{HEAD_RANKING_TEXT[lang]}</TableCell>
-            <TableCell className="2xl:text-2xl font-bold">{HEAD_TEAM_TEXT[lang]}</TableCell>
-            <TableCell className="2xl:text-2xl font-bold text-center">{HEAD_SCORE_TEXT[lang]}</TableCell>
+            <TableCell className="2xl:text-2xl font-bold text-center">
+              {intl.formatMessage(scoreboardMessages.ranking)}
+            </TableCell>
+            <TableCell className="2xl:text-2xl font-bold">{intl.formatMessage(scoreboardMessages.team)}</TableCell>
+            <TableCell className="2xl:text-2xl font-bold text-center">
+              {intl.formatMessage(scoreboardMessages.score)}
+            </TableCell>
           </TableRow>
         </TableHead>
 

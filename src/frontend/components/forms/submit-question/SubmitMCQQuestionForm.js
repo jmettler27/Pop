@@ -6,17 +6,19 @@ import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
 import { topicSchema } from '@/frontend/utils/forms/topics';
-import {
-  QUESTION_EXPLANATION_LABEL,
-  QUESTION_HINTS_REMARKS,
-  QUESTION_SOURCE_LABEL,
-  QUESTION_TITLE_LABEL,
-  SELECT_PROPOSAL,
-} from '@/frontend/utils/forms/questions';
+import { messages as questionMessages } from '@/frontend/utils/forms/questions';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { stringSchema } from '@/frontend/utils/forms/forms';
+
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.forms.submitQuestion.mcq', {
+  addChoice: 'Add choice',
+  answerIdxLabel: 'What proposal is the correct one ?',
+});
 
 import { useRouter } from 'next/navigation';
 
@@ -33,26 +35,7 @@ const QUESTION_TYPE = QuestionType.MCQ;
 
 const MCQ_CHOICES_EXAMPLE = ['101', '303', '404', '506'];
 
-/* MCQ Details */
-const MCQ_SOURCE_EXAMPLE = {
-  en: 'The Matrix',
-  'fr-FR': 'Matrix',
-};
-
-const MCQ_TITLE_EXAMPLE = {
-  en: "What is Neo's room number?",
-  'fr-FR': 'Quel est le numéro de chambre de Neo ?',
-};
-
-const MCQ_NOTE_EXAMPLE = '';
-
-const MCQ_EXPLANATION_EXAMPLE = {
-  en: "101 is an allusion to Neo's destiny as the One. 101 is also the number usually attributed to a course or manual for beginners in a particular field (in this case it represents the beginning of Neo's path to hacker enlightenment). It can also be seen as an allusion to the Room 101 of George Orwell's novel 'Nineteen Eighty-Four'. It is a torture chamber in the 'Ministry of Love' in which a prisoner is subjected to his or her own worst nightmare, fear or phobia.",
-  'fr-FR':
-    "101 est une allusion au destin de Neo en tant que l'Unique. 101 est également le nombre généralement attribué à un cours ou à un manuel destiné aux débutants dans un domaine particulier (dans ce cas, il représente le début du chemin de Neo vers l'illumination du pirate informatique). On peut également y voir une allusion à la salle 101 du roman '1984' de George Orwell. Il s'agit d'une chambre de torture du 'Ministère de l'Amour' dans laquelle un prisonnier est soumis à son pire cauchemar, à sa peur ou à sa phobie,",
-};
-
-export default function SubmitMCQForm({ userId, lang, ...props }) {
+export default function SubmitMCQForm({ userId, ...props }) {
   const router = useRouter();
 
   const [submitMCQ, isSubmitting] = useAsyncAction(async (values) => {
@@ -110,7 +93,6 @@ export default function SubmitMCQForm({ userId, lang, ...props }) {
           title: stringSchema(MCQQuestion.TITLE_MAX_LENGTH),
           note: stringSchema(MCQQuestion.NOTE_MAX_LENGTH, false),
         })}
-        lang={lang}
       />
 
       <EnterChoicesStep
@@ -126,7 +108,6 @@ export default function SubmitMCQForm({ userId, lang, ...props }) {
             .required('Required.'),
           explanation: stringSchema(MCQQuestion.EXPLANATION_MAX_LENGTH, false),
         })}
-        lang={lang}
       >
         {/* TODO */}
       </EnterChoicesStep>
@@ -134,37 +115,38 @@ export default function SubmitMCQForm({ userId, lang, ...props }) {
   );
 }
 
-function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
+function GeneralInfoStep({ onSubmit, validationSchema }) {
+  const intl = useIntl();
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
-      <SelectLanguage lang={lang} name="lang" validationSchema={validationSchema} />
+      <SelectLanguage name="lang" validationSchema={validationSchema} />
 
-      <SelectQuestionTopic lang={lang} name="topic" validationSchema={validationSchema} />
+      <SelectQuestionTopic name="topic" validationSchema={validationSchema} />
 
       <MyTextInput
         // label={`${stringRequiredAsterisk(validationSchema, 'source')}To what work is this question related to? ${numCharsIndicator(values['source'], MCQ_SOURCE_MAX_LENGTH)}`}
-        label={QUESTION_SOURCE_LABEL[lang]}
+        label={intl.formatMessage(questionMessages.questionSource)}
         name="source"
         type="text"
-        placeholder={MCQ_SOURCE_EXAMPLE[lang]}
+        placeholder="The Matrix"
         validationSchema={validationSchema}
         maxLength={MCQQuestion.SOURCE_MAX_LENGTH}
       />
 
       <MyTextInput
-        label={QUESTION_TITLE_LABEL[lang]}
+        label={intl.formatMessage(questionMessages.questionTitle)}
         name="title"
         type="text"
-        placeholder={MCQ_TITLE_EXAMPLE[lang]}
+        placeholder="What is Neo's room number?"
         validationSchema={validationSchema}
         maxLength={MCQQuestion.TITLE_MAX_LENGTH}
       />
 
       <MyTextInput
-        label={QUESTION_HINTS_REMARKS[lang]}
+        label={intl.formatMessage(questionMessages.hintsRemarks)}
         name="note"
         type="text"
-        placeholder={MCQ_NOTE_EXAMPLE[lang]}
+        placeholder=""
         validationSchema={validationSchema}
         maxLength={MCQQuestion.NOTE_MAX_LENGTH}
       />
@@ -177,7 +159,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { IconButton } from '@mui/material';
 
-function EnterChoicesStep({ onSubmit, validationSchema, lang }) {
+function EnterChoicesStep({ onSubmit, validationSchema }) {
+  const intl = useIntl();
   const formik = useFormikContext();
 
   const values = formik.values;
@@ -216,7 +199,7 @@ function EnterChoicesStep({ onSubmit, validationSchema, lang }) {
               </div>
             ))}
             <Button variant="outlined" startIcon={<AddIcon />} onClick={() => push('')}>
-              {ADD_CHOICE[lang]}
+              {intl.formatMessage(messages.addChoice)}
             </Button>
           </div>
         )}
@@ -224,12 +207,12 @@ function EnterChoicesStep({ onSubmit, validationSchema, lang }) {
       <ChoiceArrayErrors />
 
       <MySelect
-        label={MCQ_ANSWER_IDX_LABEL[lang]}
+        label={intl.formatMessage(messages.answerIdxLabel)}
         name="answerIdx"
         validationSchema={validationSchema}
         onChange={(e) => formik.setFieldValue('answerIdx', parseInt(e.target.value, 10))}
       >
-        <option value="">{SELECT_PROPOSAL[lang]}</option>
+        <option value="">{intl.formatMessage(questionMessages.selectProposal)}</option>
         {values.choices.map((choice, index) => (
           <option key={index} value={index}>
             {MCQQuestion.CHOICES[index]}. {choice}
@@ -238,23 +221,13 @@ function EnterChoicesStep({ onSubmit, validationSchema, lang }) {
       </MySelect>
 
       <MyTextInput
-        label={QUESTION_EXPLANATION_LABEL[lang]}
+        label={intl.formatMessage(questionMessages.explanation)}
         name="explanation"
         type="text"
-        placeholder={MCQ_EXPLANATION_EXAMPLE[lang]}
+        placeholder="101 is an allusion to Neo's destiny as the One."
         validationSchema={validationSchema}
         maxLength={MCQQuestion.EXPLANATION_MAX_LENGTH}
       />
     </WizardStep>
   );
 }
-
-const ADD_CHOICE = {
-  en: 'Add choice',
-  'fr-FR': 'Ajouter choix',
-};
-
-const MCQ_ANSWER_IDX_LABEL = {
-  en: 'What proposal is the correct one ?',
-  'fr-FR': 'Quelle proposition est la bonne?',
-};

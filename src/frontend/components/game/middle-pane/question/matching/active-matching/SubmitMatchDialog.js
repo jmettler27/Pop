@@ -4,11 +4,11 @@ import { useUserContext, useGameContext } from '@/frontend/contexts';
 
 import { matchIsComplete } from '@/frontend/components/game/middle-pane/question/matching/gridUtils';
 
-import { DIALOG_ACTION_CANCEL, DIALOG_ACTION_VALIDATE, DIALOG_TITLE } from '@/frontend/texts/dialogs';
+import globalMessages from '@/i18n/globalMessages';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
 
 import { useEffect, useState } from 'react';
 
@@ -17,14 +17,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { GameMatchingQuestion } from '@/backend/models/questions/Matching';
 
-export default function SubmitMatchDialog({
-  edges,
-  setEdges,
-  numCols,
-  setNewEdgeSource,
-  answer,
-  lang = DEFAULT_LOCALE,
-}) {
+export default function SubmitMatchDialog({ edges, setEdges, numCols, setNewEdgeSource, answer }) {
+  const intl = useIntl();
   const user = useUserContext();
   const game = useGameContext();
 
@@ -57,7 +51,7 @@ export default function SubmitMatchDialog({
 
   return (
     <Dialog disableEscapeKeyDown open={dialogOpen} onClose={onDialogClose}>
-      <DialogTitle>{DIALOG_TITLE[lang]}</DialogTitle>
+      <DialogTitle>{intl.formatMessage(globalMessages.dialogTitle)}</DialogTitle>
 
       <DialogContent>
         <DialogContentText>{GameMatchingQuestion.edgesToString(edges, answer)}</DialogContentText>
@@ -71,11 +65,11 @@ export default function SubmitMatchDialog({
           onClick={handleMatchValidate}
           disabled={isSubmitting}
         >
-          {DIALOG_ACTION_VALIDATE[lang]}
+          {intl.formatMessage(globalMessages.dialogValidate)}
         </Button>
 
         <Button variant="outlined" color="error" startIcon={<CancelIcon />} onClick={handleMatchCancel}>
-          {DIALOG_ACTION_CANCEL[lang]}
+          {intl.formatMessage(globalMessages.cancel)}
         </Button>
       </DialogActions>
     </Dialog>

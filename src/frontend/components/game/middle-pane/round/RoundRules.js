@@ -12,6 +12,8 @@ import { OddOneOutQuestion } from '@/backend/models/questions/OddOneOut';
 import { ProgressiveCluesQuestion } from '@/backend/models/questions/ProgressiveClues';
 import { QuoteQuestion } from '@/backend/models/questions/Quote';
 
+import { useIntl } from 'react-intl';
+
 export function RoundRules({ round }) {
   switch (round.type) {
     case RoundType.BASIC:
@@ -379,6 +381,7 @@ function MCQRoundRules({ round }) {
 }
 
 function NaguiRoundRules({ round }) {
+  const intl = useIntl();
   console.log('ROUND QWQWQW', round);
 
   return (
@@ -390,7 +393,7 @@ function NaguiRoundRules({ round }) {
       <ol className="2xl:text-2xl border-solid border-blue-500 border-2 p-2">
         {Object.keys(NaguiQuestion.OPTIONS).map((option, index) => (
           <li key={index}>
-            {NaguiQuestion.typeToEmoji(option)} {NaguiQuestion.typeToTitle(option, 'fr-FR')} (
+            {NaguiQuestion.typeToEmoji(option)} {NaguiQuestion.typeToTitle(option, intl.locale)} (
             {round.rewardsPerQuestion[option]} pt{round.rewardsPerQuestion[option] > 1 && 's'})
           </li>
         ))}

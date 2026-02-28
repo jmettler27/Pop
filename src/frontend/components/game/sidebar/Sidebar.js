@@ -2,7 +2,12 @@ import { UserRole } from '@/backend/models/users/User';
 
 import { useRoleContext } from '@/frontend/contexts';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.game.sidebar.Sidebar', {
+  progress: 'Progress',
+});
 
 import SoundboardAudioPlayer from '@/frontend/components/game/soundboard/SoundboardAudioPlayer';
 import ProgressTabPanel from '@/frontend/components/game/sidebar/progress/ProgressTabPanel';
@@ -20,8 +25,9 @@ import ScoreboardIcon from '@mui/icons-material/Scoreboard';
 import ChatIcon from '@mui/icons-material/Chat';
 import HomeIcon from '@mui/icons-material/Home';
 
-export default function Sidebar({ lang = DEFAULT_LOCALE }) {
+export default function Sidebar({}) {
   const myRole = useRoleContext();
+  const intl = useIntl();
 
   const [value, setValue] = useState(0);
 
@@ -51,7 +57,7 @@ export default function Sidebar({ lang = DEFAULT_LOCALE }) {
         >
           <Tab
             icon={<FormatListNumberedIcon />}
-            label={PROGRESS_TAB_LABEL[lang]}
+            label={intl.formatMessage(messages.progress)}
             aria-label="game progress"
             {...a11yProps(0)}
           />
@@ -102,8 +108,3 @@ function a11yProps(index) {
     'aria-controls': `simple-tabpanel-${index}`,
   };
 }
-
-const PROGRESS_TAB_LABEL = {
-  en: 'Progress',
-  'fr-FR': 'Progression',
-};

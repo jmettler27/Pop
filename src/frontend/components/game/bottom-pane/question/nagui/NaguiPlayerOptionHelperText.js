@@ -1,11 +1,17 @@
 import { UserRole } from '@/backend/models/users/User';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 
 import { useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
 import NaguiOptionFactory from '@/backend/models/questions/NaguiOptionFactory';
 
-export default function NaguiPlayerOptionHelperText({ gameQuestion, lang = DEFAULT_LOCALE }) {
+const messages = defineMessages('frontend.game.bottom.NaguiPlayerOptionHelperText', {
+  hasChosen: 'has chosen',
+});
+
+export default function NaguiPlayerOptionHelperText({ gameQuestion }) {
+  const intl = useIntl();
   const myRole = useRoleContext();
 
   const { playerRepo, teamRepo } = useGameRepositoriesContext();
@@ -40,13 +46,8 @@ export default function NaguiPlayerOptionHelperText({ gameQuestion, lang = DEFAU
 
   return (
     <span>
-      <span style={{ color: team.color }}>{player.name}</span> {HAS_CHOSEN_TEXT[lang]}{' '}
-      {NaguiOptionFactory.createNaguiOption(gameQuestion.option).prependTypeWithEmoji(lang)}
+      <span style={{ color: team.color }}>{player.name}</span> {intl.formatMessage(messages.hasChosen)}{' '}
+      {NaguiOptionFactory.createNaguiOption(gameQuestion.option).prependTypeWithEmoji(intl.locale)}
     </span>
   );
 }
-
-const HAS_CHOSEN_TEXT = {
-  en: 'has chosen',
-  'fr-FR': 'a choisi',
-};

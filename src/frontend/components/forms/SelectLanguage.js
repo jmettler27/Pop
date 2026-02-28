@@ -1,16 +1,20 @@
 import { MySelect } from '@/frontend/components/forms/StyledFormComponents';
 
-import { DEFAULT_LOCALE, LOCALES, prependLocaleWithEmoji } from '@/frontend/utils/locales';
+import { LOCALES, prependLocaleWithEmoji } from '@/frontend/utils/locales';
 
-export default function SelectLanguage({
-  validationSchema,
-  labels = SELECT_QUESTION_LANGUAGE_LABEL,
-  lang = DEFAULT_LOCALE,
-  name = 'lang',
-}) {
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.forms.SelectLanguage', {
+  label: 'Language of the question',
+  header: 'Select the language',
+});
+
+export default function SelectLanguage({ validationSchema, name = 'lang' }) {
+  const intl = useIntl();
   return (
-    <MySelect label={labels[lang]} name={name} validationSchema={validationSchema}>
-      <option value="">{SELECT_QUESTION_LANGUAGE_HEADER[lang]}</option>
+    <MySelect label={intl.formatMessage(messages.label)} name={name} validationSchema={validationSchema}>
+      <option value="">{intl.formatMessage(messages.header)}</option>
       {LOCALES.map((locale) => (
         <option key={locale} value={locale}>
           {prependLocaleWithEmoji(locale)}
@@ -19,13 +23,3 @@ export default function SelectLanguage({
     </MySelect>
   );
 }
-
-const SELECT_QUESTION_LANGUAGE_LABEL = {
-  en: 'Language of the question',
-  'fr-FR': 'Langue de la question',
-};
-
-const SELECT_QUESTION_LANGUAGE_HEADER = {
-  en: 'Select the language',
-  'fr-FR': 'Sélectionnez la langue',
-};

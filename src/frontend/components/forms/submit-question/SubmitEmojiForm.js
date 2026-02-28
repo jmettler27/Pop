@@ -6,16 +6,14 @@ import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
 import { topicSchema } from '@/frontend/utils/forms/topics';
-import {
-  QUESTION_ANSWER_LABEL,
-  QUESTION_TITLE_LABEL,
-  SUBMIT_QUESTION_BUTTON_LABEL,
-} from '@/frontend/utils/forms/questions';
+import { messages as questionMessages } from '@/frontend/utils/forms/questions';
 
 import { stringSchema } from '@/frontend/utils/forms/forms';
 import { getFileFromRef, imageFileSchema } from '@/frontend/utils/forms/files';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+
+import { useIntl } from 'react-intl';
 
 import { MyTextInput } from '@/frontend/components/forms/StyledFormComponents';
 import { UploadImage } from '@/frontend/components/forms/UploadFile';
@@ -58,7 +56,8 @@ export const emojiClueSchema = () =>
     )
     .required('Required.');
 
-export default function SubmitEmojiQuestionForm({ userId, lang, ...props }) {
+export default function SubmitEmojiQuestionForm({ userId, ...props }) {
+  const intl = useIntl();
   const router = useRouter();
 
   const fileRef = useRef(null);
@@ -124,12 +123,12 @@ export default function SubmitEmojiQuestionForm({ userId, lang, ...props }) {
       validationSchema={validationSchema}
     >
       <Form>
-        <SelectLanguage lang={lang} name="lang" validationSchema={validationSchema} />
+        <SelectLanguage name="lang" validationSchema={validationSchema} />
 
-        <SelectQuestionTopic lang={lang} name="topic" validationSchema={validationSchema} />
+        <SelectQuestionTopic name="topic" validationSchema={validationSchema} />
 
         <MyTextInput
-          label={QUESTION_TITLE_LABEL[lang]}
+          label={intl.formatMessage(questionMessages.questionTitle)}
           name="title"
           type="text"
           placeholder={EMOJI_TITLE_EXAMPLE}
@@ -138,7 +137,7 @@ export default function SubmitEmojiQuestionForm({ userId, lang, ...props }) {
         />
 
         <MyTextInput
-          label={QUESTION_ANSWER_LABEL[lang]}
+          label={intl.formatMessage(questionMessages.answer)}
           name="answer_title"
           type="text"
           placeholder={EMOJI_ANSWER_TITLE_EXAMPLE}
@@ -160,9 +159,9 @@ export default function SubmitEmojiQuestionForm({ userId, lang, ...props }) {
         <EmojiPicker />
 
         {/* Image */}
-        <UploadImage fileRef={fileRef} name="files" validationSchema={validationSchema} lang={lang} />
+        <UploadImage fileRef={fileRef} name="files" validationSchema={validationSchema} />
 
-        <SubmitFormButton isSubmitting={isSubmitting} label={SUBMIT_QUESTION_BUTTON_LABEL[lang]} />
+        <SubmitFormButton isSubmitting={isSubmitting} label={intl.formatMessage(questionMessages.submit)} />
       </Form>
     </Formik>
   );

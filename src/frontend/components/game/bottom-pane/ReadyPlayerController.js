@@ -7,9 +7,19 @@ import { UserRole } from '@/backend/models/users/User';
 
 import { useGameContext, useGameRepositoriesContext, useRoleContext, useUserContext } from '@/frontend/contexts';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.game.bottom.ReadyPlayerController', {
+  waitingForPlayers: 'Waiting for players...',
+  hotFor: 'Ready for',
+  gameStart: 'starting the game',
+  roundStart: 'the first question',
+  questionEnd: 'the next question',
+  questionEndLast: 'the end of the round',
+});
 
 import { useParams } from 'next/navigation';
 
@@ -17,7 +27,7 @@ import { Button, CircularProgress } from '@mui/material';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import { PlayerStatus } from '@/backend/models/users/Player';
 
-export default function ReadyPlayerController({ isLastQuestion, lang = DEFAULT_LOCALE }) {
+export default function ReadyPlayerController({ isLastQuestion }) {
   const { id: gameId } = useParams();
   const myRole = useRoleContext();
 
@@ -43,14 +53,15 @@ export default function ReadyPlayerController({ isLastQuestion, lang = DEFAULT_L
       {timer.authorized && (
         <>
           <ReadyPlayerHeader isLastQuestion={isLastQuestion} />
-          {myRole === UserRole.PLAYER && <ReadyPlayerButton lang={lang} />}
+          {myRole === UserRole.PLAYER && <ReadyPlayerButton />}
         </>
       )}
     </div>
   );
 }
 
-function ReadyPlayerHeader({ isLastQuestion, lang = DEFAULT_LOCALE }) {
+function ReadyPlayerHeader({ isLastQuestion }) {
+  const intl = useIntl();
   const game = useGameContext();
   const myRole = useRoleContext();
 
@@ -80,21 +91,21 @@ function ReadyPlayerHeader({ isLastQuestion, lang = DEFAULT_LOCALE }) {
       case GameStatus.GAME_START:
         return (
           <span className="2xl:text-4xl">
-            {READY_PLAYER_HEADER_START[lang]} <strong>{READY_PLAYER_HEADER_GAME_START[lang]}</strong>? 🥸
+            {intl.formatMessage(messages.hotFor)} <strong>{intl.formatMessage(messages.gameStart)}</strong>? 🥸
           </span>
         );
       case GameStatus.ROUND_START:
         return (
           <span className="2xl:text-4xl">
-            {READY_PLAYER_HEADER_START[lang]} <strong>{READY_PLAYER_HEADER_ROUND_START[lang]}</strong>? 🥸
+            {intl.formatMessage(messages.hotFor)} <strong>{intl.formatMessage(messages.roundStart)}</strong>? 🥸
           </span>
         );
       case GameStatus.QUESTION_END:
         return (
           <span className="2xl:text-4xl">
-            {READY_PLAYER_HEADER_START[lang]}{' '}
+            {intl.formatMessage(messages.hotFor)}{' '}
             <strong>
-              {isLastQuestion ? READY_PLAYER_HEADER_QUESTION_END_LAST[lang] : READY_PLAYER_HEADER_QUESTION_END[lang]}
+              {isLastQuestion ? intl.formatMessage(messages.questionEndLast) : intl.formatMessage(messages.questionEnd)}
             </strong>
             ? 🥸
           </span>
@@ -104,45 +115,13 @@ function ReadyPlayerHeader({ isLastQuestion, lang = DEFAULT_LOCALE }) {
 
   return (
     <span className="2xl:text-4xl">
-      {WAITING_FOR_PLAYERS_TEXT[lang]} ({ready.numReady}/{ready.numPlayers})
+      {intl.formatMessage(messages.waitingForPlayers)} ({ready.numReady}/{ready.numPlayers})
     </span>
   );
 }
 
-const WAITING_FOR_PLAYERS_TEXT = {
-  en: 'Waiting for players...',
-  'fr-FR': 'En attente des joueurs...',
-};
-
-const READY_PLAYER_HEADER_START = {
-  en: 'Ready for',
-  'fr-FR': 'Chaud pour',
-};
-
-// GAME START
-const READY_PLAYER_HEADER_GAME_START = {
-  en: 'starting the game',
-  'fr-FR': 'démarrer la partie',
-};
-
-// ROUND START
-const READY_PLAYER_HEADER_ROUND_START = {
-  en: 'the first question',
-  'fr-FR': 'la première question',
-};
-
-// QUESTION END
-const READY_PLAYER_HEADER_QUESTION_END = {
-  en: 'the next question',
-  'fr-FR': 'la prochaine question',
-};
-
-const READY_PLAYER_HEADER_QUESTION_END_LAST = {
-  en: 'the end of the round',
-  'fr-FR': 'la fin de la manche',
-};
-
-export function ReadyPlayerButton({ lang = DEFAULT_LOCALE }) {
+export function ReadyPlayerButton() {
+  const intl = useIntl();
   const { id: gameId } = useParams();
   const user = useUserContext();
 
@@ -167,10 +146,8 @@ export function ReadyPlayerButton({ lang = DEFAULT_LOCALE }) {
     return <></>;
   }
 
-  const readyButtonText = {
-    en: getRandomElement(READY_BUTTON_TEXT_EN),
-    'fr-FR': getRandomElement(READY_BUTTON_TEXT_FR),
-  };
+  const readyButtonText =
+    intl.locale === 'fr' ? getRandomElement(READY_BUTTON_TEXT_FR) : getRandomElement(READY_BUTTON_TEXT_EN);
 
   return (
     <Button
@@ -182,7 +159,7 @@ export function ReadyPlayerButton({ lang = DEFAULT_LOCALE }) {
       disabled={player.status === PlayerStatus.READY || isSubmitting}
       startIcon={<HowToRegIcon />}
     >
-      {readyButtonText[lang]}
+      {readyButtonText}
     </Button>
   );
 }

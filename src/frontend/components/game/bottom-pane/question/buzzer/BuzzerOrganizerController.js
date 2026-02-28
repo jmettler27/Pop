@@ -5,8 +5,6 @@ import { QuestionType } from '@/backend/models/questions/QuestionType';
 
 import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/GameProgressiveCluesQuestionRepository';
 
-import { INVALIDATE_ANSWER, VALIDATE_ANSWER } from '@/backend/utils/question/question';
-
 import { useGameContext } from '@/frontend/contexts';
 
 import EndQuestionButton from '@/frontend/components/game/bottom-pane/question/EndQuestionButton';
@@ -16,7 +14,8 @@ import BuzzerHeadPlayer from '@/frontend/components/game/bottom-pane/question/bu
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 
 import { Button, ButtonGroup } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -26,6 +25,12 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { useParams } from 'next/navigation';
 
 import { useEffect, useRef } from 'react';
+
+const messages = defineMessages('frontend.game.bottom.BuzzerOrganizerController', {
+  validate: 'Validate',
+  invalidate: 'Invalidate',
+  nextClue: 'Next clue',
+});
 
 export default function BuzzerOrganizerController({ baseQuestion, questionPlayers: questionPlayers }) {
   const { id: gameId } = useParams();
@@ -61,7 +66,8 @@ export default function BuzzerOrganizerController({ baseQuestion, questionPlayer
   );
 }
 
-function BuzzerOrganizerAnswerController({ buzzed, lang = DEFAULT_LOCALE, questionType }) {
+function BuzzerOrganizerAnswerController({ buzzed, questionType }) {
+  const intl = useIntl();
   const game = useGameContext();
 
   const buzzedIsEmpty = buzzed.length === 0;
@@ -90,12 +96,12 @@ function BuzzerOrganizerAnswerController({ buzzed, lang = DEFAULT_LOCALE, questi
       >
         {/* Validate the player's answer */}
         <Button color="success" startIcon={<CheckCircleIcon />} onClick={handleValidate} disabled={isValidating}>
-          {VALIDATE_ANSWER[lang]}
+          {intl.formatMessage(messages.validate)}
         </Button>
 
         {/* Invalidate the player's answer */}
         <Button color="error" startIcon={<CancelIcon />} onClick={handleInvalidate} disabled={isInvalidating}>
-          {INVALIDATE_ANSWER[lang]}
+          {intl.formatMessage(messages.invalidate)}
         </Button>
       </ButtonGroup>
     </>
@@ -120,7 +126,8 @@ function BuzzerOrganizerQuestionController({ baseQuestion }) {
  * @param {*} question
  * @returns
  */
-function NextClueButton({ baseQuestion, lang = DEFAULT_LOCALE }) {
+function NextClueButton({ baseQuestion }) {
+  const intl = useIntl();
   const game = useGameContext();
 
   const [handleClick, isLoadingNextClue] = useAsyncAction(async () => {
@@ -158,12 +165,7 @@ function NextClueButton({ baseQuestion, lang = DEFAULT_LOCALE }) {
       disabled={isLastClue || isLoadingNextClue}
       startIcon={<ArrowDownwardIcon />}
     >
-      {NEXT_CLUE[lang]}
+      {intl.formatMessage(messages.nextClue)}
     </Button>
   );
 }
-
-const NEXT_CLUE = {
-  en: 'Next clue',
-  'fr-FR': 'Prochain indice',
-};

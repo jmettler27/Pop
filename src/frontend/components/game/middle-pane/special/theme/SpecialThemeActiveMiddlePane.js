@@ -7,8 +7,12 @@ import { useDocumentData, useDocumentOnce } from 'react-firebase-hooks/firestore
 import { clsx } from 'clsx';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import { THEME_SECTION_TEXT } from '@/backend/utils/question/theme';
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.game.middle.SpecialThemeActiveMiddlePane', {
+  level: 'Level',
+});
 
 import { UserRole } from '@/backend/models/users/User';
 export default function SpecialThemeActiveMiddlePane({ theme, gameTheme }) {
@@ -49,11 +53,12 @@ export default function SpecialThemeActiveMiddlePane({ theme, gameTheme }) {
   );
 }
 
-function SectionTitle({ section, gameTheme, lang = DEFAULT_LOCALE }) {
+function SectionTitle({ section, gameTheme }) {
+  const intl = useIntl();
   return (
     <h1 className="2xl:text-4xl">
       <span className="font-bold">
-        {THEME_SECTION_TEXT[lang]} {gameTheme.currentSectionIdx + 1}
+        {intl.formatMessage(messages.level)} {gameTheme.currentSectionIdx + 1}
       </span>
       {section.title && `: ${section.title}`}
     </h1>

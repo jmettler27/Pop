@@ -1,6 +1,7 @@
 import { UserRole } from '@/backend/models/users/User';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 
 import { useGameRepositoriesContext, useRoleContext, useTeamContext } from '@/frontend/contexts';
 import GameChooserOrder from '@/frontend/components/game/GameChooserOrder';
@@ -8,6 +9,11 @@ import { GameChooserHelperText } from '@/frontend/components/game/GameChooserTea
 import ResetQuestionButton from '@/frontend/components/game/bottom-pane/question/ResetQuestionButton';
 import EndQuestionButton from '@/frontend/components/game/bottom-pane/question/EndQuestionButton';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+
+const messages = defineMessages('frontend.game.bottom.OddOneOutBottomPane', {
+  youCanGo: 'You can go',
+  waitForAuth: 'Wait for your authorization',
+});
 
 export default function OddOneOutBottomPane({}) {
   const { chooserRepo } = useGameRepositoriesContext();
@@ -55,7 +61,8 @@ function OddOneOutController({ chooser }) {
   );
 }
 
-function OddOneOutChooserController({ lang = DEFAULT_LOCALE }) {
+function OddOneOutChooserController() {
+  const intl = useIntl();
   const { timerRepo } = useGameRepositoriesContext();
   const { timer, loading, error } = timerRepo.useTimer();
   if (error) {
@@ -73,21 +80,11 @@ function OddOneOutChooserController({ lang = DEFAULT_LOCALE }) {
   }
 
   return timer.authorized ? (
-    <span className="text-3xl text-green-500 font-bold">👍 {OOO_AUTHORIZED[lang]}</span>
+    <span className="text-3xl text-green-500 font-bold">👍 {intl.formatMessage(messages.youCanGo)}</span>
   ) : (
-    <span className="text-3xl text-yellow-500">🤨 {OOO_NOT_AUTHORIZED[lang]}</span>
+    <span className="text-3xl text-yellow-500">🤨 {intl.formatMessage(messages.waitForAuth)}</span>
   );
 }
-
-const OOO_AUTHORIZED = {
-  en: 'You can go',
-  'fr-FR': 'Tu peux y aller',
-};
-
-const OOO_NOT_AUTHORIZED = {
-  en: 'Wait for your authorization',
-  'fr-FR': 'Mais attends un peu, ok ?',
-};
 
 function OddOneOutOrganizerController({}) {
   return (

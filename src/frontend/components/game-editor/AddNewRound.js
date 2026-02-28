@@ -2,8 +2,6 @@ import { addRoundToGame } from '@/backend/services/edit-game/actions';
 
 import { Round } from '@/backend/models/rounds/Round';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { stringSchema } from '@/frontend/utils/forms/forms';
@@ -25,7 +23,18 @@ import { Form, Formik } from 'formik';
 
 import * as Yup from 'yup';
 
-export function AddNewRoundButton({ disabled, lang = DEFAULT_LOCALE }) {
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.gameEditor.AddNewRound', {
+  addRound: 'Add round',
+  createNewRound: 'Create new round',
+  roundTitle: 'Title of the round',
+  create: 'Create',
+});
+
+export function AddNewRoundButton({ disabled }) {
+  const intl = useIntl();
   const [dialogOpen, setDialogOpen] = useState(false);
 
   return (
@@ -45,36 +54,28 @@ export function AddNewRoundButton({ disabled, lang = DEFAULT_LOCALE }) {
           disabled={disabled}
           onClick={() => setDialogOpen(true)}
         >
-          {ADD_ROUND[lang]}
+          {intl.formatMessage(messages.addRound)}
         </Button>
       </div>
-      <CreateRoundFormDialog open={dialogOpen} onClose={() => setDialogOpen(false)} lang={lang} />
+      <CreateRoundFormDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
     </>
   );
 }
 
-const ADD_ROUND = {
-  en: 'Add round',
-  'fr-FR': 'Ajouter manche',
-};
-
-function CreateRoundFormDialog({ open, onClose, lang }) {
+function CreateRoundFormDialog({ open, onClose }) {
+  const intl = useIntl();
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>{ADD_NEW_ROUND_TITLE[lang]}</DialogTitle>
+      <DialogTitle>{intl.formatMessage(messages.createNewRound)}</DialogTitle>
       <DialogContent>
-        <CreateRoundForm onClose={onClose} lang={lang} />
+        <CreateRoundForm onClose={onClose} />
       </DialogContent>
     </Dialog>
   );
 }
 
-const ADD_NEW_ROUND_TITLE = {
-  en: 'Create new round',
-  'fr-FR': 'Créer une nouvelle manche',
-};
-
-function CreateRoundForm({ onClose, lang }) {
+function CreateRoundForm({ onClose }) {
+  const intl = useIntl();
   const { id: gameId } = useParams();
 
   const [submitRound, isSubmitting] = useAsyncAction(async (values) => {
@@ -117,35 +118,20 @@ function CreateRoundForm({ onClose, lang }) {
       validationSchema={validationSchema}
     >
       <Form>
-        <SelectRoundType label="Type" name="type" validationSchema={validationSchema} lang={lang} />
+        <SelectRoundType label="Type" name="type" validationSchema={validationSchema} />
 
         <MyTextInput
-          label={ROUND_TITLE_LABEL[lang]}
+          label={intl.formatMessage(messages.roundTitle)}
           name="title"
           type="text"
           validationSchema={validationSchema}
           maxLength={Round.TITLE_MAX_LENGTH}
         />
 
-        {/* <MyNumberInput label={ROUND_REWARDS_PER_QUESTION_LABEL[lang]} name='rewardsPerQuestion' min={1} max={10} /> */}
+        {/* <MyNumberInput label={intl.formatMessage(messages.rewardsPerQuestion)} name='rewardsPerQuestion' min={1} max={10} /> */}
 
-        <SubmitFormButton isSubmitting={isSubmitting} label={SUBMIT_BUTTON_LABEL[lang]} />
+        <SubmitFormButton isSubmitting={isSubmitting} label={intl.formatMessage(messages.create)} />
       </Form>
     </Formik>
   );
 }
-
-const ROUND_TITLE_LABEL = {
-  en: 'Title of the round',
-  'fr-FR': 'Titre de la manche',
-};
-
-// const ROUND_REWARDS_PER_QUESTION_LABEL = {
-//     'en': "Rewards per question",
-//     'fr-FR': "Points par question"
-// }
-
-const SUBMIT_BUTTON_LABEL = {
-  en: 'Create',
-  'fr-FR': 'Créer',
-};

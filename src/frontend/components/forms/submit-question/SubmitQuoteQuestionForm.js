@@ -11,6 +11,21 @@ import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
 import { topicSchema } from '@/frontend/utils/forms/topics';
 import { stringSchema } from '@/frontend/utils/forms/forms';
 
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.forms.submitQuestion.quote', {
+  quote: 'Quote',
+  quoteSource: 'Source of the quote',
+  quoteAuthor: 'Author of the quote',
+  aspectsToGuess: 'Which aspects of the quote do you want the players to guess?',
+  parts: 'Parts of the quote (to be entered)',
+  enterParts: 'Enter the parts of the quote to guess.',
+  partsNoOverlap: 'The parts must not overlap and must be entered in order.',
+  addPart: 'Add part',
+  part: 'Part',
+});
+
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { MyTextInput, StyledErrorMessage } from '@/frontend/components/forms/StyledFormComponents';
@@ -33,19 +48,19 @@ const QUESTION_TYPE = QuestionType.QUOTE;
 
 const QUOTE_EXAMPLE = {
   en: "I'm Commander Shepard and this is my favorite store on the Citadel.",
-  'fr-FR': "Je suis le Commandant Shepard et c'est mon magasin préféré de la Citadelle.",
+  fr: "Je suis le Commandant Shepard et c'est mon magasin préféré de la Citadelle.",
 };
 
 const QUOTE_SOURCE_EXAMPLE = {
   en: 'Mass Effect 2',
-  'fr-FR': 'Mass Effect 2',
+  fr: 'Mass Effect 2',
 };
 const QUOTE_AUTHOR_EXAMPLE = {
   en: 'Commander Shepard',
-  'fr-FR': 'Commandant Shepard',
+  fr: 'Commandant Shepard',
 };
 
-export default function SubmitQuoteQuestionForm({ userId, lang, ...props }) {
+export default function SubmitQuoteQuestionForm({ userId, ...props }) {
   const router = useRouter();
 
   const [submitQuoteQuestion, isSubmitting] = useAsyncAction(async (values) => {
@@ -104,7 +119,6 @@ export default function SubmitQuoteQuestionForm({ userId, lang, ...props }) {
           source: stringSchema(QuoteQuestion.SOURCE_MAX_LENGTH, false),
           author: stringSchema(QuoteQuestion.AUTHOR_MAX_LENGTH, false),
         })}
-        lang={lang}
       />
 
       {/* Step 2: indicate which aspects of the quote to guess */}
@@ -185,45 +199,45 @@ export default function SubmitQuoteQuestionForm({ userId, lang, ...props }) {
               (value, context) => !context.options.context.toGuess.includes('quote') || value.length > 0
             ),
         })}
-        lang={lang}
       />
     </Wizard>
   );
 }
 
-function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
+function GeneralInfoStep({ onSubmit, validationSchema }) {
+  const intl = useIntl();
   const formik = useFormikContext();
   const values = formik.values;
 
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
-      <SelectLanguage lang={lang} name="lang" validationSchema={validationSchema} />
+      <SelectLanguage name="lang" validationSchema={validationSchema} />
 
-      <SelectQuestionTopic lang={lang} name="topic" validationSchema={validationSchema} />
+      <SelectQuestionTopic name="topic" validationSchema={validationSchema} />
 
       <MyTextInput
-        label={QUOTE[lang]}
+        label={intl.formatMessage(messages.quote)}
         name="quote"
         type="text"
-        placeholder={QUOTE_EXAMPLE[lang]}
+        placeholder={intl.locale === 'fr' ? QUOTE_EXAMPLE['fr'] : QUOTE_EXAMPLE['en']}
         validationSchema={validationSchema}
         maxLength={QuoteQuestion.QUOTE_MAX_LENGTH}
       />
 
       <MyTextInput
-        label={QUOTE_AUTHOR[lang]}
+        label={intl.formatMessage(messages.quoteAuthor)}
         name="author"
         type="text"
-        placeholder={QUOTE_AUTHOR_EXAMPLE[lang]}
+        placeholder={intl.locale === 'fr' ? QUOTE_AUTHOR_EXAMPLE['fr'] : QUOTE_AUTHOR_EXAMPLE['en']}
         validationSchema={validationSchema}
         maxLength={QuoteQuestion.AUTHOR_MAX_LENGTH}
       />
 
       <MyTextInput
-        label={QUOTE_SOURCE[lang]}
+        label={intl.formatMessage(messages.quoteSource)}
         name="source"
         type="text"
-        placeholder={QUOTE_SOURCE_EXAMPLE[lang]}
+        placeholder={intl.locale === 'fr' ? QUOTE_SOURCE_EXAMPLE['fr'] : QUOTE_SOURCE_EXAMPLE['en']}
         validationSchema={validationSchema}
         maxLength={QuoteQuestion.SOURCE_MAX_LENGTH}
       />
@@ -231,22 +245,12 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
   );
 }
 
-const QUOTE = {
-  en: 'Quote',
-  'fr-FR': 'Réplique',
-};
+const QUOTE_FOR_DI = null;
+const QUOTE_SOURCE_FOR_DI = null;
+const QUOTE_AUTHOR_FOR_DI = null;
 
-const QUOTE_SOURCE = {
-  en: 'Source of the quote',
-  'fr-FR': 'Source de la réplique',
-};
-
-const QUOTE_AUTHOR = {
-  en: 'Author of the quote',
-  'fr-FR': 'Auteur de la réplique',
-};
-
-function EnterGuessSteps({ onSubmit, validationSchema, lang }) {
+function EnterGuessSteps({ onSubmit, validationSchema }) {
+  const intl = useIntl();
   const formik = useFormikContext();
 
   const values = formik.values;
@@ -284,24 +288,26 @@ function EnterGuessSteps({ onSubmit, validationSchema, lang }) {
       <br />
 
       <div id="checkbox-group" className="2xl:text-xl">
-        {QUOTE_ASPECTS_TO_GUESS[lang]}
+        {intl.formatMessage(messages.aspectsToGuess)}
       </div>
       <div role="group" aria-labelledby="checkbox-group">
         {values.source && (
           <label>
             <Field type="checkbox" name="toGuess" value="source" />
-            {QuoteSourceElement.elementToEmoji()} {QUOTE_SOURCE[lang]} (&quot;{values.source}&quot;)
+            {QuoteSourceElement.elementToEmoji()} {intl.formatMessage(messages.quoteSource)} (&quot;{values.source}
+            &quot;)
           </label>
         )}
         {values.author && (
           <label>
             <Field type="checkbox" name="toGuess" value="author" />
-            {QuoteAuthorElement.elementToEmoji()} {QUOTE_AUTHOR[lang]} (&quot;{values.author}&quot;)
+            {QuoteAuthorElement.elementToEmoji()} {intl.formatMessage(messages.quoteAuthor)} (&quot;{values.author}
+            &quot;)
           </label>
         )}
         <label>
           <Field type="checkbox" name="toGuess" value="quote" />
-          {QuotePartElement.elementToEmoji()} {QUOTE_PARTS[lang]}
+          {QuotePartElement.elementToEmoji()} {intl.formatMessage(messages.parts)}
         </label>
       </div>
       <ToGuessArrayErrors />
@@ -309,9 +315,9 @@ function EnterGuessSteps({ onSubmit, validationSchema, lang }) {
       {/* Only display this if quote is checked */}
       {values.toGuess.includes('quote') && (
         <Box component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', maxWidth: '900px' }}>
-          <span className="2xl:text-xl">{ENTER_QUOTE_PARTS[lang]}</span>
+          <span className="2xl:text-xl">{intl.formatMessage(messages.enterParts)}</span>
           <br />
-          <span className="2xl:text-xl">{QUOTE_PARTS_MUST_NOT_OVERLAP[lang]}</span>
+          <span className="2xl:text-xl">{intl.formatMessage(messages.partsNoOverlap)}</span>
           <br />
 
           <FieldArray name="quoteParts">
@@ -325,7 +331,6 @@ function EnterGuessSteps({ onSubmit, validationSchema, lang }) {
                       index={index}
                       onDelete={() => remove(index)}
                       validationSchema={validationSchema}
-                      lang={lang}
                     />
                   ))}
                 <Button
@@ -337,7 +342,7 @@ function EnterGuessSteps({ onSubmit, validationSchema, lang }) {
                     push({ startIdx: lastEndIdx + 1, endIdx: lastEndIdx + 1 });
                   }}
                 >
-                  {ADD_QUOTE_PART[lang]}
+                  {intl.formatMessage(messages.addPart)}
                 </Button>
               </>
             )}
@@ -350,32 +355,14 @@ function EnterGuessSteps({ onSubmit, validationSchema, lang }) {
   );
 }
 
-const QUOTE_ASPECTS_TO_GUESS = {
-  en: 'Which aspects of the quote do you want the players to guess?',
-  'fr-FR': 'Quels aspects de la réplique voulez-vous que les joueurs devinent?',
-};
+const QUOTE_ASPECTS_TO_GUESS = null;
+const QUOTE_PARTS = null;
+const ENTER_QUOTE_PARTS = null;
+const QUOTE_PARTS_MUST_NOT_OVERLAP = null;
+const ADD_QUOTE_PART = null;
 
-const QUOTE_PARTS = {
-  en: 'Parts of the quote (to be entered)',
-  'fr-FR': 'Morceaux de la réplique (à entrer)',
-};
-
-const ENTER_QUOTE_PARTS = {
-  en: 'Enter the parts of the quote to guess.',
-  'fr-FR': 'Entrez les morceaux à deviner.',
-};
-
-const QUOTE_PARTS_MUST_NOT_OVERLAP = {
-  en: 'The parts must not overlap and must be entered in order.',
-  'fr-FR': "Les morceaux ne doivent pas se chevaucher et doivent être entrées dans l'ordre.",
-};
-
-const ADD_QUOTE_PART = {
-  en: 'Add part',
-  'fr-FR': 'Ajouter morceau',
-};
-
-function EnterQuotePart({ quotePart, index, onDelete, validationSchema, lang }) {
+function EnterQuotePart({ quotePart, index, onDelete, validationSchema }) {
+  const intl = useIntl();
   const formik = useFormikContext();
   const [field, meta] = useField(`quoteParts.${index}`);
 
@@ -409,7 +396,7 @@ function EnterQuotePart({ quotePart, index, onDelete, validationSchema, lang }) 
   return (
     <div className="flex flex-col">
       <span className="2xl:text-xl">
-        {QUOTE_PART[lang]} #{index + 1}:{' '}
+        {intl.formatMessage(messages.part)} #{index + 1}:{' '}
         {startIdx !== -1 && endIdx !== -1 && (
           <span className="text-yellow-500">&quot;{quote.substring(startIdx, endIdx + 1)}&quot;</span>
         )}
@@ -453,10 +440,7 @@ function EnterQuotePart({ quotePart, index, onDelete, validationSchema, lang }) 
   );
 }
 
-const QUOTE_PART = {
-  en: 'Part',
-  'fr-FR': 'Morceau',
-};
+const QUOTE_PART = null;
 
 function findLastEndIdx(quoteParts, index) {
   // Assume quoteParts is sorted by startIdx and endIdx

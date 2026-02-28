@@ -35,9 +35,15 @@ function RoundStartController({}) {
 }
 
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 
-function RoundStartOrganizerButton({ lang = DEFAULT_LOCALE }) {
+const messages = defineMessages('frontend.game.bottom.RoundStartBottomPane', {
+  launchFirstQuestion: 'Launch the first question',
+});
+
+function RoundStartOrganizerButton() {
+  const intl = useIntl();
   const game = useGameContext();
 
   const [handleContinueClick, isHandling] = useAsyncAction(async () => {
@@ -54,12 +60,7 @@ function RoundStartOrganizerButton({ lang = DEFAULT_LOCALE }) {
       disabled={isHandling}
       startIcon={<ArrowForwardIosIcon />}
     >
-      {ROUND_START_ORGANIZER_BUTTON_TEXT[lang]}
+      {intl.formatMessage(messages.launchFirstQuestion)}
     </Button>
   );
 }
-
-const ROUND_START_ORGANIZER_BUTTON_TEXT = {
-  en: 'Launch the first question',
-  'fr-FR': 'Lancer la première question',
-};

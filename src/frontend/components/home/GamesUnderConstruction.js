@@ -1,10 +1,11 @@
 import React from 'react';
+import { useIntl } from 'react-intl';
 
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 
 import { gameTypeToEmoji } from '@/backend/models/games/GameType';
-import { DEFAULT_LOCALE, localeToEmoji } from '@/frontend/utils/locales';
+import { localeToEmoji } from '@/frontend/utils/locales';
 
 import { useSession } from 'next-auth/react';
 
@@ -18,8 +19,17 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import EditIcon from '@mui/icons-material/Edit';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import { GameStatus } from '@/backend/models/games/GameStatus';
+import defineMessages from '@/utils/defineMessages';
 
-export default function GamesUnderConstruction({ lang = DEFAULT_LOCALE }) {
+const messages = defineMessages('frontend.home.GamesUnderConstruction', {
+  title: 'Games under construction',
+  empty: 'No games under construction',
+  editGame: 'Edit game',
+  organizers: 'Organizers',
+});
+
+export default function GamesUnderConstruction() {
+  const intl = useIntl();
   const gameRepo = new GameRepository();
   const { games, loading, error } = gameRepo.useGamesByStatus(GameStatus.GAME_EDIT);
   if (error) {
@@ -43,19 +53,19 @@ export default function GamesUnderConstruction({ lang = DEFAULT_LOCALE }) {
     <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-slate-700 shadow-2xl hover:shadow-yellow-500/20 transition-all duration-300">
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 border-b border-slate-700">
         <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-          🛠️ {GAMES_UNDER_CONSTRUCTION_CARD_TITLE[lang]} ({sortedGames.length})
+          🛠️ {intl.formatMessage(messages.title)} ({sortedGames.length})
         </CardTitle>
       </CardHeader>
 
       <CardContent className="pt-6">
         {sortedGames.length === 0 ? (
           <div className="text-center py-12 text-slate-400 text-sm sm:text-base">
-            {NO_GAMES_UNDER_CONSTRUCTION[lang]}
+            {intl.formatMessage(messages.empty)}
           </div>
         ) : (
           <div className="grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {sortedGames.map((g) => (
-              <GameUnderConstructionCard key={g.id} game={g} lang={lang} />
+              <GameUnderConstructionCard key={g.id} game={g} />
             ))}
           </div>
         )}
@@ -64,17 +74,8 @@ export default function GamesUnderConstruction({ lang = DEFAULT_LOCALE }) {
   );
 }
 
-const GAMES_UNDER_CONSTRUCTION_CARD_TITLE = {
-  en: 'Games under construction',
-  'fr-FR': 'Parties en travaux',
-};
-
-const NO_GAMES_UNDER_CONSTRUCTION = {
-  en: 'No games under construction',
-  'fr-FR': 'Aucune partie en travaux',
-};
-
-export function GameUnderConstructionCard({ game, lang = DEFAULT_LOCALE }) {
+export function GameUnderConstructionCard({ game }) {
+  const intl = useIntl();
   const { data: session } = useSession();
   const user = session.user;
 
@@ -115,7 +116,7 @@ export function GameUnderConstructionCard({ game, lang = DEFAULT_LOCALE }) {
               </div>
             </Tooltip>
           </div>
-          {isOrganizer && <EditGameButton gameId={game.id} lang={lang} />}
+          {isOrganizer && <EditGameButton gameId={game.id} />}
         </div>
       </CardHeader>
 
@@ -125,7 +126,7 @@ export function GameUnderConstructionCard({ game, lang = DEFAULT_LOCALE }) {
           <div className="flex items-center gap-1">
             <SupervisorAccountIcon sx={{ fontSize: '0.875rem', color: 'rgb(251, 191, 36)' }} />
             <Typography variant="caption" className="text-xs font-medium text-yellow-300">
-              {ORGANIZERS_LABEL[lang]}
+              {intl.formatMessage(messages.organizers)}
             </Typography>
           </div>
           <div className="flex justify-start w-full">
@@ -137,9 +138,10 @@ export function GameUnderConstructionCard({ game, lang = DEFAULT_LOCALE }) {
   );
 }
 
-function EditGameButton({ gameId, lang }) {
+function EditGameButton({ gameId }) {
+  const intl = useIntl();
   return (
-    <Tooltip title={ACCESS_GAME_EDITOR_BUTTON_LABEL[lang]}>
+    <Tooltip title={intl.formatMessage(messages.editGame)}>
       <IconButton
         href={'/edit/' + gameId}
         size="small"
@@ -158,13 +160,3 @@ function EditGameButton({ gameId, lang }) {
     </Tooltip>
   );
 }
-
-const ACCESS_GAME_EDITOR_BUTTON_LABEL = {
-  en: 'Edit game',
-  'fr-FR': 'Éditer la partie',
-};
-
-const ORGANIZERS_LABEL = {
-  en: 'Organizers',
-  'fr-FR': 'Organisateurs',
-};

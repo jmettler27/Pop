@@ -1,12 +1,14 @@
 import { UserRole } from '@/backend/models/users/User';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 import { GameMatchingQuestion } from '@/backend/models/questions/Matching';
 
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 
 import { useGameContext, useGameRepositoriesContext, useRoleContext, useTeamContext } from '@/frontend/contexts';
+
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 
 import { GameChooserHelperText } from '@/frontend/components/game/GameChooserTeamAnnouncement';
 import ResetQuestionButton from '@/frontend/components/game/bottom-pane/question/ResetQuestionButton';
@@ -15,6 +17,14 @@ import EndQuestionButton from '@/frontend/components/game/bottom-pane/question/E
 import { CircularProgress } from '@mui/material';
 
 import clsx from 'clsx';
+
+const messages = defineMessages('frontend.game.bottom.MatchingBottomPane', {
+  maxMistakesExceeded: 'You have exceeded the maximum number of mistakes!',
+  runningOrder: 'Running order',
+  youCanMakeMore: 'You can still make',
+  mistake: 'mistake',
+  mistakes: 'mistakes',
+});
 
 export default function MatchingBottomPane({}) {
   const { chooserRepo } = useGameRepositoriesContext();
@@ -62,7 +72,8 @@ function MatchingController({ chooser }) {
   );
 }
 
-function MatchingPlayerQuestionController({ lang = DEFAULT_LOCALE }) {
+function MatchingPlayerQuestionController() {
+  const intl = useIntl();
   const game = useGameContext();
   const myTeam = useTeamContext();
 
@@ -101,24 +112,20 @@ function MatchingPlayerQuestionController({ lang = DEFAULT_LOCALE }) {
 
   return isCanceled ? (
     <span className="2xl:text-3xl text-red-500">
-      🙅 {MAX_TRIES_EXCEEDED_TEXT[lang]} ({maxMistakes})
+      🙅 {intl.formatMessage(messages.maxMistakesExceeded)} ({maxMistakes})
     </span>
   ) : (
     <span className="2xl:text-3xl">
-      Tu peux faire encore{' '}
+      {intl.formatMessage(messages.youCanMakeMore)}{' '}
       <span className="font-bold text-red-500">
-        {remainingMistakes} erreur{remainingMistakes > 1 && 's'}
+        {remainingMistakes}{' '}
+        {remainingMistakes > 1 ? intl.formatMessage(messages.mistakes) : intl.formatMessage(messages.mistake)}
       </span>
       .
     </span>
   );
   return;
 }
-
-const MAX_TRIES_EXCEEDED_TEXT = {
-  en: 'You have exceeded the maximum number of mistakes!',
-  'fr-FR': "Tu as excédé le nombre maximum d'erreurs!",
-};
 
 function MatchingOrganizerQuestionController({}) {
   return (
@@ -129,7 +136,8 @@ function MatchingOrganizerQuestionController({}) {
   );
 }
 
-function MatchingRunningOrder({ chooser, lang = DEFAULT_LOCALE }) {
+function MatchingRunningOrder({ chooser }) {
+  const intl = useIntl();
   const game = useGameContext();
 
   const gameQuestionRepo = new GameMatchingQuestionRepository(game.id, game.currentRound);
@@ -169,7 +177,7 @@ function MatchingRunningOrder({ chooser, lang = DEFAULT_LOCALE }) {
   return (
     <div className="flex flex-col h-full w-full items-center justify-center">
       <h2 className="2xl:text-2xl font-bold">
-        👥 <span className="underline">{RUNNING_ORDER_TEXT[lang]}</span>
+        👥 <span className="underline">{intl.formatMessage(messages.runningOrder)}</span>
       </h2>
 
       <ol className="overflow-auto">
@@ -196,8 +204,3 @@ function MatchingRunningOrder({ chooser, lang = DEFAULT_LOCALE }) {
 function getTeamName(teams, teamId) {
   return teams.find((t) => t.id === teamId).name;
 }
-
-const RUNNING_ORDER_TEXT = {
-  en: 'Running order',
-  'fr-FR': 'Ordre de passage',
-};

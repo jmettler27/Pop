@@ -6,6 +6,9 @@ import { Form, Formik } from 'formik';
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
 
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
@@ -26,9 +29,19 @@ import { GameType } from '@/backend/models/games/GameType';
 export const roundScorePolicySchema = () =>
   Yup.string().oneOf(Object.values(ScorePolicyType), 'Invalid round score policy.').required('Required.');
 
-export default function Page({ lang = DEFAULT_LOCALE }) {
+const messages = defineMessages('app.edit', {
+  createGame: 'Create a new game',
+  selectGameLanguageLabel: 'Game language',
+  gameTitleLabel: 'Game title',
+  gameMaxPlayersLabel: 'Maximum number of players',
+  gameOrganizerNameLabel: 'Choose a nickname for the game',
+  createGameSubmitButtonLabel: 'Create',
+});
+
+export default function Page() {
   const { data: session } = useSession();
   const router = useRouter();
+  const intl = useIntl();
 
   const [createNewGame, isSubmitting] = useAsyncAction(async (values, user) => {
     const { title, type, lang, maxPlayers, roundScorePolicy, organizerName } = values;
@@ -70,7 +83,7 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
 
   return (
     <>
-      <h1>{CREATE_GAME[lang]}</h1>
+      <h1>{intl.formatMessage(messages.createGame)}</h1>
       <Formik
         initialValues={{
           // type: GAME_DEFAULT_TYPE,
@@ -92,8 +105,7 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
       >
         <Form>
           <SelectLanguage
-            labels={SELECT_GAME_LANGUAGE_LABEL}
-            lang={lang}
+            labels={intl.formatMessage(messages.selectGameLanguageLabel)}
             name="lang"
             validationSchema={validationSchema}
           />
@@ -101,7 +113,7 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
           {/* <SelectGameType lang={lang} name='type' validationSchema={validationSchema} /> */}
 
           <MyTextInput
-            label={GAME_TITLE_LABEL[lang]}
+            label={intl.formatMessage(messages.gameTitleLabel)}
             name="title"
             type="text"
             placeholder={Game.TITLE_EXAMPLE}
@@ -110,16 +122,16 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
           />
 
           <MyNumberInput
-            label={GAME_MAX_PLAYERS_LABEL[lang]}
+            label={intl.formatMessage(messages.gameMaxPlayersLabel)}
             name="maxPlayers"
             min={Game.MIN_NUM_PLAYERS}
             max={Game.MAX_NUM_PLAYERS}
           />
 
-          <SelectRoundScorePolicy lang={lang} name="roundScorePolicy" validationSchema={validationSchema} />
+          <SelectRoundScorePolicy name="roundScorePolicy" validationSchema={validationSchema} />
 
           <MyTextInput
-            label={GAME_ORGANIZER_NAME_LABEL[lang]}
+            label={intl.formatMessage(messages.gameOrganizerNameLabel)}
             name="organizerName"
             type="text"
             placeholder={user.name}
@@ -129,39 +141,12 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
 
           <br />
 
-          <SubmitFormButton isSubmitting={isSubmitting} label={CREATE_GAME_SUBMIT_BUTTON_LABEL[lang]} />
+          <SubmitFormButton
+            isSubmitting={isSubmitting}
+            label={intl.formatMessage(messages.createGameSubmitButtonLabel)}
+          />
         </Form>
       </Formik>
     </>
   );
 }
-
-const CREATE_GAME = {
-  en: 'Create a new game',
-  'fr-FR': 'Créer une nouvelle partie',
-};
-
-const SELECT_GAME_LANGUAGE_LABEL = {
-  en: 'Game language',
-  'fr-FR': 'Langue de la partie',
-};
-
-const GAME_TITLE_LABEL = {
-  en: 'Game title',
-  'fr-FR': 'Titre de la partie',
-};
-
-const GAME_MAX_PLAYERS_LABEL = {
-  en: 'Maximum number of players',
-  'fr-FR': 'Nombre maximum de joueurs',
-};
-
-const GAME_ORGANIZER_NAME_LABEL = {
-  en: 'Choose a nickname for the game',
-  'fr-FR': 'Choisis un pseudo pour cette partie',
-};
-
-const CREATE_GAME_SUBMIT_BUTTON_LABEL = {
-  en: 'Create',
-  'fr-FR': 'Créer',
-};

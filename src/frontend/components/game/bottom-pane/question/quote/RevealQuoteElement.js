@@ -9,11 +9,20 @@ import { revealQuoteElement } from '@/backend/services/question/quote/actions';
 
 import { isEmpty } from '@/backend/utils/arrays';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { useGameContext } from '@/frontend/contexts';
+
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.game.bottom.RevealQuoteElement', {
+  reveal: 'Reveal',
+  listHeader: 'Reveal an element of the quote',
+  dialogContentText: 'Are you sure you want to reveal',
+  dialogYes: 'Yes',
+  dialogNo: 'No',
+});
 
 import { useState } from 'react';
 
@@ -29,7 +38,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
-export default function RevealQuoteElementButton({ buzzed, baseQuestion, gameQuestion, lang = DEFAULT_LOCALE }) {
+export default function RevealQuoteElementButton({ buzzed, baseQuestion, gameQuestion }) {
+  const intl = useIntl();
   const buzzedIsEmpty = isEmpty(buzzed);
 
   const author = baseQuestion.author;
@@ -66,7 +76,7 @@ export default function RevealQuoteElementButton({ buzzed, baseQuestion, gameQue
   return (
     <>
       <Button color="info" startIcon={<VisibilityIcon />} onClick={handleRevealButtonClick} disabled={!buzzedIsEmpty}>
-        {REVEAL_BUTTON_LABEL[lang]}
+        {intl.formatMessage(messages.reveal)}
       </Button>
 
       <Menu
@@ -84,7 +94,7 @@ export default function RevealQuoteElementButton({ buzzed, baseQuestion, gameQue
           aria-labelledby="nested-list-subheader"
           subheader={
             <ListSubheader component="div" id="nested-list-subheader">
-              {REVEAL_LIST_HEADER[lang]}
+              {intl.formatMessage(messages.listHeader)}
             </ListSubheader>
           }
         >
@@ -138,16 +148,6 @@ export default function RevealQuoteElementButton({ buzzed, baseQuestion, gameQue
   );
 }
 
-const REVEAL_BUTTON_LABEL = {
-  en: 'Reveal',
-  'fr-FR': 'Révéler',
-};
-
-const REVEAL_LIST_HEADER = {
-  en: 'Reveal an element of the quote',
-  'fr-FR': 'Révéler un élément de la réplique',
-};
-
 function RevealQuoteElementItemButton({ gameQuestion, quoteElement, quoteElementStr, onClick }) {
   const itemText = `${QuoteQuestion.elementToEmoji(quoteElementStr)} ("${quoteElement}")`;
 
@@ -194,15 +194,8 @@ function RevealQuotePartItemButton({ gameQuestion, quote, quoteParts, setQuotePa
   );
 }
 
-function RevealQuoteElementDialog({
-  baseQuestion,
-  quoteElem,
-  quoteParts,
-  quotePartIdx,
-  dialogOpen,
-  onDialogClose,
-  lang = DEFAULT_LOCALE,
-}) {
+function RevealQuoteElementDialog({ baseQuestion, quoteElem, quoteParts, quotePartIdx, dialogOpen, onDialogClose }) {
+  const intl = useIntl();
   const game = useGameContext();
 
   const [handleRevealQuoteElement, isRevealing] = useAsyncAction(async () => {
@@ -222,11 +215,11 @@ function RevealQuoteElementDialog({
   return (
     <Dialog disableEscapeKeyDown open={dialogOpen} onClose={onDialogClose}>
       <DialogTitle>
-        {REVEAL_LIST_HEADER[lang]}: {QuoteQuestion.elementToTitle(quoteElem)}
+        {intl.formatMessage(messages.listHeader)}: {QuoteQuestion.elementToTitle(quoteElem)}
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {REVEAL_QUOTE_ELEMENT_DIALOG_CONTENT_TEXT[lang]} <strong>&quot;{elementToRevealText()}&quot;</strong>?
+          {intl.formatMessage(messages.dialogContentText)} <strong>&quot;{elementToRevealText()}&quot;</strong>?
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -237,28 +230,13 @@ function RevealQuoteElementDialog({
           onClick={handleRevealQuoteElement}
           disabled={isRevealing}
         >
-          {DIALOG_YES_BUTTON_LABEL[lang]}
+          {intl.formatMessage(messages.dialogYes)}
         </Button>
 
         <Button variant="outlined" color="error" startIcon={<CancelIcon />} onClick={onDialogClose} autoFocus>
-          {DIALOG_NO_BUTTON_LABEL[lang]}
+          {intl.formatMessage(messages.dialogNo)}
         </Button>
       </DialogActions>
     </Dialog>
   );
 }
-
-const REVEAL_QUOTE_ELEMENT_DIALOG_CONTENT_TEXT = {
-  en: 'Are you sure you want to reveal',
-  'fr-FR': 'Es-tu sûr de vouloir révéler',
-};
-
-const DIALOG_YES_BUTTON_LABEL = {
-  en: 'Yes',
-  'fr-FR': 'Oui',
-};
-
-const DIALOG_NO_BUTTON_LABEL = {
-  en: 'No',
-  'fr-FR': 'Non',
-};

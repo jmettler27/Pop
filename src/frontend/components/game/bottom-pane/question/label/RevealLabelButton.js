@@ -5,7 +5,8 @@ import { isEmpty } from '@/backend/utils/arrays';
 import { rankingToEmoji } from '@/backend/utils/emojis';
 
 import { useGameContext } from '@/frontend/contexts';
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Menu } from '@mui/material';
@@ -18,7 +19,16 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
-export default function RevealLabelButton({ buzzed, baseQuestion, gameQuestion, lang = DEFAULT_LOCALE }) {
+const messages = defineMessages('frontend.game.bottom.RevealLabelButton', {
+  reveal: 'Reveal',
+  revealListHeader: 'Reveal a label',
+  areYouSureReveal: 'Are you sure you want to reveal',
+  yes: 'Yes',
+  no: 'No',
+});
+
+export default function RevealLabelButton({ buzzed, baseQuestion, gameQuestion }) {
+  const intl = useIntl();
   const buzzedIsEmpty = isEmpty(buzzed);
 
   const labels = baseQuestion.labels;
@@ -50,7 +60,7 @@ export default function RevealLabelButton({ buzzed, baseQuestion, gameQuestion, 
   return (
     <>
       <Button color="info" startIcon={<VisibilityIcon />} onClick={handleRevealButtonClick} disabled={!buzzedIsEmpty}>
-        {REVEAL_BUTTON_LABEL[lang]}
+        {intl.formatMessage(messages.reveal)}
       </Button>
 
       <Menu
@@ -68,7 +78,7 @@ export default function RevealLabelButton({ buzzed, baseQuestion, gameQuestion, 
           aria-labelledby="nested-list-subheader"
           subheader={
             <ListSubheader component="div" id="nested-list-subheader">
-              {REVEAL_LIST_HEADER[lang]}
+              {intl.formatMessage(messages.revealListHeader)}
             </ListSubheader>
           }
         >
@@ -94,16 +104,6 @@ export default function RevealLabelButton({ buzzed, baseQuestion, gameQuestion, 
   );
 }
 
-const REVEAL_BUTTON_LABEL = {
-  en: 'Reveal',
-  'fr-FR': 'Révéler',
-};
-
-const REVEAL_LIST_HEADER = {
-  en: 'Reveal an label',
-  'fr-FR': 'Révéler une étiquette',
-};
-
 function RevealLabelItemButton({ gameQuestion, label, labelIdx, onClick }) {
   const itemText = `${rankingToEmoji(labelIdx)} ("${label}")`;
 
@@ -114,7 +114,8 @@ function RevealLabelItemButton({ gameQuestion, label, labelIdx, onClick }) {
   );
 }
 
-function RevealLabelDialog({ baseQuestion, labelIdx, dialogOpen, onDialogClose, lang = DEFAULT_LOCALE }) {
+function RevealLabelDialog({ baseQuestion, labelIdx, dialogOpen, onDialogClose }) {
+  const intl = useIntl();
   const game = useGameContext();
 
   const [handleRevealLabel, isRevealing] = useAsyncAction(async () => {
@@ -126,10 +127,10 @@ function RevealLabelDialog({ baseQuestion, labelIdx, dialogOpen, onDialogClose, 
 
   return (
     <Dialog disableEscapeKeyDown open={dialogOpen} onClose={onDialogClose}>
-      <DialogTitle>{REVEAL_LIST_HEADER[lang]}</DialogTitle>
+      <DialogTitle>{intl.formatMessage(messages.revealListHeader)}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {REVEAL_LABEL_DIALOG_CONTENT_TEXT[lang]} <strong>&quot;{labelToReveal}&quot;</strong>?
+          {intl.formatMessage(messages.areYouSureReveal)} <strong>&quot;{labelToReveal}&quot;</strong>?
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -140,28 +141,13 @@ function RevealLabelDialog({ baseQuestion, labelIdx, dialogOpen, onDialogClose, 
           onClick={handleRevealLabel}
           disabled={isRevealing}
         >
-          {DIALOG_YES_BUTTON_LABEL[lang]}
+          {intl.formatMessage(messages.yes)}
         </Button>
 
         <Button variant="outlined" color="error" startIcon={<CancelIcon />} onClick={onDialogClose} autoFocus>
-          {DIALOG_NO_BUTTON_LABEL[lang]}
+          {intl.formatMessage(messages.no)}
         </Button>
       </DialogActions>
     </Dialog>
   );
 }
-
-const REVEAL_LABEL_DIALOG_CONTENT_TEXT = {
-  en: 'Are you sure you want to reveal',
-  'fr-FR': 'Es-tu sûr de vouloir révéler',
-};
-
-const DIALOG_YES_BUTTON_LABEL = {
-  en: 'Yes',
-  'fr-FR': 'Oui',
-};
-
-const DIALOG_NO_BUTTON_LABEL = {
-  en: 'No',
-  'fr-FR': 'Non',
-};

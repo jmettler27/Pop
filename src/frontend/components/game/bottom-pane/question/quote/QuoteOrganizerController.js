@@ -8,7 +8,8 @@ import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuo
 
 import { isEmpty } from '@/backend/utils/arrays';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
@@ -28,6 +29,11 @@ import { Button, ButtonGroup, CircularProgress } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+
+const messages = defineMessages('frontend.game.bottom.QuoteOrganizerController', {
+  validateAll: 'Validate all',
+  cancel: 'Cancel',
+});
 
 export default function QuoteOrganizerController({ baseQuestion, questionPlayers }) {
   const { id: gameId } = useParams();
@@ -82,8 +88,6 @@ function QuoteOrganizerAnswerController({ buzzed, baseQuestion }) {
     return <></>;
   }
 
-  // const revealed = gameQuestion.revealed
-
   {
     /* Validate or invalidate the player's answer */
   }
@@ -104,7 +108,8 @@ function QuoteOrganizerAnswerController({ buzzed, baseQuestion }) {
   );
 }
 
-function ValidateAllQuoteElementsButton({ buzzed, gameQuestion, lang = DEFAULT_LOCALE }) {
+function ValidateAllQuoteElementsButton({ buzzed, gameQuestion }) {
+  const intl = useIntl();
   const game = useGameContext();
 
   const atLeastOneRevealed = gameQuestion.atLeastOneElementRevealed();
@@ -121,17 +126,13 @@ function ValidateAllQuoteElementsButton({ buzzed, gameQuestion, lang = DEFAULT_L
       onClick={handleValidateAll}
       disabled={atLeastOneRevealed || buzzedIsEmpty || isValidating}
     >
-      {VALIDATE_ALL_QUOTE_ELEMENTS[lang]}
+      {intl.formatMessage(messages.validateAll)}
     </Button>
   );
 }
 
-const VALIDATE_ALL_QUOTE_ELEMENTS = {
-  en: 'Validate all',
-  'fr-FR': 'Tout valider',
-};
-
-function CancelQuoteElementButton({ buzzed, lang = DEFAULT_LOCALE }) {
+function CancelQuoteElementButton({ buzzed }) {
+  const intl = useIntl();
   const game = useGameContext();
 
   const buzzedIsEmpty = isEmpty(buzzed);
@@ -148,16 +149,13 @@ function CancelQuoteElementButton({ buzzed, lang = DEFAULT_LOCALE }) {
         onClick={handleCancelQuote}
         disabled={buzzedIsEmpty || isCanceling}
       >
-        {CANCEL_QUOTE_ELEMENT[lang]}
+        {intl.formatMessage(messages.cancel)}
       </Button>
     </>
   );
 }
 
-const CANCEL_QUOTE_ELEMENT = {
-  en: 'Cancel',
-  'fr-FR': 'Invalider',
-};
+const CANCEL_QUOTE_ELEMENT = undefined; // removed
 
 function QuoteOrganizerQuestionController({}) {
   return (

@@ -10,7 +10,8 @@ import {
 import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
 
 import { useGameContext } from '@/frontend/contexts';
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 import EndQuestionButton from '@/frontend/components/game/bottom-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/bottom-pane/question/ResetQuestionButton';
@@ -22,6 +23,11 @@ import { Button, ButtonGroup, CircularProgress } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+
+const messages = defineMessages('frontend.game.bottom.LabelOrganizerController', {
+  validateAll: 'Validate all',
+  cancel: 'Cancel',
+});
 
 export default function LabelOrganizerController({ baseQuestion, questionPlayers }) {
   const { id: gameId } = useParams();
@@ -93,7 +99,8 @@ function LabelOrganizerAnswerController({ buzzed, baseQuestion }) {
   );
 }
 
-function ValidateAllLabelsButton({ buzzed, gameQuestion, lang = DEFAULT_LOCALE }) {
+function ValidateAllLabelsButton({ buzzed, gameQuestion }) {
+  const intl = useIntl();
   const game = useGameContext();
 
   const atLeastOneRevealed = gameQuestion.atLeastOneLabelIsRevealed();
@@ -110,17 +117,13 @@ function ValidateAllLabelsButton({ buzzed, gameQuestion, lang = DEFAULT_LOCALE }
       onClick={handleValidateAll}
       disabled={atLeastOneRevealed || buzzedIsEmpty || isValidating}
     >
-      {VALIDATE_ALL_LABELS[lang]}
+      {intl.formatMessage(messages.validateAll)}
     </Button>
   );
 }
 
-const VALIDATE_ALL_LABELS = {
-  en: 'Validate all',
-  'fr-FR': 'Tout valider',
-};
-
-function CancelLabelButton({ buzzed, lang = DEFAULT_LOCALE }) {
+function CancelLabelButton({ buzzed }) {
+  const intl = useIntl();
   const game = useGameContext();
 
   const buzzedIsEmpty = isEmpty(buzzed);
@@ -137,16 +140,11 @@ function CancelLabelButton({ buzzed, lang = DEFAULT_LOCALE }) {
         onClick={handleCancelLabel}
         disabled={buzzedIsEmpty || isCanceling}
       >
-        {CANCEL_LABEL[lang]}
+        {intl.formatMessage(messages.cancel)}
       </Button>
     </>
   );
 }
-
-const CANCEL_LABEL = {
-  en: 'Cancel',
-  'fr-FR': 'Invalider',
-};
 
 function LabelOrganizerQuestionController({}) {
   return (

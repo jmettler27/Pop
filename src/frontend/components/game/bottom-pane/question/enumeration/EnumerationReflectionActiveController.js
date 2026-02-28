@@ -7,13 +7,13 @@ import { UserRole } from '@/backend/models/users/User';
 
 import { range } from '@/backend/utils/arrays';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
-import { useGameContext, useRoleContext, useTeamContext, useUserContext } from '@/frontend/contexts';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 
-import { DIALOG_ACTION_CANCEL, DIALOG_ACTION_VALIDATE, DIALOG_TITLE, DIALOG_WARNING } from '@/frontend/texts/dialogs';
+import { useGameContext, useRoleContext, useTeamContext, useUserContext } from '@/frontend/contexts';
 
 import { useState } from 'react';
 
@@ -31,34 +31,40 @@ import {
   Select,
 } from '@mui/material';
 
-export default function EnumerationReflectionActiveController({ baseQuestion, timer, lang = DEFAULT_LOCALE }) {
+const messages = defineMessages('frontend.game.bottom.EnumerationReflectionActiveController', {
+  betInputLabel: 'My bet',
+  enumReflectionActiveHeader: 'Waiting for players to bet...',
+});
+
+export default function EnumerationReflectionActiveController({ baseQuestion, timer }) {
   const myRole = useRoleContext();
 
   console.log('EnumerationReflectionActiveController', { baseQuestion, timer, myRole });
 
   switch (myRole) {
     case UserRole.PLAYER:
-      return <EnumPlayerReflectionActive baseQuestion={baseQuestion} timer={timer} lang={lang} />;
+      return <EnumPlayerReflectionActive baseQuestion={baseQuestion} timer={timer} />;
     default:
-      return <EnumSpectatorReflectionActive timer={timer} lang={lang} />;
+      return <EnumSpectatorReflectionActive timer={timer} />;
   }
 }
 
 /* ============================================================ Player ============================================================ */
-function EnumPlayerReflectionActive({ baseQuestion, timer, lang }) {
+function EnumPlayerReflectionActive({ baseQuestion, timer }) {
   return (
     <div className="flex flex-col h-full items-center justify-center">
-      <AddBetForm baseQuestion={baseQuestion} status={timer.status} lang={lang} />
+      <AddBetForm baseQuestion={baseQuestion} status={timer.status} />
     </div>
   );
 }
 
-function AddBetForm({ baseQuestion, status, lang }) {
+function AddBetForm({ baseQuestion, status }) {
+  const intl = useIntl();
   const game = useGameContext();
   const user = useUserContext();
   const myTeam = useTeamContext();
 
-  console.log('AddBetForm', { baseQuestion, status, lang, user, myTeam });
+  console.log('AddBetForm', { baseQuestion, status, user, myTeam });
 
   const [handleBetValidate, isSubmitting] = useAsyncAction(async () => {
     await addBet(game.id, game.currentRound, game.currentQuestion, user.id, myTeam, myBet);
@@ -116,14 +122,14 @@ function AddBetForm({ baseQuestion, status, lang }) {
       {/* Selector of the bet */}
       <FormControl sx={{ m: 1, minWidth: 150 }} disabled={selectorDisabled}>
         <InputLabel id="enum-bet-selector-input-label" sx={{ color: 'inherit' }}>
-          {BET_INPUT_LABEL[lang]}
+          {intl.formatMessage(messages.betInputLabel)}
         </InputLabel>
 
         <Select
           id="enum-bet-selector-select"
           labelId="enum-bet-selector-select-label"
           value={myBet}
-          label={BET_INPUT_LABEL[lang]}
+          label={intl.formatMessage(messages.betInputLabel)}
           onChange={handleSelectorChange}
           autoWidth
           sx={{
@@ -151,10 +157,10 @@ function AddBetForm({ baseQuestion, status, lang }) {
 
       <Dialog disableEscapeKeyDown open={dialogOpen} onClose={handleDialogClose}>
         <DialogTitle>
-          {DIALOG_TITLE[lang]} ({myBet})
+          {intl.formatMessage(globalMessages.dialogTitle)} ({myBet})
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>{DIALOG_WARNING[lang]}</DialogContentText>
+          <DialogContentText>{intl.formatMessage(globalMessages.dialogWarning)}</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button
@@ -164,7 +170,7 @@ function AddBetForm({ baseQuestion, status, lang }) {
             onClick={handleBetValidate}
             disabled={isSubmitting}
           >
-            {DIALOG_ACTION_VALIDATE[lang]}
+            {intl.formatMessage(globalMessages.dialogValidate)}
           </Button>
 
           <Button
@@ -175,7 +181,7 @@ function AddBetForm({ baseQuestion, status, lang }) {
             onClick={handleBetCancel}
             autoFocus
           >
-            {DIALOG_ACTION_CANCEL[lang]}
+            {intl.formatMessage(globalMessages.cancel)}
           </Button>
         </DialogActions>
       </Dialog>
@@ -183,23 +189,14 @@ function AddBetForm({ baseQuestion, status, lang }) {
   );
 }
 
-const BET_INPUT_LABEL = {
-  en: 'My bet',
-  'fr-FR': 'Mon pari',
-};
-
 /* ============================================================ Spectator ============================================================ */
-function EnumSpectatorReflectionActive({ timer, lang }) {
+function EnumSpectatorReflectionActive({ timer }) {
+  const intl = useIntl();
   return (
     <div className="flex flex-col h-full items-center justify-center">
       {timer.status === TimerStatus.START && (
-        <span className="2xl:text-3xl">{ENUM_REFLECTION_ACTIVE_HEADER[lang]}</span>
+        <span className="2xl:text-3xl">{intl.formatMessage(messages.enumReflectionActiveHeader)}</span>
       )}
     </div>
   );
 }
-
-const ENUM_REFLECTION_ACTIVE_HEADER = {
-  en: 'Waiting for players to bet...',
-  'fr-FR': 'En attente des paris...',
-};

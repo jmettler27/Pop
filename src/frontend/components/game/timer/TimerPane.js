@@ -7,7 +7,15 @@ import { UserRole } from '@/backend/models/users/User';
 
 import { SERVER_TIME_OFFSET_REF } from '@/backend/firebase/database';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.game.timer.TimerPane', {
+  gameStartsIn: 'Game starting in',
+  firstQuestionIn: 'First question in',
+  roundEndsIn: 'End of round in',
+  nextQuestionIn: 'Next question in',
+});
 
 import { useUserContext, useGameContext, useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
 
@@ -148,37 +156,33 @@ function SpectatorTimerPane() {
   );
 }
 
-function TimerHeader({ lang = DEFAULT_LOCALE }) {
+function TimerHeader() {
   const game = useGameContext();
+  const intl = useIntl();
 
   switch (game.status) {
     case GameStatus.GAME_START:
-      return <span className="text-xs sm:text-xs lg:text-base 2xl:text-xl">{GAME_START_COUNTDOWN_TEXT[lang]}</span>;
+      return (
+        <span className="text-xs sm:text-xs lg:text-base 2xl:text-xl">{intl.formatMessage(messages.gameStartsIn)}</span>
+      );
     case GameStatus.ROUND_START:
-      return <span className="text-xs sm:text-xs lg:text-base 2xl:text-xl">{ROUND_START_COUNTDOWN_TEXT[lang]}</span>;
+      return (
+        <span className="text-xs sm:text-xs lg:text-base 2xl:text-xl">
+          {intl.formatMessage(messages.firstQuestionIn)}
+        </span>
+      );
     case GameStatus.QUESTION_END:
-      return <QuestionEndTimerHeader lang={lang} />;
+      return <QuestionEndTimerHeader />;
     default:
       return <></>;
   }
 }
 
 // GAME START
-const GAME_START_COUNTDOWN_TEXT = {
-  en: 'Game starting in',
-  'fr-FR': 'Début de la partie dans',
-};
-
 // ROUND START
-const ROUND_START_COUNTDOWN_TEXT = {
-  en: 'First question in',
-  'fr-FR': 'Première question dans',
-};
-
 // QUESTION END
-function QuestionEndTimerHeader({ lang }) {
-  const game = useGameContext();
-
+function QuestionEndTimerHeader() {
+  const intl = useIntl();
   const { roundRepo } = useGameRepositoriesContext();
   const { round, roundLoading, roundError } = roundRepo.useRoundOnce(game.currentRound);
 
@@ -200,17 +204,7 @@ function QuestionEndTimerHeader({ lang }) {
 
   return (
     <span className="text-lg sm:text-xl lg:text-2xl 2xl:text-2xl">
-      {isRoundOver ? QUESTION_END_COUNTDOWN_ROUND_END_TEXT[lang] : QUESTION_END_COUNTDOWN_NEXT_QUESTION_TEXT[lang]}
+      {isRoundOver ? intl.formatMessage(messages.roundEndsIn) : intl.formatMessage(messages.nextQuestionIn)}
     </span>
   );
 }
-
-const QUESTION_END_COUNTDOWN_ROUND_END_TEXT = {
-  en: 'End of round in',
-  'fr-FR': 'Fin de manche dans',
-};
-
-const QUESTION_END_COUNTDOWN_NEXT_QUESTION_TEXT = {
-  en: 'Next question in',
-  'fr-FR': 'Prochaine question dans',
-};

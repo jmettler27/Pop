@@ -6,7 +6,6 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -20,14 +19,24 @@ import InfoIcon from '@mui/icons-material/Info';
 import LanguageIcon from '@mui/icons-material/Language';
 
 import { useSession, signOut } from 'next-auth/react';
-import { redirect, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useRouter } from 'next/navigation';
 
-const pages = {
-  en: ['Games', 'Create a new game', 'Submit a question', 'About'],
-  'fr-FR': ['Parties', 'Créer une partie', 'Soumettre une question', 'À propos'],
-};
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+import { useLocale } from '@/app/LocaleProvider';
+import { LOCALES, LOCALE_TO_EMOJI, LOCALE_TO_TITLE } from '@/frontend/utils/locales';
+
+const messages = defineMessages('frontend.home.HomeBar', {
+  games: 'Games',
+  createGame: 'Create a new game',
+  submitQuestion: 'Submit a question',
+  about: 'About',
+  settingsProfile: 'Profile',
+  settingsAccount: 'Account',
+  settingsDashboard: 'Dashboard',
+  settingsLogout: 'Logout',
+  selectLanguage: 'Select Language',
+});
 
 const pageIcons = [
   <ViewListIcon key="games" sx={{ fontSize: '1.1rem' }} />,
@@ -36,75 +45,44 @@ const pageIcons = [
   <InfoIcon key="about" sx={{ fontSize: '1.1rem' }} />,
 ];
 
-const settings = {
-  en: ['Profile', 'Account', 'Dashboard', 'Logout'],
-  'fr-FR': ['Profil', 'Compte', 'Tableau de bord', 'Déconnexion'],
-};
-
-const languages = [
-  { code: 'en', label: 'English', flag: '🇬🇧' },
-  { code: 'fr-FR', label: 'Français', flag: '🇫🇷' },
-];
-
-export function HomeBar({ lang = DEFAULT_LOCALE, onLanguageChange }) {
+export function HomeBar() {
   const { data: session } = useSession();
   const { user } = session;
-
+  const { locale, setLocale } = useLocale();
+  const intl = useIntl();
   const router = useRouter();
 
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [anchorElLang, setAnchorElLang] = React.useState(null);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-  const handleOpenLangMenu = (event) => {
-    setAnchorElLang(event.currentTarget);
-  };
+  const handleOpenUserMenu = (event) => setAnchorElUser(event.currentTarget);
+  const handleOpenLangMenu = (event) => setAnchorElLang(event.currentTarget);
+  const handleCloseUserMenu = () => setAnchorElUser(null);
+  const handleCloseLangMenu = () => setAnchorElLang(null);
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+  const pages = [
+    intl.formatMessage(messages.games),
+    intl.formatMessage(messages.createGame),
+    intl.formatMessage(messages.submitQuestion),
+    intl.formatMessage(messages.about),
+  ];
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const settingsList = [
+    { label: intl.formatMessage(messages.settingsProfile), action: () => {} },
+    { label: intl.formatMessage(messages.settingsAccount), action: () => {} },
+    { label: intl.formatMessage(messages.settingsDashboard), action: () => {} },
+    { label: intl.formatMessage(messages.settingsLogout), action: () => signOut() },
+  ];
 
-  const handleCloseLangMenu = () => {
-    setAnchorElLang(null);
-  };
-
-  const handleSelectSetting = (setting) => {
-    if (setting === 'Logout' || setting === 'Déconnexion') {
-      signOut();
-    }
+  const handleSelectPage = (idx) => {
+    if (idx === 0) router.push('/');
+    if (idx === 1) router.push('/edit');
+    if (idx === 2) router.push('/submit');
   };
 
   const handleSelectLanguage = (langCode) => {
-    if (onLanguageChange) {
-      onLanguageChange(langCode);
-    }
+    setLocale(langCode);
     handleCloseLangMenu();
-  };
-
-  const handleSelectPage = (idx) => {
-    console.log(idx);
-    if (idx === 0) {
-      router.push('/');
-    }
-    if (idx === 1) {
-      router.push('/edit');
-    }
-    if (idx === 2) {
-      router.push('/submit');
-    }
-    // if (idx === 3) {
-    //     router.push('/about')
-    // }
   };
 
   return (
@@ -134,50 +112,12 @@ export function HomeBar({ lang = DEFAULT_LOCALE, onLanguageChange }) {
               textDecoration: 'none',
               textShadow: '2px 2px 4px rgba(0,0,0,0.2)',
               transition: 'transform 0.2s',
-              '&:hover': {
-                transform: 'scale(1.05)',
-              },
+              '&:hover': { transform: 'scale(1.05)' },
             }}
           >
             Pop!
           </Typography>
 
-          {/* <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-                        <IconButton
-                            size="large"
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleOpenNavMenu}
-                            color="inherit"
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorElNav}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'left',
-                            }}
-                            open={Boolean(anchorElNav)}
-                            onClose={handleCloseNavMenu}
-                            sx={{
-                                display: { xs: 'block', md: 'none' },
-                            }}
-                        >
-                            {pages[lang].map((page, idx) => (
-                                <MenuItem key={page} onClick={() => handleSelectPage(idx)}>
-                                    <Typography textAlign="center">{page}</Typography>
-                                </MenuItem>
-                            ))}
-                        </Menu>
-                    </Box> */}
           <SportsEsportsIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1, fontSize: '1.5rem' }} />
           <Typography
             variant="h6"
@@ -198,8 +138,9 @@ export function HomeBar({ lang = DEFAULT_LOCALE, onLanguageChange }) {
           >
             Pop!
           </Typography>
+
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, gap: 0.5 }}>
-            {pages[lang].map((page, idx) => (
+            {pages.map((page, idx) => (
               <Button
                 key={page}
                 onClick={() => handleSelectPage(idx)}
@@ -226,7 +167,7 @@ export function HomeBar({ lang = DEFAULT_LOCALE, onLanguageChange }) {
 
           {/* Language Selector */}
           <Box sx={{ flexGrow: 0, mr: 2 }}>
-            <Tooltip title="Select Language">
+            <Tooltip title={intl.formatMessage(messages.selectLanguage)}>
               <IconButton onClick={handleOpenLangMenu} sx={{ p: 0.5 }}>
                 <LanguageIcon sx={{ color: 'white', fontSize: '1.5rem' }} />
               </IconButton>
@@ -235,32 +176,23 @@ export function HomeBar({ lang = DEFAULT_LOCALE, onLanguageChange }) {
               sx={{ mt: '45px' }}
               id="language-menu"
               anchorEl={anchorElLang}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
+              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
               keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
               open={Boolean(anchorElLang)}
               onClose={handleCloseLangMenu}
             >
-              {languages.map((language) => (
-                <MenuItem
-                  key={language.code}
-                  onClick={() => handleSelectLanguage(language.code)}
-                  selected={lang === language.code}
-                >
+              {LOCALES.map((code) => (
+                <MenuItem key={code} onClick={() => handleSelectLanguage(code)} selected={locale === code}>
                   <Typography textAlign="center">
-                    {language.flag} {language.label}
+                    {LOCALE_TO_EMOJI[code]} {LOCALE_TO_TITLE[code]}
                   </Typography>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
 
+          {/* User menu */}
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -271,21 +203,21 @@ export function HomeBar({ lang = DEFAULT_LOCALE, onLanguageChange }) {
               sx={{ mt: '45px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
+              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
               keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings[lang].map((setting) => (
-                <MenuItem key={setting} onClick={() => handleSelectSetting(setting)}>
-                  <Typography textAlign="center">{setting}</Typography>
+              {settingsList.map((setting) => (
+                <MenuItem
+                  key={setting.label}
+                  onClick={() => {
+                    setting.action();
+                    handleCloseUserMenu();
+                  }}
+                >
+                  <Typography textAlign="center">{setting.label}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -295,4 +227,5 @@ export function HomeBar({ lang = DEFAULT_LOCALE, onLanguageChange }) {
     </AppBar>
   );
 }
+
 export default HomeBar;

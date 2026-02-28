@@ -3,9 +3,10 @@ import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository
 
 import { gameTypeToEmoji } from '@/backend/models/games/GameType';
 import { timestampToDate } from '@/backend/utils/time';
-import { DEFAULT_LOCALE, localeToEmoji } from '@/frontend/utils/locales';
+import { localeToEmoji } from '@/frontend/utils/locales';
 
 import React from 'react';
+import { useIntl } from 'react-intl';
 
 import { useSession } from 'next-auth/react';
 
@@ -20,8 +21,18 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import GroupIcon from '@mui/icons-material/Group';
 import { GameStatus } from '@/backend/models/games/GameStatus';
+import defineMessages from '@/utils/defineMessages';
 
-export default function EndedGames({ lang = DEFAULT_LOCALE }) {
+const messages = defineMessages('frontend.home.EndedGames', {
+  title: 'Ended games',
+  empty: 'No ended games yet',
+  organizersShort: 'Organizers',
+  playersShort: 'Players',
+  accessDashboard: 'Access game dashboard',
+});
+
+export default function EndedGames() {
+  const intl = useIntl();
   const gameRepo = new GameRepository();
   const { games, loading, error } = gameRepo.useGamesByStatus(GameStatus.GAME_END);
 
@@ -46,18 +57,20 @@ export default function EndedGames({ lang = DEFAULT_LOCALE }) {
     <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-slate-700 shadow-2xl hover:shadow-purple-500/20 transition-all duration-300">
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 border-b border-slate-700">
         <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
-          🔚 {ENDED_GAMES_CARD_TITLE[lang]} ({sortedGames.length})
+          🔚 {intl.formatMessage(messages.title)} ({sortedGames.length})
         </CardTitle>
         {/* <RemoveRoundFromGameButton roundId={roundId} /> */}
       </CardHeader>
 
       <CardContent className="pt-6">
         {sortedGames.length === 0 ? (
-          <div className="text-center py-12 text-slate-400 text-sm sm:text-base">{NO_ENDED_GAMES[lang]}</div>
+          <div className="text-center py-12 text-slate-400 text-sm sm:text-base">
+            {intl.formatMessage(messages.empty)}
+          </div>
         ) : (
           <div className="grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {sortedGames.map((game) => (
-              <EndedGameCard key={game.id} game={game} lang={lang} />
+              <EndedGameCard key={game.id} game={game} />
             ))}
           </div>
         )}
@@ -66,17 +79,8 @@ export default function EndedGames({ lang = DEFAULT_LOCALE }) {
   );
 }
 
-const ENDED_GAMES_CARD_TITLE = {
-  en: 'Ended games',
-  'fr-FR': 'Parties terminées',
-};
-
-const NO_ENDED_GAMES = {
-  en: 'No ended games yet',
-  'fr-FR': 'Aucune partie terminée pour le moment',
-};
-
-export function EndedGameCard({ game, lang = DEFAULT_LOCALE }) {
+export function EndedGameCard({ game }) {
+  const intl = useIntl();
   const { data: session } = useSession();
   const user = session.user;
 
@@ -111,7 +115,7 @@ export function EndedGameCard({ game, lang = DEFAULT_LOCALE }) {
             </Tooltip>
           </div>
           {isOrganizer && (
-            <Tooltip title={ACCESS_GAME_DASHBOARD_BUTTON_LABEL[lang]} placement="top">
+            <Tooltip title={intl.formatMessage(messages.accessDashboard)} placement="top">
               <IconButton
                 href={'/edit/' + game.id}
                 size="small"
@@ -140,7 +144,7 @@ export function EndedGameCard({ game, lang = DEFAULT_LOCALE }) {
             <div className="flex items-center gap-1">
               <SupervisorAccountIcon sx={{ fontSize: '0.875rem', color: 'rgb(168, 85, 247)' }} />
               <Typography variant="caption" className="text-xs font-medium text-purple-300">
-                {ORGANIZERS_SHORT[lang]}
+                {intl.formatMessage(messages.organizersShort)}
               </Typography>
             </div>
             <div className="flex justify-start w-full">
@@ -153,7 +157,7 @@ export function EndedGameCard({ game, lang = DEFAULT_LOCALE }) {
             <div className="flex items-center gap-1">
               <GroupIcon sx={{ fontSize: '0.875rem', color: 'rgb(96, 165, 250)' }} />
               <Typography variant="caption" className="text-xs font-medium text-blue-300">
-                {PLAYERS_SHORT[lang]}
+                {intl.formatMessage(messages.playersShort)}
               </Typography>
             </div>
             <div className="flex justify-start w-full">
@@ -166,25 +170,10 @@ export function EndedGameCard({ game, lang = DEFAULT_LOCALE }) {
         <div className="flex items-center gap-1.5 pt-2 border-t border-slate-700/50">
           <AccessTimeIcon sx={{ fontSize: '0.875rem', color: 'rgb(148, 163, 184)' }} />
           <Typography variant="caption" className="text-xs text-slate-400">
-            {timestampToDate(game.dateEnd, lang)}
+            {timestampToDate(game.dateEnd, intl.locale)}
           </Typography>
         </div>
       </CardContent>
     </Card>
   );
 }
-
-const ORGANIZERS_SHORT = {
-  en: 'Organizers',
-  'fr-FR': 'Organisateurs',
-};
-
-const PLAYERS_SHORT = {
-  en: 'Players',
-  'fr-FR': 'Joueurs',
-};
-
-const ACCESS_GAME_DASHBOARD_BUTTON_LABEL = {
-  en: 'Access game dashboard',
-  'fr-FR': 'Accéder au tableau de bord',
-};

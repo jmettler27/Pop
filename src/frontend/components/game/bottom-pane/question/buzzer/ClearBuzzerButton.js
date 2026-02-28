@@ -1,21 +1,19 @@
 import { clearBuzzer } from '@/backend/services/question/buzzer/actions';
 import { useGameContext } from '@/frontend/contexts';
 
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
-
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
 import { Button } from '@mui/material';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 
-/**
- * Clear the question buzzer
- * @param {Object} props
- * @param {string} props.lang - Language code
- * @param {string} props.questionType - Type of question to clear the buzzer
- * @returns
- */
-export default function ClearBuzzerButton({ lang = DEFAULT_LOCALE, questionType }) {
+const messages = defineMessages('frontend.game.bottom.ClearBuzzerButton', {
+  clearBuzzer: 'Clear buzzer',
+});
+
+export default function ClearBuzzerButton({ questionType }) {
+  const intl = useIntl();
   const game = useGameContext();
 
   const [handleClick, isClearing] = useAsyncAction(async () => {
@@ -24,12 +22,7 @@ export default function ClearBuzzerButton({ lang = DEFAULT_LOCALE, questionType 
 
   return (
     <Button variant="outlined" color="warning" startIcon={<ClearAllIcon />} onClick={handleClick} disabled={isClearing}>
-      {CLEAR_BUZZER_BUTTON_LABEL[lang]}
+      {intl.formatMessage(messages.clearBuzzer)}
     </Button>
   );
 }
-
-const CLEAR_BUZZER_BUTTON_LABEL = {
-  en: 'Clear buzzer',
-  'fr-FR': 'Effacer le buzzer',
-};

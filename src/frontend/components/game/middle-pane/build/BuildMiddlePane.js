@@ -2,8 +2,6 @@
 
 import { useGameContext } from '@/frontend/contexts';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
 export default function BuildMiddlePane() {
   const game = useGameContext();
 

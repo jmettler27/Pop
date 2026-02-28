@@ -13,6 +13,16 @@ import {
   MAX_IMAGE_SIZE_MB,
 } from '@/frontend/utils/forms/files';
 
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.forms.UploadFile', {
+  selectImage: 'Select an image file',
+  selectAudio: 'Select an audio file',
+  acceptedFormats: 'Accepted formats',
+  cancel: 'Cancel',
+});
+
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -49,7 +59,8 @@ import Image from 'next/image';
 
 import { requiredFileFieldIndicator } from '@/frontend/utils/forms/forms';
 
-export function UploadImage({ validationSchema, fileRef, lang, name }) {
+export function UploadImage({ validationSchema, fileRef, name }) {
+  const intl = useIntl();
   const formik = useFormikContext();
   const [, meta] = useField(name);
 
@@ -59,12 +70,12 @@ export function UploadImage({ validationSchema, fileRef, lang, name }) {
   return (
     <Box component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: '400px' }}>
       <span className="text-lg">
-        {requiredFileFieldIndicator(validationSchema, name)}
-        {SELECT_IMAGE_FILE[lang]}
+        {requiredFileFieldIndicator(validationSchema, name, intl)}
+        {intl.formatMessage(messages.selectImage)}
       </span>
       <br />
       <span className="text-md">
-        {ACCEPTED_FORMATS[lang]}: {IMAGE_VALID_TYPES.join(', ')} (max {MAX_IMAGE_SIZE_MB}MB)
+        {intl.formatMessage(messages.acceptedFormats)}: {IMAGE_VALID_TYPES.join(', ')} (max {MAX_IMAGE_SIZE_MB}MB)
       </span>
       <br />
       {image && (
@@ -87,7 +98,7 @@ export function UploadImage({ validationSchema, fileRef, lang, name }) {
               formik.setFieldValue(name, '');
             }}
           >
-            {CANCEL[lang]}
+            {intl.formatMessage(messages.cancel)}
           </Button>
         </>
       )}
@@ -96,7 +107,8 @@ export function UploadImage({ validationSchema, fileRef, lang, name }) {
   );
 }
 
-export function UploadAudio({ validationSchema, fileRef, lang, name = 'files' }) {
+export function UploadAudio({ validationSchema, fileRef, name = 'files' }) {
+  const intl = useIntl();
   const formik = useFormikContext();
   const [, meta] = useField(name);
 
@@ -106,12 +118,12 @@ export function UploadAudio({ validationSchema, fileRef, lang, name = 'files' })
   return (
     <Box component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: '400px' }}>
       <span className="text-lg">
-        {requiredFileFieldIndicator(validationSchema, name)}
-        {SELECT_AUDIO_FILE[lang]}{' '}
+        {requiredFileFieldIndicator(validationSchema, name, intl)}
+        {intl.formatMessage(messages.selectAudio)}{' '}
       </span>
       <br />
       <span className="text-md">
-        {ACCEPTED_FORMATS[lang]}: {AUDIO_VALID_TYPES.join(', ')} (max {MAX_AUDIO_SIZE_MB}MB)
+        {intl.formatMessage(messages.acceptedFormats)}: {AUDIO_VALID_TYPES.join(', ')} (max {MAX_AUDIO_SIZE_MB}MB)
       </span>
       <br />
       {audio && (
@@ -128,7 +140,7 @@ export function UploadAudio({ validationSchema, fileRef, lang, name = 'files' })
               formik.setFieldValue(name, '');
             }}
           >
-            {CANCEL[lang]}
+            {intl.formatMessage(messages.cancel)}
           </Button>
         </>
       )}
@@ -136,23 +148,3 @@ export function UploadAudio({ validationSchema, fileRef, lang, name = 'files' })
     </Box>
   );
 }
-
-const SELECT_IMAGE_FILE = {
-  en: 'Select an image file',
-  'fr-FR': 'Sélectionnez une image',
-};
-
-const SELECT_AUDIO_FILE = {
-  en: 'Select an audio file',
-  'fr-FR': 'Sélectionnez un fichier audio',
-};
-
-const ACCEPTED_FORMATS = {
-  en: 'Accepted formats',
-  'fr-FR': 'Formats acceptés',
-};
-
-const CANCEL = {
-  en: 'Cancel',
-  'fr-FR': 'Annuler',
-};

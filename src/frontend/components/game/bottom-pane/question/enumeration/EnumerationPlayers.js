@@ -1,5 +1,6 @@
 import { rankingToEmoji } from '@/backend/utils/emojis';
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 
@@ -7,7 +8,12 @@ import { useGameContext } from '@/frontend/contexts';
 
 import PlayerName from '@/frontend/components/game/PlayerName';
 
-export default function EnumerationPlayers({ lang = DEFAULT_LOCALE }) {
+const messages = defineMessages('frontend.game.bottom.EnumerationPlayers', {
+  betsHeader: 'Bets',
+});
+
+export default function EnumerationPlayers() {
+  const intl = useIntl();
   const game = useGameContext();
 
   const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound);
@@ -38,7 +44,7 @@ export default function EnumerationPlayers({ lang = DEFAULT_LOCALE }) {
     <div className="flex flex-row h-full w-full">
       {bets.length > 0 && (
         <div className="flex flex-col h-full w-full justify-start p-2">
-          <h2 className="font-bold">{BETS_HEADER[lang]}</h2>
+          <h2 className="font-bold">{intl.formatMessage(messages.betsHeader)}</h2>
           <ol className="overflow-auto">
             {bets.map((bet, index) => {
               return (
@@ -53,8 +59,3 @@ export default function EnumerationPlayers({ lang = DEFAULT_LOCALE }) {
     </div>
   );
 }
-
-const BETS_HEADER = {
-  en: 'Bets',
-  'fr-FR': 'Paris',
-};

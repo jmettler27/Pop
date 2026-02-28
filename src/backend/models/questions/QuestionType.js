@@ -53,7 +53,7 @@ export const QuestionTypeToTitle = {
     [QuestionType.NAGUI]: 'Nagui',
     [QuestionType.BASIC]: 'Question',
   },
-  'fr-FR': {
+  fr: {
     [QuestionType.PROGRESSIVE_CLUES]: 'Devinette',
     [QuestionType.IMAGE]: 'Image',
     [QuestionType.EMOJI]: 'Emoji',
@@ -103,7 +103,7 @@ export const QuestionTypeToDescription = {
     [QuestionType.NAGUI]: 'Hide, square or duo?',
     [QuestionType.BASIC]: 'One question, one answer. Simple as that.',
   },
-  'fr-FR': {
+  fr: {
     [QuestionType.PROGRESSIVE_CLUES]: "Qu'est-ce qui se cache derrière ces indices ?",
     [QuestionType.IMAGE]: "Qu'est-ce qui se cache derrière cette image ?",
     [QuestionType.EMOJI]: "Qu'est-ce qui se cache derrière ces emojis ?",

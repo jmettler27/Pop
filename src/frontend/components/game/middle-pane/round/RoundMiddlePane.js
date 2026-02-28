@@ -4,7 +4,7 @@ import { RoundTypeIcon, ROUND_HEADER_TEXT } from '@/backend/utils/rounds';
 
 import { useGameContext, useGameRepositoriesContext } from '@/frontend/contexts';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import RoundStartBody from '@/frontend/components/game/middle-pane/round/RoundStartBody';
@@ -55,13 +55,14 @@ export default function RoundMiddlePane() {
   );
 }
 
-function RoundHeader({ round, lang = DEFAULT_LOCALE }) {
+function RoundHeader({ round }) {
+  const intl = useIntl();
   return (
     <div className="flex flex-row items-center justify-center space-x-1">
       <RoundTypeIcon roundType={round.type} fontSize={50} />
       <h1 className="2xl:text-5xl">
         <span className="font-bold">
-          {ROUND_HEADER_TEXT[lang]} {round.order + 1}
+          {ROUND_HEADER_TEXT[intl.locale] ?? ROUND_HEADER_TEXT['en']} {round.order + 1}
         </span>{' '}
         - <i>{round.title}</i>{' '}
       </h1>

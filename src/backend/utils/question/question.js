@@ -33,17 +33,17 @@ export const DEFAULT_THINKING_TIME_SECONDS = {
 
 export const VALIDATE_ANSWER = {
   en: 'Validate',
-  'fr-FR': 'Valider',
+  fr: 'Valider',
 };
 
 export const INVALIDATE_ANSWER = {
   en: 'Invalidate',
-  'fr-FR': 'Invalider',
+  fr: 'Invalider',
 };
 
 export const ANSWER_TEXT = {
   en: 'Answer',
-  'fr-FR': 'Réponse',
+  fr: 'Réponse',
 };
 
 export const CORRECT_ANSWER_TEXT1 = {
@@ -59,7 +59,7 @@ export const CORRECT_ANSWER_TEXT1 = {
     'Yup, yup, and yup!',
     'Definitely, without a shred of uncertainty!',
   ],
-  'fr-FR': [
+  fr: [
     'Absolument!',
     'Oui!',
     'Tout à fait!',
@@ -73,12 +73,12 @@ export const CORRECT_ANSWER_TEXT1 = {
 
 export const CORRECT_ANSWER_TEXT = {
   en: 'Yes!',
-  'fr-FR': 'Absolument!',
+  fr: 'Absolument!',
 };
 
 export const INCORRECT_ANSWER_TEXT = {
   en: 'No!',
-  'fr-FR': 'Non!',
+  fr: 'Non!',
 };
 
 export const QUESTION_ELEMENT_TO_TITLE = {
@@ -92,7 +92,7 @@ export const QUESTION_ELEMENT_TO_TITLE = {
     createdBy: 'Created by',
     note: 'Note',
   },
-  'fr-FR': {
+  fr: {
     source: 'Source',
     author: 'Auteur',
     answer: 'Réponse',

@@ -6,12 +6,7 @@ import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
 import { topicSchema } from '@/frontend/utils/forms/topics';
-import {
-  ADD_ITEM,
-  QUESTION_HINTS_REMARKS,
-  QUESTION_ITEM,
-  QUESTION_TITLE_LABEL,
-} from '@/frontend/utils/forms/questions';
+import { messages as questionMessages } from '@/frontend/utils/forms/questions';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
@@ -21,6 +16,18 @@ import {
   requiredStringInArrayFieldIndicator,
   stringSchema,
 } from '@/frontend/utils/forms/forms';
+
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.forms.submitQuestion.enumeration', {
+  numAnswersAllowed: 'Number of answers allowed',
+  maxIsKnown: 'Is the total number of answers known?',
+  yes: 'Yes',
+  no: 'No',
+  thinkingTimeLabel: 'How many seconds should a player have to think and submit a bet?',
+  challengeTimeLabel: 'How many seconds should the challenger have to enumerate its answers?',
+});
 
 import {
   MyTextInput,
@@ -44,16 +51,6 @@ import AddIcon from '@mui/icons-material/Add';
 import Box from '@mui/system/Box';
 
 const QUESTION_TYPE = QuestionType.ENUMERATION;
-
-const ENUM_TITLE_EXAMPLE = {
-  en: 'List all Pokémon versions',
-  'fr-FR': 'Cite toutes les versions de Pokémon',
-};
-
-const ENUM_NOTE_EXAMPLE = {
-  en: 'Main series only!',
-  'fr-FR': 'Série principale uniquement !',
-};
 
 const ENUM_ANSWER_EXAMPLE = {
   en: [
@@ -96,7 +93,7 @@ const ENUM_ANSWER_EXAMPLE = {
     'Violet',
     'Scarlet',
   ],
-  'fr-FR': [
+  fr: [
     'Vert',
     'Bleu',
     'Rouge',
@@ -144,7 +141,8 @@ const enumAnswerSchema = () =>
     .min(EnumerationQuestion.MIN_NUM_ANSWERS, `There must be at least ${EnumerationQuestion.MIN_NUM_ANSWERS} answers`)
     .max(EnumerationQuestion.MAX_NUM_ANSWERS, `There can be at most ${EnumerationQuestion.MAX_NUM_ANSWERS} answers`);
 
-export default function SubmitEnumerationQuestionForm({ userId, lang, ...props }) {
+export default function SubmitEnumerationQuestionForm({ userId, ...props }) {
+  const intl = useIntl();
   const router = useRouter();
 
   const [submitEnumQuestion, isSubmitting] = useAsyncAction(async (values) => {
@@ -199,7 +197,6 @@ export default function SubmitEnumerationQuestionForm({ userId, lang, ...props }
           title: stringSchema(EnumerationQuestion.TITLE_MAX_LENGTH),
           note: stringSchema(EnumerationQuestion.NOTE_MAX_LENGTH, false),
         })}
-        lang={lang}
       />
 
       {/* Step 2: answer */}
@@ -209,7 +206,6 @@ export default function SubmitEnumerationQuestionForm({ userId, lang, ...props }
           answer: enumAnswerSchema(),
           maxIsKnown: Yup.boolean().required('Required.'),
         })}
-        lang={lang}
       />
 
       {/* Step 3: Times */}
@@ -237,33 +233,33 @@ export default function SubmitEnumerationQuestionForm({ userId, lang, ...props }
             )
             .required('Required.'),
         })}
-        lang={lang}
       />
     </Wizard>
   );
 }
 
-function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
+function GeneralInfoStep({ onSubmit, validationSchema }) {
+  const intl = useIntl();
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
-      <SelectLanguage lang={lang} name="lang" validationSchema={validationSchema} />
+      <SelectLanguage name="lang" validationSchema={validationSchema} />
 
-      <SelectQuestionTopic lang={lang} name="topic" validationSchema={validationSchema} />
+      <SelectQuestionTopic name="topic" validationSchema={validationSchema} />
 
       <MyTextInput
-        label={QUESTION_TITLE_LABEL[lang]}
+        label={intl.formatMessage(questionMessages.questionTitle)}
         name="title"
         type="text"
-        placeholder={ENUM_TITLE_EXAMPLE[lang]}
+        placeholder="List all Pokémon versions"
         validationSchema={validationSchema}
         maxLength={EnumerationQuestion.TITLE_MAX_LENGTH}
       />
 
       <MyTextInput
-        label={QUESTION_HINTS_REMARKS[lang]}
+        label={intl.formatMessage(questionMessages.hintsRemarks)}
         name="note"
         type="text"
-        placeholder={ENUM_NOTE_EXAMPLE[lang]}
+        placeholder="Main series only!"
         validationSchema={validationSchema}
         maxLength={EnumerationQuestion.NOTE_MAX_LENGTH}
       />
@@ -271,11 +267,14 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
   );
 }
 
-function EnterAnswerItemsStep({ onSubmit, validationSchema, lang }) {
+function EnterAnswerItemsStep({ onSubmit, validationSchema }) {
+  const intl = useIntl();
   const formik = useFormikContext();
 
   const values = formik.values;
   const errors = formik.errors;
+
+  const exampleAnswers = intl.locale === 'fr' ? ENUM_ANSWER_EXAMPLE['fr'] : ENUM_ANSWER_EXAMPLE['en'];
 
   const ItemArrayErrors = () =>
     typeof errors.answer === 'string' && <StyledErrorMessage>{errors.answer}</StyledErrorMessage>;
@@ -301,18 +300,15 @@ function EnterAnswerItemsStep({ onSubmit, validationSchema, lang }) {
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
       <p>
-        {NUM_ANSWERS_ALLOWED[lang]}: {EnumerationQuestion.MIN_NUM_ANSWERS}-{EnumerationQuestion.MAX_NUM_ANSWERS}.
+        {intl.formatMessage(messages.numAnswersAllowed)}: {EnumerationQuestion.MIN_NUM_ANSWERS}-
+        {EnumerationQuestion.MAX_NUM_ANSWERS}.
       </p>
 
       <MyRadioGroup
-        label={MAX_IS_KNOWN[lang]}
+        label={intl.formatMessage(messages.maxIsKnown)}
         name="maxIsKnown"
-        // options={[
-        //     { value: true, label: 'Yes' },
-        //     { value: false, label: 'No' },
-        // ]}
-        trueText={TRUE_TEXT[lang]}
-        falseText={FALSE_TEXT[lang]}
+        trueText={intl.formatMessage(messages.yes)}
+        falseText={intl.formatMessage(messages.no)}
         validationSchema={validationSchema}
       />
 
@@ -327,14 +323,14 @@ function EnterAnswerItemsStep({ onSubmit, validationSchema, lang }) {
                   sx={{ my: 2, pb: 2, px: 2, border: '2px dashed grey', width: '500px' }}
                 >
                   <label htmlFor={'answer.' + index}>
-                    {requiredStringInArrayFieldIndicator(validationSchema, 'answer')}
-                    {QUESTION_ITEM[lang]} #{index + 1}{' '}
+                    {requiredStringInArrayFieldIndicator(validationSchema, 'answer', intl)}
+                    {intl.formatMessage(questionMessages.item)} #{index + 1}{' '}
                     {numCharsIndicator(item, EnumerationQuestion.ANSWER_ITEM_MAX_LENGTH)}
                   </label>
                   <Field
                     name={'answer.' + index}
                     type="text"
-                    placeholder={ENUM_ANSWER_EXAMPLE[lang][index % ENUM_ANSWER_EXAMPLE.length]}
+                    placeholder={exampleAnswers[index % exampleAnswers.length]}
                   />
                   <IconButton color="error" onClick={() => remove(index)}>
                     <DeleteIcon />
@@ -344,7 +340,7 @@ function EnterAnswerItemsStep({ onSubmit, validationSchema, lang }) {
                 </Box>
               ))}
             <Button variant="outlined" startIcon={<AddIcon />} onClick={() => push('')}>
-              {ADD_ITEM[lang]}
+              {intl.formatMessage(questionMessages.addItem)}
             </Button>
           </div>
         )}
@@ -355,31 +351,12 @@ function EnterAnswerItemsStep({ onSubmit, validationSchema, lang }) {
   );
 }
 
-const NUM_ANSWERS_ALLOWED = {
-  en: 'Number of answers allowed',
-  'fr-FR': 'Nombre de réponses autorisé',
-};
-
-const MAX_IS_KNOWN = {
-  en: 'Is the total number of answers known?',
-  'fr-FR': 'Le nombre total de réponses est-il connu ?',
-};
-
-const TRUE_TEXT = {
-  en: 'Yes',
-  'fr-FR': 'Oui',
-};
-
-const FALSE_TEXT = {
-  en: 'No',
-  'fr-FR': 'Non',
-};
-
-function EnterTimesStep({ onSubmit, validationSchema, lang }) {
+function EnterTimesStep({ onSubmit, validationSchema }) {
+  const intl = useIntl();
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
       <MyNumberInput
-        label={ENUM_THINKING_LABEL[lang]}
+        label={intl.formatMessage(messages.thinkingTimeLabel)}
         name="thinkingTime"
         min={EnumerationQuestion.MIN_THINKING_SECONDS}
         max={EnumerationQuestion.MAX_THINKING_SECONDS}
@@ -387,7 +364,7 @@ function EnterTimesStep({ onSubmit, validationSchema, lang }) {
       />
 
       <MyNumberInput
-        label={ENUM_CHALLENGE_LABEL[lang]}
+        label={intl.formatMessage(messages.challengeTimeLabel)}
         name="challengeTime"
         min={EnumerationQuestion.MIN_CHALLENGE_SECONDS}
         max={EnumerationQuestion.MAX_CHALLENGE_SECONDS}
@@ -396,13 +373,3 @@ function EnterTimesStep({ onSubmit, validationSchema, lang }) {
     </WizardStep>
   );
 }
-
-const ENUM_THINKING_LABEL = {
-  en: 'How many seconds should a player have to think and submit a bet?',
-  'fr-FR': 'Combien de secondes un joueur doit-il avoir pour réfléchir et soumettre un pari ?',
-};
-
-const ENUM_CHALLENGE_LABEL = {
-  en: 'How many seconds should the challenger have to enumerate its answers?',
-  'fr-FR': 'Combien de secondes le challenger doit-il avoir pour énumérer ses réponses ?',
-};

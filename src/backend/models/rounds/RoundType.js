@@ -47,7 +47,7 @@ export const RoundTypeToTitle = {
     [RoundType.NAGUI]: 'Nagui',
     [RoundType.BASIC]: 'Questions',
   },
-  'fr-FR': {
+  fr: {
     [RoundType.MIXED]: 'Mixte',
     [RoundType.SPECIAL]: 'Manche spéciale',
     [RoundType.PROGRESSIVE_CLUES]: 'Devinettes',

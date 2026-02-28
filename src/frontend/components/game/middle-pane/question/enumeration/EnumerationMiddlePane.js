@@ -9,7 +9,15 @@ import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/Qu
 import { EnumerationQuestionStatus } from '@/backend/models/questions/Enumeration';
 import { topicToEmoji } from '@/backend/models/Topic';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.game.EnumerationMiddlePane', {
+  thereAre: 'There are',
+  exactly: 'exactly',
+  atLeast: 'at least',
+  answers: 'answers',
+});
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
@@ -58,23 +66,17 @@ function EnumerationQuestionHeader({ baseQuestion }) {
   );
 }
 
-function EnumerationQuestionObjective({ baseQuestion, lang = DEFAULT_LOCALE }) {
-  switch (lang) {
-    case 'en':
-      return (
-        <span className="2xl:text-3xl text-yellow-300">
-          There are {baseQuestion.maxIsKnown ? 'exactly' : 'at least'} <strong>{baseQuestion.answer.length}</strong>{' '}
-          answers
-        </span>
-      );
-    case 'fr-FR':
-      return (
-        <span className="2xl:text-3xl text-yellow-300">
-          Il y a {baseQuestion.maxIsKnown ? 'exactement' : 'au moins'} <strong>{baseQuestion.answer.length}</strong>{' '}
-          réponses
-        </span>
-      );
-  }
+function EnumerationQuestionObjective({ baseQuestion }) {
+  const intl = useIntl();
+  const qualifier = baseQuestion.maxIsKnown
+    ? intl.formatMessage(messages.exactly)
+    : intl.formatMessage(messages.atLeast);
+  return (
+    <span className="2xl:text-3xl text-yellow-300">
+      {intl.formatMessage(messages.thereAre)} {qualifier} <strong>{baseQuestion.answer.length}</strong>{' '}
+      {intl.formatMessage(messages.answers)}
+    </span>
+  );
 }
 
 function EnumerationQuestionAnswer({ answer }) {

@@ -7,8 +7,6 @@ import { useGameRepositories, useGameData } from '@/backend/repositories/useGame
 import Game from '@/backend/models/games/Game';
 import Team from '@/backend/models/Team';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import MyColorPicker from '@/frontend/components/forms/MyColorPicker';
@@ -33,10 +31,36 @@ import * as Yup from 'yup';
 
 import { CircularProgress } from '@mui/material';
 
-function JoinGameHeader({ lang = DEFAULT_LOCALE }) {
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('app.join', {
+  joinGameHeader: 'Join a game',
+  submitFormButtonLabel: 'Join the game',
+  playerNameInputLabel: 'Choose a nickname',
+  playerNameInputPlaceholder: 'My nickname',
+  teamsOrAloneLabel: 'Do you want to play in teams or alone?',
+  inTeams: 'In teams',
+  alone: 'Alone',
+  joinOrCreateTeamLabel: 'Do you want to join an existing team or create a new one?',
+  joinTeam: 'Join a team',
+  createTeam: 'Create a team',
+  selectTeamLabel: 'What team do you want to join?',
+  selectTeamFirstOption: 'Select a team',
+  teamNameInputLabel: 'Choose a team name',
+  teamNameInputPlaceholder: 'My team name',
+  teamColorPickerLabel: 'Choose a color for your team',
+  chooseYourColor: 'Choose your color',
+  canJoinGame: 'You can now join the game.',
+});
+
+const REGEX_HEX_COLOR = /^#[0-9A-F]{6}$/i;
+
+function JoinGameHeader() {
   const { id: gameId } = useParams();
   const { gameRepo } = useGameRepositories(gameId);
   const { game, loading, error } = gameRepo.useGameOnce(gameId);
+  const intl = useIntl();
 
   return (
     <>
@@ -47,24 +71,18 @@ function JoinGameHeader({ lang = DEFAULT_LOCALE }) {
       )}
       {!loading && game && (
         <h1>
-          {JOIN_GAME_HEADER[lang]}: <i>{game.title}</i>
+          {intl.formatMessage(messages.joinGameHeader)}: <i>{game.title}</i>
         </h1>
       )}
     </>
   );
 }
 
-const JOIN_GAME_HEADER = {
-  en: 'Join a game',
-  'fr-FR': 'Rejoindre une partie',
-};
-
-const REGEX_HEX_COLOR = /^#[0-9A-F]{6}$/i;
-
-export default function Page({ params, lang = DEFAULT_LOCALE }) {
+export default function Page({ params }) {
   const { data: session } = useSession();
   const resolvedParams = React.use(params);
   const gameId = resolvedParams.id;
+  const intl = useIntl();
 
   const [joinGame, isJoining] = useAsyncAction(async (values, user) => {
     try {
@@ -117,7 +135,7 @@ export default function Page({ params, lang = DEFAULT_LOCALE }) {
         }}
         onSubmit={async (values) => await joinGame(values, user)}
         isSubmitting={isJoining}
-        submitButtonLabel={SUBMIT_FORM_BUTTON_LABEL[lang]}
+        submitButtonLabel={intl.formatMessage(messages.submitFormButtonLabel)}
       >
         {/* Step 1: General info */}
         <GeneralInfoStep
@@ -172,15 +190,11 @@ export default function Page({ params, lang = DEFAULT_LOCALE }) {
   );
 }
 
-const SUBMIT_FORM_BUTTON_LABEL = {
-  en: 'Join the game',
-  'fr-FR': 'Rejoindre la partie',
-};
-
-function GeneralInfoStep({ onSubmit, validationSchema, lang = DEFAULT_LOCALE }) {
+function GeneralInfoStep({ onSubmit, validationSchema }) {
   const formik = useFormikContext();
   const values = formik.values;
   const errors = formik.errors;
+  const intl = useIntl();
 
   const PlayInTeamsError = () => {
     const [_, meta] = useField('playInTeams');
@@ -194,10 +208,10 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang = DEFAULT_LOCALE }) 
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
       <MyTextInput
-        label={PLAYER_NAME_INPUT_LABEL[lang]}
+        label={intl.formatMessage(messages.playerNameInputLabel)}
         name="playerName"
         type="text"
-        placeholder={PLAYER_NAME_INPUT_PLACEHOLDER[lang]}
+        placeholder={intl.formatMessage(messages.playerNameInputPlaceholder)}
         validationSchema={validationSchema}
         maxLength={Game.PARTICIPANT_NAME_MAX_LENGTH}
       />
@@ -205,8 +219,12 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang = DEFAULT_LOCALE }) 
       <br />
       <br />
       <span>
-        {TEAMS_OR_ALONE_LABEL[lang]}{' '}
-        {values.playInTeams !== null && <strong>{values.playInTeams ? IN_TEAMS[lang] : ALONE[lang]}</strong>}
+        {intl.formatMessage(messages.teamsOrAloneLabel)}{' '}
+        {values.playInTeams !== null && (
+          <strong>
+            {values.playInTeams ? intl.formatMessage(messages.inTeams) : intl.formatMessage(messages.alone)}
+          </strong>
+        )}
       </span>
       <div role="group" aria-labelledby="play-in-teams-radio-group" className="flex flex-row space-x-2">
         <label>
@@ -216,7 +234,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang = DEFAULT_LOCALE }) 
             value="In teams"
             onClick={() => formik.setFieldValue('playInTeams', true)}
           />
-          {IN_TEAMS[lang]}
+          {intl.formatMessage(messages.inTeams)}
         </label>
         <label>
           <Field
@@ -225,7 +243,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang = DEFAULT_LOCALE }) 
             value="Alone"
             onClick={() => formik.setFieldValue('playInTeams', false)}
           />
-          {ALONE[lang]}
+          {intl.formatMessage(messages.alone)}
         </label>
       </div>
       <PlayInTeamsError />
@@ -235,36 +253,11 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang = DEFAULT_LOCALE }) 
   );
 }
 
-const PLAYER_NAME_INPUT_LABEL = {
-  en: 'Choose a nickname',
-  'fr-FR': 'Choisis un pseudo',
-};
-
-const PLAYER_NAME_INPUT_PLACEHOLDER = {
-  en: 'My nickname',
-  'fr-FR': 'Mon pseudo',
-};
-
-const TEAMS_OR_ALONE_LABEL = {
-  en: 'Do you want to play in teams or alone?',
-  'fr-FR': 'Veux-tu jouer en équipe ou en solo?',
-};
-
-const IN_TEAMS = {
-  en: 'In teams',
-  'fr-FR': 'En équipe',
-};
-
-const ALONE = {
-  en: 'Alone',
-  'fr-FR': 'Solo',
-};
-
-function JoinOrCreateTeam({ validationSchema, lang = DEFAULT_LOCALE }) {
+function JoinOrCreateTeam({ validationSchema }) {
   const { id: gameId } = useParams();
   const formik = useFormikContext();
   const values = formik.values;
-  const errors = formik.errors;
+  const intl = useIntl();
 
   const { teamRepo } = useGameRepositories(gameId);
   const { teams, loading, error } = teamRepo.useJoinableTeams();
@@ -285,16 +278,16 @@ function JoinOrCreateTeam({ validationSchema, lang = DEFAULT_LOCALE }) {
       <br />
       <br />
       <MyRadioGroup
-        label={JOIN_OR_CREATE_TEAM_LABEL[lang]}
+        label={intl.formatMessage(messages.joinOrCreateTeamLabel)}
         name="joinTeam"
-        trueText={JOIN_TEAM[lang]}
-        falseText={CREATE_TEAM[lang]}
+        trueText={intl.formatMessage(messages.joinTeam)}
+        falseText={intl.formatMessage(messages.createTeam)}
         validationSchema={validationSchema}
       />
 
       {values.joinTeam && teams.length > 0 && (
         <MySelect
-          label={SELECT_TEAM_LABEL[lang]}
+          label={intl.formatMessage(messages.selectTeamLabel)}
           name="teamId"
           validationSchema={validationSchema}
           onChange={(e) => {
@@ -307,7 +300,7 @@ function JoinOrCreateTeam({ validationSchema, lang = DEFAULT_LOCALE }) {
             }
           }}
         >
-          <option value="">{SELECT_TEAM_FIRST_OPTION[lang]}</option>
+          <option value="">{intl.formatMessage(messages.selectTeamFirstOption)}</option>
           {teams.map((team) => (
             <SelectTeamOption key={team.id} team={team} />
           ))}
@@ -341,81 +334,44 @@ function SelectTeamOption({ team }) {
   );
 }
 
-const JOIN_OR_CREATE_TEAM_LABEL = {
-  en: 'Do you want to join an existing team or create a new one?',
-  'fr-FR': 'Veux-tu rejoindre une équipe existante ou en créer une nouvelle?',
-};
-
-const JOIN_TEAM = {
-  en: 'Join a team',
-  'fr-FR': 'Rejoindre une équipe',
-};
-
-const CREATE_TEAM = {
-  en: 'Create a team',
-  'fr-FR': 'Créer une équipe',
-};
-
-const SELECT_TEAM_LABEL = {
-  en: 'What team do you want to join?',
-  'fr-FR': 'Quelle équipe veux-tu rejoindre?',
-};
-
-const SELECT_TEAM_FIRST_OPTION = {
-  en: 'Select a team',
-  'fr-FR': 'Sélectionne une équipe',
-};
-
-function CreateTeamStep({ onSubmit, validationSchema, lang = DEFAULT_LOCALE }) {
+function CreateTeamStep({ onSubmit, validationSchema }) {
   const formik = useFormikContext();
   const values = formik.values;
-  const errors = formik.errors;
+  const intl = useIntl();
 
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
       {/* Solo player */}
       {values.playInTeams === false && (
-        <MyColorPicker label="Choose your color" name="teamColor" validationSchema={validationSchema} />
+        <MyColorPicker
+          label={intl.formatMessage(messages.chooseYourColor)}
+          name="teamColor"
+          validationSchema={validationSchema}
+        />
       )}
 
       {/* Player that joins an existing team */}
-      {values.playInTeams === true && values.joinTeam === true && <p>{CAN_JOIN_GAME[lang]}</p>}
+      {values.playInTeams === true && values.joinTeam === true && <p>{intl.formatMessage(messages.canJoinGame)}</p>}
 
       {/* Player that creates a new team */}
       {values.playInTeams === true && values.joinTeam === false && (
         <>
           <MyTextInput
-            label={TEAM_NAME_INPUT_LABEL[lang]}
+            label={intl.formatMessage(messages.teamNameInputLabel)}
             name="teamName"
             type="text"
-            placeholder={TEAM_NAME_INPUT_PLACEHOLDER[lang]}
+            placeholder={intl.formatMessage(messages.teamNameInputPlaceholder)}
             validationSchema={validationSchema}
             maxLength={Team.NAME_MAX_LENGTH}
           />
 
-          <MyColorPicker label={TEAM_COLOR_PICKER_LABEL[lang]} name="teamColor" validationSchema={validationSchema} />
+          <MyColorPicker
+            label={intl.formatMessage(messages.teamColorPickerLabel)}
+            name="teamColor"
+            validationSchema={validationSchema}
+          />
         </>
       )}
     </WizardStep>
   );
 }
-
-const TEAM_NAME_INPUT_LABEL = {
-  en: 'Choose a team name',
-  'fr-FR': "Choisis un nom d'équipe",
-};
-
-const TEAM_NAME_INPUT_PLACEHOLDER = {
-  en: 'My team name',
-  'fr-FR': "Mon nom d'équipe",
-};
-
-const TEAM_COLOR_PICKER_LABEL = {
-  en: 'Choose a color for your team',
-  'fr-FR': 'Choisis une couleur pour ton équipe',
-};
-
-const CAN_JOIN_GAME = {
-  en: 'You can now join the game.',
-  'fr-FR': 'Tu peux maintenant rejoindre la partie.',
-};

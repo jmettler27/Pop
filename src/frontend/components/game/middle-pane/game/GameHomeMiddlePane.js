@@ -7,7 +7,7 @@ import { useGameRepositoriesContext, useRoleContext, useTeamContext, useUserCont
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { useParams } from 'next/navigation';
@@ -16,21 +16,21 @@ import { Avatar, Divider, List, ListItemAvatar, ListItemButton, ListItemText } f
 import { RoundType } from '@/backend/models/rounds/RoundType';
 import { handleRoundSelected } from '@/backend/services/round/actions';
 
+const messages = defineMessages('frontend.game.middle.GameHomeMiddlePane', {
+  title: 'Rounds',
+});
+
 export default function GameHomeMiddlePane({}) {
   return (
     <div className="flex flex-col h-full items-center justify-center">
       <div className="flex flex-col h-[10%] items-center justify-center">
-        <GameHomeTitle />
+        <h1 className="2xl:text-5xl font-bold">{messages.title}</h1>
       </div>
       <div className="flex flex-col h-[90%] w-full items-center justify-around overflow-auto">
         <GameHomeRounds />
       </div>
     </div>
   );
-}
-
-function GameHomeTitle() {
-  return <h1 className="2xl:text-5xl font-bold">Les manches</h1>;
 }
 
 function GameHomeRounds() {
@@ -144,11 +144,12 @@ function GameHomeRounds() {
   );
 }
 
-function GameHomeRoundItem({ round, isDisabled, onSelectRound, locale = DEFAULT_LOCALE }) {
+function GameHomeRoundItem({ round, isDisabled, onSelectRound }) {
+  const intl = useIntl();
   const secondaryText = () => {
     if (!round.dateStart) return '';
 
-    const startTime = timestampToHour(round.dateEnd, locale);
+    const startTime = timestampToHour(round.dateEnd, intl.locale);
 
     if (!round.dateEnd) {
       const now = new Date();
@@ -157,7 +158,7 @@ function GameHomeRoundItem({ round, isDisabled, onSelectRound, locale = DEFAULT_
       return `Commencée à ${startTime} (y a ${elapsedMins} min)`;
     }
 
-    const endTime = timestampToHour(round.dateEnd, locale);
+    const endTime = timestampToHour(round.dateEnd, intl.locale);
     const durationSecs = round.dateEnd.seconds - round.dateStart.seconds;
     const durationMins = Math.floor(durationSecs / 60);
     return `Manche terminée à ${endTime} (${durationMins} min)`;

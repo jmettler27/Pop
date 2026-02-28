@@ -1,5 +1,3 @@
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
 import { QuestionType, questionTypeToEmoji } from '@/backend/models/questions/QuestionType';
 
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
@@ -9,7 +7,16 @@ import { useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
-import { DIALOG_ACTION_CANCEL, DIALOG_ACTION_VALIDATE, DIALOG_TITLE } from '@/frontend/texts/dialogs';
+import globalMessages from '@/i18n/globalMessages';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.gameEditor.AddNewQuestion', {
+  createNewQuestion: 'Create a new question',
+  searchExisting: 'Search for an existing question',
+  addToRoundDialogTitle: 'Add this question to the round?',
+  addToRound: 'Add',
+});
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { CardContent, Card } from '@/frontend/components/card';
@@ -35,33 +42,26 @@ import {
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-const CREATE_NEW_QUESTION = {
-  en: 'Create a new question',
-  'fr-FR': 'Créer une nouvelle question',
-};
-
-const SEARCH_EXISTING_QUESTION = {
-  en: 'Search for an existing question',
-  'fr-FR': 'Rechercher une question existante',
-};
-
 const CREATE_NEW_QUESTION_EMOJI = '🆕';
 const SEARCH_EXISTING_QUESTION_EMOJI = '🔍';
 
-function prependCreateNewQuestionWithEmoji(lang = DEFAULT_LOCALE) {
-  return `${CREATE_NEW_QUESTION_EMOJI} ${CREATE_NEW_QUESTION[DEFAULT_LOCALE]}`;
+function prependCreateNewQuestionWithEmoji(label) {
+  return `${CREATE_NEW_QUESTION_EMOJI} ${label}`;
 }
 
-function prependSearchExistingQuestionWithEmoji(lang = DEFAULT_LOCALE) {
-  return `${SEARCH_EXISTING_QUESTION_EMOJI} ${SEARCH_EXISTING_QUESTION[DEFAULT_LOCALE]}`;
+function prependSearchExistingQuestionWithEmoji(label) {
+  return `${SEARCH_EXISTING_QUESTION_EMOJI} ${label}`;
 }
 
-function AddQuestionToRoundDialog({ roundId, questionType, dialog, onDialogClose, lang = DEFAULT_LOCALE }) {
+function AddQuestionToRoundDialog({ roundId, questionType, dialog, onDialogClose }) {
+  const intl = useIntl();
   return (
     <Dialog open={dialog !== null} onClose={onDialogClose} maxWidth="xl">
       <DialogTitle>
-        {dialog === 'new-question' && `${CREATE_NEW_QUESTION[lang]} (${questionTypeToEmoji(questionType)})`}
-        {dialog === 'existing-question' && `${SEARCH_EXISTING_QUESTION[lang]} (${questionTypeToEmoji(questionType)})`}
+        {dialog === 'new-question' &&
+          `${intl.formatMessage(messages.createNewQuestion)} (${questionTypeToEmoji(questionType)})`}
+        {dialog === 'existing-question' &&
+          `${intl.formatMessage(messages.searchExisting)} (${questionTypeToEmoji(questionType)})`}
       </DialogTitle>
       <DialogContent>
         {dialog === 'new-question' && (
@@ -75,7 +75,8 @@ function AddQuestionToRoundDialog({ roundId, questionType, dialog, onDialogClose
   );
 }
 
-export function AddQuestionToRoundButton({ round, disabled, lang = DEFAULT_LOCALE }) {
+export function AddQuestionToRoundButton({ round, disabled }) {
+  const intl = useIntl();
   const [anchorEl, setAnchorEl] = useState(null);
   const menuOpen = Boolean(anchorEl);
   const handleMenuClose = () => {
@@ -118,9 +119,11 @@ export function AddQuestionToRoundButton({ round, disabled, lang = DEFAULT_LOCAL
               'aria-labelledby': 'basic-button',
             }}
           >
-            <MenuItem onClick={() => setDialog('new-question')}>{prependCreateNewQuestionWithEmoji(lang)}</MenuItem>
+            <MenuItem onClick={() => setDialog('new-question')}>
+              {prependCreateNewQuestionWithEmoji(intl.formatMessage(messages.createNewQuestion))}
+            </MenuItem>
             <MenuItem onClick={() => setDialog('existing-question')}>
-              {prependSearchExistingQuestionWithEmoji(lang)}
+              {prependSearchExistingQuestionWithEmoji(intl.formatMessage(messages.searchExisting))}
             </MenuItem>
           </Menu>
         </CardContent>
@@ -135,7 +138,7 @@ export function AddQuestionToRoundButton({ round, disabled, lang = DEFAULT_LOCAL
   );
 }
 
-export function AddQuestionToMixedRoundButton({ roundId, disabled, lang = DEFAULT_LOCALE }) {
+export function AddQuestionToMixedRoundButton({ roundId, disabled }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const menuOpen = Boolean(anchorEl);
   const handleMenuClose = () => {
@@ -224,15 +227,16 @@ export function AddQuestionToMixedRoundButton({ roundId, disabled, lang = DEFAUL
   );
 }
 
-function SelectQuestionTypeButton({ type, handleListItemClick, lang = DEFAULT_LOCALE }) {
+function SelectQuestionTypeButton({ type, handleListItemClick }) {
+  const intl = useIntl();
   const [open, setOpen] = useState(true);
 
   const itemText = () => {
     switch (type) {
       case 'new-question':
-        return prependCreateNewQuestionWithEmoji(lang);
+        return prependCreateNewQuestionWithEmoji(intl.formatMessage(messages.createNewQuestion));
       case 'existing-question':
-        return prependSearchExistingQuestionWithEmoji(lang);
+        return prependSearchExistingQuestionWithEmoji(intl.formatMessage(messages.searchExisting));
     }
   };
 
@@ -284,7 +288,6 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
       return (
         <SubmitBasicQuestionForm
           userId={userId}
-          lang={DEFAULT_LOCALE}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -295,7 +298,6 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
       return (
         <SubmitBlindtestQuestionForm
           userId={userId}
-          lang={DEFAULT_LOCALE}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -306,7 +308,6 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
       return (
         <SubmitEmojiQuestionForm
           userId={userId}
-          lang={DEFAULT_LOCALE}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -317,7 +318,6 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
       return (
         <SubmitEnumerationQuestionForm
           userId={userId}
-          lang={DEFAULT_LOCALE}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -328,7 +328,6 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
       return (
         <SubmitImageQuestionForm
           userId={userId}
-          lang={DEFAULT_LOCALE}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -339,7 +338,6 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
       return (
         <SubmitLabellingQuestionForm
           userId={userId}
-          lang={DEFAULT_LOCALE}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -350,7 +348,6 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
       return (
         <SubmitMatchingQuestionForm
           userId={userId}
-          lang={DEFAULT_LOCALE}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -361,7 +358,6 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
       return (
         <SubmitMCQForm
           userId={userId}
-          lang={DEFAULT_LOCALE}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -372,7 +368,6 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
       return (
         <SubmitNaguiQuestionForm
           userId={userId}
-          lang={DEFAULT_LOCALE}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -383,7 +378,6 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
       return (
         <SubmitOddOneOutQuestionForm
           userId={userId}
-          lang={DEFAULT_LOCALE}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -394,7 +388,6 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
       return (
         <SubmitProgressiveCluesQuestionForm
           userId={userId}
-          lang={DEFAULT_LOCALE}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -405,7 +398,6 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
       return (
         <SubmitQuoteQuestionForm
           userId={userId}
-          lang={DEFAULT_LOCALE}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -416,7 +408,6 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
       return (
         <SubmitReorderingQuestionForm
           userId={userId}
-          lang={DEFAULT_LOCALE}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -470,8 +461,8 @@ function AddExistingQuestionToRoundDialog({
   questionSelectionModel,
   setSelectedQuestionModel,
   onDialogClose,
-  lang = DEFAULT_LOCALE,
 }) {
+  const intl = useIntl();
   const { id: gameId } = useParams();
   const { data: session } = useSession();
 
@@ -497,15 +488,15 @@ function AddExistingQuestionToRoundDialog({
 
   return (
     <Dialog open={validationDialogOpen} onClose={onValidationDialogClose} maxWidth="xl">
-      <DialogTitle>{ADD_EXISTING_QUESTION_TO_ROUND_DIALOG_TITLE[lang]}</DialogTitle>
+      <DialogTitle>{intl.formatMessage(messages.addToRoundDialogTitle)}</DialogTitle>
       {selectedQuestionId && <AddExistingQuestionToRoundDialogContent selectedQuestionId={selectedQuestionId} />}
       <DialogActions>
         <Button variant="contained" color="primary" onClick={handleValidate} disabled={isValidating}>
-          {ADD_EXISTING_QUESTION_TO_ROUND_DIALOG_ACTION_VALIDATE[lang]}
+          {intl.formatMessage(messages.addToRound)}
         </Button>
 
         <Button variant="outlined" color="error" onClick={onValidationCancel}>
-          {DIALOG_ACTION_CANCEL[lang]}
+          {intl.formatMessage(globalMessages.cancel)}
         </Button>
       </DialogActions>
     </Dialog>
@@ -532,13 +523,3 @@ function AddExistingQuestionToRoundDialogContent({ selectedQuestionId }) {
 
   return <DialogContent>{selectedQuestionId && <QuestionCard baseQuestion={baseQuestion} />}</DialogContent>;
 }
-
-const ADD_EXISTING_QUESTION_TO_ROUND_DIALOG_TITLE = {
-  en: 'Add this question to the round?',
-  'fr-FR': 'Ajouter cette question à la manche ?',
-};
-
-const ADD_EXISTING_QUESTION_TO_ROUND_DIALOG_ACTION_VALIDATE = {
-  en: 'Add',
-  'fr-FR': 'Ajouter',
-};

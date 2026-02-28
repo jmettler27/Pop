@@ -2,8 +2,8 @@ import { UserRole } from '@/backend/models/users/User';
 
 import { returnToGameHome } from '@/backend/services/game/actions';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { useGameContext, useRoleContext } from '@/frontend/contexts';
@@ -14,7 +14,12 @@ import EndGameButton from '@/frontend/components/game/bottom-pane/EndGameButton'
 
 import { useParams } from 'next/navigation';
 
-export default function RoundEndBottomPane({ endedRound, lang = DEFAULT_LOCALE }) {
+const messages = defineMessages('frontend.game.bottom.RoundEndBottomPane', {
+  theRound: 'the round',
+});
+
+export default function RoundEndBottomPane({ endedRound }) {
+  const intl = useIntl();
   const { id: gameId } = useParams();
   const myRole = useRoleContext();
   const game = useGameContext();
@@ -29,7 +34,7 @@ export default function RoundEndBottomPane({ endedRound, lang = DEFAULT_LOCALE }
     <div className="flex flex-col h-full justify-around items-center">
       {!isFinalRound && (
         <span className="2xl:text-4xl font-bold">
-          <GameChooserTeamAnnouncement /> {ROUND_TEXT[lang]} {endedRound.order + 1 + 1}
+          <GameChooserTeamAnnouncement /> {intl.formatMessage(messages.theRound)} {endedRound.order + 1 + 1}
         </span>
       )}
       {myRole === UserRole.ORGANIZER &&
@@ -37,8 +42,3 @@ export default function RoundEndBottomPane({ endedRound, lang = DEFAULT_LOCALE }
     </div>
   );
 }
-
-const ROUND_TEXT = {
-  en: 'the round',
-  'fr-FR': 'la manche',
-};

@@ -9,9 +9,14 @@ import { QuestionCardTitle, QuestionCardContent } from '@/frontend/components/qu
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
-import { DIALOG_ACTION_CANCEL, DIALOG_WARNING } from '@/frontend/texts/dialogs';
+import globalMessages from '@/i18n/globalMessages';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+const messages = defineMessages('frontend.gameEditor.EditQuestionInRound', {
+  deleteDialogTitle: 'Are you sure you want to remove this question?',
+  deleteDialogConfirm: 'Yes',
+});
 
 import { Avatar, Button, Divider } from '@mui/material';
 import {
@@ -126,7 +131,8 @@ function UpdateCreatorButton({ roundId, questionId }) {
   );
 }
 
-function RemoveQuestionFromRoundButton({ roundId, questionId, lang = DEFAULT_LOCALE }) {
+function RemoveQuestionFromRoundButton({ roundId, questionId }) {
+  const intl = useIntl();
   const { id: gameId } = useParams();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -150,32 +156,22 @@ function RemoveQuestionFromRoundButton({ roundId, questionId, lang = DEFAULT_LOC
       </IconButton>
 
       <Dialog disableEscapeKeyDown open={dialogOpen} onClose={onDialogClose}>
-        <DialogTitle>{REMOVE_QUESTION_FROM_ROUND_DIALOG_TITLE[lang]}</DialogTitle>
+        <DialogTitle>{intl.formatMessage(messages.deleteDialogTitle)}</DialogTitle>
 
         <DialogContent>
-          <DialogContentText>{DIALOG_WARNING[lang]}</DialogContentText>
+          <DialogContentText>{intl.formatMessage(globalMessages.dialogWarning)}</DialogContentText>
         </DialogContent>
 
         <DialogActions>
           <Button variant="contained" color="primary" onClick={handleRemoveQuestion} disabled={isRemoving}>
-            {REMOVE_QUESTION_FROM_ROUND_DIALOG_ACTION_VALIDATE[lang]}
+            {intl.formatMessage(messages.deleteDialogConfirm)}
           </Button>
 
           <Button variant="outlined" color="error" onClick={onCancel}>
-            {DIALOG_ACTION_CANCEL[lang]}
+            {intl.formatMessage(globalMessages.cancel)}
           </Button>
         </DialogActions>
       </Dialog>
     </>
   );
 }
-
-const REMOVE_QUESTION_FROM_ROUND_DIALOG_TITLE = {
-  en: 'Are you sure you want to remove this question?',
-  'fr-FR': "T'es sûr de vouloir supprimer cette question ?",
-};
-
-const REMOVE_QUESTION_FROM_ROUND_DIALOG_ACTION_VALIDATE = {
-  en: 'Yes',
-  'fr-FR': 'Oui',
-};

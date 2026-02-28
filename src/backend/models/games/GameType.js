@@ -19,7 +19,7 @@ export const GameTypeToTitle = {
     [GameType.RANDOM]: 'Random',
     [GameType.ROUNDS]: 'Rounds',
   },
-  'fr-FR': {
+  fr: {
     [GameType.RANDOM]: 'Aléatoire',
     [GameType.ROUNDS]: 'Manches',
   },
@@ -44,7 +44,7 @@ export const GameTypeToDescription = {
     [GameType.RANDOM]: 'Random game type',
     [GameType.ROUNDS]: 'Rounds game type',
   },
-  'fr-FR': {
+  fr: {
     [GameType.RANDOM]: 'Partie à questions aléatoires',
     [GameType.ROUNDS]: 'Partie à questions par manches',
   },
