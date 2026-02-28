@@ -402,7 +402,7 @@ const questionRow = (question, users) => {
 function SearchQuestionDataGridImpl({
   questionType,
   questionSelectionModel = [],
-  onQuestionSelectionModelChange = () => { },
+  onQuestionSelectionModelChange = () => {},
 }) {
   // Create repository instances with memoization to prevent unnecessary recreations
   const userRepo = useMemo(() => new UserRepository(), []);

@@ -45,7 +45,7 @@ function BasicQuestionOrganizerAnswerController({ gameQuestion, lang = DEFAULT_L
         variant="contained"
         size="large"
         color="primary"
-      // aria-label='outlined primary button group'
+        // aria-label='outlined primary button group'
       >
         {/* Validate the player's answer */}
         <Button color="success" startIcon={<CheckCircleIcon />} onClick={validateBasicAnswer} disabled={isValidating}>
@@ -61,7 +61,7 @@ function BasicQuestionOrganizerAnswerController({ gameQuestion, lang = DEFAULT_L
   );
 }
 
-function QuestionOrganizerController({ }) {
+function QuestionOrganizerController({}) {
   return (
     <div className="flex flex-row w-full justify-end">
       <ResetQuestionButton questionType={QuestionType.BASIC} />

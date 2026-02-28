@@ -253,7 +253,6 @@ export class GameNaguiQuestion extends GameQuestion {
 
   static NAGUI_OPTIONS = ['hide', 'square', 'duo'];
 
-
   static THINKING_TIME = 20;
 
   constructor(data) {
@@ -369,7 +368,6 @@ export class GameNaguiQuestion extends GameQuestion {
     this.teamId = null;
   }
 }
-
 
 export const NAGUI_OPTION_TO_SOUND = {
   hide: 'quest_ce_que_laudace',

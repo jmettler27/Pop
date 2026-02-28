@@ -16,7 +16,7 @@ import { CircularProgress } from '@mui/material';
 
 import clsx from 'clsx';
 
-export default function MatchingBottomPane({ }) {
+export default function MatchingBottomPane({}) {
   const { chooserRepo } = useGameRepositoriesContext();
   const { chooser, loading, error } = chooserRepo.useChooser();
 
@@ -120,7 +120,7 @@ const MAX_TRIES_EXCEEDED_TEXT = {
   'fr-FR': "Tu as excédé le nombre maximum d'erreurs!",
 };
 
-function MatchingOrganizerQuestionController({ }) {
+function MatchingOrganizerQuestionController({}) {
   return (
     <div className="flex flex-row w-full justify-end">
       <ResetQuestionButton questionType={QuestionType.MATCHING} />

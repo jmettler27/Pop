@@ -81,11 +81,11 @@ function NaguiSpectatorController({ chooserTeamId, gameQuestion }) {
   return (
     <div className="flex flex-col h-full items-center justify-center">
       {(gameQuestion.option === null) &
-        (
-          <span className="2xl:text-4xl font-bold">
-            <GameChooserHelperText chooserTeamId={chooserTeamId} />
-          </span>
-        )}
+      (
+        <span className="2xl:text-4xl font-bold">
+          <GameChooserHelperText chooserTeamId={chooserTeamId} />
+        </span>
+      )}
       {gameQuestion.option !== null && (
         <span className="2xl:text-4xl font-bold">
           <NaguiPlayerOptionHelperText gameQuestion={gameQuestion} />

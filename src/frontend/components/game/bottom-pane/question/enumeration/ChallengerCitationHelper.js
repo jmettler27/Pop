@@ -12,7 +12,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-export default function ChallengerCitationHelper({ }) {
+export default function ChallengerCitationHelper({}) {
   const game = useGameContext();
 
   const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound);

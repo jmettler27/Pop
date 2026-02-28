@@ -10,7 +10,7 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import GoSpecialHomeButton from '@/frontend/components/game/bottom-pane/special/GoSpecialHomeButton';
 import EndGameButton from '@/frontend/components/game/bottom-pane/EndGameButton';
 
-export default function SpecialThemeEndBottomPane({ }) {
+export default function SpecialThemeEndBottomPane({}) {
   const myRole = useRoleContext();
 
   switch (myRole) {
@@ -19,7 +19,7 @@ export default function SpecialThemeEndBottomPane({ }) {
   }
 }
 
-function SpecialThemeEndOrganizerBottomPane({ }) {
+function SpecialThemeEndOrganizerBottomPane({}) {
   const game = useGameContext();
 
   const [gameThemes, gameThemesLoading, gameThemesError] = useCollectionDataOnce(

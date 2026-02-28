@@ -14,7 +14,7 @@ import { QuestionType } from '@/backend/models/questions/QuestionType';
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import LabelBottomPane from '@/frontend/components/game/bottom-pane/question/label/LabelBottomPane';
 
-export default function QuestionActiveBottomPane({ }) {
+export default function QuestionActiveBottomPane({}) {
   const game = useGameContext();
   if (!game.currentQuestionType) {
     return <></>;
@@ -52,7 +52,7 @@ export default function QuestionActiveBottomPane({ }) {
     case QuestionType.QUOTE:
       return <QuoteBottomPane baseQuestion={baseQuestion} />;
     case QuestionType.LABELLING:
-        return <LabelBottomPane baseQuestion={baseQuestion} />
+      return <LabelBottomPane baseQuestion={baseQuestion} />;
     case QuestionType.ENUMERATION:
       return <EnumerationBottomPane baseQuestion={baseQuestion} />;
     case QuestionType.ODD_ONE_OUT:

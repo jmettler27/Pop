@@ -94,7 +94,7 @@ function QuoteOrganizerAnswerController({ buzzed, baseQuestion }) {
         variant="contained"
         size="large"
         color="primary"
-      // aria-label='outlined primary button group'
+        // aria-label='outlined primary button group'
       >
         <ValidateAllQuoteElementsButton buzzed={buzzed} gameQuestion={gameQuestion} />
         <CancelQuoteElementButton buzzed={buzzed} />
@@ -159,7 +159,7 @@ const CANCEL_QUOTE_ELEMENT = {
   'fr-FR': 'Invalider',
 };
 
-function QuoteOrganizerQuestionController({ }) {
+function QuoteOrganizerQuestionController({}) {
   return (
     <div className="flex flex-row w-full justify-end">
       <ResetQuestionButton questionType={QuestionType.QUOTE} />

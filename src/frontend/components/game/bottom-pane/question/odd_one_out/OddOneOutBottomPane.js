@@ -9,7 +9,7 @@ import ResetQuestionButton from '@/frontend/components/game/bottom-pane/question
 import EndQuestionButton from '@/frontend/components/game/bottom-pane/question/EndQuestionButton';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
-export default function OddOneOutBottomPane({ }) {
+export default function OddOneOutBottomPane({}) {
   const { chooserRepo } = useGameRepositoriesContext();
   const { chooser, loading, error } = chooserRepo.useChooser();
   if (error) {
@@ -89,7 +89,7 @@ const OOO_NOT_AUTHORIZED = {
   'fr-FR': 'Mais attends un peu, ok ?',
 };
 
-function OddOneOutOrganizerController({ }) {
+function OddOneOutOrganizerController({}) {
   return (
     <div className="flex flex-row h-full items-center justify-center">
       <ResetQuestionButton questionType={QuestionType.ODD_ONE_OUT} />

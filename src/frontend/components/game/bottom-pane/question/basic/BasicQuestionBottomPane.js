@@ -8,7 +8,7 @@ import BasicQuestionOrganizerController from '@/frontend/components/game/bottom-
 import { CircularProgress } from '@mui/material';
 import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
 
-export default function BasicQuestionBottomPane({ }) {
+export default function BasicQuestionBottomPane({}) {
   const { chooserRepo } = useGameRepositoriesContext();
   const { chooser, chooserLoading, chooserError } = chooserRepo.useChooser();
   if (chooserError) {
@@ -37,7 +37,7 @@ export default function BasicQuestionBottomPane({ }) {
   );
 }
 
-function BasicQuestionController({ }) {
+function BasicQuestionController({}) {
   const game = useGameContext();
   const myRole = useRoleContext();
 

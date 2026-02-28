@@ -37,4 +37,3 @@ export const cancelPlayer = async (gameId, roundId, questionId, playerId) => {
   const service = new GameLabellingQuestionService(gameId, roundId);
   return service.cancelPlayer(questionId, playerId);
 };
-

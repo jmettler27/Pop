@@ -379,7 +379,7 @@ function MCQRoundRules({ round }) {
 }
 
 function NaguiRoundRules({ round }) {
-  console.log("ROUND QWQWQW", round);
+  console.log('ROUND QWQWQW', round);
 
   return (
     <>

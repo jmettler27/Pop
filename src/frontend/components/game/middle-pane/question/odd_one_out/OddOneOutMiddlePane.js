@@ -253,11 +253,7 @@ function SelectedProposalPlayerAvatar({ playerId }) {
   const { playerRepo } = useGameRepositoriesContext();
   const { player, loading, error } = playerRepo.usePlayerOnce(playerId);
   console.log('SELECTED PROPOSAL PLAYER', playerId, player, loading, error);
-  return (
-    !error &&
-    !loading &&
-    player && <Avatar alt={player.name} src={player.image} sx={{ width: 25, height: 25 }} />
-  );
+  return !error && !loading && player && <Avatar alt={player.name} src={player.image} sx={{ width: 25, height: 25 }} />;
 }
 
 function OddOneOutAnswerImage({ correct }) {

@@ -44,11 +44,7 @@ function GameEndBody() {
 
   const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeams();
 
-  const {
-    roundScores,
-    loading: roundScoresLoading,
-    error: roundScoresError,
-  } = roundScoreRepo.useScoresOnce();
+  const { roundScores, loading: roundScoresLoading, error: roundScoresError } = roundScoreRepo.useScoresOnce();
 
   if (finalRoundError || teamsError || roundScoresError) {
     return (

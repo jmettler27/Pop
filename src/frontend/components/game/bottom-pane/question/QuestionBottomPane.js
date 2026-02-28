@@ -20,7 +20,7 @@ export default function QuestionBottomPane() {
   );
 }
 
-const SelectedQuestionBottomPane = ({ }) => {
+const SelectedQuestionBottomPane = ({}) => {
   const game = useGameContext();
 
   switch (game.status) {

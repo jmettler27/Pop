@@ -7,7 +7,7 @@ export class NaguiRound extends Round {
     this.type = RoundType.NAGUI;
 
     this.maxPoints = data.maxPoints || null;
-    this.rewardsPerQuestion = data.rewardsPerQuestion || { 'hide': 5, 'square': 3, 'duo': 2 } ;
+    this.rewardsPerQuestion = data.rewardsPerQuestion || { hide: 5, square: 3, duo: 2 };
   }
 
   toObject() {

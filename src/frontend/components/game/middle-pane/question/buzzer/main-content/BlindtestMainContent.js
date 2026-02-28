@@ -145,8 +145,9 @@ function ActiveBlindtestMainContent({ baseQuestion }) {
                 boxShadow: '0 2px 12px 0 rgba(0,0,0,0.4)',
               },
               '&:hover, &.Mui-focusVisible': {
-                boxShadow: `0px 0px 0px 8px ${theme.palette.mode === 'dark' ? 'rgb(255 255 255 / 16%)' : 'rgb(0 0 0 / 16%)'
-                  }`,
+                boxShadow: `0px 0px 0px 8px ${
+                  theme.palette.mode === 'dark' ? 'rgb(255 255 255 / 16%)' : 'rgb(0 0 0 / 16%)'
+                }`,
               },
               '&.Mui-active': {
                 width: 20,

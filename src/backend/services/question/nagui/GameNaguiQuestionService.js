@@ -54,7 +54,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
     const playerId = gameQuestion.playerId;
     const choiceIdx = gameQuestion.choiceIdx;
 
-    await this.playerRepo.updateTeamPlayersStatus( teamId, PlayerStatus.READY);
+    await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.READY);
 
     const correct = false;
     const reward = 0;
@@ -152,7 +152,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
         const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
         const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
 
-        await this.playerRepo.updateTeamPlayersStatus( teamId, PlayerStatus.READY);
+        await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.READY);
 
         const answerIdx = baseQuestion.answerIdx;
         const correct = choiceIdx === answerIdx;
@@ -226,7 +226,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
         const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
         const reward = correct ? round.rewardsPerQuestion[gameQuestion.option] : 0;
 
-        await this.playerRepo.updateTeamPlayersStatus( teamId, PlayerStatus.READY);
+        await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.READY);
 
         await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward);
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { playerId, reward, correct });

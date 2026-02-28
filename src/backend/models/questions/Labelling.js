@@ -234,6 +234,3 @@ export class GameLabellingQuestion extends GameQuestion {
     this.revealed = [];
   }
 }
-
-
-

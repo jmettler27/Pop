@@ -28,7 +28,7 @@ export default class GameMCQQuestionService extends GameQuestionService {
     const playerId = gameQuestion.playerId;
     const choiceIdx = gameQuestion.choiceIdx;
 
-    await this.playerRepo.updateTeamPlayersStatus( teamId, PlayerStatus.READY);
+    await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.READY);
 
     const correct = false;
     const reward = 0;
@@ -79,7 +79,7 @@ export default class GameMCQQuestionService extends GameQuestionService {
         const reward = correct ? round.rewardsPerQuestion : 0;
 
         await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward);
-        await this.playerRepo.updateTeamPlayersStatus( teamId, PlayerStatus.READY);
+        await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.READY);
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
           playerId,
           choiceIdx,

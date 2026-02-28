@@ -4,11 +4,11 @@ export default class NaguiOptionFactory {
   static createNaguiOption(option) {
     switch (option) {
       case 'hide':
-        return HideNaguiOption
+        return HideNaguiOption;
       case 'square':
-        return SquareNaguiOption
+        return SquareNaguiOption;
       case 'duo':
-        return DuoNaguiOption
+        return DuoNaguiOption;
     }
   }
 }
