@@ -1,23 +1,23 @@
-"use server";
+'use server';
 
-import TimerService from "@/backend/services/timer/TimerService";
+import TimerService from '@/backend/services/timer/TimerService';
 
 export const endTimer = async (gameId) => {
-    const service = new TimerService(gameId);
-    return service.endTimer();
+  const service = new TimerService(gameId);
+  return service.endTimer();
 };
 
 export const startTimer = async (gameId, duration) => {
-    const service = new TimerService(gameId);
-    return service.startTimer(duration);
+  const service = new TimerService(gameId);
+  return service.startTimer(duration);
 };
 
 export const stopTimer = async (gameId) => {
-    const service = new TimerService(gameId);
-    return service.stopTimer();
+  const service = new TimerService(gameId);
+  return service.stopTimer();
 };
 
 export const resetTimer = async (gameId) => {
-    const service = new TimerService(gameId);
-    return service.resetTimer();
+  const service = new TimerService(gameId);
+  return service.resetTimer();
 };

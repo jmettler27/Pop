@@ -1,9 +1,8 @@
-import GameRiddleQuestionService from '@/backend/services/question/riddle/GameRiddleQuestionService';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import GameBuzzerQuestionService from '@/backend/services/question/GameBuzzerQuestionService';
 
-export default class GameImageQuestionService extends GameRiddleQuestionService {
-
-    constructor(gameId, roundId) {
-        super(gameId, roundId);
-    }
-
+export default class GameImageQuestionService extends GameBuzzerQuestionService {
+  constructor(gameId, roundId) {
+    super(gameId, roundId, QuestionType.IMAGE);
+  }
 }

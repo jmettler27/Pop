@@ -6,10 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prettier-write": "npx prettier src --write",
+    "prettier-check": "npx prettier src --check"
   },
   "dependencies": {
     "@auth/firebase-adapter": "^2.7.1",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@emoji-mart/data": "^1.2.1",
     "@emoji-mart/react": "^1.1.1",
     "@emotion/react": "^11.11.4",
@@ -34,8 +39,6 @@
     "emoji-mart": "^5.6.0",
     "emoji-regex": "^10.3.0",
     "encoding": "^0.1.13",
-    "eslint": "9.5.0",
-    "eslint-config-next": "^15.2.1",
     "firebase": "^10.12.2",
     "firebase-admin": "^12.6.0",
     "formik": "^2.4.6",
@@ -56,7 +59,9 @@
     "autoprefixer": "^10.4.19",
     "eslint": "^9.5.0",
     "eslint-config-next": "^15.2.1",
+    "eslint-config-prettier": "^10.1.5",
     "postcss": "^8.4.31",
+    "prettier": "^3.5.3",
     "tailwindcss": "^3.4.4"
   }
 }

@@ -1,17 +1,16 @@
-import { RiddleRound } from '@/backend/models/rounds/Riddle';
+import { BuzzerRound } from '@/backend/models/rounds/Buzzer';
 import { RoundType } from '@/backend/models/rounds/RoundType';
 
-export class BlindtestRound extends RiddleRound {
-    
-    constructor(data) {
-        super(data);
-        this.type = RoundType.BLINDTEST;
-    }
+export class BlindtestRound extends BuzzerRound {
+  constructor(data) {
+    super(data);
+    this.type = RoundType.BLINDTEST;
+  }
 
-    toObject() {
-        return {
-            ...super.toObject(),
-            type: this.type,
-        };
-    }
+  toObject() {
+    return {
+      ...super.toObject(),
+      type: this.type,
+    };
+  }
 }

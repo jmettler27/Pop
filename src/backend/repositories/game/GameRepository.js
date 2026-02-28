@@ -2,112 +2,148 @@ import GameFactory from '@/backend/models/games/GameFactory';
 
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 import { arrayUnion } from 'firebase/firestore';
-
+import { GameStatus } from '@/backend/models/games/GameStatus';
 
 export default class GameRepository extends FirebaseRepository {
-    
-    constructor() {
-        super('games');
-    }
+  static ORGANIZERS_PATH = ['organizers'];
 
-    async getAllGames() {
-        const data = await super.getAll();
-        return data.map(g => GameFactory.createGame(g.type, g));
-    }
+  constructor() {
+    super('games');
+  }
 
-    async createGame(data, gameId = null) {
-        const createData = await super.create(data, gameId);
-        return GameFactory.createGame(data.type, createData);
-    }
+  async resetGame(gameId) {
+    await this.updateGame(gameId, {
+      currentRound: null,
+      currentQuestion: null,
+      currentQuestionType: null,
+      dateEnd: null,
+      dateStart: null,
+      status: GameStatus.GAME_START,
+    });
+  }
 
-    async updateGame(gameId, data) {
-        return super.update(gameId, data);
-    }
+  async resetGameTransaction(transaction, gameId) {
+    await this.updateGameTransaction(transaction, gameId, {
+      currentRound: null,
+      currentQuestion: null,
+      currentQuestionType: null,
+      dateEnd: null,
+      dateStart: null,
+      status: GameStatus.GAME_START,
+    });
+  }
 
-    async updateGameTransaction(transaction, gameId, data) {
-        return super.updateTransaction(transaction, gameId, data);
-    }
+  async getAllGames() {
+    const data = await super.getAll();
+    return data.map((g) => GameFactory.createGame(g.type, g));
+  }
 
-    async updateGameStatusTransaction(transaction, gameId, status) {
-        return super.updateTransaction(transaction, gameId, { status });
-    }
+  async createGame(data, gameId = null) {
+    const createData = await super.create(data, gameId);
+    return GameFactory.createGame(data.type, createData);
+  }
 
-    async getGame(gameId) {
-        const data = await super.get(gameId);
-        return data ? GameFactory.createGame(data.type, data) : null;
-    }
+  async updateGame(gameId, data) {
+    await super.update(gameId, data);
+  }
 
-    async getGameTransaction(transaction, id) {
-        const data = await super.getTransaction(transaction, id);
-        return data ? GameFactory.createGame(data.type, data) : null;
-    }
-    
-    async createGameTransaction(transaction, data) {
+  async updateGameTransaction(transaction, gameId, data) {
+    await super.updateTransaction(transaction, gameId, data);
+  }
 
-    }
+  async updateGameStatusTransaction(transaction, gameId, status) {
+    await super.updateTransaction(transaction, gameId, { status });
+  }
 
-    async addRoundTransaction(transaction, gameId, roundId) {
-        await this.updateTransaction(transaction, gameId, {
-            rounds: arrayUnion(roundId)
-        });
-    }
+  async getGame(gameId) {
+    const data = await super.get(gameId);
+    return data ? GameFactory.createGame(data.type, data) : null;
+  }
 
-    // React hooks for real-time operations
-    useGame(id) {
-        const { data, loading, error } = super.useDocument(id);
-        return {
-            game: data ? GameFactory.createGame(data.type, data) : null,
-            loading,
-            error
-        };
-    }
+  async getGameTransaction(transaction, id) {
+    const data = await super.getTransaction(transaction, id);
+    return data ? GameFactory.createGame(data.type, data) : null;
+  }
 
-    useGameOnce(id) {
-        const { data, loading, error } = super.useDocumentOnce(id);
-        return {
-            game: data ? GameFactory.createGame(data.type, data) : null,
-            loading,
-            error
-        };
-    }
+  async createGameTransaction(transaction, data) {
+    const game = await this.createTransaction(transaction, data);
+    return GameFactory.createGame(game.type, game);
+  }
 
-    useAllGames() {
-        const { data, loading, error } = super.useCollection();
-        return {
-            games: data.map(g => GameFactory.createGame(g.type, g)),
-            loading,
-            error
-        };
-    }
+  async addRoundTransaction(transaction, gameId, roundId) {
+    await this.updateTransaction(transaction, gameId, {
+      rounds: arrayUnion(roundId),
+    });
+  }
 
-    useGamesByStatus(status) {
-        const { data, loading, error } = super.useCollection({
-            where: {
-                field: 'status',
-                operator: '==',
-                value: status
-            }
-        })
-        return {
-            games: data.map(g => GameFactory.createGame(g.type, g)),
-            loading,
-            error
-        };
-    }
+  async setCurrentQuestionTransaction(transaction, gameId, questionId, questionType) {
+    await this.updateTransaction(transaction, gameId, {
+      currentQuestion: questionId,
+      currentQuestionType: questionType,
+      status: GameStatus.QUESTION_ACTIVE,
+    });
+  }
 
-    useGamesByCreator(creatorId) {
-        const { data, loading, error } = super.useCollection({
-            where: {
-                field: 'createdBy',
-                operator: '==',
-                value: creatorId
-            }
-        })
-        return {
-            games: data.map(g => GameFactory.createGame(g.type, g)),
-            loading,
-            error
-        };
-    }
+  // async createOrganizerTransaction(transaction, gameId, data, organizerId=null) {
+  //   return await this.createTransaction(transaction, data, [gameId, ...GameRepository.ORGANIZERS_PATH, organizerId]);
+  // }
+  //
 
-} 
+  // React hooks for real-time operations
+  useGame(id) {
+    const { data, loading, error } = super.useDocument(id);
+    return {
+      game: data ? GameFactory.createGame(data.type, data) : null,
+      loading,
+      error,
+    };
+  }
+
+  useGameOnce(id) {
+    const { data, loading, error } = super.useDocumentOnce(id);
+    return {
+      game: data ? GameFactory.createGame(data.type, data) : null,
+      loading,
+      error,
+    };
+  }
+
+  useAllGames() {
+    const { data, loading, error } = super.useCollection();
+    return {
+      games: data.map((g) => GameFactory.createGame(g.type, g)),
+      loading,
+      error,
+    };
+  }
+
+  useGamesByStatus(status) {
+    const { data, loading, error } = super.useCollection({
+      where: {
+        field: 'status',
+        operator: '==',
+        value: status,
+      },
+    });
+    return {
+      games: data.map((g) => GameFactory.createGame(g.type, g)),
+      loading,
+      error,
+    };
+  }
+
+  useGamesByCreator(creatorId) {
+    const { data, loading, error } = super.useCollection({
+      where: {
+        field: 'createdBy',
+        operator: '==',
+        value: creatorId,
+      },
+    });
+    return {
+      games: data.map((g) => GameFactory.createGame(g.type, g)),
+      loading,
+      error,
+    };
+  }
+}

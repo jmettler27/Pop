@@ -6,21 +6,21 @@ import { useState } from 'react';
  * @returns {[Function, boolean]} - A tuple containing the execute function and loading state
  */
 export default function useAsyncAction(asyncAction) {
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    const execute = async (...args) => {
-        setIsLoading(true);
-        setError(null);
-        try {
-            await asyncAction(...args);
-        } catch (err) {
-            setError(err);
-            throw err;
-        } finally {
-            setIsLoading(false);
-        }
-    };
+  const execute = async (...args) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await asyncAction(...args);
+    } catch (err) {
+      setError(err);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    return [execute, isLoading, error];
-} 
+  return [execute, isLoading, error];
+}

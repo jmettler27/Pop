@@ -28,7 +28,6 @@ export const NumberInput = React.forwardRef(function CustomNumberInput(props, re
   );
 });
 
-
 const blue = {
   100: '#daecff',
   200: '#b6daff',
@@ -61,7 +60,7 @@ const StyledInputRoot = styled('div')(
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
-`,
+`
 );
 
 const StyledInput = styled('input')(
@@ -73,8 +72,7 @@ const StyledInput = styled('input')(
   color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
   background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
   border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
-  box-shadow: 0px 2px 4px ${theme.palette.mode === 'dark' ? 'rgba(0,0,0, 0.5)' : 'rgba(0,0,0, 0.05)'
-    };
+  box-shadow: 0px 2px 4px ${theme.palette.mode === 'dark' ? 'rgba(0,0,0, 0.5)' : 'rgba(0,0,0, 0.05)'};
   border-radius: 8px;
   margin: 0 8px;
   padding: 10px 12px;
@@ -95,7 +93,7 @@ const StyledInput = styled('input')(
   &:focus-visible {
     outline: 0;
   }
-`,
+`
 );
 
 const StyledButton = styled('button')(
@@ -133,5 +131,5 @@ const StyledButton = styled('button')(
   &.increment {
     order: 1;
   }
-`,
+`
 );

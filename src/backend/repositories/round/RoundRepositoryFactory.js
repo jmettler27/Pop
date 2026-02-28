@@ -16,43 +16,41 @@ import ReorderingRoundRepository from '@/backend/repositories/round/ReorderingRo
 import SpecialRoundRepository from '@/backend/repositories/round/SpecialRoundRepository';
 import MixedRoundRepository from '@/backend/repositories/round/MixedRoundRepository';
 
-
 export default class RoundRepositoryFactory {
-    
-    static createRepository(gameId, roundType) {
-        switch (roundType) {
-            case RoundType.BASIC:
-                return new BasicRoundRepository(gameId);
-            case RoundType.BLINDTEST:
-                return new BlindtestRoundRepository(gameId);
-            case RoundType.EMOJI:
-                return new EmojiRoundRepository(gameId);
-            case RoundType.ENUMERATION:
-                return new EnumerationRoundRepository(gameId);
-            case RoundType.IMAGE:
-                return new ImageRoundRepository(gameId);
-            case RoundType.LABELLING:
-                return new LabellingRoundRepository(gameId);
-            case RoundType.MATCHING:
-                return new MatchingRoundRepository(gameId);
-            case RoundType.MCQ:
-                return new MCQRoundRepository(gameId);
-            case RoundType.NAGUI:
-                return new NaguiRoundRepository(gameId);
-            case RoundType.ODD_ONE_OUT:
-                return new OddOneOutRoundRepository(gameId);
-            case RoundType.PROGRESSIVE_CLUES:
-                return new ProgressiveCluesRoundRepository(gameId);
-            case RoundType.QUOTE:
-                return new QuoteRoundRepository(gameId);
-            case RoundType.REORDERING:
-                return new ReorderingRoundRepository(gameId);
-            case RoundType.SPECIAL:
-                return new SpecialRoundRepository(gameId);
-            case RoundType.MIXED:
-                return new MixedRoundRepository(gameId);
-            default:
-                throw new Error(`Unknown round type: ${roundType}`);
-        }
+  static createRepository(roundType, gameId) {
+    switch (roundType) {
+      case RoundType.BASIC:
+        return new BasicRoundRepository(gameId);
+      case RoundType.BLINDTEST:
+        return new BlindtestRoundRepository(gameId);
+      case RoundType.EMOJI:
+        return new EmojiRoundRepository(gameId);
+      case RoundType.ENUMERATION:
+        return new EnumerationRoundRepository(gameId);
+      case RoundType.IMAGE:
+        return new ImageRoundRepository(gameId);
+      case RoundType.LABELLING:
+        return new LabellingRoundRepository(gameId);
+      case RoundType.MATCHING:
+        return new MatchingRoundRepository(gameId);
+      case RoundType.MCQ:
+        return new MCQRoundRepository(gameId);
+      case RoundType.NAGUI:
+        return new NaguiRoundRepository(gameId);
+      case RoundType.ODD_ONE_OUT:
+        return new OddOneOutRoundRepository(gameId);
+      case RoundType.PROGRESSIVE_CLUES:
+        return new ProgressiveCluesRoundRepository(gameId);
+      case RoundType.QUOTE:
+        return new QuoteRoundRepository(gameId);
+      case RoundType.REORDERING:
+        return new ReorderingRoundRepository(gameId);
+      case RoundType.SPECIAL:
+        return new SpecialRoundRepository(gameId);
+      case RoundType.MIXED:
+        return new MixedRoundRepository(gameId);
+      default:
+        throw new Error(`Unknown round type: ${roundType}`);
     }
-} 
+  }
+}

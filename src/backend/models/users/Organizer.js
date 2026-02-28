@@ -1,7 +1,7 @@
 import { User } from '@/backend/models/users/User';
 
 export class Organizer extends User {
-    constructor(data) {
-        super(data);
-    }
-} 
+  constructor(data) {
+    super(data);
+  }
+}

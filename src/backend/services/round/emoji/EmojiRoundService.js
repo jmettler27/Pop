@@ -1,13 +1,8 @@
-import RiddleRoundService from "@/backend/services/round/riddle/RiddleRoundService";
+import BuzzerRoundService from '@/backend/services/round/BuzzerRoundService';
+import { RoundType } from '@/backend/models/rounds/RoundType';
 
-export default class EmojiRoundService extends RiddleRoundService {
-
-    constructor(gameId, roundId) {
-        super(gameId, roundId)
-    }
-    
-    async calculateMaxPointsTransaction(transaction, round) {
-        return round.questions.length * (round.rewardsPerQuestion + round.rewardsForBonus)
-    }
-
+export default class EmojiRoundService extends BuzzerRoundService {
+  constructor(gameId) {
+    super(gameId, RoundType.EMOJI);
+  }
 }

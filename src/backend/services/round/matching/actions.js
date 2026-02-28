@@ -1,26 +1,25 @@
-"use server";
+'use server';
 
-import MatchingRoundService from "@/backend/services/round/matching/MatchingRoundService";
-
+import MatchingRoundService from '@/backend/services/round/matching/MatchingRoundService';
 
 export const handleRoundSelected = async (gameId, roundId, userId) => {
-    const service = new MatchingRoundService(gameId, roundId);
-    return service.handleRoundSelected(userId);
+  const service = new MatchingRoundService(gameId);
+  return service.handleRoundSelected(userId);
 };
 
 export const startRound = async (gameId, roundId) => {
-    const service = new MatchingRoundService(gameId, roundId);
-    return service.startRound();
+  const service = new MatchingRoundService(gameId);
+  return service.startRound(roundId);
 };
 
-export const handleQuestionEnd = async (gameId, roundId) => {
-    const service = new MatchingRoundService(gameId, roundId);
-    return service.handleQuestionEnd();
+export const handleQuestionEnd = async (gameId, roundId, questionId) => {
+  const service = new MatchingRoundService(gameId);
+  return service.handleQuestionEnd(roundId, questionId);
 };
 
 export const endRound = async (gameId, roundId) => {
-    const service = new MatchingRoundService(gameId, roundId);
-    return service.endRound();
+  const service = new MatchingRoundService(gameId);
+  return service.endRound();
 };
 
-/* ============================================================================================================ */
+/* =============================================================================================================== */

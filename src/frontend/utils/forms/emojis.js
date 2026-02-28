@@ -5,13 +5,13 @@
  * @returns {string} - A string indicating the number of emojis
  */
 export function numEmojisIndicator(value, maxEmojis) {
-    if (!value) return '';
-    
-    // Count emojis using regex
-    const emojiRegex = /\p{Emoji}/gu;
-    const emojiCount = (value.match(emojiRegex) || []).length;
-    
-    return `${emojiCount}/${maxEmojis} emojis`;
+  if (!value) return '';
+
+  // Count emojis using regex
+  const emojiRegex = /\p{Emoji}/gu;
+  const emojiCount = (value.match(emojiRegex) || []).length;
+
+  return `${emojiCount}/${maxEmojis} emojis`;
 }
 
 /**
@@ -21,10 +21,10 @@ export function numEmojisIndicator(value, maxEmojis) {
  * @returns {boolean} - Whether the input is valid
  */
 export function validateMaxEmojis(value, maxEmojis) {
-    if (!value) return true;
-    
-    const emojiRegex = /\p{Emoji}/gu;
-    const emojiCount = (value.match(emojiRegex) || []).length;
-    
-    return emojiCount <= maxEmojis;
-} 
+  if (!value) return true;
+
+  const emojiRegex = /\p{Emoji}/gu;
+  const emojiCount = (value.match(emojiRegex) || []).length;
+
+  return emojiCount <= maxEmojis;
+}

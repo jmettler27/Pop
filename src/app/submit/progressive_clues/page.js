@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
@@ -12,19 +12,18 @@ import { useSession } from 'next-auth/react';
 
 const QUESTION_TYPE = QuestionType.PROGRESSIVE_CLUES;
 
-
 export default function Page({ lang = DEFAULT_LOCALE }) {
-    const { data: session } = useSession()
+  const { data: session } = useSession();
 
-    // Protected route
-    if (!session || !session.user) {
-        redirect("/api/auth/signin");
-    }
+  // Protected route
+  if (!session || !session.user) {
+    redirect('/api/auth/signin');
+  }
 
-    return (
-        <>
-            <QuestionFormHeader questionType={QUESTION_TYPE} lang={lang} />
-            <SubmitProgressiveCluesQuestionForm userId={session.user.id} lang={lang} inSubmitPage={true} />
-        </>
-    );
+  return (
+    <>
+      <QuestionFormHeader questionType={QUESTION_TYPE} lang={lang} />
+      <SubmitProgressiveCluesQuestionForm userId={session.user.id} lang={lang} inSubmitPage={true} />
+    </>
+  );
 }

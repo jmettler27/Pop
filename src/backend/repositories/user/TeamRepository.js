@@ -1,98 +1,105 @@
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 
 import Team from '@/backend/models/Team';
-
+import { shuffle } from '@/backend/utils/arrays';
 
 export default class TeamRepository extends FirebaseRepository {
-    constructor(gameId) {
-        super(['games', gameId, 'teams']);
-    }
+  constructor(gameId) {
+    super(['games', gameId, 'teams']);
+  }
 
-    async get(id) {
-        const data = await super.get(id);
-        return data ? new Team(data) : null;
-    }
+  async get(id) {
+    const data = await super.get(id);
+    return data ? new Team(data) : null;
+  }
 
-    async getAll() {
-        const data = await super.getAll();
-        return data.map(t => new Team(t));
-    }
+  async getAllTeams() {
+    const data = await super.getAll();
+    return data.map((t) => new Team(t));
+  }
 
-    async getAllTransaction(transaction) {
-        const data = await super.getAllTransaction(transaction);
-        return data.map(t => new Team(t));
-    }
+  async createTeam(data, id = null) {
+    Team.validateName(data.name);
+    Team.validateColor(data.color);
+    const team = await super.create(data, id);
+    return new Team(team);
+  }
 
-    async create(data, id = null) {
-        Team.validateName(data.name);
-        Team.validateColor(data.color);
-        const team = await super.create(data, id);
-        return new Team(team);
-    }
+  async createTeamTransaction(transaction, data, id = null) {
+    Team.validateName(data.name);
+    Team.validateColor(data.color);
+    const team = await super.createTransaction(transaction, data, id);
+    return new Team(team);
+  }
 
-    async update(id, data) {
-        if (data.name) Team.validateName(data.name);
-        if (data.color) Team.validateColor(data.color);
-        const team = await super.update(id, data);
-        return new Team(team);
-    }
+  async updateTeam(id, data) {
+    await super.update(id, data);
+  }
 
-    async getNumTeams(transaction) {
-        const data = await super.getNumDocuments(transaction);
-        return data;
-    }
+  async getNumTeams(transaction) {
+    return await super.getNumDocuments(transaction);
+  }
 
-    // React hooks for real-time operations
-    useTeam(id) {
-        const { data, loading, error } = super.useDocument(id);
-        return {
-            team: data ? new Team(data) : null,
-            loading,
-            error
-        };
-    }
+  async getShuffledTeamIds() {
+    const teams = await this.getAllTeams();
+    const teamIds = teams.map((t) => t.id);
+    return shuffle(teamIds);
+  }
 
-    useTeamOnce(id) {
-        const { data, loading, error } = super.useDocumentOnce(id);
-        return {
-            team: data ? new Team(data) : null,
-            loading,
-            error
-        };
-    }
+  async getOtherTeams(teamId) {
+    const teams = await this.getAllTeams();
+    return teams.filter((t) => t.id !== teamId);
+  }
 
-    useAllTeams() {
-        const { data, loading, error } = super.useCollection();
-        return {
-            teams: data.map(t => new Team(t)),
-            loading,
-            error
-        };
-    }
+  // React hooks for real-time operations
+  useTeam(id) {
+    const { data, loading, error } = super.useDocument(id);
+    return {
+      team: data ? new Team(data) : null,
+      loading,
+      error,
+    };
+  }
 
-    useAllTeamsOnce() {
-        const { data, loading, error } = super.useCollectionOnce();
-        return {
-            teams: data.map(t => new Team(t)),
-            loading,
-            error
-        };
-    }
+  useTeamOnce(id) {
+    const { data, loading, error } = super.useDocumentOnce(id);
+    return {
+      team: data ? new Team(data) : null,
+      loading,
+      error,
+    };
+  }
 
-    useJoinableTeams() {
-        const { data, loading, error } = super.useCollection(
-            {
-                where: {
-                    field: 'teamAllowed',
-                    operator: '==',
-                    value: true
-                }
-            }
-        )
-        return {
-            teams: data.map(t => new Team(t)),
-            loading,
-            error
-        };
-    }
-} 
+  useAllTeams() {
+    const { data, loading, error } = super.useCollection();
+    return {
+      teams: data.map((t) => new Team(t)),
+      loading,
+      error,
+    };
+  }
+
+  useAllTeamsOnce() {
+    const { data, loading, error } = super.useCollectionOnce();
+    return {
+      teams: data.map((t) => new Team(t)),
+      loading,
+      error,
+    };
+  }
+
+  useJoinableTeams() {
+    const { data, loading, error } = super.useCollection({
+      where: {
+        field: 'teamAllowed',
+        operator: '==',
+        value: true,
+      },
+    });
+    return {
+      teams: data.map((t) => new Team(t)),
+      loading,
+      error,
+    };
+  }
+}

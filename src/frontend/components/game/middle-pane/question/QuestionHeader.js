@@ -1,15 +1,20 @@
-import { useGameContext } from '@/frontend/contexts'
+import { useGameContext, useGameRepositoriesContext } from '@/frontend/contexts';
+import RoundRepository from '@/backend/repositories/round/RoundRepository';
+import { useGameRepositories } from '@/backend/repositories/useGameRepositories';
 
 export function CurrentRoundQuestionOrder() {
-    const game = useGameContext()
-    
-    const roundRepo = new RoundRepository()
-    const { round, roundLoading, roundError } = roundRepo.useRoundOnce(game.currentRound)
+  const game = useGameContext();
 
-    if (roundError) {
-        return <p><strong>Error: {JSON.stringify(roundError)}</strong></p>
-    }
-    if (roundLoading || !round)
-        return <>❓</>
-    return <>{round.currentQuestionIdx + 1}</>
+  const { roundRepo } = useGameRepositoriesContext();
+  const { round, roundLoading, roundError } = roundRepo.useRound(game.currentRound);
+
+  if (roundError) {
+    return (
+      <p>
+        <strong>Error: {JSON.stringify(roundError)}</strong>
+      </p>
+    );
+  }
+  if (roundLoading || !round) return <>❓</>;
+  return <>{round.currentQuestionIdx + 1}</>;
 }

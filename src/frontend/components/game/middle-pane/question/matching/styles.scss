@@ -1,141 +1,140 @@
 .MatchingGrid-node {
-    fill: white;
-    stroke: white;
+  fill: white;
+  stroke: white;
 
-    &:hover,
-    &-active {
-        fill: yellow;
-        stroke: yellow;
-    }
+  &:hover,
+  &-active {
+    fill: yellow;
+    stroke: yellow;
+  }
 
-    &-correct {
-        fill: lightgreen;
-        stroke: lightgreen;
-        opacity: 0.25;
-    }
+  &-correct {
+    fill: lightgreen;
+    stroke: lightgreen;
+    opacity: 0.25;
+  }
 
-    &-answer {
-        fill: lightgreen;
-        stroke: lightgreen;
-        opacity: 1.0;
-    }
+  &-answer {
+    fill: lightgreen;
+    stroke: lightgreen;
+    opacity: 1;
+  }
 }
 
 .MatchingGrid-text {
-    fill: white;
-    opacity: 1.0;
+  fill: white;
+  opacity: 1;
 
-    &-active {
-        fill: yellow;
-    }
+  &-active {
+    fill: yellow;
+  }
 
-    &-correct {
-        fill: lightgreen;
-        opacity: 0.25;
-    }
+  &-correct {
+    fill: lightgreen;
+    opacity: 0.25;
+  }
 
-    &-answer {
-        fill: lightgreen;
-        opacity: 1.0;
-    }
+  &-answer {
+    fill: lightgreen;
+    opacity: 1;
+  }
 }
 
 .MatchingGrid-edge {
-    fill: yellow;
-    stroke: yellow;
-    animation: activeEdgeGlow 1s ease-in-out infinite;
+  fill: yellow;
+  stroke: yellow;
+  animation: activeEdgeGlow 1s ease-in-out infinite;
+
+  &:hover {
+    opacity: 0.5;
+  }
+
+  &-correct {
+    fill: lightgreen;
+    stroke: lightgreen;
+    opacity: 0.25;
 
     &:hover {
-        opacity: 0.5;
+      opacity: 1;
     }
+  }
 
-    &-correct {
-        fill: lightgreen;
-        stroke: lightgreen;
-        opacity: 0.25;
+  &-new-correct {
+    fill: lightgreen;
+    stroke: lightgreen;
+    opacity: 0.25;
+    animation: newCorrectEdgeGlow 1s ease-in-out;
 
-        &:hover {
-            opacity: 1.0;
-        }
+    &:hover {
+      opacity: 1;
     }
+  }
 
-    &-new-correct {
-        fill: lightgreen;
-        stroke: lightgreen;
-        opacity: 0.25;
-        animation: newCorrectEdgeGlow 1s ease-in-out;
+  &-incorrect {
+    fill: red;
+    stroke: red;
+    opacity: 0.25;
 
-        &:hover {
-            opacity: 1.0;
-        }
+    &:hover {
+      opacity: 1;
     }
+  }
 
-    &-incorrect {
-        fill: red;
-        stroke: red;
-        opacity: 0.25;
+  &-new-incorrect {
+    fill: red;
+    stroke: red;
+    opacity: 0.25;
+    animation: newIncorrectEdgeBlink 0.1s 5;
 
-        &:hover {
-            opacity: 1.0;
-        }
+    &:hover {
+      opacity: 1;
     }
+  }
 
-    &-new-incorrect {
-        fill: red;
-        stroke: red;
-        opacity: 0.25;
-        animation: newIncorrectEdgeBlink 0.1s 5;
-
-        &:hover {
-            opacity: 1.0;
-        }
-    }
-
-    &-answer {
-        fill: lightgreen;
-        stroke: lightgreen;
-        opacity: 1.0;
-    }
+  &-answer {
+    fill: lightgreen;
+    stroke: lightgreen;
+    opacity: 1;
+  }
 }
 
-
 @keyframes activeEdgeGlow {
-    0% {
-        stroke: yellow;
-        filter: drop-shadow(0 0 2px yellow);
-    }
+  0% {
+    stroke: yellow;
+    filter: drop-shadow(0 0 2px yellow);
+  }
 
-    50% {
-        stroke: yellow;
-        filter: drop-shadow(0 0 3px yellow);
-    }
+  50% {
+    stroke: yellow;
+    filter: drop-shadow(0 0 3px yellow);
+  }
 
-    100% {
-        stroke: yellow;
-        filter: drop-shadow(0 0 2px yellow);
-    }
+  100% {
+    stroke: yellow;
+    filter: drop-shadow(0 0 2px yellow);
+  }
 }
 
 @keyframes newIncorrectEdgeBlink {
-    from {
-        stroke: red;
-        filter: drop-shadow(0 0 4px red);
-        opacity: 1.0;
-    }
+  from {
+    stroke: red;
+    filter: drop-shadow(0 0 4px red);
+    opacity: 1;
+  }
 
-    to {
-        filter: none
-    }
+  to {
+    filter: none;
+  }
 }
 
 @keyframes newCorrectEdgeGlow {
-    from {
-        stroke: lightgreen;
-        filter: drop-shadow(0 0 2px lightgreen);
-        opacity: 1.0;
-    }
+  from {
+    stroke: lightgreen;
+    filter: drop-shadow(0 0 2px lightgreen);
+    opacity: 1;
+  }
 
-    to {
-        filter: none
-    }
+  to {
+    filter: none;
+  }
 }

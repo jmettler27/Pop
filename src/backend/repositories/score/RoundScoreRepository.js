@@ -1,65 +1,79 @@
 import FirebaseDocumentRepository from '@/backend/repositories/FirebaseDocumentRepository';
+import { increment } from 'firebase/firestore';
 
 export default class RoundScoreRepository extends FirebaseDocumentRepository {
-    
-    constructor(gameId, roundId) {
-        super(['games', gameId, 'rounds', roundId, 'realtime', 'scores']);
+  constructor(gameId, roundId) {
+    super(['games', gameId, 'rounds', roundId, 'realtime', 'scores']);
+  }
+
+  async getScoresTransaction(transaction) {
+    return await this.getTransaction(transaction);
+  }
+
+  async updateScoresTransaction(transaction, scores) {
+    await this.updateTransaction(transaction, scores);
+  }
+
+  async initializeScoresTransaction(transaction) {
+    await this.setTransaction(transaction, {
+      gameSortedTeams: [],
+      rankingDiffs: {},
+      roundSortedTeams: [],
+      scores: {},
+      scoresProgress: {},
+    });
+  }
+
+  async resetScores(initTeamRoundScores) {
+    await this.update({
+      scores: initTeamRoundScores,
+      scoresProgress: {},
+      teamsScoresSequences: {},
+      roundSortedTeams: [],
+      gameSortedTeams: [],
+    });
+  }
+
+  async resetScoresTransaction(transaction, initTeamRoundScores) {
+    await this.updateTransaction(transaction, {
+      scores: initTeamRoundScores,
+      scoresProgress: {},
+      teamsScoresSequences: {},
+      roundSortedTeams: [],
+      gameSortedTeams: [],
+    });
+  }
+
+  async increaseTeamScoreTransaction(transaction, questionId, teamId = null, points = 0) {
+    const roundScores = await this.getTransaction(transaction);
+    const { scores: currRoundScores, scoresProgress: currRoundProgress } = roundScores;
+
+    // Update progress for all teams
+    const newRoundProgress = {};
+    for (const tid of Object.keys(currRoundScores)) {
+      newRoundProgress[tid] = {
+        ...currRoundProgress[tid],
+        [questionId]: currRoundScores[tid] + (tid === teamId) * points,
+      };
     }
 
-    async getScoresTransaction(transaction) {
-        return await this.getTransaction(transaction);
-    }
+    // Update scores
+    await this.updateTransaction(transaction, {
+      [`scores.${teamId}`]: increment(points),
+      scoresProgress: newRoundProgress,
+    });
+  }
 
-    async updateScoresTransaction(transaction, scores) {
-        return await this.updateTransaction(transaction, scores);
-    }
+  /* =============================================================================================================== */
 
-    async resetScoresTransaction(transaction) {
-        return await this.updateTransaction(transaction, {
-            scores: initTeamRoundScores,
-            scoresProgress: {},
-            teamsScoresSequences: {},
-            roundSortedTeams: [],
-            gameSortedTeams: []
-        });
-    }
+  // React hooks for real-time operations
+  useScores() {
+    const { data, loading, error } = super.useDocument();
+    return { roundScores: data, loading, error };
+  }
 
-    async initializeScoresTransaction(transaction) {
-        return await this.setTransaction(transaction, {
-            gameSortedTeams: [],
-            rankingDiffs: {},
-            roundSortedTeams: [],
-            scores: {},
-            scoresProgress: {},
-        });
-    }
-
-    async increaseTeamScoreTransaction(transaction, questionId, teamId=null, points=0) {
-        const roundScores = await this.getTransaction(transaction)
-        const { scores: currentRoundScores, scoresProgress: currentRoundProgress } = roundScores
-    
-        const newRoundProgress = {}
-        for (const tid of Object.keys(currentRoundScores)) {
-            newRoundProgress[tid] = {
-                ...currentRoundProgress[tid],
-                [questionId]: currentRoundScores[tid] + (tid === teamId) * points
-            }
-        }
-
-        await this.updateTransaction(transaction, {
-            [`scores.${teamId}`]: increment(points),
-            scoresProgress: newRoundProgress
-        })
-    }
-
-    // React hooks for real-time operations
-    useScores() {
-        const { data, loading, error } = super.useDocument();
-        return { roundScores: data, loading, error };
-    }
-
-    useScoresOnce() {
-        const { data, loading, error } = super.useDocumentOnce();
-        return { roundScores: data, loading, error };
-    }
-} 
+  useScoresOnce() {
+    const { data, loading, error } = super.useDocumentOnce();
+    return { roundScores: data, loading, error };
+  }
+}
