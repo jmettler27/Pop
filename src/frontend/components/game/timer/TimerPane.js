@@ -183,6 +183,8 @@ function TimerHeader() {
 // QUESTION END
 function QuestionEndTimerHeader() {
   const intl = useIntl();
+  const game = useGameContext();
+
   const { roundRepo } = useGameRepositoriesContext();
   const { round, roundLoading, roundError } = roundRepo.useRoundOnce(game.currentRound);
 

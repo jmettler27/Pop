@@ -9,7 +9,7 @@
     "lint": "next lint",
     "prettier-write": "npx prettier src --write",
     "prettier-check": "npx prettier src --check",
-    "update-i18n": "node scripts/update-i18n.mjs"
+    "update-i18n": "node src/i18n/update-i18n.mjs"
   },
   "dependencies": {
     "@auth/firebase-adapter": "^2.7.1",

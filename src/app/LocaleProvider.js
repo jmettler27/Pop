@@ -18,11 +18,11 @@ const LOCALE_STORAGE_KEY = 'pop-locale';
 
 async function loadMessages(locale) {
   if (locale === 'fr') {
-    const mod = await import('@/i18n/fr.json');
+    const mod = await import('@/i18n/locale/fr.json');
     return mod.default ?? mod;
   }
   // English catalog — defaultMessage in code is source of truth, but load for completeness
-  const mod = await import('@/i18n/en.json');
+  const mod = await import('@/i18n/locale/en.json');
   return mod.default ?? mod;
 }
 
