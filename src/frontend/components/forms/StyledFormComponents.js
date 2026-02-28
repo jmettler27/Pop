@@ -13,6 +13,8 @@ import {
 } from '@/frontend/utils/forms/forms';
 import { numEmojisIndicator } from '@/frontend/utils/forms/emojis';
 
+import { useIntl } from 'react-intl';
+
 export function MyTextInput({ label, maxLength, validationSchema, fieldType = 'string', ...props }) {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
   // which we can spread on <input> and alse replace ErrorMessage entirely.
@@ -92,13 +94,14 @@ export function MySelect({ label, validationSchema, ...props }) {
 
 import { NumberInput } from '@/frontend/components/forms/NumberInput';
 export function MyNumberInput({ label, name, min, max, ...props }) {
+  const intl = useIntl();
   const formik = useFormikContext();
   const [field, meta, helpers] = useField(name);
 
   return (
     <>
       <StyledLabel htmlFor={props.id || props.name}>
-        {requiredIndicatorString(true)}
+        {requiredIndicatorString(true, intl)}
         {label} ({min}-{max})
       </StyledLabel>
       <NumberInput

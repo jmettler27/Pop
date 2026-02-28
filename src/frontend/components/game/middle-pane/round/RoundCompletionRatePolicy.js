@@ -1,6 +1,29 @@
 import { numberToKeycapEmoji } from '@/backend/utils/emojis';
 
 import { RoundType } from '@/backend/models/rounds/RoundType';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+import fmt, { keyChunks } from '@/utils/fmt';
+
+const messages = defineMessages('frontend.game.round.RoundCompletionRatePolicy', {
+  maxPoints: 'Max points / team: <b>{points}</b>',
+  pointsPerCorrectAnswer: '✨ <correct>{points} point per correct answer</correct>',
+  pointsPerElementFound: '✨ <correct>{points} point per correct element found</correct>',
+  pointsPerLabelFound: '✨ <correct>{points} point per correct label found</correct>',
+  oddOneOutPenalty:
+    '✨ Selecting an incorrect proposal = <incorrect>{penalty} point(s) on the global score</incorrect>',
+  matchingPenalty: '✨ Drawing an incorrect link = <incorrect>{penalty} point(s) on the global score</incorrect>',
+  naguiTitle: '✨ A <b>variable number of points</b> per correct answer',
+  specialTitle: '😨 Your <b>accumulated points</b> so far = your <b>number of mistake allowances</b>',
+  specialOrder: 'Turn order = {order}.',
+  specialOrderRandom: 'random order',
+  specialOrderRanking: 'reverse ranking from round {roundNumber}',
+});
+
+const b = (chunks) => <strong>{keyChunks(chunks)}</strong>;
+const correct = (chunks) => <span className="text-green-500 font-bold">{keyChunks(chunks)}</span>;
+const incorrect = (chunks) => <span className="text-red-500 font-bold">{keyChunks(chunks)}</span>;
+const richTags = { b, correct, incorrect };
 
 export function RoundCompletionRatePolicy({ round }) {
   return (
@@ -28,7 +51,7 @@ function RoundCompletionRatePolicyTitle({ round }) {
     case RoundType.MATCHING:
       return <MatchingRoundCompletionRatePolicyTitle round={round} />;
     case RoundType.NAGUI:
-      return <NaguiRoundCompletionRatePolicyTitle round={round} />;
+      return <NaguiRoundCompletionRatePolicyTitle />;
     case RoundType.ODD_ONE_OUT:
       return <OddOneOutRoundCompletionRatePolicyTitle round={round} />;
     case RoundType.QUOTE:
@@ -39,6 +62,7 @@ function RoundCompletionRatePolicyTitle({ round }) {
 }
 
 function RoundMaxNumPoints({ round }) {
+  const { formatMessage } = useIntl();
   switch (round.type) {
     case RoundType.BASIC:
     case RoundType.BLINDTEST:
@@ -52,7 +76,7 @@ function RoundMaxNumPoints({ round }) {
     case RoundType.QUOTE:
       return (
         <h1 className="2xl:text-3xl text-center">
-          Points max / équipe: <span className="font-bold">{numberToKeycapEmoji(round.maxPoints)}</span>
+          {fmt(formatMessage, messages.maxPoints, { points: numberToKeycapEmoji(round.maxPoints), ...richTags })}
         </h1>
       );
     default:
@@ -61,90 +85,66 @@ function RoundMaxNumPoints({ round }) {
 }
 
 function BuzzerRoundCompletionRatePolicyTitle({ round }) {
+  const { formatMessage } = useIntl();
   return (
     <h1 className="2xl:text-3xl text-center">
-      ✨{' '}
-      <span className="text-center text-green-500">
-        <strong>{round.rewardsPerQuestion} point</strong> par bonne réponse
-      </span>{' '}
+      {fmt(formatMessage, messages.pointsPerCorrectAnswer, { points: round.rewardsPerQuestion, ...richTags })}
     </h1>
   );
 }
 
 function QuoteRoundCompletionRatePolicyTitle({ round }) {
+  const { formatMessage } = useIntl();
   return (
     <h1 className="2xl:text-3xl text-center">
-      ✨{' '}
-      <span className="text-center text-green-500">
-        <strong>{round.rewardsPerElement} point</strong> par bon élément trouvé
-      </span>
+      {fmt(formatMessage, messages.pointsPerElementFound, { points: round.rewardsPerElement, ...richTags })}
     </h1>
   );
 }
 
 function LabellingRoundCompletionRatePolicyTitle({ round }) {
+  const { formatMessage } = useIntl();
   return (
     <h1 className="2xl:text-3xl text-center">
-      ✨{' '}
-      <span className="text-center text-green-500">
-        <strong>{round.rewardsPerElement} point</strong> par bonne étiquette trouvée
-      </span>
+      {fmt(formatMessage, messages.pointsPerLabelFound, { points: round.rewardsPerElement, ...richTags })}
     </h1>
   );
 }
 
 function OddOneOutRoundCompletionRatePolicyTitle({ round }) {
-  const { mistakePenalty } = round;
-  const absPenalty = Math.abs(mistakePenalty);
+  const { formatMessage } = useIntl();
   return (
     <h1 className="2xl:text-2xl text-center">
-      ✨ Sélectionner un intrus ={' '}
-      <span className="text-red-500">
-        <strong>
-          {mistakePenalty} point{absPenalty > 1 ? 's' : ''}
-        </strong>{' '}
-        sur le score global
-      </span>
+      {fmt(formatMessage, messages.oddOneOutPenalty, { penalty: round.mistakePenalty, ...richTags })}
     </h1>
   );
 }
 
 function MatchingRoundCompletionRatePolicyTitle({ round }) {
-  const { mistakePenalty } = round;
-  const absPenalty = Math.abs(mistakePenalty);
+  const { formatMessage } = useIntl();
   return (
     <h1 className="2xl:text-2xl text-center">
-      ✨ Dessiner un lien incorrect ={' '}
-      <span className="text-red-500">
-        <strong>
-          {mistakePenalty} point{absPenalty > 1 ? 's' : ''}
-        </strong>{' '}
-        sur le score global
-      </span>
+      {fmt(formatMessage, messages.matchingPenalty, { penalty: round.mistakePenalty, ...richTags })}
     </h1>
   );
 }
 
-function NaguiRoundCompletionRatePolicyTitle({}) {
-  return (
-    <>
-      <h1 className="2xl:text-3xl text-center">✨ Un nombre variable de points par bonne réponse</h1>
-    </>
-  );
+function NaguiRoundCompletionRatePolicyTitle() {
+  const { formatMessage } = useIntl();
+  return <h1 className="2xl:text-3xl text-center">{fmt(formatMessage, messages.naguiTitle, richTags)}</h1>;
 }
 
-function SpecialRoundCompletionRatePolicy({ round }) {
+export function SpecialRoundCompletionRatePolicy({ round }) {
+  const { formatMessage } = useIntl();
+  const orderText =
+    round.order > 0
+      ? formatMessage(messages.specialOrderRanking, { roundNumber: round.order })
+      : formatMessage(messages.specialOrderRandom);
   return (
     <div className="flex flex-col items-center justify-start space-y-4">
-      <h1 className="2xl:text-3xl text-center">
-        😨 Vos <strong>points accumulés</strong> jusqu&apos;à présent = votre{' '}
-        <strong>nombre de droits à l&apos;erreur</strong>
-      </h1>
+      <h1 className="2xl:text-3xl text-center">{fmt(formatMessage, messages.specialTitle, richTags)}</h1>
       <div className="flex flex-col items-center justify-start">
-        <p className="2xl:text-2xl text-center">
-          L&apos;ordre de passage ={' '}
-          {round.order > 0 ? `Le classement inversé de la manche ${round.order}` : 'Un ordre aléatoire'}.
-        </p>
+        <p className="2xl:text-2xl text-center">{formatMessage(messages.specialOrder, { order: orderText })}</p>
       </div>
     </div>
   );

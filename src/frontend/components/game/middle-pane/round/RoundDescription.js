@@ -5,6 +5,50 @@ import { QuoteAuthorElement, QuotePartElement, QuoteSourceElement } from '@/back
 
 import { RoundType } from '@/backend/models/rounds/RoundType';
 
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+import fmt, { keyChunks } from '@/utils/fmt';
+
+const messages = defineMessages('frontend.game.round.RoundDescription', {
+  basic: '🔀 Several direct questions on different topics, in a <b>random order.</b>',
+  blindtest1: '👂 Listen to the music ({songEmoji}) or the sound ({soundEmoji}), and answer the question.',
+  blindtest2: '🋺 Controls let you <b>adjust the volume</b> and <b>skip forward or backward in the timeline</b>.',
+  emoji1: '🧐 Find the work or place/character/object/... hidden behind each combination of emojis.',
+  emoji2: '🧩 This combination may evoke <b>general ideas</b>, or it may just be a <b>rebus</b>, it depends.',
+  enumeration: '💬 Name as many elements as possible that answer the question.',
+  image: '🧐 Find the work or place/character/object/... hidden behind each image.',
+  labelling1: 'Each question consists of an image with numbered markers.',
+  labelling2: '🫳 Find the labels corresponding to the markers.',
+  labelling3: '👁️ If you get stuck, the organizers can <b>reveal an element</b>.',
+  matching1:
+    '🔀 A grid organized into <b>{min} to {max}</b> columns of proposals shown in random order, with links between them.',
+  matching2: '🔗 The goal is to find the correct associations.',
+  mixed: '🔀 Several questions of <b>different types</b>.',
+  mcq: '🔀 Several direct questions on different topics, in a <b>random order.</b>',
+  nagui: '🔀 Several direct questions on different topics, in a <b>random order.</b>',
+  oddOneOut1: '🔀 A list of <b>{count} proposals</b> shown in a <b>random order</b> for each participant.',
+  oddOneOut2: '<correct>All true</correct>, <incorrect>except one!</incorrect>',
+  oddOneOut3: 'If you know the odd one out, <b>keep it secret</b>... 🤫',
+  progressiveClues1: '🕵️ A <b>list of clues</b> is revealed to you progressively...',
+  progressiveClues2: '🧠 <b>Search your memory</b> and guess the work/person/... hidden behind these clues.',
+  quoteIntro: 'Each question consists of:',
+  quotePart: 'A <b>quote</b>',
+  quoteAuthor: 'The <b>person</b> who said it',
+  quoteSource: 'The <b>work</b> it came from',
+  quoteHidden: '🫳 <b>One, two or three</b> of these elements are <b>hidden</b>: find them.',
+  quoteReveal: '👁️ If you get stuck, the organizers can <b>reveal an element</b>.',
+  special: '<b>25 questions</b> organized into <b>5 levels</b>.',
+});
+
+const b = (chunks) => <strong>{keyChunks(chunks)}</strong>;
+const correct = (chunks) => <span className="text-green-500">{keyChunks(chunks)}</span>;
+const incorrect = (chunks) => <span className="font-bold text-red-500">{keyChunks(chunks)}</span>;
+const richTags = { b, correct, incorrect };
+
+function RuleP({ children }) {
+  return <p className="2xl:text-2xl text-center">{children}</p>;
+}
+
 export function RoundDescription({ round }) {
   switch (round.type) {
     case RoundType.BASIC:
@@ -40,191 +84,141 @@ export function RoundDescription({ round }) {
   }
 }
 
-function BasicRoundDescription({}) {
+function BasicRoundDescription() {
+  const { formatMessage } = useIntl();
+  return <RuleP>{fmt(formatMessage, messages.basic, richTags)}</RuleP>;
+}
+
+function BlindtestRoundDescription() {
+  const { formatMessage } = useIntl();
   return (
     <>
-      <p className="2xl:text-2xl text-center">
-        🔀 Plusieurs questions directes sur des sujets différents, dans un <strong>ordre aléatoire.</strong>
-      </p>
+      <RuleP>
+        {formatMessage(messages.blindtest1, {
+          songEmoji: BlindtestQuestion.typeToEmoji(BlindtestType.SONG),
+          soundEmoji: BlindtestQuestion.typeToEmoji(BlindtestType.SOUND),
+        })}
+      </RuleP>
+      <RuleP>{fmt(formatMessage, messages.blindtest2, richTags)}</RuleP>
     </>
   );
 }
 
-function BlindtestRoundDescription({}) {
+function EmojiRoundDescription() {
+  const { formatMessage } = useIntl();
   return (
     <>
-      <p className="2xl:text-2xl text-center">
-        👂 Écoutez la musique ({BlindtestQuestion.typeToEmoji(BlindtestType.SONG)}) ou le son (
-        {BlindtestQuestion.typeToEmoji(BlindtestType.SOUND)}), et répondez à la question.
-      </p>
-      <br></br>
-      <p className="2xl:text-2xl text-center">
-        🎚️ Des contrôles vous permettent de <strong>régler le volume</strong> et d&apos;
-        <strong>avancer ou reculer dans la timeline</strong>.
-      </p>
-    </>
-  );
-}
-
-function EmojiRoundDescription({}) {
-  return (
-    <>
-      <p className="2xl:text-2xl text-center">
-        🧐 Trouvez l&apos;œuvre ou le lieu/personnage/objet/... qui se cache derrière chaque combinaison d&apos;emojis.
-      </p>
-      <br></br>
-      <p className="2xl:text-2xl text-center">
-        🧩 Cette combinaison peut évoquer les <strong>idées générales</strong>, ou il peut s&apos;agir juste d&apos;un{' '}
-        <strong>rébus</strong>, ça dépend.
-      </p>
-    </>
-  );
-}
-
-function EnumerationRoundDescription({}) {
-  return (
-    <>
-      <p className="2xl:text-2xl text-center">💬 Citez-nous le plus d&apos;éléments qui répondent à la question.</p>
-    </>
-  );
-}
-
-function ImageRoundDescription({}) {
-  return (
-    <>
-      <p className="2xl:text-2xl text-center">
-        🧐 Trouvez l&apos;œuvre ou le lieu/personnage/objet/... qui se cache derrière chaque image.
-      </p>
-    </>
-  );
-}
-
-function LabellingRoundDescription({}) {
-  return (
-    <>
-      <p className="2xl:text-2xl text-center">Chaque question consiste en une image et des pastilles numérotées</p>
+      <RuleP>{formatMessage(messages.emoji1)}</RuleP>
       <br />
-      <p className="2xl:text-2xl text-center">🫣 A vous de retrouver les étiquettes correspondant aux pastilles.</p>
+      <RuleP>{fmt(formatMessage, messages.emoji2, richTags)}</RuleP>
+    </>
+  );
+}
+
+function EnumerationRoundDescription() {
+  const { formatMessage } = useIntl();
+  return <RuleP>{formatMessage(messages.enumeration)}</RuleP>;
+}
+
+function ImageRoundDescription() {
+  const { formatMessage } = useIntl();
+  return <RuleP>{formatMessage(messages.image)}</RuleP>;
+}
+
+function LabellingRoundDescription() {
+  const { formatMessage } = useIntl();
+  return (
+    <>
+      <RuleP>{formatMessage(messages.labelling1)}</RuleP>
       <br />
-      <p className="2xl:text-2xl text-center">
-        👁️ En cas de blocage, les organisateurs peuvent vous <strong>révéler un élément</strong>.
-      </p>
-    </>
-  );
-}
-
-function MatchingRoundDescription({}) {
-  return (
-    <>
-      <p className="2xl:text-2xl text-center">
-        🔀 Une grille, organisée en{' '}
-        <strong>
-          {MatchingQuestion.MIN_NUM_COLS} à {MatchingQuestion.MAX_NUM_COLS}
-        </strong>{' '}
-        colonnes de propositions affichées dans un ordre aléatoire, et entre lesquelles il existe des liens.
-      </p>
-      <p className="2xl:text-2xl text-center">🔗 Le but est de trouver les bonnes associations.</p>
-    </>
-  );
-}
-
-function MixedRoundDescription({}) {
-  return (
-    <>
-      <p className="2xl:text-2xl text-center">
-        🔀 Plusieurs questions de <strong>types différents</strong>.
-      </p>
-    </>
-  );
-}
-
-function MCQRoundDescription({}) {
-  return (
-    <>
-      <p className="2xl:text-2xl text-center">
-        🔀 Plusieurs questions directes sur des sujets différents, dans un <strong>ordre aléatoire.</strong>
-      </p>
-    </>
-  );
-}
-
-function NaguiRoundDescription({}) {
-  return (
-    <>
-      <p className="2xl:text-2xl text-center">
-        🔀 Plusieurs questions directes sur des sujets différents, dans un <strong>ordre aléatoire.</strong>
-      </p>
-    </>
-  );
-}
-
-function OddOneOutRoundDescription({}) {
-  return (
-    <>
-      <p className="2xl:text-2xl text-center">
-        🔀 Une liste de <strong>{OddOneOutQuestion.MAX_NUM_ITEMS} propositions</strong>, affichée dans un{' '}
-        <strong>ordre aléatoire</strong> pour chaque participant.
-      </p>
+      <RuleP>{formatMessage(messages.labelling2)}</RuleP>
       <br />
-      <p className="2xl:text-2xl text-center">
-        <span className="text-green-500">Toutes vraies</span>, <span className="font-bold text-red-500">sauf une!</span>
-      </p>
+      <RuleP>{fmt(formatMessage, messages.labelling3, richTags)}</RuleP>
+    </>
+  );
+}
+
+function MatchingRoundDescription() {
+  const { formatMessage } = useIntl();
+  return (
+    <>
+      <RuleP>
+        {fmt(formatMessage, messages.matching1, {
+          min: MatchingQuestion.MIN_NUM_COLS,
+          max: MatchingQuestion.MAX_NUM_COLS,
+          ...richTags,
+        })}
+      </RuleP>
       <br />
-      <p className="2xl:text-2xl text-center">
-        Si vous connaissez l&apos;intrus, <strong>gardez-le secret</strong>... 🤫
-      </p>
+      <RuleP>{formatMessage(messages.matching2)}</RuleP>
     </>
   );
 }
 
-function ProgressiveCluesRoundDescription({}) {
+function MCQRoundDescription() {
+  const { formatMessage } = useIntl();
+  return <RuleP>{fmt(formatMessage, messages.mcq, richTags)}</RuleP>;
+}
+
+function MixedRoundDescription() {
+  const { formatMessage } = useIntl();
+  return <RuleP>{fmt(formatMessage, messages.mixed, richTags)}</RuleP>;
+}
+
+function NaguiRoundDescription() {
+  const { formatMessage } = useIntl();
+  return <RuleP>{fmt(formatMessage, messages.nagui, richTags)}</RuleP>;
+}
+
+function OddOneOutRoundDescription() {
+  const { formatMessage } = useIntl();
   return (
     <>
-      <p className="2xl:text-2xl text-center">
-        🕵️‍♂️ Une <strong>liste d&apos;indices</strong> vous est dévoilée progressivement...
-      </p>
-      <br></br>
-      <p className="2xl:text-2xl text-center">
-        🧠 <strong>Fouillez dans votre mémoire</strong> et devinez l&apos;œuvre/la personne/... qui se cache derrière
-        ces indices.
-      </p>
+      <RuleP>{fmt(formatMessage, messages.oddOneOut1, { count: OddOneOutQuestion.MAX_NUM_ITEMS, ...richTags })}</RuleP>
+      <br />
+      <RuleP>{fmt(formatMessage, messages.oddOneOut2, richTags)}</RuleP>
+      <br />
+      <RuleP>{fmt(formatMessage, messages.oddOneOut3, richTags)}</RuleP>
     </>
   );
 }
 
-function QuoteRoundDescription({}) {
+function ProgressiveCluesRoundDescription() {
+  const { formatMessage } = useIntl();
   return (
     <>
-      <p className="2xl:text-2xl text-center">Chaque question consiste en</p>
+      <RuleP>{fmt(formatMessage, messages.progressiveClues1, richTags)}</RuleP>
+      <br />
+      <RuleP>{fmt(formatMessage, messages.progressiveClues2, richTags)}</RuleP>
+    </>
+  );
+}
+
+function QuoteRoundDescription() {
+  const { formatMessage } = useIntl();
+  return (
+    <>
+      <RuleP>{formatMessage(messages.quoteIntro)}</RuleP>
       <ul className="2xl:text-2xl list-disc pl-10">
         <li>
-          {QuotePartElement.elementToEmoji()} Une <strong>réplique</strong>
+          {QuotePartElement.elementToEmoji()} {fmt(formatMessage, messages.quotePart, richTags)}
         </li>
         <li>
-          {QuoteAuthorElement.elementToEmoji()} La <strong>personne</strong> qui l&apos;a prononcée
+          {QuoteAuthorElement.elementToEmoji()} {fmt(formatMessage, messages.quoteAuthor, richTags)}
         </li>
         <li>
-          {QuoteSourceElement.elementToEmoji()} L&apos;<strong>œuvre</strong> dont elle est issue
+          {QuoteSourceElement.elementToEmoji()} {fmt(formatMessage, messages.quoteSource, richTags)}
         </li>
       </ul>
       <br />
-      <p className="2xl:text-2xl text-center">
-        🫣 <strong>Un, deux ou trois</strong> de ces éléments sont <strong>cachés</strong>: à vous de les retrouver.
-      </p>
+      <RuleP>{fmt(formatMessage, messages.quoteHidden, richTags)}</RuleP>
       <br />
-      <p className="2xl:text-2xl text-center">
-        👁️ En cas de blocage, les organisateurs peuvent vous <strong>révéler un élément</strong>.
-      </p>
+      <RuleP>{fmt(formatMessage, messages.quoteReveal, richTags)}</RuleP>
     </>
   );
 }
 
-function SpecialRoundDescription({}) {
-  return (
-    <>
-      <p className="2xl:text-2xl text-center">
-        <strong>25 questions</strong> organisées en <strong>5 niveaux</strong>.
-      </p>
-    </>
-  );
+function SpecialRoundDescription() {
+  const { formatMessage } = useIntl();
+  return <RuleP>{fmt(formatMessage, messages.special, richTags)}</RuleP>;
 }

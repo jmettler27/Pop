@@ -12,9 +12,12 @@ import RoundEndBody from '@/frontend/components/game/middle-pane/round/RoundEndB
 
 import { useParams } from 'next/navigation';
 
+import globalMessages from '@/i18n/globalMessages';
+
 export default function RoundMiddlePane() {
   const game = useGameContext();
   const params = useParams();
+  const intl = useIntl();
 
   const { roundRepo } = useGameRepositoriesContext();
   const { round, loading: roundLoading, error: roundError } = roundRepo.useRound(game.currentRound);
@@ -62,7 +65,7 @@ function RoundHeader({ round }) {
       <RoundTypeIcon roundType={round.type} fontSize={50} />
       <h1 className="2xl:text-5xl">
         <span className="font-bold">
-          {ROUND_HEADER_TEXT[intl.locale] ?? ROUND_HEADER_TEXT['en']} {round.order + 1}
+          {intl.formatMessage(globalMessages.round)} {round.order + 1}
         </span>{' '}
         - <i>{round.title}</i>{' '}
       </h1>
