@@ -1,4 +1,4 @@
-import { User } from '@/backend/models/users/User';
+import { Participant, ParticipantRole } from '@/backend/models/users/Participant';
 
 export const PlayerStatus = {
   IDLE: 'idle',
@@ -8,9 +8,9 @@ export const PlayerStatus = {
   READY: 'ready',
 };
 
-export class Player extends User {
+export class Player extends Participant {
   constructor(data) {
-    super(data);
+    super(ParticipantRole.PLAYER, data);
     this.teamId = data.teamId;
     this.status = data.status;
   }

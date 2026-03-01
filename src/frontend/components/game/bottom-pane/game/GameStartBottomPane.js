@@ -1,6 +1,6 @@
 import { startGame } from '@/backend/services/game/actions';
 
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
@@ -30,7 +30,7 @@ function GameStartController({}) {
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-5">
       <ReadyPlayerController />
-      {myRole === UserRole.ORGANIZER && <GameStartOrganizerController />}
+      {myRole === ParticipantRole.ORGANIZER && <GameStartOrganizerController />}
     </div>
   );
 }

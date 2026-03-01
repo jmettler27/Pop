@@ -12,7 +12,7 @@ export const QUOTE_ELEMENT_TO_TITLE = {
     author: 'Author',
     quote: 'Quote part',
   },
-  'fr-FR': {
+  fr: {
     source: 'Source',
     author: 'Auteur',
     quote: 'Partie de la réplique',
@@ -25,7 +25,7 @@ export class QuoteSourceElement {
 
   static TYPE_TO_TITLE = {
     en: 'Source',
-    'fr-FR': 'Source',
+    fr: 'Source',
   };
   static TYPE_TO_EMOJI = '📜';
 
@@ -48,7 +48,7 @@ export class QuoteAuthorElement {
 
   static TYPE_TO_TITLE = {
     en: 'Author',
-    'fr-FR': 'Auteur',
+    fr: 'Auteur',
   };
   static TYPE_TO_EMOJI = '🧑';
 
@@ -71,7 +71,7 @@ export class QuotePartElement {
 
   static TYPE_TO_TITLE = {
     en: 'Quote part',
-    'fr-FR': 'Partie de la réplique',
+    fr: 'Partie de la réplique',
   };
 
   static TYPE_TO_EMOJI = '💬';

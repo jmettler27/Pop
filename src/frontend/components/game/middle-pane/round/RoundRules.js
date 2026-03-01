@@ -1,31 +1,162 @@
 import { RoundType } from '@/backend/models/rounds/RoundType';
-import { BasicQuestion } from '@/backend/models/questions/Basic';
-import { BlindtestQuestion } from '@/backend/models/questions/Blindtest';
-import { EmojiQuestion } from '@/backend/models/questions/Emoji';
-import { EnumerationQuestion } from '@/backend/models/questions/Enumeration';
-import { ImageQuestion } from '@/backend/models/questions/Image';
-import { LabellingQuestion } from '@/backend/models/questions/Labelling';
-import { MatchingQuestion } from '@/backend/models/questions/Matching';
-import { MCQQuestion } from '@/backend/models/questions/MCQ';
+import { GameMatchingQuestion, MatchingQuestion } from '@/backend/models/questions/Matching';
 import { NaguiQuestion } from '@/backend/models/questions/Nagui';
 import { OddOneOutQuestion } from '@/backend/models/questions/OddOneOut';
-import { ProgressiveCluesQuestion } from '@/backend/models/questions/ProgressiveClues';
-import { QuoteQuestion } from '@/backend/models/questions/Quote';
 
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+import fmt, { keyChunks } from '@/utils/fmt';
+
+const messages = defineMessages('frontend.game.round.RoundRules', {
+  buzzInstruction:
+    '💡 As soon as you have an idea, <buzz>buzz</buzz> by clicking <b>"Buzz"</b>. You can <cancel>cancel your buzz</cancel> by clicking <b>"Cancel"</b>.',
+  queueLeader: '🥇 If you are at the top of the queue, give your answer verbally.',
+  correctEarnPoints:
+    'If your answer is <correct>correct</correct>, you earn <b>{points} point</b> and the question ends.',
+  incorrectNextInQueue:
+    'If your answer is <incorrect>incorrect</incorrect>, your attempt is invalidated and we move to the next player in the queue, if any.',
+  incorrectWithBuzzerDelay:
+    'If your answer is <incorrect>incorrect</incorrect>, your attempt is invalidated and we move to the next player in the queue. Furthermore, <b>your buzzer is disabled until clue i + {delay}</b>.',
+  thinkingTime: '⏳ You have <u><b>{seconds} seconds</b></u> to answer, otherwise your attempt will be invalidated!',
+  maxTries: '⚠️ You have <b>{maxTries} attempts per question</b>.',
+  partialCredit: '😈 You can earn points <b>even if you do not know all the elements!</b>',
+  turnOrder: 'Turn order = {order}.',
+  turnOrderRanking: 'reverse ranking from round {roundNumber}',
+  turnOrderRandom: 'random order',
+  oddOneOutInstruction: '🖱️ Each team takes turns and <b>clicks on a proposal from the list</b> it considers correct.',
+  oddOneOutCorrect: 'If the proposal is <correct>correct</correct>, we move to the next team.',
+  oddOneOutIncorrect:
+    'If the proposal is <incorrect>incorrect</incorrect>, the question ends and the team receives <b>{penalty} point(s) of penalty.</b> Furthermore, it becomes <b>1st in the turn order for the next question</b>.',
+  oddOneOutNote: 'ℹ️ A short <b>explanation</b> is shown each time.',
+  oddOneOutThinkingTime:
+    '⏳ You have <u><b>{seconds} seconds</b></u> to decide, otherwise <b>a proposal will be chosen randomly!</b>',
+  enumTwoPhases: 'The question takes place in <b>two phases</b>:',
+  enumPhaseReflection: '🤔 A <b>reflection</b> phase during which teams choose their bid.',
+  enumPhaseAnswer: '🗣️ An <b>answer</b> phase during which the team with the highest bid gives their answers.',
+  enumOutcomes: 'There are then two possible outcomes:',
+  enumBidMet:
+    'The bid is <correct>met</correct>: the team earns <b>{points} point</b>, <b>+{bonus} bonus point</b> if they give even more answers than announced.',
+  enumBidNotMet: 'The bid is <incorrect>not met</incorrect>: all other teams earn <b>{points} point</b>.',
+  matchingInstruction:
+    '🖱️ Each team takes turns and <b>clicks on the proposals</b> for the link it considers correct, <u>left to right</u>.',
+  matchingCorrect: 'If the link is <correct>correct</correct>, we move to the next team.',
+  matchingIncorrect:
+    'If the link is <incorrect>incorrect</incorrect>, the team receives <b>{penalty} point(s) of penalty.</b>',
+  matchingAlwaysDrawn: '⚠️ <b>In any case, the link is drawn!</b>',
+  matchingDisqualified:
+    '🙅 A team is <b>disqualified</b> after <b>{maxMistakes} mistakes</b>; the question ends if all teams are disqualified.',
+  matchingThinkingTime:
+    '⏳ You have <u><b>between {min} and {max} seconds</b></u> to decide, otherwise <b>a random link will be drawn!</b>',
+  basicInstruction: '❓ Each question is assigned to a team, which must give their answer verbally.',
+  basicCorrect: 'If your answer is <correct>correct</correct>, you earn <b>{points} point</b>.',
+  basicIncorrect: 'If your answer is <incorrect>incorrect</incorrect>, you earn no points.',
+  mcqInstruction: '❓ Each question is assigned to a team. The team has several answer choices.',
+  naguiInstruction: '❓ Each question is assigned to a team. The team has <b>{count} options</b> available:',
+  specialInstruction: '🗣️ Answer the questions directly — there are no answer choices.',
+  specialPrecision: '⚠️ Be precise in your answer!',
+  specialCalm: '💜 Stay calm, it will be fine.',
+  mixedInstruction: 'Rules depend on the question type.',
+});
+
+// ── Rich-text tag factories ───────────────────────────────────────────────────
+const b = (chunks) => <strong>{keyChunks(chunks)}</strong>;
+const u = (chunks) => <u>{keyChunks(chunks)}</u>;
+const buzz = (chunks) => <span className="font-bold text-red-500">{keyChunks(chunks)}</span>;
+const cancel = (chunks) => <span className="font-bold text-blue-400">{keyChunks(chunks)}</span>;
+const correct = (chunks) => <span className="text-green-500 font-bold">{keyChunks(chunks)}</span>;
+const incorrect = (chunks) => <span className="text-red-500 font-bold">{keyChunks(chunks)}</span>;
+const richTags = { b, u, buzz, cancel, correct, incorrect };
+
+// ── Layout primitives ─────────────────────────────────────────────────────────
+function RuleP({ children }) {
+  return <p className="2xl:text-2xl text-center">{children}</p>;
+}
+
+function RuleList({ children }) {
+  return <ul className="2xl:text-2xl list-disc pl-10">{children}</ul>;
+}
+
+// ── Reusable rule atoms ───────────────────────────────────────────────────────
+function BuzzInstruction() {
+  const { formatMessage } = useIntl();
+  return <RuleP>{fmt(formatMessage, messages.buzzInstruction, richTags)}</RuleP>;
+}
+
+function QueueLeader() {
+  const { formatMessage } = useIntl();
+  return <RuleP>{formatMessage(messages.queueLeader)}</RuleP>;
+}
+
+function ThinkingTimeRule({ seconds }) {
+  const { formatMessage } = useIntl();
+  return <RuleP>{fmt(formatMessage, messages.thinkingTime, { seconds, ...richTags })}</RuleP>;
+}
+
+function MaxTriesRule({ maxTries }) {
+  const { formatMessage } = useIntl();
+  return <RuleP>{fmt(formatMessage, messages.maxTries, { maxTries, ...richTags })}</RuleP>;
+}
+
+function PartialCreditRule() {
+  const { formatMessage } = useIntl();
+  return <RuleP>{fmt(formatMessage, messages.partialCredit, richTags)}</RuleP>;
+}
+
+function TurnOrderRule({ order }) {
+  const { formatMessage } = useIntl();
+  const orderText =
+    order > 0
+      ? formatMessage(messages.turnOrderRanking, { roundNumber: order })
+      : formatMessage(messages.turnOrderRandom);
+  return <RuleP>{formatMessage(messages.turnOrder, { order: orderText })}</RuleP>;
+}
+
+// ── Shared buzzer round rules (Emoji, Image, Blindtest, ProgressiveClues) ─────
+function BuzzerRoundRules({ round, withBuzzerDelay = false }) {
+  const { formatMessage } = useIntl();
+  const incorrectMsg = withBuzzerDelay ? messages.incorrectWithBuzzerDelay : messages.incorrectNextInQueue;
+  return (
+    <>
+      <BuzzInstruction />
+      <QueueLeader />
+      <RuleList>
+        <li>{fmt(formatMessage, messages.correctEarnPoints, { points: round.rewardsPerQuestion, ...richTags })}</li>
+        <li>{fmt(formatMessage, incorrectMsg, { delay: round.delay, ...richTags })}</li>
+      </RuleList>
+      <ThinkingTimeRule seconds={round.thinkingTime} />
+      <MaxTriesRule maxTries={round.maxTries} />
+    </>
+  );
+}
+
+// ── Shared buzzer + partial credit (Quote, Labelling) ─────────────────────────
+function BuzzerPartialCreditRoundRules({ round }) {
+  return (
+    <>
+      <BuzzInstruction />
+      <QueueLeader />
+      <ThinkingTimeRule seconds={round.thinkingTime} />
+      <MaxTriesRule maxTries={round.maxTries} />
+      <PartialCreditRule />
+    </>
+  );
+}
+
+// ── Dispatcher ────────────────────────────────────────────────────────────────
 export function RoundRules({ round }) {
   switch (round.type) {
     case RoundType.BASIC:
       return <BasicRoundRules round={round} />;
     case RoundType.BLINDTEST:
-      return <BlindtestRoundRules round={round} />;
+      return <BuzzerRoundRules round={round} />;
     case RoundType.EMOJI:
-      return <EmojiRoundRules round={round} />;
+      return <BuzzerRoundRules round={round} />;
     case RoundType.ENUMERATION:
       return <EnumRoundRules round={round} />;
     case RoundType.IMAGE:
-      return <ImageRoundRules round={round} />;
+      return <BuzzerRoundRules round={round} />;
     case RoundType.LABELLING:
-      return <LabellingRoundRules round={round} />;
+      return <BuzzerPartialCreditRoundRules round={round} />;
     case RoundType.MATCHING:
       return <MatchingRoundRules round={round} />;
     case RoundType.MCQ:
@@ -37,419 +168,146 @@ export function RoundRules({ round }) {
     case RoundType.ODD_ONE_OUT:
       return <OddOneOutRoundRules round={round} />;
     case RoundType.PROGRESSIVE_CLUES:
-      return <ProgressiveCluesRoundRules round={round} />;
+      return <BuzzerRoundRules round={round} withBuzzerDelay />;
     case RoundType.QUOTE:
-      return <QuoteRoundRules round={round} />;
+      return <BuzzerPartialCreditRoundRules round={round} />;
     case RoundType.SPECIAL:
       return <SpecialRoundRules round={round} />;
   }
 }
 
-function ProgressiveCluesRoundRules({ round }) {
-  return (
-    <>
-      <p className="2xl:text-2xl text-center">
-        💡 Dès que vous avez une idée, <span className="font-bold text-red-500">buzzez</span> en{' '}
-        <strong>cliquant sur &quot;Buzz&quot;</strong>. Vous pouvez{' '}
-        <span className="font-bold text-blue-400">annuler votre buzz</span> en{' '}
-        <strong>cliquant sur &quot;Annuler&quot;</strong>.
-      </p>
-      <p className="2xl:text-2xl text-center">
-        🥇 Si vous êtes en tête de la file d&apos;attente, proposez votre réponse à l&apos;oral.
-      </p>
-      <ul className="2xl:text-2xl list-disc pl-10">
-        <li>
-          Si votre réponse est <span className="text-green-500 font-bold">correcte</span>, vous gagnez{' '}
-          <strong>{round.rewardsPerQuestion} point</strong> et la question se termine.
-        </li>
-        <li>
-          Si votre réponse est <span className="text-red-500 font-bold">incorrecte</span>, votre essai est invalidé et
-          on passe au prochain joueur dans la file d&apos;attente, s&apos;il y en a un. De plus,{' '}
-          <strong>votre buzzer est désactivé jusqu&apos;à l&apos;indice i + {round.delay}</strong>.
-        </li>
-      </ul>
-      <p className="2xl:text-2xl text-center">
-        ⏳ Vous avez{' '}
-        <u>
-          <strong>{round.thinkingTime} secondes</strong>
-        </u>{' '}
-        pour répondre, faute de quoi votre essai sera invalidé !
-      </p>
-      <p className="2xl:text-2xl text-center">
-        ⚠️ Vous disposez de <strong>{round.maxTries} essais par question</strong>.
-      </p>
-    </>
-  );
-}
-
-function EmojiRoundRules({ round }) {
-  return (
-    <>
-      <p className="2xl:text-2xl text-center">
-        💡 Dès que vous avez une idée, <span className="font-bold text-red-500">buzzez</span> en{' '}
-        <strong>cliquant sur &quot;Buzz&quot;</strong>. Vous pouvez{' '}
-        <span className="font-bold text-blue-400">annuler votre buzz</span> en{' '}
-        <strong>cliquant sur &quot;Annuler&quot;</strong>.
-      </p>
-      <p className="2xl:text-2xl text-center">
-        🥇 Si vous êtes en tête de la file d&apos;attente, proposez votre réponse à l&apos;oral.
-      </p>
-      <ul className="2xl:text-2xl list-disc pl-10">
-        <li>
-          Si votre réponse est <span className="text-green-500 font-bold">correcte</span>, vous gagnez{' '}
-          <strong>{round.rewardsPerQuestion} point</strong> et la question se termine.
-        </li>
-        <li>
-          Si votre réponse est <span className="text-red-500 font-bold">incorrecte</span>, votre essai est invalidé et
-          on passe au prochain joueur dans la file d&apos;attente, s&apos;il y en a un.
-        </li>
-      </ul>
-      <p className="2xl:text-2xl text-center">
-        ⏳ Vous avez{' '}
-        <u>
-          <strong>{round.thinkingTime} secondes</strong>
-        </u>{' '}
-        pour répondre, faute de quoi votre essai sera invalidé !
-      </p>
-      <p className="2xl:text-2xl text-center">
-        ⚠️ Vous disposez de <strong>{round.maxTries} essais par question</strong>.
-      </p>
-    </>
-  );
-}
-
-function ImageRoundRules({ round }) {
-  return (
-    <>
-      <p className="2xl:text-2xl text-center">
-        💡 Dès que vous avez une idée, <span className="font-bold text-red-500">buzzez</span> en{' '}
-        <strong>cliquant sur &quot;Buzz&quot;</strong>. Vous pouvez{' '}
-        <span className="font-bold text-blue-400">annuler votre buzz</span> en{' '}
-        <strong>cliquant sur &quot;Annuler&quot;</strong>.
-      </p>
-      <p className="2xl:text-2xl text-center">
-        🥇 Si vous êtes en tête de la file d&apos;attente, proposez votre réponse à l&apos;oral.
-      </p>
-      <ul className="2xl:text-2xl list-disc pl-10">
-        <li>
-          Si votre réponse est <span className="text-green-500 font-bold">correcte</span>, vous gagnez{' '}
-          <strong>{round.rewardsPerQuestion} point</strong> et la question se termine.
-        </li>
-        <li>
-          Si votre réponse est <span className="text-red-500 font-bold">incorrecte</span>, votre essai est invalidé et
-          on passe au prochain joueur dans la file d&apos;attente, s&apos;il y en a un.
-        </li>
-      </ul>
-      <p className="2xl:text-2xl text-center">
-        ⏳ Vous avez{' '}
-        <u>
-          <strong>{round.thinkingTime} secondes</strong>
-        </u>{' '}
-        pour répondre, faute de quoi votre essai sera invalidé !
-      </p>
-      <p className="2xl:text-2xl text-center">
-        ⚠️ Vous disposez de <strong>{round.maxTries} essais par question</strong>.
-      </p>
-    </>
-  );
-}
-
-function BlindtestRoundRules({ round }) {
-  return (
-    <>
-      <p className="2xl:text-2xl text-center">
-        💡 Dès que vous avez une idée, <span className="font-bold text-red-500">buzzez</span> en{' '}
-        <strong>cliquant sur &quot;Buzz&quot;</strong>. Vous pouvez{' '}
-        <span className="font-bold text-blue-400">annuler votre buzz</span> en{' '}
-        <strong>cliquant sur &quot;Annuler&quot;</strong>.
-      </p>
-      <p className="2xl:text-2xl text-center">
-        🥇 Si vous êtes en tête de la file d&apos;attente, proposez votre réponse à l&apos;oral.
-      </p>
-      <ul className="2xl:text-2xl list-disc pl-10">
-        <li>
-          Si votre réponse est <span className="text-green-500 font-bold">correcte</span>, vous gagnez{' '}
-          <strong>{round.rewardsPerQuestion} point</strong> et la question se termine.
-        </li>
-        <li>
-          Si votre réponse est <span className="text-red-500 font-bold">incorrecte</span>, votre essai est invalidé et
-          on passe au prochain joueur dans la file d&apos;attente, s&apos;il y en a un.
-        </li>
-      </ul>
-      <p className="2xl:text-2xl text-center">
-        ⏳ Vous avez{' '}
-        <u>
-          <strong>{round.thinkingTime} secondes</strong>
-        </u>{' '}
-        pour répondre, faute de quoi votre essai sera invalidé !
-      </p>
-      <p className="2xl:text-2xl text-center">
-        ⚠️ Vous disposez de <strong>{round.maxTries} essais par question</strong>.
-      </p>
-    </>
-  );
-}
-
-function QuoteRoundRules({ round }) {
-  return (
-    <>
-      <p className="2xl:text-2xl text-center">
-        💡 Dès que vous avez une idée, <span className="font-bold text-red-500">buzzez</span> en{' '}
-        <strong>cliquant sur &quot;Buzz&quot;</strong>. Vous pouvez{' '}
-        <span className="font-bold text-blue-400">annuler votre buzz</span> en{' '}
-        <strong>cliquant sur &quot;Annuler&quot;</strong>.
-      </p>
-      <p className="2xl:text-2xl text-center">
-        🥇 Si vous êtes en tête de la file d&apos;attente, proposez votre réponse à l&apos;oral.
-      </p>
-      <p className="2xl:text-2xl text-center">
-        ⏳ Vous avez{' '}
-        <u>
-          <strong>{round.thinkingTime} secondes</strong>
-        </u>{' '}
-        pour répondre, faute de quoi votre essai sera invalidé !
-      </p>
-      <p className="2xl:text-2xl text-center">
-        ⚠️ Vous disposez de <strong>{round.maxTries} essais par question</strong>.
-      </p>
-      <p className="2xl:text-2xl text-center">
-        😈 Vous pouvez gagner des points <strong>même si vous ne connaissez pas tous les éléments !</strong>
-      </p>
-    </>
-  );
-}
-
-function LabellingRoundRules({ round }) {
-  return (
-    <>
-      <p className="2xl:text-2xl text-center">
-        💡 Dès que vous avez une idée, <span className="font-bold text-red-500">buzzez</span> en{' '}
-        <strong>cliquant sur &quot;Buzz&quot;</strong>. Vous pouvez{' '}
-        <span className="font-bold text-blue-400">annuler votre buzz</span> en{' '}
-        <strong>cliquant sur &quot;Annuler&quot;</strong>.
-      </p>
-      <p className="2xl:text-2xl text-center">
-        🥇 Si vous êtes en tête de la file d&apos;attente, proposez votre réponse à l&apos;oral.
-      </p>
-      <p className="2xl:text-2xl text-center">
-        ⏳ Vous avez{' '}
-        <u>
-          <strong>{round.thinkingTime} secondes</strong>
-        </u>{' '}
-        pour répondre, faute de quoi votre essai sera invalidé !
-      </p>
-      <p className="2xl:text-2xl text-center">
-        ⚠️ Vous disposez de <strong>{round.maxTries} essais par question</strong>.
-      </p>
-      <p className="2xl:text-2xl text-center">
-        😈 Vous pouvez gagner des points <strong>même si vous ne connaissez pas tous les éléments !</strong>
-      </p>
-    </>
-  );
-}
-
 function OddOneOutRoundRules({ round }) {
+  const { formatMessage } = useIntl();
   const { order, mistakePenalty } = round;
-
   return (
     <>
-      <p className="2xl:text-2xl text-center">
-        🖱️ Chaque équipe se relaie à son tour et{' '}
-        <strong>clique sur une proposition de la liste qu&apos;elle considère juste</strong>.
-      </p>
-      <ul className="2xl:text-2xl list-disc pl-10">
-        <li>
-          Si la proposition est <span className="text-green-500 font-bold">correcte</span>, on passe à l&apos;équipe
-          suivante.
-        </li>
-        <li>
-          Si la proposition est <span className="text-red-500 font-bold">incorrecte</span>, on termine la question et
-          l&apos;équipe obtient{' '}
-          <strong>
-            {mistakePenalty} point{Math.abs(mistakePenalty) > 1 ? 's' : ''} de pénalité.
-          </strong>{' '}
-          De plus, elle devient <strong>1ère dans l&apos;ordre de passage de la question suivante</strong>.
-        </li>
-      </ul>
-      <p className="2xl:text-2xl text-center">
-        ℹ️ Une petite <strong>explication</strong> est affichée à chaque fois.
-      </p>
-      <p className="2xl:text-2xl text-center">
-        ⏳ Vous avez{' '}
-        <u>
-          <strong>{OddOneOutQuestion.THINKING_TIME} secondes</strong>
-        </u>{' '}
-        pour vous décider, faute de quoi <strong>une proposition sera choisie aléatoirement dans la liste !</strong>
-      </p>
-      <p className="2xl:text-2xl text-center">
-        L&apos;ordre de passage = {order > 0 ? `Le classement inversé de la manche ${order}` : 'Un ordre aléatoire'}.
-      </p>
+      <RuleP>{fmt(formatMessage, messages.oddOneOutInstruction, richTags)}</RuleP>
+      <RuleList>
+        <li>{fmt(formatMessage, messages.oddOneOutCorrect, richTags)}</li>
+        <li>{fmt(formatMessage, messages.oddOneOutIncorrect, { penalty: mistakePenalty, ...richTags })}</li>
+      </RuleList>
+      <RuleP>{fmt(formatMessage, messages.oddOneOutNote, richTags)}</RuleP>
+      <RuleP>
+        {fmt(formatMessage, messages.oddOneOutThinkingTime, { seconds: OddOneOutQuestion.THINKING_TIME, ...richTags })}
+      </RuleP>
+      <TurnOrderRule order={order} />
     </>
   );
 }
 
 function EnumRoundRules({ round }) {
+  const { formatMessage } = useIntl();
   return (
     <>
-      <p className="2xl:text-2xl text-center">
-        La question se déroule en <strong>deux temps</strong> :
-      </p>
+      <RuleP>{fmt(formatMessage, messages.enumTwoPhases, richTags)}</RuleP>
       <ol className="2xl:text-2xl list-decimal pl-10">
-        <li>
-          🤔 Une phase de <strong>réflexion</strong> durant laquelle les équipes choisissent leur pari.
-        </li>
-        <li>
-          🗣️ Une phase de <strong>réponse</strong> durant laquelle l&apos;équipe qui a donné le plus gros pari énonce
-          ses réponses.{' '}
-        </li>
+        <li>{fmt(formatMessage, messages.enumPhaseReflection, richTags)}</li>
+        <li>{fmt(formatMessage, messages.enumPhaseAnswer, richTags)}</li>
       </ol>
-      <p className="text-xs sm:text-sm 2xl:text-base 2xl:text-xl">Il y a alors deux issues possibles :</p>
-      <ul className="2xl:text-2xl list-disc pl-10">
+      <RuleP>{formatMessage(messages.enumOutcomes)}</RuleP>
+      <RuleList>
         <li>
-          Le pari est <span className="text-green-500 font-bold">réalisé</span>: l&apos;équipe remporte{' '}
-          <strong>{round.rewardsPerQuestion} point</strong>, <strong>+{round.rewardsForBonus} point bonus</strong> si
-          elle énonce encore plus de réponses qu&apos;annoncé.
+          {fmt(formatMessage, messages.enumBidMet, {
+            points: round.rewardsPerQuestion,
+            bonus: round.rewardsForBonus,
+            ...richTags,
+          })}
         </li>
-        <li>
-          Le pari n&apos;est <span className="text-red-500 font-bold">pas réalisé</span>: toutes les autres équipes
-          remportent <strong>{round.rewardsPerQuestion} point</strong>.
-        </li>
-      </ul>
+        <li>{fmt(formatMessage, messages.enumBidNotMet, { points: round.rewardsPerQuestion, ...richTags })}</li>
+      </RuleList>
     </>
   );
 }
 
 function MatchingRoundRules({ round }) {
+  const { formatMessage } = useIntl();
   const { order, mistakePenalty, maxMistakes } = round;
-
+  const minSeconds = GameMatchingQuestion.THINKING_TIME * (MatchingQuestion.MIN_NUM_COLS - 1);
+  const maxSeconds = GameMatchingQuestion.THINKING_TIME * (MatchingQuestion.MAX_NUM_COLS - 1);
   return (
     <>
-      <p className="2xl:text-2xl text-center">
-        🖱️ Chaque équipe se relaie à son tour et <strong>clique sur les propositions </strong> du lien qu&apos;elle
-        considère juste, <span className="font-bold underline">de gauche à droite</span>.
-      </p>
-      <ul className="2xl:text-2xl list-disc pl-10">
-        <li>
-          Si le lien est <span className="text-green-500 font-bold">correct</span>, on passe à l&apos;équipe suivante.
-        </li>
-        <li>
-          Si le lien est <span className="text-red-500 font-bold">incorrect</span>, l&apos;équipe obtient{' '}
-          <strong>
-            {mistakePenalty} point{Math.abs(mistakePenalty) > 1 ? 's' : ''} de pénalité.
-          </strong>
-        </li>
-      </ul>
-      <p className="2xl:text-2xl text-center">
-        ⚠️ <strong>Dans tous les cas, le lien est dessiné !</strong>
-      </p>
-      <p className="2xl:text-2xl text-center">
-        🙅 L&apos;équipe est <strong>disqualifiée</strong> de la question au bout de{' '}
-        <strong>{maxMistakes || MatchingQuestion.MAX_NUM_MISTAKES} erreurs</strong>, et la question s&apos;arrête si
-        toutes les équipes sont disqualifiées.
-      </p>
-      <p className="2xl:text-2xl text-center">
-        ⏳ Vous avez{' '}
-        <u>
-          <strong>
-            entre {MatchingQuestion.THINKING_TIME * (MatchingQuestion.MIN_NUM_COLS - 1)} et{' '}
-            {MatchingQuestion.THINKING_TIME * (MatchingQuestion.MAX_NUM_COLS - 1)} secondes
-          </strong>
-        </u>{' '}
-        pour vous décider, faute de quoi <strong>un lien aléatoire sera dessiné !</strong>
-      </p>
-      <p className="2xl:text-2xl text-center">
-        L&apos;ordre de passage = {order > 0 ? `Le classement inversé de la manche ${order}` : 'Un ordre aléatoire'}.
-      </p>
+      <RuleP>{fmt(formatMessage, messages.matchingInstruction, richTags)}</RuleP>
+      <RuleList>
+        <li>{fmt(formatMessage, messages.matchingCorrect, richTags)}</li>
+        <li>{fmt(formatMessage, messages.matchingIncorrect, { penalty: mistakePenalty, ...richTags })}</li>
+      </RuleList>
+      <RuleP>{fmt(formatMessage, messages.matchingAlwaysDrawn, richTags)}</RuleP>
+      <RuleP>
+        {fmt(formatMessage, messages.matchingDisqualified, {
+          maxMistakes: maxMistakes || MatchingQuestion.MAX_NUM_MISTAKES,
+          ...richTags,
+        })}
+      </RuleP>
+      <RuleP>
+        {fmt(formatMessage, messages.matchingThinkingTime, { min: minSeconds, max: maxSeconds, ...richTags })}
+      </RuleP>
+      <TurnOrderRule order={order} />
     </>
   );
 }
 
 function MCQRoundRules({ round }) {
+  const { formatMessage } = useIntl();
   return (
     <>
-      <p className="2xl:text-2xl text-center">
-        ❓ Chaque question est attribuée à une équipe. L&apos;équipe a alors plusieurs choix de réponses.
-      </p>
-      <p className="2xl:text-2xl text-center">
-        L&apos;ordre de passage ={' '}
-        {round.order > 0 ? `Le classement inversé de la manche ${round.order}` : 'Un ordre aléatoire'}.
-      </p>
+      <RuleP>{formatMessage(messages.mcqInstruction)}</RuleP>
+      <TurnOrderRule order={round.order} />
     </>
   );
 }
 
 function NaguiRoundRules({ round }) {
-  console.log('ROUND QWQWQW', round);
-
+  const intl = useIntl();
   return (
     <>
-      <p className="2xl:text-2xl text-center">
-        ❓ Chaque question est attribuée à une équipe. L&apos;équipe a alors{' '}
-        <strong>{Object.keys(NaguiQuestion.OPTIONS).length} options</strong> à sa disposition:
-      </p>
+      <RuleP>
+        {fmt(intl.formatMessage.bind(intl), messages.naguiInstruction, {
+          count: Object.keys(NaguiQuestion.OPTIONS).length,
+          ...richTags,
+        })}
+      </RuleP>
       <ol className="2xl:text-2xl border-solid border-blue-500 border-2 p-2">
         {Object.keys(NaguiQuestion.OPTIONS).map((option, index) => (
           <li key={index}>
-            {NaguiQuestion.typeToEmoji(option)} {NaguiQuestion.typeToTitle(option, 'fr-FR')} (
+            {NaguiQuestion.typeToEmoji(option)} {NaguiQuestion.typeToTitle(option, intl.locale)} (
             {round.rewardsPerQuestion[option]} pt{round.rewardsPerQuestion[option] > 1 && 's'})
           </li>
         ))}
       </ol>
-      <p className="2xl:text-2xl text-center">
-        L&apos;ordre de passage ={' '}
-        {round.order > 0 ? `Le classement inversé de la manche ${round.order}` : 'Un ordre aléatoire'}.
-      </p>
+      <TurnOrderRule order={round.order} />
     </>
   );
 }
 
 function BasicRoundRules({ round }) {
+  const { formatMessage } = useIntl();
   return (
     <>
-      <p className="2xl:text-2xl text-center">
-        ❓ Chaque question est attribuée à une équipe, qui doit proposer sa réponse à l&apos;oral.
-      </p>
-      <ul className="2xl:text-2xl list-disc pl-10">
-        <li>
-          Si votre réponse est <span className="text-green-500 font-bold">correcte</span>, vous gagnez{' '}
-          <strong>{round.rewardsPerQuestion} point</strong>.
-        </li>
-        <li>
-          Si votre réponse est <span className="text-red-500 font-bold">incorrecte</span>, vous n&apos;obtenez aucun
-          point.
-        </li>
-      </ul>
-      <p className="2xl:text-2xl text-center">
-        ⏳ Vous avez{' '}
-        <u>
-          <strong>{round.thinkingTime} secondes</strong>
-        </u>{' '}
-        pour répondre, faute de quoi votre essai sera invalidé !
-      </p>
-      <p className="2xl:text-2xl text-center">
-        L&apos;ordre de passage ={' '}
-        {round.order > 0 ? `Le classement inversé de la manche ${round.order}` : 'Un ordre aléatoire'}.
-      </p>
+      <RuleP>{formatMessage(messages.basicInstruction)}</RuleP>
+      <RuleList>
+        <li>{fmt(formatMessage, messages.basicCorrect, { points: round.rewardsPerQuestion, ...richTags })}</li>
+        <li>{fmt(formatMessage, messages.basicIncorrect, richTags)}</li>
+      </RuleList>
+      <ThinkingTimeRule seconds={round.thinkingTime} />
+      <TurnOrderRule order={round.order} />
     </>
   );
 }
 
-function SpecialRoundRules({ round }) {
+function SpecialRoundRules() {
+  const { formatMessage } = useIntl();
   return (
     <>
-      <p className="2xl:text-2xl text-center font-bold">
-        🗣️ Répondez directement aux questions, il n&apos;y a pas de proposition de réponses.
-      </p>
-      <p className="2xl:text-2xl text-center">⚠️ Attention, il faut être précis dans sa réponse!</p>
-      <p className="2xl:text-2xl text-center">💜 Restez calme, ça va bien se passer.</p>
+      <RuleP>
+        <strong>{formatMessage(messages.specialInstruction)}</strong>
+      </RuleP>
+      <RuleP>{formatMessage(messages.specialPrecision)}</RuleP>
+      <RuleP>{formatMessage(messages.specialCalm)}</RuleP>
     </>
   );
 }
 
-function MixedRoundRules({ round }) {
-  return (
-    <>
-      <p className="2xl:text-2xl text-center">Les règles dépendent du type de la question.</p>
-    </>
-  );
+function MixedRoundRules() {
+  const { formatMessage } = useIntl();
+  return <RuleP>{formatMessage(messages.mixedInstruction)}</RuleP>;
 }

@@ -6,17 +6,19 @@ import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
 import { topicSchema } from '@/frontend/utils/forms/topics';
-import {
-  QUESTION_EXPLANATION_LABEL,
-  QUESTION_HINTS_REMARKS,
-  QUESTION_SOURCE_LABEL,
-  QUESTION_TITLE_LABEL,
-  SELECT_PROPOSAL,
-} from '@/frontend/utils/forms/questions';
+import { messages as questionMessages } from '@/frontend/utils/forms/questions';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { stringSchema } from '@/frontend/utils/forms/forms';
+
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.forms.submitQuestion.nagui', {
+  answerIdxLabel: 'What proposal is the correct one ?',
+  duoIdxLabel: 'What other proposal do you want for the duo?',
+});
 
 import { MyTextInput, MySelect, StyledErrorMessage } from '@/frontend/components/forms/StyledFormComponents';
 import { Wizard, WizardStep } from '@/frontend/components/forms/MultiStepComponents';
@@ -35,25 +37,7 @@ const QUESTION_TYPE = QuestionType.NAGUI;
 
 const NAGUI_CHOICES_EXAMPLE = ['101', '303', '404', '506'];
 
-const NAGUI_SOURCE_EXAMPLE = {
-  en: 'The Matrix',
-  'fr-FR': 'Matrix',
-};
-
-const NAGUI_TITLE_EXAMPLE = {
-  en: "What is Neo's room number?",
-  'fr-FR': 'Quel est le numéro de chambre de Neo ?',
-};
-
-const NAGUI_NOTE_EXAMPLE = '';
-
-const NAGUI_EXPLANATION_EXAMPLE = {
-  en: "101 is an allusion to Neo's destiny as the One. 101 is also the number usually attributed to a course or manual for beginners in a particular field (in this case it represents the beginning of Neo's path to hacker enlightenment). It can also be seen as an allusion to the Room 101 of George Orwell's novel 'Nineteen Eighty-Four'. It is a torture chamber in the 'Ministry of Love' in which a prisoner is subjected to his or her own worst nightmare, fear or phobia.",
-  'fr-FR':
-    "101 est une allusion au destin de Neo en tant que l'Unique. 101 est également le nombre généralement attribué à un cours ou à un manuel destiné aux débutants dans un domaine particulier (dans ce cas, il représente le début du chemin de Neo vers l'illumination du pirate informatique). On peut également y voir une allusion à la salle 101 du roman '1984' de George Orwell. Il s'agit d'une chambre de torture du 'Ministère de l'Amour' dans laquelle un prisonnier est soumis à son pire cauchemar, à sa peur ou à sa phobie,",
-};
-
-export default function SubmitNaguiQuestionForm({ userId, lang, ...props }) {
+export default function SubmitNaguiQuestionForm({ userId, ...props }) {
   const router = useRouter();
 
   const [submitNaguiQuestion, isSubmitting] = useAsyncAction(async (values) => {
@@ -112,7 +96,6 @@ export default function SubmitNaguiQuestionForm({ userId, lang, ...props }) {
           title: stringSchema(NaguiQuestion.TITLE_MAX_LENGTH),
           note: stringSchema(NaguiQuestion.NOTE_MAX_LENGTH, false),
         })}
-        lang={lang}
       />
 
       <EnterChoicesStep
@@ -138,7 +121,6 @@ export default function SubmitNaguiQuestionForm({ userId, lang, ...props }) {
           //         return this.parent.answerIdx !== this.parent.duoIdx
           //     })
         })}
-        lang={lang}
       >
         {/* TODO */}
       </EnterChoicesStep>
@@ -146,37 +128,38 @@ export default function SubmitNaguiQuestionForm({ userId, lang, ...props }) {
   );
 }
 
-function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
+function GeneralInfoStep({ onSubmit, validationSchema }) {
+  const intl = useIntl();
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
-      <SelectLanguage lang={lang} name="lang" validationSchema={validationSchema} />
+      <SelectLanguage name="lang" validationSchema={validationSchema} />
 
-      <SelectQuestionTopic lang={lang} name="topic" validationSchema={validationSchema} />
+      <SelectQuestionTopic name="topic" validationSchema={validationSchema} />
 
       <MyTextInput
         // label={`${stringRequiredAsterisk(validationSchema, 'source')}To what work is this question related to? ${numCharsIndicator(values['source'], NAGUI_SOURCE_MAX_LENGTH)}`}
-        label={QUESTION_SOURCE_LABEL[lang]}
+        label={intl.formatMessage(questionMessages.questionSource)}
         name="source"
         type="text"
-        placeholder={NAGUI_SOURCE_EXAMPLE[lang]}
+        placeholder="The Matrix"
         validationSchema={validationSchema}
         maxLength={NaguiQuestion.SOURCE_MAX_LENGTH}
       />
 
       <MyTextInput
-        label={QUESTION_TITLE_LABEL[lang]}
+        label={intl.formatMessage(questionMessages.questionTitle)}
         name="title"
         type="text"
-        placeholder={NAGUI_TITLE_EXAMPLE[lang]}
+        placeholder="What is Neo's room number?"
         validationSchema={validationSchema}
         maxLength={NaguiQuestion.TITLE_MAX_LENGTH}
       />
 
       <MyTextInput
-        label={QUESTION_HINTS_REMARKS[lang]}
+        label={intl.formatMessage(questionMessages.hintsRemarks)}
         name="note"
         type="text"
-        placeholder={NAGUI_NOTE_EXAMPLE[lang]}
+        placeholder=""
         validationSchema={validationSchema}
         maxLength={NaguiQuestion.NOTE_MAX_LENGTH}
       />
@@ -184,7 +167,8 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
   );
 }
 
-function EnterChoicesStep({ onSubmit, validationSchema, lang }) {
+function EnterChoicesStep({ onSubmit, validationSchema }) {
+  const intl = useIntl();
   const formik = useFormikContext();
 
   const values = formik.values;
@@ -220,12 +204,12 @@ function EnterChoicesStep({ onSubmit, validationSchema, lang }) {
       <ChoiceArrayErrors />
 
       <MySelect
-        label={NAGUI_ANSWER_IDX_LABEL[lang]}
+        label={intl.formatMessage(messages.answerIdxLabel)}
         name="answerIdx"
         validationSchema={validationSchema}
         onChange={(e) => formik.setFieldValue('answerIdx', parseInt(e.target.value, 10))}
       >
-        <option value="">{SELECT_PROPOSAL[lang]}</option>
+        <option value="">{intl.formatMessage(questionMessages.selectProposal)}</option>
         {values.choices.map((choice, index) => (
           <option key={index} value={index}>
             {NaguiQuestion.CHOICES[index]}. {choice}
@@ -234,22 +218,22 @@ function EnterChoicesStep({ onSubmit, validationSchema, lang }) {
       </MySelect>
 
       <MyTextInput
-        label={QUESTION_EXPLANATION_LABEL[lang]}
+        label={intl.formatMessage(questionMessages.explanation)}
         name="explanation"
         type="text"
-        placeholder={NAGUI_EXPLANATION_EXAMPLE[lang]}
+        placeholder="101 is an allusion to Neo's destiny as the One."
         validationSchema={validationSchema}
         maxLength={NaguiQuestion.EXPLANATION_MAX_LENGTH}
       />
 
       {values.answerIdx >= 0 && (
         <MySelect
-          label={NAGUI_DUO_IDX_LABEL[lang]}
+          label={intl.formatMessage(messages.duoIdxLabel)}
           name="duoIdx"
           validationSchema={validationSchema}
           onChange={(e) => formik.setFieldValue('duoIdx', parseInt(e.target.value, 10))}
         >
-          <option value="">{SELECT_PROPOSAL[lang]}</option>
+          <option value="">{intl.formatMessage(questionMessages.selectProposal)}</option>
           {values.choices.map(
             (choice, index) =>
               index !== values.answerIdx && (
@@ -263,13 +247,3 @@ function EnterChoicesStep({ onSubmit, validationSchema, lang }) {
     </WizardStep>
   );
 }
-
-const NAGUI_ANSWER_IDX_LABEL = {
-  en: 'What proposal is the correct one ?',
-  'fr-FR': 'Quelle proposition est la bonne?',
-};
-
-const NAGUI_DUO_IDX_LABEL = {
-  en: 'What other proposal do you want for the duo?',
-  'fr-FR': 'Quelle autre proposition voulez-vous pour le duo ?',
-};

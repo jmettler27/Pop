@@ -4,7 +4,7 @@ import { RoundTypeIcon, ROUND_HEADER_TEXT } from '@/backend/utils/rounds';
 
 import { useGameContext, useGameRepositoriesContext } from '@/frontend/contexts';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import RoundStartBody from '@/frontend/components/game/middle-pane/round/RoundStartBody';
@@ -12,9 +12,12 @@ import RoundEndBody from '@/frontend/components/game/middle-pane/round/RoundEndB
 
 import { useParams } from 'next/navigation';
 
+import globalMessages from '@/i18n/globalMessages';
+
 export default function RoundMiddlePane() {
   const game = useGameContext();
   const params = useParams();
+  const intl = useIntl();
 
   const { roundRepo } = useGameRepositoriesContext();
   const { round, loading: roundLoading, error: roundError } = roundRepo.useRound(game.currentRound);
@@ -55,13 +58,14 @@ export default function RoundMiddlePane() {
   );
 }
 
-function RoundHeader({ round, lang = DEFAULT_LOCALE }) {
+function RoundHeader({ round }) {
+  const intl = useIntl();
   return (
     <div className="flex flex-row items-center justify-center space-x-1">
       <RoundTypeIcon roundType={round.type} fontSize={50} />
       <h1 className="2xl:text-5xl">
         <span className="font-bold">
-          {ROUND_HEADER_TEXT[lang]} {round.order + 1}
+          {intl.formatMessage(globalMessages.round)} {round.order + 1}
         </span>{' '}
         - <i>{round.title}</i>{' '}
       </h1>

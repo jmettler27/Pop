@@ -6,17 +6,22 @@ import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
 import { topicSchema } from '@/frontend/utils/forms/topics';
-import {
-  ADD_ITEM,
-  QUESTION_HINTS_REMARKS,
-  QUESTION_ITEM,
-  QUESTION_TITLE_LABEL,
-  SELECT_PROPOSAL,
-} from '@/frontend/utils/forms/questions';
+import { messages as questionMessages } from '@/frontend/utils/forms/questions';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { stringSchema } from '@/frontend/utils/forms/forms';
+
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.forms.submitQuestion.oddOneOut', {
+  numItemsAllowed: 'Number of proposals allowed',
+  enterItems: 'All the proposals must be correct, except for one (the odd one out).',
+  proposal: 'Proposal',
+  explanation: 'Explanation',
+  answerIdxLabel: 'What proposal is the odd one?',
+});
 
 import { MyTextInput, MySelect, StyledErrorMessage } from '@/frontend/components/forms/StyledFormComponents';
 import { Wizard, WizardStep } from '@/frontend/components/forms/MultiStepComponents';
@@ -35,16 +40,6 @@ import AddIcon from '@mui/icons-material/Add';
 import Box from '@mui/system/Box';
 
 const QUESTION_TYPE = QuestionType.ODD_ONE_OUT;
-
-const OOO_TITLE_EXAMPLE = {
-  en: 'Which films feature one or more serial killers?',
-  'fr-FR': 'Quels films mettent en scène un ou plusieurs tueurs en série?',
-};
-
-const OOO_NOTE_EXAMPLE = {
-  en: 'Hint: The odd one out is a zombie film.',
-  'fr-FR': "Indice: L'intrus est un film de zombies.",
-};
 
 const OOO_ITEMS_EXAMPLE = {
   en: [
@@ -68,7 +63,7 @@ const OOO_ITEMS_EXAMPLE = {
     },
     { title: 'American Psycho (🇺🇸, 2000)', explanation: 'Patrick Bateman.' },
   ],
-  'fr-FR': [
+  fr: [
     {
       explanation: 'Faux documentaire belge sur un tueur en série, incarné par Benoît Poelvoorde',
       title: 'C’est arrivé près de chez vous (1992)',
@@ -103,7 +98,7 @@ const oddOneOutItemsSchema = () =>
     .max(OddOneOutQuestion.MAX_NUM_ITEMS, `There must be at most ${OddOneOutQuestion.MAX_NUM_ITEMS} items`)
     .required('Required.');
 
-export default function SubmitOddOneOutQuestionForm({ userId, lang, ...props }) {
+export default function SubmitOddOneOutQuestionForm({ userId, ...props }) {
   const router = useRouter();
 
   const [submitOOOQuestion, isSubmitting] = useAsyncAction(async (values) => {
@@ -156,7 +151,6 @@ export default function SubmitOddOneOutQuestionForm({ userId, lang, ...props }) 
           title: stringSchema(OddOneOutQuestion.TITLE_MAX_LENGTH),
           note: stringSchema(OddOneOutQuestion.NOTE_MAX_LENGTH, false),
         })}
-        lang={lang}
       />
 
       {/* Step 2: Proposals */}
@@ -169,33 +163,33 @@ export default function SubmitOddOneOutQuestionForm({ userId, lang, ...props }) 
             .max(OddOneOutQuestion.MAX_NUM_ITEMS - 1, 'Required.')
             .required('Required.'),
         })}
-        lang={lang}
       />
     </Wizard>
   );
 }
 
-function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
+function GeneralInfoStep({ onSubmit, validationSchema }) {
+  const intl = useIntl();
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
-      <SelectLanguage lang={lang} name="lang" validationSchema={validationSchema} />
+      <SelectLanguage name="lang" validationSchema={validationSchema} />
 
-      <SelectQuestionTopic lang={lang} name="topic" validationSchema={validationSchema} />
+      <SelectQuestionTopic name="topic" validationSchema={validationSchema} />
 
       <MyTextInput
-        label={QUESTION_TITLE_LABEL[lang]}
+        label={intl.formatMessage(questionMessages.questionTitle)}
         name="title"
         type="text"
-        placeholder={OOO_TITLE_EXAMPLE[lang]}
+        placeholder="Which films feature one or more serial killers?"
         validationSchema={validationSchema}
         maxLength={OddOneOutQuestion.TITLE_MAX_LENGTH}
       />
 
       <MyTextInput
-        label={QUESTION_HINTS_REMARKS[lang]}
+        label={intl.formatMessage(questionMessages.hintsRemarks)}
         name="note"
         type="text"
-        placeholder={OOO_NOTE_EXAMPLE[lang]}
+        placeholder="Hint: The odd one out is a zombie film."
         validationSchema={validationSchema}
         maxLength={OddOneOutQuestion.NOTE_MAX_LENGTH}
       />
@@ -203,7 +197,8 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
   );
 }
 
-function EnterItemsStep({ onSubmit, validationSchema, lang }) {
+function EnterItemsStep({ onSubmit, validationSchema }) {
+  const intl = useIntl();
   const formik = useFormikContext();
 
   const values = formik.values;
@@ -220,15 +215,16 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
     typeof errors.items === 'array' &&
     errors.items[index] && <StyledErrorMessage>{errors.items[index].explanation}</StyledErrorMessage>;
 
-  const exampleItems = OOO_ITEMS_EXAMPLE[lang];
+  const exampleItems = intl.locale === 'fr' ? OOO_ITEMS_EXAMPLE['fr'] : OOO_ITEMS_EXAMPLE['en'];
 
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
       <p>
-        {NUM_ITEMS_ALLOWED[lang]}: {OddOneOutQuestion.MIN_NUM_ITEMS}-{OddOneOutQuestion.MAX_NUM_ITEMS}.
+        {intl.formatMessage(messages.numItemsAllowed)}: {OddOneOutQuestion.MIN_NUM_ITEMS}-
+        {OddOneOutQuestion.MAX_NUM_ITEMS}.
       </p>
 
-      <p>{ENTER_ITEMS[lang]}</p>
+      <p>{intl.formatMessage(messages.enterItems)}</p>
 
       <FieldArray name="items">
         {({ remove, push }) => (
@@ -237,7 +233,7 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
               values.items.map((item, idx) => (
                 <Box key={idx} component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: '500px' }}>
                   <span className="text-lg">
-                    {QUESTION_ITEM[lang]} #{idx + 1}
+                    {intl.formatMessage(questionMessages.item)} #{idx + 1}
                   </span>
 
                   <IconButton color="error" onClick={() => remove(idx)}>
@@ -245,7 +241,7 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
                   </IconButton>
 
                   <MyTextInput
-                    label={`${PROPOSAL[lang]} #${idx + 1}`}
+                    label={`${intl.formatMessage(messages.proposal)} #${idx + 1}`}
                     name={`items.${idx}.title`}
                     type="text"
                     placeholder={exampleItems[idx % exampleItems.length].title}
@@ -256,7 +252,7 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
                   <TitleError index={idx} />
 
                   <MyTextInput
-                    label={`${EXPLANATION[lang]} #${idx + 1}`}
+                    label={`${intl.formatMessage(messages.explanation)} #${idx + 1}`}
                     name={`items.${idx}.explanation`}
                     type="text"
                     placeholder={exampleItems[idx % exampleItems.length].explanation}
@@ -268,7 +264,7 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
                 </Box>
               ))}
             <Button variant="outlined" startIcon={<AddIcon />} onClick={() => push({ title: '', explanation: '' })}>
-              {ADD_ITEM[lang]}
+              {intl.formatMessage(questionMessages.addItem)}
             </Button>
           </>
         )}
@@ -278,12 +274,12 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
 
       {!errors.items && formik.touched.items && (
         <MySelect
-          label={ANSWER_IDX_LABEL[lang]}
+          label={intl.formatMessage(messages.answerIdxLabel)}
           name="answerIdx"
           validationSchema={validationSchema}
           onChange={(e) => formik.setFieldValue('answerIdx', parseInt(e.target.value, 10))}
         >
-          <option value="">{SELECT_PROPOSAL[lang]}</option>
+          <option value="">{intl.formatMessage(questionMessages.selectProposal)}</option>
           {values.items.map((item, index) => (
             <option key={index} value={index}>
               {item.title}
@@ -294,28 +290,3 @@ function EnterItemsStep({ onSubmit, validationSchema, lang }) {
     </WizardStep>
   );
 }
-
-const NUM_ITEMS_ALLOWED = {
-  en: 'Number of proposals allowed',
-  'fr-FR': 'Nombre de propositions autorisées',
-};
-
-const ENTER_ITEMS = {
-  en: 'All the proposals must be correct, except for one (the odd one out).',
-  'fr-FR': "Toutes les propositions doivent être correctes, sauf une (l'intrus).",
-};
-
-const PROPOSAL = {
-  en: 'Proposal',
-  'fr-FR': 'Proposition',
-};
-
-const EXPLANATION = {
-  en: 'Explanation',
-  'fr-FR': 'Explication',
-};
-
-const ANSWER_IDX_LABEL = {
-  en: 'What proposal is the odd one?',
-  'fr-FR': "Qui est l'intrus ?",
-};

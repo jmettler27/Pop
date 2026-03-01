@@ -6,10 +6,12 @@ import { MCQQuestion } from '@/backend/models/questions/MCQ';
 import { NaguiQuestion } from '@/backend/models/questions/Nagui';
 import { prependTopicWithEmoji, topicToEmoji } from '@/backend/models/Topic';
 
-import { QUESTION_ELEMENT_TO_EMOJI, QUESTION_ELEMENT_TO_TITLE } from '@/backend/utils/question/question';
+import { QUESTION_ELEMENT_TO_EMOJI, QUESTION_ELEMENT_TO_TITLE } from '@/backend/utils/question';
 import { timestampToDate } from '@/backend/utils/time';
 
-import { DEFAULT_LOCALE, LOCALE_TO_EMOJI } from '@/frontend/utils/locales';
+import { LOCALE_TO_EMOJI } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 
 import { CardTitle, CardHeader, CardContent, Card, CardFooter } from '@/frontend/components/card';
 
@@ -20,6 +22,11 @@ import React from 'react';
 import clsx from 'clsx';
 
 import { Divider, Tooltip } from '@mui/material';
+
+const messages = defineMessages('frontend.questions.QuestionCard', {
+  thinking: 'Thinking',
+  enumeration: 'Enumeration',
+});
 
 export function QuestionCard({ baseQuestion, showType = false }) {
   return (
@@ -42,7 +49,8 @@ export function QuestionCard({ baseQuestion, showType = false }) {
   );
 }
 
-export function QuestionCardTitle({ baseQuestion, showType = false, lang = DEFAULT_LOCALE }) {
+export function QuestionCardTitle({ baseQuestion, showType = false }) {
+  const intl = useIntl();
   const emoji = questionTypeToEmoji(baseQuestion.type);
 
   switch (baseQuestion.type) {
@@ -72,7 +80,7 @@ export function QuestionCardTitle({ baseQuestion, showType = false, lang = DEFAU
       return (
         <span>
           {showType && emoji}
-          {prependTopicWithEmoji(baseQuestion.topic, lang)}
+          {prependTopicWithEmoji(baseQuestion.topic, intl.locale)}
         </span>
       );
     case QuestionType.REORDERING:
@@ -95,7 +103,8 @@ export function QuestionCardTitle({ baseQuestion, showType = false, lang = DEFAU
   }
 }
 
-function QuestionCardFooter({ baseQuestion, lang = DEFAULT_LOCALE }) {
+function QuestionCardFooter({ baseQuestion }) {
+  const intl = useIntl();
   const userRepository = new UserRepository();
   const { user, loading, error } = userRepository.useUserOnce(baseQuestion.createdBy);
   if (error) {
@@ -110,8 +119,8 @@ function QuestionCardFooter({ baseQuestion, lang = DEFAULT_LOCALE }) {
 
   return (
     <p className="text-xs sm:text-sm 2xl:text-base dark:text-white">
-      {LOCALE_TO_EMOJI[baseQuestion.lang]} {QUESTION_ELEMENT_TO_TITLE[lang]['createdBy']} <strong>{user.name}</strong> (
-      {timestampToDate(baseQuestion.createdAt, lang)})
+      {LOCALE_TO_EMOJI[baseQuestion.lang]} {QUESTION_ELEMENT_TO_TITLE[intl.locale]['createdBy']}{' '}
+      <strong>{user.name}</strong> ({timestampToDate(baseQuestion.createdAt, intl.locale)})
     </p>
   );
 }
@@ -392,7 +401,8 @@ const LabellingCardMainContent = ({ baseQuestion }) => {
 
 const ENUM_MAX_NUM_ELEMENTS = 10;
 
-const EnumCardMainContent = ({ baseQuestion, lang = DEFAULT_LOCALE }) => {
+const EnumCardMainContent = ({ baseQuestion }) => {
+  const intl = useIntl();
   const note = baseQuestion.note;
   const maxIsKnown = baseQuestion.maxIsKnown;
   const thinkingTime = baseQuestion.thinkingTime;
@@ -431,24 +441,14 @@ const EnumCardMainContent = ({ baseQuestion, lang = DEFAULT_LOCALE }) => {
       <Divider className="my-2 bg-slate-600" />
       <div className="flex flex-col w-full">
         <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
-          🤔 {ENUM_THINKING[lang]}: <strong>{thinkingTime}s</strong>
+          🤔 {intl.formatMessage(messages.thinking)}: <strong>{thinkingTime}s</strong>
         </span>
         <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
-          🗣️ {ENUM_ENUMERATION[lang]}: <strong>{challengeTime}s</strong>
+          🗣️ {intl.formatMessage(messages.enumeration)}: <strong>{challengeTime}s</strong>
         </span>
       </div>
     </>
   );
-};
-
-const ENUM_THINKING = {
-  en: 'Thinking',
-  'fr-FR': 'Réflexion',
-};
-
-const ENUM_ENUMERATION = {
-  en: 'Enumeration',
-  'fr-FR': 'Énumération',
 };
 
 const OOOCardMainContent = ({ baseQuestion }) => {

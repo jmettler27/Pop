@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "prettier-write": "npx prettier src --write",
-    "prettier-check": "npx prettier src --check"
+    "prettier-check": "npx prettier src --check",
+    "update-i18n": "node src/i18n/update-i18n.mjs"
   },
   "dependencies": {
     "@auth/firebase-adapter": "^2.7.1",
@@ -50,6 +51,7 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-firebase-hooks": "^5.1.1",
+    "react-intl": "^6.8.9",
     "sass": "^1.77.6",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",

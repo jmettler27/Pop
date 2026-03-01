@@ -3,12 +3,7 @@ import GameQuestionService from '@/backend/services/question/GameQuestionService
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-import {
-  GameNaguiQuestion,
-  NAGUI_OPTION_TO_SOUND,
-  NAGUI_OPTIONS,
-  NaguiQuestion,
-} from '@/backend/models/questions/Nagui';
+import { GameNaguiQuestion, NAGUI_OPTION_TO_SOUND, NaguiQuestion } from '@/backend/models/questions/Nagui';
 import { PlayerStatus } from '@/backend/models/users/Player';
 
 import { runTransaction } from 'firebase/firestore';

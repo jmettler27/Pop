@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { useGameContext, useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
 import GameChooserOrder from '@/frontend/components/game/GameChooserOrder';
@@ -59,7 +59,7 @@ function BasicQuestionController({}) {
   }
 
   switch (myRole) {
-    case UserRole.ORGANIZER:
+    case ParticipantRole.ORGANIZER:
       return <BasicQuestionOrganizerController gameQuestion={gameQuestion} />;
     default:
       return <BasicQuestionSpectatorController gameQuestion={gameQuestion} />;

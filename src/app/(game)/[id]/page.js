@@ -1,6 +1,6 @@
 'use client';
 
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
 import { useGameRepositories } from '@/backend/repositories/useGameRepositories';
@@ -43,12 +43,12 @@ export default function GamePage() {
 
   // Determine user's role and team
   const role = organizers?.some((o) => o.id === session.user.id)
-    ? UserRole.ORGANIZER
+    ? ParticipantRole.ORGANIZER
     : players?.find((p) => p.id === session.user.id)
-      ? UserRole.PLAYER
-      : UserRole.SPECTATOR;
+      ? ParticipantRole.PLAYER
+      : ParticipantRole.SPECTATOR;
 
-  const teamId = role === UserRole.PLAYER ? players.find((p) => p.id === session.user.id)?.teamId : null;
+  const teamId = role === ParticipantRole.PLAYER ? players.find((p) => p.id === session.user.id)?.teamId : null;
 
   return (
     <UserContext.Provider value={session.user}>

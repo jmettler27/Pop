@@ -5,7 +5,7 @@ import GameMatchingQuestionRepository from '@/backend/repositories/question/Game
 import RoundService from '@/backend/services/round/RoundService';
 import { serverTimestamp } from 'firebase/firestore';
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question/question';
+import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { RoundType } from '@/backend/models/rounds/RoundType';
 

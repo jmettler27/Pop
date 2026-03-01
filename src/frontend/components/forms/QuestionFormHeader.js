@@ -1,15 +1,17 @@
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 import { prependQuestionTypeWithEmoji } from '@/backend/models/questions/QuestionType';
 
-export default function QuestionFormHeader({ questionType, lang = DEFAULT_LOCALE }) {
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.forms.QuestionFormHeader', {
+  submitQuestion: 'Submit a question',
+});
+
+export default function QuestionFormHeader({ questionType }) {
+  const intl = useIntl();
   return (
     <h1 className="text-lg sm:text-xl xl:text-3xl 2xl:text-4xl font-bold text-white mb-4 drop-shadow-lg">
-      {SUBMIT_QUESTION_LABEL[lang]} ({prependQuestionTypeWithEmoji(questionType, lang)})
+      {intl.formatMessage(messages.submitQuestion)} ({prependQuestionTypeWithEmoji(questionType, intl.locale)})
     </h1>
   );
 }
-
-const SUBMIT_QUESTION_LABEL = {
-  en: 'Submit a question',
-  'fr-FR': 'Soumettre une question',
-};

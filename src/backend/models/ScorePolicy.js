@@ -19,7 +19,7 @@ export const ScorePolicyTypeToTitle = {
     [ScorePolicyType.RANKING]: 'Ranking in round',
     [ScorePolicyType.COMPLETION_RATE]: 'Completion rate of round',
   },
-  'fr-FR': {
+  fr: {
     [ScorePolicyType.RANKING]: 'Classement dans la manche',
     [ScorePolicyType.COMPLETION_RATE]: 'Taux de complétion de la manche',
   },

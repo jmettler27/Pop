@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { useGameContext, useRoleContext } from '@/frontend/contexts';
 
@@ -56,9 +56,9 @@ function BuzzerController({ baseQuestion, questionPlayers }) {
   console.log('BuzzerController myRole', myRole);
 
   switch (myRole) {
-    case UserRole.PLAYER:
+    case ParticipantRole.PLAYER:
       return <BuzzerPlayerController questionPlayers={questionPlayers} />;
-    case UserRole.ORGANIZER:
+    case ParticipantRole.ORGANIZER:
       return <BuzzerOrganizerController baseQuestion={baseQuestion} questionPlayers={questionPlayers} />;
     default:
       return <BuzzerSpectatorController questionPlayers={questionPlayers} />;

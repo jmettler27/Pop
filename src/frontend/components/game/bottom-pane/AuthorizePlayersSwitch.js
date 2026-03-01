@@ -1,14 +1,19 @@
 import { togglePlayerAuthorization } from '@/backend/services/player/actions';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { useParams } from 'next/navigation';
 
 import { FormControlLabel, Switch } from '@mui/material';
 
-export default function AuthorizePlayersSwitch({ authorized, lang = DEFAULT_LOCALE }) {
+const messages = defineMessages('frontend.game.bottom.AuthorizePlayersSwitch', {
+  authorizeLabel: 'Authorize players',
+});
+
+export default function AuthorizePlayersSwitch({ authorized }) {
+  const intl = useIntl();
   const { id: gameId } = useParams();
 
   const [handleAuthorizePlayers, isAuthorizing] = useAsyncAction(async () => {
@@ -25,12 +30,7 @@ export default function AuthorizePlayersSwitch({ authorized, lang = DEFAULT_LOCA
           inputProps={{ 'aria-label': 'controlled' }}
         />
       }
-      label={AUTHORIZE_PLAYERS_SWITCH_LABEL[lang]}
+      label={intl.formatMessage(messages.authorizeLabel)}
     />
   );
 }
-
-const AUTHORIZE_PLAYERS_SWITCH_LABEL = {
-  en: 'Authorize players',
-  'fr-FR': 'Autoriser les joueurs',
-};

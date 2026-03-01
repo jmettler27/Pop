@@ -6,11 +6,20 @@ import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
 import { topicSchema } from '@/frontend/utils/forms/topics';
-import { QUESTION_ANSWER_LABEL, QUESTION_TITLE_LABEL } from '@/frontend/utils/forms/questions';
+import { messages as questionMessages } from '@/frontend/utils/forms/questions';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { numCharsIndicator, requiredStringInArrayFieldIndicator, stringSchema } from '@/frontend/utils/forms/forms';
+
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.forms.submitQuestion.progressiveClues', {
+  numCluesAllowed: 'Number of clues allowed',
+  clue: 'Clue',
+  addClue: 'Add clue',
+});
 import { getFileFromRef, imageFileSchema } from '@/frontend/utils/forms/files';
 
 import { MyTextInput, StyledErrorMessage } from '@/frontend/components/forms/StyledFormComponents';
@@ -33,16 +42,6 @@ import { IconButton } from '@mui/material';
 
 const QUESTION_TYPE = QuestionType.PROGRESSIVE_CLUES;
 
-const PROGRESSIVE_CLUES_TITLE_EXAMPLE = {
-  en: 'Actor',
-  'fr-FR': 'Acteur',
-};
-
-const PROGRESSIVE_CLUES_ANSWER_TITLE_EXAMPLE = {
-  en: 'Nicolas Cage',
-  'fr-FR': 'Nicolas Cage',
-};
-
 const PROGRESSIVE_CLUES_CLUES_EXAMPLE = {
   en: [
     'My actor was born in the 1960s.',
@@ -56,7 +55,7 @@ const PROGRESSIVE_CLUES_CLUES_EXAMPLE = {
     '...named Benjamin Gates.',
     'Nicolas in a cage.',
   ],
-  'fr-FR': [
+  fr: [
     'Mon acteur est né dans les années 1960',
     'En tant que grand fan de comics, mon nom de scène fait référence au nom de famille d’un super-héros Marvel.',
     'De plus, j’ai prêté ma voix à Superman et à Spider-Man.',
@@ -90,7 +89,7 @@ const progressiveCluesSchema = () =>
       `There can be at most ${ProgressiveCluesQuestion.MAX_NUM_CLUES} clues.`
     );
 
-export default function SubmitProgressiveCluesQuestionForm({ userId, lang, ...props }) {
+export default function SubmitProgressiveCluesQuestionForm({ userId, ...props }) {
   const router = useRouter();
 
   const [submitProgressiveCluesQuestion, isSubmitting] = useAsyncAction(async (values, fileRef) => {
@@ -158,7 +157,6 @@ export default function SubmitProgressiveCluesQuestionForm({ userId, lang, ...pr
           title: stringSchema(ProgressiveCluesQuestion.TITLE_MAX_LENGTH),
           answer_title: stringSchema(ProgressiveCluesQuestion.ANSWER_TITLE_MAX_LENGTH),
         })}
-        lang={lang}
       />
 
       {/* Step 2: clues */}
@@ -167,7 +165,6 @@ export default function SubmitProgressiveCluesQuestionForm({ userId, lang, ...pr
         validationSchema={Yup.object({
           clues: progressiveCluesSchema(),
         })}
-        lang={lang}
       />
 
       {/* Step 3: image */}
@@ -177,33 +174,33 @@ export default function SubmitProgressiveCluesQuestionForm({ userId, lang, ...pr
           files: imageFileSchema(fileRef, false),
         })}
         fileRef={fileRef}
-        lang={lang}
       />
     </Wizard>
   );
 }
 
-function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
+function GeneralInfoStep({ onSubmit, validationSchema }) {
+  const intl = useIntl();
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
-      <SelectLanguage lang={lang} name="lang" validationSchema={validationSchema} />
+      <SelectLanguage name="lang" validationSchema={validationSchema} />
 
-      <SelectQuestionTopic lang={lang} name="topic" validationSchema={validationSchema} />
+      <SelectQuestionTopic name="topic" validationSchema={validationSchema} />
 
       <MyTextInput
-        label={QUESTION_TITLE_LABEL[lang]}
+        label={intl.formatMessage(questionMessages.questionTitle)}
         name="title"
         type="text"
-        placeholder={PROGRESSIVE_CLUES_TITLE_EXAMPLE[lang]}
+        placeholder="Actor"
         validationSchema={validationSchema}
         maxLength={ProgressiveCluesQuestion.TITLE_MAX_LENGTH}
       />
 
       <MyTextInput
-        label={QUESTION_ANSWER_LABEL[lang]}
+        label={intl.formatMessage(questionMessages.answer)}
         name="answer_title"
         type="text"
-        placeholder={PROGRESSIVE_CLUES_ANSWER_TITLE_EXAMPLE[lang]}
+        placeholder="Nicolas Cage"
         validationSchema={validationSchema}
         maxLength={ProgressiveCluesQuestion.ANSWER_TITLE_MAX_LENGTH}
       />
@@ -211,7 +208,8 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
   );
 }
 
-function EnterCluesStep({ onSubmit, validationSchema, lang }) {
+function EnterCluesStep({ onSubmit, validationSchema }) {
+  const intl = useIntl();
   const formik = useFormikContext();
 
   const values = formik.values;
@@ -232,7 +230,8 @@ function EnterCluesStep({ onSubmit, validationSchema, lang }) {
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
       <p>
-        {NUM_CLUES_ALLOWED[lang]}: {ProgressiveCluesQuestion.MIN_NUM_CLUES}-{ProgressiveCluesQuestion.MAX_NUM_CLUES}
+        {intl.formatMessage(messages.numCluesAllowed)}: {ProgressiveCluesQuestion.MIN_NUM_CLUES}-
+        {ProgressiveCluesQuestion.MAX_NUM_CLUES}
       </p>
 
       <FieldArray name="clues">
@@ -242,16 +241,19 @@ function EnterCluesStep({ onSubmit, validationSchema, lang }) {
               values.clues.map((clue, index) => (
                 <div className="row" key={index}>
                   <label htmlFor={'clues.' + index}>
-                    {requiredStringInArrayFieldIndicator(validationSchema, 'clues')}
-                    {CLUE[lang]} #{index + 1} {numCharsIndicator(clue, ProgressiveCluesQuestion.CLUE_MAX_LENGTH)}
+                    {requiredStringInArrayFieldIndicator(validationSchema, 'clues', intl)}
+                    {intl.formatMessage(messages.clue)} #{index + 1}{' '}
+                    {numCharsIndicator(clue, ProgressiveCluesQuestion.CLUE_MAX_LENGTH)}
                   </label>
                   <Field
                     name={'clues.' + index}
-                    placeholder={
-                      index < PROGRESSIVE_CLUES_CLUES_EXAMPLE[lang].length
-                        ? PROGRESSIVE_CLUES_CLUES_EXAMPLE[lang][index]
-                        : 'Some clue'
-                    }
+                    placeholder={(() => {
+                      const clues =
+                        intl.locale === 'fr'
+                          ? PROGRESSIVE_CLUES_CLUES_EXAMPLE['fr']
+                          : PROGRESSIVE_CLUES_CLUES_EXAMPLE['en'];
+                      return index < clues.length ? clues[index] : 'Some clue';
+                    })()}
                     type="text"
                   />
                   {/* <ClueTextField index={index} /> */}
@@ -264,7 +266,7 @@ function EnterCluesStep({ onSubmit, validationSchema, lang }) {
                 </div>
               ))}
             <Button variant="outlined" startIcon={<AddIcon />} onClick={() => push('')}>
-              {ADD_CLUE[lang]}
+              {intl.formatMessage(messages.addClue)}
             </Button>
           </div>
         )}
@@ -274,21 +276,6 @@ function EnterCluesStep({ onSubmit, validationSchema, lang }) {
     </WizardStep>
   );
 }
-
-const NUM_CLUES_ALLOWED = {
-  en: 'Number of clues allowed',
-  'fr-FR': "Nombre d'indices autorisé",
-};
-
-const CLUE = {
-  en: 'Clue',
-  'fr-FR': 'Indice',
-};
-
-const ADD_CLUE = {
-  en: 'Add clue',
-  'fr-FR': 'Ajouter indice',
-};
 
 function ClueTextField({ index }) {
   const formik = useFormikContext();
@@ -316,10 +303,10 @@ function ClueTextField({ index }) {
   );
 }
 
-function SelectImageStep({ onSubmit, validationSchema, fileRef, lang }) {
+function SelectImageStep({ onSubmit, validationSchema, fileRef }) {
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
-      <UploadImage fileRef={fileRef} name="files" validationSchema={validationSchema} lang={lang} />
+      <UploadImage fileRef={fileRef} name="files" validationSchema={validationSchema} />
     </WizardStep>
   );
 }

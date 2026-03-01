@@ -16,11 +16,6 @@ export default class GameBuzzerQuestionRepository extends GameQuestionRepository
     return await this.getTransaction(transaction, [questionId, ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH]);
   }
 
-  async resetQuestionTransaction(transaction, questionId) {
-    await this.resetPlayersTransaction(transaction, questionId);
-    await this.resetQuestionWinnerTransaction(transaction, questionId);
-  }
-
   async createQuestionTransaction(transaction, questionId, managerId, data) {
     await super.createQuestionTransaction(transaction, questionId, managerId, data);
 
@@ -28,6 +23,16 @@ export default class GameBuzzerQuestionRepository extends GameQuestionRepository
       questionId,
       ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH,
     ]);
+  }
+
+  async resetQuestionTransaction(transaction, questionId) {
+    await this.resetPlayersTransaction(transaction, questionId);
+    await this.resetQuestionWinnerTransaction(transaction, questionId);
+  }
+
+  async deleteQuestionTransaction(transaction, questionId) {
+    await super.deleteQuestionTransaction(transaction, questionId);
+    await this.deletePlayersTransaction(transaction, questionId);
   }
 
   async updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId) {
@@ -48,6 +53,10 @@ export default class GameBuzzerQuestionRepository extends GameQuestionRepository
       [questionId, ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH],
       players
     );
+  }
+
+  async deletePlayersTransaction(transaction, questionId) {
+    await this.deleteTransaction(transaction, [questionId, ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH]);
   }
 
   async resetPlayersTransaction(transaction, questionId) {

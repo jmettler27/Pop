@@ -2,7 +2,7 @@ import { selectProposal } from '@/backend/services/question/odd-one-out/actions'
 
 import GameOddOneOutQuestionRepository from '@/backend/repositories/question/GameOddOneOutQuestionRepository';
 
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { topicToEmoji } from '@/backend/models/Topic';
 import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
@@ -19,7 +19,7 @@ import {
 } from '@/frontend/contexts';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pane/question/QuestionHeader';
+import CurrentRoundQuestionOrder from '@/frontend/components/game/middle-pane/question/QuestionHeader';
 import NoteButton from '@/frontend/components/game/NoteButton';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
@@ -198,10 +198,11 @@ function ProposalItem({
 
   const isClicked = selectedItem != null;
   const showExplanation = game.status === GameStatus.QUESTION_END || isClicked;
-  const showComplete = myRole === UserRole.ORGANIZER || showExplanation;
+  const showComplete = myRole === ParticipantRole.ORGANIZER || showExplanation;
 
   const isItemInteractive =
-    myRole === UserRole.ORGANIZER || (myRole === UserRole.PLAYER && isChooser && authorized && !showExplanation);
+    myRole === ParticipantRole.ORGANIZER ||
+    (myRole === ParticipantRole.PLAYER && isChooser && authorized && !showExplanation);
 
   return showExplanation ? (
     <Accordion className="flex-grow" expanded={expanded} onChange={onAccordionChange} disabled={false} disableGutters>

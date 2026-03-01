@@ -101,7 +101,7 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
       if (roundScorePolicy === ScorePolicyType.RANKING) {
         await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, mistakePenalty);
       } else if (roundScorePolicy === ScorePolicyType.COMPLETION_RATE) {
-        await this.decreaseGlobalTeamScoreTransaction(transaction, questionId, mistakePenalty, teamId);
+        await this.increaseGlobalTeamScoreTransaction(transaction, questionId, mistakePenalty, teamId);
       }
 
       // Move winner to head of chooser list

@@ -1,10 +1,4 @@
-export const UserRole = {
-  PLAYER: 'player',
-  ORGANIZER: 'organizer',
-  SPECTATOR: 'spectator',
-};
-
-export class User {
+export default class User {
   constructor(data) {
     this.id = data.id;
     this.name = data.name;

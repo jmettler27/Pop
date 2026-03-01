@@ -5,16 +5,11 @@ import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
 import { topicSchema } from '@/frontend/utils/forms/topics';
-import {
-  QUESTION_ANSWER_LABEL,
-  QUESTION_TITLE_LABEL,
-  SUBMIT_QUESTION_BUTTON_LABEL,
-  QUESTION_HINTS_REMARKS,
-  QUESTION_SOURCE_LABEL,
-  QUESTION_EXPLANATION_LABEL,
-} from '@/frontend/utils/forms/questions';
+import { messages as questionMessages } from '@/frontend/utils/forms/questions';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+
+import { useIntl } from 'react-intl';
 
 import { stringSchema } from '@/frontend/utils/forms/forms';
 
@@ -24,23 +19,12 @@ import SelectQuestionTopic from '@/frontend/components/forms/SelectQuestionTopic
 import SubmitFormButton from '@/frontend/components/forms/SubmitFormButton';
 
 import { useRouter } from 'next/navigation';
+import * as Yup from 'yup';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { Form, Formik } from 'formik';
 
-const BASIC_QUESTION_SOURCE_EXAMPLE = {
-  en: 'Minecraft',
-  'fr-FR': 'Minecraft',
-};
-
-const BASIC_QUESTION_TITLE_EXAMPLE = {
-  en: 'How much sand is needed to craft sandstone?',
-  'fr-FR': 'Combien de sable est nécessaire pour fabriquer du grès?',
-};
-
-const BASIC_QUESTION_ANSWER_EXAMPLE = {
-  en: '4',
-  'fr-FR': '4',
-};
-
-export default function SubmitBasicQuestionForm({ userId, lang, ...props }) {
+export default function SubmitBasicQuestionForm({ userId, ...props }) {
+  const intl = useIntl();
   const router = useRouter();
 
   const [submitBasicQuestion, isSubmitting] = useAsyncAction(async (values) => {
@@ -49,7 +33,7 @@ export default function SubmitBasicQuestionForm({ userId, lang, ...props }) {
       const questionId = await submitQuestion(
         {
           details: { ...others },
-          type: QUESTION_TYPE,
+          type: QuestionType.BASIC,
           topic,
           lang,
         },
@@ -95,30 +79,30 @@ export default function SubmitBasicQuestionForm({ userId, lang, ...props }) {
       }}
     >
       <Form>
-        <SelectLanguage lang={lang} name="lang" validationSchema={validationSchema} />
+        <SelectLanguage name="lang" validationSchema={validationSchema} />
 
-        <SelectQuestionTopic lang={lang} name="topic" validationSchema={validationSchema} />
+        <SelectQuestionTopic name="topic" validationSchema={validationSchema} />
 
         <MyTextInput
-          label={QUESTION_SOURCE_LABEL[lang]}
+          label={intl.formatMessage(questionMessages.questionSource)}
           name="source"
           type="text"
-          placeholder={BASIC_QUESTION_SOURCE_EXAMPLE[lang]}
+          placeholder="Minecraft"
           validationSchema={validationSchema}
           maxLength={BasicQuestion.SOURCE_MAX_LENGTH}
         />
 
         <MyTextInput
-          label={QUESTION_TITLE_LABEL[lang]}
+          label={intl.formatMessage(questionMessages.questionTitle)}
           name="title"
           type="text"
-          placeholder={BASIC_QUESTION_TITLE_EXAMPLE[lang]}
+          placeholder="How much sand is needed to craft sandstone?"
           validationSchema={validationSchema}
           maxLength={BasicQuestion.TITLE_MAX_LENGTH}
         />
 
         <MyTextInput
-          label={QUESTION_HINTS_REMARKS[lang]}
+          label={intl.formatMessage(questionMessages.hintsRemarks)}
           name="note"
           type="text"
           // placeholder={MCQ_NOTE_EXAMPLE}
@@ -127,16 +111,16 @@ export default function SubmitBasicQuestionForm({ userId, lang, ...props }) {
         />
 
         <MyTextInput
-          label={QUESTION_ANSWER_LABEL[lang]}
+          label={intl.formatMessage(questionMessages.answer)}
           name="answer"
           type="text"
-          placeholder={BASIC_QUESTION_ANSWER_EXAMPLE[lang]}
+          placeholder="4"
           validationSchema={validationSchema}
           maxLength={BasicQuestion.ANSWER_MAX_LENGTH}
         />
 
         <MyTextInput
-          label={QUESTION_EXPLANATION_LABEL[lang]}
+          label={intl.formatMessage(questionMessages.explanation)}
           name="explanation"
           type="text"
           // placeholder={MCQ_EXPLANATION_EXAMPLE}
@@ -144,7 +128,7 @@ export default function SubmitBasicQuestionForm({ userId, lang, ...props }) {
           maxLength={BasicQuestion.EXPLANATION_MAX_LENGTH}
         />
 
-        <SubmitFormButton isSubmitting={isSubmitting} label={SUBMIT_QUESTION_BUTTON_LABEL[lang]} />
+        <SubmitFormButton isSubmitting={isSubmitting} label={intl.formatMessage(questionMessages.submit)} />
       </Form>
     </Formik>
   );

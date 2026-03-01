@@ -1,7 +1,13 @@
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.game.GameChooserTeamAnnouncement', {
+  toPlay: 'play',
+  toChoose: 'choose',
+});
 
 import { useGameContext, useGameRepositoriesContext, useRoleContext, useTeamContext } from '@/frontend/contexts';
 
@@ -30,10 +36,11 @@ export default function GameChooserTeamAnnouncement({}) {
   return chooserTeamId && <GameChooserHelperText chooserTeamId={chooserTeamId} />;
 }
 
-export function GameChooserHelperText({ chooserTeamId, lang = DEFAULT_LOCALE }) {
+export function GameChooserHelperText({ chooserTeamId }) {
   const game = useGameContext();
   const myTeam = useTeamContext();
   const myRole = useRoleContext();
+  const intl = useIntl();
 
   const { teamRepo, playerRepo, chooserRepo } = useGameRepositoriesContext();
 
@@ -61,59 +68,49 @@ export function GameChooserHelperText({ chooserTeamId, lang = DEFAULT_LOCALE }) 
     return <></>;
   }
 
-  const isChooser = myRole === UserRole.PLAYER && chooserTeamId === myTeam;
+  const isChooser = myRole === ParticipantRole.PLAYER && chooserTeamId === myTeam;
   const teamHasManyPlayers = players.length > 1;
-  const chooserActionText = chooserAction(game.status, lang);
+  const chooserActionText = chooserAction(game.status, intl);
 
   if (isChooser) {
-    if (lang === 'fr-FR')
+    if (intl.locale === 'fr')
       return (
         <span>
           🫵 C&apos;est à <span style={{ color: team.color }}>{teamHasManyPlayers ? 'ton équipe' : 'toi'}</span> de{' '}
           {chooserActionText}{' '}
         </span>
       );
-    if (lang === 'en') return <span>🫵 It&apos;s your turn to {chooserActionText}</span>;
+    return <span>🫵 It&apos;s your turn to {chooserActionText}</span>;
   }
   if (teamHasManyPlayers) {
-    if (lang === 'fr-FR')
+    if (intl.locale === 'fr')
       return (
         <span>
           C&apos;est à l&apos;équipe <span style={{ color: team.color }}>{team.name}</span> de {chooserActionText}
         </span>
       );
-    if (lang === 'en')
-      return (
-        <span>
-          It&apos;s Team <span style={{ color: team.color }}>{team.name}</span>&apos;s turn to {chooserActionText}
-        </span>
-      );
+    return (
+      <span>
+        It&apos;s Team <span style={{ color: team.color }}>{team.name}</span>&apos;s turn to {chooserActionText}
+      </span>
+    );
   }
   const chooserPlayerName = team.name;
-  if (lang === 'fr-FR')
+  if (intl.locale === 'fr')
     return (
       <span>
         C&apos;est à <span style={{ color: team.color }}>{chooserPlayerName}</span> de {chooserActionText}
       </span>
     );
-  if (lang === 'en')
-    return (
-      <span>
-        It&apos;s <span style={{ color: team.color }}>{chooserPlayerName}</span>&apos;s turn to {chooserActionText}
-      </span>
-    );
+  return (
+    <span>
+      It&apos;s <span style={{ color: team.color }}>{chooserPlayerName}</span>&apos;s turn to {chooserActionText}
+    </span>
+  );
 }
 
-const chooserAction = (gameStatus, lang) => {
-  return gameStatus === GameStatus.QUESTION_ACTIVE ? CHOOSER_ACTION_PLAY_TEXT[lang] : CHOOSER_ACTION_CHOOSE_TEXT[lang];
-};
-
-const CHOOSER_ACTION_PLAY_TEXT = {
-  en: 'play',
-  'fr-FR': 'jouer',
-};
-
-const CHOOSER_ACTION_CHOOSE_TEXT = {
-  en: 'choose',
-  'fr-FR': 'choisir',
+const chooserAction = (gameStatus, intl) => {
+  return gameStatus === GameStatus.QUESTION_ACTIVE
+    ? intl.formatMessage(messages.toPlay)
+    : intl.formatMessage(messages.toChoose);
 };

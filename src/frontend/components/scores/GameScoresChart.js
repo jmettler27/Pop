@@ -1,4 +1,6 @@
 import { useParams } from 'next/navigation';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 
 import { CircularProgress } from '@mui/material';
 
@@ -13,17 +15,15 @@ import {
   Tooltip,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 import { useGameRepositoriesContext } from '@/frontend/contexts';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const GAME_SCORES_CHART_TITLE = {
-  en: 'Global scores',
-  'fr-FR': 'Scores globaux',
-};
+const messages = defineMessages('frontend.scores.GameScoresChart', {
+  title: 'Global scores',
+});
 
-export const options = (lang) => {
+export const options = (title) => {
   return {
     responsive: true,
     plugins: {
@@ -32,7 +32,7 @@ export const options = (lang) => {
       },
       title: {
         display: true,
-        text: GAME_SCORES_CHART_TITLE[lang],
+        text: title,
       },
     },
     scales: {
@@ -43,7 +43,8 @@ export const options = (lang) => {
   };
 };
 
-export default function GameScoresChart({ currentRoundOrder, teams, lang = DEFAULT_LOCALE }) {
+export default function GameScoresChart({ currentRoundOrder, teams }) {
+  const intl = useIntl();
   const { id: gameId } = useParams();
 
   // Return the rounds played up to the current round
@@ -109,5 +110,5 @@ export default function GameScoresChart({ currentRoundOrder, teams, lang = DEFAU
     datasets,
   };
 
-  return <Line datasetIdKey={gameId} options={options(lang)} data={data} />;
+  return <Line datasetIdKey={gameId} options={options(intl.formatMessage(messages.title))} data={data} />;
 }

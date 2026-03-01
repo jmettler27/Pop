@@ -2,7 +2,8 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
 import { getRandomElement } from '@/backend/utils/arrays';
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+
+import { useIntl } from 'react-intl';
 
 import { useGameContext } from '@/frontend/contexts';
 import { WinnerName } from '@/frontend/components/game/PlayerName';
@@ -12,7 +13,7 @@ export default function BuzzerAnswer({ baseQuestion }) {
   return (
     <div className="flex flex-col h-full items-center">
       <BuzzerAnswerText baseQuestion={baseQuestion} />
-      <BuzzerWinnerInfo baseQuestion={baseQuestion} lang={DEFAULT_LOCALE} />
+      <BuzzerWinnerInfo baseQuestion={baseQuestion} />
     </div>
   );
 }
@@ -28,8 +29,9 @@ function BuzzerAnswerText({ baseQuestion }) {
   }
 }
 
-function BuzzerWinnerInfo({ baseQuestion, lang = DEFAULT_LOCALE }) {
+function BuzzerWinnerInfo({ baseQuestion }) {
   const game = useGameContext();
+  const intl = useIntl();
 
   const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(
     baseQuestion.type,
@@ -60,9 +62,12 @@ function BuzzerWinnerInfo({ baseQuestion, lang = DEFAULT_LOCALE }) {
     return <></>;
   }
 
+  const winnerText =
+    intl.locale === 'fr' ? getRandomElement(BUZZER_WINNER_TEXT_FR) : getRandomElement(BUZZER_WINNER_TEXT_EN);
+
   return (
     <span className="2xl:text-3xl">
-      {BUZZER_WINNER_TEXT[lang]}{' '}
+      {winnerText}{' '}
       <strong>
         <WinnerName playerId={gameQuestion.winner.playerId} teamId={gameQuestion.winner.teamId} />
       </strong>
@@ -74,8 +79,3 @@ function BuzzerWinnerInfo({ baseQuestion, lang = DEFAULT_LOCALE }) {
 const BUZZER_WINNER_TEXT_EN = ['GG', 'Congrats', 'Hats off', 'Well done'];
 
 const BUZZER_WINNER_TEXT_FR = ['GG', 'Bravo', 'Félicitations', 'Chapeau', 'Bien joué', 'Super', 'Excellent', 'Parfait'];
-
-const BUZZER_WINNER_TEXT = {
-  en: getRandomElement(BUZZER_WINNER_TEXT_EN),
-  'fr-FR': getRandomElement(BUZZER_WINNER_TEXT_FR),
-};

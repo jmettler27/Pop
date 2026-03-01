@@ -4,15 +4,9 @@ import { rankingToEmoji } from '@/backend/utils/emojis';
 
 import { useGameContext, useGameRepositoriesContext } from '@/frontend/contexts';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
 
-import {
-  HEAD_RANKING_TEXT,
-  HEAD_REWARD_TEXT,
-  HEAD_COMPLETION_RATE_TEXT,
-  HEAD_SCORE_TEXT,
-  HEAD_TEAM_TEXT,
-} from '@/frontend/components/scores/scoreboardUtils';
+import { scoreboardMessages } from '@/frontend/components/scores/scoreboardUtils';
 
 import { Fragment } from 'react';
 
@@ -20,7 +14,8 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 
 import clsx from 'clsx';
 
-export default function RoundScoreboard({ roundScores, teams, lang = DEFAULT_LOCALE }) {
+export default function RoundScoreboard({ roundScores, teams }) {
+  const intl = useIntl();
   const { roundSortedTeams } = roundScores;
   const game = useGameContext();
 
@@ -61,14 +56,22 @@ export default function RoundScoreboard({ roundScores, teams, lang = DEFAULT_LOC
         {/* Table head */}
         <TableHead>
           <TableRow>
-            <TableCell className="2xl:text-2xl font-bold text-center">{HEAD_RANKING_TEXT[lang]}</TableCell>
-            <TableCell className="2xl:text-2xl font-bold">{HEAD_TEAM_TEXT[lang]}</TableCell>
-            <TableCell className="2xl:text-2xl font-bold text-center">{HEAD_SCORE_TEXT[lang]}</TableCell>
+            <TableCell className="2xl:text-2xl font-bold text-center">
+              {intl.formatMessage(scoreboardMessages.ranking)}
+            </TableCell>
+            <TableCell className="2xl:text-2xl font-bold">{intl.formatMessage(scoreboardMessages.team)}</TableCell>
+            <TableCell className="2xl:text-2xl font-bold text-center">
+              {intl.formatMessage(scoreboardMessages.score)}
+            </TableCell>
             {game.roundScorePolicy === 'ranking' && (
-              <TableCell className="2xl:text-2xl font-bold text-center">{HEAD_REWARD_TEXT[lang]}</TableCell>
+              <TableCell className="2xl:text-2xl font-bold text-center">
+                {intl.formatMessage(scoreboardMessages.reward)}
+              </TableCell>
             )}
             {game.roundScorePolicy === 'completion_rate' && isCompletionRound && (
-              <TableCell className="2xl:text-2xl font-bold text-center">{HEAD_COMPLETION_RATE_TEXT[lang]}</TableCell>
+              <TableCell className="2xl:text-2xl font-bold text-center">
+                {intl.formatMessage(scoreboardMessages.completion)}
+              </TableCell>
             )}
           </TableRow>
         </TableHead>

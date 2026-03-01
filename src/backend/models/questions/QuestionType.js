@@ -6,8 +6,8 @@ export const QuestionType = {
   EMOJI: 'emoji',
   BLINDTEST: 'blindtest',
   QUOTE: 'quote',
-  LABELLING: 'label',
-  ENUMERATION: 'enum',
+  LABELLING: 'labelling',
+  ENUMERATION: 'enumeration',
   ODD_ONE_OUT: 'odd_one_out',
   MATCHING: 'matching',
   REORDERING: 'reordering',
@@ -53,15 +53,15 @@ export const QuestionTypeToTitle = {
     [QuestionType.NAGUI]: 'Nagui',
     [QuestionType.BASIC]: 'Question',
   },
-  'fr-FR': {
+  fr: {
     [QuestionType.PROGRESSIVE_CLUES]: 'Devinette',
     [QuestionType.IMAGE]: 'Image',
     [QuestionType.EMOJI]: 'Emoji',
     [QuestionType.BLINDTEST]: 'Blindtest',
     [QuestionType.QUOTE]: 'Réplique',
-    [QuestionType.LABELLING]: 'Labelling',
+    [QuestionType.LABELLING]: 'Étiquettes',
     [QuestionType.ENUMERATION]: 'Énumération',
-    [QuestionType.ODD_ONE_OUT]: 'Coups par coup',
+    [QuestionType.ODD_ONE_OUT]: 'Intrus',
     [QuestionType.MATCHING]: 'Matching',
     [QuestionType.REORDERING]: 'Rangement',
     [QuestionType.MCQ]: 'QCM',
@@ -103,7 +103,7 @@ export const QuestionTypeToDescription = {
     [QuestionType.NAGUI]: 'Hide, square or duo?',
     [QuestionType.BASIC]: 'One question, one answer. Simple as that.',
   },
-  'fr-FR': {
+  fr: {
     [QuestionType.PROGRESSIVE_CLUES]: "Qu'est-ce qui se cache derrière ces indices ?",
     [QuestionType.IMAGE]: "Qu'est-ce qui se cache derrière cette image ?",
     [QuestionType.EMOJI]: "Qu'est-ce qui se cache derrière ces emojis ?",

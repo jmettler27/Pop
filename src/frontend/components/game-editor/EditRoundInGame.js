@@ -5,14 +5,18 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 import { RoundType, roundTypeToEmoji, roundTypeToTitle } from '@/backend/models/rounds/RoundType';
 import { Round } from '@/backend/models/rounds/Round';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 
-import { removeRoundFromGame } from '@/backend/services/edit-game/edit-game';
-import { updateRound } from '@/backend/services/edit-game/actions';
+import { updateRound, removeRoundFromGame } from '@/backend/services/edit-game/actions';
 
-import { DIALOG_ACTION_CANCEL, DIALOG_WARNING } from '@/frontend/texts/dialogs';
+import globalMessages from '@/i18n/globalMessages';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.gameEditor.EditRoundInGame', {
+  deleteDialogTitle: 'Are you sure you want to remove this round?',
+  deleteDialogConfirm: 'Yes',
+});
 
 import { QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { doc, getDoc } from 'firebase/firestore';
@@ -86,6 +90,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
 
   const roundRepo = new RoundRepository(gameId);
   const { round, loading, error } = roundRepo.useRound(roundId);
+  const intl = useIntl();
 
   const [isReorderMode, setIsReorderMode] = useState(false);
   const [reorderedQuestions, setReorderedQuestions] = useState([]);
@@ -142,7 +147,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
     <Card className="border-0 shadow-xl bg-white dark:bg-slate-900 rounded-2xl overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between pb-2 pt-3 space-y-0 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-900 border-b border-slate-200 dark:border-slate-700">
         <div className="flex flex-row items-center gap-5 min-w-0">
-          <Tooltip title={roundTypeToTitle(round.type, DEFAULT_LOCALE)}>
+          <Tooltip title={roundTypeToTitle(round.type, intl.locale)}>
             <span className="text-xl shrink-0">{roundTypeToEmoji(round.type)}</span>
           </Tooltip>
           <CardTitle className="text-base md:text-lg font-semibold flex items-center gap-2 min-w-0">
@@ -399,7 +404,8 @@ function EditGameRoundQuestionCards({ round, status, isReorderMode, reorderedQue
   );
 }
 
-function RemoveRoundFromGameButton({ roundId, lang = DEFAULT_LOCALE }) {
+function RemoveRoundFromGameButton({ roundId }) {
+  const intl = useIntl();
   const { id: gameId } = useParams();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -425,32 +431,22 @@ function RemoveRoundFromGameButton({ roundId, lang = DEFAULT_LOCALE }) {
       </Tooltip>
 
       <Dialog disableEscapeKeyDown open={dialogOpen} onClose={onDialogClose}>
-        <DialogTitle>{REMOVE_ROUND_FROM_GAME_DIALOG_TITLE[lang]}</DialogTitle>
+        <DialogTitle>{intl.formatMessage(messages.deleteDialogTitle)}</DialogTitle>
 
         <DialogContent>
-          <DialogContentText>{DIALOG_WARNING[lang]}</DialogContentText>
+          <DialogContentText>{intl.formatMessage(globalMessages.dialogWarning)}</DialogContentText>
         </DialogContent>
 
         <DialogActions>
           <Button variant="contained" color="primary" onClick={handleRemoveRound} disabled={isRemoving}>
-            {REMOVE_ROUND_FROM_GAME_DIALOG_ACTION_VALIDATE[lang]}
+            {intl.formatMessage(messages.deleteDialogConfirm)}
           </Button>
 
           <Button variant="outlined" color="error" onClick={onCancel}>
-            {DIALOG_ACTION_CANCEL[lang]}
+            {intl.formatMessage(globalMessages.cancel)}
           </Button>
         </DialogActions>
       </Dialog>
     </>
   );
 }
-
-const REMOVE_ROUND_FROM_GAME_DIALOG_TITLE = {
-  en: 'Are you sure you want to remove this round?',
-  'fr-FR': "T'es sûr de vouloir supprimer cette manche ?",
-};
-
-const REMOVE_ROUND_FROM_GAME_DIALOG_ACTION_VALIDATE = {
-  en: 'Yes',
-  'fr-FR': 'Oui',
-};

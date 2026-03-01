@@ -1,12 +1,17 @@
 import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 import { topicToEmoji } from '@/backend/models/Topic';
 import { BlindtestQuestion } from '@/backend/models/questions/Blindtest';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
 import { useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
+
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.game.sidebar.progress.RoundQuestionsProgress', {
+  nobody: 'Nobody',
+});
 
 import { QuestionCardContent } from '@/frontend/components/questions/QuestionCard';
 
@@ -140,7 +145,7 @@ export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({
   }
 
   const showComplete =
-    myRole === UserRole.ORGANIZER ||
+    myRole === ParticipantRole.ORGANIZER ||
     (isCurrent && game.status === GameStatus.QUESTION_END) ||
     hasEnded ||
     game.status === GameStatus.ROUND_END;
@@ -187,7 +192,7 @@ export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({
   };
 
   const isDisabled = () => {
-    if (myRole === UserRole.ORGANIZER) return false;
+    if (myRole === ParticipantRole.ORGANIZER) return false;
     return hasNotStarted;
   };
 
@@ -234,7 +239,9 @@ export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({
 });
 
 /* ============================================================================================ */
-function RoundQuestionSummary({ roundType, question, order, lang = DEFAULT_LOCALE }) {
+function RoundQuestionSummary({ roundType, question, order }) {
+  const intl = useIntl();
+  const lang = intl.locale;
   // if (roundType === 'mixed') {
   //   return (
   //     <span className="text-lg">
@@ -328,7 +335,8 @@ function QuestionTitleWithSource({ question }) {
 }
 
 /* ============================================================================================ */
-function QuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = DEFAULT_LOCALE }) {
+function QuestionWinner({ winnerTeam, winnerPlayer, question, game }) {
+  const intl = useIntl();
   switch (question.type) {
     case QuestionType.ENUMERATION:
       return <EnumQuestionWinner winnerTeam={winnerTeam} winnerPlayer={winnerPlayer} question={question} game={game} />;
@@ -343,14 +351,14 @@ function QuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = DEFAU
               {winnerPlayer.name} {winnerTeam.name !== winnerPlayer.name && `(${winnerTeam.name})`}
             </span>
           ) : (
-            <span className="italic opacity-50">{NO_WINNER_TEXT[lang]}</span>
+            <span className="italic opacity-50">{intl.formatMessage(messages.nobody)}</span>
           )}
         </Typography>
       );
   }
 }
 
-function EnumQuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = DEFAULT_LOCALE }) {
+function EnumQuestionWinner({ winnerTeam, winnerPlayer, question, game }) {
   return <></>;
   // const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameIdds', roundId, 'questions', question.id, 'realtime', 'players')
   // const [players, playersLoading, playersError] = useDocumentDataOnce(questionPlayersRef)
@@ -376,8 +384,3 @@ function EnumQuestionWinner({ winnerTeam, winnerPlayer, question, game, lang = D
   //     </Typography>
   // )
 }
-
-const NO_WINNER_TEXT = {
-  en: 'Nobody',
-  'fr-FR': 'Personne',
-};

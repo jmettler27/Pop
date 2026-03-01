@@ -1,8 +1,7 @@
 import { handleAnswer } from '@/backend/services/question/basic/actions';
-import { INVALIDATE_ANSWER, VALIDATE_ANSWER } from '@/backend/utils/question/question';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { useGameContext } from '@/frontend/contexts';
@@ -15,6 +14,11 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
+const messages = defineMessages('frontend.game.bottom.BasicQuestionOrganizerController', {
+  validate: 'Validate',
+  invalidate: 'Invalidate',
+});
+
 export default function BasicQuestionOrganizerController({ gameQuestion }) {
   return (
     <div className="flex flex-col h-full w-full items-center justify-around">
@@ -24,7 +28,8 @@ export default function BasicQuestionOrganizerController({ gameQuestion }) {
   );
 }
 
-function BasicQuestionOrganizerAnswerController({ gameQuestion, lang = DEFAULT_LOCALE }) {
+function BasicQuestionOrganizerAnswerController({ gameQuestion }) {
+  const intl = useIntl();
   const game = useGameContext();
 
   const [validateBasicAnswer, isValidating] = useAsyncAction(async () => {
@@ -49,12 +54,12 @@ function BasicQuestionOrganizerAnswerController({ gameQuestion, lang = DEFAULT_L
       >
         {/* Validate the player's answer */}
         <Button color="success" startIcon={<CheckCircleIcon />} onClick={validateBasicAnswer} disabled={isValidating}>
-          {VALIDATE_ANSWER[lang]}
+          {intl.formatMessage(messages.validate)}
         </Button>
 
         {/* Invalidate the player's answer */}
         <Button color="error" startIcon={<CancelIcon />} onClick={invalidateBasicAnswer} disabled={isInvalidating}>
-          {INVALIDATE_ANSWER[lang]}
+          {intl.formatMessage(messages.invalidate)}
         </Button>
       </ButtonGroup>
     </>

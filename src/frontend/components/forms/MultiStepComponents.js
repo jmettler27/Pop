@@ -8,7 +8,15 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import SendIcon from '@mui/icons-material/Send';
 
 import SubmitFormButton from '@/frontend/components/forms/SubmitFormButton';
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.forms.MultiStepComponents', {
+  step: 'Step',
+  previousStep: 'Previous step',
+  nextStep: 'Next step',
+  submit: 'Submit',
+});
 
 // Wizard is a single Formik instance whose children are each page of the
 // multi-step form. The form is submitted on each forward transition (can only
@@ -16,14 +24,8 @@ import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 // incomplete data. A snapshot of form state is used as initialValues after each
 // transition. Each page has an optional submit handler, and the top-level
 // submit is called when the final page is submitted.
-export const Wizard = ({
-  children,
-  initialValues,
-  onSubmit,
-  isSubmitting,
-  submitButtonLabel = DEFAULT_SUBMIT_BUTTON_TEXT[DEFAULT_LOCALE],
-  lang = DEFAULT_LOCALE,
-}) => {
+export const Wizard = ({ children, initialValues, onSubmit, isSubmitting, submitButtonLabel = undefined }) => {
+  const intl = useIntl();
   const [stepNumber, setStepNumber] = useState(0);
   const steps = React.Children.toArray(children);
   const [snapshot, setSnapshot] = useState(initialValues);
@@ -64,7 +66,7 @@ export const Wizard = ({
       {(formik) => (
         <Form>
           <p>
-            {STEP_TEXT[lang]} {stepNumber + 1}/{totalSteps}
+            {intl.formatMessage(messages.step)} {stepNumber + 1}/{totalSteps}
           </p>
           {step}
           <div className="flex">
@@ -82,19 +84,10 @@ export const Wizard = ({
   );
 };
 
-const DEFAULT_SUBMIT_BUTTON_TEXT = {
-  en: 'Submit',
-  'fr-FR': 'Envoyer',
-};
-
-const STEP_TEXT = {
-  en: 'Step',
-  'fr-FR': 'Étape',
-};
-
 export const WizardStep = ({ children }) => children;
 
-function PreviousStepButton({ onClick, lang = DEFAULT_LOCALE }) {
+function PreviousStepButton({ onClick }) {
+  const intl = useIntl();
   return (
     <Button
       // size='large'
@@ -103,17 +96,13 @@ function PreviousStepButton({ onClick, lang = DEFAULT_LOCALE }) {
       variant="outlined"
       startIcon={<ArrowBackIcon />}
     >
-      {PREVIOUS_STEP_BUTTON_LABEL[lang]}
+      {intl.formatMessage(messages.previousStep)}
     </Button>
   );
 }
 
-const PREVIOUS_STEP_BUTTON_LABEL = {
-  en: 'Previous step',
-  'fr-FR': 'Étape précédente',
-};
-
-function NextStepButton({ disabled, lang = DEFAULT_LOCALE }) {
+function NextStepButton({ disabled }) {
+  const intl = useIntl();
   return (
     <Button
       // size='large'
@@ -123,15 +112,10 @@ function NextStepButton({ disabled, lang = DEFAULT_LOCALE }) {
       variant="outlined"
       endIcon={<ArrowForwardIcon />}
     >
-      {NEXT_STEP_BUTTON_LABEL[lang]}
+      {intl.formatMessage(messages.nextStep)}
     </Button>
   );
 }
-
-const NEXT_STEP_BUTTON_LABEL = {
-  en: 'Next step',
-  'fr-FR': 'Étape suivante',
-};
 
 // function SubmitFormButton({ disabled }) {
 //     {/* https://mui.com/material-ui/react-button/#loading-button */ }

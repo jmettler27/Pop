@@ -6,6 +6,9 @@ import { Form, Formik } from 'formik';
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
 
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
@@ -17,6 +20,7 @@ import SelectLanguage from '@/frontend/components/forms/SelectLanguage';
 import Game from '@/backend/models/games/Game';
 import CreateGameService from '@/backend/services/create-game/CreateGameService';
 import { gameTitleSchema, participantNameSchema } from '@/frontend/utils/forms/game';
+import AppFooter from '@/frontend/components/AppFooter';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 
 /* Validation */
@@ -26,9 +30,19 @@ import { GameType } from '@/backend/models/games/GameType';
 export const roundScorePolicySchema = () =>
   Yup.string().oneOf(Object.values(ScorePolicyType), 'Invalid round score policy.').required('Required.');
 
-export default function Page({ lang = DEFAULT_LOCALE }) {
+const messages = defineMessages('app.edit', {
+  createGame: 'Create a new game',
+  selectGameLanguageLabel: 'Game language',
+  gameTitleLabel: 'Game title',
+  gameMaxPlayersLabel: 'Max num. of players',
+  gameOrganizerNameLabel: 'Choose a nickname for the game',
+  createGameSubmitButtonLabel: 'Create',
+});
+
+export default function Page() {
   const { data: session } = useSession();
   const router = useRouter();
+  const intl = useIntl();
 
   const [createNewGame, isSubmitting] = useAsyncAction(async (values, user) => {
     const { title, type, lang, maxPlayers, roundScorePolicy, organizerName } = values;
@@ -69,99 +83,74 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
   });
 
   return (
-    <>
-      <h1>{CREATE_GAME[lang]}</h1>
-      <Formik
-        initialValues={{
-          // type: GAME_DEFAULT_TYPE,
-          lang: DEFAULT_LOCALE,
-          title: '',
-          maxPlayers: Game.MIN_NUM_PLAYERS,
-          roundScorePolicy: '',
-          organizerName: '',
-        }}
-        onSubmit={async (values) => {
-          try {
-            await createNewGame(values, user);
-          } catch (error) {
-            console.error('Failed to create the game:', error);
-            router.push('/');
-          }
-        }}
-        validationSchema={validationSchema}
-      >
-        <Form>
-          <SelectLanguage
-            labels={SELECT_GAME_LANGUAGE_LABEL}
-            lang={lang}
-            name="lang"
-            validationSchema={validationSchema}
-          />
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <main className="flex-1 p-8">
+        <h1>{intl.formatMessage(messages.createGame)}</h1>
+        <Formik
+          initialValues={{
+            // type: GAME_DEFAULT_TYPE,
+            lang: DEFAULT_LOCALE,
+            title: '',
+            maxPlayers: Game.MIN_NUM_PLAYERS,
+            roundScorePolicy: '',
+            organizerName: '',
+          }}
+          onSubmit={async (values) => {
+            try {
+              await createNewGame(values, user);
+            } catch (error) {
+              console.error('Failed to create the game:', error);
+              router.push('/');
+            }
+          }}
+          validationSchema={validationSchema}
+        >
+          <Form>
+            <SelectLanguage
+              labels={intl.formatMessage(messages.selectGameLanguageLabel)}
+              name="lang"
+              validationSchema={validationSchema}
+            />
 
-          {/* <SelectGameType lang={lang} name='type' validationSchema={validationSchema} /> */}
+            {/* <SelectGameType lang={lang} name='type' validationSchema={validationSchema} /> */}
 
-          <MyTextInput
-            label={GAME_TITLE_LABEL[lang]}
-            name="title"
-            type="text"
-            placeholder={Game.TITLE_EXAMPLE}
-            validationSchema={validationSchema}
-            maxLength={Game.TITLE_MAX_LENGTH}
-          />
+            <MyTextInput
+              label={intl.formatMessage(messages.gameTitleLabel)}
+              name="title"
+              type="text"
+              placeholder={Game.TITLE_EXAMPLE}
+              validationSchema={validationSchema}
+              maxLength={Game.TITLE_MAX_LENGTH}
+            />
 
-          <MyNumberInput
-            label={GAME_MAX_PLAYERS_LABEL[lang]}
-            name="maxPlayers"
-            min={Game.MIN_NUM_PLAYERS}
-            max={Game.MAX_NUM_PLAYERS}
-          />
+            <MyNumberInput
+              label={intl.formatMessage(messages.gameMaxPlayersLabel)}
+              name="maxPlayers"
+              min={Game.MIN_NUM_PLAYERS}
+              max={Game.MAX_NUM_PLAYERS}
+            />
 
-          <SelectRoundScorePolicy lang={lang} name="roundScorePolicy" validationSchema={validationSchema} />
+            <SelectRoundScorePolicy name="roundScorePolicy" validationSchema={validationSchema} />
 
-          <MyTextInput
-            label={GAME_ORGANIZER_NAME_LABEL[lang]}
-            name="organizerName"
-            type="text"
-            placeholder={user.name}
-            validationSchema={validationSchema}
-            maxLength={Game.PARTICIPANT_NAME_MAX_LENGTH}
-          />
+            <MyTextInput
+              label={intl.formatMessage(messages.gameOrganizerNameLabel)}
+              name="organizerName"
+              type="text"
+              placeholder={user.name}
+              validationSchema={validationSchema}
+              maxLength={Game.PARTICIPANT_NAME_MAX_LENGTH}
+            />
 
-          <br />
+            <br />
 
-          <SubmitFormButton isSubmitting={isSubmitting} label={CREATE_GAME_SUBMIT_BUTTON_LABEL[lang]} />
-        </Form>
-      </Formik>
-    </>
+            <SubmitFormButton
+              isSubmitting={isSubmitting}
+              label={intl.formatMessage(messages.createGameSubmitButtonLabel)}
+            />
+          </Form>
+        </Formik>
+      </main>
+      <AppFooter />
+    </div>
   );
 }
-
-const CREATE_GAME = {
-  en: 'Create a new game',
-  'fr-FR': 'Créer une nouvelle partie',
-};
-
-const SELECT_GAME_LANGUAGE_LABEL = {
-  en: 'Game language',
-  'fr-FR': 'Langue de la partie',
-};
-
-const GAME_TITLE_LABEL = {
-  en: 'Game title',
-  'fr-FR': 'Titre de la partie',
-};
-
-const GAME_MAX_PLAYERS_LABEL = {
-  en: 'Maximum number of players',
-  'fr-FR': 'Nombre maximum de joueurs',
-};
-
-const GAME_ORGANIZER_NAME_LABEL = {
-  en: 'Choose a nickname for the game',
-  'fr-FR': 'Choisis un pseudo pour cette partie',
-};
-
-const CREATE_GAME_SUBMIT_BUTTON_LABEL = {
-  en: 'Create',
-  'fr-FR': 'Créer',
-};

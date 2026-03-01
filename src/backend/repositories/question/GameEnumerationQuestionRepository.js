@@ -23,6 +23,11 @@ export default class GameEnumerationQuestionRepository extends GameQuestionRepos
     });
   }
 
+  async deleteQuestionTransaction(transaction, questionId) {
+    await super.deleteQuestionTransaction(transaction, questionId);
+    await this.deletePlayersTransaction(transaction, questionId);
+  }
+
   async getPlayersTransaction(transaction, questionId) {
     return await this.getTransaction(transaction, [
       questionId,
@@ -36,6 +41,10 @@ export default class GameEnumerationQuestionRepository extends GameQuestionRepos
       [questionId, ...GameEnumerationQuestionRepository.ENUMERATION_PLAYERS_PATH],
       players
     );
+  }
+
+  async deletePlayersTransaction(transaction, questionId) {
+    await this.deleteTransaction(transaction, [questionId, ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH]);
   }
 
   async setPlayersTransaction(transaction, questionId, data) {

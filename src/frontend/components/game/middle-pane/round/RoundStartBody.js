@@ -6,12 +6,23 @@ import { useCollection } from 'react-firebase-hooks/firestore';
 
 import { useGameContext } from '@/frontend/contexts';
 
+import { ScorePolicyType } from '@/backend/models/ScorePolicy';
+import { RoundType } from '@/backend/models/rounds/RoundType';
+
 import { RoundDescription } from '@/frontend/components/game/middle-pane/round/RoundDescription';
 import { RoundRules } from '@/frontend/components/game/middle-pane/round/RoundRules';
 import { RoundRankingPolicy } from '@/frontend/components/game/middle-pane/round/RoundRankingPolicy';
 import { RoundCompletionRatePolicy } from '@/frontend/components/game/middle-pane/round/RoundCompletionRatePolicy';
+import defineMessages from '@/utils/defineMessages';
+import { useIntl } from 'react-intl';
+
+const messages = defineMessages('frontend.game.round.RoundStartBody', {
+  rules: '📜 Rules',
+});
 
 export default function RoundStartBody({ round }) {
+  const { formatMessage } = useIntl();
+
   return (
     <div className="flex flex-row justify-around w-full h-full p-10 [&>*]:">
       {/* General principle + Number of questions */}
@@ -22,7 +33,7 @@ export default function RoundStartBody({ round }) {
       {/* Additional Remarks */}
       <div className="border-dashed border-4 p-2 w-[30%] h-full overflow-auto">
         <div className="flex flex-col items-center justify-start space-y-4 p-2">
-          <h1 className="2xl:text-3xl font-bold">📜 Règles</h1>
+          <h1 className="2xl:text-3xl font-bold">{formatMessage(messages.rules)}</h1>
           <RoundRules round={round} />
         </div>
       </div>
@@ -40,7 +51,7 @@ function RoundGeneralInfo({ round }) {
   const numQuestions = round.questions.length;
   return (
     <div className="flex flex-col items-center justify-start p-2">
-      {round.type === 'special' ? (
+      {round.type === RoundType.SPECIAL ? (
         <h1 className="2xl:text-3xl mb-4 font-bold">{<SpecialNumThemes round={round} />} thèmes</h1>
       ) : (
         <h1 className="2xl:text-3xl mb-4 font-bold">
@@ -65,8 +76,8 @@ function RoundScorePolicy({ round }) {
 
   return (
     <>
-      {game.roundScorePolicy === 'ranking' && <RoundRankingPolicy round={round} />}
-      {game.roundScorePolicy && 'completion_rate' && <RoundCompletionRatePolicy round={round} />}
+      {game.roundScorePolicy === ScorePolicyType.RANKING && <RoundRankingPolicy round={round} />}
+      {game.roundScorePolicy === ScorePolicyType.COMPLETION_RATE && <RoundCompletionRatePolicy round={round} />}
     </>
   );
 }

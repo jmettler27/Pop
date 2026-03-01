@@ -1,9 +1,15 @@
 import { topicToEmoji } from '@/backend/models/Topic';
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
 
-import { THEME_SECTION_TEXT, THEME_TEXT } from '@/backend/utils/question/theme';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.game.sidebar.progress.SpecialRoundProgress', {
+  theme: 'Theme',
+  level: 'Level',
+});
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { doc, collection, query, where, orderBy } from 'firebase/firestore';
@@ -14,8 +20,6 @@ import { useRoleContext } from '@/frontend/contexts';
 import { useParams } from 'next/navigation';
 
 import { useState, useEffect } from 'react';
-
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
@@ -42,8 +46,9 @@ export default function SpecialRoundProgress({ game, round }) {
 /**
  * Sidebar visible in the special round home screen
  */
-function SpecialRoundHomeProgress({ round, lang = DEFAULT_LOCALE }) {
+function SpecialRoundHomeProgress({ round }) {
   const { id: gameId } = useParams();
+  const intl = useIntl();
 
   const gameThemesCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds', round.id, 'themes');
   const [gameThemes, gameThemesLoading, gameThemesError] = useCollection(
@@ -98,7 +103,7 @@ function SpecialRoundHomeProgress({ round, lang = DEFAULT_LOCALE }) {
             <AccordionSummary aria-controls="panel1a-content" id="panel1a-header">
               <Typography className={clsx(themeIsCurrent && 'text-orange-300')}>
                 <span className="font-bold">
-                  {THEME_TEXT[lang]} {gameTheme.order + 1}
+                  {intl.formatMessage(messages.theme)} {gameTheme.order + 1}
                 </span>
                 : {gameTheme.title}
               </Typography>
@@ -117,8 +122,9 @@ function SpecialRoundHomeProgress({ round, lang = DEFAULT_LOCALE }) {
 /**
  * Sidebar visible in a special round theme
  */
-function SpecialRoundThemeProgress({ round, lang = DEFAULT_LOCALE }) {
+function SpecialRoundThemeProgress({ round }) {
   const { id: gameId } = useParams();
+  const intl = useIntl();
   const themeId = round.currentTheme;
 
   const gameSectionsRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds', round.id, 'themes', themeId, 'sections');
@@ -201,7 +207,7 @@ function SpecialRoundThemeProgress({ round, lang = DEFAULT_LOCALE }) {
       <h2 className="text-lg">
         {topicToEmoji(theme.topic)}{' '}
         <strong>
-          {THEME_TEXT[lang]} {gameTheme.order + 1}
+          {intl.formatMessage(messages.theme)} {gameTheme.order + 1}
         </strong>
         : {theme.details.title}
       </h2>
@@ -240,11 +246,9 @@ function ThemeSectionAccordion({
   gameSection,
   currentGameSection,
   playerTeam,
-  lang = DEFAULT_LOCALE,
 }) {
   const myRole = useRoleContext();
-
-  const showComplete = myRole === UserRole.ORGANIZER || hasEnded || isCurrent;
+  const showComplete = myRole === ParticipantRole.ORGANIZER || hasEnded || isCurrent;
   console.log(sectionId, showComplete);
 
   const borderColor = () => {
@@ -298,7 +302,6 @@ function ThemeSectionAccordion({
           sectionOrder={sectionOrder}
           showComplete={showComplete}
           isCurrent={isCurrent}
-          lang={lang}
         />
       </AccordionSummary>
 
@@ -308,14 +311,14 @@ function ThemeSectionAccordion({
           sectionIsCurrent={isCurrent}
           sectionHasEnded={hasEnded}
           currentGameSection={currentGameSection}
-          lang={lang}
         />
       </AccordionDetails>
     </Accordion>
   );
 }
 
-function SectionSummary({ themeId, sectionId, sectionOrder, showComplete, isCurrent, lang = DEFAULT_LOCALE }) {
+function SectionSummary({ themeId, sectionId, sectionOrder, showComplete, isCurrent }) {
+  const intl = useIntl();
   const sectionRef = doc(QUESTIONS_COLLECTION_REF, themeId, 'sections', sectionId);
   const [section, sectionLoading, sectionError] = useDocumentDataOnce(sectionRef);
   if (sectionError) {
@@ -336,7 +339,7 @@ function SectionSummary({ themeId, sectionId, sectionOrder, showComplete, isCurr
     <Typography className={clsx(isCurrent && 'text-orange-300')}>
       <span className="text-lg">
         <strong>
-          {THEME_SECTION_TEXT[lang]} {sectionOrder + 1}
+          {intl.formatMessage(messages.level)} {sectionOrder + 1}
         </strong>
         : {section.title && `${showComplete || isCurrent ? section.title : '???'}`}
       </span>
@@ -344,7 +347,7 @@ function SectionSummary({ themeId, sectionId, sectionOrder, showComplete, isCurr
   );
 }
 
-function SectionDetails({ gameSection, sectionIsCurrent, sectionHasEnded, currentGameSection, lang = DEFAULT_LOCALE }) {
+function SectionDetails({ gameSection, sectionIsCurrent, sectionHasEnded, currentGameSection }) {
   const { currentQuestionIdx } = currentGameSection;
 
   return (

@@ -6,7 +6,8 @@ import { useGameContext, useGameRepositoriesContext, useUserContext } from '@/fr
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 
 import { Button, IconButton, Tooltip } from '@mui/material';
 import ReplayIcon from '@mui/icons-material/Replay';
@@ -14,6 +15,18 @@ import PanToolIcon from '@mui/icons-material/PanTool';
 
 import clsx from 'clsx';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
+
+const messages = defineMessages('frontend.game.BuzzerPlayerController', {
+  numRemainingClues: 'in {remaining} clues',
+  oneMoreWaitingClue: 'at the next clue',
+  maxTriesExceeded: 'You have exceeded the maximum number of tries!',
+  canceledWarning: 'You will be able to buzz again',
+  lastAttempt: "Attention, it's your last attempt.",
+  waitingForTurn: 'Wait for your turn...',
+  buzzerIdle: 'Any idea?',
+  firstBuzzer: "We're all ears",
+  incorrectAnswer: 'Wrong answer!',
+});
 
 export default function BuzzerPlayerController({ questionPlayers }) {
   const game = useGameContext();
@@ -93,80 +106,27 @@ export default function BuzzerPlayerController({ questionPlayers }) {
   );
 }
 
-const numRemainingClues = (remaining, lang) => {
-  switch (lang) {
-    case 'en':
-      return `in ${remaining} clues`;
-    case 'fr-FR':
-      return `dans ${remaining} indices`;
-  }
+const numRemainingClues = (remaining, intl) => {
+  return intl.formatMessage(messages.numRemainingClues, { remaining });
 };
 
-const ONE_MORE_WAITING_CLUE_TEXT = {
-  en: 'at the next clue',
-  'fr-FR': 'au prochain indice',
-};
-
-const MAX_TRIES_EXCEEDED_TEXT = {
-  en: 'You have exceeded the maximum number of tries!',
-  'fr-FR': "Tu as excédé le nombre maximum d'essais!",
-};
-
-const CANCELED_WARNING_TEXT = {
-  en: 'You will be able to buzz again',
-  'fr-FR': 'Tu pourras de nouveau buzzer',
-};
-
-const LAST_ATTEMPT_TEXT = {
-  en: "Attention, it's your last attempt.",
-  'fr-FR': "Attention, c'est ton dernier essai.",
-};
-
-const WAITING_FOR_TURN_TEXT = {
-  en: 'Wait for your turn...',
-  'fr-FR': 'Attends ton tour...',
-};
-
-const BUZZER_IDLE_TEXT = {
-  en: 'Any idea?',
-  'fr-FR': 'Une idée?',
-};
-
-const BUZZER_FIRST_BUZZER_TEXT = {
-  en: "We're all ears",
-  'fr-FR': "On t'écoute",
-};
-
-const BUZZER_INCORRECT_ASNWER_TEXT = {
-  en: 'Wrong answer!',
-  'fr-FR': 'Mauvaise réponse!',
-};
-
-function BuzzerMessage({
-  playerStatus,
-  hasExceededMaxTries,
-  round,
-  myCanceledItems,
-  isFirst,
-  hasBuzzed,
-  remaining,
-  lang = DEFAULT_LOCALE,
-}) {
+function BuzzerMessage({ playerStatus, hasExceededMaxTries, round, myCanceledItems, isFirst, hasBuzzed, remaining }) {
+  const intl = useIntl();
   if (hasExceededMaxTries)
     return (
       <span className="2xl:text-3xl text-red-500">
-        🤐 {MAX_TRIES_EXCEEDED_TEXT[lang]} ({round.maxTries})
+        🤐 {intl.formatMessage(messages.maxTriesExceeded)} ({round.maxTries})
       </span>
     );
 
   if (playerStatus === PlayerStatus.WRONG) {
-    const message = BUZZER_INCORRECT_ASNWER_TEXT[lang];
+    const message = intl.formatMessage(messages.incorrectAnswer);
     if (round.type === QuestionType.PROGRESSIVE_CLUES && round.delay && round.delay > 0) {
       return (
         <span className="2xl:text-3xl">
-          {message} {CANCELED_WARNING_TEXT[lang]}{' '}
+          {message} {intl.formatMessage(messages.canceledWarning)}{' '}
           <span className="font-bold text-blue-500">
-            {remaining > 1 ? numRemainingClues(remaining, lang) : ONE_MORE_WAITING_CLUE_TEXT[lang]}.
+            {remaining > 1 ? numRemainingClues(remaining, intl) : intl.formatMessage(messages.oneMoreWaitingClue)}.
           </span>
         </span>
       );
@@ -174,17 +134,17 @@ function BuzzerMessage({
     return <span className="2xl:text-3xl text-red-500">{message}</span>;
   }
   if (isFirst) {
-    const message = `${BUZZER_FIRST_BUZZER_TEXT[lang]} 🧐`;
+    const message = `${intl.formatMessage(messages.firstBuzzer)} 🧐`;
     if (myCanceledItems.length === round.maxTries - 1)
       return (
         <span className="2xl:text-3xl">
-          {message}. <span className="text-red-500">{LAST_ATTEMPT_TEXT[lang]}</span>
+          {message}. <span className="text-red-500">{intl.formatMessage(messages.lastAttempt)}</span>
         </span>
       );
     return <span className="2xl:text-3xl">{message}</span>;
   }
-  if (hasBuzzed) return <span className="2xl:text-3xl">{WAITING_FOR_TURN_TEXT[lang]}</span>;
-  return <span className="2xl:text-3xl">{BUZZER_IDLE_TEXT[lang]} 🤔</span>;
+  if (hasBuzzed) return <span className="2xl:text-3xl">{intl.formatMessage(messages.waitingForTurn)}</span>;
+  return <span className="2xl:text-3xl">{intl.formatMessage(messages.buzzerIdle)} 🤔</span>;
 }
 
 function remainingWaitingClues(round, hasExceededMaxTries, currentClueIdx, myCanceledItems) {

@@ -13,16 +13,19 @@ import {
 } from '@/frontend/utils/forms/forms';
 import { numEmojisIndicator } from '@/frontend/utils/forms/emojis';
 
+import { useIntl } from 'react-intl';
+
 export function MyTextInput({ label, maxLength, validationSchema, fieldType = 'string', ...props }) {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
   // which we can spread on <input> and alse replace ErrorMessage entirely.
   const [field, meta] = useField(props);
+  const intl = useIntl();
 
   // const maxLength = validationSchema.fields[field.name].tests.find(test => test.OPTIONS.name === 'max')?.OPTIONS.params.max || 0
   return (
     <>
       <StyledLabel htmlFor={props.id || props.name}>
-        {requiredIndicator(validationSchema, fieldType, field.name)}
+        {requiredIndicator(validationSchema, fieldType, field.name, intl)}
         {label}{' '}
         {maxLength > 0 &&
           (props.onlyEmojis ? numEmojisIndicator(field.value, maxLength) : numCharsIndicator(field.value, maxLength))}
@@ -77,11 +80,12 @@ export function MySelect({ label, validationSchema, ...props }) {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
   // which we can spread on <input> and alse replace ErrorMessage entirely.
   const [field, meta] = useField(props);
+  const intl = useIntl();
 
   return (
     <>
       <StyledLabel htmlFor={props.id || props.name}>
-        {requiredFieldIndicator(validationSchema, field.name)}
+        {requiredFieldIndicator(validationSchema, field.name, intl)}
         {label}
       </StyledLabel>
       <StyledSelect className="text-xs sm:text-sm 2xl:text-base dark:text-white" {...field} {...props} />
@@ -92,13 +96,14 @@ export function MySelect({ label, validationSchema, ...props }) {
 
 import { NumberInput } from '@/frontend/components/forms/NumberInput';
 export function MyNumberInput({ label, name, min, max, ...props }) {
+  const intl = useIntl();
   const formik = useFormikContext();
   const [field, meta, helpers] = useField(name);
 
   return (
     <>
       <StyledLabel htmlFor={props.id || props.name}>
-        {requiredIndicatorString(true)}
+        {requiredIndicatorString(true, intl)}
         {label} ({min}-{max})
       </StyledLabel>
       <NumberInput

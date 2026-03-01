@@ -6,8 +6,16 @@ import { useGameRepositoriesContext } from '@/frontend/contexts';
 
 import { Stack, Avatar } from '@mui/material';
 
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.game.middlePane.GameStartMiddlePane', {
+  intro: 'This humorous and interactive program is brought to you by',
+});
+
 export default function GameStartMiddlePane({}) {
   const game = useGameContext();
+  const intl = useIntl();
 
   const { organizerRepo } = useGameRepositoriesContext();
   const {
@@ -27,9 +35,7 @@ export default function GameStartMiddlePane({}) {
         </h1>
       </div>
       <div className="flex flex-col h-5/6 w-full items-center justify-center space-y-4 overflow-auto">
-        <span className="text-xs sm:text-sm 2xl:text-base 2xl:text-xl">
-          Ce programme à but humoristique et <strong>interactif</strong> vous est présenté par
-        </span>
+        <span className="text-xs sm:text-sm 2xl:text-base 2xl:text-xl">{intl.formatMessage(messages.intro)}</span>
 
         <Stack direction="row" spacing={3} className="h-1/3">
           {organizers.map((o) => (

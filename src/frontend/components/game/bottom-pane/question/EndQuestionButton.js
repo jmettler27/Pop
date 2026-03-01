@@ -2,11 +2,16 @@ import { endQuestion } from '@/backend/services/question/actions';
 
 import { useGameContext } from '@/frontend/contexts';
 
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
 import { Button } from '@mui/material';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
+
+const messages = defineMessages('frontend.game.bottom.EndQuestionButton', {
+  endQuestion: 'End question',
+});
 
 /**
  * End the question
@@ -14,7 +19,8 @@ import SkipNextIcon from '@mui/icons-material/SkipNext';
  * @param {string} questionType - Type of question to end
  * @returns
  */
-export default function EndQuestionButton({ lang = DEFAULT_LOCALE, questionType }) {
+export default function EndQuestionButton({ questionType }) {
+  const intl = useIntl();
   const game = useGameContext();
 
   const [handleEndQuestion, isEnding] = useAsyncAction(async () => {
@@ -29,12 +35,7 @@ export default function EndQuestionButton({ lang = DEFAULT_LOCALE, questionType 
       onClick={handleEndQuestion}
       disabled={isEnding}
     >
-      {END_QUESTION_BUTTON_LABEL[lang]}
+      {intl.formatMessage(messages.endQuestion)}
     </Button>
   );
 }
-
-const END_QUESTION_BUTTON_LABEL = {
-  en: 'End question',
-  'fr-FR': 'Terminer la question',
-};

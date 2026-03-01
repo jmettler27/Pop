@@ -1,18 +1,22 @@
 import { QuestionTypeIcon } from '@/backend/utils/question_types';
-import { CORRECT_ANSWER_TEXT, INCORRECT_ANSWER_TEXT } from '@/backend/utils/question/question';
-
 import { topicToEmoji } from '@/backend/models/Topic';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.game.BasicMiddlePane', {
+  correct: 'Correct!',
+  incorrect: 'Wrong answer!',
+});
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { useGameContext, useRoleContext } from '@/frontend/contexts';
-import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pane/question/QuestionHeader';
+import CurrentRoundQuestionOrder from '@/frontend/components/game/middle-pane/question/QuestionHeader';
 
 export default function BasicMiddlePane({ baseQuestion }) {
   return (
@@ -72,7 +76,7 @@ function BasicQuestionMainContent({ baseQuestion }) {
         <BasicQuestionAnswer baseQuestion={baseQuestion} gameQuestion={gameQuestion} />
       </div>
       <div className="flex h-[20%] w-full items-center justify-center">
-        {(game.status === GameStatus.QUESTION_END || myRole === UserRole.ORGANIZER) && (
+        {(game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER) && (
           <BasicQuestionFooter baseQuestion={baseQuestion} gameQuestion={gameQuestion} />
         )}
       </div>
@@ -91,33 +95,34 @@ function BasicQuestionAnswer({ baseQuestion, gameQuestion }) {
     else if (correct === false)
       // Question has been answered incorrectly
       return 'text-red-600'; // Question not answered yet
-    else return myRole === UserRole.ORGANIZER && 'text-orange-300';
+    else return myRole === ParticipantRole.ORGANIZER && 'text-orange-300';
   };
 
   return (
-    (game.status === GameStatus.QUESTION_END || myRole === UserRole.ORGANIZER) && (
+    (game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER) && (
       <span className={`2xl:text-4xl font-bold ${statusToColor(gameQuestion.correct)}`}>{baseQuestion.answer}</span>
     )
   );
 }
 
-function BasicQuestionFooter({ baseQuestion, gameQuestion, lang = DEFAULT_LOCALE }) {
+function BasicQuestionFooter({ baseQuestion, gameQuestion }) {
   const explanation = baseQuestion.explanation;
 
   return (
     <div className="flex flex-col h-full items-center justify-center">
       <span className="text-4xl">
-        {gameQuestion.correct !== null && <BasicQuestionPlayerAnswerText gameQuestion={gameQuestion} lang={lang} />}
+        {gameQuestion.correct !== null && <BasicQuestionPlayerAnswerText gameQuestion={gameQuestion} />}
       </span>
       {explanation && <span className="text-xs sm:text-sm 2xl:text-base 2xl:text-xl">👉 {explanation}</span>}
     </div>
   );
 }
 
-function BasicQuestionPlayerAnswerText({ gameQuestion, lang = DEFAULT_LOCALE }) {
+function BasicQuestionPlayerAnswerText({ gameQuestion }) {
+  const intl = useIntl();
   return gameQuestion.correct ? (
-    <span className="text-green-500">{CORRECT_ANSWER_TEXT[lang]}</span>
+    <span className="text-green-500">{intl.formatMessage(messages.correct)}</span>
   ) : (
-    <span className="text-red-500">{INCORRECT_ANSWER_TEXT[lang]}</span>
+    <span className="text-red-500">{intl.formatMessage(messages.incorrect)}</span>
   );
 }
