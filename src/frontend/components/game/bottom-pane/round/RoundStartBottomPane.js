@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 import { startRound } from '@/backend/services/round/actions';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
@@ -29,7 +29,7 @@ function RoundStartController({}) {
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-5">
       <ReadyPlayerController />
-      {myRole === UserRole.ORGANIZER && <RoundStartOrganizerButton />}
+      {myRole === ParticipantRole.ORGANIZER && <RoundStartOrganizerButton />}
     </div>
   );
 }

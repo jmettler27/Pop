@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { timestampToHour } from '@/backend/utils/time';
 import { RoundTypeIcon } from '@/backend/utils/rounds';
@@ -92,14 +92,14 @@ function GameHomeRounds() {
 
   const roundIsDisabled = (roundId) => {
     if (endedRounds.includes(roundId)) return true;
-    if (myRole === UserRole.ORGANIZER) return false;
-    if (myRole === UserRole.PLAYER) return !isChooser;
+    if (myRole === ParticipantRole.ORGANIZER) return false;
+    if (myRole === ParticipantRole.PLAYER) return !isChooser;
     return true;
   };
 
   const showSpecial =
     specialRound &&
-    (myRole === UserRole.ORGANIZER ||
+    (myRole === ParticipantRole.ORGANIZER ||
       (endedRounds.length === nonSpecialRounds.length && !endedRounds.includes(specialRound.id)));
 
   /* Rounds */
@@ -140,7 +140,7 @@ function GameHomeRounds() {
           <GameHomeRoundItem
             key={specialRound.id}
             round={specialRound}
-            isDisabled={isHandling || myRole !== UserRole.ORGANIZER}
+            isDisabled={isHandling || myRole !== ParticipantRole.ORGANIZER}
             onSelectRound={() => handleSelect(specialRound.id, RoundType.SPECIAL)}
           />
         )}

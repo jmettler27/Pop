@@ -31,16 +31,6 @@ export const DEFAULT_THINKING_TIME_SECONDS = {
   // [QuestionType.SPECIAL]: 20,
 };
 
-export const VALIDATE_ANSWER = {
-  en: 'Validate',
-  fr: 'Valider',
-};
-
-export const INVALIDATE_ANSWER = {
-  en: 'Invalidate',
-  fr: 'Invalider',
-};
-
 export const ANSWER_TEXT = {
   en: 'Answer',
   fr: 'Réponse',

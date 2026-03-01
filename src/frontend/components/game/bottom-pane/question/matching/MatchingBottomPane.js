@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
 import { GameMatchingQuestion } from '@/backend/models/questions/Matching';
@@ -66,8 +66,8 @@ function MatchingController({ chooser }) {
       <span className="2xl:text-4xl font-bold">
         <GameChooserHelperText chooserTeamId={chooserTeamId} />
       </span>
-      {myRole === UserRole.PLAYER && <MatchingPlayerQuestionController />}
-      {myRole === UserRole.ORGANIZER && <MatchingOrganizerQuestionController />}
+      {myRole === ParticipantRole.PLAYER && <MatchingPlayerQuestionController />}
+      {myRole === ParticipantRole.ORGANIZER && <MatchingOrganizerQuestionController />}
     </div>
   );
 }

@@ -4,7 +4,7 @@ import GameNaguiQuestionRepository from '@/backend/repositories/question/GameNag
 
 import { NaguiQuestion, HideNaguiOption, SquareNaguiOption, DuoNaguiOption } from '@/backend/models/questions/Nagui';
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { shuffleIndices } from '@/backend/utils/arrays';
 
@@ -118,7 +118,7 @@ function NaguiMainContentQuestion({ baseQuestion, randomization }) {
 }
 
 const choiceIsDisabled = (choiceIdx, myRole, isChooser, option, duoIdx, answerIdx) => {
-  if (!(myRole === UserRole.PLAYER && isChooser)) return true;
+  if (!(myRole === ParticipantRole.PLAYER && isChooser)) return true;
   if (option === DuoNaguiOption.TYPE) return !(choiceIdx === duoIdx || choiceIdx === answerIdx);
   if (option === SquareNaguiOption.TYPE) return false;
   return true;

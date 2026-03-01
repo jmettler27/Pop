@@ -20,6 +20,7 @@ import SelectLanguage from '@/frontend/components/forms/SelectLanguage';
 import Game from '@/backend/models/games/Game';
 import CreateGameService from '@/backend/services/create-game/CreateGameService';
 import { gameTitleSchema, participantNameSchema } from '@/frontend/utils/forms/game';
+import AppFooter from '@/frontend/components/AppFooter';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 
 /* Validation */
@@ -33,7 +34,7 @@ const messages = defineMessages('app.edit', {
   createGame: 'Create a new game',
   selectGameLanguageLabel: 'Game language',
   gameTitleLabel: 'Game title',
-  gameMaxPlayersLabel: 'Maximum number of players',
+  gameMaxPlayersLabel: 'Max num. of players',
   gameOrganizerNameLabel: 'Choose a nickname for the game',
   createGameSubmitButtonLabel: 'Create',
 });
@@ -82,71 +83,74 @@ export default function Page() {
   });
 
   return (
-    <>
-      <h1>{intl.formatMessage(messages.createGame)}</h1>
-      <Formik
-        initialValues={{
-          // type: GAME_DEFAULT_TYPE,
-          lang: DEFAULT_LOCALE,
-          title: '',
-          maxPlayers: Game.MIN_NUM_PLAYERS,
-          roundScorePolicy: '',
-          organizerName: '',
-        }}
-        onSubmit={async (values) => {
-          try {
-            await createNewGame(values, user);
-          } catch (error) {
-            console.error('Failed to create the game:', error);
-            router.push('/');
-          }
-        }}
-        validationSchema={validationSchema}
-      >
-        <Form>
-          <SelectLanguage
-            labels={intl.formatMessage(messages.selectGameLanguageLabel)}
-            name="lang"
-            validationSchema={validationSchema}
-          />
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <main className="flex-1 p-8">
+        <h1>{intl.formatMessage(messages.createGame)}</h1>
+        <Formik
+          initialValues={{
+            // type: GAME_DEFAULT_TYPE,
+            lang: DEFAULT_LOCALE,
+            title: '',
+            maxPlayers: Game.MIN_NUM_PLAYERS,
+            roundScorePolicy: '',
+            organizerName: '',
+          }}
+          onSubmit={async (values) => {
+            try {
+              await createNewGame(values, user);
+            } catch (error) {
+              console.error('Failed to create the game:', error);
+              router.push('/');
+            }
+          }}
+          validationSchema={validationSchema}
+        >
+          <Form>
+            <SelectLanguage
+              labels={intl.formatMessage(messages.selectGameLanguageLabel)}
+              name="lang"
+              validationSchema={validationSchema}
+            />
 
-          {/* <SelectGameType lang={lang} name='type' validationSchema={validationSchema} /> */}
+            {/* <SelectGameType lang={lang} name='type' validationSchema={validationSchema} /> */}
 
-          <MyTextInput
-            label={intl.formatMessage(messages.gameTitleLabel)}
-            name="title"
-            type="text"
-            placeholder={Game.TITLE_EXAMPLE}
-            validationSchema={validationSchema}
-            maxLength={Game.TITLE_MAX_LENGTH}
-          />
+            <MyTextInput
+              label={intl.formatMessage(messages.gameTitleLabel)}
+              name="title"
+              type="text"
+              placeholder={Game.TITLE_EXAMPLE}
+              validationSchema={validationSchema}
+              maxLength={Game.TITLE_MAX_LENGTH}
+            />
 
-          <MyNumberInput
-            label={intl.formatMessage(messages.gameMaxPlayersLabel)}
-            name="maxPlayers"
-            min={Game.MIN_NUM_PLAYERS}
-            max={Game.MAX_NUM_PLAYERS}
-          />
+            <MyNumberInput
+              label={intl.formatMessage(messages.gameMaxPlayersLabel)}
+              name="maxPlayers"
+              min={Game.MIN_NUM_PLAYERS}
+              max={Game.MAX_NUM_PLAYERS}
+            />
 
-          <SelectRoundScorePolicy name="roundScorePolicy" validationSchema={validationSchema} />
+            <SelectRoundScorePolicy name="roundScorePolicy" validationSchema={validationSchema} />
 
-          <MyTextInput
-            label={intl.formatMessage(messages.gameOrganizerNameLabel)}
-            name="organizerName"
-            type="text"
-            placeholder={user.name}
-            validationSchema={validationSchema}
-            maxLength={Game.PARTICIPANT_NAME_MAX_LENGTH}
-          />
+            <MyTextInput
+              label={intl.formatMessage(messages.gameOrganizerNameLabel)}
+              name="organizerName"
+              type="text"
+              placeholder={user.name}
+              validationSchema={validationSchema}
+              maxLength={Game.PARTICIPANT_NAME_MAX_LENGTH}
+            />
 
-          <br />
+            <br />
 
-          <SubmitFormButton
-            isSubmitting={isSubmitting}
-            label={intl.formatMessage(messages.createGameSubmitButtonLabel)}
-          />
-        </Form>
-      </Formik>
-    </>
+            <SubmitFormButton
+              isSubmitting={isSubmitting}
+              label={intl.formatMessage(messages.createGameSubmitButtonLabel)}
+            />
+          </Form>
+        </Formik>
+      </main>
+      <AppFooter />
+    </div>
   );
 }

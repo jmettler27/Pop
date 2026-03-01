@@ -2,13 +2,17 @@ import { QuestionTypeIcon } from '@/backend/utils/question_types';
 
 import { topicToEmoji } from '@/backend/models/Topic';
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
 
 import { useGameContext, useRoleContext } from '@/frontend/contexts';
 
-import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pane/question/QuestionHeader';
-import BuzzerMainContent from '@/frontend/components/game/middle-pane/question/buzzer/BuzzerMainContent';
+import ProgressiveCluesMainContent from '@/frontend/components/game/middle-pane/question/progressive-clues/ProgressiveCluesMainContent';
+import ImageMainContent from '@/frontend/components/game/middle-pane/question/image/ImageMainContent';
+import BlindtestMainContent from '@/frontend/components/game/middle-pane/question/blindtest/BlindtestMainContent';
+import EmojiMainContent from '@/frontend/components/game/middle-pane/question/emoji/EmojiMainContent';
+import CurrentRoundQuestionOrder from '@/frontend/components/game/middle-pane/question/QuestionHeader';
 import BuzzerAnswer from '@/frontend/components/game/middle-pane/question/buzzer/BuzzerAnswer';
 
 import { clsx } from 'clsx';
@@ -17,7 +21,7 @@ export default function BuzzerMiddlePane({ baseQuestion }) {
   const myRole = useRoleContext();
   const game = useGameContext();
 
-  const showAnswer = game.status === GameStatus.QUESTION_END || myRole === UserRole.ORGANIZER;
+  const showAnswer = game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER;
 
   return (
     <div
@@ -54,4 +58,19 @@ function BuzzerQuestionHeader({ baseQuestion }) {
       </div>
     </div>
   );
+}
+
+function BuzzerMainContent({ baseQuestion, showComplete }) {
+  switch (baseQuestion.type) {
+    case QuestionType.PROGRESSIVE_CLUES:
+      return <ProgressiveCluesMainContent baseQuestion={baseQuestion} showComplete={showComplete} />;
+    case QuestionType.IMAGE:
+      return <ImageMainContent baseQuestion={baseQuestion} />;
+    case QuestionType.BLINDTEST:
+      return <BlindtestMainContent baseQuestion={baseQuestion} />;
+    case QuestionType.EMOJI:
+      return <EmojiMainContent baseQuestion={baseQuestion} />;
+    default:
+      return <p>Unknown round type</p>;
+  }
 }

@@ -5,6 +5,7 @@ import { useGameContext } from '@/frontend/contexts';
 
 import { getNodeId, MatchingEdge } from '@/frontend/components/game/middle-pane/question/matching/gridUtils.js';
 import '@/frontend/components/game/middle-pane/question/matching/styles.scss';
+import { isObjectEmpty } from '@/backend/utils/objects';
 
 export default function PartiallyCorrectMatches({ nodePositions }) {
   const game = useGameContext();
@@ -22,7 +23,7 @@ export default function PartiallyCorrectMatches({ nodePositions }) {
   if (loading) {
     return <LoadingScreen loadingText="Loading partially correct matches..." />;
   }
-  if (!partiallyCorrectMatches) {
+  if (!partiallyCorrectMatches || isObjectEmpty(partiallyCorrectMatches)) {
     return <></>;
   }
   // elem = {uid: ..., teamId: ..., timestamp: ..., colIndices: [...], matchIdx: ...}

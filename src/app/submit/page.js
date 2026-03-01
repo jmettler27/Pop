@@ -31,24 +31,20 @@ export default function Page() {
     redirect('/api/auth/signin');
   }
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      <div className="flex-1">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center py-4 md:py-6 px-4">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 drop-shadow-lg">
-              🆕 {intl.formatMessage(messages.createNewQuestion)}
-            </h1>
-            <p className="text-gray-300 text-xs sm:text-sm md:text-base">
-              {intl.formatMessage(messages.chooseQuestionType)}
-            </p>
-          </div>
-          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 p-4 md:p-8 pb-12">
-            {Object.values(QuestionType).map((type, index) => (
-              <SubmitQuestionCard key={index} questionType={type} />
-            ))}
-          </section>
-        </div>
+    <div className="max-w-7xl mx-auto">
+      <div className="text-center py-4 md:py-6 px-4">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 drop-shadow-lg">
+          🆕 {intl.formatMessage(messages.createNewQuestion)}
+        </h1>
+        <p className="text-gray-300 text-xs sm:text-sm md:text-base">
+          {intl.formatMessage(messages.chooseQuestionType)}
+        </p>
       </div>
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 p-4 md:p-8 pb-12">
+        {Object.values(QuestionType).map((type, index) => (
+          <SubmitQuestionCard key={index} questionType={type} />
+        ))}
+      </section>
     </div>
   );
 }

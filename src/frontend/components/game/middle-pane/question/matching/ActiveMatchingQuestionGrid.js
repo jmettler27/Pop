@@ -1,9 +1,9 @@
 import { range } from '@/backend/utils/arrays';
 
-import ActiveMatches from '@/frontend/components/game/middle-pane/question/matching/active-matching/ActiveMatches';
-import CorrectMatches from '@/frontend/components/game/middle-pane/question/matching/active-matching/CorrectMatches';
-import IncorrectMatches from '@/frontend/components/game/middle-pane/question/matching/active-matching/IncorrectMatches';
-import PartiallyCorrectMatches from '@/frontend/components/game/middle-pane/question/matching/active-matching/PartiallyCorrectMatches';
+import ActiveMatches from '@/frontend/components/game/middle-pane/question/matching/ActiveMatches';
+import CorrectMatches from '@/frontend/components/game/middle-pane/question/matching/CorrectMatches';
+import IncorrectMatches from '@/frontend/components/game/middle-pane/question/matching/IncorrectMatches';
+import PartiallyCorrectMatches from '@/frontend/components/game/middle-pane/question/matching/PartiallyCorrectMatches';
 
 export default function ActiveMatchingQuestionGrid({ answer, nodePositions, numCols }) {
   console.log('ACTIVE MATCHING GRID RENDERED');

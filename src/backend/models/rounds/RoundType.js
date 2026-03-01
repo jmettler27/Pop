@@ -57,7 +57,7 @@ export const RoundTypeToTitle = {
     [RoundType.QUOTE]: 'Répliques',
     [RoundType.LABELLING]: 'Étiquettes',
     [RoundType.ENUMERATION]: 'Énumérations',
-    [RoundType.ODD_ONE_OUT]: 'Coups par coups',
+    [RoundType.ODD_ONE_OUT]: 'Intrus',
     [RoundType.MATCHING]: 'Matchings',
     [RoundType.REORDERING]: 'Rangements',
     [RoundType.MCQ]: 'QCMs',

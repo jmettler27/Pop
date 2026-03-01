@@ -14,7 +14,7 @@ const messages = defineMessages('frontend.game.middle.SpecialThemeActiveMiddlePa
   level: 'Level',
 });
 
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 export default function SpecialThemeActiveMiddlePane({ theme, gameTheme }) {
   const currentThemeId = theme.id;
   const currentSectionId = theme.details.sections[gameTheme.currentSectionIdx];
@@ -95,7 +95,7 @@ function SectionQuestions({ currentThemeId, currentSectionId, sectionQuestions }
   }
   const currentQuestionIdx = gameSection.currentQuestionIdx;
 
-  const isOrganizer = myRole === UserRole.ORGANIZER;
+  const isOrganizer = myRole === ParticipantRole.ORGANIZER;
   const myIndex = isOrganizer ? sectionQuestions.length - 1 : currentQuestionIdx;
 
   // Organizer: show everything

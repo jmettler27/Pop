@@ -6,7 +6,7 @@ import { MCQQuestion } from '@/backend/models/questions/MCQ';
 import { NaguiQuestion } from '@/backend/models/questions/Nagui';
 import { prependTopicWithEmoji, topicToEmoji } from '@/backend/models/Topic';
 
-import { QUESTION_ELEMENT_TO_EMOJI, QUESTION_ELEMENT_TO_TITLE } from '@/backend/utils/question/question';
+import { QUESTION_ELEMENT_TO_EMOJI, QUESTION_ELEMENT_TO_TITLE } from '@/backend/utils/question';
 import { timestampToDate } from '@/backend/utils/time';
 
 import { LOCALE_TO_EMOJI } from '@/frontend/utils/locales';

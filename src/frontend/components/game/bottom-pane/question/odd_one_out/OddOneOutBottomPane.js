@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
@@ -55,8 +55,8 @@ function OddOneOutController({ chooser }) {
       <span className="2xl:text-4xl font-bold">
         <GameChooserHelperText chooserTeamId={chooserTeamId} />
       </span>
-      {myRole === UserRole.ORGANIZER && <OddOneOutOrganizerController />}
-      {myRole === UserRole.PLAYER && myTeam === chooserTeamId && <OddOneOutChooserController />}
+      {myRole === ParticipantRole.ORGANIZER && <OddOneOutOrganizerController />}
+      {myRole === ParticipantRole.PLAYER && myTeam === chooserTeamId && <OddOneOutChooserController />}
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 import { gameTypeToEmoji } from '@/backend/models/games/GameType';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
@@ -125,31 +125,32 @@ const GameCard = ({ game }) => {
 
   let myRole = null;
   if (organizerIds.includes(user.id)) {
-    myRole = UserRole.ORGANIZER;
+    myRole = ParticipantRole.ORGANIZER;
   } else if (playerIds.includes(user.id)) {
-    myRole = UserRole.PLAYER;
+    myRole = ParticipantRole.PLAYER;
   } else {
-    myRole = UserRole.SPECTATOR;
+    myRole = ParticipantRole.SPECTATOR;
   }
 
   const buttonText = () => {
-    if (myRole === UserRole.PLAYER || myRole === UserRole.ORGANIZER) return intl.formatMessage(messages.continueGame);
-    if (myRole === UserRole.SPECTATOR)
+    if (myRole === ParticipantRole.PLAYER || myRole === ParticipantRole.ORGANIZER)
+      return intl.formatMessage(messages.continueGame);
+    if (myRole === ParticipantRole.SPECTATOR)
       return isFull ? intl.formatMessage(messages.watchGame) : intl.formatMessage(messages.joinGame);
   };
 
   const ButtonIcon = () => {
-    if (myRole === UserRole.PLAYER || myRole === UserRole.ORGANIZER) return <PlayArrowIcon />;
-    if (myRole === UserRole.SPECTATOR) return isFull ? <VisibilityIcon /> : <LoginIcon />;
+    if (myRole === ParticipantRole.PLAYER || myRole === ParticipantRole.ORGANIZER) return <PlayArrowIcon />;
+    if (myRole === ParticipantRole.SPECTATOR) return isFull ? <VisibilityIcon /> : <LoginIcon />;
   };
 
   const buttonColor = () => {
-    if (myRole === UserRole.PLAYER || myRole === UserRole.ORGANIZER) return 'success';
-    if (myRole === UserRole.SPECTATOR) return isFull ? 'warning' : 'primary';
+    if (myRole === ParticipantRole.PLAYER || myRole === ParticipantRole.ORGANIZER) return 'success';
+    if (myRole === ParticipantRole.SPECTATOR) return isFull ? 'warning' : 'primary';
   };
 
   const handleJoinClick = () => {
-    if (myRole === UserRole.SPECTATOR && !isFull) {
+    if (myRole === ParticipantRole.SPECTATOR && !isFull) {
       router.push(`/join/${game.id}`);
     } else {
       router.push(`/${game.id}`);

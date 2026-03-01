@@ -14,15 +14,27 @@ import { redirect } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
 import React from 'react';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import GameErrorScreen from '@/frontend/components/game/GameErrorScreen';
 import { AddNewRoundButton } from '@/frontend/components/game-editor/AddNewRound';
+import AppFooter from '@/frontend/components/AppFooter';
 import { EditGameRoundCard } from '@/frontend/components/game-editor/EditRoundInGame';
 import { LaunchGameButton } from '@/frontend/components/game-editor/LaunchGameButton';
 
+const messages = defineMessages('frontend.gameEditor.EditGamePage', {
+  home: 'Home',
+  analytics: 'Analytics',
+  loading: 'Loading...',
+  expandAll: 'Expand All',
+  collapseAll: 'Collapse All',
+});
+
 export default function Page({ params }) {
   const { data: session } = useSession();
+  const intl = useIntl();
   const resolvedParams = React.use(params);
   const gameId = resolvedParams.id;
 
@@ -47,7 +59,7 @@ export default function Page({ params }) {
   if (gameLoading || organizersLoading) {
     return (
       <div className="flex h-screen">
-        <LoadingScreen loadingText="Loading..." />
+        <LoadingScreen loadingText={intl.formatMessage(messages.loading)} />
       </div>
     );
   }
@@ -63,34 +75,35 @@ export default function Page({ params }) {
   if (!organizerIds.includes(user.id)) redirect('/');
 
   return (
-    <div className="h-full flex flex-row">
-      {/* Left bar */}
-      <div className="flex flex-col h-full w-64 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 border-r border-slate-200 dark:border-slate-800">
-        <div className="flex h-20 items-center px-6 border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
-          {/* <Link className='flex items-center gap-2 font-semibold' href='#'> */}
-          {/* <Package2Icon className='h-6 w-6' /> */}
-          <span className="text-lg md:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            {gameTypeToEmoji(game.type)} {localeToEmoji(game.lang)} {game.title}
-          </span>
-          {/* </Link> */}
-          {/* <Button className='ml-auto h-8 w-8' size='icon' variant='outline'>
+    <div className="flex flex-col h-screen">
+      <div className="flex flex-row flex-1 min-h-0">
+        {/* Left bar */}
+        <div className="flex flex-col w-64 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 border-r border-slate-200 dark:border-slate-800 overflow-y-auto">
+          <div className="flex h-20 items-center px-6 border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
+            {/* <Link className='flex items-center gap-2 font-semibold' href='#'> */}
+            {/* <Package2Icon className='h-6 w-6' /> */}
+            <span className="text-lg md:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              {gameTypeToEmoji(game.type)} {localeToEmoji(game.lang)} {game.title}
+            </span>
+            {/* </Link> */}
+            {/* <Button className='ml-auto h-8 w-8' size='icon' variant='outline'>
                             <BellIcon className='h-6 w-6' />
                             <span className='sr-only'>Toggle notifications</span>
                         </Button> */}
-        </div>
+          </div>
 
-        {/* Left bar */}
-        <div className="flex-1 overflow-auto py-4">
-          <nav className="grid items-start px-3 text-sm font-medium gap-1">
-            <Link
-              href="/"
-              className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-700 transition-all hover:bg-blue-50 hover:text-blue-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-blue-400 group"
-              prefetch={false}
-            >
-              <HomeIcon className="h-5 w-5 group-hover:scale-110 transition-transform" />
-              Home
-            </Link>
-            {/* <Link
+          {/* Left bar */}
+          <div className="flex-1 overflow-auto py-4">
+            <nav className="grid items-start px-3 text-sm font-medium gap-1">
+              <Link
+                href="/"
+                className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-700 transition-all hover:bg-blue-50 hover:text-blue-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-blue-400 group"
+                prefetch={false}
+              >
+                <HomeIcon className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                {intl.formatMessage(messages.home)}
+              </Link>
+              {/* <Link
                             className='flex items-center gap-3 rounded-lg bg-gray-100 px-3 py-2 text-gray-900  transition-all hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50'
                             href='#'>
                             <ShoppingCartIcon className='h-6 w-6' />
@@ -110,28 +123,28 @@ export default function Page({ params }) {
                             <UsersIcon className='h-6 w-6' />
                             Customers
                         </Link> */}
-            <Link
-              href={'/edit/' + gameId + '/analytics'}
-              className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-700 transition-all hover:bg-blue-50 hover:text-blue-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-blue-400 group"
-            >
-              <LineChartIcon className="h-5 w-5 group-hover:scale-110 transition-transform" />
-              Analytics
-            </Link>
-          </nav>
+              <Link
+                href={'/edit/' + gameId + '/analytics'}
+                className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-700 transition-all hover:bg-blue-50 hover:text-blue-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-blue-400 group"
+              >
+                <LineChartIcon className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                {intl.formatMessage(messages.analytics)}
+              </Link>
+            </nav>
+          </div>
         </div>
-      </div>
 
-      {/* Main content */}
-      <div className="flex flex-col h-full flex-1 bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-        {/* Search bar + user menu */}
-        <header className="flex h-20 items-center gap-4 border-b border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md px-8 shadow-sm">
-          <Link className="lg:hidden" href="#">
-            <Package2Icon className="h-6 w-6" />
-            <span className="sr-only">Home</span>
-          </Link>
+        {/* Main content */}
+        <div className="flex flex-col flex-1 min-h-0 bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+          {/* Search bar + user menu */}
+          <header className="flex h-20 items-center gap-4 border-b border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md px-8 shadow-sm">
+            <Link className="lg:hidden" href="#">
+              <Package2Icon className="h-6 w-6" />
+              <span className="sr-only">{intl.formatMessage(messages.home)}</span>
+            </Link>
 
-          {/* Search bar */}
-          {/* <div className='w-full flex-1'>
+            {/* Search bar */}
+            {/* <div className='w-full flex-1'>
                         <form>
                             <div className='relative'>
                                 <SearchIcon
@@ -144,8 +157,8 @@ export default function Page({ params }) {
                         </form>
                     </div> */}
 
-          {/* User menu */}
-          {/* <DropdownMenu>
+            {/* User menu */}
+            {/* <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
                                 className='rounded-full border border-gray-200 w-8 h-8 dark:border-gray-800'
@@ -173,16 +186,19 @@ export default function Page({ params }) {
                             <DropdownMenuItem>Logout</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu> */}
-        </header>
+          </header>
 
-        {/* Main content */}
-        <EditGameRounds game={game} />
+          {/* Main content */}
+          <EditGameRounds game={game} />
+        </div>
       </div>
+      <AppFooter />
     </div>
   );
 }
 
 function EditGameRounds({ game }) {
+  const intl = useIntl();
   console.log('RENDERING EditGameRounds');
   console.log('Game: ', game);
 
@@ -205,12 +221,12 @@ function EditGameRounds({ game }) {
             {allCollapsed ? (
               <>
                 <ChevronDownIcon className="h-5 w-5" />
-                Expand All
+                {intl.formatMessage(messages.expandAll)}
               </>
             ) : (
               <>
                 <ChevronUpIcon className="h-5 w-5" />
-                Collapse All
+                {intl.formatMessage(messages.collapseAll)}
               </>
             )}
           </button>
@@ -227,7 +243,7 @@ function EditGameRounds({ game }) {
           ))}
         </div>
         {status === GameStatus.GAME_EDIT && (
-          <div className="fixed bottom-0 left-64 right-0 flex justify-center items-center gap-4 bg-gradient-to-t from-slate-50/60 to-slate-50/40 dark:from-slate-950/60 dark:to-slate-950/40 border-t border-slate-200 dark:border-slate-800 backdrop-blur-sm p-4 shadow-lg">
+          <div className="sticky bottom-0 flex justify-center items-center gap-4 bg-gradient-to-t from-slate-50/60 to-slate-50/40 dark:from-slate-950/60 dark:to-slate-950/40 border-t border-slate-200 dark:border-slate-800 backdrop-blur-sm p-4 shadow-lg">
             <AddNewRoundButton disabled={roundIds.length >= Game.MAX_NUM_ROUNDS} />
             <LaunchGameButton />
           </div>

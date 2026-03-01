@@ -9,12 +9,10 @@ import SoundRepository from '@/backend/repositories/sound/SoundRepository';
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 
 import { firestore } from '@/backend/firebase/firebase';
-import { runTransaction, serverTimestamp } from 'firebase/firestore';
+import { increment, runTransaction } from 'firebase/firestore';
 import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
-import { increment } from 'firebase/firestore';
-import RoundRepository from '@/backend/repositories/round/RoundRepository';
-import RoundQuestionRepositoryFactory from '@/backend/repositories/round/RoundRepositoryFactory';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
+import RoundRepository from '@/backend/repositories/round/RoundRepository';
 
 export default class GameQuestionService {
   constructor(gameId, roundId, questionType) {
@@ -40,7 +38,7 @@ export default class GameQuestionService {
     this.baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(questionType);
 
     this.roundId = roundId;
-    this.roundRepo = RoundQuestionRepositoryFactory.createRepository(questionType, gameId);
+    this.roundRepo = new RoundRepository(gameId);
     this.roundScoreRepo = new RoundScoreRepository(gameId, roundId);
     this.gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(questionType, gameId, roundId);
   }
@@ -152,87 +150,39 @@ export default class GameQuestionService {
     throw new Error('Not implemented');
   }
 
-  /* ==================================================================================================== */
-  // export const increaseTeamScoreTransaction = async (
-  //     transaction,
-  //     gameId,
-  //     roundId,
-  //     questionId,
-  //     teamId = null,
-  //     points = 0
-  // ) => {
-  //     const roundScoresRef = doc(GAMES_COLLECTION_REF, gameId, 'rounds', roundId, 'realtime', 'scores')
-  //     const roundScoresData = await getDocDataTransaction(transaction, roundScoresRef)
-
-  //     const { scores: currRoundScores, scoresProgress: currRoundProgress } = roundScoresData
-
-  //     const newRoundProgress = {}
-  //     for (const tid of Object.keys(currRoundScores)) {
-  //         newRoundProgress[tid] = {
-  //             ...currRoundProgress[tid],
-  //             [questionId]: currRoundScores[tid] + (tid === teamId) * points
-  //         }
-  //     }
-  //     transaction.update(roundScoresRef, {
-  //         [`scores.${teamId}`]: increment(points),
-  //         scoresProgress: newRoundProgress
-  //     })
-  // }
-
-  async increaseGlobalTeamScoreTransaction(transaction, gameId, roundId, teamId = null, points = 0) {
+  async increaseGlobalTeamScoreTransaction(transaction, questionId, points, teamId = null) {
     const gameScores = await this.gameScoreRepo.getScoresTransaction(transaction);
+    const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction);
+
+    // Increase the team's global score by the given points (which can be negative in case of a penalty)
     const currentGameScores = gameScores.scores;
     const currentGameProgress = gameScores.scoresProgress;
-
-    // Update progress for all teams
     const newGameProgress = {};
     for (const tid of Object.keys(currentGameScores)) {
       newGameProgress[tid] = {
         ...currentGameProgress[tid],
-        [roundId]: currentGameScores[tid] + (tid === teamId) * points,
+        [this.roundId]: currentGameScores[tid] + (tid === teamId) * points,
       };
     }
 
-    // Update scores
     await this.gameScoreRepo.updateScoresTransaction(transaction, {
       [`scores.${teamId}`]: increment(points),
       scoresProgress: newGameProgress,
     });
-  }
 
-  async decreaseGlobalTeamScoreTransaction(transaction, questionId, penalty, teamId = null) {
-    const gameScores = await this.gameScoreRepo.getScoresTransaction(transaction);
-    const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction);
-
-    // Decrease the team's global score by the penalty
-    const mistakePenalty = penalty;
-    const currentGameScores = gameScores.scores;
-    const currentGameProgress = gameScores.scoresProgress;
-    const newGameProgress = {};
-    for (const tid of Object.keys(currentGameScores)) {
-      newGameProgress[tid] = {
-        ...currentGameProgress[tid],
-        [this.roundId]: currentGameScores[tid] + (tid === teamId) * mistakePenalty,
-      };
-    }
-
-    await this.gameScoreRepo.updateScoresTransaction(transaction, {
-      [`scores.${teamId}`]: increment(mistakePenalty),
-      scoresProgress: newGameProgress,
-    });
-
-    // Increase the team's round "score" to 1. In this context, 1 is rather an increment to the counter of mistakes of the team in the round, that a point added to round score
+    // In case of penalty: Increase the team's round "score" to 1.
+    // In this context, 1 is rather an increment to the counter of mistakes of the team in the round, that a point added to round score
     const currRoundScores = roundScores.scores;
     const currRoundProgress = roundScores.scoresProgress;
     const newRoundProgress = {};
     for (const tid of Object.keys(currRoundScores)) {
       newRoundProgress[tid] = {
         ...currRoundProgress[tid],
-        [questionId]: currRoundScores[tid] + (tid === teamId),
+        [questionId]: currRoundScores[tid] + (tid === teamId) * (points > 0 ? points : 1),
       };
     }
     await this.roundScoreRepo.updateScoresTransaction(transaction, {
-      [`scores.${teamId}`]: increment(1),
+      [`scores.${teamId}`]: increment(points > 0 ? points : 1),
       scoresProgress: newRoundProgress,
     });
   }

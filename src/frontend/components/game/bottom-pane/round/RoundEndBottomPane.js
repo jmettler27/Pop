@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { returnToGameHome } from '@/backend/services/game/actions';
 
@@ -37,7 +37,7 @@ export default function RoundEndBottomPane({ endedRound }) {
           <GameChooserTeamAnnouncement /> {intl.formatMessage(messages.theRound)} {endedRound.order + 1 + 1}
         </span>
       )}
-      {myRole === UserRole.ORGANIZER &&
+      {myRole === ParticipantRole.ORGANIZER &&
         (isFinalRound ? <EndGameButton /> : <GoGameHomeButton onClick={handleClick} disabled={isHandling} />)}
     </div>
   );

@@ -1,7 +1,7 @@
 import { selectChoice } from '@/backend/services/question/mcq/actions';
 
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 import { MCQQuestion } from '@/backend/models/questions/MCQ';
 
 import { shuffleIndices } from '@/backend/utils/arrays';
@@ -108,7 +108,7 @@ function MCQMainContentQuestion({ baseQuestion, randomization }) {
   );
 }
 
-const choiceIsDisabled = (myRole, isChooser) => !(myRole === UserRole.PLAYER && isChooser);
+const choiceIsDisabled = (myRole, isChooser) => !(myRole === ParticipantRole.PLAYER && isChooser);
 
 function ActiveMCQChoices({ baseQuestion, gameQuestion, randomization }) {
   const game = useGameContext();

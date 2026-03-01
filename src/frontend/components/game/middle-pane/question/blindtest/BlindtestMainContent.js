@@ -15,7 +15,7 @@ import VolumeDownRounded from '@mui/icons-material/VolumeDownRounded';
 import FastRewindIcon from '@mui/icons-material/FastRewind';
 import FastForwardIcon from '@mui/icons-material/FastForward';
 
-import { QUESTION_ELEMENT_TO_EMOJI } from '@/backend/utils/question/question';
+import { QUESTION_ELEMENT_TO_EMOJI } from '@/backend/utils/question';
 
 export default function BlindtestMainContent({ baseQuestion }) {
   const game = useGameContext();

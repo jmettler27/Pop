@@ -19,6 +19,9 @@ import SelectQuestionTopic from '@/frontend/components/forms/SelectQuestionTopic
 import SubmitFormButton from '@/frontend/components/forms/SubmitFormButton';
 
 import { useRouter } from 'next/navigation';
+import * as Yup from 'yup';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { Form, Formik } from 'formik';
 
 export default function SubmitBasicQuestionForm({ userId, ...props }) {
   const intl = useIntl();
@@ -30,7 +33,7 @@ export default function SubmitBasicQuestionForm({ userId, ...props }) {
       const questionId = await submitQuestion(
         {
           details: { ...others },
-          type: QUESTION_TYPE,
+          type: QuestionType.BASIC,
           topic,
           lang,
         },

@@ -1,19 +1,21 @@
-import { timestampToDate, timestampToDate1 } from '@/backend/utils/time';
-import { QUESTION_ELEMENT_TO_TITLE, ANSWER_TEXT } from '@/backend/utils/question/question';
+import { timestampToDate1 } from '@/backend/utils/time';
+import { ANSWER_TEXT, QUESTION_ELEMENT_TO_TITLE } from '@/backend/utils/question';
 
 import { BlindtestQuestion } from '@/backend/models/questions/Blindtest';
-import {
-  QuoteQuestion,
-  QuotePartElement,
-  QuoteAuthorElement,
-  QuoteSourceElement,
-} from '@/backend/models/questions/Quote';
+import { QuoteAuthorElement, QuoteQuestion, QuoteSourceElement } from '@/backend/models/questions/Quote';
 import { topicToEmoji } from '@/backend/models/Topic';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import UserRepository from '@/backend/repositories/user/UserRepository';
+import { memo, useCallback, useMemo, useState } from 'react';
+import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
+import { localeToEmoji } from '@/frontend/utils/locales';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { Avatar } from '@mui/material';
 
 const messages = defineMessages('frontend.questions.QuestionDataGrid', {
   clue: 'Clue',
@@ -307,10 +309,6 @@ const basicQuestionColumns = (intl) => [
   },
 ];
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import UserRepository from '@/backend/repositories/user/UserRepository';
-import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
-
 const questionTypeToRow = {
   [QuestionType.PROGRESSIVE_CLUES]: progressiveCluesQuestionRow,
   [QuestionType.IMAGE]: imageQuestionRow,
@@ -397,6 +395,8 @@ function SearchQuestionDataGridImpl({
   questionSelectionModel = [],
   onQuestionSelectionModelChange = () => {},
 }) {
+  const intl = useIntl();
+
   // Create repository instances with memoization to prevent unnecessary recreations
   const userRepo = useMemo(() => new UserRepository(), []);
   const { users, loading: usersLoading, error: usersError } = userRepo.useAllUsersOnce();
@@ -434,9 +434,6 @@ function SearchQuestionDataGridImpl({
     return <></>;
   }
 
-  console.log('Loaded questions:', baseQuestions);
-
-  const intl = useIntl();
   const rows = baseQuestions.map((question) => questionRow(question, users));
   const columns = questionColumns(questionType, intl);
 
@@ -484,7 +481,7 @@ function SearchQuestionDataGridImpl({
 
 // Memoize the component to prevent re-renders when parent state changes
 // Only re-renders when props actually change
-export const SearchQuestionDataGrid = React.memo(SearchQuestionDataGridImpl, (prevProps, nextProps) => {
+export const SearchQuestionDataGrid = memo(SearchQuestionDataGridImpl, (prevProps, nextProps) => {
   return (
     prevProps.questionType === nextProps.questionType &&
     prevProps.questionSelectionModel === nextProps.questionSelectionModel &&

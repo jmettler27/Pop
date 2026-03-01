@@ -3,7 +3,7 @@ import { setPlayerReady } from '@/backend/services/player/actions';
 import { getRandomElement } from '@/backend/utils/arrays';
 
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { useGameContext, useGameRepositoriesContext, useRoleContext, useUserContext } from '@/frontend/contexts';
 
@@ -53,7 +53,7 @@ export default function ReadyPlayerController({ isLastQuestion }) {
       {timer.authorized && (
         <>
           <ReadyPlayerHeader isLastQuestion={isLastQuestion} />
-          {myRole === UserRole.PLAYER && <ReadyPlayerButton />}
+          {myRole === ParticipantRole.PLAYER && <ReadyPlayerButton />}
         </>
       )}
     </div>
@@ -86,7 +86,7 @@ function ReadyPlayerHeader({ isLastQuestion }) {
     return <span className="2xl:text-4xl">Letzgo! 🚀</span>;
   }
 
-  if (myRole === UserRole.PLAYER) {
+  if (myRole === ParticipantRole.PLAYER) {
     switch (game.status) {
       case GameStatus.GAME_START:
         return (

@@ -1,6 +1,6 @@
 'use client';
 
-import JoinGameService from '@/backend/services/join-game/JoinGameService';
+import { joinGame } from '@/backend/services/join-game/actions';
 
 import { useGameRepositories, useGameData } from '@/backend/repositories/useGameRepositories';
 
@@ -84,10 +84,9 @@ export default function Page({ params }) {
   const gameId = resolvedParams.id;
   const intl = useIntl();
 
-  const [joinGame, isJoining] = useAsyncAction(async (values, user) => {
+  const [handleJoinGame, isJoining] = useAsyncAction(async (values, user) => {
     try {
-      const joinGameService = new JoinGameService(gameId);
-      await joinGameService.joinGame(user.id, values);
+      await joinGame(gameId, user.id, values);
       router.push(`/${gameId}`);
     } catch (error) {
       console.error('Failed to join the game:', error);
@@ -133,7 +132,7 @@ export default function Page({ params }) {
           teamName: '',
           teamColor: '#000000',
         }}
-        onSubmit={async (values) => await joinGame(values, user)}
+        onSubmit={async (values) => await handleJoinGame(values, user)}
         isSubmitting={isJoining}
         submitButtonLabel={intl.formatMessage(messages.submitFormButtonLabel)}
       >

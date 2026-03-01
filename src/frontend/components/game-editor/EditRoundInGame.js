@@ -7,8 +7,7 @@ import { Round } from '@/backend/models/rounds/Round';
 
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 
-import { removeRoundFromGame } from '@/backend/services/edit-game/edit-game';
-import { updateRound } from '@/backend/services/edit-game/actions';
+import { updateRound, removeRoundFromGame } from '@/backend/services/edit-game/actions';
 
 import globalMessages from '@/i18n/globalMessages';
 import { useIntl } from 'react-intl';

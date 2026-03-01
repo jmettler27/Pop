@@ -1,4 +1,4 @@
-import { removeQuestionFromRound, updateQuestionCreator } from '@/backend/services/edit-game/edit-game';
+import { removeQuestionFromRound } from '@/backend/services/edit-game/actions';
 
 import { useParams } from 'next/navigation';
 
@@ -76,7 +76,9 @@ export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questi
               {isCollapsed ? <ExpandMoreIcon fontSize="small" /> : <ExpandLessIcon fontSize="small" />}
             </IconButton>
           </Tooltip>
-          {status === 'build' && <RemoveQuestionFromRoundButton roundId={roundId} questionId={questionId} />}
+          {status === 'build' && (
+            <RemoveQuestionFromRoundButton questionType={baseQuestion.type} roundId={roundId} questionId={questionId} />
+          )}
         </div>
         {/* <UpdateCreatorButton roundId={roundId} questionId={questionId} /> */}
       </CardHeader>
@@ -131,14 +133,14 @@ function UpdateCreatorButton({ roundId, questionId }) {
   );
 }
 
-function RemoveQuestionFromRoundButton({ roundId, questionId }) {
+function RemoveQuestionFromRoundButton({ questionType, roundId, questionId }) {
   const intl = useIntl();
   const { id: gameId } = useParams();
 
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const [handleRemoveQuestion, isRemoving] = useAsyncAction(async () => {
-    await removeQuestionFromRound(gameId, roundId, questionId);
+    await removeQuestionFromRound(questionType, gameId, roundId, questionId);
   });
 
   const onCancel = () => {

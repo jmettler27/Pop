@@ -2,7 +2,7 @@ import { QuestionTypeIcon } from '@/backend/utils/question_types';
 import { topicToEmoji } from '@/backend/models/Topic';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
 
@@ -16,7 +16,7 @@ const messages = defineMessages('frontend.game.BasicMiddlePane', {
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { useGameContext, useRoleContext } from '@/frontend/contexts';
-import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pane/question/QuestionHeader';
+import CurrentRoundQuestionOrder from '@/frontend/components/game/middle-pane/question/QuestionHeader';
 
 export default function BasicMiddlePane({ baseQuestion }) {
   return (
@@ -76,7 +76,7 @@ function BasicQuestionMainContent({ baseQuestion }) {
         <BasicQuestionAnswer baseQuestion={baseQuestion} gameQuestion={gameQuestion} />
       </div>
       <div className="flex h-[20%] w-full items-center justify-center">
-        {(game.status === GameStatus.QUESTION_END || myRole === UserRole.ORGANIZER) && (
+        {(game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER) && (
           <BasicQuestionFooter baseQuestion={baseQuestion} gameQuestion={gameQuestion} />
         )}
       </div>
@@ -95,11 +95,11 @@ function BasicQuestionAnswer({ baseQuestion, gameQuestion }) {
     else if (correct === false)
       // Question has been answered incorrectly
       return 'text-red-600'; // Question not answered yet
-    else return myRole === UserRole.ORGANIZER && 'text-orange-300';
+    else return myRole === ParticipantRole.ORGANIZER && 'text-orange-300';
   };
 
   return (
-    (game.status === GameStatus.QUESTION_END || myRole === UserRole.ORGANIZER) && (
+    (game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER) && (
       <span className={`2xl:text-4xl font-bold ${statusToColor(gameQuestion.correct)}`}>{baseQuestion.answer}</span>
     )
   );

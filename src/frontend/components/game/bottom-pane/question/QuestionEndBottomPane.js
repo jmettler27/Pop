@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { handleQuestionEnd } from '@/backend/services/round/actions';
 
@@ -50,7 +50,9 @@ function QuestionEndController({ round, isLastQuestion }) {
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-5">
       <ReadyPlayerController isLastQuestion={isLastQuestion} />
-      {myRole === UserRole.ORGANIZER && <QuestionEndOrganizerButton round={round} isLastQuestion={isLastQuestion} />}
+      {myRole === ParticipantRole.ORGANIZER && (
+        <QuestionEndOrganizerButton round={round} isLastQuestion={isLastQuestion} />
+      )}
     </div>
   );
 }

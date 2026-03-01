@@ -91,16 +91,16 @@ export default class Game {
 
   static validateMaxPlayers(maxPlayers) {
     if (!maxPlayers) {
-      throw new Error('Maximum number of players is required');
+      throw new Error('Max num. of players is required');
     }
     if (typeof maxPlayers !== 'number') {
-      throw new Error('Maximum number of players must be a number');
+      throw new Error('Max num. of players must be a number');
     }
     if (maxPlayers < this.MIN_NUM_PLAYERS) {
-      throw new Error(`Maximum number of players must be at least ${this.MIN_NUM_PLAYERS}`);
+      throw new Error(`Max num. of players must be at least ${this.MIN_NUM_PLAYERS}`);
     }
     if (maxPlayers > this.MAX_NUM_PLAYERS) {
-      throw new Error(`Maximum number of players must be at most ${this.MAX_NUM_PLAYERS}`);
+      throw new Error(`Max num. of players must be at most ${this.MAX_NUM_PLAYERS}`);
     }
 
     return true;

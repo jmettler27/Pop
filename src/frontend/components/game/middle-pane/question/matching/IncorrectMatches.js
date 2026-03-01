@@ -4,8 +4,9 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 import { useGameContext } from '@/frontend/contexts';
 
-import { MatchingEdge, getNodeId } from '@/frontend/components/game/middle-pane/question/matching/gridUtils.js';
+import { getNodeId, MatchingEdge } from '@/frontend/components/game/middle-pane/question/matching/gridUtils.js';
 import '@/frontend/components/game/middle-pane/question/matching/styles.scss';
+import { isObjectEmpty } from '@/backend/utils/objects';
 
 export default function IncorrectMatches({ nodePositions, colIndices }) {
   console.log('INCORRECT MATCHES RENDERED');
@@ -25,7 +26,7 @@ export default function IncorrectMatches({ nodePositions, colIndices }) {
   if (loading) {
     return <LoadingScreen loadingText="Loading incorrect matches..." />;
   }
-  if (!incorrectMatches) {
+  if (!incorrectMatches || isObjectEmpty(incorrectMatches)) {
     return <></>;
   }
   // elem = {uid:..., teamId:..., timestamp:..., matching: [row of col 0, row of col 1, ...]}

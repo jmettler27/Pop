@@ -4,7 +4,7 @@ import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { QuoteQuestion } from '@/backend/models/questions/Quote';
 
-import { QUESTION_ELEMENT_TO_EMOJI } from '@/backend/utils/question/question';
+import { QUESTION_ELEMENT_TO_EMOJI } from '@/backend/utils/question';
 import { replaceAllNonSpace, replaceSubstrings } from '@/backend/utils/strings';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';

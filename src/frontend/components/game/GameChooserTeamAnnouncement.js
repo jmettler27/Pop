@@ -1,5 +1,5 @@
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
@@ -68,7 +68,7 @@ export function GameChooserHelperText({ chooserTeamId }) {
     return <></>;
   }
 
-  const isChooser = myRole === UserRole.PLAYER && chooserTeamId === myTeam;
+  const isChooser = myRole === ParticipantRole.PLAYER && chooserTeamId === myTeam;
   const teamHasManyPlayers = players.length > 1;
   const chooserActionText = chooserAction(game.status, intl);
 

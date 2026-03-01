@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
@@ -35,7 +35,7 @@ export default function NaguiPlayerOptionHelperText({ gameQuestion }) {
     );
   }
   if (playerLoading || teamLoading) {
-    return myRole === UserRole.ORGANIZER && <p>Loading player info...</p>;
+    return myRole === ParticipantRole.ORGANIZER && <p>Loading player info...</p>;
   }
   if (!player) {
     return <p>Player not found</p>;

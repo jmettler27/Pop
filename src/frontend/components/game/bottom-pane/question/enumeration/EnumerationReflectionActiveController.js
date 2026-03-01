@@ -3,7 +3,7 @@ import { addBet } from '@/backend/services/question/enumeration/actions';
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 
 import { TimerStatus } from '@/backend/models/Timer';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { range } from '@/backend/utils/arrays';
 
@@ -42,7 +42,7 @@ export default function EnumerationReflectionActiveController({ baseQuestion, ti
   console.log('EnumerationReflectionActiveController', { baseQuestion, timer, myRole });
 
   switch (myRole) {
-    case UserRole.PLAYER:
+    case ParticipantRole.PLAYER:
       return <EnumPlayerReflectionActive baseQuestion={baseQuestion} timer={timer} />;
     default:
       return <EnumSpectatorReflectionActive timer={timer} />;

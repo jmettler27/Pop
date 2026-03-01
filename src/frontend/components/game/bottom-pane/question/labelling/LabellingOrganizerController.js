@@ -17,19 +17,19 @@ import EndQuestionButton from '@/frontend/components/game/bottom-pane/question/E
 import ResetQuestionButton from '@/frontend/components/game/bottom-pane/question/ResetQuestionButton';
 import ClearBuzzerButton from '@/frontend/components/game/bottom-pane/question/buzzer/ClearBuzzerButton';
 import BuzzerHeadPlayer from '@/frontend/components/game/bottom-pane/question/buzzer/BuzzerHeadPlayer';
-import RevealLabelButton from '@/frontend/components/game/bottom-pane/question/label/RevealLabelButton.js';
+import RevealLabelButton from '@/frontend/components/game/bottom-pane/question/labelling/RevealLabelButton.js';
 
 import { Button, ButtonGroup, CircularProgress } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
-const messages = defineMessages('frontend.game.bottom.LabelOrganizerController', {
+const messages = defineMessages('frontend.game.bottom.LabellingOrganizerController', {
   validateAll: 'Validate all',
   cancel: 'Cancel',
 });
 
-export default function LabelOrganizerController({ baseQuestion, questionPlayers }) {
+export default function LabellingOrganizerController({ baseQuestion, questionPlayers }) {
   const { id: gameId } = useParams();
 
   const game = useGameContext();
@@ -77,11 +77,7 @@ function LabelOrganizerAnswerController({ buzzed, baseQuestion }) {
   if (!gameQuestion) {
     return <></>;
   }
-  const revealed = gameQuestion.revealed;
 
-  {
-    /* Validate or invalidate the player's answer */
-  }
   return (
     <>
       <ButtonGroup

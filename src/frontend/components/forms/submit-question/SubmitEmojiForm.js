@@ -48,10 +48,10 @@ export const emojiClueSchema = () =>
     .test('only-emojis', 'Only emojis are allowed!', (str) => onlyEmojis(str))
     .test(
       'emoji-count',
-      `There must be at least ${EMOJI_CLUE_MIN_LENGTH} and at most ${EMOJI_CLUE_MAX_LENGTH} emojis`,
+      `There must be at least ${EmojiQuestion.CLUE_MIN_LENGTH} and at most ${EmojiQuestion.CLUE_MAX_LENGTH} emojis`,
       (str) => {
         const numEmojis = emojiCount(str);
-        return EMOJI_CLUE_MIN_LENGTH <= numEmojis && numEmojis <= EMOJI_CLUE_MAX_LENGTH;
+        return EmojiQuestion.CLUE_MIN_LENGTH <= numEmojis && numEmojis <= EmojiQuestion.CLUE_MAX_LENGTH;
       }
     )
     .required('Required.');
@@ -169,8 +169,6 @@ export default function SubmitEmojiQuestionForm({ userId, ...props }) {
 
 function EmojiPicker() {
   const formik = useFormikContext();
-
-  // TODO: i8n
 
   return (
     <Picker

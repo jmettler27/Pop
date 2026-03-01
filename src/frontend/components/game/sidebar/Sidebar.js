@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { useRoleContext } from '@/frontend/contexts';
 import { useLocale } from '@/app/LocaleProvider';
@@ -99,7 +99,7 @@ export default function Sidebar({}) {
         <ProgressTabPanel />
       </CustomTabPanel>
 
-      {myRole === UserRole.ORGANIZER && <OrganizerSpeedDial />}
+      {myRole === ParticipantRole.ORGANIZER && <OrganizerSpeedDial />}
     </Box>
   );
 }

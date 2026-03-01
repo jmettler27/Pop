@@ -3,7 +3,7 @@ import { handleQuestionEnd } from '@/backend/services/round/actions';
 import { handleCountdownEnd } from '@/backend/services/question/actions';
 import { startRound } from '@/backend/services/round/actions';
 
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { SERVER_TIME_OFFSET_REF } from '@/backend/firebase/database';
 
@@ -32,7 +32,7 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 
 export default function TimerPane() {
   const myRole = useRoleContext();
-  return myRole === UserRole.ORGANIZER ? <OrganizerTimerPane /> : <SpectatorTimerPane />;
+  return myRole === ParticipantRole.ORGANIZER ? <OrganizerTimerPane /> : <SpectatorTimerPane />;
 }
 
 function OrganizerTimerPane() {

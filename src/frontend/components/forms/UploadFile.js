@@ -1,6 +1,4 @@
-import { Formik, Form, useField, useFormikContext } from 'formik';
-import { useRef } from 'react';
-import * as Yup from 'yup';
+import { useField, useFormikContext } from 'formik';
 
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
@@ -15,6 +13,12 @@ import {
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CancelIcon from '@mui/icons-material/Cancel';
+
+import Image from 'next/image';
+
+import { requiredFileFieldIndicator } from '@/frontend/utils/forms/forms';
 
 const messages = defineMessages('frontend.forms.UploadFile', {
   selectImage: 'Select an image file',
@@ -35,8 +39,6 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-
 // https://mui.com/material-ui/react-button/#file-upload
 const UploadFile = ({ fileRef, ...props }) => {
   const [field, meta] = useField(props);
@@ -52,12 +54,6 @@ const UploadFile = ({ fileRef, ...props }) => {
     </>
   );
 };
-
-import CancelIcon from '@mui/icons-material/Cancel';
-
-import Image from 'next/image';
-
-import { requiredFileFieldIndicator } from '@/frontend/utils/forms/forms';
 
 export function UploadImage({ validationSchema, fileRef, name }) {
   const intl = useIntl();

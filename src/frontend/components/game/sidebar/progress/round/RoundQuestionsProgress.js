@@ -1,6 +1,6 @@
 import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 import { topicToEmoji } from '@/backend/models/Topic';
 import { BlindtestQuestion } from '@/backend/models/questions/Blindtest';
 
@@ -145,7 +145,7 @@ export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({
   }
 
   const showComplete =
-    myRole === UserRole.ORGANIZER ||
+    myRole === ParticipantRole.ORGANIZER ||
     (isCurrent && game.status === GameStatus.QUESTION_END) ||
     hasEnded ||
     game.status === GameStatus.ROUND_END;
@@ -192,7 +192,7 @@ export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({
   };
 
   const isDisabled = () => {
-    if (myRole === UserRole.ORGANIZER) return false;
+    if (myRole === ParticipantRole.ORGANIZER) return false;
     return hasNotStarted;
   };
 

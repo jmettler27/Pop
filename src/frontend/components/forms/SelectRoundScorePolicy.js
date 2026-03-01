@@ -17,7 +17,7 @@ export default function SelectRoundScorePolicy({ validationSchema, name = 'round
       <option value="">{intl.formatMessage(messages.header)}</option>
       {Object.values(ScorePolicyType).map((policy) => (
         <option key={policy} value={policy}>
-          {prependScorePolicyTypeWithEmoji(policy)}
+          {prependScorePolicyTypeWithEmoji(policy, intl.locale)}
         </option>
       ))}
     </MySelect>

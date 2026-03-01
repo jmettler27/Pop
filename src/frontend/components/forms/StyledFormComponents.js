@@ -19,12 +19,13 @@ export function MyTextInput({ label, maxLength, validationSchema, fieldType = 's
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
   // which we can spread on <input> and alse replace ErrorMessage entirely.
   const [field, meta] = useField(props);
+  const intl = useIntl();
 
   // const maxLength = validationSchema.fields[field.name].tests.find(test => test.OPTIONS.name === 'max')?.OPTIONS.params.max || 0
   return (
     <>
       <StyledLabel htmlFor={props.id || props.name}>
-        {requiredIndicator(validationSchema, fieldType, field.name)}
+        {requiredIndicator(validationSchema, fieldType, field.name, intl)}
         {label}{' '}
         {maxLength > 0 &&
           (props.onlyEmojis ? numEmojisIndicator(field.value, maxLength) : numCharsIndicator(field.value, maxLength))}
@@ -79,11 +80,12 @@ export function MySelect({ label, validationSchema, ...props }) {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
   // which we can spread on <input> and alse replace ErrorMessage entirely.
   const [field, meta] = useField(props);
+  const intl = useIntl();
 
   return (
     <>
       <StyledLabel htmlFor={props.id || props.name}>
-        {requiredFieldIndicator(validationSchema, field.name)}
+        {requiredFieldIndicator(validationSchema, field.name, intl)}
         {label}
       </StyledLabel>
       <StyledSelect className="text-xs sm:text-sm 2xl:text-base dark:text-white" {...field} {...props} />

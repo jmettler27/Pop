@@ -1,6 +1,6 @@
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { UserRole } from '@/backend/models/users/User';
-import { QUESTION_ELEMENT_TO_EMOJI } from '@/backend/utils/question/question';
+import { ParticipantRole } from '@/backend/models/users/Participant';
+import { QUESTION_ELEMENT_TO_EMOJI } from '@/backend/utils/question';
 
 import { useGameContext, useRoleContext } from '@/frontend/contexts';
 import { Box } from '@mui/material';
@@ -37,7 +37,7 @@ const DisplayedImageElement = ({ element }) => {
   const game = useGameContext();
   const myRole = useRoleContext();
 
-  if (game.status === GameStatus.QUESTION_END || myRole === UserRole.ORGANIZER) {
+  if (game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER) {
     return <span className="text-green-500">{element}</span>;
   }
 

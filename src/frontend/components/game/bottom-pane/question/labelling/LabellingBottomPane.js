@@ -1,13 +1,13 @@
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { useGameContext, useRoleContext } from '@/frontend/contexts';
 import BuzzerPlayers from '@/frontend/components/game/bottom-pane/question/buzzer/BuzzerPlayers';
 import BuzzerPlayerController from '@/frontend/components/game/bottom-pane/question/buzzer/BuzzerPlayerController';
 import BuzzerSpectatorController from '@/frontend/components/game/bottom-pane/question/buzzer/BuzzerSpectatorController';
-import LabelOrganizerController from '@/frontend/components/game/bottom-pane/question/label/LabelOrganizerController';
+import LabellingOrganizerController from '@/frontend/components/game/bottom-pane/question/labelling/LabellingOrganizerController';
 
-export default function LabelBottomPane({ baseQuestion }) {
+export default function LabellingBottomPane({ baseQuestion }) {
   const game = useGameContext();
   console.log('BuzzerBottomPane game', game, baseQuestion);
 
@@ -53,10 +53,10 @@ function LabelController({ baseQuestion, questionPlayers }) {
   const myRole = useRoleContext();
 
   switch (myRole) {
-    case UserRole.PLAYER:
+    case ParticipantRole.PLAYER:
       return <BuzzerPlayerController questionPlayers={questionPlayers} />;
-    case UserRole.ORGANIZER:
-      return <LabelOrganizerController questionPlayers={questionPlayers} baseQuestion={baseQuestion} />;
+    case ParticipantRole.ORGANIZER:
+      return <LabellingOrganizerController questionPlayers={questionPlayers} baseQuestion={baseQuestion} />;
     default:
       return <BuzzerSpectatorController questionPlayers={questionPlayers} />;
   }

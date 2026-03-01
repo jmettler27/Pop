@@ -5,6 +5,7 @@ import { useGameContext } from '@/frontend/contexts';
 import { getNodeId, MatchingEdge } from '@/frontend/components/game/middle-pane/question/matching/gridUtils.js';
 import '@/frontend/components/game/middle-pane/question/matching/styles.scss';
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
+import { isObjectEmpty } from '@/backend/utils/objects';
 
 export default function CorrectMatches({ nodePositions, colIndices }) {
   console.log('CORRECT MATCHES RENDERED');
@@ -24,7 +25,7 @@ export default function CorrectMatches({ nodePositions, colIndices }) {
   if (loading) {
     return <LoadingScreen loadingText="Loading correct matches..." />;
   }
-  if (!correctMatches) {
+  if (!correctMatches || isObjectEmpty(correctMatches)) {
     return <></>;
   }
   // elem = {uid:..., teamId:..., timestamp:..., matching: [row of col 0, row of col 1, ...]}

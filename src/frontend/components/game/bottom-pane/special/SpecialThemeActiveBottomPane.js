@@ -1,14 +1,12 @@
-import { handlePlayerAnswer, handleQuestionEndOrganizerContinue } from '@/backend/services/round/special/actions';
+import { handleQuestionEndOrganizerContinue } from '@/backend/services/round/special/actions';
 
-import { UserRole } from '@/backend/models/users/User';
-
-import { INVALIDATE_ANSWER, VALIDATE_ANSWER } from '@/backend/utils/question/question';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { doc } from 'firebase/firestore';
 import { useDocument } from 'react-firebase-hooks/firestore';
 
-import { useUserContext, useGameContext, useRoleContext } from '@/frontend/contexts';
+import { useGameContext, useRoleContext, useUserContext } from '@/frontend/contexts';
 
 import { GameChooserHelperText } from '@/frontend/components/game/GameChooserTeamAnnouncement';
 
@@ -23,7 +21,7 @@ export default function SpecialThemeActiveBottomPane({ theme, gameTheme }) {
   const myRole = useRoleContext();
 
   switch (myRole) {
-    case UserRole.ORGANIZER:
+    case ParticipantRole.ORGANIZER:
       return <SpecialThemeActiveOrganizerBottomPane theme={theme} gameTheme={gameTheme} />;
     default:
       return (

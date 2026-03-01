@@ -3,6 +3,7 @@ import React from 'react';
 import Sketch from '@uiw/react-color-sketch';
 
 import { useField } from 'formik';
+import { useIntl } from 'react-intl';
 
 import { requiredIndicator } from '@/frontend/utils/forms/forms';
 
@@ -10,11 +11,12 @@ import { StyledLabel, StyledErrorMessage } from '@/frontend/components/forms/Sty
 
 export default function MyColorPicker({ label, validationSchema, name, ...props }) {
   const [field, meta, helpers] = useField(name);
+  const intl = useIntl();
 
   return (
     <div className="space-y-1">
       <StyledLabel htmlFor={props.id || props.name}>
-        {requiredIndicator(validationSchema, 'string', field.name)}
+        {requiredIndicator(validationSchema, 'string', field.name, intl)}
         {label}
       </StyledLabel>
       <Sketch

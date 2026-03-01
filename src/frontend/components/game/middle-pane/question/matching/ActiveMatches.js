@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import '@/frontend/components/game/middle-pane/question/matching/styles.scss';
@@ -10,12 +10,13 @@ import {
   MatchingNode,
   matchIsComplete,
 } from '@/frontend/components/game/middle-pane/question/matching/gridUtils';
-import SubmitMatchDialog from '@/frontend/components/game/middle-pane/question/matching/active-matching/SubmitMatchDialog';
+import SubmitMatchDialog from '@/frontend/components/game/middle-pane/question/matching/SubmitMatchDialog';
 
 import { useState } from 'react';
 
 import { useGameContext, useGameRepositoriesContext, useRoleContext, useTeamContext } from '@/frontend/contexts';
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
+import { isObjectEmpty } from '@/backend/utils/objects';
 
 export default function ActiveMatches({ answer, nodePositions, numCols }) {
   console.log('ACTIVE MATCHES RENDERED');
@@ -37,7 +38,7 @@ export default function ActiveMatches({ answer, nodePositions, numCols }) {
         setNewEdgeSource={setNewEdgeSource}
       />
 
-      {(myRole === UserRole.PLAYER || myRole === UserRole.ORGANIZER) && (
+      {(myRole === ParticipantRole.PLAYER || myRole === ParticipantRole.ORGANIZER) && (
         <>
           <UserMatches
             edges={edges}
@@ -59,7 +60,8 @@ export default function ActiveMatches({ answer, nodePositions, numCols }) {
   );
 }
 
-const nodeIsMatched = (origRow, foundMatches) => foundMatches.find((elem) => elem.matchIdx === origRow);
+const nodeIsMatched = (origRow, foundMatches) =>
+  !isObjectEmpty(foundMatches) && foundMatches.find((elem) => elem.matchIdx === origRow);
 
 const nodeIsActive = (id, newEdgeSource, edges) =>
   id === newEdgeSource || edges.find((edge) => edge.from === id || edge.to === id);
@@ -67,8 +69,8 @@ const nodeIsActive = (id, newEdgeSource, edges) =>
 const nodeIsDisabled = (origRow, foundMatches, edges, numCols, myRole, isChooser, isCanceled) => {
   if (nodeIsMatched(origRow, foundMatches)) return true;
   if (matchIsComplete(edges, numCols)) return true;
-  if (myRole === UserRole.ORGANIZER) return false;
-  if (myRole === UserRole.PLAYER) {
+  if (myRole === ParticipantRole.ORGANIZER) return false;
+  if (myRole === ParticipantRole.PLAYER) {
     return isCanceled || !isChooser;
   }
   return true;

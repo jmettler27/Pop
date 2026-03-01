@@ -1,6 +1,6 @@
 import { topicToEmoji } from '@/backend/models/Topic';
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
 
 import { useIntl } from 'react-intl';
@@ -248,7 +248,7 @@ function ThemeSectionAccordion({
   playerTeam,
 }) {
   const myRole = useRoleContext();
-  const showComplete = myRole === UserRole.ORGANIZER || hasEnded || isCurrent;
+  const showComplete = myRole === ParticipantRole.ORGANIZER || hasEnded || isCurrent;
   console.log(sectionId, showComplete);
 
   const borderColor = () => {
