@@ -2,9 +2,15 @@ import RoundScoreRepository from '@/backend/repositories/score/RoundScoreReposit
 
 import { useGameRepositoriesContext } from '@/frontend/contexts';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.game.middle.RoundEndBody', {
+  roundStats: 'Round statistics',
+  gameStats: 'Game statistics',
+});
 
 import RoundScoreboard from '@/frontend/components/scores/RoundScoreboard';
 import RoundScoresChart from '@/frontend/components/scores/RoundScoresChart';
@@ -13,8 +19,9 @@ import GameScoresChart from '@/frontend/components/scores/GameScoresChart';
 
 import { useParams } from 'next/navigation';
 
-export default function RoundEndBody({ currentRound, lang = DEFAULT_LOCALE }) {
+export default function RoundEndBody({ currentRound }) {
   const { id: gameId } = useParams();
+  const intl = useIntl();
 
   const { teamRepo } = useGameRepositoriesContext();
   const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeamsOnce();
@@ -48,7 +55,7 @@ export default function RoundEndBody({ currentRound, lang = DEFAULT_LOCALE }) {
       {/* Round statistics */}
       <div className="flex flex-col h-1/2 w-full items-center justify-center">
         <div className="flex flex-col h-[10%] w-full items-center justify-center">
-          <h1 className="2xl:text-3xl text-yellow-300">{ROUND_STATS_HEADER_TEXT[lang]}</h1>
+          <h1 className="2xl:text-3xl text-yellow-300">{intl.formatMessage(messages.roundStats)}</h1>
         </div>
         <div className="flex flex-row h-[90%] w-full items-center justify-center">
           <div className="flex flex-col h-full w-2/3 items-center justify-center">
@@ -63,7 +70,7 @@ export default function RoundEndBody({ currentRound, lang = DEFAULT_LOCALE }) {
       </div>
       {/* Game statistics */}
       <div className="flex flex-col h-1/2 w-full items-center justify-center">
-        <h1 className="2xl:text-3xl text-yellow-300">{GAME_STATS_HEADER_TEXT[lang]}</h1>
+        <h1 className="2xl:text-3xl text-yellow-300">{intl.formatMessage(messages.gameStats)}</h1>
         <div className="flex flex-row h-[90%] w-full items-center justify-center">
           <div className="flex flex-col h-11/12 w-2/3 items-center justify-center">
             <GameScoreboard roundScores={roundScores} teams={teams} />
@@ -76,13 +83,3 @@ export default function RoundEndBody({ currentRound, lang = DEFAULT_LOCALE }) {
     </div>
   );
 }
-
-const ROUND_STATS_HEADER_TEXT = {
-  en: 'Round statistics',
-  'fr-FR': 'Statistiques de la manche',
-};
-
-const GAME_STATS_HEADER_TEXT = {
-  en: 'Game statistics',
-  'fr-FR': 'Statistiques de la partie',
-};

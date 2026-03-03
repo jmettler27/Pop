@@ -17,9 +17,9 @@ export const addQuestionToRound = async (gameId, roundId, questionId, managerId)
   return service.addQuestionToRound(roundId, questionId, managerId);
 };
 
-export const removeQuestionFromRound = async (gameId, roundId, questionId) => {
+export const removeQuestionFromRound = async (questionType, gameId, roundId, questionId) => {
   const service = new EditGameService(gameId);
-  return service.removeQuestionFromRound(roundId, questionId);
+  return service.removeQuestionFromRound(questionType, roundId, questionId);
 };
 
 export const updateRound = async (gameId, roundId, roundData) => {

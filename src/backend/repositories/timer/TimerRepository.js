@@ -46,7 +46,7 @@ export default class TimerRepository extends FirebaseDocumentRepository {
     await this.updateTimerStatusTransaction(transaction, TimerStatus.START, duration);
   }
 
-  async pauseTimerTransaction(transaction) {
+  async stopTimerTransaction(transaction) {
     await this.updateTimerStatusTransaction(transaction, TimerStatus.STOP);
   }
 

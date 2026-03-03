@@ -1,7 +1,7 @@
-import { User } from '@/backend/models/users/User';
+import { Participant, ParticipantRole } from '@/backend/models/users/Participant';
 
-export class Organizer extends User {
+export class Organizer extends Participant {
   constructor(data) {
-    super(data);
+    super(ParticipantRole.ORGANIZER, data);
   }
 }

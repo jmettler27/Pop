@@ -1,7 +1,8 @@
 import { RoundType } from '@/backend/models/rounds/RoundType';
-import { RoundTypeIcon, ROUND_HEADER_TEXT } from '@/backend/utils/rounds';
+import { RoundTypeIcon } from '@/backend/utils/rounds';
+import globalMessages from '@/i18n/globalMessages';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
 
 import { useGameRepositoriesContext } from '@/frontend/contexts';
 
@@ -42,19 +43,15 @@ export default function RoundProgressTabPanel({ game }) {
   );
 }
 
-const RoundProgressHeader = memo(function RoundProgressHeader({
-  roundType,
-  roundOrder,
-  roundTitle,
-  lang = DEFAULT_LOCALE,
-}) {
+const RoundProgressHeader = memo(function RoundProgressHeader({ roundType, roundOrder, roundTitle }) {
+  const intl = useIntl();
   console.log('RENDERED RoundProgressHeader');
   return (
     <div className="flex flex-row items-center w-full justify-center space-x-1 mt-1">
       <RoundTypeIcon roundType={roundType} fontSize={20} />
       <span className="2xl:text-xl">
         <strong>
-          {ROUND_HEADER_TEXT[lang]} {roundOrder + 1}
+          {intl.formatMessage(globalMessages.round)} {roundOrder + 1}
         </strong>{' '}
         - <i>{roundTitle}</i>
       </span>

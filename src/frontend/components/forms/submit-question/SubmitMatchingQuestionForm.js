@@ -6,11 +6,20 @@ import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
 import { topicSchema } from '@/frontend/utils/forms/topics';
-import { QUESTION_HINTS_REMARKS, QUESTION_ITEM, QUESTION_TITLE_LABEL } from '@/frontend/utils/forms/questions';
+import { messages as questionMessages } from '@/frontend/utils/forms/questions';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { stringSchema } from '@/frontend/utils/forms/forms';
+
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.forms.submitQuestion.matching', {
+  numColumns: 'Number of columns',
+  numMatchesAllowed: 'Number of matches allowed',
+  addMatch: 'Add match',
+});
 
 import {
   MyTextInput,
@@ -64,7 +73,7 @@ const MATCHING_ANSWER_EXAMPLE_3 = [
   { 0: 'Jeremy Irons', 1: 'Alfred Pennyworth', 2: 'Batman v Superman (2016)' },
 ];
 
-export default function SubmitMatchingQuestionForm({ userId, lang, ...props }) {
+export default function SubmitMatchingQuestionForm({ userId, ...props }) {
   const router = useRouter();
 
   const [submitMatchingQuestion, isSubmitting] = useAsyncAction(async (values) => {
@@ -134,24 +143,24 @@ export default function SubmitMatchingQuestionForm({ userId, lang, ...props }) {
             )
             .required('Required.'),
         })}
-        lang={lang}
       />
 
       {/* Step 2: Proposals */}
-      <EnterMatchesStep onSubmit={() => {}} lang={lang} />
+      <EnterMatchesStep onSubmit={() => {}} />
     </Wizard>
   );
 }
 
-function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
+function GeneralInfoStep({ onSubmit, validationSchema }) {
+  const intl = useIntl();
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
-      <SelectLanguage lang={lang} name="lang" validationSchema={validationSchema} />
+      <SelectLanguage name="lang" validationSchema={validationSchema} />
 
-      <SelectQuestionTopic lang={lang} name="topic" validationSchema={validationSchema} />
+      <SelectQuestionTopic name="topic" validationSchema={validationSchema} />
 
       <MyTextInput
-        label={QUESTION_TITLE_LABEL[lang]}
+        label={intl.formatMessage(questionMessages.questionTitle)}
         name="title"
         type="text"
         placeholder={MATCHING_TITLE_EXAMPLE}
@@ -160,7 +169,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
       />
 
       <MyTextInput
-        label={QUESTION_HINTS_REMARKS[lang]}
+        label={intl.formatMessage(questionMessages.hintsRemarks)}
         name="note"
         type="text"
         placeholder=""
@@ -171,7 +180,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
       {/* <br />
             <br /> */}
       <MyNumberInput
-        label={NUM_COLUMNS[lang]}
+        label={intl.formatMessage(messages.numColumns)}
         name="numCols"
         min={MatchingQuestion.MIN_NUM_COLS}
         max={MatchingQuestion.MAX_NUM_COLS}
@@ -181,10 +190,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, lang }) {
   );
 }
 
-const NUM_COLUMNS = {
-  en: 'Number of columns',
-  'fr-FR': 'Nombre de colonnes',
-};
+const NUM_COLUMNS = null;
 
 const matchingItemsSchema = (numCols) => {
   // let row = []
@@ -202,7 +208,8 @@ const matchingItemsSchema = (numCols) => {
 // return acc;
 // }, {})
 
-function EnterMatchesStep({ onSubmit, lang }) {
+function EnterMatchesStep({ onSubmit }) {
+  const intl = useIntl();
   const formik = useFormikContext();
 
   const values = formik.values;
@@ -232,7 +239,8 @@ function EnterMatchesStep({ onSubmit, lang }) {
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
       <p>
-        {NUM_MATCHES_ALLOWED[lang]}: {MatchingQuestion.MIN_NUM_ROWS}-{MatchingQuestion.MAX_NUM_ROWS}.{' '}
+        {intl.formatMessage(messages.numMatchesAllowed)}: {MatchingQuestion.MIN_NUM_ROWS}-
+        {MatchingQuestion.MAX_NUM_ROWS}.{' '}
       </p>
 
       <FieldArray name="matches">
@@ -252,7 +260,7 @@ function EnterMatchesStep({ onSubmit, lang }) {
                     .map((_, col) => (
                       <Fragment key={`${row}_${col}`}>
                         <MyTextInput
-                          label={`${QUESTION_ITEM[lang]} #${col + 1}`}
+                          label={`${intl.formatMessage(questionMessages.item)} #${col + 1}`}
                           name={`matches.${row}.${col}`}
                           type="text"
                           placeholder={itemPlaceholder(col, row, values.numCols)}
@@ -269,7 +277,7 @@ function EnterMatchesStep({ onSubmit, lang }) {
               startIcon={<AddIcon />}
               onClick={() => push(Array.from({ length: values.numCols }, () => ''))}
             >
-              {ADD_MATCH[lang]}
+              {intl.formatMessage(messages.addMatch)}
             </Button>
           </>
         )}
@@ -280,18 +288,8 @@ function EnterMatchesStep({ onSubmit, lang }) {
   );
 }
 
-const NUM_MATCHES_ALLOWED = {
-  en: 'Number of matches allowed',
-  'fr-FR': 'Nombre de matchs autorisé',
-};
-
-const ADD_MATCH = {
-  en: 'Add match',
-  'fr-FR': 'Ajouter match',
-};
-
 const itemPlaceholder = (col, row, numCols) => {
   if (numCols === 2) return MATCHING_ANSWER_EXAMPLE_2[row % MATCHING_ANSWER_EXAMPLE_2.length][col];
   if (numCols === 3) return MATCHING_ANSWER_EXAMPLE_3[row % MATCHING_ANSWER_EXAMPLE_3.length][col];
-  return `${QUESTION_ITEM[lang]} #${col + 1} of Matching #${row + 1}`;
+  return `Item #${col + 1} of Match #${row + 1}`;
 };

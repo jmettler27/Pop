@@ -6,7 +6,7 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 import { getNextCyclicIndex, shuffle } from '@/backend/utils/arrays';
 import { Timer, TimerStatus } from '@/backend/models/Timer';
 import { HideNaguiOption } from '@/backend/models/questions/Nagui';
-import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question/question';
+import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import { RoundType } from '@/backend/models/rounds/RoundType';

@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 
@@ -49,9 +49,9 @@ function QuoteController({ baseQuestion, questionPlayers }) {
   const myRole = useRoleContext();
 
   switch (myRole) {
-    case UserRole.PLAYER:
+    case ParticipantRole.PLAYER:
       return <BuzzerPlayerController questionPlayers={questionPlayers} />;
-    case UserRole.ORGANIZER:
+    case ParticipantRole.ORGANIZER:
       return <QuoteOrganizerController baseQuestion={baseQuestion} questionPlayers={questionPlayers} />;
     default:
       return <BuzzerSpectatorController questionPlayers={questionPlayers} />;

@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { timestampToHour } from '@/backend/utils/time';
 import { RoundTypeIcon } from '@/backend/utils/rounds';
@@ -7,7 +7,7 @@ import { useGameRepositoriesContext, useRoleContext, useTeamContext, useUserCont
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { useParams } from 'next/navigation';
@@ -16,21 +16,26 @@ import { Avatar, Divider, List, ListItemAvatar, ListItemButton, ListItemText } f
 import { RoundType } from '@/backend/models/rounds/RoundType';
 import { handleRoundSelected } from '@/backend/services/round/actions';
 
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.game.middle.GameHomeMiddlePane', {
+  title: 'Rounds',
+  roundStarted: 'Started at {time} ({elapsed} min ago)',
+  roundEnded: 'Round ended at {time} ({duration} min)',
+});
+
 export default function GameHomeMiddlePane({}) {
+  const intl = useIntl();
   return (
     <div className="flex flex-col h-full items-center justify-center">
       <div className="flex flex-col h-[10%] items-center justify-center">
-        <GameHomeTitle />
+        <h1 className="2xl:text-5xl font-bold">{intl.formatMessage(messages.title)}</h1>
       </div>
       <div className="flex flex-col h-[90%] w-full items-center justify-around overflow-auto">
         <GameHomeRounds />
       </div>
     </div>
   );
-}
-
-function GameHomeTitle() {
-  return <h1 className="2xl:text-5xl font-bold">Les manches</h1>;
 }
 
 function GameHomeRounds() {
@@ -87,14 +92,14 @@ function GameHomeRounds() {
 
   const roundIsDisabled = (roundId) => {
     if (endedRounds.includes(roundId)) return true;
-    if (myRole === UserRole.ORGANIZER) return false;
-    if (myRole === UserRole.PLAYER) return !isChooser;
+    if (myRole === ParticipantRole.ORGANIZER) return false;
+    if (myRole === ParticipantRole.PLAYER) return !isChooser;
     return true;
   };
 
   const showSpecial =
     specialRound &&
-    (myRole === UserRole.ORGANIZER ||
+    (myRole === ParticipantRole.ORGANIZER ||
       (endedRounds.length === nonSpecialRounds.length && !endedRounds.includes(specialRound.id)));
 
   /* Rounds */
@@ -122,7 +127,7 @@ function GameHomeRounds() {
               <GameHomeRoundItem
                 round={round}
                 isDisabled={isHandling || roundIsDisabled(round.id)}
-                onSelectRound={() => handleSelect(round.id.round.type)}
+                onSelectRound={() => handleSelect(round.id, round.type)}
               />
               {idx < endedNonSpecialRounds.length - 1 && <Divider variant="inset" component="li" />}
             </div>
@@ -135,7 +140,7 @@ function GameHomeRounds() {
           <GameHomeRoundItem
             key={specialRound.id}
             round={specialRound}
-            isDisabled={isHandling || myRole !== UserRole.ORGANIZER}
+            isDisabled={isHandling || myRole !== ParticipantRole.ORGANIZER}
             onSelectRound={() => handleSelect(specialRound.id, RoundType.SPECIAL)}
           />
         )}
@@ -144,23 +149,24 @@ function GameHomeRounds() {
   );
 }
 
-function GameHomeRoundItem({ round, isDisabled, onSelectRound, locale = DEFAULT_LOCALE }) {
+function GameHomeRoundItem({ round, isDisabled, onSelectRound }) {
+  const intl = useIntl();
   const secondaryText = () => {
     if (!round.dateStart) return '';
 
-    const startTime = timestampToHour(round.dateEnd, locale);
+    const startTime = timestampToHour(round.dateStart, intl.locale);
 
     if (!round.dateEnd) {
       const now = new Date();
       const elapsedSecs = now.getTime() / 1000 - round.dateStart.seconds;
       const elapsedMins = Math.floor(elapsedSecs / 60);
-      return `Commencée à ${startTime} (y a ${elapsedMins} min)`;
+      return intl.formatMessage(messages.roundStarted, { time: startTime, elapsed: elapsedMins });
     }
 
-    const endTime = timestampToHour(round.dateEnd, locale);
+    const endTime = timestampToHour(round.dateEnd, intl.locale);
     const durationSecs = round.dateEnd.seconds - round.dateStart.seconds;
     const durationMins = Math.floor(durationSecs / 60);
-    return `Manche terminée à ${endTime} (${durationMins} min)`;
+    return intl.formatMessage(messages.roundEnded, { time: endTime, duration: durationMins });
   };
 
   return (

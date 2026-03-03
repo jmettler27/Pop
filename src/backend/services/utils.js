@@ -1,23 +1,11 @@
 'use server';
 
-import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { firestore } from '@/backend/firebase/firebase';
-import { getDoc, doc, setDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 
 export const getDocDataTransaction = async (transaction, docRef) => {
   const docSnap = await transaction.get(docRef);
   return docSnap.data();
-};
-
-// export const getDocDataTransaction = async (transaction, ...path) => {
-//     const docRef = doc(db, ...path);
-//     const docSnap = await transaction.get(docRef);
-//     return docSnap.data();
-// };
-
-export const updateGameStatusTransaction = async (transaction, gameId, status) => {
-  const gameRef = doc(GAMES_COLLECTION_REF, gameId);
-  await transaction.update(gameRef, { status });
 };
 
 // READ
@@ -31,11 +19,4 @@ export async function getDocData(...docPath) {
     console.error('Error fetching document:', error);
     throw error;
   }
-}
-
-export async function copyDocument(fromRef, toRef) {
-  const fromDocData = (await getDoc(fromRef)).data();
-
-  console.log(fromDocData);
-  await setDoc(toRef, fromDocData);
 }

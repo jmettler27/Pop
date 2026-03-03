@@ -47,46 +47,22 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
     const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction);
     const questionPlayers = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
 
-    const { challenger } = questionPlayers;
-    const { teamId, playerId, numCorrect, bet } = challenger;
-
     const { scores: currRoundScores, scoresProgress: currRoundProgress } = roundScores;
+    const { challenger } = questionPlayers;
 
-    const challengers = await this.playerRepo.getPlayersByTeamId(teamId);
-    const spectators = await this.playerRepo.getAllOtherPlayers(teamId);
-
-    if (numCorrect < bet) {
-      // The challenger did not succeed in its challenge
-      const spectatorTeams = await this.teamRepo.getOtherTeams(teamId);
-      const reward = round.rewardsPerQuestion;
-
-      await this.playerRepo.updateAllPlayersStatusTransaction(
-        transaction,
-        PlayerStatus.WRONG,
-        challengers.map((c) => c.id)
-      );
+    if (!challenger) {
+      // We end the question before any bet is submitted
+      const teams = await this.teamRepo.getAllTeams();
 
       const newRoundScores = {};
       const newRoundProgress = {};
-      newRoundScores[teamId] = currRoundScores[teamId] || 0;
-      newRoundProgress[teamId] = {
-        ...currRoundProgress[teamId],
-        [questionId]: currRoundScores[teamId] || 0,
-      };
-
-      await this.playerRepo.updateAllPlayersStatusTransaction(
-        transaction,
-        PlayerStatus.CORRECT,
-        spectators.map((s) => s.id)
-      );
-
-      for (const spectatorTeam of spectatorTeams) {
-        const stid = spectatorTeam.id;
-        newRoundProgress[stid] = {
-          ...currRoundProgress[stid],
-          [questionId]: currRoundScores[stid] + reward,
+      for (const team of teams) {
+        const teamId = team.id;
+        newRoundScores[teamId] = currRoundScores[teamId] || 0;
+        newRoundProgress[teamId] = {
+          ...currRoundProgress[teamId],
+          [questionId]: currRoundScores[teamId] || 0,
         };
-        newRoundScores[stid] = currRoundScores[stid] + reward;
       }
 
       await this.roundScoreRepo.updateScoresTransaction(transaction, {
@@ -94,16 +70,61 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
         scoresProgress: newRoundProgress,
       });
     } else {
-      // The challenger succeeded in its challenge
-      const reward = round.rewardsPerQuestion + (numCorrect > bet) * round.rewardsForBonus;
-      await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward);
+      // Regular case: at least one bet has been submitted
+      const { teamId, playerId, numCorrect, bet } = challenger;
+      const challengers = await this.playerRepo.getPlayersByTeamId(teamId);
+      const spectators = await this.playerRepo.getAllOtherPlayers(teamId);
 
-      await this.playerRepo.updateAllPlayersStatusTransaction(
-        transaction,
-        PlayerStatus.CORRECT,
-        challengers.map((c) => c.id)
-      );
-      await this.gameQuestionRepo.updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId);
+      if (numCorrect < bet) {
+        // The challenger did not succeed in its challenge
+        const spectatorTeams = await this.teamRepo.getOtherTeams(teamId);
+        const reward = round.rewardsPerQuestion;
+
+        await this.playerRepo.updateAllPlayersStatusTransaction(
+          transaction,
+          PlayerStatus.WRONG,
+          challengers.map((c) => c.id)
+        );
+
+        const newRoundScores = {};
+        const newRoundProgress = {};
+        newRoundScores[teamId] = currRoundScores[teamId] || 0;
+        newRoundProgress[teamId] = {
+          ...currRoundProgress[teamId],
+          [questionId]: currRoundScores[teamId] || 0,
+        };
+
+        await this.playerRepo.updateAllPlayersStatusTransaction(
+          transaction,
+          PlayerStatus.CORRECT,
+          spectators.map((s) => s.id)
+        );
+
+        for (const spectatorTeam of spectatorTeams) {
+          const stid = spectatorTeam.id;
+          newRoundProgress[stid] = {
+            ...currRoundProgress[stid],
+            [questionId]: currRoundScores[stid] + reward,
+          };
+          newRoundScores[stid] = currRoundScores[stid] + reward;
+        }
+
+        await this.roundScoreRepo.updateScoresTransaction(transaction, {
+          scores: newRoundScores,
+          scoresProgress: newRoundProgress,
+        });
+      } else {
+        // The challenger succeeded in its challenge
+        const reward = round.rewardsPerQuestion + (numCorrect > bet) * round.rewardsForBonus;
+        await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward);
+
+        await this.playerRepo.updateAllPlayersStatusTransaction(
+          transaction,
+          PlayerStatus.CORRECT,
+          challengers.map((c) => c.id)
+        );
+        await this.gameQuestionRepo.updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId);
+      }
     }
 
     await super.endQuestionTransaction(transaction, questionId);

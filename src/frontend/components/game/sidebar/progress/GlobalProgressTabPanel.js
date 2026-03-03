@@ -1,13 +1,14 @@
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 
 import { rankingToEmoji } from '@/backend/utils/emojis';
-import { RoundTypeIcon, ROUND_HEADER_TEXT } from '@/backend/utils/rounds';
+import { RoundTypeIcon } from '@/backend/utils/rounds';
 
 import { useGameRepositoriesContext } from '@/frontend/contexts';
+import globalMessages from '@/i18n/globalMessages';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
 
 import { memo } from 'react';
 
@@ -73,7 +74,8 @@ const GameRoundsProgress = memo(function GameRoundsProgress({ gameId }) {
   );
 });
 
-function RoundAccordion({ gameId, round, teams, hasEnded, isCurrent, lang = DEFAULT_LOCALE }) {
+function RoundAccordion({ gameId, round, teams, hasEnded, isCurrent }) {
+  const intl = useIntl();
   const roundScoreRepo = new RoundScoreRepository(gameId, round.id);
   const { roundScores, loading, error } = roundScoreRepo.useScoresOnce();
 
@@ -124,7 +126,7 @@ function RoundAccordion({ gameId, round, teams, hasEnded, isCurrent, lang = DEFA
           <Typography className={clsx(isCurrent && !hasEnded && 'text-orange-300')}>
             <span className="2xl:text-xl">
               <strong>
-                {ROUND_HEADER_TEXT[lang]} {round.order + 1}
+                {intl.formatMessage(globalMessages.round)} {round.order + 1}
               </strong>{' '}
               - <i>{round.title}</i>
             </span>

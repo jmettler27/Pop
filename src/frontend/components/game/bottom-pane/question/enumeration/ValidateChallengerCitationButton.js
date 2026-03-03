@@ -3,13 +3,21 @@ import { incrementValidItems } from '@/backend/services/question/enumeration/act
 import { TimerStatus } from '@/backend/models/Timer';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 
 import { useUserContext, useGameContext, useGameRepositoriesContext } from '@/frontend/contexts';
 
 import { CircularProgress, IconButton, Tooltip } from '@mui/material';
 import PlusOneIcon from '@mui/icons-material/PlusOne';
 
+const messages = defineMessages('frontend.game.bottom.ValidateChallengerCitationButton', {
+  validateCitation: 'Validate citation',
+  activateTimerFirst: 'Activate timer first!',
+});
+
 export default function ValidateChallengerCitationButton() {
+  const intl = useIntl();
   const game = useGameContext();
   const user = useUserContext();
 
@@ -38,7 +46,12 @@ export default function ValidateChallengerCitationButton() {
   const isClickable = timer.status === TimerStatus.START;
 
   return (
-    <Tooltip title={isClickable ? 'Valider la citation' : "Active le timer d'abord !"} placement="right">
+    <Tooltip
+      title={
+        isClickable ? intl.formatMessage(messages.validateCitation) : intl.formatMessage(messages.activateTimerFirst)
+      }
+      placement="right"
+    >
       <span>
         <IconButton
           variant="contained"

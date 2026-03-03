@@ -5,7 +5,7 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 import { QuestionTypeIcon } from '@/backend/utils/question_types';
 
 import NoteButton from '@/frontend/components/game/NoteButton';
-import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pane/question/QuestionHeader';
+import CurrentRoundQuestionOrder from '@/frontend/components/game/middle-pane/question/QuestionHeader';
 import ActiveMatchingQuestionGrid from '@/frontend/components/game/middle-pane/question/matching/ActiveMatchingQuestionGrid';
 import EndedMatchingQuestionGrid from '@/frontend/components/game/middle-pane/question/matching/EndedMatchingQuestionGrid';
 import { generateShuffledNodePositions } from '@/frontend/components/game/middle-pane/question/matching/gridUtils.js';

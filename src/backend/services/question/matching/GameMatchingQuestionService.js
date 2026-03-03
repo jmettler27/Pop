@@ -11,7 +11,7 @@ import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { sortAscendingRoundScores } from '@/backend/utils/rounds';
 import { sortScores } from '@/backend/utils/scores';
 import { aggregateTiedTeams, findNextAvailableChooser, shuffle } from '@/backend/utils/arrays';
-import MatchingRoundRepository from '@/backend/repositories/round/MatchingRoundRepository';
+import RoundRepository from '@/backend/repositories/round/RoundRepository';
 
 export default class GameMatchingQuestionService extends GameQuestionService {
   constructor(gameId, roundId) {
@@ -210,7 +210,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
 
   // Case 2: The matching is incorrect
   async handleIncorrectMatchTransaction(transaction, questionId, userId, teamId, rows) {
-    const roundRepo = new MatchingRoundRepository(this.gameId);
+    const roundRepo = new RoundRepository(this.gameId);
 
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
     const { chooserOrder, chooserIdx } = await this.chooserRepo.getChooserTransaction(transaction);
@@ -237,7 +237,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
       await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, penalty);
     } else if (roundScorePolicy === ScorePolicyType.COMPLETION_RATE) {
       // Decrease the team's global score by the penalty and increment the number of mistakes of the team in the round
-      await this.decreaseGlobalTeamScoreTransaction(transaction, questionId, penalty, teamId);
+      await this.increaseGlobalTeamScoreTransaction(transaction, questionId, penalty, teamId);
     }
 
     // Update the mistake and canceled information

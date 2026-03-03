@@ -4,6 +4,7 @@ import '@/app/globals.css';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import SessionProvider from '@/app/SessionProvider';
+import LocaleProvider from '@/app/LocaleProvider';
 
 const inter = Inter({ subsets: ['latin'] }); //, display: 'swap' })
 
@@ -19,10 +20,13 @@ export default async function RootLayout({ children }) {
   const session = await getServerSession(authOptions);
 
   return (
-    <html lang="en">
+    // lang is managed client-side by LocaleProvider (updates document.documentElement.lang)
+    <html lang="fr">
       <ThemeWrapper>
         <body className={`${inter.className} bg-slate-800 text-slate-100`}>
-          <SessionProvider session={session}>{children}</SessionProvider>
+          <SessionProvider session={session}>
+            <LocaleProvider>{children}</LocaleProvider>
+          </SessionProvider>
         </body>
       </ThemeWrapper>
     </html>

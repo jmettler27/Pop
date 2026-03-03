@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { useEffect, useState } from 'react';
 import { useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
@@ -48,7 +48,7 @@ export default function PlayerName({ playerId, teamColor = true }) {
     );
   }
   if (playerLoading || (teamColor && teamLoading)) {
-    return myRole === UserRole.ORGANIZER && <span>Loading player info...</span>;
+    return myRole === ParticipantRole.ORGANIZER && <span>Loading player info...</span>;
   }
   if (!player) {
     return <span>Player not found</span>;
@@ -90,7 +90,7 @@ export function WinnerName({ playerId, teamId }) {
     );
   }
   if (playerLoading || teamLoading) {
-    return myRole === UserRole.ORGANIZER && <span>Loading player info...</span>;
+    return myRole === ParticipantRole.ORGANIZER && <span>Loading player info...</span>;
   }
   if (!player) {
     return <span>Player not found</span>;

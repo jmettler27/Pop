@@ -1,21 +1,27 @@
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
 import { useGameContext } from '@/frontend/contexts';
 import { useGameRepositoriesContext } from '@/frontend/contexts';
+
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.game.middle.GameEndMiddlePane', {
+  itWas: 'It was',
+});
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import GameScoreboard from '@/frontend/components/scores/GameScoreboard';
 import GameScoresChart from '@/frontend/components/scores/GameScoresChart';
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 
-export default function GameEndMiddlePane({ lang = DEFAULT_LOCALE }) {
+export default function GameEndMiddlePane({}) {
   const game = useGameContext();
+  const intl = useIntl();
 
   return (
     <div className="flex flex-col h-full w-full items-center justify-center">
       <div className="flex h-[10%] w-full items-center justify-center mt-3">
         <h1 className="2xl:text-5xl font-bold">
-          {IT_WAS[lang]} <span className="text-yellow-300 italic">{game.title}</span>
+          {intl.formatMessage(messages.itWas)} <span className="text-yellow-300 italic">{game.title}</span>
         </h1>
       </div>
       <div className="flex h-[90%] w-full items-center justify-center">
@@ -24,11 +30,6 @@ export default function GameEndMiddlePane({ lang = DEFAULT_LOCALE }) {
     </div>
   );
 }
-
-const IT_WAS = {
-  en: 'It was',
-  'fr-FR': "C'était",
-};
 
 function GameEndBody() {
   const game = useGameContext();

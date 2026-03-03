@@ -19,7 +19,7 @@ export default class TimerService {
 
   async endTimer() {
     try {
-      await runTransaction(firestore, (transaction) => {
+      await runTransaction(firestore, async (transaction) => {
         this.timerRepo.endTimerTransaction(transaction);
 
         console.log('Timer ended');
@@ -32,9 +32,9 @@ export default class TimerService {
 
   async startTimer(duration) {
     try {
-      await runTransaction(firestore, (transaction) => {
-        this.soundRepo.addSoundTransaction(transaction, 'message-incoming');
-        this.timerRepo.startTimerTransaction(transaction, duration);
+      await runTransaction(firestore, async (transaction) => {
+        await this.soundRepo.addSoundTransaction(transaction, 'message-incoming');
+        await this.timerRepo.startTimerTransaction(transaction, duration);
 
         console.log('Timer started');
       });
@@ -46,8 +46,8 @@ export default class TimerService {
 
   async stopTimer() {
     try {
-      await runTransaction(firestore, (transaction) => {
-        this.timerRepo.stopTimerTransaction(transaction);
+      await runTransaction(firestore, async (transaction) => {
+        await this.timerRepo.stopTimerTransaction(transaction);
 
         console.log('Timer stopped');
       });
@@ -59,8 +59,8 @@ export default class TimerService {
 
   async resetTimer() {
     try {
-      await runTransaction(firestore, (transaction) => {
-        this.timerRepo.resetTimerTransaction(transaction);
+      await runTransaction(firestore, async (transaction) => {
+        await this.timerRepo.resetTimerTransaction(transaction);
 
         console.log('Timer reset');
       });

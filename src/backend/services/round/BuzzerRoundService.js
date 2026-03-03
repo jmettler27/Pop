@@ -5,7 +5,7 @@ import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQ
 import { Timer, TimerStatus } from '@/backend/models/Timer';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question/question';
+import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { serverTimestamp } from 'firebase/firestore';
 

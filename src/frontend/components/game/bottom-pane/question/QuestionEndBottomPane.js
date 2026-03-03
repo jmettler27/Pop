@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { handleQuestionEnd } from '@/backend/services/round/actions';
 
@@ -6,12 +6,18 @@ import { useGameContext, useGameRepositoriesContext, useRoleContext } from '@/fr
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 
 import { Button } from '@mui/material';
 import FastForwardIcon from '@mui/icons-material/FastForward';
 import ScoreboardIcon from '@mui/icons-material/Scoreboard';
 import ReadyPlayerController from '@/frontend/components/game/bottom-pane/ReadyPlayerController';
+
+const messages = defineMessages('frontend.game.bottom.QuestionEndBottomPane', {
+  endRound: 'End the round',
+  nextQuestion: 'Switch directly to the next question',
+});
 
 export default function QuestionEndBottomPane({}) {
   const game = useGameContext();
@@ -44,12 +50,15 @@ function QuestionEndController({ round, isLastQuestion }) {
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-5">
       <ReadyPlayerController isLastQuestion={isLastQuestion} />
-      {myRole === UserRole.ORGANIZER && <QuestionEndOrganizerButton round={round} isLastQuestion={isLastQuestion} />}
+      {myRole === ParticipantRole.ORGANIZER && (
+        <QuestionEndOrganizerButton round={round} isLastQuestion={isLastQuestion} />
+      )}
     </div>
   );
 }
 
-function QuestionEndOrganizerButton({ round, isLastQuestion, lang = DEFAULT_LOCALE }) {
+function QuestionEndOrganizerButton({ round, isLastQuestion }) {
+  const intl = useIntl();
   const game = useGameContext();
 
   const [handleContinueClick, isEnding] = useAsyncAction(async () => {
@@ -66,17 +75,7 @@ function QuestionEndOrganizerButton({ round, isLastQuestion, lang = DEFAULT_LOCA
       disabled={isEnding}
       startIcon={isLastQuestion ? <ScoreboardIcon /> : <FastForwardIcon />}
     >
-      {isLastQuestion ? QUESTION_END_ORGANIZER_ROUND_END_TEXT[lang] : QUESTION_END_ORGANIZER_NEXT_QUESTION_TEXT[lang]}
+      {isLastQuestion ? intl.formatMessage(messages.endRound) : intl.formatMessage(messages.nextQuestion)}
     </Button>
   );
 }
-
-const QUESTION_END_ORGANIZER_ROUND_END_TEXT = {
-  en: 'End the round',
-  'fr-FR': 'Terminer la manche',
-};
-
-const QUESTION_END_ORGANIZER_NEXT_QUESTION_TEXT = {
-  en: 'Switch directly to the next question',
-  'fr-FR': 'Passer directement à la prochaine question',
-};

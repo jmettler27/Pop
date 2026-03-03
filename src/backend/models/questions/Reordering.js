@@ -19,6 +19,7 @@ export class ReorderingQuestion extends BaseQuestion {
     this.items = data.items || data.details.items;
     this.title = data.title || data.details.title;
     this.note = data.note || data.details.note;
+    this.ordering = data.ordering || data.details.ordering;
   }
 
   getQuestionType() {
@@ -32,6 +33,7 @@ export class ReorderingQuestion extends BaseQuestion {
         items: this.items,
         title: this.title,
         note: this.note,
+        ordering: this.ordering,
       },
     };
   }
@@ -110,13 +112,13 @@ export class GameReorderingQuestion extends GameQuestion {
   constructor(data) {
     super(data);
 
-    this.orderings = data.orderings;
+    this.submissions = data.submissions || {};
   }
 
   toObject() {
     return {
       ...super.toObject(),
-      orderings: this.orderings,
+      submissions: this.submissions,
     };
   }
 
@@ -126,6 +128,6 @@ export class GameReorderingQuestion extends GameQuestion {
 
   reset() {
     super.reset();
-    this.orderings = {};
+    this.submissions = [];
   }
 }

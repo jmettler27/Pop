@@ -1,13 +1,13 @@
 /* LOCALES */
-export const LOCALES = ['en', 'fr-FR'];
-export const DEFAULT_LOCALE = 'fr-FR';
+export const LOCALES = ['en', 'fr'];
+export const DEFAULT_LOCALE = 'fr';
 export const LOCALE_TO_EMOJI = {
   en: '🇬🇧',
-  'fr-FR': '🇫🇷',
+  fr: '🇫🇷',
 };
 export const LOCALE_TO_TITLE = {
   en: 'English',
-  'fr-FR': 'Français (France)',
+  fr: 'Français',
 };
 
 import { prependWithEmojiAndSpace } from '@/backend/utils/strings';

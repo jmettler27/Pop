@@ -11,7 +11,7 @@ export const sortAscendingRoundScores = (roundType) => {
 
 export const ROUND_HEADER_TEXT = {
   en: 'Round',
-  'fr-FR': 'Manche',
+  fr: 'Manche',
 };
 
 /* Round types */

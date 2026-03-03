@@ -4,7 +4,7 @@ import GameLabellingQuestionRepository from '@/backend/repositories/question/Gam
 
 import { topicToEmoji } from '@/backend/models/Topic';
 import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
 import { QuestionTypeIcon } from '@/backend/utils/question_types';
@@ -12,11 +12,11 @@ import { isObjectEmpty } from '@/backend/utils/objects';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
+import { useGameContext, useRoleContext } from '@/frontend/contexts';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import NextImage from '@/frontend/components/game/NextImage';
-import { useGameContext, useRoleContext } from '@/frontend/contexts';
 import NoteButton from '@/frontend/components/game/NoteButton';
-import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pane/question/QuestionHeader';
+import CurrentRoundQuestionOrder from '@/frontend/components/game/middle-pane/question/QuestionHeader';
 
 import { Box } from '@mui/material';
 
@@ -116,7 +116,7 @@ const DisplayedLabel = ({ revealed, label, labelIdx }) => {
     return <span className="text-blue-500">{label}</span>;
   }
 
-  if (myRole === UserRole.ORGANIZER) {
+  if (myRole === ParticipantRole.ORGANIZER) {
     return (
       <span
         className="text-yellow-500 pointer-events-auto cursor-pointer hover:opacity-50"

@@ -10,12 +10,12 @@ export class BlindtestType {
   static TRANSLATIONS = {
     [BlindtestType.SONG]: {
       en: 'Music',
-      'fr-FR': 'Musique',
+      fr: 'Musique',
       emoji: '🎵',
     },
     [BlindtestType.SOUND]: {
       en: 'Sound',
-      'fr-FR': 'Son',
+      fr: 'Son',
       emoji: '🔊',
     },
   };

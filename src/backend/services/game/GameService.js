@@ -201,7 +201,10 @@ export default class GameService {
   async endGame() {
     try {
       await runTransaction(firestore, async (transaction) => {
-        await this.gameRepo.updateGameStatusTransaction(transaction, this.gameId, GameStatus.GAME_END);
+        await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
+          status: GameStatus.GAME_END,
+          dateEnd: serverTimestamp(),
+        });
 
         console.log('Game successfully ended.', 'game', this.gameId);
       });

@@ -1,8 +1,7 @@
 import { handleAnswer } from '@/backend/services/question/basic/actions';
-import { INVALIDATE_ANSWER, VALIDATE_ANSWER } from '@/backend/utils/question/question';
+import globalMessages from '@/i18n/globalMessages';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
+import { useIntl } from 'react-intl';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { useGameContext } from '@/frontend/contexts';
@@ -24,7 +23,8 @@ export default function BasicQuestionOrganizerController({ gameQuestion }) {
   );
 }
 
-function BasicQuestionOrganizerAnswerController({ gameQuestion, lang = DEFAULT_LOCALE }) {
+function BasicQuestionOrganizerAnswerController({ gameQuestion }) {
+  const intl = useIntl();
   const game = useGameContext();
 
   const [validateBasicAnswer, isValidating] = useAsyncAction(async () => {
@@ -49,12 +49,12 @@ function BasicQuestionOrganizerAnswerController({ gameQuestion, lang = DEFAULT_L
       >
         {/* Validate the player's answer */}
         <Button color="success" startIcon={<CheckCircleIcon />} onClick={validateBasicAnswer} disabled={isValidating}>
-          {VALIDATE_ANSWER[lang]}
+          {intl.formatMessage(globalMessages.validate)}
         </Button>
 
         {/* Invalidate the player's answer */}
         <Button color="error" startIcon={<CancelIcon />} onClick={invalidateBasicAnswer} disabled={isInvalidating}>
-          {INVALIDATE_ANSWER[lang]}
+          {intl.formatMessage(globalMessages.invalidate)}
         </Button>
       </ButtonGroup>
     </>

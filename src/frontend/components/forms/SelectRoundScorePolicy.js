@@ -1,27 +1,25 @@
 import { MySelect } from '@/frontend/components/forms/StyledFormComponents';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 import { prependScorePolicyTypeWithEmoji, ScorePolicyType } from '@/backend/models/ScorePolicy';
 
-export default function SelectRoundScorePolicy({ validationSchema, lang = DEFAULT_LOCALE, name = 'roundScorePolicy' }) {
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.forms.SelectRoundScorePolicy', {
+  label: 'Round score policy',
+  header: 'Select the round score policy',
+});
+
+export default function SelectRoundScorePolicy({ validationSchema, name = 'roundScorePolicy' }) {
+  const intl = useIntl();
   return (
-    <MySelect label={SELECT_SCORE_POLICY_LABEL[lang]} name={name} validationSchema={validationSchema}>
-      <option value="">{SELECT_SCORE_POLICY_HEADER[lang]}</option>
+    <MySelect label={intl.formatMessage(messages.label)} name={name} validationSchema={validationSchema}>
+      <option value="">{intl.formatMessage(messages.header)}</option>
       {Object.values(ScorePolicyType).map((policy) => (
         <option key={policy} value={policy}>
-          {prependScorePolicyTypeWithEmoji(policy)}
+          {prependScorePolicyTypeWithEmoji(policy, intl.locale)}
         </option>
       ))}
     </MySelect>
   );
 }
-
-const SELECT_SCORE_POLICY_LABEL = {
-  en: 'Round score policy',
-  'fr-FR': 'Politique de score pour la manche',
-};
-
-const SELECT_SCORE_POLICY_HEADER = {
-  en: 'Select the round score policy',
-  'fr-FR': 'Sélectionnez la politique de score pour la manche',
-};

@@ -5,13 +5,22 @@ import { useParams, useRouter } from 'next/navigation';
 
 import { useState } from 'react';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-import { DIALOG_ACTION_CANCEL } from '@/frontend/texts/dialogs';
+import globalMessages from '@/i18n/globalMessages';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
-export function LaunchGameButton({ lang = DEFAULT_LOCALE }) {
+const messages = defineMessages('frontend.gameEditor.LaunchGameButton', {
+  launchGame: 'Launch game',
+  dialogTitle: 'Are you sure you want to launch this game?',
+  dialogWarning: 'The game will be publicly accessible for all users.',
+  dialogConfirm: 'Letzgo',
+});
+
+export function LaunchGameButton() {
+  const intl = useIntl();
   const { id: gameId } = useParams();
 
   const router = useRouter();
@@ -44,46 +53,26 @@ export function LaunchGameButton({ lang = DEFAULT_LOCALE }) {
         startIcon={<RocketLaunchIcon />}
         onClick={() => setDialogOpen(true)}
       >
-        {LAUNCH_GAME_TITLE[lang]}
+        {intl.formatMessage(messages.launchGame)}
       </Button>
 
       <Dialog disableEscapeKeyDown open={dialogOpen} onClose={onDialogClose}>
-        <DialogTitle>{LAUNCH_GAME_DIALOG_TITLE[lang]}</DialogTitle>
+        <DialogTitle>{intl.formatMessage(messages.dialogTitle)}</DialogTitle>
 
         <DialogContent>
-          <DialogContentText>{LAUNCH_GAME_DIALOG_WARNING[lang]}</DialogContentText>
+          <DialogContentText>{intl.formatMessage(messages.dialogWarning)}</DialogContentText>
         </DialogContent>
 
         <DialogActions>
           <Button variant="contained" color="primary" onClick={handleLaunchGame} disabled={isLaunching}>
-            {LAUNCH_GAME_DIALOG_ACTION_VALIDATE[lang]}
+            {intl.formatMessage(messages.dialogConfirm)}
           </Button>
 
           <Button variant="outlined" color="error" onClick={onCancel}>
-            {DIALOG_ACTION_CANCEL[lang]}
+            {intl.formatMessage(globalMessages.cancel)}
           </Button>
         </DialogActions>
       </Dialog>
     </div>
   );
 }
-
-const LAUNCH_GAME_TITLE = {
-  en: 'Launch game',
-  'fr-FR': 'Lancer la partie',
-};
-
-const LAUNCH_GAME_DIALOG_TITLE = {
-  en: 'Are you sure you want to launch this game?',
-  'fr-FR': 'Êtes-vous sûr de vouloir lancer cette partie?',
-};
-
-const LAUNCH_GAME_DIALOG_WARNING = {
-  en: 'The game will be publicly accessible for all users.',
-  'fr-FR': 'La partie sera visible par tous les utilisateurs.',
-};
-
-const LAUNCH_GAME_DIALOG_ACTION_VALIDATE = {
-  en: 'Letzgo',
-  'fr-FR': 'Zéparti',
-};

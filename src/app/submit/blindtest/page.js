@@ -2,8 +2,6 @@
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
 import SubmitBlindtestQuestionForm from '@/frontend/components/forms/submit-question/SubmitBlindtestQuestionForm';
 import QuestionFormHeader from '@/frontend/components/forms/QuestionFormHeader';
 
@@ -12,7 +10,7 @@ import { useSession } from 'next-auth/react';
 
 const QUESTION_TYPE = QuestionType.BLINDTEST;
 
-export default function Page({ lang = DEFAULT_LOCALE }) {
+export default function Page() {
   const { data: session } = useSession();
 
   // Protected route
@@ -22,8 +20,8 @@ export default function Page({ lang = DEFAULT_LOCALE }) {
 
   return (
     <>
-      <QuestionFormHeader questionType={QUESTION_TYPE} lang={lang} />
-      <SubmitBlindtestQuestionForm userId={session.user.id} lang={lang} inSubmitPage={true} />
+      <QuestionFormHeader questionType={QUESTION_TYPE} />
+      <SubmitBlindtestQuestionForm userId={session.user.id} inSubmitPage={true} />
     </>
   );
 }

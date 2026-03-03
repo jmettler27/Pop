@@ -97,7 +97,7 @@ export default class EditGameService {
           ...baseQuestion.toObject(),
         });
 
-        await this.roundRepo.addGameQuestionTransaction(transaction, roundId, questionId);
+        await this.roundRepo.addQuestionTransaction(transaction, roundId, questionId);
 
         console.log(`Game ${this.gameId}: Question added to round ${roundId} successfully.`);
       });
@@ -133,10 +133,11 @@ export default class EditGameService {
   /**
    * Removes a question from a round
    *
+   * @param {string} questionType - The type of the question
    * @param {string} roundId - The ID of the round
    * @param {string} questionId - The ID of the question
    */
-  async removeQuestionFromRound(roundId, questionId) {
+  async removeQuestionFromRound(questionType, roundId, questionId) {
     if (!roundId) {
       throw new Error('Round ID is required');
     }
@@ -144,7 +145,16 @@ export default class EditGameService {
       throw new Error('Question ID is required');
     }
 
-    await this.roundRepo.removeQuestion(roundId, questionId);
+    try {
+      await runTransaction(firestore, async (transaction) => {
+        const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(questionType, gameId, roundId);
+        await gameQuestionRepo.deleteQuestionTransaction(transaction, questionId);
+        await this.roundRepo.removeQuestionTransaction(transaction, roundId);
+      });
+    } catch (error) {
+      console.error('Failed to remove the round:', error);
+      throw error;
+    }
 
     console.log(
       'Question removed successfully',

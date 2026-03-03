@@ -5,7 +5,15 @@ import { collection, doc, increment } from 'firebase/firestore';
 import { useCollectionData, useDocument, useDocumentData } from 'react-firebase-hooks/firestore';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.game.middle.SpecialThemeEndMiddlePane', {
+  themeEnd: 'End of theme',
+  wrongAnswers: 'wrong answers',
+  goodAnswers: 'correct answers',
+});
 
 export default function SpecialThemeEndMiddlePane({ theme, gameTheme }) {
   return (
@@ -20,20 +28,17 @@ export default function SpecialThemeEndMiddlePane({ theme, gameTheme }) {
   );
 }
 
-function ThemeTitle({ theme, gameTheme, lang = DEFAULT_LOCALE }) {
+function ThemeTitle({ theme, gameTheme }) {
+  const intl = useIntl();
   return (
     <h1 className="2xl:text-4xl font-bold">
-      {THEME_END_TEXT[lang]} {gameTheme.order + 1} ({theme.details.title})
+      {intl.formatMessage(messages.themeEnd)} {gameTheme.order + 1} ({theme.details.title})
     </h1>
   );
 }
 
-const THEME_END_TEXT = {
-  en: 'End of theme',
-  'fr-FR': 'Fin du thème',
-};
-
-function ThemeScores({ themeId, lang = DEFAULT_LOCALE }) {
+function ThemeScores({ themeId }) {
+  const intl = useIntl();
   const game = useGameContext();
 
   const [gameSections, gameSectionsLoading, gameSectionsError] = useCollectionData(
@@ -76,20 +81,10 @@ function ThemeScores({ themeId, lang = DEFAULT_LOCALE }) {
 
   return (
     <span className="2xl:text-4xl">
-      {totalCounts.correct} {CORRECT_ANSWER_TEXT[lang]},{' '}
+      {totalCounts.correct} {intl.formatMessage(messages.goodAnswers)},{' '}
       <span className="font-bold text-red-600">
-        {totalCounts.wrong} {WRONG_ANSWER_TEXT[lang]}
+        {totalCounts.wrong} {intl.formatMessage(messages.wrongAnswers)}
       </span>
     </span>
   );
 }
-
-const WRONG_ANSWER_TEXT = {
-  en: 'wrong answers',
-  'fr-FR': 'mauvaises réponses',
-};
-
-const CORRECT_ANSWER_TEXT = {
-  en: 'correct answers',
-  'fr-FR': 'bonnes réponses',
-};

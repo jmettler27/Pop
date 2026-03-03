@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
 
@@ -68,9 +68,9 @@ function MCQController({ chooser, baseQuestion }) {
   }
 
   switch (myRole) {
-    case UserRole.ORGANIZER:
+    case ParticipantRole.ORGANIZER:
       return <MCQOrganizerController gameQuestion={gameQuestion} />;
-    case UserRole.PLAYER:
+    case ParticipantRole.PLAYER:
       return (
         <MCQPlayerController chooserTeamId={chooserTeamId} gameQuestion={gameQuestion} baseQuestion={baseQuestion} />
       );

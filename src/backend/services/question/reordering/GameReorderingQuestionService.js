@@ -9,7 +9,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
   }
 
   async resetQuestionTransaction(transaction, questionId) {
-    await this.gameRepo.resetQuestionTransaction(transaction, questionId);
+    await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
 
     console.log(
       'Reordering question successfully reset',

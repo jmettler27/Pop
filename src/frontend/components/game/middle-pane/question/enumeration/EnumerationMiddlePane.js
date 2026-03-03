@@ -3,18 +3,19 @@ import { validateItem } from '@/backend/services/question/enumeration/actions';
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 import { TimerStatus } from '@/backend/models/Timer';
-import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
+import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { EnumerationQuestionStatus } from '@/backend/models/questions/Enumeration';
 import { topicToEmoji } from '@/backend/models/Topic';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { useGameContext, useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
-import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pane/question/QuestionHeader';
+import CurrentRoundQuestionOrder from '@/frontend/components/game/middle-pane/question/QuestionHeader';
 import NoteButton from '@/frontend/components/game/NoteButton';
 
 import { QuestionTypeIcon } from '@/backend/utils/question_types';
@@ -22,6 +23,13 @@ import { QuestionTypeIcon } from '@/backend/utils/question_types';
 import { CircularProgress } from '@mui/material';
 
 import clsx from 'clsx';
+
+const messages = defineMessages('frontend.game.EnumerationMiddlePane', {
+  thereAre: 'There are',
+  exactly: 'exactly',
+  atLeast: 'at least',
+  answers: 'answers',
+});
 
 export default function EnumerationMiddlePane({ baseQuestion }) {
   return (
@@ -58,30 +66,24 @@ function EnumerationQuestionHeader({ baseQuestion }) {
   );
 }
 
-function EnumerationQuestionObjective({ baseQuestion, lang = DEFAULT_LOCALE }) {
-  switch (lang) {
-    case 'en':
-      return (
-        <span className="2xl:text-3xl text-yellow-300">
-          There are {baseQuestion.maxIsKnown ? 'exactly' : 'at least'} <strong>{baseQuestion.answer.length}</strong>{' '}
-          answers
-        </span>
-      );
-    case 'fr-FR':
-      return (
-        <span className="2xl:text-3xl text-yellow-300">
-          Il y a {baseQuestion.maxIsKnown ? 'exactement' : 'au moins'} <strong>{baseQuestion.answer.length}</strong>{' '}
-          réponses
-        </span>
-      );
-  }
+function EnumerationQuestionObjective({ baseQuestion }) {
+  const intl = useIntl();
+  const qualifier = baseQuestion.maxIsKnown
+    ? intl.formatMessage(messages.exactly)
+    : intl.formatMessage(messages.atLeast);
+  return (
+    <span className="2xl:text-3xl text-yellow-300">
+      {intl.formatMessage(messages.thereAre)} {qualifier} <strong>{baseQuestion.answer.length}</strong>{' '}
+      {intl.formatMessage(messages.answers)}
+    </span>
+  );
 }
 
 function EnumerationQuestionAnswer({ answer }) {
   const game = useGameContext();
   const myRole = useRoleContext();
 
-  const showComplete = game.status === GameStatus.QUESTION_END || myRole === UserRole.ORGANIZER; // 'player' or 'viewer'
+  const showComplete = game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER; // 'player' or 'viewer'
 
   const [handleClick, isSubmitting] = useAsyncAction(async (itemIdx) => {
     await validateItem(game.id, game.currentRound, game.currentQuestion, itemIdx);
@@ -141,7 +143,7 @@ function EnumerationQuestionAnswer({ answer }) {
 
         const isSelectable =
           !isSubmitting &&
-          myRole === UserRole.ORGANIZER &&
+          myRole === ParticipantRole.ORGANIZER &&
           gameQuestion.status === EnumerationQuestionStatus.CHALLENGE &&
           timer.status === TimerStatus.START &&
           !isCited;

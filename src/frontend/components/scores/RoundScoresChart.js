@@ -1,4 +1,5 @@
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,12 +14,11 @@ import { Line } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const ROUND_SCORES_CHART_TITLE = {
-  en: 'Round scores',
-  'fr-FR': 'Scores de la manche',
-};
+const messages = defineMessages('frontend.scores.RoundScoresChart', {
+  title: 'Round scores',
+});
 
-export const options = (lang) => {
+export const options = (title) => {
   return {
     responsive: true,
     plugins: {
@@ -27,7 +27,7 @@ export const options = (lang) => {
       },
       title: {
         display: true,
-        text: ROUND_SCORES_CHART_TITLE[lang],
+        text: title,
       },
     },
     scales: {
@@ -40,7 +40,8 @@ export const options = (lang) => {
   };
 };
 
-export default function RoundScoresChart({ round, teams, roundScores, lang = DEFAULT_LOCALE }) {
+export default function RoundScoresChart({ round, teams, roundScores }) {
+  const intl = useIntl();
   const labels = ['', ...round.questions.map((_question, idx) => `Q${idx + 1}`)];
 
   const datasets = teams.map((team) => ({
@@ -58,5 +59,5 @@ export default function RoundScoresChart({ round, teams, roundScores, lang = DEF
     datasets,
   };
 
-  return <Line datasetIdKey={round.id} options={options(lang)} data={data} />;
+  return <Line datasetIdKey={round.id} options={options(intl.formatMessage(messages.title))} data={data} />;
 }

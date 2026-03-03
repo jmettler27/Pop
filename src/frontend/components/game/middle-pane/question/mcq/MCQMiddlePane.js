@@ -1,11 +1,11 @@
 import { topicToEmoji } from '@/backend/models/Topic';
 import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { useGameContext, useRoleContext } from '@/frontend/contexts';
 import { QuestionTypeIcon } from '@/backend/utils/question_types';
-import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pane/question/QuestionHeader';
+import CurrentRoundQuestionOrder from '@/frontend/components/game/middle-pane/question/QuestionHeader';
 import MCQMainContent from '@/frontend/components/game/middle-pane/question/mcq/MCQMainContent';
 
 export default function MCQMiddlePane({ baseQuestion }) {
@@ -21,7 +21,7 @@ export default function MCQMiddlePane({ baseQuestion }) {
         <MCQMainContent baseQuestion={baseQuestion} />
       </div>
       <div className="h-[20%] flex items-center justify-center">
-        {(game.status === GameStatus.QUESTION_END || myRole === UserRole.ORGANIZER) && (
+        {(game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER) && (
           <MCQFooter baseQuestion={baseQuestion} />
         )}
       </div>

@@ -1,12 +1,12 @@
 import { topicToEmoji } from '@/backend/models/Topic';
 import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { QuestionTypeIcon } from '@/backend/utils/question_types';
 
 import { useGameContext, useRoleContext } from '@/frontend/contexts';
-import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pane/question/QuestionHeader';
+import CurrentRoundQuestionOrder from '@/frontend/components/game/middle-pane/question/QuestionHeader';
 import NaguiMainContent from '@/frontend/components/game/middle-pane/question/nagui/NaguiMainContent';
 
 export default function NaguiMiddlePane({ baseQuestion }) {
@@ -22,7 +22,7 @@ export default function NaguiMiddlePane({ baseQuestion }) {
         <NaguiMainContent baseQuestion={baseQuestion} />
       </div>
       <div className="h-[20%] flex items-center justify-center">
-        {(game.status === GameStatus.QUESTION_END || myRole === UserRole.ORGANIZER) && (
+        {(game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER) && (
           <NaguiFooter baseQuestion={baseQuestion} />
         )}
       </div>

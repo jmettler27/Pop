@@ -1,6 +1,6 @@
 import { startTheme } from '@/backend/services/round/special/actions';
 
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { doc } from 'firebase/firestore';
@@ -43,8 +43,8 @@ export default function SpecialHomeThemeAvatar({ gameTheme, isChooser }) {
 
   const themeIsDisabled = () => {
     if (themeHasEnded) return true;
-    if (myRole === UserRole.ORGANIZER) return false;
-    if (myRole === UserRole.PLAYER) return !isChooser;
+    if (myRole === ParticipantRole.ORGANIZER) return false;
+    if (myRole === ParticipantRole.PLAYER) return !isChooser;
     return true;
   };
 

@@ -1,4 +1,4 @@
-import { User } from '@/backend/models/users/User';
+import User from '@/backend/models/users/User';
 
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 

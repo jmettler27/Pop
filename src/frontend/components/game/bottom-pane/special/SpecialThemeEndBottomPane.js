@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { collection } from 'firebase/firestore';
@@ -14,7 +14,7 @@ export default function SpecialThemeEndBottomPane({}) {
   const myRole = useRoleContext();
 
   switch (myRole) {
-    case UserRole.ORGANIZER:
+    case ParticipantRole.ORGANIZER:
       return <SpecialThemeEndOrganizerBottomPane />;
   }
 }

@@ -2,12 +2,17 @@ import { resetQuestion } from '@/backend/services/question/actions';
 
 import { useGameContext, useGameRepositoriesContext } from '@/frontend/contexts';
 
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 
 import { Button } from '@mui/material';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { PlayerStatus } from '@/backend/models/users/Player';
+
+const messages = defineMessages('frontend.game.bottom.ResetQuestionButton', {
+  resetQuestion: 'Reset question',
+});
 
 /**
  * Reset the question
@@ -16,7 +21,8 @@ import { PlayerStatus } from '@/backend/models/users/Player';
  * @param {string} props.questionType - Type of question to reset
  * @returns
  */
-export default function ResetQuestionButton({ lang = DEFAULT_LOCALE, questionType }) {
+export default function ResetQuestionButton({ questionType }) {
+  const intl = useIntl();
   const game = useGameContext();
   const { playerRepo } = useGameRepositoriesContext();
 
@@ -36,12 +42,7 @@ export default function ResetQuestionButton({ lang = DEFAULT_LOCALE, questionTyp
       onClick={handleResetQuestion}
       disabled={isResetting}
     >
-      {RESET_QUESTION_BUTTON_LABEL[lang]}
+      {intl.formatMessage(messages.resetQuestion)}
     </Button>
   );
 }
-
-const RESET_QUESTION_BUTTON_LABEL = {
-  en: 'Reset question',
-  'fr-FR': 'Réinitialiser la question',
-};

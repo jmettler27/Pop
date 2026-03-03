@@ -1,4 +1,4 @@
-import { resetTimer, startTimer, stopTimer, endTimer } from '@/backend/repositories/timer/timer';
+import { resetTimer, startTimer, stopTimer, endTimer } from '@/backend/services/timer/actions';
 
 import { TimerStatus } from '@/backend/models/Timer';
 

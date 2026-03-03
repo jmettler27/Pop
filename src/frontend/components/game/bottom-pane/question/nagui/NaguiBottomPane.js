@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import GameNaguiQuestionRepository from '@/backend/repositories/question/GameNaguiQuestionRepository';
 
@@ -68,9 +68,9 @@ function NaguiController({ chooser }) {
   }
 
   switch (myRole) {
-    case UserRole.ORGANIZER:
+    case ParticipantRole.ORGANIZER:
       return <NaguiOrganizerController gameQuestion={gameQuestion} />;
-    case UserRole.PLAYER:
+    case ParticipantRole.PLAYER:
       return <NaguiPlayerController chooserTeamId={chooserTeamId} gameQuestion={gameQuestion} />;
     default:
       return <NaguiSpectatorController chooserTeamId={chooserTeamId} gameQuestion={gameQuestion} />;

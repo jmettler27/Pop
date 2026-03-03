@@ -7,7 +7,7 @@ import { prependWithEmojiAndSpace } from '@/backend/utils/strings';
 export class NaguiOption {
   static TYPE_TO_TITLE = {
     en: '',
-    'fr-FR': '',
+    fr: '',
   };
 
   static TYPE_TO_EMOJI = '';
@@ -29,7 +29,7 @@ export class HideNaguiOption extends NaguiOption {
   static TYPE = 'hide';
   static TYPE_TO_TITLE = {
     en: 'Hide',
-    'fr-FR': 'Cache',
+    fr: 'Cache',
   };
   static TYPE_TO_EMOJI = '🙈';
 }
@@ -38,7 +38,7 @@ export class SquareNaguiOption extends NaguiOption {
   static TYPE = 'square';
   static TYPE_TO_TITLE = {
     en: 'Square',
-    'fr-FR': 'Carré',
+    fr: 'Carré',
   };
   static TYPE_TO_EMOJI = '4️⃣';
 }
@@ -47,7 +47,7 @@ export class DuoNaguiOption extends NaguiOption {
   static TYPE = 'duo';
   static TYPE_TO_TITLE = {
     en: 'Duo',
-    'fr-FR': 'Duo',
+    fr: 'Duo',
   };
   static TYPE_TO_EMOJI = '2️⃣';
 }

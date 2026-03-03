@@ -1,4 +1,9 @@
 import * as Yup from 'yup';
+import defineMessages from '@/utils/defineMessages';
+
+export const messages = defineMessages('frontend.utils.forms', {
+  optional: 'Optional',
+});
 
 export const stringSchema = (maxLength, required = true) =>
   required
@@ -8,15 +13,9 @@ export const stringSchema = (maxLength, required = true) =>
 /* Indicator on the number of characters being written in a string field */
 export const numCharsIndicator = (strField, maxLength) => '(' + strField.length + '/' + maxLength + ')';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
 /* Required field indicator */
-export const requiredIndicatorString = (isRequired) => (isRequired ? '' : `(${OPTIONAL[DEFAULT_LOCALE]}) `);
-
-const OPTIONAL = {
-  en: 'Optional',
-  'fr-FR': 'Optionnel',
-};
+export const requiredIndicatorString = (isRequired, intl) =>
+  isRequired ? '' : `(${intl.formatMessage(messages.optional)}) `;
 
 // Regular field
 function fieldIsRequired(yupSchema, fieldName) {
@@ -24,8 +23,8 @@ function fieldIsRequired(yupSchema, fieldName) {
   return field && field.exclusiveTests && Object.prototype.hasOwnProperty.call(field.exclusiveTests, 'required');
 }
 
-export const requiredFieldIndicator = (yupSchema, fieldName) =>
-  requiredIndicatorString(fieldIsRequired(yupSchema, fieldName));
+export const requiredFieldIndicator = (yupSchema, fieldName, intl) =>
+  requiredIndicatorString(fieldIsRequired(yupSchema, fieldName), intl);
 
 // The field is a string field in an array field
 function stringFieldinArrayFieldIsRequired(yupSchema, outerFieldName) {
@@ -38,8 +37,8 @@ function stringFieldinArrayFieldIsRequired(yupSchema, outerFieldName) {
   );
 }
 
-export const requiredStringInArrayFieldIndicator = (yupSchema, outerFieldName) =>
-  requiredIndicatorString(stringFieldinArrayFieldIsRequired(yupSchema, outerFieldName));
+export const requiredStringInArrayFieldIndicator = (yupSchema, outerFieldName, intl) =>
+  requiredIndicatorString(stringFieldinArrayFieldIsRequired(yupSchema, outerFieldName), intl);
 
 // The field is an object field in an array field
 function objectFieldInArrayFieldIsRequired(yupSchema, outerFieldName, innerFieldName) {
@@ -52,8 +51,8 @@ function objectFieldInArrayFieldIsRequired(yupSchema, outerFieldName, innerField
   );
 }
 
-export const requiredObjectInArrayFieldIndicator = (yupSchema, outerFieldName, innerFieldName) =>
-  requiredIndicatorString(objectFieldInArrayFieldIsRequired(yupSchema, outerFieldName, innerFieldName));
+export const requiredObjectInArrayFieldIndicator = (yupSchema, outerFieldName, innerFieldName, intl) =>
+  requiredIndicatorString(objectFieldInArrayFieldIsRequired(yupSchema, outerFieldName, innerFieldName), intl);
 
 import { REQUIRED_FILE_TEST_NAME } from '@/frontend/utils/forms/files';
 
@@ -65,8 +64,8 @@ function fileFieldIsRequired(yupSchema, fieldName) {
   );
 }
 
-export const requiredFileFieldIndicator = (yupSchema, fieldName) =>
-  requiredIndicatorString(fileFieldIsRequired(yupSchema, fieldName));
+export const requiredFileFieldIndicator = (yupSchema, fieldName, intl) =>
+  requiredIndicatorString(fileFieldIsRequired(yupSchema, fieldName), intl);
 
 // The field is a boolean
 function booleanFieldIsRequired(yupSchema, fieldName) {
@@ -78,20 +77,20 @@ function booleanFieldIsRequired(yupSchema, fieldName) {
   // );
   return true;
 }
-export const requiredBooleanFieldIndicator = (yupSchema, fieldName) =>
-  requiredIndicatorString(booleanFieldIsRequired(yupSchema, fieldName));
+export const requiredBooleanFieldIndicator = (yupSchema, fieldName, intl) =>
+  requiredIndicatorString(booleanFieldIsRequired(yupSchema, fieldName), intl);
 
-export const requiredIndicator = (validationSchema, fieldType, fieldName) => {
+export const requiredIndicator = (validationSchema, fieldType, fieldName, intl) => {
   switch (fieldType) {
     case 'string':
-      return requiredFieldIndicator(validationSchema, fieldName);
+      return requiredFieldIndicator(validationSchema, fieldName, intl);
     case 'string_in_array': {
       const outerFieldName = fieldName.split('.')[0];
-      return requiredStringInArrayFieldIndicator(validationSchema, outerFieldName);
+      return requiredStringInArrayFieldIndicator(validationSchema, outerFieldName, intl);
     }
     case 'object_in_array': {
       const [outerFieldName, _, innerFieldName] = fieldName.split('.');
-      return requiredObjectInArrayFieldIndicator(validationSchema, outerFieldName, innerFieldName);
+      return requiredObjectInArrayFieldIndicator(validationSchema, outerFieldName, innerFieldName, intl);
     }
   }
 };

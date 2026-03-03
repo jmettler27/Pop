@@ -5,12 +5,12 @@ import { doc } from 'firebase/firestore';
 import { useDocumentData, useDocumentOnce } from 'react-firebase-hooks/firestore';
 
 import { clsx } from 'clsx';
+import globalMessages from '@/i18n/globalMessages';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import { THEME_SECTION_TEXT } from '@/backend/utils/question/theme';
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
 
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 export default function SpecialThemeActiveMiddlePane({ theme, gameTheme }) {
   const currentThemeId = theme.id;
   const currentSectionId = theme.details.sections[gameTheme.currentSectionIdx];
@@ -49,11 +49,12 @@ export default function SpecialThemeActiveMiddlePane({ theme, gameTheme }) {
   );
 }
 
-function SectionTitle({ section, gameTheme, lang = DEFAULT_LOCALE }) {
+function SectionTitle({ section, gameTheme }) {
+  const intl = useIntl();
   return (
     <h1 className="2xl:text-4xl">
       <span className="font-bold">
-        {THEME_SECTION_TEXT[lang]} {gameTheme.currentSectionIdx + 1}
+        {intl.formatMessage(globalMessages.level)} {gameTheme.currentSectionIdx + 1}
       </span>
       {section.title && `: ${section.title}`}
     </h1>
@@ -90,7 +91,7 @@ function SectionQuestions({ currentThemeId, currentSectionId, sectionQuestions }
   }
   const currentQuestionIdx = gameSection.currentQuestionIdx;
 
-  const isOrganizer = myRole === UserRole.ORGANIZER;
+  const isOrganizer = myRole === ParticipantRole.ORGANIZER;
   const myIndex = isOrganizer ? sectionQuestions.length - 1 : currentQuestionIdx;
 
   // Organizer: show everything

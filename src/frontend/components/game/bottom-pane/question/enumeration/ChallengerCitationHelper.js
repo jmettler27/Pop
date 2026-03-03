@@ -1,4 +1,4 @@
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 
@@ -6,7 +6,6 @@ import { useGameContext, useGameRepositoriesContext, useRoleContext } from '@/fr
 import ValidateChallengerCitationButton from '@/frontend/components/game/bottom-pane/question/enumeration/ValidateChallengerCitationButton';
 
 import clsx from 'clsx';
-import PropTypes from 'prop-types';
 
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
@@ -122,7 +121,7 @@ function ChallengerProgress({ challenger }) {
         {challenger.numCorrect}/<strong>{challenger.bet}</strong>
       </Typography>
 
-      {myRole === UserRole.ORGANIZER && <ValidateChallengerCitationButton />}
+      {myRole === ParticipantRole.ORGANIZER && <ValidateChallengerCitationButton />}
     </Box>
   );
 }

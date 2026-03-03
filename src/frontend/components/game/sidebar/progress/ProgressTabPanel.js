@@ -8,17 +8,12 @@ import { Tabs, Tab, Box, CircularProgress } from '@mui/material';
 
 import GlobalProgressTabPanel from '@/frontend/components/game/sidebar/progress/GlobalProgressTabPanel';
 import RoundProgressTabPanel from '@/frontend/components/game/sidebar/progress/round/RoundProgressTabPanel';
-import { ROUND_HEADER_TEXT } from '@/backend/utils/rounds';
-
-// Game header text
-const GAME_HEADER_TEXT = {
-  en: 'Game',
-  'fr-FR': 'Partie',
-};
 
 import { useParams } from 'next/navigation';
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
 import { GameStatus } from '@/backend/models/games/GameStatus';
+
+import { useIntl } from 'react-intl';
+import globalMessages from '@/i18n/globalMessages';
 export default function ProgressTabPanel({}) {
   const { id: gameId } = useParams();
 
@@ -42,8 +37,9 @@ export default function ProgressTabPanel({}) {
   return <ProgressTabPanelMainContent game={game} />;
 }
 
-function ProgressTabPanelMainContent({ game, lang = DEFAULT_LOCALE }) {
+function ProgressTabPanelMainContent({ game }) {
   const [value, setValue] = useState(0);
+  const intl = useIntl();
 
   useEffect(() => {
     if (!game.currentRound || game.status === 'game_home') {
@@ -70,9 +66,9 @@ function ProgressTabPanelMainContent({ game, lang = DEFAULT_LOCALE }) {
           textColor="inherit"
           variant="fullWidth"
         >
-          <Tab label={GAME_HEADER_TEXT[lang]} aria-label="game progress" {...a11yProps(0)} />
+          <Tab label={intl.formatMessage(globalMessages.game)} aria-label="game progress" {...a11yProps(0)} />
           {/* {(game.type === 'rounds' && game.currentRound) && ( */}
-          <Tab label={ROUND_HEADER_TEXT[lang]} aria-label="round progress" {...a11yProps(1)} />
+          <Tab label={intl.formatMessage(globalMessages.round)} aria-label="round progress" {...a11yProps(1)} />
           {/* )} */}
         </Tabs>
       </Box>

@@ -6,4 +6,8 @@ export default class GameReorderingQuestionRepository extends GameQuestionReposi
   constructor(gameId, roundId) {
     super(gameId, roundId, QuestionType.REORDERING);
   }
+
+  async resetQuestionTransaction(transaction, questionId) {
+    await this.resetQuestionWinnerTransaction(transaction, questionId);
+  }
 }

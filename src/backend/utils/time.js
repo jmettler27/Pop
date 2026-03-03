@@ -1,13 +1,11 @@
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
-
 /**
  * Convert a timestamp to a date
  *
  * @param {Timestamp} timestamp - The timestamp to convert
- * @param {string} locale - The locale to use
+ * @param {string} [locale] - The locale to use (defaults to runtime environment locale)
  * @returns {string} The date
  */
-export function timestampToDate(timestamp, locale = DEFAULT_LOCALE) {
+export function timestampToDate(timestamp, locale) {
   if (!timestamp) {
     return null;
   }
@@ -45,7 +43,7 @@ export function timestampToDate1(timestamp) {
  * @param {string} locale - The locale to use
  * @returns {string} The date
  */
-export function timestampToHour(timestamp, locale = DEFAULT_LOCALE) {
+export function timestampToHour(timestamp, locale) {
   if (!timestamp) {
     return null;
   }

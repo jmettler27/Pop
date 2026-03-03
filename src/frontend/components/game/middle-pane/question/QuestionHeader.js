@@ -2,7 +2,7 @@ import { useGameContext, useGameRepositoriesContext } from '@/frontend/contexts'
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import { useGameRepositories } from '@/backend/repositories/useGameRepositories';
 
-export function CurrentRoundQuestionOrder() {
+export default function CurrentRoundQuestionOrder() {
   const game = useGameContext();
 
   const { roundRepo } = useGameRepositoriesContext();

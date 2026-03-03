@@ -82,7 +82,7 @@ export const TopicToTitle = {
     [Topic.ENTERTAINMENT]: 'Entertainment',
     [Topic.MISC]: 'Misc',
   },
-  'fr-FR': {
+  fr: {
     [Topic.VIDEO_GAME]: 'Jeux Vidéo',
     [Topic.ANIME_MANGA]: 'Anime & Manga',
     [Topic.MOVIE]: 'Film',

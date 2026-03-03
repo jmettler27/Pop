@@ -1,7 +1,7 @@
 import GameFactory from '@/backend/models/games/GameFactory';
 
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
-import { arrayUnion } from 'firebase/firestore';
+import { arrayRemove, arrayUnion } from 'firebase/firestore';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
 export default class GameRepository extends FirebaseRepository {
@@ -66,13 +66,19 @@ export default class GameRepository extends FirebaseRepository {
   }
 
   async createGameTransaction(transaction, data) {
-    const game = await this.createTransaction(transaction, data);
+    const game = await this.createTransaction(transaction, { ...data, status: GameStatus.GAME_EDIT });
     return GameFactory.createGame(game.type, game);
   }
 
   async addRoundTransaction(transaction, gameId, roundId) {
     await this.updateTransaction(transaction, gameId, {
       rounds: arrayUnion(roundId),
+    });
+  }
+
+  async removeRoundTransaction(transaction, gameId, roundId) {
+    await this.updateTransaction(transaction, gameId, {
+      rounds: arrayRemove(roundId),
     });
   }
 

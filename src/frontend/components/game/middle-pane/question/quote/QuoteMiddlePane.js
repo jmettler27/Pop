@@ -3,15 +3,15 @@ import { revealQuoteElement } from '@/backend/services/question/quote/actions';
 import { topicToEmoji } from '@/backend/models/Topic';
 import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { UserRole } from '@/backend/models/users/User';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { isObjectEmpty } from '@/backend/utils/objects';
 import { QuestionTypeIcon } from '@/backend/utils/question_types';
-import { QUESTION_ELEMENT_TO_EMOJI } from '@/backend/utils/question/question';
+import { QUESTION_ELEMENT_TO_EMOJI } from '@/backend/utils/question';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 import { useGameContext, useRoleContext } from '@/frontend/contexts';
-import { CurrentRoundQuestionOrder } from '@/frontend/components/game/middle-pane/question/QuestionHeader';
+import CurrentRoundQuestionOrder from '@/frontend/components/game/middle-pane/question/QuestionHeader';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 
@@ -133,7 +133,7 @@ const DisplayedQuoteElement = ({ toGuess, revealed, quoteElement, quoteElementSt
     return <span className="text-blue-500">{quoteElement}</span>;
   }
 
-  if (myRole === UserRole.ORGANIZER) {
+  if (myRole === ParticipantRole.ORGANIZER) {
     return (
       <span
         className="text-yellow-500 pointer-events-auto cursor-pointer hover:opacity-50"
@@ -197,7 +197,7 @@ const DisplayedQuote = ({ toGuess, revealed, quote, quoteParts }) => {
               </span>
             );
           }
-        } else if (myRole === UserRole.ORGANIZER) {
+        } else if (myRole === ParticipantRole.ORGANIZER) {
           parts.push(
             <span
               key={`within_${idx}`}

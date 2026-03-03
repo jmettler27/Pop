@@ -2,7 +2,7 @@ import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 
 import RoundFactory from '@/backend/models/rounds/RoundFactory';
 
-import { arrayUnion, serverTimestamp } from 'firebase/firestore';
+import { arrayUnion, arrayRemove, serverTimestamp } from 'firebase/firestore';
 
 export default class RoundRepository extends FirebaseRepository {
   constructor(gameId) {
@@ -88,15 +88,25 @@ export default class RoundRepository extends FirebaseRepository {
     await super.updateTransaction(transaction, roundId, data);
   }
 
+  async deleteRoundTransaction(transaction, roundId) {
+    await super.deleteTransaction(transaction, roundId);
+  }
+
   /**
    * Add a question to a round within a transaction
    * @param {Transaction} transaction - The transaction
    * @param {string} roundId - The ID of the round
    * @param {string} questionId - The ID of the question
    */
-  async addGameQuestionTransaction(transaction, roundId, questionId) {
+  async addQuestionTransaction(transaction, roundId, questionId) {
     await this.updateRoundTransaction(transaction, roundId, {
       questions: arrayUnion(questionId),
+    });
+  }
+
+  async removeQuestionTransaction(transaction, roundId, questionId) {
+    await this.updateRoundTransaction(transaction, roundId, {
+      questions: arrayRemove(questionId),
     });
   }
 

@@ -6,17 +6,18 @@ import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
 import { topicSchema } from '@/frontend/utils/forms/topics';
-import {
-  ADD_ITEM,
-  QUESTION_HINTS_REMARKS,
-  QUESTION_ITEM,
-  QUESTION_TITLE_LABEL,
-  SUBMIT_QUESTION_BUTTON_LABEL,
-} from '@/frontend/utils/forms/questions';
+import { messages as questionMessages } from '@/frontend/utils/forms/questions';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { numCharsIndicator, requiredStringInArrayFieldIndicator, stringSchema } from '@/frontend/utils/forms/forms';
+
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.forms.submitQuestion.labelling', {
+  numLabelsAllowed: 'Number of labels allowed',
+});
 import { getFileFromRef, imageFileSchema } from '@/frontend/utils/forms/files';
 
 import { MyTextInput, StyledErrorMessage } from '@/frontend/components/forms/StyledFormComponents';
@@ -38,13 +39,6 @@ import Box from '@mui/system/Box';
 
 const QUESTION_TYPE = QuestionType.LABELLING;
 
-const LABEL_TITLE_EXAMPLE = {
-  en: 'Label the members of the Simpson family',
-  'fr-FR': 'Nommez les membres de la famille Simpson',
-};
-
-const LABEL_NOTE_EXAMPLE = '';
-
 const LABEL_EXAMPLE = ['Homer Simpson', 'Marge Simpson', 'Bart Simpson', 'Lisa Simpson'];
 
 const labelsSchema = () =>
@@ -53,7 +47,8 @@ const labelsSchema = () =>
     .min(LabellingQuestion.MIN_NUM_LABELS, `There must be at least ${LabellingQuestion.MIN_NUM_LABELS} labels`)
     .max(LabellingQuestion.MAX_NUM_LABELS, `There can be at most ${LabellingQuestion.MAX_NUM_LABELS} labels`);
 
-export default function SubmitLabellingQuestionForm({ userId, lang = DEFAULT_LOCALE, ...props }) {
+export default function SubmitLabellingQuestionForm({ userId, ...props }) {
+  const intl = useIntl();
   const router = useRouter();
 
   const [submitLabelQuestion, isSubmitting] = useAsyncAction(async (values, fileRef) => {
@@ -124,21 +119,21 @@ export default function SubmitLabellingQuestionForm({ userId, lang = DEFAULT_LOC
       validationSchema={validationSchema}
     >
       <Form>
-        <SelectLanguage lang={lang} name="lang" validationSchema={validationSchema} />
+        <SelectLanguage name="lang" validationSchema={validationSchema} />
 
-        <SelectQuestionTopic lang={lang} name="topic" validationSchema={validationSchema} />
+        <SelectQuestionTopic name="topic" validationSchema={validationSchema} />
 
         <MyTextInput
-          label={QUESTION_TITLE_LABEL[lang]}
+          label={intl.formatMessage(questionMessages.questionTitle)}
           name="title"
           type="text"
-          placeholder={LABEL_TITLE_EXAMPLE[lang]}
+          placeholder="Label the members of the Simpson family"
           validationSchema={validationSchema}
           maxLength={LabellingQuestion.TITLE_MAX_LENGTH}
         />
 
         <MyTextInput
-          label={QUESTION_HINTS_REMARKS[lang]}
+          label={intl.formatMessage(questionMessages.hintsRemarks)}
           name="note"
           type="text"
           placeholder=""
@@ -146,17 +141,18 @@ export default function SubmitLabellingQuestionForm({ userId, lang = DEFAULT_LOC
           maxLength={LabellingQuestion.NOTE_MAX_LENGTH}
         />
 
-        <UploadImage fileRef={fileRef} name="files" validationSchema={validationSchema} lang={lang} />
+        <UploadImage fileRef={fileRef} name="files" validationSchema={validationSchema} />
 
-        <EnterLabels lang={lang} validationSchema={validationSchema} />
+        <EnterLabels validationSchema={validationSchema} />
 
-        <SubmitFormButton isSubmitting={isSubmitting} label={SUBMIT_QUESTION_BUTTON_LABEL[lang]} />
+        <SubmitFormButton isSubmitting={isSubmitting} label={intl.formatMessage(questionMessages.submit)} />
       </Form>
     </Formik>
   );
 }
 
-function EnterLabels({ validationSchema, lang }) {
+function EnterLabels({ validationSchema }) {
+  const intl = useIntl();
   const formik = useFormikContext();
 
   const values = formik.values;
@@ -177,7 +173,8 @@ function EnterLabels({ validationSchema, lang }) {
   return (
     <>
       <p>
-        {NUM_LABELS_ALLOWED[lang]}: {LabellingQuestion.MIN_NUM_LABELS}-{LabellingQuestion.MAX_NUM_LABELS}.
+        {intl.formatMessage(messages.numLabelsAllowed)}: {LabellingQuestion.MIN_NUM_LABELS}-
+        {LabellingQuestion.MAX_NUM_LABELS}.
       </p>
 
       <FieldArray name="labels">
@@ -191,8 +188,9 @@ function EnterLabels({ validationSchema, lang }) {
                   sx={{ my: 2, pb: 2, px: 2, border: '2px dashed grey', width: '500px' }}
                 >
                   <label htmlFor={'labels.' + index}>
-                    {requiredStringInArrayFieldIndicator(validationSchema, 'labels')}
-                    {QUESTION_ITEM[lang]} #{index + 1} {numCharsIndicator(item, LabellingQuestion.LABEL_MAX_LENGTH)}
+                    {requiredStringInArrayFieldIndicator(validationSchema, 'labels', intl)}
+                    {intl.formatMessage(questionMessages.item)} #{index + 1}{' '}
+                    {numCharsIndicator(item, LabellingQuestion.LABEL_MAX_LENGTH)}
                   </label>
                   <Field
                     name={'labels.' + index}
@@ -207,7 +205,7 @@ function EnterLabels({ validationSchema, lang }) {
                 </Box>
               ))}
             <Button variant="outlined" startIcon={<AddIcon />} onClick={() => push('')}>
-              {ADD_ITEM[lang]}
+              {intl.formatMessage(questionMessages.addItem)}
             </Button>
           </div>
         )}
@@ -217,8 +215,3 @@ function EnterLabels({ validationSchema, lang }) {
     </>
   );
 }
-
-const NUM_LABELS_ALLOWED = {
-  en: 'Number of labels allowed',
-  'fr-FR': "Nombre d'étiquettes autorisé",
-};

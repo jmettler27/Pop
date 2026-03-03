@@ -6,8 +6,16 @@ import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
 import { topicSchema } from '@/frontend/utils/forms/topics';
-import { QUESTION_TITLE_LABEL, SUBMIT_QUESTION_BUTTON_LABEL } from '@/frontend/utils/forms/questions';
+import { messages as questionMessages } from '@/frontend/utils/forms/questions';
 import { stringSchema } from '@/frontend/utils/forms/forms';
+
+import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.forms.submitQuestion.image', {
+  answerDescription: 'Description of the image',
+  answerSource: 'Source of the image',
+});
 import { getFileFromRef, imageFileSchema } from '@/frontend/utils/forms/files';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
@@ -27,21 +35,8 @@ import * as Yup from 'yup';
 
 const QUESTION_TYPE = QuestionType.IMAGE;
 
-const IMAGE_TITLE_EXAMPLE = {
-  en: 'Object + Video game',
-  'fr-FR': 'Objet + Jeu vidéo',
-};
-const IMAGE_ANSWER_SOURCE_EXAMPLE = {
-  en: 'Elden Ring',
-  'fr-FR': 'Elden Ring',
-};
-
-const IMAGE_ANSWER_DESCRIPTION_EXAMPLE = {
-  en: 'Flask of Wondrous Physick',
-  'fr-FR': 'Fiole de salut miraculeux',
-};
-
-export default function SubmitImageQuestionForm({ userId, lang = DEFAULT_LOCALE, ...props }) {
+export default function SubmitImageQuestionForm({ userId, ...props }) {
+  const intl = useIntl();
   const router = useRouter();
 
   const [submitImageQuestion, isSubmitting] = useAsyncAction(async (values, fileRef) => {
@@ -113,51 +108,41 @@ export default function SubmitImageQuestionForm({ userId, lang = DEFAULT_LOCALE,
       validationSchema={validationSchema}
     >
       <Form>
-        <SelectLanguage lang={lang} name="lang" validationSchema={validationSchema} />
+        <SelectLanguage name="lang" validationSchema={validationSchema} />
 
-        <SelectQuestionTopic lang={lang} name="topic" validationSchema={validationSchema} />
+        <SelectQuestionTopic name="topic" validationSchema={validationSchema} />
 
         <MyTextInput
-          label={QUESTION_TITLE_LABEL[lang]}
+          label={intl.formatMessage(questionMessages.questionTitle)}
           name="title"
           type="text"
-          placeholder={IMAGE_TITLE_EXAMPLE[lang]}
+          placeholder="Object + Video game"
           validationSchema={validationSchema}
           maxLength={ImageQuestion.TITLE_MAX_LENGTH}
         />
 
         <MyTextInput
-          label={IMAGE_ANSWER_DESCRIPTION_LABEL[lang]}
+          label={intl.formatMessage(messages.answerDescription)}
           name="answer_description"
           type="text"
-          placeholder={IMAGE_ANSWER_DESCRIPTION_EXAMPLE[lang]}
+          placeholder="Flask of Wondrous Physick"
           validationSchema={validationSchema}
           maxLength={ImageQuestion.ANSWER_DESCRIPTION_MAX_LENGTH}
         />
 
         <MyTextInput
-          label={IMAGE_ANSWER_SOURCE_LABEL[lang]}
+          label={intl.formatMessage(messages.answerSource)}
           name="answer_source"
           type="text"
-          placeholder={IMAGE_ANSWER_SOURCE_EXAMPLE[lang]}
+          placeholder="Elden Ring"
           validationSchema={validationSchema}
           maxLength={ImageQuestion.ANSWER_SOURCE_MAX_LENGTH}
         />
 
-        <UploadImage fileRef={fileRef} name="files" validationSchema={validationSchema} lang={lang} />
+        <UploadImage fileRef={fileRef} name="files" validationSchema={validationSchema} />
 
-        <SubmitFormButton isSubmitting={isSubmitting} label={SUBMIT_QUESTION_BUTTON_LABEL[lang]} />
+        <SubmitFormButton isSubmitting={isSubmitting} label={intl.formatMessage(questionMessages.submit)} />
       </Form>
     </Formik>
   );
 }
-
-const IMAGE_ANSWER_DESCRIPTION_LABEL = {
-  en: 'Description of the image',
-  'fr-FR': "Description de l'image",
-};
-
-const IMAGE_ANSWER_SOURCE_LABEL = {
-  en: 'Source of the image',
-  'fr-FR': "Source de l'image",
-};

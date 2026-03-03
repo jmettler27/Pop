@@ -1,4 +1,3 @@
-import RoundRepositoryFactory from '@/backend/repositories/round/RoundRepositoryFactory';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import TimerRepository from '@/backend/repositories/timer/TimerRepository';
@@ -11,6 +10,7 @@ import GameScoreRepository from '@/backend/repositories/score/GameScoreRepositor
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import GameQuestionServiceFactory from '@/backend/services/question/GameQuestionServiceFactory';
+import RoundRepository from '@/backend/repositories/round/RoundRepository';
 
 import { Round } from '@/backend/models/rounds/Round';
 import { RoundType } from '@/backend/models/rounds/RoundType';
@@ -47,7 +47,7 @@ export default class RoundService {
     this.readyRepo = new ReadyRepository(this.gameId);
 
     this.roundType = roundType;
-    this.roundRepo = RoundRepositoryFactory.createRepository(this.roundType, this.gameId);
+    this.roundRepo = new RoundRepository(this.gameId);
 
     this.baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(this.roundType);
     // this.gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(this.roundType, this.gameId);
@@ -59,12 +59,12 @@ export default class RoundService {
     const roundScoreRepo = new RoundScoreRepository(this.gameId, roundId);
 
     const questions = await gameQuestionRepo.getAllQuestions();
-    const initTeamRoundScores = await this.getInitTeamScores();
+    const initTeamScores = await this.getInitTeamScores();
 
     for (const question of questions) {
       await gameQuestionService.resetQuestion(question.id);
     }
-    await roundScoreRepo.resetScores(initTeamRoundScores);
+    await roundScoreRepo.resetScores(initTeamScores);
     await this.roundRepo.resetRound(roundId, this.roundType);
   }
 

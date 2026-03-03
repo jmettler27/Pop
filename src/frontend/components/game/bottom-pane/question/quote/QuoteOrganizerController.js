@@ -7,8 +7,9 @@ import {
 import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 
 import { isEmpty } from '@/backend/utils/arrays';
+import globalMessages from '@/i18n/globalMessages';
 
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { useIntl } from 'react-intl';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
@@ -82,8 +83,6 @@ function QuoteOrganizerAnswerController({ buzzed, baseQuestion }) {
     return <></>;
   }
 
-  // const revealed = gameQuestion.revealed
-
   {
     /* Validate or invalidate the player's answer */
   }
@@ -104,7 +103,8 @@ function QuoteOrganizerAnswerController({ buzzed, baseQuestion }) {
   );
 }
 
-function ValidateAllQuoteElementsButton({ buzzed, gameQuestion, lang = DEFAULT_LOCALE }) {
+function ValidateAllQuoteElementsButton({ buzzed, gameQuestion }) {
+  const intl = useIntl();
   const game = useGameContext();
 
   const atLeastOneRevealed = gameQuestion.atLeastOneElementRevealed();
@@ -121,17 +121,13 @@ function ValidateAllQuoteElementsButton({ buzzed, gameQuestion, lang = DEFAULT_L
       onClick={handleValidateAll}
       disabled={atLeastOneRevealed || buzzedIsEmpty || isValidating}
     >
-      {VALIDATE_ALL_QUOTE_ELEMENTS[lang]}
+      {intl.formatMessage(globalMessages.validateAll)}
     </Button>
   );
 }
 
-const VALIDATE_ALL_QUOTE_ELEMENTS = {
-  en: 'Validate all',
-  'fr-FR': 'Tout valider',
-};
-
-function CancelQuoteElementButton({ buzzed, lang = DEFAULT_LOCALE }) {
+function CancelQuoteElementButton({ buzzed }) {
+  const intl = useIntl();
   const game = useGameContext();
 
   const buzzedIsEmpty = isEmpty(buzzed);
@@ -148,16 +144,13 @@ function CancelQuoteElementButton({ buzzed, lang = DEFAULT_LOCALE }) {
         onClick={handleCancelQuote}
         disabled={buzzedIsEmpty || isCanceling}
       >
-        {CANCEL_QUOTE_ELEMENT[lang]}
+        {intl.formatMessage(globalMessages.cancel)}
       </Button>
     </>
   );
 }
 
-const CANCEL_QUOTE_ELEMENT = {
-  en: 'Cancel',
-  'fr-FR': 'Invalider',
-};
+const CANCEL_QUOTE_ELEMENT = undefined; // removed
 
 function QuoteOrganizerQuestionController({}) {
   return (
