@@ -22,12 +22,11 @@ import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import GroupIcon from '@mui/icons-material/Group';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 
 const messages = defineMessages('frontend.home.EndedGames', {
   title: 'Ended games',
   empty: 'No ended games yet',
-  organizersShort: 'Organizers',
-  playersShort: 'Players',
   accessDashboard: 'Access game dashboard',
 });
 
@@ -144,7 +143,7 @@ export function EndedGameCard({ game }) {
             <div className="flex items-center gap-1">
               <SupervisorAccountIcon sx={{ fontSize: '0.875rem', color: 'rgb(168, 85, 247)' }} />
               <Typography variant="caption" className="text-xs font-medium text-purple-300">
-                {intl.formatMessage(messages.organizersShort)}
+                {intl.formatMessage(globalMessages.organizers)}
               </Typography>
             </div>
             <div className="flex justify-start w-full">
@@ -157,7 +156,7 @@ export function EndedGameCard({ game }) {
             <div className="flex items-center gap-1">
               <GroupIcon sx={{ fontSize: '0.875rem', color: 'rgb(96, 165, 250)' }} />
               <Typography variant="caption" className="text-xs font-medium text-blue-300">
-                {intl.formatMessage(messages.playersShort)}
+                {intl.formatMessage(globalMessages.players)}
               </Typography>
             </div>
             <div className="flex justify-start w-full">

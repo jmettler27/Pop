@@ -8,10 +8,10 @@ import GameBasicQuestionRepository from '@/backend/repositories/question/GameBas
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 
 const messages = defineMessages('frontend.game.BasicMiddlePane', {
   correct: 'Correct!',
-  incorrect: 'Wrong answer!',
 });
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
@@ -123,6 +123,6 @@ function BasicQuestionPlayerAnswerText({ gameQuestion }) {
   return gameQuestion.correct ? (
     <span className="text-green-500">{intl.formatMessage(messages.correct)}</span>
   ) : (
-    <span className="text-red-500">{intl.formatMessage(messages.incorrect)}</span>
+    <span className="text-red-500">{intl.formatMessage(globalMessages.wrongAnswer)}</span>
   );
 }

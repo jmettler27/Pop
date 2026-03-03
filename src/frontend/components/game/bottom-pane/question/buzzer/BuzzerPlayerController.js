@@ -8,6 +8,7 @@ import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 
 import { Button, IconButton, Tooltip } from '@mui/material';
 import ReplayIcon from '@mui/icons-material/Replay';
@@ -18,14 +19,6 @@ import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQ
 
 const messages = defineMessages('frontend.game.BuzzerPlayerController', {
   numRemainingClues: 'in {remaining} clues',
-  oneMoreWaitingClue: 'at the next clue',
-  maxTriesExceeded: 'You have exceeded the maximum number of tries!',
-  canceledWarning: 'You will be able to buzz again',
-  lastAttempt: "Attention, it's your last attempt.",
-  waitingForTurn: 'Wait for your turn...',
-  buzzerIdle: 'Any idea?',
-  firstBuzzer: "We're all ears",
-  incorrectAnswer: 'Wrong answer!',
 });
 
 export default function BuzzerPlayerController({ questionPlayers }) {
@@ -115,18 +108,18 @@ function BuzzerMessage({ playerStatus, hasExceededMaxTries, round, myCanceledIte
   if (hasExceededMaxTries)
     return (
       <span className="2xl:text-3xl text-red-500">
-        🤐 {intl.formatMessage(messages.maxTriesExceeded)} ({round.maxTries})
+        🤐 {intl.formatMessage(globalMessages.maxTriesExceeded)} ({round.maxTries})
       </span>
     );
 
   if (playerStatus === PlayerStatus.WRONG) {
-    const message = intl.formatMessage(messages.incorrectAnswer);
+    const message = intl.formatMessage(globalMessages.wrongAnswer);
     if (round.type === QuestionType.PROGRESSIVE_CLUES && round.delay && round.delay > 0) {
       return (
         <span className="2xl:text-3xl">
-          {message} {intl.formatMessage(messages.canceledWarning)}{' '}
+          {message} {intl.formatMessage(globalMessages.buzzAgain)}{' '}
           <span className="font-bold text-blue-500">
-            {remaining > 1 ? numRemainingClues(remaining, intl) : intl.formatMessage(messages.oneMoreWaitingClue)}.
+            {remaining > 1 ? numRemainingClues(remaining, intl) : intl.formatMessage(globalMessages.nextClue)}.
           </span>
         </span>
       );
@@ -134,17 +127,17 @@ function BuzzerMessage({ playerStatus, hasExceededMaxTries, round, myCanceledIte
     return <span className="2xl:text-3xl text-red-500">{message}</span>;
   }
   if (isFirst) {
-    const message = `${intl.formatMessage(messages.firstBuzzer)} 🧐`;
+    const message = `${intl.formatMessage(globalMessages.firstBuzzer)} 🧐`;
     if (myCanceledItems.length === round.maxTries - 1)
       return (
         <span className="2xl:text-3xl">
-          {message}. <span className="text-red-500">{intl.formatMessage(messages.lastAttempt)}</span>
+          {message}. <span className="text-red-500">{intl.formatMessage(globalMessages.lastAttempt)}</span>
         </span>
       );
     return <span className="2xl:text-3xl">{message}</span>;
   }
-  if (hasBuzzed) return <span className="2xl:text-3xl">{intl.formatMessage(messages.waitingForTurn)}</span>;
-  return <span className="2xl:text-3xl">{intl.formatMessage(messages.buzzerIdle)} 🤔</span>;
+  if (hasBuzzed) return <span className="2xl:text-3xl">{intl.formatMessage(globalMessages.waitForTurn)}</span>;
+  return <span className="2xl:text-3xl">{intl.formatMessage(globalMessages.anyIdea)} 🤔</span>;
 }
 
 function remainingWaitingClues(round, hasExceededMaxTries, currentClueIdx, myCanceledItems) {

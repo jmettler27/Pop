@@ -4,15 +4,11 @@ import { rankingToEmoji } from '@/backend/utils/emojis';
 import { RoundTypeIcon } from '@/backend/utils/rounds';
 
 import { useGameRepositoriesContext } from '@/frontend/contexts';
+import globalMessages from '@/i18n/globalMessages';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-
-const messages = defineMessages('frontend.game.sidebar.progress.GlobalProgressTabPanel', {
-  round: 'Round',
-});
 
 import { memo } from 'react';
 
@@ -130,7 +126,7 @@ function RoundAccordion({ gameId, round, teams, hasEnded, isCurrent }) {
           <Typography className={clsx(isCurrent && !hasEnded && 'text-orange-300')}>
             <span className="2xl:text-xl">
               <strong>
-                {intl.formatMessage(messages.round)} {round.order + 1}
+                {intl.formatMessage(globalMessages.round)} {round.order + 1}
               </strong>{' '}
               - <i>{round.title}</i>
             </span>

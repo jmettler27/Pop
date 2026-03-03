@@ -5,14 +5,10 @@ import { doc } from 'firebase/firestore';
 import { useDocumentData, useDocumentOnce } from 'react-firebase-hooks/firestore';
 
 import { clsx } from 'clsx';
+import globalMessages from '@/i18n/globalMessages';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-
-const messages = defineMessages('frontend.game.middle.SpecialThemeActiveMiddlePane', {
-  level: 'Level',
-});
 
 import { ParticipantRole } from '@/backend/models/users/Participant';
 export default function SpecialThemeActiveMiddlePane({ theme, gameTheme }) {
@@ -58,7 +54,7 @@ function SectionTitle({ section, gameTheme }) {
   return (
     <h1 className="2xl:text-4xl">
       <span className="font-bold">
-        {intl.formatMessage(messages.level)} {gameTheme.currentSectionIdx + 1}
+        {intl.formatMessage(globalMessages.level)} {gameTheme.currentSectionIdx + 1}
       </span>
       {section.title && `: ${section.title}`}
     </h1>

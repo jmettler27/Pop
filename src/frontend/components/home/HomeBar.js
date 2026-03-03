@@ -23,13 +23,12 @@ import { useRouter } from 'next/navigation';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 import { useLocale } from '@/app/LocaleProvider';
 import { LOCALES, LOCALE_TO_EMOJI, LOCALE_TO_TITLE } from '@/frontend/utils/locales';
 
 const messages = defineMessages('frontend.home.HomeBar', {
   games: 'Games',
-  createGame: 'Create a new game',
-  submitQuestion: 'Submit a question',
   about: 'About',
   settingsProfile: 'Profile',
   settingsAccount: 'Account',
@@ -62,8 +61,8 @@ export function HomeBar() {
 
   const pages = [
     intl.formatMessage(messages.games),
-    intl.formatMessage(messages.createGame),
-    intl.formatMessage(messages.submitQuestion),
+    intl.formatMessage(globalMessages.createNewGame),
+    intl.formatMessage(globalMessages.submitQuestion),
     intl.formatMessage(messages.about),
   ];
 

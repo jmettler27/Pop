@@ -13,6 +13,7 @@ import {
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CancelIcon from '@mui/icons-material/Cancel';
 
@@ -24,7 +25,6 @@ const messages = defineMessages('frontend.forms.UploadFile', {
   selectImage: 'Select an image file',
   selectAudio: 'Select an audio file',
   acceptedFormats: 'Accepted formats',
-  cancel: 'Cancel',
 });
 
 const VisuallyHiddenInput = styled('input')({
@@ -94,7 +94,7 @@ export function UploadImage({ validationSchema, fileRef, name }) {
               formik.setFieldValue(name, '');
             }}
           >
-            {intl.formatMessage(messages.cancel)}
+            {intl.formatMessage(globalMessages.cancel)}
           </Button>
         </>
       )}
@@ -136,7 +136,7 @@ export function UploadAudio({ validationSchema, fileRef, name = 'files' }) {
               formik.setFieldValue(name, '');
             }}
           >
-            {intl.formatMessage(messages.cancel)}
+            {intl.formatMessage(globalMessages.cancel)}
           </Button>
         </>
       )}

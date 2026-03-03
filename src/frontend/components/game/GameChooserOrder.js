@@ -1,13 +1,9 @@
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 
 import { useGameRepositoriesContext } from '@/frontend/contexts';
 
 import clsx from 'clsx';
-
-const messages = defineMessages('frontend.game.GameChooserOrder', {
-  title: 'Running order',
-});
 
 export default function GameChooserOrder({ chooser }) {
   const intl = useIntl();
@@ -31,7 +27,7 @@ export default function GameChooserOrder({ chooser }) {
   return (
     <div className="flex flex-col h-full w-full items-center justify-center">
       <h2 className="2xl:text-2xl font-bold">
-        👥 <span className="underline">{intl.formatMessage(messages.title)}</span>
+        👥 <span className="underline">{intl.formatMessage(globalMessages.runningOrder)}</span>
       </h2>
 
       <ol className="overflow-auto">

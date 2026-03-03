@@ -6,6 +6,7 @@ import { GameMatchingQuestion } from '@/backend/models/questions/Matching';
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 
 import { useGameContext, useGameRepositoriesContext, useRoleContext, useTeamContext } from '@/frontend/contexts';
+import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
@@ -20,7 +21,6 @@ import clsx from 'clsx';
 
 const messages = defineMessages('frontend.game.bottom.MatchingBottomPane', {
   maxMistakesExceeded: 'You have exceeded the maximum number of mistakes!',
-  runningOrder: 'Running order',
   youCanMakeMore: 'You can still make',
   mistake: 'mistake',
   mistakes: 'mistakes',
@@ -177,7 +177,7 @@ function MatchingRunningOrder({ chooser }) {
   return (
     <div className="flex flex-col h-full w-full items-center justify-center">
       <h2 className="2xl:text-2xl font-bold">
-        👥 <span className="underline">{intl.formatMessage(messages.runningOrder)}</span>
+        👥 <span className="underline">{intl.formatMessage(globalMessages.runningOrder)}</span>
       </h2>
 
       <ol className="overflow-auto">

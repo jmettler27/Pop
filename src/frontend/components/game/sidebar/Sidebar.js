@@ -3,13 +3,13 @@ import { ParticipantRole } from '@/backend/models/users/Participant';
 import { useRoleContext } from '@/frontend/contexts';
 import { useLocale } from '@/app/LocaleProvider';
 import { LOCALES, LOCALE_TO_TITLE } from '@/frontend/utils/locales';
+import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.sidebar.Sidebar', {
   progress: 'Progress',
-  language: 'Language',
 });
 
 import SoundboardAudioPlayer from '@/frontend/components/game/soundboard/SoundboardAudioPlayer';
@@ -60,7 +60,7 @@ export default function Sidebar({}) {
       >
         <TranslateIcon sx={{ fontSize: '0.9rem', color: 'text.secondary', flexShrink: 0 }} />
         <Typography variant="caption" sx={{ color: 'text.secondary', flexShrink: 0 }}>
-          {intl.formatMessage(messages.language)}
+          {intl.formatMessage(globalMessages.language)}
         </Typography>
         <ToggleButtonGroup
           value={locale}

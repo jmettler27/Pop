@@ -1,7 +1,7 @@
 import { handleAnswer } from '@/backend/services/question/basic/actions';
+import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { useGameContext } from '@/frontend/contexts';
@@ -13,11 +13,6 @@ import { Button, ButtonGroup } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-
-const messages = defineMessages('frontend.game.bottom.BasicQuestionOrganizerController', {
-  validate: 'Validate',
-  invalidate: 'Invalidate',
-});
 
 export default function BasicQuestionOrganizerController({ gameQuestion }) {
   return (
@@ -54,12 +49,12 @@ function BasicQuestionOrganizerAnswerController({ gameQuestion }) {
       >
         {/* Validate the player's answer */}
         <Button color="success" startIcon={<CheckCircleIcon />} onClick={validateBasicAnswer} disabled={isValidating}>
-          {intl.formatMessage(messages.validate)}
+          {intl.formatMessage(globalMessages.validate)}
         </Button>
 
         {/* Invalidate the player's answer */}
         <Button color="error" startIcon={<CancelIcon />} onClick={invalidateBasicAnswer} disabled={isInvalidating}>
-          {intl.formatMessage(messages.invalidate)}
+          {intl.formatMessage(globalMessages.invalidate)}
         </Button>
       </ButtonGroup>
     </>

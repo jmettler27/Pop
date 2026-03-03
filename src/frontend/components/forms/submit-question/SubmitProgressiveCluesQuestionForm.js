@@ -14,10 +14,10 @@ import { numCharsIndicator, requiredStringInArrayFieldIndicator, stringSchema } 
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 
 const messages = defineMessages('frontend.forms.submitQuestion.progressiveClues', {
   numCluesAllowed: 'Number of clues allowed',
-  clue: 'Clue',
   addClue: 'Add clue',
 });
 import { getFileFromRef, imageFileSchema } from '@/frontend/utils/forms/files';
@@ -242,7 +242,7 @@ function EnterCluesStep({ onSubmit, validationSchema }) {
                 <div className="row" key={index}>
                   <label htmlFor={'clues.' + index}>
                     {requiredStringInArrayFieldIndicator(validationSchema, 'clues', intl)}
-                    {intl.formatMessage(messages.clue)} #{index + 1}{' '}
+                    {intl.formatMessage(globalMessages.clue)} #{index + 1}{' '}
                     {numCharsIndicator(clue, ProgressiveCluesQuestion.CLUE_MAX_LENGTH)}
                   </label>
                   <Field

@@ -12,7 +12,6 @@ import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.gameEditor.AddNewQuestion', {
-  createNewQuestion: 'Create a new question',
   searchExisting: 'Search for an existing question',
   addToRoundDialogTitle: 'Add this question to the round?',
   addToRound: 'Add',
@@ -59,7 +58,7 @@ function AddQuestionToRoundDialog({ roundId, questionType, dialog, onDialogClose
     <Dialog open={dialog !== null} onClose={onDialogClose} maxWidth="xl">
       <DialogTitle>
         {dialog === 'new-question' &&
-          `${intl.formatMessage(messages.createNewQuestion)} (${questionTypeToEmoji(questionType)})`}
+          `${intl.formatMessage(globalMessages.createNewQuestion)} (${questionTypeToEmoji(questionType)})`}
         {dialog === 'existing-question' &&
           `${intl.formatMessage(messages.searchExisting)} (${questionTypeToEmoji(questionType)})`}
       </DialogTitle>
@@ -120,7 +119,7 @@ export function AddQuestionToRoundButton({ round, disabled }) {
             }}
           >
             <MenuItem onClick={() => setDialog('new-question')}>
-              {prependCreateNewQuestionWithEmoji(intl.formatMessage(messages.createNewQuestion))}
+              {prependCreateNewQuestionWithEmoji(intl.formatMessage(globalMessages.createNewQuestion))}
             </MenuItem>
             <MenuItem onClick={() => setDialog('existing-question')}>
               {prependSearchExistingQuestionWithEmoji(intl.formatMessage(messages.searchExisting))}
@@ -234,7 +233,7 @@ function SelectQuestionTypeButton({ type, handleListItemClick }) {
   const itemText = () => {
     switch (type) {
       case 'new-question':
-        return prependCreateNewQuestionWithEmoji(intl.formatMessage(messages.createNewQuestion));
+        return prependCreateNewQuestionWithEmoji(intl.formatMessage(globalMessages.createNewQuestion));
       case 'existing-question':
         return prependSearchExistingQuestionWithEmoji(intl.formatMessage(messages.searchExisting));
     }

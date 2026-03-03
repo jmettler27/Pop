@@ -13,12 +13,7 @@ import { useParams } from 'next/navigation';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-
-const messages = defineMessages('frontend.game.sidebar.progress.ProgressTabPanel', {
-  game: 'Game',
-  round: 'Round',
-});
+import globalMessages from '@/i18n/globalMessages';
 export default function ProgressTabPanel({}) {
   const { id: gameId } = useParams();
 
@@ -71,9 +66,9 @@ function ProgressTabPanelMainContent({ game }) {
           textColor="inherit"
           variant="fullWidth"
         >
-          <Tab label={intl.formatMessage(messages.game)} aria-label="game progress" {...a11yProps(0)} />
+          <Tab label={intl.formatMessage(globalMessages.game)} aria-label="game progress" {...a11yProps(0)} />
           {/* {(game.type === 'rounds' && game.currentRound) && ( */}
-          <Tab label={intl.formatMessage(messages.round)} aria-label="round progress" {...a11yProps(1)} />
+          <Tab label={intl.formatMessage(globalMessages.round)} aria-label="round progress" {...a11yProps(1)} />
           {/* )} */}
         </Tabs>
       </Box>

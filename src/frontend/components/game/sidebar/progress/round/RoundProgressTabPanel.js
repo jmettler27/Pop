@@ -1,12 +1,8 @@
 import { RoundType } from '@/backend/models/rounds/RoundType';
 import { RoundTypeIcon } from '@/backend/utils/rounds';
+import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-
-const messages = defineMessages('frontend.game.sidebar.progress.round.RoundProgressTabPanel', {
-  round: 'Round',
-});
 
 import { useGameRepositoriesContext } from '@/frontend/contexts';
 
@@ -55,7 +51,7 @@ const RoundProgressHeader = memo(function RoundProgressHeader({ roundType, round
       <RoundTypeIcon roundType={roundType} fontSize={20} />
       <span className="2xl:text-xl">
         <strong>
-          {intl.formatMessage(messages.round)} {roundOrder + 1}
+          {intl.formatMessage(globalMessages.round)} {roundOrder + 1}
         </strong>{' '}
         - <i>{roundTitle}</i>
       </span>

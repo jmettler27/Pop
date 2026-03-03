@@ -1,11 +1,7 @@
 import { RoundTypeIcon } from '@/backend/utils/rounds';
+import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-
-const messages = defineMessages('frontend.game.middle.SpecialHomeMiddlePane', {
-  round: 'Round',
-});
 
 import SpecialHomeThemes from '@/frontend/components/game/middle-pane/special/home/SpecialHomeThemes';
 
@@ -30,7 +26,7 @@ function SpecialRoundHeader({ round }) {
       <RoundTypeIcon roundType={round.type} fontSize={50} />
       <h1 className="2xl:text-5xl">
         <span className="font-bold">
-          {intl.formatMessage(messages.round)} {round.order + 1}
+          {intl.formatMessage(globalMessages.round)} {round.order + 1}
         </span>
         : <i>{round.title}</i>{' '}
       </h1>

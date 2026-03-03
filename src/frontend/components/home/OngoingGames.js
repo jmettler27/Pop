@@ -27,12 +27,11 @@ import GroupIcon from '@mui/icons-material/Group';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 
 const messages = defineMessages('frontend.home.OngoingGames', {
   title: 'Ongoing games',
   empty: 'No ongoing games at the moment',
-  organizersShort: 'Organizers',
-  playersShort: 'Players',
   watchGame: 'Watch',
   joinGame: 'Join',
   continueGame: 'Continue',
@@ -184,7 +183,7 @@ const GameCard = ({ game }) => {
             <div className="flex items-center gap-1">
               <SupervisorAccountIcon sx={{ fontSize: '0.875rem', color: 'rgb(249, 115, 22)' }} />
               <Typography variant="caption" className="text-xs font-medium text-orange-300">
-                {intl.formatMessage(messages.organizersShort)}
+                {intl.formatMessage(globalMessages.organizers)}
               </Typography>
             </div>
             <div className="flex justify-start w-full">
@@ -197,7 +196,7 @@ const GameCard = ({ game }) => {
             <div className="flex items-center gap-1">
               <GroupIcon sx={{ fontSize: '0.875rem', color: 'rgb(96, 165, 250)' }} />
               <Typography variant="caption" className="text-xs font-medium text-blue-300">
-                {intl.formatMessage(messages.playersShort)}
+                {intl.formatMessage(globalMessages.players)}
               </Typography>
             </div>
             <div className="flex justify-start w-full">

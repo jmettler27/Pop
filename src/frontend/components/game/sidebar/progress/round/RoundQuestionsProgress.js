@@ -5,13 +5,9 @@ import { topicToEmoji } from '@/backend/models/Topic';
 import { BlindtestQuestion } from '@/backend/models/questions/Blindtest';
 
 import { useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
+import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-
-const messages = defineMessages('frontend.game.sidebar.progress.RoundQuestionsProgress', {
-  nobody: 'Nobody',
-});
 
 import { QuestionCardContent } from '@/frontend/components/questions/QuestionCard';
 
@@ -351,7 +347,7 @@ function QuestionWinner({ winnerTeam, winnerPlayer, question, game }) {
               {winnerPlayer.name} {winnerTeam.name !== winnerPlayer.name && `(${winnerTeam.name})`}
             </span>
           ) : (
-            <span className="italic opacity-50">{intl.formatMessage(messages.nobody)}</span>
+            <span className="italic opacity-50">{intl.formatMessage(globalMessages.nobody)}</span>
           )}
         </Typography>
       );

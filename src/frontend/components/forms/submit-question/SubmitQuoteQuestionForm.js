@@ -13,9 +13,9 @@ import { stringSchema } from '@/frontend/utils/forms/forms';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 
 const messages = defineMessages('frontend.forms.submitQuestion.quote', {
-  quote: 'Quote',
   quoteSource: 'Source of the quote',
   quoteAuthor: 'Author of the quote',
   aspectsToGuess: 'Which aspects of the quote do you want the players to guess?',
@@ -216,7 +216,7 @@ function GeneralInfoStep({ onSubmit, validationSchema }) {
       <SelectQuestionTopic name="topic" validationSchema={validationSchema} />
 
       <MyTextInput
-        label={intl.formatMessage(messages.quote)}
+        label={intl.formatMessage(globalMessages.quote)}
         name="quote"
         type="text"
         placeholder={intl.locale === 'fr' ? QUOTE_EXAMPLE['fr'] : QUOTE_EXAMPLE['en']}

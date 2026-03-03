@@ -1,12 +1,12 @@
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 
 import { useGameRepositoriesContext } from '@/frontend/contexts';
 import { rankingToEmoji } from '@/backend/utils/emojis';
 
 const messages = defineMessages('frontend.game.bottom.BuzzerPlayers', {
   buzzers: 'Buzzers',
-  noBuzzers: 'Nobody',
   noobs: 'N00bs',
 });
 
@@ -40,7 +40,7 @@ export default function BuzzerPlayers({ questionPlayers }) {
         {buzzed && buzzed.length > 0 ? (
           <BuzzedPlayers buzzed={buzzed} players={players} />
         ) : (
-          <p className="2xl:text-xl italic opacity-50">{intl.formatMessage(messages.noBuzzers)}</p>
+          <p className="2xl:text-xl italic opacity-50">{intl.formatMessage(globalMessages.nobody)}</p>
         )}
       </div>
 

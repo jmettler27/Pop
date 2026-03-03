@@ -19,12 +19,11 @@ import {
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 
 const messages = defineMessages('frontend.forms.submitQuestion.enumeration', {
   numAnswersAllowed: 'Number of answers allowed',
   maxIsKnown: 'Is the total number of answers known?',
-  yes: 'Yes',
-  no: 'No',
   thinkingTimeLabel: 'How many seconds should a player have to think and submit a bet?',
   challengeTimeLabel: 'How many seconds should the challenger have to enumerate its answers?',
 });
@@ -307,8 +306,8 @@ function EnterAnswerItemsStep({ onSubmit, validationSchema }) {
       <MyRadioGroup
         label={intl.formatMessage(messages.maxIsKnown)}
         name="maxIsKnown"
-        trueText={intl.formatMessage(messages.yes)}
-        falseText={intl.formatMessage(messages.no)}
+        trueText={intl.formatMessage(globalMessages.yes)}
+        falseText={intl.formatMessage(globalMessages.no)}
         validationSchema={validationSchema}
       />
 

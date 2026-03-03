@@ -5,6 +5,7 @@ import { isEmpty } from '@/backend/utils/arrays';
 import { rankingToEmoji } from '@/backend/utils/emojis';
 
 import { useGameContext } from '@/frontend/contexts';
+import globalMessages from '@/i18n/globalMessages';
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
@@ -20,11 +21,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const messages = defineMessages('frontend.game.bottom.RevealLabelButton', {
-  reveal: 'Reveal',
   revealListHeader: 'Reveal a label',
-  areYouSureReveal: 'Are you sure you want to reveal',
-  yes: 'Yes',
-  no: 'No',
 });
 
 export default function RevealLabelButton({ buzzed, baseQuestion, gameQuestion }) {
@@ -60,7 +57,7 @@ export default function RevealLabelButton({ buzzed, baseQuestion, gameQuestion }
   return (
     <>
       <Button color="info" startIcon={<VisibilityIcon />} onClick={handleRevealButtonClick} disabled={!buzzedIsEmpty}>
-        {intl.formatMessage(messages.reveal)}
+        {intl.formatMessage(globalMessages.reveal)}
       </Button>
 
       <Menu
@@ -130,7 +127,7 @@ function RevealLabelDialog({ baseQuestion, labelIdx, dialogOpen, onDialogClose }
       <DialogTitle>{intl.formatMessage(messages.revealListHeader)}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {intl.formatMessage(messages.areYouSureReveal)} <strong>&quot;{labelToReveal}&quot;</strong>?
+          {intl.formatMessage(globalMessages.areYouSureReveal)} <strong>&quot;{labelToReveal}&quot;</strong>?
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -141,11 +138,11 @@ function RevealLabelDialog({ baseQuestion, labelIdx, dialogOpen, onDialogClose }
           onClick={handleRevealLabel}
           disabled={isRevealing}
         >
-          {intl.formatMessage(messages.yes)}
+          {intl.formatMessage(globalMessages.yes)}
         </Button>
 
         <Button variant="outlined" color="error" startIcon={<CancelIcon />} onClick={onDialogClose} autoFocus>
-          {intl.formatMessage(messages.no)}
+          {intl.formatMessage(globalMessages.no)}
         </Button>
       </DialogActions>
     </Dialog>

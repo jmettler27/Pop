@@ -65,7 +65,7 @@ export default function SubmitMatchDialog({ edges, setEdges, numCols, setNewEdge
           onClick={handleMatchValidate}
           disabled={isSubmitting}
         >
-          {intl.formatMessage(globalMessages.dialogValidate)}
+          {intl.formatMessage(globalMessages.submit)}
         </Button>
 
         <Button variant="outlined" color="error" startIcon={<CancelIcon />} onClick={handleMatchCancel}>

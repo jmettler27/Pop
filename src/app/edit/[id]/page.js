@@ -23,11 +23,10 @@ import { AddNewRoundButton } from '@/frontend/components/game-editor/AddNewRound
 import AppFooter from '@/frontend/components/AppFooter';
 import { EditGameRoundCard } from '@/frontend/components/game-editor/EditRoundInGame';
 import { LaunchGameButton } from '@/frontend/components/game-editor/LaunchGameButton';
+import globalMessages from '@/i18n/globalMessages';
 
 const messages = defineMessages('frontend.gameEditor.EditGamePage', {
-  home: 'Home',
   analytics: 'Analytics',
-  loading: 'Loading...',
   expandAll: 'Expand All',
   collapseAll: 'Collapse All',
 });
@@ -59,7 +58,7 @@ export default function Page({ params }) {
   if (gameLoading || organizersLoading) {
     return (
       <div className="flex h-screen">
-        <LoadingScreen loadingText={intl.formatMessage(messages.loading)} />
+        <LoadingScreen loadingText={intl.formatMessage(globalMessages.loading)} />
       </div>
     );
   }
@@ -101,7 +100,7 @@ export default function Page({ params }) {
                 prefetch={false}
               >
                 <HomeIcon className="h-5 w-5 group-hover:scale-110 transition-transform" />
-                {intl.formatMessage(messages.home)}
+                {intl.formatMessage(globalMessages.home)}
               </Link>
               {/* <Link
                             className='flex items-center gap-3 rounded-lg bg-gray-100 px-3 py-2 text-gray-900  transition-all hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50'
@@ -140,7 +139,7 @@ export default function Page({ params }) {
           <header className="flex h-20 items-center gap-4 border-b border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md px-8 shadow-sm">
             <Link className="lg:hidden" href="#">
               <Package2Icon className="h-6 w-6" />
-              <span className="sr-only">{intl.formatMessage(messages.home)}</span>
+              <span className="sr-only">{intl.formatMessage(globalMessages.home)}</span>
             </Link>
 
             {/* Search bar */}

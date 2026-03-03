@@ -8,6 +8,7 @@ import { redirect, useRouter } from 'next/navigation';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
@@ -31,12 +32,10 @@ export const roundScorePolicySchema = () =>
   Yup.string().oneOf(Object.values(ScorePolicyType), 'Invalid round score policy.').required('Required.');
 
 const messages = defineMessages('app.edit', {
-  createGame: 'Create a new game',
   selectGameLanguageLabel: 'Game language',
   gameTitleLabel: 'Game title',
   gameMaxPlayersLabel: 'Max num. of players',
   gameOrganizerNameLabel: 'Choose a nickname for the game',
-  createGameSubmitButtonLabel: 'Create',
 });
 
 export default function Page() {
@@ -85,7 +84,7 @@ export default function Page() {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <main className="flex-1 p-8">
-        <h1>{intl.formatMessage(messages.createGame)}</h1>
+        <h1>{intl.formatMessage(globalMessages.createNewGame)}</h1>
         <Formik
           initialValues={{
             // type: GAME_DEFAULT_TYPE,
@@ -143,10 +142,7 @@ export default function Page() {
 
             <br />
 
-            <SubmitFormButton
-              isSubmitting={isSubmitting}
-              label={intl.formatMessage(messages.createGameSubmitButtonLabel)}
-            />
+            <SubmitFormButton isSubmitting={isSubmitting} label={intl.formatMessage(globalMessages.create)} />
           </Form>
         </Formik>
       </main>

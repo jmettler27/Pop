@@ -13,13 +13,7 @@ import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 import { stringSchema } from '@/frontend/utils/forms/forms';
 
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-
-const messages = defineMessages('frontend.forms.submitQuestion.reordering', {
-  numItemsAllowed: 'Number of proposals allowed',
-  proposal: 'Proposal',
-  explanation: 'Explanation',
-});
+import globalMessages from '@/i18n/globalMessages';
 
 import { MyTextInput, StyledErrorMessage } from '@/frontend/components/forms/StyledFormComponents';
 import { Wizard, WizardStep } from '@/frontend/components/forms/MultiStepComponents';
@@ -198,7 +192,7 @@ function EnterItemsStep({ onSubmit, validationSchema }) {
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
       <p>
-        {intl.formatMessage(messages.numItemsAllowed)}: {ReorderingQuestion.MIN_NUM_ITEMS}-
+        {intl.formatMessage(globalMessages.numProposalsAllowed)}: {ReorderingQuestion.MIN_NUM_ITEMS}-
         {ReorderingQuestion.MAX_NUM_ITEMS}.
       </p>
 
@@ -217,7 +211,7 @@ function EnterItemsStep({ onSubmit, validationSchema }) {
                   </IconButton>
 
                   <MyTextInput
-                    label={`${intl.formatMessage(messages.proposal)} #${idx + 1}`}
+                    label={`${intl.formatMessage(globalMessages.proposal)} #${idx + 1}`}
                     name={`items.${idx}.title`}
                     type="text"
                     placeholder={exampleItems[idx % exampleItems.length].title}
@@ -228,7 +222,7 @@ function EnterItemsStep({ onSubmit, validationSchema }) {
                   <TitleError index={idx} />
 
                   <MyTextInput
-                    label={`${intl.formatMessage(messages.explanation)} #${idx + 1}`}
+                    label={`${intl.formatMessage(globalMessages.explanation)} #${idx + 1}`}
                     name={`items.${idx}.explanation`}
                     type="text"
                     placeholder={exampleItems[idx % exampleItems.length].explanation}

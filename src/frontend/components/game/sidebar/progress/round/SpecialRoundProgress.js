@@ -2,13 +2,13 @@ import { topicToEmoji } from '@/backend/models/Topic';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { ParticipantRole } from '@/backend/models/users/Participant';
 import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
+import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.sidebar.progress.SpecialRoundProgress', {
   theme: 'Theme',
-  level: 'Level',
 });
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
@@ -339,7 +339,7 @@ function SectionSummary({ themeId, sectionId, sectionOrder, showComplete, isCurr
     <Typography className={clsx(isCurrent && 'text-orange-300')}>
       <span className="text-lg">
         <strong>
-          {intl.formatMessage(messages.level)} {sectionOrder + 1}
+          {intl.formatMessage(globalMessages.level)} {sectionOrder + 1}
         </strong>
         : {section.title && `${showComplete || isCurrent ? section.title : '???'}`}
       </span>

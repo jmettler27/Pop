@@ -2,6 +2,7 @@ import { RoundType } from '@/backend/models/rounds/RoundType';
 import { GameMatchingQuestion, MatchingQuestion } from '@/backend/models/questions/Matching';
 import { NaguiQuestion } from '@/backend/models/questions/Nagui';
 import { OddOneOutQuestion } from '@/backend/models/questions/OddOneOut';
+import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
@@ -20,9 +21,6 @@ const messages = defineMessages('frontend.game.round.RoundRules', {
   thinkingTime: '⏳ You have <u><b>{seconds} seconds</b></u> to answer, otherwise your attempt will be invalidated!',
   maxTries: '⚠️ You have <b>{maxTries} attempts per question</b>.',
   partialCredit: '😈 You can earn points <b>even if you do not know all the elements!</b>',
-  turnOrder: 'Turn order = {order}.',
-  turnOrderRanking: 'reverse ranking from round {roundNumber}',
-  turnOrderRandom: 'random order',
   oddOneOutInstruction: '🖱️ Each team takes turns and <b>clicks on a proposal from the list</b> it considers correct.',
   oddOneOutCorrect: 'If the proposal is <correct>correct</correct>, we move to the next team.',
   oddOneOutIncorrect:
@@ -106,9 +104,9 @@ function TurnOrderRule({ order }) {
   const { formatMessage } = useIntl();
   const orderText =
     order > 0
-      ? formatMessage(messages.turnOrderRanking, { roundNumber: order })
-      : formatMessage(messages.turnOrderRandom);
-  return <RuleP>{formatMessage(messages.turnOrder, { order: orderText })}</RuleP>;
+      ? formatMessage(globalMessages.reverseRankingFromRound, { roundNumber: order })
+      : formatMessage(globalMessages.randomOrder);
+  return <RuleP>{formatMessage(globalMessages.turnOrder, { order: orderText })}</RuleP>;
 }
 
 // ── Shared buzzer round rules (Emoji, Image, Blindtest, ProgressiveClues) ─────

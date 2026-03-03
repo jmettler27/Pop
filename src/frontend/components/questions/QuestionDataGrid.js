@@ -9,6 +9,7 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import UserRepository from '@/backend/repositories/user/UserRepository';
 import { memo, useCallback, useMemo, useState } from 'react';
@@ -18,13 +19,11 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { Avatar } from '@mui/material';
 
 const messages = defineMessages('frontend.questions.QuestionDataGrid', {
-  clue: 'Clue',
   title: 'Title',
   enumAnswers: 'Answers',
   enumThinking: 'Thinking (s)',
   oddOneOut: 'Odd one out',
   matchingColumns: 'Columns',
-  quote: 'Quote',
   quoteToGuess: 'To guess',
   numLabels: 'Labels',
   choices: 'Choices',
@@ -84,7 +83,7 @@ const emojiQuestionRow = (question) => {
 const emojiQuestionColumns = (intl) => [
   { field: 'title', headerName: 'Question', width: 225 },
   { field: 'answer', headerName: ANSWER_TEXT[intl.locale] ?? ANSWER_TEXT['en'], width: 225 },
-  { field: 'clue', headerName: intl.formatMessage(messages.clue), width: 200 },
+  { field: 'clue', headerName: intl.formatMessage(globalMessages.clue), width: 200 },
 ];
 
 // BLINDTEST
@@ -186,7 +185,7 @@ const quoteQuestionRow = (question) => {
 const quoteQuestionColumns = (intl) => [
   { field: 'source', headerName: QuoteSourceElement.elementToTitle(), width: 200 },
   { field: 'author', headerName: QuoteAuthorElement.elementToTitle(), width: 200 },
-  { field: 'quote', headerName: intl.formatMessage(messages.quote), width: 500 },
+  { field: 'quote', headerName: intl.formatMessage(globalMessages.quote), width: 500 },
   { field: 'toGuess', headerName: intl.formatMessage(messages.quoteToGuess), width: 100 },
 ];
 

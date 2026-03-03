@@ -2,6 +2,7 @@
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 
 import {
   QuestionType,
@@ -19,7 +20,6 @@ import React from 'react';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 const messages = defineMessages('app.submit', {
-  createNewQuestion: 'Create a new question',
   chooseQuestionType: 'Choose a question type to get started',
 });
 
@@ -34,7 +34,7 @@ export default function Page() {
     <div className="max-w-7xl mx-auto">
       <div className="text-center py-4 md:py-6 px-4">
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 drop-shadow-lg">
-          🆕 {intl.formatMessage(messages.createNewQuestion)}
+          🆕 {intl.formatMessage(globalMessages.createNewQuestion)}
         </h1>
         <p className="text-gray-300 text-xs sm:text-sm md:text-base">
           {intl.formatMessage(messages.chooseQuestionType)}
@@ -71,7 +71,7 @@ function SubmitQuestionCard({ questionType }) {
         <CardFooter className="pt-4 relative z-10">
           <div className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-600 to-blue-700 group-hover:from-blue-500 group-hover:to-blue-600 text-white font-semibold rounded-lg transition-all duration-300 group-hover:shadow-lg group-hover:shadow-blue-500/50 text-center text-xs md:text-sm">
             <AddCircleIcon sx={{ fontSize: '1.2em' }} />
-            {intl.formatMessage(messages.createNewQuestion)}
+            {intl.formatMessage(globalMessages.createNewQuestion)}
           </div>
         </CardFooter>
       </Card>

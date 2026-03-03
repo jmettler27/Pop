@@ -7,6 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 
 import Backdrop from '@mui/material/Backdrop';
 import SpeedDial from '@mui/material/SpeedDial';
@@ -23,7 +24,6 @@ import EditIcon from '@mui/icons-material/Edit';
 const messages = defineMessages('frontend.game.speedDial.OrganizerSpeedDial', {
   share: 'Share',
   soundboard: 'Soundboard',
-  home: 'Home',
   resetGame: 'Reset game',
   resumeEditing: 'Resume editing',
 });
@@ -44,7 +44,7 @@ export default function OrganizerSpeedDial() {
   const actions = [
     { icon: <ShareIcon />, name: 'share', label: intl.formatMessage(messages.share) },
     { icon: <LibraryMusicIcon />, name: 'soundboard', label: intl.formatMessage(messages.soundboard) },
-    { icon: <HomeIcon />, name: 'home', label: intl.formatMessage(messages.home) },
+    { icon: <HomeIcon />, name: 'home', label: intl.formatMessage(globalMessages.home) },
     { icon: <RestartAltIcon />, name: 'resetGame', label: intl.formatMessage(messages.resetGame) },
     { icon: <EditIcon />, name: 'resumeEditing', label: intl.formatMessage(messages.resumeEditing) },
   ];

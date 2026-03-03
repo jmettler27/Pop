@@ -7,9 +7,9 @@ import {
 import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 
 import { isEmpty } from '@/backend/utils/arrays';
+import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
@@ -29,11 +29,6 @@ import { Button, ButtonGroup, CircularProgress } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-
-const messages = defineMessages('frontend.game.bottom.QuoteOrganizerController', {
-  validateAll: 'Validate all',
-  cancel: 'Cancel',
-});
 
 export default function QuoteOrganizerController({ baseQuestion, questionPlayers }) {
   const { id: gameId } = useParams();
@@ -126,7 +121,7 @@ function ValidateAllQuoteElementsButton({ buzzed, gameQuestion }) {
       onClick={handleValidateAll}
       disabled={atLeastOneRevealed || buzzedIsEmpty || isValidating}
     >
-      {intl.formatMessage(messages.validateAll)}
+      {intl.formatMessage(globalMessages.validateAll)}
     </Button>
   );
 }
@@ -149,7 +144,7 @@ function CancelQuoteElementButton({ buzzed }) {
         onClick={handleCancelQuote}
         disabled={buzzedIsEmpty || isCanceling}
       >
-        {intl.formatMessage(messages.cancel)}
+        {intl.formatMessage(globalMessages.cancel)}
       </Button>
     </>
   );

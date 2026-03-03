@@ -23,6 +23,7 @@ import { Form, Formik } from 'formik';
 
 import * as Yup from 'yup';
 
+import globalMessages from '@/i18n/globalMessages';
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 
@@ -30,7 +31,6 @@ const messages = defineMessages('frontend.gameEditor.AddNewRound', {
   addRound: 'Add round',
   createNewRound: 'Create new round',
   roundTitle: 'Title of the round',
-  create: 'Create',
 });
 
 export function AddNewRoundButton({ disabled }) {
@@ -130,7 +130,7 @@ function CreateRoundForm({ onClose }) {
 
         {/* <MyNumberInput label={intl.formatMessage(messages.rewardsPerQuestion)} name='rewardsPerQuestion' min={1} max={10} /> */}
 
-        <SubmitFormButton isSubmitting={isSubmitting} label={intl.formatMessage(messages.create)} />
+        <SubmitFormButton isSubmitting={isSubmitting} label={intl.formatMessage(globalMessages.create)} />
       </Form>
     </Formik>
   );

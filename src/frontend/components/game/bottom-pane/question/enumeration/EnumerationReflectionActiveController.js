@@ -170,7 +170,7 @@ function AddBetForm({ baseQuestion, status }) {
             onClick={handleBetValidate}
             disabled={isSubmitting}
           >
-            {intl.formatMessage(globalMessages.dialogValidate)}
+            {intl.formatMessage(globalMessages.submit)}
           </Button>
 
           <Button

@@ -4,13 +4,13 @@ import { OddOneOutQuestion } from '@/backend/models/questions/OddOneOut';
 import { QuoteAuthorElement, QuotePartElement, QuoteSourceElement } from '@/backend/models/questions/Quote';
 
 import { RoundType } from '@/backend/models/rounds/RoundType';
+import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 import fmt, { keyChunks } from '@/utils/fmt';
 
 const messages = defineMessages('frontend.game.round.RoundDescription', {
-  basic: '🔀 Several direct questions on different topics, in a <b>random order.</b>',
   blindtest1: '👂 Listen to the music ({songEmoji}) or the sound ({soundEmoji}), and answer the question.',
   blindtest2: '🋺 Controls let you <b>adjust the volume</b> and <b>skip forward or backward in the timeline</b>.',
   emoji1: '🧐 Find the work or place/character/object/... hidden behind each combination of emojis.',
@@ -19,13 +19,10 @@ const messages = defineMessages('frontend.game.round.RoundDescription', {
   image: '🧐 Find the work or place/character/object/... hidden behind each image.',
   labelling1: 'Each question consists of an image with numbered markers.',
   labelling2: '🫳 Find the labels corresponding to the markers.',
-  labelling3: '👁️ If you get stuck, the organizers can <b>reveal an element</b>.',
   matching1:
     '🔀 A grid organized into <b>{min} to {max}</b> columns of proposals shown in random order, with links between them.',
   matching2: '🔗 The goal is to find the correct associations.',
   mixed: '🔀 Several questions of <b>different types</b>.',
-  mcq: '🔀 Several direct questions on different topics, in a <b>random order.</b>',
-  nagui: '🔀 Several direct questions on different topics, in a <b>random order.</b>',
   oddOneOut1: '🔀 A list of <b>{count} proposals</b> shown in a <b>random order</b> for each participant.',
   oddOneOut2: '<correct>All true</correct>, <incorrect>except one!</incorrect>',
   oddOneOut3: 'If you know the odd one out, <b>keep it secret</b>... 🤫',
@@ -36,7 +33,6 @@ const messages = defineMessages('frontend.game.round.RoundDescription', {
   quoteAuthor: 'The <b>person</b> who said it',
   quoteSource: 'The <b>work</b> it came from',
   quoteHidden: '🫳 <b>One, two or three</b> of these elements are <b>hidden</b>: find them.',
-  quoteReveal: '👁️ If you get stuck, the organizers can <b>reveal an element</b>.',
   special: '<b>25 questions</b> organized into <b>5 levels</b>.',
 });
 
@@ -86,7 +82,7 @@ export function RoundDescription({ round }) {
 
 function BasicRoundDescription() {
   const { formatMessage } = useIntl();
-  return <RuleP>{fmt(formatMessage, messages.basic, richTags)}</RuleP>;
+  return <RuleP>{fmt(formatMessage, globalMessages.directQuestionsRandomOrder, richTags)}</RuleP>;
 }
 
 function BlindtestRoundDescription() {
@@ -133,7 +129,7 @@ function LabellingRoundDescription() {
       <br />
       <RuleP>{formatMessage(messages.labelling2)}</RuleP>
       <br />
-      <RuleP>{fmt(formatMessage, messages.labelling3, richTags)}</RuleP>
+      <RuleP>{fmt(formatMessage, globalMessages.revealElementIfStuck, richTags)}</RuleP>
     </>
   );
 }
@@ -157,7 +153,7 @@ function MatchingRoundDescription() {
 
 function MCQRoundDescription() {
   const { formatMessage } = useIntl();
-  return <RuleP>{fmt(formatMessage, messages.mcq, richTags)}</RuleP>;
+  return <RuleP>{fmt(formatMessage, globalMessages.directQuestionsRandomOrder, richTags)}</RuleP>;
 }
 
 function MixedRoundDescription() {
@@ -167,7 +163,7 @@ function MixedRoundDescription() {
 
 function NaguiRoundDescription() {
   const { formatMessage } = useIntl();
-  return <RuleP>{fmt(formatMessage, messages.nagui, richTags)}</RuleP>;
+  return <RuleP>{fmt(formatMessage, globalMessages.directQuestionsRandomOrder, richTags)}</RuleP>;
 }
 
 function OddOneOutRoundDescription() {
@@ -213,7 +209,7 @@ function QuoteRoundDescription() {
       <br />
       <RuleP>{fmt(formatMessage, messages.quoteHidden, richTags)}</RuleP>
       <br />
-      <RuleP>{fmt(formatMessage, messages.quoteReveal, richTags)}</RuleP>
+      <RuleP>{fmt(formatMessage, globalMessages.revealElementIfStuck, richTags)}</RuleP>
     </>
   );
 }

@@ -7,6 +7,8 @@ import { doc } from 'firebase/firestore';
 import { useDocument } from 'react-firebase-hooks/firestore';
 
 import { useGameContext, useRoleContext, useUserContext } from '@/frontend/contexts';
+import globalMessages from '@/i18n/globalMessages';
+import { useIntl } from 'react-intl';
 
 import { GameChooserHelperText } from '@/frontend/components/game/GameChooserTeamAnnouncement';
 
@@ -92,7 +94,7 @@ function SpecialQuestionActiveOrganizerBottomPane({ gameTheme }) {
         }}
         disabled={isHandling}
       >
-        {intl.formatMessage(messages.validate)}
+        {intl.formatMessage(globalMessages.validate)}
       </Button>
 
       {/* Invalidate the player's answer */}
@@ -104,7 +106,7 @@ function SpecialQuestionActiveOrganizerBottomPane({ gameTheme }) {
         }}
         disabled={isHandling}
       >
-        {intl.formatMessage(messages.invalidate)}
+        {intl.formatMessage(globalMessages.invalidate)}
       </Button>
     </ButtonGroup>
   );

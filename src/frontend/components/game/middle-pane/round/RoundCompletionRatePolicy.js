@@ -1,6 +1,7 @@
 import { numberToKeycapEmoji } from '@/backend/utils/emojis';
 
 import { RoundType } from '@/backend/models/rounds/RoundType';
+import globalMessages from '@/i18n/globalMessages';
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 import fmt, { keyChunks } from '@/utils/fmt';
@@ -15,9 +16,6 @@ const messages = defineMessages('frontend.game.round.RoundCompletionRatePolicy',
   matchingPenalty: '✨ Drawing an incorrect link = <incorrect>{penalty} point(s) on the global score</incorrect>',
   naguiTitle: '✨ A <b>variable number of points</b> per correct answer',
   specialTitle: '😨 Your <b>accumulated points</b> so far = your <b>number of mistake allowances</b>',
-  specialOrder: 'Turn order = {order}.',
-  specialOrderRandom: 'random order',
-  specialOrderRanking: 'reverse ranking from round {roundNumber}',
 });
 
 const b = (chunks) => <strong>{keyChunks(chunks)}</strong>;
@@ -138,13 +136,13 @@ export function SpecialRoundCompletionRatePolicy({ round }) {
   const { formatMessage } = useIntl();
   const orderText =
     round.order > 0
-      ? formatMessage(messages.specialOrderRanking, { roundNumber: round.order })
-      : formatMessage(messages.specialOrderRandom);
+      ? formatMessage(globalMessages.reverseRankingFromRound, { roundNumber: round.order })
+      : formatMessage(globalMessages.randomOrder);
   return (
     <div className="flex flex-col items-center justify-start space-y-4">
       <h1 className="2xl:text-3xl text-center">{fmt(formatMessage, messages.specialTitle, richTags)}</h1>
       <div className="flex flex-col items-center justify-start">
-        <p className="2xl:text-2xl text-center">{formatMessage(messages.specialOrder, { order: orderText })}</p>
+        <p className="2xl:text-2xl text-center">{formatMessage(globalMessages.turnOrder, { order: orderText })}</p>
       </div>
     </div>
   );

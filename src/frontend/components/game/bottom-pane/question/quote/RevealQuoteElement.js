@@ -12,16 +12,13 @@ import { isEmpty } from '@/backend/utils/arrays';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { useGameContext } from '@/frontend/contexts';
+import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.RevealQuoteElement', {
-  reveal: 'Reveal',
   listHeader: 'Reveal an element of the quote',
-  dialogContentText: 'Are you sure you want to reveal',
-  dialogYes: 'Yes',
-  dialogNo: 'No',
 });
 
 import { useState } from 'react';
@@ -76,7 +73,7 @@ export default function RevealQuoteElementButton({ buzzed, baseQuestion, gameQue
   return (
     <>
       <Button color="info" startIcon={<VisibilityIcon />} onClick={handleRevealButtonClick} disabled={!buzzedIsEmpty}>
-        {intl.formatMessage(messages.reveal)}
+        {intl.formatMessage(globalMessages.reveal)}
       </Button>
 
       <Menu
@@ -219,7 +216,7 @@ function RevealQuoteElementDialog({ baseQuestion, quoteElem, quoteParts, quotePa
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {intl.formatMessage(messages.dialogContentText)} <strong>&quot;{elementToRevealText()}&quot;</strong>?
+          {intl.formatMessage(globalMessages.areYouSureReveal)} <strong>&quot;{elementToRevealText()}&quot;</strong>?
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -230,11 +227,11 @@ function RevealQuoteElementDialog({ baseQuestion, quoteElem, quoteParts, quotePa
           onClick={handleRevealQuoteElement}
           disabled={isRevealing}
         >
-          {intl.formatMessage(messages.dialogYes)}
+          {intl.formatMessage(globalMessages.yes)}
         </Button>
 
         <Button variant="outlined" color="error" startIcon={<CancelIcon />} onClick={onDialogClose} autoFocus>
-          {intl.formatMessage(messages.dialogNo)}
+          {intl.formatMessage(globalMessages.no)}
         </Button>
       </DialogActions>
     </Dialog>

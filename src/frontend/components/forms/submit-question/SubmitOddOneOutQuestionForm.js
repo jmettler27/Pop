@@ -14,12 +14,10 @@ import { stringSchema } from '@/frontend/utils/forms/forms';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 
 const messages = defineMessages('frontend.forms.submitQuestion.oddOneOut', {
-  numItemsAllowed: 'Number of proposals allowed',
   enterItems: 'All the proposals must be correct, except for one (the odd one out).',
-  proposal: 'Proposal',
-  explanation: 'Explanation',
   answerIdxLabel: 'What proposal is the odd one?',
 });
 
@@ -220,7 +218,7 @@ function EnterItemsStep({ onSubmit, validationSchema }) {
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
       <p>
-        {intl.formatMessage(messages.numItemsAllowed)}: {OddOneOutQuestion.MIN_NUM_ITEMS}-
+        {intl.formatMessage(globalMessages.numProposalsAllowed)}: {OddOneOutQuestion.MIN_NUM_ITEMS}-
         {OddOneOutQuestion.MAX_NUM_ITEMS}.
       </p>
 
@@ -241,7 +239,7 @@ function EnterItemsStep({ onSubmit, validationSchema }) {
                   </IconButton>
 
                   <MyTextInput
-                    label={`${intl.formatMessage(messages.proposal)} #${idx + 1}`}
+                    label={`${intl.formatMessage(globalMessages.proposal)} #${idx + 1}`}
                     name={`items.${idx}.title`}
                     type="text"
                     placeholder={exampleItems[idx % exampleItems.length].title}
@@ -252,7 +250,7 @@ function EnterItemsStep({ onSubmit, validationSchema }) {
                   <TitleError index={idx} />
 
                   <MyTextInput
-                    label={`${intl.formatMessage(messages.explanation)} #${idx + 1}`}
+                    label={`${intl.formatMessage(globalMessages.explanation)} #${idx + 1}`}
                     name={`items.${idx}.explanation`}
                     type="text"
                     placeholder={exampleItems[idx % exampleItems.length].explanation}

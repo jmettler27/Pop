@@ -1,16 +1,12 @@
 import { clearBuzzer } from '@/backend/services/question/buzzer/actions';
 import { useGameContext } from '@/frontend/contexts';
+import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { Button } from '@mui/material';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
-
-const messages = defineMessages('frontend.game.bottom.ClearBuzzerButton', {
-  clearBuzzer: 'Clear buzzer',
-});
 
 export default function ClearBuzzerButton({ questionType }) {
   const intl = useIntl();
@@ -22,7 +18,7 @@ export default function ClearBuzzerButton({ questionType }) {
 
   return (
     <Button variant="outlined" color="warning" startIcon={<ClearAllIcon />} onClick={handleClick} disabled={isClearing}>
-      {intl.formatMessage(messages.clearBuzzer)}
+      {intl.formatMessage(globalMessages.clearBuzzer)}
     </Button>
   );
 }

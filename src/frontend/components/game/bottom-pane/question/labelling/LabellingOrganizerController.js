@@ -10,8 +10,8 @@ import {
 import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
 
 import { useGameContext } from '@/frontend/contexts';
+import globalMessages from '@/i18n/globalMessages';
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 import EndQuestionButton from '@/frontend/components/game/bottom-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/bottom-pane/question/ResetQuestionButton';
@@ -23,11 +23,6 @@ import { Button, ButtonGroup, CircularProgress } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-
-const messages = defineMessages('frontend.game.bottom.LabellingOrganizerController', {
-  validateAll: 'Validate all',
-  cancel: 'Cancel',
-});
 
 export default function LabellingOrganizerController({ baseQuestion, questionPlayers }) {
   const { id: gameId } = useParams();
@@ -113,7 +108,7 @@ function ValidateAllLabelsButton({ buzzed, gameQuestion }) {
       onClick={handleValidateAll}
       disabled={atLeastOneRevealed || buzzedIsEmpty || isValidating}
     >
-      {intl.formatMessage(messages.validateAll)}
+      {intl.formatMessage(globalMessages.validateAll)}
     </Button>
   );
 }
@@ -136,7 +131,7 @@ function CancelLabelButton({ buzzed }) {
         onClick={handleCancelLabel}
         disabled={buzzedIsEmpty || isCanceling}
       >
-        {intl.formatMessage(messages.cancel)}
+        {intl.formatMessage(globalMessages.cancel)}
       </Button>
     </>
   );

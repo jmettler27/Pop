@@ -2,6 +2,7 @@
 
 import { useLocale } from '@/app/LocaleProvider';
 import { LOCALES, LOCALE_TO_EMOJI, LOCALE_TO_TITLE } from '@/frontend/utils/locales';
+import globalMessages from '@/i18n/globalMessages';
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 import LanguageIcon from '@mui/icons-material/Language';
@@ -9,7 +10,6 @@ import HomeIcon from '@mui/icons-material/Home';
 import Link from 'next/link';
 
 const messages = defineMessages('frontend.components.AppFooter', {
-  languageLabel: 'Language',
   selectLanguage: 'Select language',
   returnHome: 'Return home',
 });
@@ -31,7 +31,9 @@ export default function AppFooter() {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
             <LanguageIcon sx={{ fontSize: '1.1rem' }} className="text-gray-400" />
-            <span className="text-gray-400 text-xs hidden sm:inline">{intl.formatMessage(messages.languageLabel)}</span>
+            <span className="text-gray-400 text-xs hidden sm:inline">
+              {intl.formatMessage(globalMessages.language)}
+            </span>
           </div>
 
           <div className="flex items-center gap-1">

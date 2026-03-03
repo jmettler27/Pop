@@ -13,6 +13,7 @@ import ClearBuzzerButton from '@/frontend/components/game/bottom-pane/question/b
 import BuzzerHeadPlayer from '@/frontend/components/game/bottom-pane/question/buzzer/BuzzerHeadPlayer';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
@@ -27,8 +28,6 @@ import { useParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
 const messages = defineMessages('frontend.game.bottom.BuzzerOrganizerController', {
-  validate: 'Validate',
-  invalidate: 'Invalidate',
   nextClue: 'Next clue',
 });
 
@@ -96,12 +95,12 @@ function BuzzerOrganizerAnswerController({ buzzed, questionType }) {
       >
         {/* Validate the player's answer */}
         <Button color="success" startIcon={<CheckCircleIcon />} onClick={handleValidate} disabled={isValidating}>
-          {intl.formatMessage(messages.validate)}
+          {intl.formatMessage(globalMessages.validate)}
         </Button>
 
         {/* Invalidate the player's answer */}
         <Button color="error" startIcon={<CancelIcon />} onClick={handleInvalidate} disabled={isInvalidating}>
-          {intl.formatMessage(messages.invalidate)}
+          {intl.formatMessage(globalMessages.invalidate)}
         </Button>
       </ButtonGroup>
     </>

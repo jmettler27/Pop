@@ -1,11 +1,11 @@
 import { handleHideAnswer } from '@/backend/services/question/nagui/actions';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import globalMessages from '@/i18n/globalMessages';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
 
 import { useGameContext } from '@/frontend/contexts';
 
@@ -17,11 +17,6 @@ import NaguiPlayerOptionHelperText from '@/frontend/components/game/bottom-pane/
 import { Button, ButtonGroup } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
-
-const messages = defineMessages('frontend.game.bottom.NaguiOrganizerController', {
-  validate: 'Validate',
-  invalidate: 'Invalidate',
-});
 
 export default function NaguiOrganizerController({ gameQuestion }) {
   return (
@@ -70,12 +65,12 @@ function NaguiOrganizerHideAnswerController({ gameQuestion }) {
       <ButtonGroup disableElevation variant="contained" size="large" color="primary">
         {/* Validate the player's answer */}
         <Button color="success" startIcon={<CheckCircleIcon />} onClick={() => handleClick(true)} disabled={isHandling}>
-          {intl.formatMessage(messages.validate)}
+          {intl.formatMessage(globalMessages.validate)}
         </Button>
 
         {/* Invalidate the player's answer */}
         <Button color="error" startIcon={<CancelIcon />} onClick={() => handleClick(false)} disabled={isHandling}>
-          {intl.formatMessage(messages.invalidate)}
+          {intl.formatMessage(globalMessages.invalidate)}
         </Button>
       </ButtonGroup>
     </>

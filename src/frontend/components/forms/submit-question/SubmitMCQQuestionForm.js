@@ -14,10 +14,10 @@ import { stringSchema } from '@/frontend/utils/forms/forms';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 
 const messages = defineMessages('frontend.forms.submitQuestion.mcq', {
   addChoice: 'Add choice',
-  answerIdxLabel: 'What proposal is the correct one ?',
 });
 
 import { useRouter } from 'next/navigation';
@@ -207,7 +207,7 @@ function EnterChoicesStep({ onSubmit, validationSchema }) {
       <ChoiceArrayErrors />
 
       <MySelect
-        label={intl.formatMessage(messages.answerIdxLabel)}
+        label={intl.formatMessage(globalMessages.correctProposalQuestion)}
         name="answerIdx"
         validationSchema={validationSchema}
         onChange={(e) => formik.setFieldValue('answerIdx', parseInt(e.target.value, 10))}

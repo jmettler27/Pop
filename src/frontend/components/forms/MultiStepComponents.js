@@ -15,7 +15,6 @@ const messages = defineMessages('frontend.forms.MultiStepComponents', {
   step: 'Step',
   previousStep: 'Previous step',
   nextStep: 'Next step',
-  submit: 'Submit',
 });
 
 // Wizard is a single Formik instance whose children are each page of the

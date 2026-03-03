@@ -20,12 +20,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 
 const messages = defineMessages('frontend.home.GamesUnderConstruction', {
   title: 'Games under construction',
   empty: 'No games under construction',
   editGame: 'Edit game',
-  organizers: 'Organizers',
 });
 
 export default function GamesUnderConstruction() {
@@ -126,7 +126,7 @@ export function GameUnderConstructionCard({ game }) {
           <div className="flex items-center gap-1">
             <SupervisorAccountIcon sx={{ fontSize: '0.875rem', color: 'rgb(251, 191, 36)' }} />
             <Typography variant="caption" className="text-xs font-medium text-yellow-300">
-              {intl.formatMessage(messages.organizers)}
+              {intl.formatMessage(globalMessages.organizers)}
             </Typography>
           </div>
           <div className="flex justify-start w-full">
