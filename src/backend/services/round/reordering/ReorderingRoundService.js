@@ -50,12 +50,6 @@ export default class ReorderingRoundService extends RoundService {
       ...(maxPoints !== null && { maxPoints }),
     });
 
-    // // If the round requires an order of chooser teams (e.g. OOO, MCQ) and it is the first round, find a random order for the chooser teams
-    // if (chooser.chooserOrder.length === 0 || chooser.chooserIdx === null) {
-    //   const teamIds = await this.teamRepo.getShuffledTeamIds();
-    //   await this.chooserRepo.updateChooserOrderTransaction(transaction, teamIds);
-    // }
-
     await this.chooserRepo.resetChoosersTransaction(transaction);
 
     await this.timerRepo.updateTimerTransaction(transaction, {
