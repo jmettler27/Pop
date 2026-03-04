@@ -20,7 +20,6 @@ export default class BuzzerRoundService extends RoundService {
     const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
 
-    // const { type: roundType, questions: questionIds, rewardsPerQuestion, rewardsForBonus, rewardsPerElement } = round
     const roundScorePolicy = game.roundScorePolicy;
     const currentQuestion = game.currentQuestion;
     const currentRound = game.currentRound;
