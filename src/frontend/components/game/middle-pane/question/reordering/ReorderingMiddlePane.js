@@ -41,7 +41,9 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import SwapVertIcon from '@mui/icons-material/SwapVert';
 
 import { useGameContext, useTeamContext, useUserContext, useRoleContext } from '@/frontend/contexts';
 import { GameStatus } from '@/backend/models/games/GameStatus';
@@ -67,6 +69,8 @@ const messages = defineMessages('frontend.game.middle.ReorderingMiddlePane', {
   confirmDialogMessage: 'Please review your ordering before submitting:',
   teammateSubmitted: 'Your teammate has already submitted!',
   youSubmitted: 'Your ordering has been submitted!',
+  yourScore: 'Your score: {score}/{maxScore}',
+  youPlaced: 'You placed this #{position}',
 });
 
 export default function ReorderingMiddlePane({ baseQuestion }) {
@@ -102,7 +106,12 @@ export default function ReorderingMiddlePane({ baseQuestion }) {
       </div>
       <div className="h-[85%] w-full flex flex-col items-center justify-center">
         {(game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER) && (
-          <ReorderingItemsDisplayEnd baseQuestion={baseQuestion} />
+          <ReorderingItemsDisplayEnd
+            baseQuestion={baseQuestion}
+            gameQuestion={gameQuestion}
+            myTeam={myTeam}
+            myRole={myRole}
+          />
         )}
         {game.status === GameStatus.QUESTION_ACTIVE && myRole === ParticipantRole.PLAYER && (
           <ReorderingItemsEditable
@@ -351,7 +360,8 @@ function ReorderingItemsSpectator({ baseQuestion, randomMapping }) {
   );
 }
 
-function ReorderingItemsDisplayEnd({ baseQuestion }) {
+function ReorderingItemsDisplayEnd({ baseQuestion, gameQuestion, myTeam, myRole }) {
+  const intl = useIntl();
   const [expandedIdx, setExpandedIdx] = useState(false);
   const displayOrder = baseQuestion.items.map((_, i) => i);
 
@@ -359,34 +369,114 @@ function ReorderingItemsDisplayEnd({ baseQuestion }) {
     setExpandedIdx(expandedIdx === idx ? false : idx);
   };
 
+  // Get team's submission (if player)
+  const teamSubmission =
+    myRole === ParticipantRole.PLAYER ? gameQuestion?.orderings?.find((o) => o.teamId === myTeam) : null;
+  const hasSubmitted = !!teamSubmission;
+
+  // Build a map: correctPosition -> positionTeamPlacedIt
+  const teamPlacementMap = useMemo(() => {
+    if (!teamSubmission) return {};
+    const map = {};
+    teamSubmission.ordering.forEach((itemIdx, positionPlaced) => {
+      map[itemIdx] = positionPlaced;
+    });
+    return map;
+  }, [teamSubmission]);
+
   return (
-    <List className="rounded-lg max-h-[90%] w-1/2 overflow-y-auto mb-3 bg-white dark:bg-slate-900">
-      {displayOrder.map((idx, position) => (
-        <ReorderingItemDisplayEnd
-          key={idx}
-          item={baseQuestion.items[idx]}
-          displayOrder={position}
-          expanded={expandedIdx === idx}
-          onAccordionChange={() => handleAccordionChange(idx)}
-          isLast={position === displayOrder.length - 1}
-        />
-      ))}
-    </List>
+    <div className="flex flex-col items-center w-1/2 max-h-[90%]">
+      <List className="rounded-lg w-full overflow-y-auto mb-3 bg-white dark:bg-slate-900">
+        {displayOrder.map((idx, position) => (
+          <ReorderingItemDisplayEnd
+            key={idx}
+            item={baseQuestion.items[idx]}
+            displayOrder={position}
+            expanded={expandedIdx === idx}
+            onAccordionChange={() => handleAccordionChange(idx)}
+            isLast={position === displayOrder.length - 1}
+            hasSubmitted={hasSubmitted}
+            teamPlacedAt={teamPlacementMap[idx]}
+            isCorrect={teamPlacementMap[idx] === position}
+          />
+        ))}
+      </List>
+
+      {hasSubmitted && (
+        <div className="flex items-center justify-center mt-2 mb-3">
+          <Typography
+            variant="h5"
+            className="font-bold"
+            sx={{
+              color:
+                teamSubmission.score === baseQuestion.items.length
+                  ? 'success.main'
+                  : teamSubmission.score >= baseQuestion.items.length / 2
+                    ? 'warning.main'
+                    : 'error.main',
+            }}
+          >
+            {intl.formatMessage(messages.yourScore, {
+              score: teamSubmission.score,
+              maxScore: baseQuestion.items.length,
+            })}
+          </Typography>
+        </div>
+      )}
+    </div>
   );
 }
 
-function ReorderingItemDisplayEnd({ item, displayOrder, expanded, onAccordionChange, isLast }) {
+function ReorderingItemDisplayEnd({
+  item,
+  displayOrder,
+  expanded,
+  onAccordionChange,
+  isLast,
+  hasSubmitted,
+  teamPlacedAt,
+  isCorrect,
+}) {
+  const intl = useIntl();
+
   return (
-    <Accordion className="flex-grow" expanded={expanded} onChange={onAccordionChange} disabled={false} disableGutters>
+    <Accordion
+      className="flex-grow"
+      expanded={expanded}
+      onChange={onAccordionChange}
+      disabled={false}
+      disableGutters
+      sx={{
+        ...(hasSubmitted && {
+          borderLeft: '4px solid',
+          borderLeftColor: isCorrect ? 'success.main' : 'error.main',
+          bgcolor: isCorrect ? 'rgba(46, 125, 50, 0.08)' : 'rgba(211, 47, 47, 0.08)',
+        }),
+      }}
+    >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <ListItemIcon>
-          <Typography variant="h6" className="ml-2 font-bold">
+        <ListItemIcon className="flex items-center">
+          {hasSubmitted &&
+            (isCorrect ? (
+              <CheckCircleIcon sx={{ color: 'success.main', mr: 1 }} />
+            ) : (
+              <CancelIcon sx={{ color: 'error.main', mr: 1 }} />
+            ))}
+          <Typography variant="h6" className="font-bold">
             {displayOrder + 1}.
           </Typography>
         </ListItemIcon>
-        <Typography sx={{ marginRight: '10px' }} variant="h6">
-          {item.title}
-        </Typography>
+        <div className="flex flex-col flex-grow">
+          <Typography sx={{ marginRight: '10px' }} variant="h6">
+            {item.title}
+          </Typography>
+          {hasSubmitted && !isCorrect && teamPlacedAt !== undefined && (
+            <div className="flex items-center text-sm text-red-500 dark:text-red-400 mt-1">
+              <SwapVertIcon fontSize="small" className="mr-1" />
+              <span>{intl.formatMessage(messages.youPlaced, { position: teamPlacedAt + 1 })}</span>
+            </div>
+          )}
+        </div>
       </AccordionSummary>
 
       <AccordionDetails>
