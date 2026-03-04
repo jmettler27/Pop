@@ -58,7 +58,6 @@ export default class GameReorderingQuestionService extends GameQuestionService {
         scores: newRoundScores,
         scoresProgress: newRoundProgress,
       });
-      return;
     } else {
       // Regular case: at least one ordering has been submitted, calculate scores as normal
       const players = await this.playerRepo.getAllPlayers();

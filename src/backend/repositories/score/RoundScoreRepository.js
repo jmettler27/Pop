@@ -19,6 +19,7 @@ export default class RoundScoreRepository extends FirebaseDocumentRepository {
       gameSortedTeams: [],
       rankingDiffs: {},
       roundSortedTeams: [],
+      roundCompletionRates: {},
       scores: {},
       scoresProgress: {},
     });
@@ -29,6 +30,7 @@ export default class RoundScoreRepository extends FirebaseDocumentRepository {
       scores: initTeamRoundScores,
       scoresProgress: {},
       teamsScoresSequences: {},
+      roundCompletionRates: {},
       roundSortedTeams: [],
       gameSortedTeams: [],
     });
@@ -39,6 +41,7 @@ export default class RoundScoreRepository extends FirebaseDocumentRepository {
       scores: initTeamRoundScores,
       scoresProgress: {},
       teamsScoresSequences: {},
+      roundCompletionRates: {},
       roundSortedTeams: [],
       gameSortedTeams: [],
     });
