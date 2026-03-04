@@ -127,20 +127,21 @@ function CompletionRatePolicyTeamRoundActiveScore({ teamId, game }) {
 
   console.log('Round.type', round.type);
   switch (round.type) {
-    case RoundType.MIXED:
-    case RoundType.PROGRESSIVE_CLUES:
-    case RoundType.IMAGE:
-    case RoundType.EMOJI:
-    case RoundType.BLINDTEST:
-    case RoundType.QUOTE:
-    case RoundType.LABELLING:
-    case RoundType.ENUMERATION:
-    case RoundType.MCQ:
-    case RoundType.NAGUI:
     case RoundType.BASIC:
+    case RoundType.BLINDTEST:
+    case RoundType.EMOJI:
+    case RoundType.ENUMERATION:
+    case RoundType.IMAGE:
+    case RoundType.LABELLING:
+    case RoundType.MCQ:
+    case RoundType.MIXED:
+    case RoundType.NAGUI:
+    case RoundType.PROGRESSIVE_CLUES:
+    case RoundType.QUOTE:
+    case RoundType.REORDERING:
       return <TeamRoundScore teamId={teamId} roundId={game.currentRound} />;
-    case RoundType.ODD_ONE_OUT:
     case RoundType.MATCHING:
+    case RoundType.ODD_ONE_OUT:
       return <TeamGameScore teamId={teamId} />;
     default:
       return <TeamGameScore teamId={teamId} />;

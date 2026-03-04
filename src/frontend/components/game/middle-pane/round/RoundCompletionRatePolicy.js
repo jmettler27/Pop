@@ -16,6 +16,7 @@ const messages = defineMessages('frontend.game.round.RoundCompletionRatePolicy',
   matchingPenalty: '✨ Drawing an incorrect link = <incorrect>{penalty} point(s) on the global score</incorrect>',
   naguiTitle: '✨ A <b>variable number of points</b> per correct answer',
   specialTitle: '😨 Your <b>accumulated points</b> so far = your <b>number of mistake allowances</b>',
+  pointsPerCorrectPosition: '✨ <correct>{points} point per item in correct position</correct>',
 });
 
 const b = (chunks) => <strong>{keyChunks(chunks)}</strong>;
@@ -54,6 +55,8 @@ function RoundCompletionRatePolicyTitle({ round }) {
       return <OddOneOutRoundCompletionRatePolicyTitle round={round} />;
     case RoundType.QUOTE:
       return <QuoteRoundCompletionRatePolicyTitle round={round} />;
+    case RoundType.REORDERING:
+      return <ReorderingRoundCompletionRatePolicyTitle round={round} />;
     default:
       return <></>;
   }
@@ -72,6 +75,7 @@ function RoundMaxNumPoints({ round }) {
     case RoundType.NAGUI:
     case RoundType.PROGRESSIVE_CLUES:
     case RoundType.QUOTE:
+    case RoundType.REORDERING:
       return (
         <h1 className="2xl:text-3xl text-center">
           {fmt(formatMessage, messages.maxPoints, { points: numberToKeycapEmoji(round.maxPoints), ...richTags })}
@@ -130,6 +134,15 @@ function MatchingRoundCompletionRatePolicyTitle({ round }) {
 function NaguiRoundCompletionRatePolicyTitle() {
   const { formatMessage } = useIntl();
   return <h1 className="2xl:text-3xl text-center">{fmt(formatMessage, messages.naguiTitle, richTags)}</h1>;
+}
+
+function ReorderingRoundCompletionRatePolicyTitle({ round }) {
+  const { formatMessage } = useIntl();
+  return (
+    <h1 className="2xl:text-3xl text-center">
+      {fmt(formatMessage, messages.pointsPerCorrectPosition, { points: round.rewardsPerElement, ...richTags })}
+    </h1>
+  );
 }
 
 export function SpecialRoundCompletionRatePolicy({ round }) {

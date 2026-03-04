@@ -3,13 +3,13 @@ import { QuestionType } from '@/backend/models/questions/QuestionType';
 
 // Basic questions
 export class BasicQuestion extends BuzzerQuestion {
-  static TITLE_MAX_LENGTH = 100;
-  static ANSWER_MAX_LENGTH = 50;
+  static TITLE_MAX_LENGTH = 200;
+  static ANSWER_MAX_LENGTH = 100;
   static SOURCE_MAX_LENGTH = 75;
 
   constructor(data) {
     super(data);
-    this.constructor.validate(data);
+    // this.constructor.validate(data);
 
     this.answer = data.answer || data.details.answer;
     this.explanation = data.explanation || data.details.explanation;

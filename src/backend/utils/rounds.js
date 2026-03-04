@@ -2,7 +2,6 @@ export const sortAscendingRoundScores = (roundType) => {
   switch (roundType) {
     case RoundType.ODD_ONE_OUT:
     case RoundType.MATCHING:
-    case RoundType.REORDERING:
       return true;
     default:
       return false;
