@@ -2,6 +2,7 @@ import { BlindtestQuestion, BlindtestType } from '@/backend/models/questions/Bli
 import { MatchingQuestion } from '@/backend/models/questions/Matching';
 import { OddOneOutQuestion } from '@/backend/models/questions/OddOneOut';
 import { QuoteAuthorElement, QuotePartElement, QuoteSourceElement } from '@/backend/models/questions/Quote';
+import { ReorderingQuestion } from '@/backend/models/questions/Reordering';
 
 import { RoundType } from '@/backend/models/rounds/RoundType';
 import globalMessages from '@/i18n/globalMessages';
@@ -28,6 +29,9 @@ const messages = defineMessages('frontend.game.round.RoundDescription', {
   oddOneOut3: 'If you know the odd one out, <b>keep it secret</b>... 🤫',
   progressiveClues1: '🕵️ A <b>list of clues</b> is revealed to you progressively...',
   progressiveClues2: '🧠 <b>Search your memory</b> and guess the work/person/... hidden behind these clues.',
+  reordering1: '🔀 A list of <b>{min} to {max} proposals</b> shown in a <b>random order</b>.',
+  reordering2: '🫳 <b>Drag and drop</b> the items to reorder them in the <b>correct sequence</b>.',
+  reordering3: '✅ Click <b>Submit</b> when you think your ordering is correct.',
   quoteIntro: 'Each question consists of:',
   quotePart: 'A <b>quote</b>',
   quoteAuthor: 'The <b>person</b> who said it',
@@ -71,6 +75,8 @@ export function RoundDescription({ round }) {
       return <OddOneOutRoundDescription />;
     case RoundType.PROGRESSIVE_CLUES:
       return <ProgressiveCluesRoundDescription />;
+    case RoundType.REORDERING:
+      return <ReorderingRoundDescription />;
     case RoundType.QUOTE:
       return <QuoteRoundDescription />;
     case RoundType.SPECIAL:
@@ -210,6 +216,25 @@ function QuoteRoundDescription() {
       <RuleP>{fmt(formatMessage, messages.quoteHidden, richTags)}</RuleP>
       <br />
       <RuleP>{fmt(formatMessage, globalMessages.revealElementIfStuck, richTags)}</RuleP>
+    </>
+  );
+}
+
+function ReorderingRoundDescription() {
+  const { formatMessage } = useIntl();
+  return (
+    <>
+      <RuleP>
+        {fmt(formatMessage, messages.reordering1, {
+          min: ReorderingQuestion.MIN_NUM_ITEMS,
+          max: ReorderingQuestion.MAX_NUM_ITEMS,
+          ...richTags,
+        })}
+      </RuleP>
+      <br />
+      <RuleP>{fmt(formatMessage, messages.reordering2, richTags)}</RuleP>
+      <br />
+      <RuleP>{fmt(formatMessage, messages.reordering3, richTags)}</RuleP>
     </>
   );
 }

@@ -59,7 +59,7 @@ export class Question {
 export class BaseQuestion extends Question {
   constructor(data) {
     super(data);
-    this.constructor.validate(data);
+    // this.constructor.validate(data);
 
     this.topic = data.topic;
     this.approved = data.approved;

@@ -2,6 +2,7 @@ import { RoundType } from '@/backend/models/rounds/RoundType';
 import { GameMatchingQuestion, MatchingQuestion } from '@/backend/models/questions/Matching';
 import { NaguiQuestion } from '@/backend/models/questions/Nagui';
 import { OddOneOutQuestion } from '@/backend/models/questions/OddOneOut';
+import { GameReorderingQuestion } from '@/backend/models/questions/Reordering';
 import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
@@ -50,6 +51,12 @@ const messages = defineMessages('frontend.game.round.RoundRules', {
   basicIncorrect: 'If your answer is <incorrect>incorrect</incorrect>, you earn no points.',
   mcqInstruction: '❓ Each question is assigned to a team. The team has several answer choices.',
   naguiInstruction: '❓ Each question is assigned to a team. The team has <b>{count} options</b> available:',
+  reorderingInstruction:
+    '👆 <b>Drag and drop</b> the items to reorder them in the <b>correct sequence</b>, then <b>submit</b> your ordering.',
+  reorderingScoring: 'Each item in the <correct>correct position</correct> earns <b>{points} point</b> for your team.',
+  reorderingOneSubmission: '⚠️ <b>One submission per team</b> — once submitted, your ordering is final!',
+  reorderingThinkingTime:
+    '⏳ You have <u><b>{seconds} seconds</b></u> to submit, otherwise <b>no points will be awarded!</b>',
   specialInstruction: '🗣️ Answer the questions directly — there are no answer choices.',
   specialPrecision: '⚠️ Be precise in your answer!',
   specialCalm: '💜 Stay calm, it will be fine.',
@@ -169,6 +176,8 @@ export function RoundRules({ round }) {
       return <BuzzerRoundRules round={round} withBuzzerDelay />;
     case RoundType.QUOTE:
       return <BuzzerPartialCreditRoundRules round={round} />;
+    case RoundType.REORDERING:
+      return <ReorderingRoundRules round={round} />;
     case RoundType.SPECIAL:
       return <SpecialRoundRules round={round} />;
   }
@@ -301,6 +310,23 @@ function SpecialRoundRules() {
       </RuleP>
       <RuleP>{formatMessage(messages.specialPrecision)}</RuleP>
       <RuleP>{formatMessage(messages.specialCalm)}</RuleP>
+    </>
+  );
+}
+
+function ReorderingRoundRules({ round }) {
+  const { formatMessage } = useIntl();
+  return (
+    <>
+      <RuleP>{fmt(formatMessage, messages.reorderingInstruction, richTags)}</RuleP>
+      <RuleP>{fmt(formatMessage, messages.reorderingScoring, { points: round.rewardsPerElement, ...richTags })}</RuleP>
+      <RuleP>{fmt(formatMessage, messages.reorderingOneSubmission, richTags)}</RuleP>
+      <RuleP>
+        {fmt(formatMessage, messages.reorderingThinkingTime, {
+          seconds: round.thinkingTime || GameReorderingQuestion.THINKING_TIME,
+          ...richTags,
+        })}
+      </RuleP>
     </>
   );
 }

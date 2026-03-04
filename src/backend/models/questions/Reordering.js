@@ -107,18 +107,20 @@ export class ReorderingQuestion extends BaseQuestion {
 }
 
 export class GameReorderingQuestion extends GameQuestion {
-  static THINKING_TIME = 30;
+  static THINKING_TIME = 60;
 
   constructor(data) {
     super(data);
 
-    this.submissions = data.submissions || {};
+    this.orderings = data.orderings || [];
+
+    this.constructor.validate(data);
   }
 
   toObject() {
     return {
       ...super.toObject(),
-      submissions: this.submissions,
+      orderings: this.orderings,
     };
   }
 
@@ -128,6 +130,6 @@ export class GameReorderingQuestion extends GameQuestion {
 
   reset() {
     super.reset();
-    this.submissions = [];
+    this.orderings = [];
   }
 }

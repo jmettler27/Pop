@@ -8,6 +8,7 @@ import OddOneOutBottomPane from '@/frontend/components/game/bottom-pane/question
 import MCQBottomPane from '@/frontend/components/game/bottom-pane/question/mcq/MCQBottomPane';
 import BasicQuestionBottomPane from '@/frontend/components/game/bottom-pane/question/basic/BasicQuestionBottomPane';
 import NaguiBottomPane from '@/frontend/components/game/bottom-pane/question/nagui/NaguiBottomPane';
+import ReorderingBottomPane from '@/frontend/components/game/bottom-pane/question/reordering/ReorderingBottomPane';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
@@ -65,5 +66,7 @@ export default function QuestionActiveBottomPane({}) {
       return <NaguiBottomPane />;
     case QuestionType.BASIC:
       return <BasicQuestionBottomPane />;
+    case QuestionType.REORDERING:
+      return <ReorderingBottomPane baseQuestion={baseQuestion} />;
   }
 }

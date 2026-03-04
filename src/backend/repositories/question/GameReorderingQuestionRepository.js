@@ -8,6 +8,10 @@ export default class GameReorderingQuestionRepository extends GameQuestionReposi
   }
 
   async resetQuestionTransaction(transaction, questionId) {
-    await this.resetQuestionWinnerTransaction(transaction, questionId);
+    await this.updateQuestionTransaction(transaction, questionId, {
+      dateStart: null,
+      dateEnd: null,
+      orderings: null,
+    });
   }
 }

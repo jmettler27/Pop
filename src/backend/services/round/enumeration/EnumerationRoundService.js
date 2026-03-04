@@ -19,7 +19,6 @@ export default class EnumerationRoundService extends RoundService {
     const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
 
-    // const { type: roundType, questions: questionIds, rewardsPerQuestion, rewardsForBonus, rewardsPerElement } = round
     const { roundScorePolicy, currentRound, currentQuestion } = game;
 
     let prevOrder = -1;

@@ -11,6 +11,7 @@ import NaguiMiddlePane from '@/frontend/components/game/middle-pane/question/nag
 import OddOneOutMiddlePane from '@/frontend/components/game/middle-pane/question/odd_one_out/OddOneOutMiddlePane';
 import QuoteMiddlePane from '@/frontend/components/game/middle-pane/question/quote/QuoteMiddlePane';
 import BuzzerMiddlePane from '@/frontend/components/game/middle-pane/question/buzzer/BuzzerMiddlePane';
+import ReorderingMiddlePane from '@/frontend/components/game/middle-pane/question/reordering/ReorderingMiddlePane';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
@@ -59,5 +60,7 @@ export default function QuestionMiddlePane() {
       return <OddOneOutMiddlePane baseQuestion={baseQuestion} />;
     case QuestionType.QUOTE:
       return <QuoteMiddlePane baseQuestion={baseQuestion} />;
+    case QuestionType.REORDERING:
+      return <ReorderingMiddlePane baseQuestion={baseQuestion} />;
   }
 }
