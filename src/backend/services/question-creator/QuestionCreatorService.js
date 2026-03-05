@@ -51,14 +51,14 @@ export default class QuestionCreatorService {
 
         if (files.image) {
           this.imageRepo = new QuestionImageRepository();
-          const imageUrl = await this.imageRepo.uploadImage(baseQuestion.id, files.image);
+          const imageUrl = await this.imageRepo.uploadQuestionImage(baseQuestion.id, files.image);
           baseQuestion.setImage(imageUrl);
           hasFiles = true;
         }
 
         if (files.audio) {
           this.audioRepo = new QuestionAudioRepository();
-          const audioUrl = await this.audioRepo.uploadAudio(baseQuestion.id, files.audio);
+          const audioUrl = await this.audioRepo.uploadQuestionAudio(baseQuestion.id, files.audio);
           baseQuestion.setAudio(audioUrl);
           hasFiles = true;
         }

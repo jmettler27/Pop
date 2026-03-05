@@ -14,11 +14,11 @@ export class LabellingQuestion extends BaseQuestion {
 
   constructor(data) {
     super(data);
-    this.constructor.validate(data);
+    // this.constructor.validate(data);
 
     this.title = data.title || data.details.title;
     this.note = data.note || data.details.note;
-    this.image = data.image || data.details.image;
+    this.image = data.image || data.details.image || '';
     this.labels = data.labels || data.details.labels;
   }
 

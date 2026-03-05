@@ -15,7 +15,7 @@ import { numEmojisIndicator } from '@/frontend/utils/forms/emojis';
 
 import { useIntl } from 'react-intl';
 
-export function MyTextInput({ label, maxLength, validationSchema, fieldType = 'string', ...props }) {
+export function MyTextInput({ label, maxLength, validationSchema, fieldType = 'string', onlyEmojis, ...props }) {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
   // which we can spread on <input> and alse replace ErrorMessage entirely.
   const [field, meta] = useField(props);
@@ -28,7 +28,7 @@ export function MyTextInput({ label, maxLength, validationSchema, fieldType = 's
         {requiredIndicator(validationSchema, fieldType, field.name, intl)}
         {label}{' '}
         {maxLength > 0 &&
-          (props.onlyEmojis ? numEmojisIndicator(field.value, maxLength) : numCharsIndicator(field.value, maxLength))}
+          (onlyEmojis ? numEmojisIndicator(field.value, maxLength) : numCharsIndicator(field.value, maxLength))}
       </StyledLabel>
       <input className="text-input text-xs sm:text-sm md:text-base" {...field} {...props} value={field.value || ''} />
       {meta.touched && meta.error && <div className="error text-xs sm:text-sm">{meta.error}</div>}

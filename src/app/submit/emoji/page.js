@@ -3,7 +3,7 @@
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
 import QuestionFormHeader from '@/frontend/components/forms/QuestionFormHeader';
-import SubmitEmojiQuestionForm from '@/frontend/components/forms/submit-question/SubmitEmojiForm';
+import SubmitEmojiQuestionForm from '@/frontend/components/forms/submit-question/SubmitEmojiQuestionForm';
 
 import { redirect } from 'next/navigation';
 import { useSession } from 'next-auth/react';

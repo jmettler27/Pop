@@ -2,7 +2,12 @@ import { submitQuestion } from '@/backend/services/question-creator/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { QuoteQuestion } from '@/backend/models/questions/Quote';
+import {
+  QuoteQuestion,
+  QuoteAuthorElement,
+  QuotePartElement,
+  QuoteSourceElement,
+} from '@/backend/models/questions/Quote';
 
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/backend/utils/question';
 import { replaceAllNonSpace, replaceSubstrings } from '@/backend/utils/strings';
@@ -66,10 +71,10 @@ export default function SubmitQuoteQuestionForm({ userId, ...props }) {
   const [submitQuoteQuestion, isSubmitting] = useAsyncAction(async (values) => {
     try {
       const { topic, lang, ...others } = values;
-      if (!details.toGuess.includes('quote')) {
-        details.quoteParts = [];
+      if (!others.toGuess.includes('quote')) {
+        others.quoteParts = [];
       } else {
-        details.quoteParts = values.quoteParts.sort((a, b) => a.startIdx - b.startIdx);
+        others.quoteParts = values.quoteParts.sort((a, b) => a.startIdx - b.startIdx);
       }
       const questionId = await submitQuestion(
         {

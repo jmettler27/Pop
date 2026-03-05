@@ -95,7 +95,7 @@ export default function SubmitProgressiveCluesQuestionForm({ userId, ...props })
   const [submitProgressiveCluesQuestion, isSubmitting] = useAsyncAction(async (values, fileRef) => {
     try {
       const { files, topic, lang, ...others } = values;
-      const { title, clues, answer_title } = details;
+      const { title, clues, answer_title } = others;
 
       // Get the file from the ref if it exists
       const image = getFileFromRef(fileRef);

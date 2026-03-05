@@ -59,13 +59,14 @@ export default function SubmitLabellingQuestionForm({ userId, ...props }) {
         throw new Error('No image file');
       }
       const { files, topic, lang, ...others } = values;
-      const { title, labels } = details;
+      const { title, labels, note } = others;
 
       const questionId = await submitQuestion(
         {
           details: {
             title,
             labels,
+            note,
           },
           type: QUESTION_TYPE,
           topic,

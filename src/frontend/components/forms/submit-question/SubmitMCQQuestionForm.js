@@ -100,11 +100,11 @@ export default function SubmitMCQForm({ userId, ...props }) {
         validationSchema={Yup.object({
           choices: Yup.array()
             .of(stringSchema(MCQQuestion.CHOICE_MAX_LENGTH))
-            .min(MCQQuestion.MIN_NUM_CHOICES, `There must be at least ${MCQQuestion.MIN_NUM_CHOICES} choices`)
-            .max(MCQQuestion.MAX_NUM_CHOICES, `There must be at most ${MCQQuestion.MAX_NUM_CHOICES} choices`),
+            .min(MCQQuestion.MIN_CHOICES, `There must be at least ${MCQQuestion.MIN_CHOICES} choices`)
+            .max(MCQQuestion.MAX_CHOICES, `There must be at most ${MCQQuestion.MAX_CHOICES} choices`),
           answerIdx: Yup.number()
             .min(0, 'Required.')
-            .max(MCQQuestion.MAX_NUM_CHOICES - 1, 'Required.')
+            .max(MCQQuestion.MAX_CHOICES - 1, 'Required.')
             .required('Required.'),
           explanation: stringSchema(MCQQuestion.EXPLANATION_MAX_LENGTH, false),
         })}
