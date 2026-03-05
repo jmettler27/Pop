@@ -9,14 +9,14 @@ import Team from '@/backend/models/Team';
 
 import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
-import MyColorPicker from '@/frontend/components/forms/MyColorPicker';
+import MyColorPicker from '@/frontend/components/common/MyColorPicker';
 import {
   MyTextInput,
   MySelect,
   StyledErrorMessage,
   MyRadioGroup,
-} from '@/frontend/components/forms/StyledFormComponents';
-import { Wizard, WizardStep } from '@/frontend/components/forms/MultiStepComponents';
+} from '@/frontend/components/common/StyledFormComponents';
+import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import GameErrorScreen from '@/frontend/components/game/GameErrorScreen';

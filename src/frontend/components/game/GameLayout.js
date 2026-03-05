@@ -4,8 +4,8 @@ import { memo } from 'react';
 import { useGameRepositoriesContext } from '@/frontend/contexts';
 
 import TopPane from '@/frontend/components/game/top-pane/TopPane';
-import MiddlePane from '@/frontend/components/game/middle-pane/MiddlePane';
-import BottomPane from '@/frontend/components/game/bottom-pane/BottomPane';
+import MiddlePane from '@/frontend/components/game/main-pane/MiddlePane';
+import BottomPane from '@/frontend/components/game/main-pane/BottomPane';
 import Sidebar from '@/frontend/components/game/sidebar/Sidebar';
 
 // Container components to control re-rendering

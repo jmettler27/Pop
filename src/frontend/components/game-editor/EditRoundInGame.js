@@ -33,7 +33,7 @@ import {
   AddQuestionToMixedRoundButton,
   AddQuestionToRoundButton,
 } from '@/frontend/components/game-editor/AddNewQuestion';
-import { QuestionCardTitle } from '@/frontend/components/questions/QuestionCard';
+import { QuestionCardTitle } from '@/frontend/components/common/QuestionCard';
 
 import {
   Button,

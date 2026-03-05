@@ -21,7 +21,7 @@ import { useUserContext, useGameContext, useGameRepositoriesContext, useRoleCont
 
 import Timer from '@/frontend/components/game/timer/Timer';
 import OrganizerTimerController from '@/frontend/components/game/timer/OrganizerTimerController';
-import AuthorizePlayersSwitch from '@/frontend/components/game/bottom-pane/AuthorizePlayersSwitch';
+import AuthorizePlayersSwitch from '@/frontend/components/game/main-pane/AuthorizePlayersSwitch';
 
 import { useRef } from 'react';
 

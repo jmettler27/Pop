@@ -2,7 +2,7 @@ import { BaseQuestion, GameQuestion } from '@/backend/models/questions/Question'
 import { isArray, range, shuffle } from '@/backend/utils/arrays';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
-import { getNodeText } from '@/frontend/components/game/middle-pane/question/matching/gridUtils';
+import { getNodeText } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
 
 /**
  * Matching questions

@@ -1,0 +1,78 @@
+import { handleHideAnswer } from '@/backend/services/question/nagui/actions';
+
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import globalMessages from '@/i18n/globalMessages';
+
+import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+
+import { useIntl } from 'react-intl';
+
+import { useGameContext } from '@/frontend/contexts';
+
+import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
+import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
+import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
+import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
+
+import { Button, ButtonGroup } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+
+export default function NaguiOrganizerController({ gameQuestion }) {
+  return (
+    <div className="flex flex-col h-full w-full items-center justify-around">
+      {/* <BuzzerHeadPlayer gameQuestion={gameQuestion} />
+       */}
+      {gameQuestion.option === null && (
+        <span className="2xl:text-4xl font-bold">
+          <GameChooserHelperText chooserTeamId={gameQuestion.teamId} />
+        </span>
+      )}
+      {gameQuestion.option !== null && (
+        <span className="2xl:text-4xl">
+          <NaguiPlayerOptionHelperText gameQuestion={gameQuestion} />
+        </span>
+      )}
+      {gameQuestion.option === 'hide' && <NaguiOrganizerHideAnswerController gameQuestion={gameQuestion} />}
+      <div className="flex flex-row w-full justify-end">
+        <ResetQuestionButton questionType={QuestionType.NAGUI} />
+        <EndQuestionButton questionType={QuestionType.NAGUI} />
+      </div>
+    </div>
+  );
+}
+
+function NaguiOrganizerHideAnswerController({ gameQuestion }) {
+  const intl = useIntl();
+  const game = useGameContext();
+
+  const [handleClick, isHandling] = useAsyncAction(async (correct) => {
+    await handleHideAnswer(
+      game.id,
+      game.currentRound,
+      game.currentQuestion,
+      gameQuestion.playerId,
+      gameQuestion.teamId,
+      correct
+    );
+  });
+
+  {
+    /* Validate or invalidate the player's answer */
+  }
+  return (
+    <>
+      <ButtonGroup disableElevation variant="contained" size="large" color="primary">
+        {/* Validate the player's answer */}
+        <Button color="success" startIcon={<CheckCircleIcon />} onClick={() => handleClick(true)} disabled={isHandling}>
+          {intl.formatMessage(globalMessages.validate)}
+        </Button>
+
+        {/* Invalidate the player's answer */}
+        <Button color="error" startIcon={<CancelIcon />} onClick={() => handleClick(false)} disabled={isHandling}>
+          {intl.formatMessage(globalMessages.invalidate)}
+        </Button>
+      </ButtonGroup>
+    </>
+  );
+}

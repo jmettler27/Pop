@@ -9,7 +9,7 @@ import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
 
-import { QuestionCardContent } from '@/frontend/components/questions/QuestionCard';
+import { QuestionCardContent } from '@/frontend/components/common/QuestionCard';
 
 import { useParams } from 'next/navigation';
 
