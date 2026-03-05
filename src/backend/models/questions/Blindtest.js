@@ -66,10 +66,12 @@ export class BlindtestQuestion extends BuzzerQuestion {
   toObject() {
     return {
       ...super.toObject(),
-      answer: this.answer,
-      audio: this.audio || null,
-      subtype: this.subtype,
-      title: this.title,
+      details: {
+        answer: this.answer,
+        audio: this.audio || null,
+        subtype: this.subtype,
+        title: this.title,
+      },
     };
   }
 

@@ -79,7 +79,7 @@ export default function SubmitMatchingQuestionForm({ userId, ...props }) {
   const [submitMatchingQuestion, isSubmitting] = useAsyncAction(async (values) => {
     try {
       const { topic, lang, ...others } = values;
-      const { matches, title, note, numCols } = details;
+      const { matches, title, note, numCols } = others;
       const numRows = matches.length;
 
       const answer = matches.reduce((acc, row, index) => {
@@ -195,10 +195,10 @@ const NUM_COLUMNS = null;
 const matchingItemsSchema = (numCols) => {
   // let row = []
   // for (let col = 0; col < numCols; col++) {
-  //     row[col] = stringSchema(MATCHING_ITEM_MAX_LENGTH)
+  //     row[col] = stringSchema(MatchingQuestion.ITEM_MAX_LENGTH)
   // }
   return Yup.array()
-    .of(Yup.array().of(stringSchema(MATCHING_ITEM_MAX_LENGTH)).length(numCols))
+    .of(Yup.array().of(stringSchema(MatchingQuestion.ITEM_MAX_LENGTH)).length(numCols))
     .min(MatchingQuestion.MIN_NUM_ROWS, `There must be at least ${MatchingQuestion.MIN_NUM_ROWS} matches.`)
     .max(MatchingQuestion.MAX_NUM_ROWS, `There can be at most ${MatchingQuestion.MAX_NUM_ROWS} matches.`);
 };

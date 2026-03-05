@@ -263,8 +263,8 @@ import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestion
 
 import SubmitBasicQuestionForm from '@/frontend/components/forms/submit-question/SubmitBasicQuestionForm';
 import SubmitBlindtestQuestionForm from '@/frontend/components/forms/submit-question/SubmitBlindtestQuestionForm';
-import SubmitEmojiQuestionForm from '@/frontend/components/forms/submit-question/SubmitEmojiForm';
-import SubmitEnumerationQuestionForm from '@/frontend/components/forms/submit-question/SubmitEnumerationForm';
+import SubmitEmojiQuestionForm from '@/frontend/components/forms/submit-question/SubmitEmojiQuestionForm';
+import SubmitEnumerationQuestionForm from '@/frontend/components/forms/submit-question/SubmitEnumerationQuestionForm';
 import SubmitImageQuestionForm from '@/frontend/components/forms/submit-question/SubmitImageQuestionForm';
 import SubmitLabellingQuestionForm from '@/frontend/components/forms/submit-question/SubmitLabellingQuestionForm';
 import SubmitMatchingQuestionForm from '@/frontend/components/forms/submit-question/SubmitMatchingQuestionForm';

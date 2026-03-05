@@ -11,10 +11,10 @@ export class ImageQuestion extends BuzzerQuestion {
 
   constructor(data) {
     super(data);
-    this.constructor.validate(data);
+    // this.constructor.validate(data);
 
     this.answer = data.answer || data.details.answer;
-    this.image = data.image || data.details.image;
+    this.image = data.image || data.details.image || '';
     this.title = data.title || data.details.title;
   }
 

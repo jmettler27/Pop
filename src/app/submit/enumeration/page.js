@@ -3,7 +3,7 @@
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
 import QuestionFormHeader from '@/frontend/components/forms/QuestionFormHeader';
-import SubmitEnumerationQuestionForm from '@/frontend/components/forms/submit-question/SubmitEnumerationForm';
+import SubmitEnumerationQuestionForm from '@/frontend/components/forms/submit-question/SubmitEnumerationQuestionForm';
 
 import { redirect } from 'next/navigation';
 import { useSession } from 'next-auth/react';

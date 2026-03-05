@@ -71,7 +71,7 @@ export default function SubmitNaguiQuestionForm({ userId, ...props }) {
         title: '',
         note: '',
         explanation: '',
-        choices: Array(NaguiQuestion.MAX_NUM_CHOICES).fill(''),
+        choices: Array(NaguiQuestion.MAX_CHOICES).fill(''),
         answerIdx: -1,
         duoIdx: -1,
         // imageFiles: '',
@@ -103,16 +103,16 @@ export default function SubmitNaguiQuestionForm({ userId, ...props }) {
         validationSchema={Yup.object({
           choices: Yup.array()
             .of(stringSchema(NaguiQuestion.CHOICE_MAX_LENGTH))
-            .length(NaguiQuestion.MAX_NUM_CHOICES, `There must be exactly ${NaguiQuestion.MAX_NUM_CHOICES} choices`)
+            .length(NaguiQuestion.MAX_CHOICES, `There must be exactly ${NaguiQuestion.MAX_CHOICES} choices`)
             .required('Required.'),
           answerIdx: Yup.number()
             .min(0, 'Required.')
-            .max(NaguiQuestion.MAX_NUM_CHOICES - 1, 'Required.')
+            .max(NaguiQuestion.MAX_CHOICES - 1, 'Required.')
             .required('Required.'),
           explanation: stringSchema(NaguiQuestion.EXPLANATION_MAX_LENGTH, false),
           duoIdx: Yup.number()
             .min(0, 'Required.')
-            .max(NaguiQuestion.MAX_NUM_CHOICES - 1, 'Required.')
+            .max(NaguiQuestion.MAX_CHOICES - 1, 'Required.')
             .required('Required.'),
           // .test(
           //     "same-as-answer",

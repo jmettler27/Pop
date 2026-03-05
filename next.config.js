@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    experimental: {
+        serverActions: {
+            bodySizeLimit: '4mb',
+        },
+    },
     images: {
         formats: ['image/avif', 'image/webp'],
         domains: ['firebasestorage.googleapis.com'],

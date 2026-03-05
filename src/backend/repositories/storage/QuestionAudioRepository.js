@@ -5,18 +5,7 @@ import StorageRepository from '@/backend/repositories/storage/StorageRepository'
  */
 export default class QuestionAudioRepository extends StorageRepository {
   constructor() {
-    super('audio');
-  }
-
-  /**
-   * Upload an audio file to the storage
-   *
-   * @param {File} audioFile - The audio file to upload
-   * @param {string} path - The path to upload the audio file to
-   * @returns {Promise<string>} The download URL
-   */
-  async uploadAudio(audioFile, path) {
-    return await this.uploadFile(audioFile, path);
+    super('questions/audio');
   }
 
   /**
@@ -27,6 +16,6 @@ export default class QuestionAudioRepository extends StorageRepository {
    * @returns {Promise<string>} The download URL
    */
   async uploadQuestionAudio(questionId, audio) {
-    return await this.uploadAudio(audio, `questions/${questionId}`);
+    return await this.uploadFile(audio, questionId);
   }
 }

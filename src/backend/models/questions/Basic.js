@@ -4,6 +4,8 @@ import { QuestionType } from '@/backend/models/questions/QuestionType';
 // Basic questions
 export class BasicQuestion extends BuzzerQuestion {
   static TITLE_MAX_LENGTH = 200;
+  static NOTE_MAX_LENGTH = 200;
+  static EXPLANATION_MAX_LENGTH = 200;
   static ANSWER_MAX_LENGTH = 100;
   static SOURCE_MAX_LENGTH = 75;
 

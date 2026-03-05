@@ -1,3 +1,5 @@
+import { emojiCount } from '@/backend/utils/emojis';
+
 /**
  * Returns a string indicating the number of emojis in the input
  * @param {string} value - The input value to check
@@ -7,11 +9,7 @@
 export function numEmojisIndicator(value, maxEmojis) {
   if (!value) return '';
 
-  // Count emojis using regex
-  const emojiRegex = /\p{Emoji}/gu;
-  const emojiCount = (value.match(emojiRegex) || []).length;
-
-  return `${emojiCount}/${maxEmojis} emojis`;
+  return `${emojiCount(value)}/${maxEmojis} emojis`;
 }
 
 /**
@@ -23,8 +21,5 @@ export function numEmojisIndicator(value, maxEmojis) {
 export function validateMaxEmojis(value, maxEmojis) {
   if (!value) return true;
 
-  const emojiRegex = /\p{Emoji}/gu;
-  const emojiCount = (value.match(emojiRegex) || []).length;
-
-  return emojiCount <= maxEmojis;
+  return emojiCount(value) <= maxEmojis;
 }

@@ -19,7 +19,7 @@ export class ReorderingQuestion extends BaseQuestion {
     this.items = data.items || data.details.items;
     this.title = data.title || data.details.title;
     this.note = data.note || data.details.note;
-    this.ordering = data.ordering || data.details.ordering;
+    this.items = data.items || data.details.items;
   }
 
   getQuestionType() {
@@ -33,7 +33,7 @@ export class ReorderingQuestion extends BaseQuestion {
         items: this.items,
         title: this.title,
         note: this.note,
-        ordering: this.ordering,
+        items: this.items,
       },
     };
   }

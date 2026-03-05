@@ -5,18 +5,7 @@ import StorageRepository from '@/backend/repositories/storage/StorageRepository'
  */
 export default class QuestionImageRepository extends StorageRepository {
   constructor() {
-    super('images');
-  }
-
-  /**
-   * Upload an image file to the storage
-   *
-   * @param {File} imageFile - The image file to upload
-   * @param {string} path - The path to upload the image file to
-   * @returns {Promise<string>} The download URL
-   */
-  async uploadImage(imageFile, path) {
-    return await this.uploadFile(imageFile, path);
+    super('questions/images');
   }
 
   /**
@@ -27,6 +16,6 @@ export default class QuestionImageRepository extends StorageRepository {
    * @returns {Promise<string>} The download URL
    */
   async uploadQuestionImage(questionId, image) {
-    return await this.uploadImage(image, `questions/${questionId}`);
+    return await this.uploadFile(image, questionId);
   }
 }
