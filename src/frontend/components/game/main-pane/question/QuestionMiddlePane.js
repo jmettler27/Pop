@@ -8,7 +8,7 @@ import LabellingMiddlePane from '@/frontend/components/game/main-pane/question/l
 import MatchingMiddlePane from '@/frontend/components/game/main-pane/question/matching/MatchingMiddlePane';
 import MCQMiddlePane from '@/frontend/components/game/main-pane/question/mcq/MCQMiddlePane';
 import NaguiMiddlePane from '@/frontend/components/game/main-pane/question/nagui/NaguiMiddlePane';
-import OddOneOutMiddlePane from '@/frontend/components/game/main-pane/question/odd_one_out/OddOneOutMiddlePane';
+import OddOneOutMiddlePane from '@/frontend/components/game/main-pane/question/odd-one-out/OddOneOutMiddlePane';
 import QuoteMiddlePane from '@/frontend/components/game/main-pane/question/quote/QuoteMiddlePane';
 import BuzzerMiddlePane from '@/frontend/components/game/main-pane/question/buzzer/BuzzerMiddlePane';
 import ReorderingMiddlePane from '@/frontend/components/game/main-pane/question/reordering/ReorderingMiddlePane';

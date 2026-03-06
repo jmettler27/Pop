@@ -4,7 +4,7 @@ import BuzzerBottomPane from '@/frontend/components/game/main-pane/question/buzz
 import QuoteBottomPane from '@/frontend/components/game/main-pane/question/quote/QuoteBottomPane';
 import MatchingBottomPane from '@/frontend/components/game/main-pane/question/matching/MatchingBottomPane';
 import EnumerationBottomPane from '@/frontend/components/game/main-pane/question/enumeration/EnumerationBottomPane';
-import OddOneOutBottomPane from '@/frontend/components/game/main-pane/question/odd_one_out/OddOneOutBottomPane';
+import OddOneOutBottomPane from '@/frontend/components/game/main-pane/question/odd-one-out/OddOneOutBottomPane';
 import MCQBottomPane from '@/frontend/components/game/main-pane/question/mcq/MCQBottomPane';
 import BasicQuestionBottomPane from '@/frontend/components/game/main-pane/question/basic/BasicQuestionBottomPane';
 import NaguiBottomPane from '@/frontend/components/game/main-pane/question/nagui/NaguiBottomPane';

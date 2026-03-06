@@ -81,13 +81,11 @@ function JoinGameHeader() {
 const useGameData = (gameId) => {
   const repositories = useGameRepositories(gameId);
 
-  const { game, loading: gameLoading, error: gameError } = repositories.gameRepo.useGameOnce(gameId);
-  const {
-    organizers,
-    loading: orgLoading,
-    error: orgError,
-  } = repositories.organizerRepo.useAllOrganizerIdentitiesOnce();
-  const { players, loading: playerLoading, error: playerError } = repositories.playerRepo.useAllPlayerIdentitiesOnce();
+  const { gameRepo, organizerRepo, playerRepo } = repositories;
+
+  const { game, loading: gameLoading, error: gameError } = gameRepo.useGameOnce(gameId);
+  const { organizers, loading: orgLoading, error: orgError } = organizerRepo.useAllOrganizerIdentitiesOnce();
+  const { players, loading: playerLoading, error: playerError } = playerRepo.useAllPlayerIdentitiesOnce();
 
   return {
     game,

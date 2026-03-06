@@ -29,13 +29,11 @@ export default function GamePage() {
   const gameId = params.id;
   const repositories = useGameRepositories(gameId);
 
-  const { game, loading: gameLoading, error: gameError } = repositories.gameRepo.useGame(gameId);
-  const {
-    organizers,
-    loading: orgLoading,
-    error: orgError,
-  } = repositories.organizerRepo.useAllOrganizerIdentitiesOnce();
-  const { players, loading: playerLoading, error: playerError } = repositories.playerRepo.useAllPlayerIdentitiesOnce();
+  const { gameRepo, organizerRepo, playerRepo } = repositories;
+
+  const { game, loading: gameLoading, error: gameError } = gameRepo.useGame(gameId);
+  const { organizers, loading: orgLoading, error: orgError } = organizerRepo.useAllOrganizerIdentitiesOnce();
+  const { players, loading: playerLoading, error: playerError } = playerRepo.useAllPlayerIdentitiesOnce();
 
   if (gameError || orgError || playerError) return <GameErrorScreen />;
   if (gameLoading || orgLoading || playerLoading) return <LoadingScreen loadingText="Loading game..." />;
