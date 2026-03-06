@@ -6,13 +6,16 @@ import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { doc } from 'firebase/firestore';
 import { useDocument } from 'react-firebase-hooks/firestore';
 
-import { useGameContext, useRoleContext, useUserContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
+import useUser from '@/frontend/hooks/useUser';
+
 import globalMessages from '@/i18n/globalMessages';
 import { useIntl } from 'react-intl';
 
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { Button, ButtonGroup } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -20,7 +23,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
 export default function SpecialThemeActiveBottomPane({ theme, gameTheme }) {
-  const myRole = useRoleContext();
+  const myRole = useRole();
 
   switch (myRole) {
     case ParticipantRole.ORGANIZER:
@@ -35,7 +38,7 @@ export default function SpecialThemeActiveBottomPane({ theme, gameTheme }) {
 }
 
 function SpecialThemeActiveOrganizerBottomPane({ theme, gameTheme }) {
-  const game = useGameContext();
+  const game = useGame();
 
   const { currentSectionIdx } = gameTheme;
   const currentSectionId = theme.details.sections[currentSectionIdx];
@@ -76,8 +79,8 @@ function SpecialThemeActiveOrganizerBottomPane({ theme, gameTheme }) {
 
 function SpecialQuestionActiveOrganizerBottomPane({ gameTheme }) {
   const intl = useIntl();
-  const game = useGameContext();
-  const user = useUserContext();
+  const game = useGame();
+  const user = useUser();
 
   const [handlePlayerAnswer, isHandling] = useAsyncAction(async (invalidate) => {
     await handlePlayerAnswer(game.id, game.currentRound, gameTheme.id, invalidate, user.id);
@@ -113,8 +116,8 @@ function SpecialQuestionActiveOrganizerBottomPane({ gameTheme }) {
 }
 
 function SpecialQuestionEndOrganizerBottomPane({ theme, gameTheme, gameSection }) {
-  const game = useGameContext();
-  const user = useUserContext();
+  const game = useGame();
+  const user = useUser();
 
   const [handleContinue, isHandling] = useAsyncAction(async () => {
     await handleQuestionEndOrganizerContinue(

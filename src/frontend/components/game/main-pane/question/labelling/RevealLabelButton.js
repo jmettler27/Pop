@@ -4,11 +4,11 @@ import { revealLabel } from '@/backend/services/question/labelling/actions';
 import { isEmpty } from '@/backend/utils/arrays';
 import { rankingToEmoji } from '@/backend/utils/emojis';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/i18n/globalMessages';
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Menu } from '@mui/material';
 import ListSubheader from '@mui/material/ListSubheader';
@@ -113,7 +113,7 @@ function RevealLabelItemButton({ gameQuestion, label, labelIdx, onClick }) {
 
 function RevealLabelDialog({ baseQuestion, labelIdx, dialogOpen, onDialogClose }) {
   const intl = useIntl();
-  const game = useGameContext();
+  const game = useGame();
 
   const [handleRevealLabel, isRevealing] = useAsyncAction(async () => {
     await revealLabel(game.id, game.currentRound, game.currentQuestion, labelIdx);

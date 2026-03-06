@@ -1,14 +1,14 @@
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import { getNodeId, MatchingEdge } from '@/frontend/components/game/main-pane/question/matching/gridUtils.js';
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
 import { isObjectEmpty } from '@/backend/utils/objects';
 
 export default function PartiallyCorrectMatches({ nodePositions }) {
-  const game = useGameContext();
+  const game = useGame();
 
   const gameQuestionRepo = new GameMatchingQuestionRepository(game.id, game.currentRound);
   const { partiallyCorrectMatches, loading, error } = gameQuestionRepo.usePartiallyCorrectMatches(game.currentQuestion);

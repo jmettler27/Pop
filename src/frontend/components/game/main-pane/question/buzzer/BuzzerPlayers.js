@@ -2,7 +2,7 @@ import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 import globalMessages from '@/i18n/globalMessages';
 
-import { useGameRepositoriesContext } from '@/frontend/contexts';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import { rankingToEmoji } from '@/backend/utils/emojis';
 
 const messages = defineMessages('frontend.game.bottom.BuzzerPlayers', {
@@ -12,7 +12,7 @@ const messages = defineMessages('frontend.game.bottom.BuzzerPlayers', {
 
 export default function BuzzerPlayers({ questionPlayers }) {
   const intl = useIntl();
-  const { playerRepo } = useGameRepositoriesContext();
+  const { playerRepo } = useGameRepositories();
   const { players, loading, error } = playerRepo.useAllPlayersOnce();
 
   if (error) {

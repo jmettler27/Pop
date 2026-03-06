@@ -1,4 +1,4 @@
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
@@ -17,7 +17,7 @@ import { QuestionType } from '@/backend/models/questions/QuestionType';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 
 export default function QuestionMiddlePane() {
-  const game = useGameContext();
+  const game = useGame();
 
   const baseQuestionRepo = new BaseQuestionRepository();
   const { baseQuestion, baseQuestionLoading, baseQuestionError } = baseQuestionRepo.useQuestionOnce(

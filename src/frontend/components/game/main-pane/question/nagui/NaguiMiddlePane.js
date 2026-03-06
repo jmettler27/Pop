@@ -5,13 +5,14 @@ import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { QuestionTypeIcon } from '@/backend/utils/question_types';
 
-import { useGameContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import NaguiMainContent from '@/frontend/components/game/main-pane/question/nagui/NaguiMainContent';
 
 export default function NaguiMiddlePane({ baseQuestion }) {
-  const game = useGameContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myRole = useRole();
 
   return (
     <div className="flex flex-col h-full items-center">

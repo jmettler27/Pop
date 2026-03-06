@@ -2,9 +2,9 @@ import { resetTimer, startTimer, stopTimer, endTimer } from '@/backend/services/
 
 import { TimerStatus } from '@/backend/models/Timer';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import Timer from '@/frontend/components/game/timer/Timer';
 
@@ -16,7 +16,7 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 
 export default function OrganizerTimerController({ timer, serverTimeOffset, onTimerEnd }) {
-  const game = useGameContext();
+  const game = useGame();
 
   const [handleTimerEnd, isEnding] = useAsyncAction(async () => {
     await onTimerEnd();

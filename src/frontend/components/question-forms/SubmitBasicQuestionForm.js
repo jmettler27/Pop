@@ -7,7 +7,7 @@ import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
 import { topicSchema } from '@/frontend/utils/forms/topics';
 import { messages as questionMessages } from '@/frontend/utils/forms/questions';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { useIntl } from 'react-intl';
 

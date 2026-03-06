@@ -6,20 +6,17 @@ import { MCQQuestion } from '@/backend/models/questions/MCQ';
 
 import { shuffleIndices } from '@/backend/utils/arrays';
 
-import {
-  useUserContext,
-  useGameContext,
-  useGameRepositoriesContext,
-  useRoleContext,
-  useTeamContext,
-} from '@/frontend/contexts';
+import useUser from '@/frontend/hooks/useUser';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+import useTeam from '@/frontend/hooks/useTeam';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { IMAGES } from '@/frontend/constants/images';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import NoteButton from '@/frontend/components/game/NoteButton';
-
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { useMemo } from 'react';
 
@@ -71,7 +68,7 @@ function MCQAnswerImage({ correct }) {
 }
 
 function MCQMainContentQuestion({ baseQuestion, randomization }) {
-  const game = useGameContext();
+  const game = useGame();
 
   const gameQuestionRepo = new GameMCQQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion);
@@ -111,10 +108,10 @@ function MCQMainContentQuestion({ baseQuestion, randomization }) {
 const choiceIsDisabled = (myRole, isChooser) => !(myRole === ParticipantRole.PLAYER && isChooser);
 
 function ActiveMCQChoices({ baseQuestion, gameQuestion, randomization }) {
-  const game = useGameContext();
-  const myTeam = useTeamContext();
-  const myRole = useRoleContext();
-  const user = useUserContext();
+  const game = useGame();
+  const myTeam = useTeam();
+  const myRole = useRole();
+  const user = useUser();
 
   const choices = baseQuestion.choices;
 
@@ -226,7 +223,7 @@ function EndedMCQChoices({ baseQuestion, gameQuestion, randomization }) {
 }
 
 function PlayerAvatar({ playerId }) {
-  const { playerRepo } = useGameRepositoriesContext();
+  const { playerRepo } = useGameRepositories();
   const { player, loading, error } = playerRepo.usePlayerOnce(playerId);
 
   return !error && !loading && player && <Avatar alt={player.name} src={player.image} sx={{ width: 30, height: 30 }} />;

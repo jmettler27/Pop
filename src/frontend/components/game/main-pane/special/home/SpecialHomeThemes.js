@@ -2,7 +2,7 @@ import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { doc, collection } from 'firebase/firestore';
 import { useDocumentData, useCollectionOnce } from 'react-firebase-hooks/firestore';
 
-import { useTeamContext } from '@/frontend/contexts';
+import useTeam from '@/frontend/hooks/useTeam';
 
 import SpecialHomeThemeAvatar from '@/frontend/components/game/main-pane/special/home/SpecialHomeThemeAvatar';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
@@ -13,7 +13,7 @@ import { Grid, Box } from '@mui/material';
 
 export default function SpecialHomeThemes({ round }) {
   const { id: gameId } = useParams();
-  const myTeam = useTeamContext();
+  const myTeam = useTeam();
 
   const chooserRef = doc(GAMES_COLLECTION_REF, gameId, 'realtime', 'states');
   const gameThemesCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'rounds', round.id, 'themes');

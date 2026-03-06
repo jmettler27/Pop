@@ -1,4 +1,5 @@
-import { useGameContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { doc } from 'firebase/firestore';
@@ -62,8 +63,8 @@ function SectionTitle({ section, gameTheme }) {
 }
 
 function SectionQuestions({ currentThemeId, currentSectionId, sectionQuestions }) {
-  const game = useGameContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myRole = useRole();
 
   const gameSectionRef = doc(
     GAMES_COLLECTION_REF,

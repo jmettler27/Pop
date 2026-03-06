@@ -5,14 +5,14 @@ import { QuestionType } from '@/backend/models/questions/QuestionType';
 
 import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/GameProgressiveCluesQuestionRepository';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import ClearBuzzerButton from '@/frontend/components/game/main-pane/question/buzzer/ClearBuzzerButton';
 import BuzzerHeadPlayer from '@/frontend/components/game/main-pane/question/buzzer/BuzzerHeadPlayer';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
@@ -33,7 +33,7 @@ const messages = defineMessages('frontend.game.bottom.BuzzerOrganizerController'
 
 export default function BuzzerOrganizerController({ baseQuestion, questionPlayers: questionPlayers }) {
   const { id: gameId } = useParams();
-  const game = useGameContext();
+  const game = useGame();
 
   /* Set the state 'focus' to the playerId which is the first element of the buzzed list */
   const { buzzed } = questionPlayers;
@@ -67,7 +67,7 @@ export default function BuzzerOrganizerController({ baseQuestion, questionPlayer
 
 function BuzzerOrganizerAnswerController({ buzzed, questionType }) {
   const intl = useIntl();
-  const game = useGameContext();
+  const game = useGame();
 
   const buzzedIsEmpty = buzzed.length === 0;
 
@@ -127,7 +127,7 @@ function BuzzerOrganizerQuestionController({ baseQuestion }) {
  */
 function NextClueButton({ baseQuestion }) {
   const intl = useIntl();
-  const game = useGameContext();
+  const game = useGame();
 
   const [handleClick, isLoadingNextClue] = useAsyncAction(async () => {
     await revealClue(game.id, game.currentRound, game.currentQuestion);

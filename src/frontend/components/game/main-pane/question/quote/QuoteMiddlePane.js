@@ -9,8 +9,9 @@ import { isObjectEmpty } from '@/backend/utils/objects';
 import { QuestionTypeIcon } from '@/backend/utils/question_types';
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/backend/utils/question';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
-import { useGameContext, useRoleContext } from '@/frontend/contexts';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
@@ -43,7 +44,7 @@ function QuoteQuestionHeader({ baseQuestion }) {
 }
 
 function QuoteMainContent({ baseQuestion }) {
-  const game = useGameContext();
+  const game = useGame();
 
   const gameQuestionRepo = new GameQuoteQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
@@ -108,8 +109,8 @@ function QuoteMainContent({ baseQuestion }) {
 }
 
 const DisplayedQuoteElement = ({ toGuess, revealed, quoteElement, quoteElementStr }) => {
-  const game = useGameContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myRole = useRole();
 
   const [handleQuoteElementClick, isSubmitting] = useAsyncAction(async () => {
     await revealQuoteElement(game.id, game.currentRound, game.currentQuestion, quoteElementStr);
@@ -149,8 +150,8 @@ const DisplayedQuoteElement = ({ toGuess, revealed, quoteElement, quoteElementSt
 };
 
 const DisplayedQuote = ({ toGuess, revealed, quote, quoteParts }) => {
-  const game = useGameContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myRole = useRole();
 
   const [handleQuotePartClick, isSubmitting] = useAsyncAction(async (quotePartIdx) => {
     await revealQuoteElement(game.id, game.currentRound, game.currentQuestion, 'quote', quotePartIdx);

@@ -2,7 +2,8 @@ import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 
-import { useGameContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
 
 import QuoteOrganizerController from '@/frontend/components/game/main-pane/question/quote/QuoteOrganizerController';
 import BuzzerSpectatorController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerSpectatorController';
@@ -10,7 +11,7 @@ import BuzzerPlayerController from '@/frontend/components/game/main-pane/questio
 import BuzzerPlayers from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayers';
 
 export default function QuoteBottomPane({ baseQuestion }) {
-  const game = useGameContext();
+  const game = useGame();
 
   const gameQuestionRepo = new GameQuoteQuestionRepository(game.id, game.currentRound);
   const { data: questionPlayers, loading, error } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
@@ -46,7 +47,7 @@ export default function QuoteBottomPane({ baseQuestion }) {
 }
 
 function QuoteController({ baseQuestion, questionPlayers }) {
-  const myRole = useRoleContext();
+  const myRole = useRole();
 
   switch (myRole) {
     case ParticipantRole.PLAYER:

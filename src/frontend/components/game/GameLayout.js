@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import { useGameRepositoriesContext } from '@/frontend/contexts';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import TopPane from '@/frontend/components/game/top-pane/TopPane';
 import MiddlePane from '@/frontend/components/game/main-pane/MiddlePane';
@@ -11,7 +11,7 @@ import Sidebar from '@/frontend/components/game/sidebar/Sidebar';
 // Container components to control re-rendering
 const TopPaneContainer = memo(function TopPaneContainer({}) {
   console.log('TopPaneContainer');
-  const { teamRepo, scoreRepo, playerRepo } = useGameRepositoriesContext();
+  const { teamRepo, scoreRepo, playerRepo } = useGameRepositories();
 
   const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeams();
   const { scores, loading: scoresLoading, error: scoresError } = scoreRepo.useScores();

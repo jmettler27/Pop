@@ -2,7 +2,8 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 
 import { RoundTypeIcon, ROUND_HEADER_TEXT } from '@/backend/utils/rounds';
 
-import { useGameContext, useGameRepositoriesContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import { useIntl } from 'react-intl';
 
@@ -15,11 +16,11 @@ import { useParams } from 'next/navigation';
 import globalMessages from '@/i18n/globalMessages';
 
 export default function RoundMiddlePane() {
-  const game = useGameContext();
+  const game = useGame();
   const params = useParams();
   const intl = useIntl();
 
-  const { roundRepo } = useGameRepositoriesContext();
+  const { roundRepo } = useGameRepositories();
   const { round, loading: roundLoading, error: roundError } = roundRepo.useRound(game.currentRound);
   console.log('Round in RoundMiddlePane', round);
 

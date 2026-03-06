@@ -3,14 +3,15 @@ import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/Qu
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { ParticipantRole } from '@/backend/models/users/Participant';
 
-import { useGameContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
 import { QuestionTypeIcon } from '@/backend/utils/question_types';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import MCQMainContent from '@/frontend/components/game/main-pane/question/mcq/MCQMainContent';
 
 export default function MCQMiddlePane({ baseQuestion }) {
-  const game = useGameContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myRole = useRole();
 
   return (
     <div className="flex flex-col h-full items-center">

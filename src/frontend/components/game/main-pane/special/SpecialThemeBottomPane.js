@@ -1,4 +1,4 @@
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { doc } from 'firebase/firestore';
@@ -11,7 +11,7 @@ import SpecialThemeEndBottomPane from '@/frontend/components/game/main-pane/spec
 import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
 
 export default function SpecialThemeBottomPane({ round }) {
-  const game = useGameContext();
+  const game = useGame();
 
   const currentThemeId = round.currentTheme;
   const baseThemeRef = doc(QUESTIONS_COLLECTION_REF, currentThemeId);

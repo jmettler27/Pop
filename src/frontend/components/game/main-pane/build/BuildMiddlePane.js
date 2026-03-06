@@ -1,9 +1,9 @@
 'use client';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 export default function BuildMiddlePane() {
-  const game = useGameContext();
+  const game = useGame();
 
   return (
     <div className="h-full flex flex-col items-center justify-center p-8 text-center">

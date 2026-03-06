@@ -2,7 +2,10 @@ import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 
-import { useGameContext, useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+
 import ValidateChallengerCitationButton from '@/frontend/components/game/main-pane/question/enumeration/ValidateChallengerCitationButton';
 
 import clsx from 'clsx';
@@ -12,7 +15,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
 export default function ChallengerCitationHelper({}) {
-  const game = useGameContext();
+  const game = useGame();
 
   const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound);
   const {
@@ -47,7 +50,7 @@ export default function ChallengerCitationHelper({}) {
 }
 
 function ChallengerName({ challengerId }) {
-  const { playerRepo } = useGameRepositoriesContext();
+  const { playerRepo } = useGameRepositories();
   const { player, loading: playerLoading, error: playerError } = playerRepo.usePlayer(challengerId);
 
   if (playerError) {
@@ -96,7 +99,7 @@ const progressToBarColor = {
 };
 
 function ChallengerProgress({ challenger }) {
-  const myRole = useRoleContext();
+  const myRole = useRole();
 
   const percentage = (challenger.numCorrect * 100) / challenger.bet;
   const cappedPercentage = Math.min(percentage, 100);

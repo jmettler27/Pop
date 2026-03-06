@@ -1,6 +1,6 @@
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import { getNodeId, MatchingEdge } from '@/frontend/components/game/main-pane/question/matching/gridUtils.js';
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
@@ -10,7 +10,7 @@ import { isObjectEmpty } from '@/backend/utils/objects';
 export default function CorrectMatches({ nodePositions, colIndices }) {
   console.log('CORRECT MATCHES RENDERED');
 
-  const game = useGameContext();
+  const game = useGame();
 
   const gameQuestionRepo = new GameMatchingQuestionRepository(game.id, game.currentRound);
   const { correctMatches, loading, error } = gameQuestionRepo.useCorrectMatches(game.currentQuestion);

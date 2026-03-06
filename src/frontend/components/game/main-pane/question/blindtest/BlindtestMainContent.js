@@ -3,7 +3,7 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
 
 import { useState, useRef, useEffect } from 'react';
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import NextImage from '@/frontend/components/common/NextImage';
 import { Box, Typography, Slider, IconButton, Stack } from '@mui/material';
@@ -18,7 +18,7 @@ import FastForwardIcon from '@mui/icons-material/FastForward';
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/backend/utils/question';
 
 export default function BlindtestMainContent({ baseQuestion }) {
-  const game = useGameContext();
+  const game = useGame();
 
   return (
     <>
@@ -31,7 +31,7 @@ export default function BlindtestMainContent({ baseQuestion }) {
 const DEFAULT_VOLUME = 0.25;
 
 function ActiveBlindtestMainContent({ baseQuestion }) {
-  const game = useGameContext();
+  const game = useGame();
 
   const audioRef = useRef(null);
   const [currentTime, setCurrentTime] = useState(0);

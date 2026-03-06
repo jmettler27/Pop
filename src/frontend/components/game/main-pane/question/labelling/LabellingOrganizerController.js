@@ -9,10 +9,11 @@ import {
 } from '@/backend/services/question/labelling/actions';
 import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+
 import globalMessages from '@/i18n/globalMessages';
 import { useIntl } from 'react-intl';
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import ClearBuzzerButton from '@/frontend/components/game/main-pane/question/buzzer/ClearBuzzerButton';
@@ -27,7 +28,7 @@ import { QuestionType } from '@/backend/models/questions/QuestionType';
 export default function LabellingOrganizerController({ baseQuestion, questionPlayers }) {
   const { id: gameId } = useParams();
 
-  const game = useGameContext();
+  const game = useGame();
 
   /* Set the state 'focus' to the playerId which is the first element of the buzzed list */
   const { buzzed } = questionPlayers;
@@ -54,7 +55,7 @@ export default function LabellingOrganizerController({ baseQuestion, questionPla
 }
 
 function LabelOrganizerAnswerController({ buzzed, baseQuestion }) {
-  const game = useGameContext();
+  const game = useGame();
 
   const gameQuestionRepo = new GameLabellingQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
@@ -92,7 +93,7 @@ function LabelOrganizerAnswerController({ buzzed, baseQuestion }) {
 
 function ValidateAllLabelsButton({ buzzed, gameQuestion }) {
   const intl = useIntl();
-  const game = useGameContext();
+  const game = useGame();
 
   const atLeastOneRevealed = gameQuestion.atLeastOneLabelIsRevealed();
   const buzzedIsEmpty = isEmpty(buzzed);
@@ -115,7 +116,7 @@ function ValidateAllLabelsButton({ buzzed, gameQuestion }) {
 
 function CancelLabelButton({ buzzed }) {
   const intl = useIntl();
-  const game = useGameContext();
+  const game = useGame();
 
   const buzzedIsEmpty = isEmpty(buzzed);
 

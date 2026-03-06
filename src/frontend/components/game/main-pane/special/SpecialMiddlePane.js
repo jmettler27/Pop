@@ -1,16 +1,16 @@
 import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
 
-import { useGameContext } from '@/frontend/contexts';
-import { useGameRepositoriesContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import SpecialHomeMiddlePane from '@/frontend/components/game/main-pane/special/home/SpecialHomeMiddlePane';
 import SpecialThemeMiddlePane from '@/frontend/components/game/main-pane/special/theme/SpecialThemeMiddlePane';
 
 export default function SpecialMiddlePane({}) {
-  const game = useGameContext();
+  const game = useGame();
 
-  const { roundRepo } = useGameRepositoriesContext();
+  const { roundRepo } = useGameRepositories();
   const { round, roundLoading, roundError } = roundRepo.useRound(game.currentRound);
 
   if (roundError) {

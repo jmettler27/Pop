@@ -1,10 +1,11 @@
 import { resetQuestion } from '@/backend/services/question/actions';
 
-import { useGameContext, useGameRepositoriesContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { Button } from '@mui/material';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
@@ -23,8 +24,8 @@ const messages = defineMessages('frontend.game.bottom.ResetQuestionButton', {
  */
 export default function ResetQuestionButton({ questionType }) {
   const intl = useIntl();
-  const game = useGameContext();
-  const { playerRepo } = useGameRepositoriesContext();
+  const game = useGame();
+  const { playerRepo } = useGameRepositories();
 
   const [handleResetQuestion, isResetting] = useAsyncAction(async () => {
     const playerIds = await playerRepo.getAllPlayerIds();

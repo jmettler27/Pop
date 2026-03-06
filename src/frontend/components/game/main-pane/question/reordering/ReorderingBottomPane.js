@@ -6,7 +6,10 @@ import globalMessages from '@/i18n/globalMessages';
 
 import { List, ListItem, ListItemText } from '@mui/material';
 
-import { useGameContext, useRoleContext, useGameRepositoriesContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+
 import { ParticipantRole } from '@/backend/models/users/Participant';
 import GameReorderingQuestionRepository from '@/backend/repositories/question/GameReorderingQuestionRepository';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
@@ -18,7 +21,7 @@ const messages = defineMessages('frontend.game.bottom.ReorderingBottomPane', {
 });
 
 export default function ReorderingBottomPane({ baseQuestion }) {
-  const game = useGameContext();
+  const game = useGame();
   const gameQuestionRepo = new GameReorderingQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
@@ -52,7 +55,7 @@ export default function ReorderingBottomPane({ baseQuestion }) {
 }
 
 function ReorderingController() {
-  const myRole = useRoleContext();
+  const myRole = useRole();
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-2">
@@ -72,7 +75,7 @@ function ReorderingOrganizerController() {
 
 function ReorderingSubmittedTeams({ gameQuestion }) {
   const intl = useIntl();
-  const { teamRepo } = useGameRepositoriesContext();
+  const { teamRepo } = useGameRepositories();
   const { teams, loading, error } = teamRepo.useAllTeamsOnce();
 
   if (error) {

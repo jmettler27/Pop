@@ -11,7 +11,7 @@ import defineMessages from '@/utils/defineMessages';
 import globalMessages from '@/i18n/globalMessages';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { MyNumberInput, MyTextInput } from '@/frontend/components/common/StyledFormComponents';
 import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';

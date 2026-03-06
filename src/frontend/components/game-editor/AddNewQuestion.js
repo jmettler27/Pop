@@ -16,7 +16,7 @@ const messages = defineMessages('frontend.gameEditor.AddNewQuestion', {
   addToRoundDialogTitle: 'Add this question to the round?',
   addToRound: 'Add',
 });
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { CardContent, Card } from '@/frontend/components/card';
 import { QuestionCard } from '@/frontend/components/common/QuestionCard';

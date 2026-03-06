@@ -18,7 +18,7 @@ const messages = defineMessages('frontend.forms.submitQuestion.image', {
 });
 import { getFileFromRef, imageFileSchema } from '@/frontend/utils/forms/files';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import { MyTextInput } from '@/frontend/components/common/StyledFormComponents';

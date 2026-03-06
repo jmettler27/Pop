@@ -3,14 +3,14 @@ import RoundScoreRepository from '@/backend/repositories/score/RoundScoreReposit
 import { rankingToEmoji } from '@/backend/utils/emojis';
 import { RoundTypeIcon } from '@/backend/utils/rounds';
 
-import { useGameRepositoriesContext } from '@/frontend/contexts';
+import { memo } from 'react';
+
 import globalMessages from '@/i18n/globalMessages';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-
 import { useIntl } from 'react-intl';
 
-import { memo } from 'react';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+
+import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 import { Accordion, AccordionSummary, AccordionDetails, Typography, CircularProgress } from '@mui/material';
 
@@ -30,7 +30,7 @@ const GameRoundsProgressHeader = memo(function GameRoundsProgressHeader({ gameTi
 });
 
 const GameRoundsProgress = memo(function GameRoundsProgress({ gameId }) {
-  const { teamRepo, roundRepo } = useGameRepositoriesContext();
+  const { teamRepo, roundRepo } = useGameRepositories();
   const { startedRounds, roundsLoading, roundsError } = roundRepo.useAllRoundsOnce({
     where: { field: 'order', operator: '!=', value: null },
     orderBy: { field: 'order', direction: 'asc' },

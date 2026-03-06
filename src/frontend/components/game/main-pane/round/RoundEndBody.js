@@ -1,6 +1,6 @@
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 
-import { useGameRepositoriesContext } from '@/frontend/contexts';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
@@ -23,7 +23,7 @@ export default function RoundEndBody({ currentRound }) {
   const { id: gameId } = useParams();
   const intl = useIntl();
 
-  const { teamRepo } = useGameRepositoriesContext();
+  const { teamRepo } = useGameRepositories();
   const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeamsOnce();
 
   const roundScoreRepo = new RoundScoreRepository(gameId, currentRound.id);

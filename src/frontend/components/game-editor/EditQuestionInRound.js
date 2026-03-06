@@ -7,7 +7,7 @@ import React, { useState, memo } from 'react';
 import { CardTitle, CardHeader, CardContent, Card, CardFooter } from '@/frontend/components/card';
 import { QuestionCardTitle, QuestionCardContent } from '@/frontend/components/common/QuestionCard';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import globalMessages from '@/i18n/globalMessages';
 import { useIntl } from 'react-intl';

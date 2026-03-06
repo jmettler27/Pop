@@ -4,9 +4,10 @@ import { returnToGameHome } from '@/backend/services/game/actions';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
-import { useGameContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
 
 import GameChooserTeamAnnouncement from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import GoGameHomeButton from '@/frontend/components/game/main-pane/GoGameHomeButton';
@@ -21,8 +22,8 @@ const messages = defineMessages('frontend.game.bottom.RoundEndBottomPane', {
 export default function RoundEndBottomPane({ endedRound }) {
   const intl = useIntl();
   const { id: gameId } = useParams();
-  const myRole = useRoleContext();
-  const game = useGameContext();
+  const myRole = useRole();
+  const game = useGame();
 
   const [handleClick, isHandling] = useAsyncAction(async () => {
     await returnToGameHome(gameId);

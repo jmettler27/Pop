@@ -2,7 +2,7 @@ import { togglePlayerAuthorization } from '@/backend/services/player/actions';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { useParams } from 'next/navigation';
 

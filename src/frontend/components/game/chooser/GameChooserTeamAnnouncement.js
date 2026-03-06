@@ -9,12 +9,15 @@ const messages = defineMessages('frontend.game.GameChooserTeamAnnouncement', {
   toChoose: 'choose',
 });
 
-import { useGameContext, useGameRepositoriesContext, useRoleContext, useTeamContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+import useTeam from '@/frontend/hooks/useTeam';
 
 export default function GameChooserTeamAnnouncement({}) {
-  const game = useGameContext();
+  const game = useGame();
 
-  const { chooserRepo } = useGameRepositoriesContext();
+  const { chooserRepo } = useGameRepositories();
   const { chooser, chooserLoading, chooserError } = chooserRepo.useChooser();
 
   if (chooserError) {
@@ -37,12 +40,12 @@ export default function GameChooserTeamAnnouncement({}) {
 }
 
 export function GameChooserHelperText({ chooserTeamId }) {
-  const game = useGameContext();
-  const myTeam = useTeamContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myTeam = useTeam();
+  const myRole = useRole();
   const intl = useIntl();
 
-  const { teamRepo, playerRepo, chooserRepo } = useGameRepositoriesContext();
+  const { teamRepo, playerRepo, chooserRepo } = useGameRepositories();
 
   const { team, loading: teamLoading, error: teamError } = teamRepo.useTeam(chooserTeamId);
   const { players, loading: playersLoading, error: playersError } = playerRepo.useTeamPlayers(chooserTeamId);

@@ -1,5 +1,5 @@
-import { useGameContext } from '@/frontend/contexts';
-import { useGameRepositoriesContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
@@ -14,7 +14,7 @@ import GameScoresChart from '@/frontend/components/scores/GameScoresChart';
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 
 export default function GameEndMiddlePane({}) {
-  const game = useGameContext();
+  const game = useGame();
   const intl = useIntl();
 
   return (
@@ -32,9 +32,9 @@ export default function GameEndMiddlePane({}) {
 }
 
 function GameEndBody() {
-  const game = useGameContext();
+  const game = useGame();
 
-  const { roundRepo, teamRepo, scoreRepo } = useGameRepositoriesContext();
+  const { roundRepo, teamRepo, scoreRepo } = useGameRepositories();
   const roundScoreRepo = new RoundScoreRepository(game.id, game.currentRound);
 
   const {

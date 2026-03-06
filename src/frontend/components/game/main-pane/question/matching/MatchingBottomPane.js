@@ -5,7 +5,10 @@ import { GameMatchingQuestion } from '@/backend/models/questions/Matching';
 
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 
-import { useGameContext, useGameRepositoriesContext, useRoleContext, useTeamContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+import useTeam from '@/frontend/hooks/useTeam';
 import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
@@ -27,7 +30,7 @@ const messages = defineMessages('frontend.game.bottom.MatchingBottomPane', {
 });
 
 export default function MatchingBottomPane({}) {
-  const { chooserRepo } = useGameRepositoriesContext();
+  const { chooserRepo } = useGameRepositories();
   const { chooser, loading, error } = chooserRepo.useChooser();
 
   if (error) {
@@ -57,7 +60,7 @@ export default function MatchingBottomPane({}) {
 }
 
 function MatchingController({ chooser }) {
-  const myRole = useRoleContext();
+  const myRole = useRole();
 
   const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx];
 
@@ -74,10 +77,10 @@ function MatchingController({ chooser }) {
 
 function MatchingPlayerQuestionController() {
   const intl = useIntl();
-  const game = useGameContext();
-  const myTeam = useTeamContext();
+  const game = useGame();
+  const myTeam = useTeam();
 
-  const { roundRepo } = useGameRepositoriesContext();
+  const { roundRepo } = useGameRepositories();
   const { round, roundLoading, roundError } = roundRepo.useRound(game.currentRound);
 
   const gameQuestionRepo = new GameMatchingQuestionRepository(game.id, game.currentRound);
@@ -138,12 +141,12 @@ function MatchingOrganizerQuestionController({}) {
 
 function MatchingRunningOrder({ chooser }) {
   const intl = useIntl();
-  const game = useGameContext();
+  const game = useGame();
 
   const gameQuestionRepo = new GameMatchingQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  const { teamRepo } = useGameRepositoriesContext();
+  const { teamRepo } = useGameRepositories();
   const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeams();
 
   if (gameQuestionError) {

@@ -10,18 +10,16 @@ import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { shuffleIndices } from '@/backend/utils/arrays';
 import { QuestionTypeIcon } from '@/backend/utils/question_types';
 
-import {
-  useGameContext,
-  useGameRepositoriesContext,
-  useRoleContext,
-  useTeamContext,
-  useUserContext,
-} from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useTeam from '@/frontend/hooks/useTeam';
+import useUser from '@/frontend/hooks/useUser';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import NoteButton from '@/frontend/components/game/NoteButton';
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { useEffect, useMemo, useState } from 'react';
 
@@ -84,11 +82,11 @@ function OddOneOutQuestionHeader({ baseQuestion }) {
 }
 
 function OddOneOutMainContent({ baseQuestion, randomization }) {
-  const game = useGameContext();
-  const myTeam = useTeamContext();
+  const game = useGame();
+  const myTeam = useTeam();
 
   const gameQuestionRepo = new GameOddOneOutQuestionRepository(game.id, game.currentRound);
-  const { chooserRepo, timerRepo } = useGameRepositoriesContext();
+  const { chooserRepo, timerRepo } = useGameRepositories();
 
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
   const { isChooser, chooserLoading, chooserError } = chooserRepo.useIsChooser(myTeam);
@@ -134,8 +132,8 @@ function OddOneOutMainContent({ baseQuestion, randomization }) {
 }
 
 function OddOneOutProposals({ baseQuestion, randomization, selectedItems, isChooser, authorized }) {
-  const game = useGameContext();
-  const user = useUserContext();
+  const game = useGame();
+  const user = useUser();
 
   const [handleSelectProposal, isSubmitting] = useAsyncAction(async (idx) => {
     await selectProposal(game.id, game.currentRound, game.currentQuestion, user.id, idx);
@@ -193,8 +191,8 @@ function ProposalItem({
   authorized,
   isSubmitting,
 }) {
-  const game = useGameContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myRole = useRole();
 
   const isClicked = selectedItem != null;
   const showExplanation = game.status === GameStatus.QUESTION_END || isClicked;
@@ -251,7 +249,7 @@ function ProposalItem({
 }
 
 function SelectedProposalPlayerAvatar({ playerId }) {
-  const { playerRepo } = useGameRepositoriesContext();
+  const { playerRepo } = useGameRepositories();
   const { player, loading, error } = playerRepo.usePlayerOnce(playerId);
   console.log('SELECTED PROPOSAL PLAYER', playerId, player, loading, error);
   return !error && !loading && player && <Avatar alt={player.name} src={player.image} sx={{ width: 25, height: 25 }} />;

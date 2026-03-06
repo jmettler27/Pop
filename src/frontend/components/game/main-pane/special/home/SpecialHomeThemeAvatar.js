@@ -6,15 +6,16 @@ import { QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { doc } from 'firebase/firestore';
 import { useDocument } from 'react-firebase-hooks/firestore';
 
-import { useGameContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { Button, Tooltip, CircularProgress, Badge } from '@mui/material';
 
 export default function SpecialHomeThemeAvatar({ gameTheme, isChooser }) {
-  const game = useGameContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myRole = useRole();
 
   const [handleSelectTheme, isStartingTheme] = useAsyncAction(async (themeId) => {
     await startTheme(game.id, game.currentRound, themeId);

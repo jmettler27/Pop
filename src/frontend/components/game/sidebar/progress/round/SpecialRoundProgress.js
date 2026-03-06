@@ -15,7 +15,7 @@ import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/fireba
 import { doc, collection, query, where, orderBy } from 'firebase/firestore';
 import { useDocumentData, useCollection, useCollectionOnce, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 
-import { useRoleContext } from '@/frontend/contexts';
+import useRole from '@/frontend/hooks/useRole';
 
 import { useParams } from 'next/navigation';
 
@@ -247,7 +247,7 @@ function ThemeSectionAccordion({
   currentGameSection,
   playerTeam,
 }) {
-  const myRole = useRoleContext();
+  const myRole = useRole();
   const showComplete = myRole === ParticipantRole.ORGANIZER || hasEnded || isCurrent;
   console.log(sectionId, showComplete);
 

@@ -2,9 +2,9 @@ import { handleAnswer } from '@/backend/services/question/basic/actions';
 import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import ClearBasicBuzzerButton from '@/frontend/components/game/main-pane/question/basic/ClearBasicBuzzerButton';
@@ -25,7 +25,7 @@ export default function BasicQuestionOrganizerController({ gameQuestion }) {
 
 function BasicQuestionOrganizerAnswerController({ gameQuestion }) {
   const intl = useIntl();
-  const game = useGameContext();
+  const game = useGame();
 
   const [validateBasicAnswer, isValidating] = useAsyncAction(async () => {
     await handleAnswer(game.id, game.currentRound, game.currentQuestion, gameQuestion.teamId, true);

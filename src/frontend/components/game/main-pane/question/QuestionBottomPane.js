@@ -1,6 +1,6 @@
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import QuestionActiveBottomPane from '@/frontend/components/game/main-pane/question/QuestionActiveBottomPane';
 import QuestionEndBottomPane from '@/frontend/components/game/main-pane/question/QuestionEndBottomPane';
@@ -21,7 +21,7 @@ export default function QuestionBottomPane() {
 }
 
 const SelectedQuestionBottomPane = ({}) => {
-  const game = useGameContext();
+  const game = useGame();
 
   switch (game.status) {
     case GameStatus.QUESTION_ACTIVE:

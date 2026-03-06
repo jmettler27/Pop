@@ -10,7 +10,7 @@ import ActiveMatchingQuestionGrid from '@/frontend/components/game/main-pane/que
 import EndedMatchingQuestionGrid from '@/frontend/components/game/main-pane/question/matching/EndedMatchingQuestionGrid';
 import { generateShuffledNodePositions } from '@/frontend/components/game/main-pane/question/matching/gridUtils.js';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 import { useMemo } from 'react';
 
 export default function MatchingMiddlePane({ baseQuestion }) {
@@ -47,7 +47,7 @@ function MatchingQuestionHeader({ baseQuestion }) {
 }
 
 function MatchingQuestionGrid({ baseQuestion }) {
-  const game = useGameContext();
+  const game = useGame();
 
   const answer = baseQuestion.answer;
   const numCols = baseQuestion.numCols;

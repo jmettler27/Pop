@@ -1,8 +1,8 @@
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import GameErrorScreen from '@/frontend/components/game/GameErrorScreen';
 
-import { useGameContext } from '@/frontend/contexts';
-import { useGameRepositoriesContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import { Stack, Avatar } from '@mui/material';
 
@@ -14,10 +14,10 @@ const messages = defineMessages('frontend.game.middlePane.GameStartMiddlePane', 
 });
 
 export default function GameStartMiddlePane({}) {
-  const game = useGameContext();
+  const game = useGame();
   const intl = useIntl();
 
-  const { organizerRepo } = useGameRepositoriesContext();
+  const { organizerRepo } = useGameRepositories();
   const {
     organizers,
     loading: organizersLoading,

@@ -2,9 +2,10 @@ import { startGame } from '@/backend/services/game/actions';
 
 import { ParticipantRole } from '@/backend/models/users/Participant';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
-import { useGameContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
 
 import GoGameHomeButton from '@/frontend/components/game/main-pane/GoGameHomeButton';
 import TimerPane from '@/frontend/components/game/timer/TimerPane';
@@ -25,7 +26,7 @@ export default function GameStartBottomPane() {
 }
 
 function GameStartController({}) {
-  const myRole = useRoleContext();
+  const myRole = useRole();
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-5">
@@ -36,7 +37,7 @@ function GameStartController({}) {
 }
 
 function GameStartOrganizerController() {
-  const game = useGameContext();
+  const game = useGame();
 
   const [handleStartGame, isStarting] = useAsyncAction(async () => {
     await startGame(game.id);

@@ -1,13 +1,13 @@
 import { useIntl } from 'react-intl';
 import globalMessages from '@/i18n/globalMessages';
 
-import { useGameRepositoriesContext } from '@/frontend/contexts';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import clsx from 'clsx';
 
 export default function GameChooserOrder({ chooser }) {
   const intl = useIntl();
-  const { teamRepo } = useGameRepositoriesContext();
+  const { teamRepo } = useGameRepositories();
   const { teams, loading, error } = teamRepo.useAllTeams();
 
   if (error) {

@@ -11,9 +11,9 @@ import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
@@ -33,7 +33,7 @@ import { QuestionType } from '@/backend/models/questions/QuestionType';
 export default function QuoteOrganizerController({ baseQuestion, questionPlayers }) {
   const { id: gameId } = useParams();
 
-  const game = useGameContext();
+  const game = useGame();
 
   /* Set the state 'focus' to the playerId which is the first element of the buzzed list */
   const { buzzed } = questionPlayers;
@@ -60,7 +60,7 @@ export default function QuoteOrganizerController({ baseQuestion, questionPlayers
 }
 
 function QuoteOrganizerAnswerController({ buzzed, baseQuestion }) {
-  const game = useGameContext();
+  const game = useGame();
 
   const gameQuestionRepo = new GameQuoteQuestionRepository(game.id, game.currentRound);
   const {
@@ -105,7 +105,7 @@ function QuoteOrganizerAnswerController({ buzzed, baseQuestion }) {
 
 function ValidateAllQuoteElementsButton({ buzzed, gameQuestion }) {
   const intl = useIntl();
-  const game = useGameContext();
+  const game = useGame();
 
   const atLeastOneRevealed = gameQuestion.atLeastOneElementRevealed();
   const buzzedIsEmpty = isEmpty(buzzed);
@@ -128,7 +128,7 @@ function ValidateAllQuoteElementsButton({ buzzed, gameQuestion }) {
 
 function CancelQuoteElementButton({ buzzed }) {
   const intl = useIntl();
-  const game = useGameContext();
+  const game = useGame();
 
   const buzzedIsEmpty = isEmpty(buzzed);
 

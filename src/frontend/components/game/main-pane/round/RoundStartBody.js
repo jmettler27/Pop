@@ -4,7 +4,7 @@ import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { collection } from 'firebase/firestore';
 import { useCollection } from 'react-firebase-hooks/firestore';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { RoundType } from '@/backend/models/rounds/RoundType';
@@ -64,7 +64,7 @@ function RoundGeneralInfo({ round }) {
 }
 
 function SpecialNumThemes({ round }) {
-  const game = useGameContext();
+  const game = useGame();
   const [themes, themesLoading, themesError] = useCollection(
     collection(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'themes')
   );
@@ -72,7 +72,7 @@ function SpecialNumThemes({ round }) {
 }
 
 function RoundScorePolicy({ round }) {
-  const game = useGameContext();
+  const game = useGame();
 
   return (
     <>

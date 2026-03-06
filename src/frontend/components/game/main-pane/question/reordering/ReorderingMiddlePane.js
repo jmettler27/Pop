@@ -2,7 +2,8 @@
 
 import { useMemo } from 'react';
 
-import { useGameContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
 import GameReorderingQuestionRepository from '@/backend/repositories/question/GameReorderingQuestionRepository';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { shuffleIndices } from '@/backend/utils/arrays';
@@ -13,8 +14,8 @@ import ReorderingPlayerPane from './ReorderingPlayerPane';
 import ReorderingSpectatorPane from './ReorderingSpectatorPane';
 
 export default function ReorderingMiddlePane({ baseQuestion }) {
-  const game = useGameContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myRole = useRole();
 
   // Initialize random order (consistent for the session)
   const randomMapping = useMemo(() => shuffleIndices(baseQuestion.items.length), [baseQuestion.items.length]);

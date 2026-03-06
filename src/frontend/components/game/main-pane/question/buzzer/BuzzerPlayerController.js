@@ -2,9 +2,11 @@ import { addPlayerToBuzzer, removePlayerFromBuzzer } from '@/backend/services/qu
 import { PlayerStatus } from '@/backend/models/users/Player';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
-import { useGameContext, useGameRepositoriesContext, useUserContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useUser from '@/frontend/hooks/useUser';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
@@ -22,10 +24,10 @@ const messages = defineMessages('frontend.game.BuzzerPlayerController', {
 });
 
 export default function BuzzerPlayerController({ questionPlayers }) {
-  const game = useGameContext();
-  const user = useUserContext();
+  const game = useGame();
+  const user = useUser();
 
-  const { playerRepo, roundRepo } = useGameRepositoriesContext();
+  const { playerRepo, roundRepo } = useGameRepositories();
   const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(
     game.currentQuestionType,
     game.id,
@@ -152,8 +154,8 @@ function remainingWaitingClues(round, hasExceededMaxTries, currentClueIdx, myCan
 }
 
 function BuzzerButton({ isDisabled, questionType }) {
-  const game = useGameContext();
-  const user = useUserContext();
+  const game = useGame();
+  const user = useUser();
 
   const [handleBuzz, isBuzzing] = useAsyncAction(async () => {
     await addPlayerToBuzzer(questionType, game.id, game.currentRound, game.currentQuestion, user.id);
@@ -175,8 +177,8 @@ function BuzzerButton({ isDisabled, questionType }) {
 }
 
 function BuzzerResetButton({ isDisabled, questionType }) {
-  const game = useGameContext();
-  const user = useUserContext();
+  const game = useGame();
+  const user = useUser();
 
   const [handleResetBuzz, isResetting] = useAsyncAction(async () => {
     await removePlayerFromBuzzer(questionType, game.id, game.currentRound, game.currentQuestion, user.id);

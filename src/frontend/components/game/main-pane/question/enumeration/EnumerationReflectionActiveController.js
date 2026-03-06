@@ -7,15 +7,17 @@ import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { range } from '@/backend/utils/arrays';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
+import useTeam from '@/frontend/hooks/useTeam';
+import useUser from '@/frontend/hooks/useUser';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+
+import { useState } from 'react';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 import globalMessages from '@/i18n/globalMessages';
-
-import { useGameContext, useRoleContext, useTeamContext, useUserContext } from '@/frontend/contexts';
-
-import { useState } from 'react';
 
 import {
   Button,
@@ -37,7 +39,7 @@ const messages = defineMessages('frontend.game.bottom.EnumerationReflectionActiv
 });
 
 export default function EnumerationReflectionActiveController({ baseQuestion, timer }) {
-  const myRole = useRoleContext();
+  const myRole = useRole();
 
   console.log('EnumerationReflectionActiveController', { baseQuestion, timer, myRole });
 
@@ -60,9 +62,9 @@ function EnumPlayerReflectionActive({ baseQuestion, timer }) {
 
 function AddBetForm({ baseQuestion, status }) {
   const intl = useIntl();
-  const game = useGameContext();
-  const user = useUserContext();
-  const myTeam = useTeamContext();
+  const game = useGame();
+  const user = useUser();
+  const myTeam = useTeam();
 
   console.log('AddBetForm', { baseQuestion, status, user, myTeam });
 

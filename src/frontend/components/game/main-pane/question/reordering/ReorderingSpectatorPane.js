@@ -4,13 +4,13 @@ import { useState } from 'react';
 
 import { List, ListItemButton, Typography } from '@mui/material';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
 import { ReorderingQuestionHeader, ReorderingItemAccordion } from './ReorderingCommon';
 
 export default function ReorderingSpectatorPane({ baseQuestion, randomMapping }) {
-  const game = useGameContext();
+  const game = useGame();
 
   return (
     <div className="flex flex-col h-full items-center">

@@ -8,13 +8,11 @@ import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { shuffleIndices } from '@/backend/utils/arrays';
 
-import {
-  useUserContext,
-  useGameContext,
-  useRoleContext,
-  useTeamContext,
-  useGameRepositoriesContext,
-} from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useTeam from '@/frontend/hooks/useTeam';
+import useUser from '@/frontend/hooks/useUser';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import NoteButton from '@/frontend/components/game/NoteButton';
@@ -80,7 +78,7 @@ function NaguiAnswerImage({ correct }) {
 }
 
 function NaguiMainContentQuestion({ baseQuestion, randomization }) {
-  const game = useGameContext();
+  const game = useGame();
 
   const gameQuestionRepo = new GameNaguiQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
@@ -124,13 +122,13 @@ const choiceIsDisabled = (choiceIdx, myRole, isChooser, option, duoIdx, answerId
   return true;
 };
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 function ActiveNaguiChoices({ baseQuestion, gameQuestion, randomization }) {
-  const game = useGameContext();
-  const myTeam = useTeamContext();
-  const myRole = useRoleContext();
-  const user = useUserContext();
+  const game = useGame();
+  const myTeam = useTeam();
+  const myRole = useRole();
+  const user = useUser();
 
   const choices = baseQuestion.choices;
   const answerIdx = baseQuestion.answerIdx;
@@ -262,7 +260,7 @@ function EndedNaguiChoices({ baseQuestion, gameQuestion, randomization }) {
 }
 
 function PlayerAvatar({ playerId }) {
-  const { playerRepo } = useGameRepositoriesContext();
+  const { playerRepo } = useGameRepositories();
   const { player, playerLoading, playerError } = playerRepo.usePlayerOnce(playerId);
 
   return (

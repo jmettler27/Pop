@@ -3,7 +3,9 @@ import { ParticipantRole } from '@/backend/models/users/Participant';
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 
-import { useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+
 import NaguiOptionFactory from '@/backend/models/questions/NaguiOptionFactory';
 
 const messages = defineMessages('frontend.game.bottom.NaguiPlayerOptionHelperText', {
@@ -12,9 +14,9 @@ const messages = defineMessages('frontend.game.bottom.NaguiPlayerOptionHelperTex
 
 export default function NaguiPlayerOptionHelperText({ gameQuestion }) {
   const intl = useIntl();
-  const myRole = useRoleContext();
+  const myRole = useRole();
 
-  const { playerRepo, teamRepo } = useGameRepositoriesContext();
+  const { playerRepo, teamRepo } = useGameRepositories();
   const { player, playerLoading, playerError } = playerRepo.usePlayerOnce(gameQuestion.playerId);
   const { team, teamLoading, teamError } = teamRepo.useTeamOnce(gameQuestion.teamId);
 

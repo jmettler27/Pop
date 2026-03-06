@@ -2,12 +2,12 @@
 
 import { joinGame } from '@/backend/services/join-game/actions';
 
-import { useGameRepositories, useGameData } from '@/backend/repositories/useGameRepositories';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import Game from '@/backend/models/games/Game';
 import Team from '@/backend/models/Team';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import MyColorPicker from '@/frontend/components/common/MyColorPicker';
 import {
@@ -77,6 +77,26 @@ function JoinGameHeader() {
     </>
   );
 }
+
+const useGameData = (gameId) => {
+  const repositories = useGameRepositories(gameId);
+
+  const { game, loading: gameLoading, error: gameError } = repositories.gameRepo.useGameOnce(gameId);
+  const {
+    organizers,
+    loading: orgLoading,
+    error: orgError,
+  } = repositories.organizerRepo.useAllOrganizerIdentitiesOnce();
+  const { players, loading: playerLoading, error: playerError } = repositories.playerRepo.useAllPlayerIdentitiesOnce();
+
+  return {
+    game,
+    organizers,
+    players,
+    loading: gameLoading || orgLoading || playerLoading,
+    error: gameError || orgError || playerError,
+  };
+};
 
 export default function Page({ params }) {
   const { data: session } = useSession();

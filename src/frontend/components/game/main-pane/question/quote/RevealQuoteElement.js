@@ -9,9 +9,9 @@ import { revealQuoteElement } from '@/backend/services/question/quote/actions';
 
 import { isEmpty } from '@/backend/utils/arrays';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
@@ -193,7 +193,7 @@ function RevealQuotePartItemButton({ gameQuestion, quote, quoteParts, setQuotePa
 
 function RevealQuoteElementDialog({ baseQuestion, quoteElem, quoteParts, quotePartIdx, dialogOpen, onDialogClose }) {
   const intl = useIntl();
-  const game = useGameContext();
+  const game = useGame();
 
   const [handleRevealQuoteElement, isRevealing] = useAsyncAction(async () => {
     await revealQuoteElement(game.id, game.currentRound, game.currentQuestion, quoteElem, quotePartIdx);

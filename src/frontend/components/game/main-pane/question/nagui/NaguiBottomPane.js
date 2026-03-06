@@ -2,7 +2,9 @@ import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import GameNaguiQuestionRepository from '@/backend/repositories/question/GameNaguiQuestionRepository';
 
-import { useGameContext, useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
 
 import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
@@ -13,7 +15,7 @@ import NaguiOrganizerController from '@/frontend/components/game/main-pane/quest
 import { CircularProgress } from '@mui/material';
 
 export default function NaguiBottomPane({ question: baseQuestion }) {
-  const { chooserRepo } = useGameRepositoriesContext();
+  const { chooserRepo } = useGameRepositories();
   const { chooser, loading: chooserLoading, error: chooserError } = chooserRepo.useChooser();
   if (chooserError) {
     return (
@@ -45,8 +47,8 @@ export default function NaguiBottomPane({ question: baseQuestion }) {
 }
 
 function NaguiController({ chooser }) {
-  const game = useGameContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myRole = useRole();
 
   const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx];
 

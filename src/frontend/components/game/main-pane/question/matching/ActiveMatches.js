@@ -14,14 +14,17 @@ import SubmitMatchDialog from '@/frontend/components/game/main-pane/question/mat
 
 import { useState } from 'react';
 
-import { useGameContext, useGameRepositoriesContext, useRoleContext, useTeamContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+import useTeam from '@/frontend/hooks/useTeam';
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import { isObjectEmpty } from '@/backend/utils/objects';
 
 export default function ActiveMatches({ answer, nodePositions, numCols }) {
   console.log('ACTIVE MATCHES RENDERED');
 
-  const myRole = useRoleContext();
+  const myRole = useRole();
 
   const [edges, setEdges] = useState([]);
   const [newEdgeSource, setNewEdgeSource] = useState(null);
@@ -88,11 +91,11 @@ function ActiveMatchingQuestionNodes({
 }) {
   console.log('ACTIVE MATCHING QUESTION NODES RENDERED');
 
-  const game = useGameContext();
-  const myTeam = useTeamContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myTeam = useTeam();
+  const myRole = useRole();
 
-  const { chooserRepo } = useGameRepositoriesContext();
+  const { chooserRepo } = useGameRepositories();
 
   const { isChooser, loading: isChooserLoading, error: isChooserError } = chooserRepo.useIsChooser(myTeam);
 

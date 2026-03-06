@@ -3,11 +3,11 @@ import { handleHideAnswer } from '@/backend/services/question/nagui/actions';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import globalMessages from '@/i18n/globalMessages';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { useIntl } from 'react-intl';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
@@ -44,7 +44,7 @@ export default function NaguiOrganizerController({ gameQuestion }) {
 
 function NaguiOrganizerHideAnswerController({ gameQuestion }) {
   const intl = useIntl();
-  const game = useGameContext();
+  const game = useGame();
 
   const [handleClick, isHandling] = useAsyncAction(async (correct) => {
     await handleHideAnswer(

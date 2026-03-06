@@ -1,10 +1,10 @@
 import { endQuestion } from '@/backend/services/question/actions';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { Button } from '@mui/material';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
@@ -21,7 +21,7 @@ const messages = defineMessages('frontend.game.bottom.EndQuestionButton', {
  */
 export default function EndQuestionButton({ questionType }) {
   const intl = useIntl();
-  const game = useGameContext();
+  const game = useGame();
 
   const [handleEndQuestion, isEnding] = useAsyncAction(async () => {
     await endQuestion(game.id, game.currentRound, game.currentQuestion, questionType);

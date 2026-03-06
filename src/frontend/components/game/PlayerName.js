@@ -1,7 +1,9 @@
 import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { useEffect, useState } from 'react';
-import { useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
+
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
 
 import { useParams } from 'next/navigation';
 
@@ -11,9 +13,9 @@ import { doc, getDoc } from 'firebase/firestore';
 export default function PlayerName({ playerId, teamColor = true }) {
   const { id: gameId } = useParams();
 
-  const myRole = useRoleContext();
+  const myRole = useRole();
 
-  const { playerRepo } = useGameRepositoriesContext();
+  const { playerRepo } = useGameRepositories();
   const { player, loading: playerLoading, error: playerError } = playerRepo.usePlayerOnce(playerId);
 
   const [team, setTeam] = useState(null);
@@ -67,9 +69,9 @@ export default function PlayerName({ playerId, teamColor = true }) {
 
 export function WinnerName({ playerId, teamId }) {
   console.log('WinnerName - playerId:', playerId, 'teamId:', teamId);
-  const myRole = useRoleContext();
+  const myRole = useRole();
 
-  const { playerRepo, teamRepo } = useGameRepositoriesContext();
+  const { playerRepo, teamRepo } = useGameRepositories();
   const { player, loading: playerLoading, error: playerError } = playerRepo.usePlayerOnce(playerId);
   const { team, loading: teamLoading, error: teamError } = teamRepo.useTeamOnce(teamId);
 

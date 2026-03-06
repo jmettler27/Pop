@@ -2,11 +2,13 @@ import { incrementValidItems } from '@/backend/services/question/enumeration/act
 
 import { TimerStatus } from '@/backend/models/Timer';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 
-import { useUserContext, useGameContext, useGameRepositoriesContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useUser from '@/frontend/hooks/useUser';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { CircularProgress, IconButton, Tooltip } from '@mui/material';
 import PlusOneIcon from '@mui/icons-material/PlusOne';
@@ -18,14 +20,14 @@ const messages = defineMessages('frontend.game.bottom.ValidateChallengerCitation
 
 export default function ValidateChallengerCitationButton() {
   const intl = useIntl();
-  const game = useGameContext();
-  const user = useUserContext();
+  const game = useGame();
+  const user = useUser();
 
   const [handleClick, isSubmitting] = useAsyncAction(async () => {
     await incrementValidItems(game.id, game.currentRound, game.currentQuestion, user.id);
   });
 
-  const { timerRepo } = useGameRepositoriesContext();
+  const { timerRepo } = useGameRepositories();
   const { timer, timerLoading, timerError } = timerRepo.useTimer();
 
   if (timerError) {

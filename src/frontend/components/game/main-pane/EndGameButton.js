@@ -4,7 +4,7 @@ import { endGame } from '@/backend/services/game/actions';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { Button } from '@mui/material';
 

@@ -1,14 +1,15 @@
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import { ParticipantRole } from '@/backend/models/users/Participant';
 
-import { useGameContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
 import BuzzerPlayers from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayers';
 import BuzzerPlayerController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayerController';
 import BuzzerSpectatorController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerSpectatorController';
 import LabellingOrganizerController from '@/frontend/components/game/main-pane/question/labelling/LabellingOrganizerController';
 
 export default function LabellingBottomPane({ baseQuestion }) {
-  const game = useGameContext();
+  const game = useGame();
   console.log('BuzzerBottomPane game', game, baseQuestion);
 
   const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(
@@ -50,7 +51,7 @@ export default function LabellingBottomPane({ baseQuestion }) {
 }
 
 function LabelController({ baseQuestion, questionPlayers }) {
-  const myRole = useRoleContext();
+  const myRole = useRole();
 
   switch (myRole) {
     case ParticipantRole.PLAYER:

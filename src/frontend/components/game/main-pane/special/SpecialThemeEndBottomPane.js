@@ -4,14 +4,15 @@ import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { collection } from 'firebase/firestore';
 import { useCollectionDataOnce } from 'react-firebase-hooks/firestore';
 
-import { useGameContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import GoSpecialHomeButton from '@/frontend/components/game/main-pane/special/GoSpecialHomeButton';
 import EndGameButton from '@/frontend/components/game/main-pane/EndGameButton';
 
 export default function SpecialThemeEndBottomPane({}) {
-  const myRole = useRoleContext();
+  const myRole = useRole();
 
   switch (myRole) {
     case ParticipantRole.ORGANIZER:
@@ -20,7 +21,7 @@ export default function SpecialThemeEndBottomPane({}) {
 }
 
 function SpecialThemeEndOrganizerBottomPane({}) {
-  const game = useGameContext();
+  const game = useGame();
 
   const [gameThemes, gameThemesLoading, gameThemesError] = useCollectionDataOnce(
     collection(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'themes')

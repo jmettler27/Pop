@@ -1,6 +1,9 @@
 import { ParticipantRole } from '@/backend/models/users/Participant';
 
-import { useGameContext, useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+
 import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import BasicQuestionOrganizerController from '@/frontend/components/game/main-pane/question/basic/BasicQuestionOrganizerController';
@@ -9,7 +12,7 @@ import { CircularProgress } from '@mui/material';
 import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
 
 export default function BasicQuestionBottomPane({}) {
-  const { chooserRepo } = useGameRepositoriesContext();
+  const { chooserRepo } = useGameRepositories();
   const { chooser, chooserLoading, chooserError } = chooserRepo.useChooser();
   if (chooserError) {
     return (
@@ -38,8 +41,8 @@ export default function BasicQuestionBottomPane({}) {
 }
 
 function BasicQuestionController({}) {
-  const game = useGameContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myRole = useRole();
 
   const gameQuestionRepo = new GameBasicQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useDocument(game.currentQuestion);

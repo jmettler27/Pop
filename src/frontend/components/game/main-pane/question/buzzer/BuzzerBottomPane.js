@@ -1,6 +1,7 @@
 import { ParticipantRole } from '@/backend/models/users/Participant';
 
-import { useGameContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
 
 import BuzzerPlayerController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayerController';
 import BuzzerOrganizerController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerOrganizerController';
@@ -9,7 +10,7 @@ import BuzzerPlayers from '@/frontend/components/game/main-pane/question/buzzer/
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 
 export default function BuzzerBottomPane({ baseQuestion }) {
-  const game = useGameContext();
+  const game = useGame();
   console.log('BuzzerBottomPane game', game, baseQuestion);
 
   const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(
@@ -52,7 +53,7 @@ export default function BuzzerBottomPane({ baseQuestion }) {
 }
 
 function BuzzerController({ baseQuestion, questionPlayers }) {
-  const myRole = useRoleContext();
+  const myRole = useRole();
   console.log('BuzzerController myRole', myRole);
 
   switch (myRole) {

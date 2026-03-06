@@ -1,4 +1,4 @@
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { collection, doc, increment } from 'firebase/firestore';
@@ -39,7 +39,7 @@ function ThemeTitle({ theme, gameTheme }) {
 
 function ThemeScores({ themeId }) {
   const intl = useIntl();
-  const game = useGameContext();
+  const game = useGame();
 
   const [gameSections, gameSectionsLoading, gameSectionsError] = useCollectionData(
     collection(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'themes', themeId, 'sections')

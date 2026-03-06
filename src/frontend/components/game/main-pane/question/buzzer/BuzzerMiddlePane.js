@@ -6,7 +6,8 @@ import { ParticipantRole } from '@/backend/models/users/Participant';
 import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
-import { useGameContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
 
 import ProgressiveCluesMainContent from '@/frontend/components/game/main-pane/question/progressive-clues/ProgressiveCluesMainContent';
 import ImageMainContent from '@/frontend/components/game/main-pane/question/image/ImageMainContent';
@@ -18,8 +19,8 @@ import BuzzerAnswer from '@/frontend/components/game/main-pane/question/buzzer/B
 import { clsx } from 'clsx';
 
 export default function BuzzerMiddlePane({ baseQuestion }) {
-  const myRole = useRoleContext();
-  const game = useGameContext();
+  const myRole = useRole();
+  const game = useGame();
 
   const showAnswer = game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER;
 

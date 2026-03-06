@@ -1,6 +1,6 @@
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import NextImage from '@/frontend/components/common/NextImage';
@@ -9,7 +9,7 @@ import { clsx } from 'clsx';
 import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/GameProgressiveCluesQuestionRepository';
 
 export default function ProgressiveCluesMainContent({ baseQuestion, showComplete }) {
-  const game = useGameContext();
+  const game = useGame();
 
   return (
     <>
@@ -22,7 +22,7 @@ export default function ProgressiveCluesMainContent({ baseQuestion, showComplete
 }
 
 function ProgressiveClues({ baseQuestion, showComplete }) {
-  const game = useGameContext();
+  const game = useGame();
 
   const gameQuestionRepo = new GameProgressiveCluesQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);

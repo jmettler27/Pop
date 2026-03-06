@@ -15,7 +15,8 @@ const messages = defineMessages('frontend.game.BasicMiddlePane', {
 });
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import { useGameContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 
 export default function BasicMiddlePane({ baseQuestion }) {
@@ -50,8 +51,8 @@ function BasicQuestionHeader({ baseQuestion }) {
 }
 
 function BasicQuestionMainContent({ baseQuestion }) {
-  const game = useGameContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myRole = useRole();
 
   const gameQuestionRepo = new GameBasicQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
@@ -85,8 +86,8 @@ function BasicQuestionMainContent({ baseQuestion }) {
 }
 
 function BasicQuestionAnswer({ baseQuestion, gameQuestion }) {
-  const game = useGameContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myRole = useRole();
 
   const statusToColor = (correct) => {
     if (correct === true)

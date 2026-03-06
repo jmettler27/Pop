@@ -2,9 +2,10 @@ import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { handleQuestionEnd } from '@/backend/services/round/actions';
 
-import { useGameContext, useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
-
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
@@ -20,9 +21,9 @@ const messages = defineMessages('frontend.game.bottom.QuestionEndBottomPane', {
 });
 
 export default function QuestionEndBottomPane({}) {
-  const game = useGameContext();
+  const game = useGame();
 
-  const { roundRepo } = useGameRepositoriesContext();
+  const { roundRepo } = useGameRepositories();
   const { round, roundLoading, roundError } = roundRepo.useRoundOnce(game.currentRound);
 
   if (roundError) {
@@ -45,7 +46,7 @@ export default function QuestionEndBottomPane({}) {
 }
 
 function QuestionEndController({ round, isLastQuestion }) {
-  const myRole = useRoleContext();
+  const myRole = useRole();
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-5">
@@ -59,7 +60,7 @@ function QuestionEndController({ round, isLastQuestion }) {
 
 function QuestionEndOrganizerButton({ round, isLastQuestion }) {
   const intl = useIntl();
-  const game = useGameContext();
+  const game = useGame();
 
   const [handleContinueClick, isEnding] = useAsyncAction(async () => {
     await handleQuestionEnd(round.type, game.id, game.currentRound, game.currentQuestion);

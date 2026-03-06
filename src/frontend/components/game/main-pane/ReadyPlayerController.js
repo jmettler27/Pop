@@ -5,9 +5,12 @@ import { getRandomElement } from '@/backend/utils/arrays';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { ParticipantRole } from '@/backend/models/users/Participant';
 
-import { useGameContext, useGameRepositoriesContext, useRoleContext, useUserContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+import useUser from '@/frontend/hooks/useUser';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
@@ -29,9 +32,9 @@ import { PlayerStatus } from '@/backend/models/users/Player';
 
 export default function ReadyPlayerController({ isLastQuestion }) {
   const { id: gameId } = useParams();
-  const myRole = useRoleContext();
+  const myRole = useRole();
 
-  const { timerRepo } = useGameRepositoriesContext();
+  const { timerRepo } = useGameRepositories();
   const { timer, timerLoading, timerError } = timerRepo.useTimer(gameId);
 
   if (timerError) {
@@ -62,10 +65,10 @@ export default function ReadyPlayerController({ isLastQuestion }) {
 
 function ReadyPlayerHeader({ isLastQuestion }) {
   const intl = useIntl();
-  const game = useGameContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myRole = useRole();
 
-  const { readyRepo } = useGameRepositoriesContext();
+  const { readyRepo } = useGameRepositories();
   const { ready, readyLoading, readyError } = readyRepo.useReady();
 
   if (readyError) {
@@ -123,13 +126,13 @@ function ReadyPlayerHeader({ isLastQuestion }) {
 export function ReadyPlayerButton() {
   const intl = useIntl();
   const { id: gameId } = useParams();
-  const user = useUserContext();
+  const user = useUser();
 
   const [handleClickReady, isSubmitting] = useAsyncAction(async () => {
     await setPlayerReady(gameId, user.id);
   });
 
-  const { playerRepo } = useGameRepositoriesContext();
+  const { playerRepo } = useGameRepositories();
   const { player, playerLoading, playerError } = playerRepo.usePlayer(user.id);
 
   if (playerError) {

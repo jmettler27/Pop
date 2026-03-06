@@ -31,7 +31,7 @@ const messages = defineMessages('frontend.forms.submitQuestion.quote', {
   part: 'Part',
 });
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { MyTextInput, StyledErrorMessage } from '@/frontend/components/common/StyledFormComponents';
 import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';

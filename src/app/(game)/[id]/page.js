@@ -3,9 +3,13 @@
 import { ParticipantRole } from '@/backend/models/users/Participant';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
-import { useGameRepositories } from '@/backend/repositories/useGameRepositories';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
-import { UserContext, RoleContext, TeamContext, GameContext, GameRepositoriesContext } from '@/frontend/contexts';
+import { UserProvider } from '@/frontend/contexts/UserContext';
+import { RoleProvider } from '@/frontend/contexts/RoleContext';
+import { TeamProvider } from '@/frontend/contexts/TeamContext';
+import { GameProvider } from '@/frontend/contexts/GameContext';
+import { GameRepositoriesProvider } from '@/frontend/contexts/GameRepositoriesContext';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import GameErrorScreen from '@/frontend/components/game/GameErrorScreen';
@@ -51,16 +55,16 @@ export default function GamePage() {
   const teamId = role === ParticipantRole.PLAYER ? players.find((p) => p.id === session.user.id)?.teamId : null;
 
   return (
-    <UserContext.Provider value={session.user}>
-      <RoleContext.Provider value={role}>
-        <TeamContext.Provider value={teamId}>
-          <GameContext.Provider value={game}>
-            <GameRepositoriesContext.Provider value={repositories}>
+    <UserProvider user={session.user}>
+      <RoleProvider role={role}>
+        <TeamProvider teamId={teamId}>
+          <GameProvider game={game}>
+            <GameRepositoriesProvider repositories={repositories}>
               <GameLayout />
-            </GameRepositoriesContext.Provider>
-          </GameContext.Provider>
-        </TeamContext.Provider>
-      </RoleContext.Provider>
-    </UserContext.Provider>
+            </GameRepositoriesProvider>
+          </GameProvider>
+        </TeamProvider>
+      </RoleProvider>
+    </UserProvider>
   );
 }

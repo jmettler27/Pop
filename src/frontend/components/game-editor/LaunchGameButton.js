@@ -1,6 +1,6 @@
 import { launchGame } from '@/backend/services/edit-game/actions';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import { useParams, useRouter } from 'next/navigation';
 
 import { useState } from 'react';

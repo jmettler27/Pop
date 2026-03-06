@@ -2,7 +2,8 @@ import { EnumerationQuestionStatus } from '@/backend/models/questions/Enumeratio
 
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 
-import { useGameContext, useGameRepositoriesContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import EnumerationReflectionActiveController from '@/frontend/components/game/main-pane/question/enumeration/EnumerationReflectionActiveController';
 import EnumerationChallengeActiveController from '@/frontend/components/game/main-pane/question/enumeration/EnumerationChallengeActiveController';
@@ -10,7 +11,7 @@ import EnumerationChallengeActiveController from '@/frontend/components/game/mai
 import { CircularProgress } from '@mui/material';
 
 export default function EnumerationController({ baseQuestion }) {
-  const game = useGameContext();
+  const game = useGame();
 
   const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound);
   const {
@@ -19,7 +20,7 @@ export default function EnumerationController({ baseQuestion }) {
     error: gameQuestionError,
   } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  const { timerRepo } = useGameRepositoriesContext();
+  const { timerRepo } = useGameRepositories();
   const { timer, timerLoading, timerError } = timerRepo.useTimer();
 
   if (gameQuestionError) {

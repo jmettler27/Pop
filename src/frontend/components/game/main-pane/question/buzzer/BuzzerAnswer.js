@@ -5,7 +5,7 @@ import { getRandomElement } from '@/backend/utils/arrays';
 
 import { useIntl } from 'react-intl';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 import { WinnerName } from '@/frontend/components/game/PlayerName';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 
@@ -30,7 +30,7 @@ function BuzzerAnswerText({ baseQuestion }) {
 }
 
 function BuzzerWinnerInfo({ baseQuestion }) {
-  const game = useGameContext();
+  const game = useGame();
   const intl = useIntl();
 
   const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(

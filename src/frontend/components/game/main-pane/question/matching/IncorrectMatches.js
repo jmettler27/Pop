@@ -2,7 +2,7 @@ import GameMatchingQuestionRepositoru from '@/backend/repositories/question/Game
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import { getNodeId, MatchingEdge } from '@/frontend/components/game/main-pane/question/matching/gridUtils.js';
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
@@ -11,7 +11,7 @@ import { isObjectEmpty } from '@/backend/utils/objects';
 export default function IncorrectMatches({ nodePositions, colIndices }) {
   console.log('INCORRECT MATCHES RENDERED');
 
-  const game = useGameContext();
+  const game = useGame();
 
   const gameQuestionRepo = new GameMatchingQuestionRepositoru(game.id, game.currentRound);
   const { incorrectMatches, loading, error } = gameQuestionRepo.useIncorrectMatches(game.currentQuestion);

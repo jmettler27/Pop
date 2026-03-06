@@ -11,7 +11,7 @@ import { messages as questionMessages } from '@/frontend/utils/forms/questions';
 import { stringSchema } from '@/frontend/utils/forms/forms';
 import { getFileFromRef, imageFileSchema } from '@/frontend/utils/forms/files';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { useIntl } from 'react-intl';
 

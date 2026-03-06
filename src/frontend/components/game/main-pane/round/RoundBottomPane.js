@@ -2,16 +2,17 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
-import { useGameContext, useGameRepositoriesContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import RoundStartBottomPane from '@/frontend/components/game/main-pane/round/RoundStartBottomPane';
 import RoundEndBottomPane from '@/frontend/components/game/main-pane/round/RoundEndBottomPane';
 
 export default function RoundBottomPane() {
-  const game = useGameContext();
+  const game = useGame();
   console.log('game', game);
 
-  const { roundRepo } = useGameRepositoriesContext();
+  const { roundRepo } = useGameRepositories();
   console.log('Current round', game.currentRound);
 
   if (!game.currentRound) {

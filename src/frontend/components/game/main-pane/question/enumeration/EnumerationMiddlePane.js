@@ -12,9 +12,11 @@ import { topicToEmoji } from '@/backend/models/Topic';
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
-import { useGameContext, useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import NoteButton from '@/frontend/components/game/NoteButton';
 
@@ -80,8 +82,8 @@ function EnumerationQuestionObjective({ baseQuestion }) {
 }
 
 function EnumerationQuestionAnswer({ answer }) {
-  const game = useGameContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myRole = useRole();
 
   const showComplete = game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER; // 'player' or 'viewer'
 
@@ -89,7 +91,7 @@ function EnumerationQuestionAnswer({ answer }) {
     await validateItem(game.id, game.currentRound, game.currentQuestion, itemIdx);
   });
 
-  const { timerRepo } = useGameRepositoriesContext();
+  const { timerRepo } = useGameRepositories();
   const { timer, timerLoading, timerError } = timerRepo.useTimer(game.id);
 
   const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound);

@@ -3,12 +3,15 @@ import { ParticipantRole } from '@/backend/models/users/Participant';
 import { timestampToHour } from '@/backend/utils/time';
 import { RoundTypeIcon } from '@/backend/utils/rounds';
 
-import { useGameRepositoriesContext, useRoleContext, useTeamContext, useUserContext } from '@/frontend/contexts';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+import useTeam from '@/frontend/hooks/useTeam';
+import useUser from '@/frontend/hooks/useUser';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 import { useIntl } from 'react-intl';
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { useParams } from 'next/navigation';
 
@@ -42,15 +45,15 @@ function GameHomeRounds() {
   const params = useParams();
   const gameId = params.id;
 
-  const myRole = useRoleContext();
-  const myTeam = useTeamContext();
-  const user = useUserContext();
+  const myRole = useRole();
+  const myTeam = useTeam();
+  const user = useUser();
 
   const [handleSelect, isHandling] = useAsyncAction(async (roundId, roundType) => {
     await handleRoundSelected(roundType, gameId, roundId, user.id);
   });
 
-  const { roundRepo, chooserRepo } = useGameRepositoriesContext();
+  const { roundRepo, chooserRepo } = useGameRepositories();
   const { rounds, loading: roundsLoading, error: roundsError } = roundRepo.useAllRounds();
   const { isChooser, loading: isChooserLoading, error: isChooserError } = chooserRepo.useIsChooser(myTeam);
 

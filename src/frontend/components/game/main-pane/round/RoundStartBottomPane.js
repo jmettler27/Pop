@@ -1,9 +1,9 @@
 import { ParticipantRole } from '@/backend/models/users/Participant';
 import { startRound } from '@/backend/services/round/actions';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
-
-import { useGameContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import TimerPane from '@/frontend/components/game/timer/TimerPane';
 import ReadyPlayerController from '@/frontend/components/game/main-pane/ReadyPlayerController';
 
@@ -24,7 +24,7 @@ export default function RoundStartBottomPane({}) {
 }
 
 function RoundStartController({}) {
-  const myRole = useRoleContext();
+  const myRole = useRole();
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-5">
@@ -44,7 +44,7 @@ const messages = defineMessages('frontend.game.bottom.RoundStartBottomPane', {
 
 function RoundStartOrganizerButton() {
   const intl = useIntl();
-  const game = useGameContext();
+  const game = useGame();
 
   const [handleContinueClick, isHandling] = useAsyncAction(async () => {
     await startRound(game.currentQuestionType, game.id, game.currentRound);

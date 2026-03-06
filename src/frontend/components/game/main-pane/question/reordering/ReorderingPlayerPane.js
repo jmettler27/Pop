@@ -29,16 +29,19 @@ import {
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
-import { useGameContext, useTeamContext, useUserContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useTeam from '@/frontend/hooks/useTeam';
+import useUser from '@/frontend/hooks/useUser';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 import { submitOrdering } from '@/backend/services/question/reordering/actions';
 
 import { ReorderingQuestionHeader, ReorderingItemAccordion, messages } from './ReorderingCommon';
 
 export default function ReorderingPlayerPane({ baseQuestion, gameQuestion, randomMapping }) {
-  const game = useGameContext();
-  const myTeam = useTeamContext();
+  const game = useGame();
+  const myTeam = useTeam();
 
   // Get team's submission
   const teamSubmission = gameQuestion?.orderings?.find((o) => o.teamId === myTeam);
@@ -82,9 +85,9 @@ export default function ReorderingPlayerPane({ baseQuestion, gameQuestion, rando
 
 function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping }) {
   const intl = useIntl();
-  const game = useGameContext();
-  const user = useUserContext();
-  const myTeam = useTeamContext();
+  const game = useGame();
+  const user = useUser();
+  const myTeam = useTeam();
   const [orderedIndices, setOrderedIndices] = useState(randomMapping);
   const [dialogOpen, setDialogOpen] = useState(false);
 

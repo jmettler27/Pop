@@ -1,4 +1,4 @@
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import BuzzerBottomPane from '@/frontend/components/game/main-pane/question/buzzer/BuzzerBottomPane';
 import QuoteBottomPane from '@/frontend/components/game/main-pane/question/quote/QuoteBottomPane';
@@ -16,7 +16,7 @@ import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQ
 import LabellingBottomPane from '@/frontend/components/game/main-pane/question/labelling/LabellingBottomPane';
 
 export default function QuestionActiveBottomPane({}) {
-  const game = useGameContext();
+  const game = useGame();
   if (!game.currentQuestionType) {
     return <></>;
   }

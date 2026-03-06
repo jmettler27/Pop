@@ -1,4 +1,5 @@
-import { useGameContext, useGameRepositoriesContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
 
@@ -24,9 +25,9 @@ export default function SpecialBottomPane() {
 }
 
 function SpecialController() {
-  const game = useGameContext();
+  const game = useGame();
 
-  const { roundRepo } = useGameRepositoriesContext();
+  const { roundRepo } = useGameRepositories();
   const { round, loading, error } = roundRepo.useRound(game.currentRound);
 
   if (error) {
@@ -57,9 +58,9 @@ function SpecialController() {
 }
 
 function SpecialChooserOrder() {
-  const game = useGameContext();
+  const game = useGame();
 
-  const { chooserRepo } = useGameRepositoriesContext();
+  const { chooserRepo } = useGameRepositories();
   const { chooser, loading, error } = chooserRepo.useChooser(game.id);
 
   if (error) {

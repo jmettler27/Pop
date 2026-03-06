@@ -2,7 +2,8 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 import { ParticipantRole } from '@/backend/models/users/Participant';
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/backend/utils/question';
 
-import { useGameContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
 import { Box } from '@mui/material';
 import NextImage from '@/frontend/components/common/NextImage';
 
@@ -34,8 +35,8 @@ export default function ImageMainContent({ baseQuestion }) {
 }
 
 const DisplayedImageElement = ({ element }) => {
-  const game = useGameContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myRole = useRole();
 
   if (game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER) {
     return <span className="text-green-500">{element}</span>;

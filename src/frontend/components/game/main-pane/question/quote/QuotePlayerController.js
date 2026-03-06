@@ -5,9 +5,10 @@ import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuo
 import { PlayerStatus } from '@/backend/models/users/Player';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
-import { useUserContext, useGameContext, useGameRepositoriesContext } from '@/frontend/contexts';
-
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useUser from '@/frontend/hooks/useUser';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { useIntl } from 'react-intl';
 import globalMessages from '@/i18n/globalMessages';
@@ -19,10 +20,10 @@ import PanToolIcon from '@mui/icons-material/PanTool';
 import clsx from 'clsx';
 
 export default function QuotePlayerController({ players: quotePlayers }) {
-  const game = useGameContext();
-  const user = useUserContext();
+  const game = useGame();
+  const user = useUser();
 
-  const { playerRepo, roundRepo } = useGameRepositoriesContext();
+  const { playerRepo, roundRepo } = useGameRepositories();
   const gameQuestionRepo = new GameQuoteQuestionRepository(game.id, game.currentRound);
 
   const { player, loading: playerLoading, error: playerError } = playerRepo.usePlayer(user.id);
@@ -129,8 +130,8 @@ function BuzzerMessage({ playerStatus, hasExceededMaxTries, round, myCanceledIte
 }
 
 function BuzzerButton({ isDisabled }) {
-  const game = useGameContext();
-  const user = useUserContext();
+  const game = useGame();
+  const user = useUser();
 
   const [handleBuzz, isBuzzing] = useAsyncAction(async () => {
     await addPlayerToBuzzer(game.id, game.currentRound, game.currentQuestion, user.id);
@@ -152,8 +153,8 @@ function BuzzerButton({ isDisabled }) {
 }
 
 function BuzzerResetButton({ isDisabled }) {
-  const game = useGameContext();
-  const user = useUserContext();
+  const game = useGame();
+  const user = useUser();
 
   const [handleResetBuzz, isResetting] = useAsyncAction(async () => {
     await removePlayerFromBuzzer(game.id, game.currentRound, game.currentQuestion, user.id);

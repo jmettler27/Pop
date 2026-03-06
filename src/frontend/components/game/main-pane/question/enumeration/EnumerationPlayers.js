@@ -4,7 +4,7 @@ import defineMessages from '@/utils/defineMessages';
 
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import PlayerName from '@/frontend/components/game/PlayerName';
 
@@ -14,7 +14,7 @@ const messages = defineMessages('frontend.game.bottom.EnumerationPlayers', {
 
 export default function EnumerationPlayers() {
   const intl = useIntl();
-  const game = useGameContext();
+  const game = useGame();
 
   const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id, game.currentRound);
   const {

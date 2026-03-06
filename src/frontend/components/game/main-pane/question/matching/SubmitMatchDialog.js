@@ -1,12 +1,14 @@
 import { submitMatch } from '@/backend/services/question/matching/actions';
 
-import { useUserContext, useGameContext } from '@/frontend/contexts';
+import { GameMatchingQuestion } from '@/backend/models/questions/Matching';
+
+import useGame from '@/frontend/hooks/useGame';
+import useUser from '@/frontend/hooks/useUser';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { matchIsComplete } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
 
 import globalMessages from '@/i18n/globalMessages';
-
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
 
 import { useIntl } from 'react-intl';
 
@@ -15,12 +17,11 @@ import { useEffect, useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { GameMatchingQuestion } from '@/backend/models/questions/Matching';
 
 export default function SubmitMatchDialog({ edges, setEdges, numCols, setNewEdgeSource, answer }) {
   const intl = useIntl();
-  const user = useUserContext();
-  const game = useGameContext();
+  const user = useUser();
+  const game = useGame();
 
   const [dialogOpen, setDialogOpen] = useState(false);
 

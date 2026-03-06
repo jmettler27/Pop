@@ -1,6 +1,6 @@
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import GameStartMiddlePane from '@/frontend/components/game/main-pane/game/GameStartMiddlePane';
 import GameHomeMiddlePane from '@/frontend/components/game/main-pane/game/GameHomeMiddlePane';
@@ -11,7 +11,7 @@ import SpecialMiddlePane from '@/frontend/components/game/main-pane/special/Spec
 import BuildMiddlePane from '@/frontend/components/game/main-pane/build/BuildMiddlePane';
 
 export default function MiddlePane({}) {
-  const game = useGameContext();
+  const game = useGame();
 
   switch (game.status) {
     case GameStatus.GAME_START:

@@ -1,17 +1,17 @@
 import { clearBuzzer } from '@/backend/services/question/basic/actions';
 import globalMessages from '@/i18n/globalMessages';
 
-import { useGameContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
 
 import { useIntl } from 'react-intl';
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { Button } from '@mui/material';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 
 export default function ClearBuzzerButton() {
   const intl = useIntl();
-  const game = useGameContext();
+  const game = useGame();
 
   const [handleClick, isClearing] = useAsyncAction(async () => {
     await clearBuzzer(game.id, game.currentRound, game.currentQuestion);

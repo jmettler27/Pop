@@ -2,7 +2,7 @@ import { addRoundToGame } from '@/backend/services/edit-game/actions';
 
 import { Round } from '@/backend/models/rounds/Round';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { stringSchema } from '@/frontend/utils/forms/forms';
 import { roundTypeSchema } from '@/frontend/utils/forms/game';

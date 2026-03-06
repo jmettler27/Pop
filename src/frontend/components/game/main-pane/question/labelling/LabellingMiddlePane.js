@@ -10,9 +10,10 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 import { QuestionTypeIcon } from '@/backend/utils/question_types';
 import { isObjectEmpty } from '@/backend/utils/objects';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
-import { useGameContext, useRoleContext } from '@/frontend/contexts';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import NextImage from '@/frontend/components/common/NextImage';
 import NoteButton from '@/frontend/components/game/NoteButton';
@@ -54,7 +55,7 @@ function LabellingQuestionHeader({ baseQuestion }) {
 }
 
 function LabellingMainContent({ baseQuestion }) {
-  const game = useGameContext();
+  const game = useGame();
 
   const gameQuestionRepo = new GameLabellingQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
@@ -96,8 +97,8 @@ function LabellingMainContent({ baseQuestion }) {
 }
 
 const DisplayedLabel = ({ revealed, label, labelIdx }) => {
-  const game = useGameContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myRole = useRole();
 
   const [handleLabelClick, isSubmitting] = useAsyncAction(async () => {
     await revealLabel(game.id, game.currentRound, game.currentQuestion, labelIdx);

@@ -1,8 +1,11 @@
 import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
 
-import { useGameContext, useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
@@ -10,10 +13,9 @@ import EndQuestionButton from '@/frontend/components/game/main-pane/question/End
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 
 import { CircularProgress } from '@mui/material';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 
 export default function MCQBottomPane({ baseQuestion }) {
-  const { chooserRepo } = useGameRepositoriesContext();
+  const { chooserRepo } = useGameRepositories();
   const { chooser, loading: chooserLoading, error: chooserError } = chooserRepo.useChooser();
   if (chooserError) {
     return (
@@ -45,8 +47,8 @@ export default function MCQBottomPane({ baseQuestion }) {
 }
 
 function MCQController({ chooser, baseQuestion }) {
-  const game = useGameContext();
-  const myRole = useRoleContext();
+  const game = useGame();
+  const myRole = useRole();
 
   const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx];
 

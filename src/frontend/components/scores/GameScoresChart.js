@@ -15,7 +15,7 @@ import {
   Tooltip,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import { useGameRepositoriesContext } from '@/frontend/contexts';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -48,7 +48,7 @@ export default function GameScoresChart({ currentRoundOrder, teams }) {
   const { id: gameId } = useParams();
 
   // Return the rounds played up to the current round
-  const { roundRepo, scoreRepo } = useGameRepositoriesContext();
+  const { roundRepo, scoreRepo } = useGameRepositories();
   const {
     rounds,
     loading: roundsLoading,

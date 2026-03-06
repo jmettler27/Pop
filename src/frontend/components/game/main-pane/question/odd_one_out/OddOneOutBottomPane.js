@@ -3,7 +3,10 @@ import { ParticipantRole } from '@/backend/models/users/Participant';
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 
-import { useGameRepositoriesContext, useRoleContext, useTeamContext } from '@/frontend/contexts';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+import useTeam from '@/frontend/hooks/useTeam';
+
 import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
@@ -16,7 +19,7 @@ const messages = defineMessages('frontend.game.bottom.OddOneOutBottomPane', {
 });
 
 export default function OddOneOutBottomPane({}) {
-  const { chooserRepo } = useGameRepositoriesContext();
+  const { chooserRepo } = useGameRepositories();
   const { chooser, loading, error } = chooserRepo.useChooser();
   if (error) {
     return (
@@ -45,8 +48,8 @@ export default function OddOneOutBottomPane({}) {
 }
 
 function OddOneOutController({ chooser }) {
-  const myRole = useRoleContext();
-  const myTeam = useTeamContext();
+  const myRole = useRole();
+  const myTeam = useTeam();
 
   const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx];
 
@@ -63,7 +66,7 @@ function OddOneOutController({ chooser }) {
 
 function OddOneOutChooserController() {
   const intl = useIntl();
-  const { timerRepo } = useGameRepositoriesContext();
+  const { timerRepo } = useGameRepositories();
   const { timer, loading, error } = timerRepo.useTimer();
   if (error) {
     return (
