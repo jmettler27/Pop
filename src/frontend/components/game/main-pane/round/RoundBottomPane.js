@@ -1,0 +1,45 @@
+import { GameStatus } from '@/backend/models/games/GameStatus';
+
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+
+import RoundStartBottomPane from '@/frontend/components/game/main-pane/round/RoundStartBottomPane';
+import RoundEndBottomPane from '@/frontend/components/game/main-pane/round/RoundEndBottomPane';
+
+export default function RoundBottomPane() {
+  const game = useGame();
+  console.log('game', game);
+
+  const { roundRepo } = useGameRepositories();
+  console.log('Current round', game.currentRound);
+
+  if (!game.currentRound) {
+    return <></>;
+  }
+
+  const { round, loading: roundLoading, error: roundError } = roundRepo.useRound(game.currentRound);
+  console.log('round', round);
+
+  if (roundError) {
+    return (
+      <p>
+        <strong>Error: {JSON.stringify(roundError)}</strong>
+      </p>
+    );
+  }
+  if (roundLoading) {
+    return <LoadingScreen loadingText="Loading round..." />;
+  }
+  if (!round) {
+    return <></>;
+  }
+
+  switch (game.status) {
+    case GameStatus.ROUND_START:
+      return <RoundStartBottomPane />;
+    case GameStatus.ROUND_END:
+      return <RoundEndBottomPane endedRound={round} />;
+  }
+}

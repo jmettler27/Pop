@@ -1,0 +1,55 @@
+import { topicToEmoji } from '@/backend/models/Topic';
+import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import { ParticipantRole } from '@/backend/models/users/Participant';
+
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
+import { QuestionTypeIcon } from '@/backend/utils/question_types';
+import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
+import MCQMainContent from '@/frontend/components/game/main-pane/question/mcq/MCQMainContent';
+
+export default function MCQMiddlePane({ baseQuestion }) {
+  const game = useGame();
+  const myRole = useRole();
+
+  return (
+    <div className="flex flex-col h-full items-center">
+      <div className="h-[20%] flex flex-col items-center justify-center">
+        <MCQHeader baseQuestion={baseQuestion} />
+      </div>
+      <div className="h-[60%] w-full flex items-center justify-center">
+        <MCQMainContent baseQuestion={baseQuestion} />
+      </div>
+      <div className="h-[20%] flex items-center justify-center">
+        {(game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER) && (
+          <MCQFooter baseQuestion={baseQuestion} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function MCQHeader({ baseQuestion }) {
+  return (
+    <div className="flex flex-col items-center justify-center space-y-2">
+      <div className="flex flex-row items-center justify-center space-x-1">
+        <QuestionTypeIcon questionType={baseQuestion.type} fontSize={40} />
+        <h1 className="2xl:text-5xl">
+          {topicToEmoji(baseQuestion.topic)}{' '}
+          <strong>
+            {questionTypeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
+          </strong>
+        </h1>
+      </div>
+      <div className="flex flex-row items-center justify-center space-x-1">
+        <h2 className="2xl:text-5xl italic">{baseQuestion.source}</h2>
+      </div>
+    </div>
+  );
+}
+
+function MCQFooter({ baseQuestion }) {
+  const explanation = baseQuestion.explanation;
+  return explanation && <span className="w-[80%] 2xl:text-2xl text-center">👉 {explanation}</span>;
+}

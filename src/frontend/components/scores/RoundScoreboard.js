@@ -2,7 +2,8 @@ import { QuestionType } from '@/backend/models/questions/QuestionType';
 
 import { rankingToEmoji } from '@/backend/utils/emojis';
 
-import { useGameContext, useGameRepositoriesContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import { useIntl } from 'react-intl';
 
@@ -17,9 +18,9 @@ import clsx from 'clsx';
 export default function RoundScoreboard({ roundScores, teams }) {
   const intl = useIntl();
   const { roundSortedTeams } = roundScores;
-  const game = useGameContext();
+  const game = useGame();
 
-  const { roundRepo } = useGameRepositoriesContext();
+  const { roundRepo } = useGameRepositories();
   const { round, loading, error } = roundRepo.useRoundOnce(game.currentRound);
   if (error) {
     return (

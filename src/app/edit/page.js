@@ -11,12 +11,12 @@ import defineMessages from '@/utils/defineMessages';
 import globalMessages from '@/i18n/globalMessages';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
-import { MyNumberInput, MyTextInput } from '@/frontend/components/forms/StyledFormComponents';
-import SubmitFormButton from '@/frontend/components/forms/SubmitFormButton';
-import SelectRoundScorePolicy from '@/frontend/components/forms/SelectRoundScorePolicy';
-import SelectLanguage from '@/frontend/components/forms/SelectLanguage';
+import { MyNumberInput, MyTextInput } from '@/frontend/components/common/StyledFormComponents';
+import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
+import SelectRoundScorePolicy from '@/frontend/components/common/SelectRoundScorePolicy';
+import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 
 import Game from '@/backend/models/games/Game';
 import CreateGameService from '@/backend/services/create-game/CreateGameService';
