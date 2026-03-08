@@ -112,6 +112,7 @@ export class GameReorderingQuestion extends GameQuestion {
   constructor(data) {
     super(data);
 
+    this.thinkingTime = data.thinkingTime || GameReorderingQuestion.THINKING_TIME;
     this.orderings = data.orderings || [];
 
     this.constructor.validate(data);
@@ -120,6 +121,7 @@ export class GameReorderingQuestion extends GameQuestion {
   toObject() {
     return {
       ...super.toObject(),
+      thinkingTime: this.thinkingTime,
       orderings: this.orderings,
     };
   }

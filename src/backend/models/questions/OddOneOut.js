@@ -142,12 +142,14 @@ export class GameOddOneOutQuestion extends GameQuestion {
     super(data);
     this.constructor.validate(data);
 
+    this.thinkingTime = data.thinkingTime || GameOddOneOutQuestion.THINKING_TIME;
     this.selectedItems = data.selectedItems || [];
   }
 
   toObject() {
     return {
       ...super.toObject(),
+      thinkingTime: this.thinkingTime,
       selectedItems: this.selectedItems,
     };
   }

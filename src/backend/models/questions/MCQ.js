@@ -165,6 +165,7 @@ export class GameMCQQuestion extends GameQuestion {
     super(data);
     this.constructor.validate(data);
 
+    this.thinkingTime = data.thinkingTime || GameMCQQuestion.THINKING_TIME;
     this.correct = data.correct || null;
     this.choiceIdx = data.choiceIdx || null;
     this.playerId = data.playerId || null;
@@ -175,6 +176,7 @@ export class GameMCQQuestion extends GameQuestion {
   toObject() {
     return {
       ...super.toObject(),
+      thinkingTime: this.thinkingTime,
       correct: this.correct,
       choiceIdx: this.choiceIdx,
       playerId: this.playerId,

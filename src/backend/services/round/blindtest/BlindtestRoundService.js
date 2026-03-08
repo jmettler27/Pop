@@ -18,14 +18,14 @@ export default class BlindtestRoundService extends BuzzerRoundService {
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
 
     const questionId = round.questions[questionOrder];
-    const defaultThinkingTime = DEFAULT_THINKING_TIME_SECONDS[QuestionType.MATCHING];
+    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
 
     console.log('Resetting player statuses to IDLE');
     await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
 
-    console.log('Resetting timer for next question with default thinking time', defaultThinkingTime);
+    console.log('Resetting timer for next question with thinking time', gameQuestion.thinkingTime);
     // await this.timerRepo.resetTimerTransaction(transaction, managedBy, defaultThinkingTime)
-    await this.timerRepo.resetTimerTransaction(transaction, defaultThinkingTime);
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
 
     console.log('startQuestionTransaction');
     await gameQuestionRepo.startQuestionTransaction(transaction, questionId);

@@ -21,11 +21,13 @@ export default class GameMatchingQuestionService extends GameQuestionService {
   }
 
   async resetQuestionTransaction(transaction, questionId) {
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     const chooser = await this.chooserRepo.resetChoosersTransaction(transaction);
     if (chooser && chooser.teamId) {
       await this.playerRepo.updateTeamPlayersStatus(chooser.teamId, PlayerStatus.FOCUS);
     }
     await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
 
     console.log(
       'Matching question successfully reset',

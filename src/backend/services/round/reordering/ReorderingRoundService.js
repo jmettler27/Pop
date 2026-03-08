@@ -76,12 +76,12 @@ export default class ReorderingRoundService extends RoundService {
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
 
     const questionId = round.questions[questionOrder];
-    const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
+    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
 
     await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
 
     // await this.timerRepo.resetTimerTransaction(transaction, managedBy, baseQuestion.thinkingTime)
-    await this.timerRepo.resetTimerTransaction(transaction, baseQuestion.thinkingTime);
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
 
     await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
     await gameQuestionRepo.startQuestionTransaction(transaction, questionId);

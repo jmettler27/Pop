@@ -235,6 +235,7 @@ export class GameQuoteQuestion extends GameQuestion {
   constructor(data) {
     super(data);
 
+    this.thinkingTime = data.thinkingTime || GameQuoteQuestion.THINKING_TIME;
     this.revealed = data.revealed || data.details.revealed;
     if (!this.revealed) {
       this.initializeRevealed(data);
@@ -266,6 +267,7 @@ export class GameQuoteQuestion extends GameQuestion {
   toObject() {
     return {
       ...super.toObject(),
+      thinkingTime: this.thinkingTime,
       revealed: this.revealed,
     };
   }

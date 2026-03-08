@@ -71,15 +71,14 @@ export default class MatchingRoundService extends RoundService {
 
     const questionId = round.questions[questionOrder];
     const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
-
-    const defaultThinkingTime = DEFAULT_THINKING_TIME_SECONDS[QuestionType.MATCHING];
+    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
 
     await this.chooserRepo.resetChoosersTransaction(transaction);
     const newChooserTeamId = chooser.chooserOrder[0];
     await this.playerRepo.updateTeamAndOtherTeamsPlayersStatus(newChooserTeamId, PlayerStatus.FOCUS, PlayerStatus.IDLE);
 
     // await this.timerRepo.resetTimerTransaction(transaction, { status: TimerStatus.RESET, managedBy, duration: defaultThinkingTime * (baseQuestion.numCols - 1) })
-    await this.timerRepo.resetTimerTransaction(transaction, defaultThinkingTime * (baseQuestion.numCols - 1));
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime * (baseQuestion.numCols - 1));
 
     await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
     await gameQuestionRepo.startQuestionTransaction(transaction, questionId);

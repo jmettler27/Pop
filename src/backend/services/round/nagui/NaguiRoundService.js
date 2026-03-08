@@ -86,7 +86,7 @@ export default class NaguiRoundService extends RoundService {
     const chooser = await this.chooserRepo.getChooserTransaction(transaction);
 
     const questionId = round.questions[questionOrder];
-    const defaultThinkingTime = DEFAULT_THINKING_TIME_SECONDS[QuestionType.MCQ];
+    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
 
     const chooserOrder = chooser.chooserOrder;
     const chooserIdx = chooser.chooserIdx;
@@ -107,7 +107,7 @@ export default class NaguiRoundService extends RoundService {
     }
 
     // await this.timerRepo.resetTimerTransaction(transaction, { status: TimerStatus.RESET, managedBy, duration: defaultThinkingTime })
-    await this.timerRepo.resetTimerTransaction(transaction, defaultThinkingTime);
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
 
     await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
     await gameQuestionRepo.startQuestionTransaction(transaction, questionId);

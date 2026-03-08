@@ -12,7 +12,9 @@ export default class GameMCQQuestionService extends GameQuestionService {
   }
 
   async resetQuestionTransaction(transaction, questionId) {
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
     console.log('MCQ question successfully reset', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
   }
 

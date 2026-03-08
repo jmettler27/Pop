@@ -83,10 +83,10 @@ export default class LabellingRoundService extends RoundService {
     const playerIds = await this.playerRepo.getAllPlayerIds();
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     const questionId = round.questions[questionOrder];
-    const defaultThinkingTime = DEFAULT_THINKING_TIME_SECONDS[QuestionType.MATCHING];
+    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
 
     await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
-    await this.timerRepo.resetTimerTransaction(transaction, defaultThinkingTime);
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
     await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
     await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
     await this.roundRepo.setCurrentQuestionIdxTransaction(transaction, roundId, questionOrder);

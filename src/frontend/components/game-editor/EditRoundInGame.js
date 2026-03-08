@@ -16,6 +16,7 @@ import defineMessages from '@/utils/defineMessages';
 const messages = defineMessages('frontend.gameEditor.EditRoundInGame', {
   deleteDialogTitle: 'Are you sure you want to remove this round?',
   deleteDialogConfirm: 'Yes',
+  defaultThinkingTime: 'Default thinking time for questions in this round',
 });
 
 import { QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
@@ -52,6 +53,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import TimerIcon from '@mui/icons-material/Timer';
 
 import clsx from 'clsx';
 
@@ -158,6 +160,14 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
           <div className="hidden sm:flex ml-2">
             <RoundTopicDistribution round={round} />
           </div>
+          {round.thinkingTime != null && (
+            <Tooltip title={intl.formatMessage(messages.defaultThinkingTime)}>
+              <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 shadow-sm">
+                <TimerIcon sx={{ fontSize: 14 }} />
+                {round.thinkingTime}s
+              </span>
+            </Tooltip>
+          )}
         </div>
         <div className="flex flex-row gap-2">
           <Tooltip title={isCollapsed ? 'Expand' : 'Collapse'}>
@@ -194,8 +204,14 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
           )}
         </div>
       </CardHeader>
-      <div className="sm:hidden px-4 pt-2">
+      <div className="sm:hidden px-4 pt-2 flex items-center gap-2">
         <RoundTopicDistribution round={round} />
+        {round.thinkingTime != null && (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 shadow-sm">
+            <TimerIcon sx={{ fontSize: 14 }} />
+            {round.thinkingTime}s
+          </span>
+        )}
       </div>
       {!isCollapsed && (
         <CardContent className="p-6 bg-gradient-to-br from-slate-50/50 to-transparent dark:from-slate-900/50">
@@ -398,6 +414,7 @@ function EditGameRoundQuestionCards({ round, status, isReorderMode, reorderedQue
           questionId={questionId}
           questionOrder={idx}
           status={status}
+          roundThinkingTime={round.thinkingTime}
         />
       ))}
     </div>

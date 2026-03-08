@@ -16,6 +16,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
   async resetQuestionTransaction(transaction, questionId) {
     const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
     const toGuess = baseQuestion.toGuess;
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
 
     await this.gameQuestionRepo.resetPlayersTransaction(transaction, questionId);
 
@@ -32,6 +33,8 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
     await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
       revealed: initialRevealed,
     });
+
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
 
     console.log(
       'Quote question successfully reset',
@@ -70,8 +73,8 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
 
       // If there's a next player in the queue, start their countdown
       if (buzzed.length > 1) {
-        const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
-        const thinkingTime = round.thinkingTime;
+        const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+        const thinkingTime = gameQuestion.thinkingTime;
         await this.playerRepo.updatePlayerStatusTransaction(transaction, buzzed[1], PlayerStatus.FOCUS);
         await this.timerRepo.startTimerTransaction(transaction, thinkingTime);
       } else {
@@ -91,8 +94,8 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
 
     try {
       await runTransaction(firestore, async (transaction) => {
-        const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
-        const thinkingTime = round.thinkingTime;
+        const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+        const thinkingTime = gameQuestion.thinkingTime;
 
         await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.FOCUS);
         await this.timerRepo.startTimerTransaction(transaction, thinkingTime);

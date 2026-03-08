@@ -191,6 +191,7 @@ export class GameMatchingQuestion extends GameQuestion {
   toObject() {
     return {
       ...super.toObject(),
+      thinkingTime: this.thinkingTime,
       canceled: this.canceled,
       teamNumMistakes: this.teamNumMistakes,
     };

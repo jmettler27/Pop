@@ -16,6 +16,8 @@ import defineMessages from '@/utils/defineMessages';
 const messages = defineMessages('frontend.gameEditor.EditQuestionInRound', {
   deleteDialogTitle: 'Are you sure you want to remove this question?',
   deleteDialogConfirm: 'Yes',
+  thinkingTimeOverridden: 'Overridden thinking time',
+  thinkingTimeInherited: 'Inherited from round',
 });
 
 import { Avatar, Button, Divider } from '@mui/material';
@@ -32,8 +34,15 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import TimerIcon from '@mui/icons-material/Timer';
 
-export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questionId, questionOrder, status }) {
+export const EditQuestionCard = memo(function EditQuestionCard({
+  roundId,
+  questionId,
+  questionOrder,
+  status,
+  roundThinkingTime,
+}) {
   const { id: gameId } = useParams();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -57,6 +66,38 @@ export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questi
   }
 
   return (
+    <EditQuestionCardInner
+      baseQuestion={baseQuestion}
+      gameId={gameId}
+      roundId={roundId}
+      questionId={questionId}
+      status={status}
+      roundThinkingTime={roundThinkingTime}
+      isCollapsed={isCollapsed}
+      setIsCollapsed={setIsCollapsed}
+    />
+  );
+});
+
+function EditQuestionCardInner({
+  baseQuestion,
+  gameId,
+  roundId,
+  questionId,
+  status,
+  roundThinkingTime,
+  isCollapsed,
+  setIsCollapsed,
+}) {
+  const intl = useIntl();
+  const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(baseQuestion.type, gameId, roundId);
+  const { gameQuestion } = gameQuestionRepo.useQuestionOnce(questionId);
+
+  const questionThinkingTime = gameQuestion?.thinkingTime;
+  const isOverridden =
+    questionThinkingTime != null && roundThinkingTime != null && questionThinkingTime !== roundThinkingTime;
+
+  return (
     <Card className="border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800 rounded-xl overflow-hidden group hover:scale-[1.02]">
       <CardHeader
         className={`flex flex-row items-center justify-between bg-gradient-to-r from-slate-50 to-blue-50/50 dark:from-slate-800 dark:to-slate-900 py-2 px-3 ${!isCollapsed ? 'border-b border-slate-200 dark:border-slate-700' : ''}`}
@@ -65,7 +106,25 @@ export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questi
         <CardTitle className="text-sm md:text-base dark:text-white font-semibold">
           <QuestionCardTitle baseQuestion={baseQuestion} showType={true} />
         </CardTitle>
-        <div className="flex gap-1">
+        <div className="flex gap-1 items-center">
+          {questionThinkingTime != null && (
+            <Tooltip
+              title={intl.formatMessage(
+                isOverridden ? messages.thinkingTimeOverridden : messages.thinkingTimeInherited
+              )}
+            >
+              <span
+                className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium ${
+                  isOverridden
+                    ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 ring-1 ring-orange-300 dark:ring-orange-700'
+                    : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'
+                }`}
+              >
+                <TimerIcon sx={{ fontSize: 12 }} />
+                {questionThinkingTime}s
+              </span>
+            </Tooltip>
+          )}
           <Tooltip title={isCollapsed ? 'Expand' : 'Collapse'}>
             <IconButton
               onClick={() => setIsCollapsed(!isCollapsed)}
@@ -90,7 +149,7 @@ export const EditQuestionCard = memo(function EditQuestionCard({ roundId, questi
       )}
     </Card>
   );
-});
+}
 
 function QuestionCardSkeleton() {
   return (

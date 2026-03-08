@@ -15,6 +15,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
 
   async resetQuestionTransaction(transaction, questionId) {
     const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     const playerIds = await this.playerRepo.getAllPlayerIds();
 
     await this.gameQuestionRepo.resetPlayersTransaction(transaction, questionId);
@@ -23,6 +24,8 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
     });
 
     await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
+
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
 
     console.log(
       'Labelling question successfully reset',

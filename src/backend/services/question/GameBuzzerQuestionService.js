@@ -13,7 +13,9 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
   }
 
   async resetQuestionTransaction(transaction, questionId) {
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
   }
 
   async endQuestion(questionId) {
@@ -70,8 +72,8 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
 
       // If there's a next player in the queue, start their countdown
       if (buzzed.length > 1) {
-        const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
-        const thinkingTime = round.thinkingTime;
+        const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+        const thinkingTime = gameQuestion.thinkingTime;
         await this.playerRepo.updatePlayerStatusTransaction(transaction, buzzed[1], PlayerStatus.FOCUS);
         await this.timerRepo.startTimerTransaction(transaction, thinkingTime);
       } else {
@@ -91,8 +93,8 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
 
     try {
       await runTransaction(firestore, async (transaction) => {
-        const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
-        const thinkingTime = round.thinkingTime;
+        const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+        const thinkingTime = gameQuestion.thinkingTime;
 
         await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.FOCUS);
         await this.timerRepo.startTimerTransaction(transaction, thinkingTime);

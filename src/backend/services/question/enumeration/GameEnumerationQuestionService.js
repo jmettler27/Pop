@@ -15,9 +15,10 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
 
   async resetQuestionTransaction(transaction, questionId) {
     const playerIds = await this.playerRepo.getAllPlayerIds();
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
 
     await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
-    await this.timerRepo.resetTimerTransaction(transaction);
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
     await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
 
     console.log(

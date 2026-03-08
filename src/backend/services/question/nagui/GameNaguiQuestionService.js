@@ -17,7 +17,9 @@ export default class GameNaguiQuestionService extends GameQuestionService {
   }
 
   async resetQuestionTransaction(transaction, questionId) {
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
     console.log(
       'Nagui question successfully reset',
       'game',

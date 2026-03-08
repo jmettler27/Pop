@@ -259,6 +259,7 @@ export class GameNaguiQuestion extends GameQuestion {
     super(data);
     // this.constructor.validate(data);
 
+    this.thinkingTime = data.thinkingTime || GameNaguiQuestion.THINKING_TIME;
     this.correct = data.correct || null;
     this.option = data.option || null;
     this.playerId = data.playerId || null;
@@ -269,6 +270,7 @@ export class GameNaguiQuestion extends GameQuestion {
   toObject() {
     return {
       ...super.toObject(),
+      thinkingTime: this.thinkingTime,
       correct: this.correct,
       option: this.option,
       playerId: this.playerId,
