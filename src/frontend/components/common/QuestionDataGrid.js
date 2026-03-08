@@ -1,5 +1,5 @@
 import { timestampToDate1 } from '@/backend/utils/time';
-import { ANSWER_TEXT, QUESTION_ELEMENT_TO_TITLE } from '@/backend/utils/question';
+import { QUESTION_ELEMENT_TO_TITLE } from '@/backend/utils/question';
 
 import { BlindtestQuestion } from '@/backend/models/questions/Blindtest';
 import { QuoteAuthorElement, QuoteQuestion, QuoteSourceElement } from '@/backend/models/questions/Quote';
@@ -82,7 +82,7 @@ const emojiQuestionRow = (question) => {
 };
 const emojiQuestionColumns = (intl) => [
   { field: 'title', headerName: 'Question', width: 225 },
-  { field: 'answer', headerName: ANSWER_TEXT[intl.locale] ?? ANSWER_TEXT['en'], width: 225 },
+  { field: 'answer', headerName: intl.formatMessage(globalMessages.answer), width: 225 },
   { field: 'clue', headerName: intl.formatMessage(globalMessages.clue), width: 200 },
 ];
 
