@@ -238,6 +238,8 @@
   "frontend.gameEditor.EditGamePage.expandAll": "Expand All",
   "frontend.gameEditor.EditQuestionInRound.deleteDialogConfirm": "Yes",
   "frontend.gameEditor.EditQuestionInRound.deleteDialogTitle": "Are you sure you want to remove this question?",
+  "frontend.gameEditor.EditQuestionInRound.editThinkingTime": "Thinking time (seconds)",
+  "frontend.gameEditor.EditQuestionInRound.resetToRound": "Reset to round default",
   "frontend.gameEditor.EditQuestionInRound.thinkingTimeInherited": "Inherited from round",
   "frontend.gameEditor.EditQuestionInRound.thinkingTimeOverridden": "Overridden thinking time",
   "frontend.gameEditor.EditRoundInGame.defaultThinkingTime": "Default thinking time for questions in this round",

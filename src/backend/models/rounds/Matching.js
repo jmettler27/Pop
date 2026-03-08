@@ -4,6 +4,7 @@ import { RoundType } from '@/backend/models/rounds/RoundType';
 export class MatchingRound extends Round {
   static DEFAULT_MAX_MISTAKES = 3;
   static DEFAULT_MISTAKE_PENALTY = -5;
+  static DEFAULT_THINKING_TIME = 30;
 
   constructor(data) {
     super(data);
@@ -11,6 +12,7 @@ export class MatchingRound extends Round {
 
     this.mistakePenalty = data.mistakePenalty || MatchingRound.DEFAULT_MISTAKE_PENALTY;
     this.maxMistakes = data.maxMistakes || MatchingRound.DEFAULT_MAX_MISTAKES;
+    this.thinkingTime = data.thinkingTime || MatchingRound.DEFAULT_THINKING_TIME;
   }
 
   toObject() {
@@ -19,6 +21,7 @@ export class MatchingRound extends Round {
       type: this.type,
       mistakePenalty: this.mistakePenalty,
       maxMistakes: this.maxMistakes,
+      thinkingTime: this.thinkingTime,
     };
   }
 

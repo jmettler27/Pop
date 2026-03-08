@@ -238,6 +238,8 @@
   "frontend.gameEditor.EditGamePage.expandAll": "Tout déployer",
   "frontend.gameEditor.EditQuestionInRound.deleteDialogConfirm": "Oui",
   "frontend.gameEditor.EditQuestionInRound.deleteDialogTitle": "T'es sûr de vouloir supprimer cette question ?",
+  "frontend.gameEditor.EditQuestionInRound.editThinkingTime": "Temps de réflexion (secondes)",
+  "frontend.gameEditor.EditQuestionInRound.resetToRound": "Réinitialiser au défaut de la manche",
   "frontend.gameEditor.EditQuestionInRound.thinkingTimeInherited": "Hérité de la manche",
   "frontend.gameEditor.EditQuestionInRound.thinkingTimeOverridden": "Temps de réflexion personnalisé",
   "frontend.gameEditor.EditRoundInGame.defaultThinkingTime": "Temps de réflexion par défaut pour les questions de cette manche",

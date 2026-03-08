@@ -32,6 +32,11 @@ export const updateRound = async (gameId, roundId, roundData) => {
 //   return service.addOrganizerToGame(organizerId);
 // };
 
+export const updateGameQuestionThinkingTime = async (gameId, questionType, roundId, questionId, thinkingTime) => {
+  const service = new EditGameService(gameId);
+  return service.updateGameQuestionThinkingTime(questionType, roundId, questionId, thinkingTime);
+};
+
 export const launchGame = async (gameId) => {
   const service = new EditGameService(gameId);
   return service.launchGame();

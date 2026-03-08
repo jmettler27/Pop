@@ -6,8 +6,6 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import { serverTimestamp } from 'firebase/firestore';
 import { getNextCyclicIndex, shuffle } from '@/backend/utils/arrays';
-import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { RoundType } from '@/backend/models/rounds/RoundType';
 
 export default class MCQRoundService extends RoundService {

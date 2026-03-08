@@ -1,4 +1,5 @@
-import { removeQuestionFromRound } from '@/backend/services/edit-game/actions';
+import { removeQuestionFromRound, updateGameQuestionThinkingTime } from '@/backend/services/edit-game/actions';
+import { Timer } from '@/backend/models/Timer';
 
 import { useParams } from 'next/navigation';
 
@@ -18,9 +19,11 @@ const messages = defineMessages('frontend.gameEditor.EditQuestionInRound', {
   deleteDialogConfirm: 'Yes',
   thinkingTimeOverridden: 'Overridden thinking time',
   thinkingTimeInherited: 'Inherited from round',
+  editThinkingTime: 'Thinking time (seconds)',
+  resetToRound: 'Reset to round default',
 });
 
-import { Avatar, Button, Divider } from '@mui/material';
+import { Avatar, Button, Divider, Popover, TextField } from '@mui/material';
 import {
   Dialog,
   DialogActions,
@@ -97,6 +100,25 @@ function EditQuestionCardInner({
   const isOverridden =
     questionThinkingTime != null && roundThinkingTime != null && questionThinkingTime !== roundThinkingTime;
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [editValue, setEditValue] = useState('');
+  const [handleSaveThinkingTime, isSaving] = useAsyncAction(async (value) => {
+    await updateGameQuestionThinkingTime(gameId, baseQuestion.type, roundId, questionId, value);
+    setAnchorEl(null);
+  });
+
+  const handleBadgeClick = (event) => {
+    if (status !== GameStatus.GAME_EDIT) return;
+    setEditValue(questionThinkingTime ?? roundThinkingTime ?? '');
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleResetToRound = () => {
+    if (roundThinkingTime != null) {
+      handleSaveThinkingTime(roundThinkingTime);
+    }
+  };
+
   return (
     <Card className="border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800 rounded-xl overflow-hidden group hover:scale-[1.02]">
       <CardHeader
@@ -114,7 +136,8 @@ function EditQuestionCardInner({
               )}
             >
               <span
-                className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium ${
+                onClick={handleBadgeClick}
+                className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium ${status === GameStatus.GAME_EDIT ? 'cursor-pointer hover:ring-2 hover:ring-blue-400' : ''} ${
                   isOverridden
                     ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 ring-1 ring-orange-300 dark:ring-orange-700'
                     : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'
@@ -125,6 +148,49 @@ function EditQuestionCardInner({
               </span>
             </Tooltip>
           )}
+          <Popover
+            open={Boolean(anchorEl)}
+            anchorEl={anchorEl}
+            onClose={() => setAnchorEl(null)}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+          >
+            <div className="p-4 flex flex-col gap-3 min-w-[240px]">
+              <TextField
+                label={intl.formatMessage(messages.editThinkingTime)}
+                type="number"
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                inputProps={{ min: Timer.MIN_THINKING_TIME_SECONDS, max: Timer.MAX_THINKING_TIME_SECONDS }}
+                autoFocus
+                fullWidth
+              />
+              <div className="flex gap-2 justify-end">
+                {isOverridden && roundThinkingTime != null && (
+                  <Button size="small" onClick={handleResetToRound} disabled={isSaving} color="warning">
+                    {intl.formatMessage(messages.resetToRound)}
+                  </Button>
+                )}
+                <Button
+                  size="small"
+                  variant="contained"
+                  onClick={() => {
+                    const num = Number(editValue);
+                    if (num >= Timer.MIN_THINKING_TIME_SECONDS && num <= Timer.MAX_THINKING_TIME_SECONDS)
+                      handleSaveThinkingTime(num);
+                  }}
+                  disabled={
+                    isSaving ||
+                    !editValue ||
+                    Number(editValue) < Timer.MIN_THINKING_TIME_SECONDS ||
+                    Number(editValue) > Timer.MAX_THINKING_TIME_SECONDS
+                  }
+                >
+                  {intl.formatMessage(globalMessages.save)}
+                </Button>
+              </div>
+            </div>
+          </Popover>
           <Tooltip title={isCollapsed ? 'Expand' : 'Collapse'}>
             <IconButton
               onClick={() => setIsCollapsed(!isCollapsed)}
@@ -135,7 +201,7 @@ function EditQuestionCardInner({
               {isCollapsed ? <ExpandMoreIcon fontSize="small" /> : <ExpandLessIcon fontSize="small" />}
             </IconButton>
           </Tooltip>
-          {status === 'build' && (
+          {status === GameStatus.GAME_EDIT && (
             <RemoveQuestionFromRoundButton questionType={baseQuestion.type} roundId={roundId} questionId={questionId} />
           )}
         </div>
@@ -170,27 +236,9 @@ function QuestionCardSkeleton() {
   );
 }
 
-import PersonIcon from '@mui/icons-material/Person';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
-import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
-import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
-
-function UpdateCreatorButton({ roundId, questionId }) {
-  const { id: gameId } = useParams();
-
-  const [handleChange, isChanging] = useAsyncAction(async () => {
-    // await updateQuestionCreator(gameId, roundId, questionId, '')
-  });
-
-  return (
-    <>
-      <IconButton color="error" onClick={handleChange} disabled={isChanging}>
-        <PersonIcon />
-      </IconButton>
-    </>
-  );
-}
+import { GameStatus } from '@/backend/models/games/GameStatus';
 
 function RemoveQuestionFromRoundButton({ questionType, roundId, questionId }) {
   const intl = useIntl();
