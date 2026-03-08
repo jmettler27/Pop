@@ -4,7 +4,7 @@ import { RoundType } from '@/backend/models/rounds/RoundType';
 export class MatchingRound extends Round {
   static DEFAULT_MAX_MISTAKES = 3;
   static DEFAULT_MISTAKE_PENALTY = -5;
-  static DEFAULT_THINKING_TIME = 30;
+  static DEFAULT_THINKING_TIME = 40;
 
   constructor(data) {
     super(data);

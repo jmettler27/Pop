@@ -209,7 +209,39 @@ export default class EditGameService {
   /**
    * Launches a game
    */
-  async updateGameQuestionThinkingTime(questionType, roundId, questionId, thinkingTime) {
+  async updateRoundThinkingTime(roundId, thinkingTime) {
+    if (!roundId) throw new Error('Round ID is required');
+    if (
+      typeof thinkingTime !== 'number' ||
+      thinkingTime < Timer.MIN_THINKING_TIME_SECONDS ||
+      thinkingTime > Timer.MAX_THINKING_TIME_SECONDS
+    )
+      throw new Error(
+        `Thinking time must be between ${Timer.MIN_THINKING_TIME_SECONDS} and ${Timer.MAX_THINKING_TIME_SECONDS} seconds`
+      );
+    await runTransaction(firestore, async (transaction) => {
+      const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
+      const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(round.type, this.gameId, roundId);
+
+      for (const questionId of round.questions) {
+        await gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { thinkingTime });
+      }
+
+      await this.roundRepo.updateRoundTransaction(transaction, roundId, { thinkingTime });
+    });
+
+    console.log(
+      'Round thinking time updated',
+      'gameId:',
+      this.gameId,
+      'roundId:',
+      roundId,
+      'thinkingTime:',
+      thinkingTime
+    );
+  }
+
+  async updateQuestionThinkingTime(questionType, roundId, questionId, thinkingTime) {
     if (!roundId) throw new Error('Round ID is required');
     if (!questionId) throw new Error('Question ID is required');
     if (

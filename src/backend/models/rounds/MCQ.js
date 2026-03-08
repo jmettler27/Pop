@@ -3,7 +3,7 @@ import { RoundType } from '@/backend/models/rounds/RoundType';
 
 export class MCQRound extends Round {
   static REWARDS_PER_QUESTION = 1;
-  static DEFAULT_THINKING_TIME = 15;
+  static DEFAULT_THINKING_TIME = 30;
 
   constructor(data) {
     super(data);

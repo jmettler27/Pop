@@ -245,6 +245,7 @@
   "frontend.gameEditor.EditRoundInGame.defaultThinkingTime": "Temps de réflexion par défaut pour les questions de cette manche",
   "frontend.gameEditor.EditRoundInGame.deleteDialogConfirm": "Oui",
   "frontend.gameEditor.EditRoundInGame.deleteDialogTitle": "T'es sûr de vouloir supprimer cette manche ?",
+  "frontend.gameEditor.EditRoundInGame.editThinkingTime": "Temps de réflexion (secondes)",
   "frontend.gameEditor.LaunchGameButton.dialogConfirm": "Zéparti",
   "frontend.gameEditor.LaunchGameButton.dialogTitle": "Êtes-vous sûr de vouloir lancer cette partie?",
   "frontend.gameEditor.LaunchGameButton.dialogWarning": "La partie sera visible par tous les utilisateurs.",

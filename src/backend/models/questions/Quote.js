@@ -230,7 +230,7 @@ export class QuoteQuestion extends BaseQuestion {
 export class GameQuoteQuestion extends GameQuestion {
   static REWARDS_PER_ELEMENT = 1;
   static MAX_TRIES = 2;
-  static THINKING_TIME = 30;
+  static THINKING_TIME = 15;
 
   constructor(data) {
     super(data);

@@ -1,5 +1,7 @@
 'use client';
 
+import { Timer } from '@/backend/models/Timer';
+
 import { topicToEmoji } from '@/backend/models/Topic';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { RoundType, roundTypeToEmoji, roundTypeToTitle } from '@/backend/models/rounds/RoundType';
@@ -7,7 +9,7 @@ import { Round } from '@/backend/models/rounds/Round';
 
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 
-import { updateRound, removeRoundFromGame } from '@/backend/services/edit-game/actions';
+import { updateRound, removeRoundFromGame, updateRoundThinkingTime } from '@/backend/services/edit-game/actions';
 
 import globalMessages from '@/i18n/globalMessages';
 import { useIntl } from 'react-intl';
@@ -17,6 +19,7 @@ const messages = defineMessages('frontend.gameEditor.EditRoundInGame', {
   deleteDialogTitle: 'Are you sure you want to remove this round?',
   deleteDialogConfirm: 'Yes',
   defaultThinkingTime: 'Default thinking time for questions in this round',
+  editThinkingTime: 'Thinking time (seconds)',
 });
 
 import { QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
@@ -44,6 +47,8 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
+  Popover,
+  TextField,
   Tooltip,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -97,6 +102,19 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
   const [isReorderMode, setIsReorderMode] = useState(false);
   const [reorderedQuestions, setReorderedQuestions] = useState([]);
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const [thinkingTimeAnchor, setThinkingTimeAnchor] = useState(null);
+  const [thinkingTimeEditValue, setThinkingTimeEditValue] = useState('');
+  const [handleSaveThinkingTime, isSavingThinkingTime] = useAsyncAction(async (value) => {
+    await updateRoundThinkingTime(gameId, roundId, value);
+    setThinkingTimeAnchor(null);
+  });
+
+  const handleThinkingTimeBadgeClick = (event) => {
+    if (status !== GameStatus.GAME_EDIT) return;
+    setThinkingTimeEditValue(round?.thinkingTime ?? '');
+    setThinkingTimeAnchor(event.currentTarget);
+  };
 
   // Sync with forceCollapse prop
   useEffect(() => {
@@ -162,12 +180,53 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
           </div>
           {round.thinkingTime != null && (
             <Tooltip title={intl.formatMessage(messages.defaultThinkingTime)}>
-              <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 shadow-sm">
+              <span
+                onClick={handleThinkingTimeBadgeClick}
+                className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 shadow-sm ${status === GameStatus.GAME_EDIT ? 'cursor-pointer hover:ring-2 hover:ring-blue-400' : ''}`}
+              >
                 <TimerIcon sx={{ fontSize: 14 }} />
                 {round.thinkingTime}s
               </span>
             </Tooltip>
           )}
+          <Popover
+            open={Boolean(thinkingTimeAnchor)}
+            anchorEl={thinkingTimeAnchor}
+            onClose={() => setThinkingTimeAnchor(null)}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+          >
+            <div className="p-4 flex flex-col gap-3 min-w-[240px]">
+              <TextField
+                label={intl.formatMessage(messages.editThinkingTime)}
+                type="number"
+                value={thinkingTimeEditValue}
+                onChange={(e) => setThinkingTimeEditValue(e.target.value)}
+                inputProps={{ min: Timer.MIN_THINKING_TIME_SECONDS, max: Timer.MAX_THINKING_TIME_SECONDS }}
+                autoFocus
+                fullWidth
+              />
+              <div className="flex gap-2 justify-end">
+                <Button
+                  size="small"
+                  variant="contained"
+                  onClick={() => {
+                    const num = Number(thinkingTimeEditValue);
+                    if (num >= Timer.MIN_THINKING_TIME_SECONDS && num <= Timer.MAX_THINKING_TIME_SECONDS)
+                      handleSaveThinkingTime(num);
+                  }}
+                  disabled={
+                    isSavingThinkingTime ||
+                    !thinkingTimeEditValue ||
+                    Number(thinkingTimeEditValue) < Timer.MIN_THINKING_TIME_SECONDS ||
+                    Number(thinkingTimeEditValue) > Timer.MAX_THINKING_TIME_SECONDS
+                  }
+                >
+                  {intl.formatMessage(globalMessages.save)}
+                </Button>
+              </div>
+            </div>
+          </Popover>
         </div>
         <div className="flex flex-row gap-2">
           <Tooltip title={isCollapsed ? 'Expand' : 'Collapse'}>
@@ -207,7 +266,10 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
       <div className="sm:hidden px-4 pt-2 flex items-center gap-2">
         <RoundTopicDistribution round={round} />
         {round.thinkingTime != null && (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 shadow-sm">
+          <span
+            onClick={handleThinkingTimeBadgeClick}
+            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 shadow-sm ${status === GameStatus.GAME_EDIT ? 'cursor-pointer hover:ring-2 hover:ring-blue-400' : ''}`}
+          >
             <TimerIcon sx={{ fontSize: 14 }} />
             {round.thinkingTime}s
           </span>

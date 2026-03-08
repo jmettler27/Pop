@@ -1,4 +1,4 @@
-import { removeQuestionFromRound, updateGameQuestionThinkingTime } from '@/backend/services/edit-game/actions';
+import { removeQuestionFromRound, updateQuestionThinkingTime } from '@/backend/services/edit-game/actions';
 import { Timer } from '@/backend/models/Timer';
 
 import { useParams } from 'next/navigation';
@@ -94,7 +94,7 @@ function EditQuestionCardInner({
 }) {
   const intl = useIntl();
   const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(baseQuestion.type, gameId, roundId);
-  const { gameQuestion } = gameQuestionRepo.useQuestionOnce(questionId);
+  const { gameQuestion } = gameQuestionRepo.useQuestion(questionId);
 
   const questionThinkingTime = gameQuestion?.thinkingTime;
   const isOverridden =
@@ -103,7 +103,7 @@ function EditQuestionCardInner({
   const [anchorEl, setAnchorEl] = useState(null);
   const [editValue, setEditValue] = useState('');
   const [handleSaveThinkingTime, isSaving] = useAsyncAction(async (value) => {
-    await updateGameQuestionThinkingTime(gameId, baseQuestion.type, roundId, questionId, value);
+    await updateQuestionThinkingTime(gameId, baseQuestion.type, roundId, questionId, value);
     setAnchorEl(null);
   });
 

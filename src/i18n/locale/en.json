@@ -245,6 +245,7 @@
   "frontend.gameEditor.EditRoundInGame.defaultThinkingTime": "Default thinking time for questions in this round",
   "frontend.gameEditor.EditRoundInGame.deleteDialogConfirm": "Yes",
   "frontend.gameEditor.EditRoundInGame.deleteDialogTitle": "Are you sure you want to remove this round?",
+  "frontend.gameEditor.EditRoundInGame.editThinkingTime": "Thinking time (seconds)",
   "frontend.gameEditor.LaunchGameButton.dialogConfirm": "Letzgo",
   "frontend.gameEditor.LaunchGameButton.dialogTitle": "Are you sure you want to launch this game?",
   "frontend.gameEditor.LaunchGameButton.dialogWarning": "The game will be publicly accessible for all users.",
