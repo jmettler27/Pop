@@ -147,9 +147,9 @@ export default class EditGameService {
 
     try {
       await runTransaction(firestore, async (transaction) => {
-        const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(questionType, gameId, roundId);
+        const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(questionType, this.gameId, roundId);
         await gameQuestionRepo.deleteQuestionTransaction(transaction, questionId);
-        await this.roundRepo.removeQuestionTransaction(transaction, roundId);
+        await this.roundRepo.removeQuestionTransaction(transaction, roundId, questionId);
       });
     } catch (error) {
       console.error('Failed to remove the round:', error);
