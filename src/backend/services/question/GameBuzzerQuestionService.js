@@ -4,7 +4,6 @@ import { firestore } from '@/backend/firebase/firebase';
 import { runTransaction, serverTimestamp } from 'firebase/firestore';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
-import { TimerStatus } from '@/backend/models/Timer';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
 
 export default class GameBuzzerQuestionService extends GameQuestionService {
@@ -66,9 +65,18 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
 
     if (buzzed.length === 0) {
       await this.timerRepo.resetTimerTransaction(transaction);
-      // await this.timerRepo.prepareTimerForReadyTransaction(transaction);
     } else {
       await this.invalidateAnswerTransaction(transaction, questionId, buzzed[0]);
+
+      // If there's a next player in the queue, start their countdown
+      if (buzzed.length > 1) {
+        const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
+        const thinkingTime = round.thinkingTime;
+        await this.playerRepo.updatePlayerStatusTransaction(transaction, buzzed[1], PlayerStatus.FOCUS);
+        await this.timerRepo.startTimerTransaction(transaction, thinkingTime);
+      } else {
+        await this.timerRepo.resetTimerTransaction(transaction);
+      }
     }
   }
 
@@ -83,8 +91,11 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
 
     try {
       await runTransaction(firestore, async (transaction) => {
+        const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
+        const thinkingTime = round.thinkingTime;
+
         await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.FOCUS);
-        // await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.START);
+        await this.timerRepo.startTimerTransaction(transaction, thinkingTime);
 
         console.log(
           'Buzzer head change successfully handled',

@@ -65,9 +65,18 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
 
     if (buzzed.length === 0) {
       await this.timerRepo.resetTimerTransaction(transaction);
-      // await this.timerRepo.prepareTimerForReadyTransaction(transaction);
     } else {
       await this.cancelPlayerTransaction(transaction, questionId, buzzed[0]);
+
+      // If there's a next player in the queue, start their countdown
+      if (buzzed.length > 1) {
+        const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
+        const thinkingTime = round.thinkingTime;
+        await this.playerRepo.updatePlayerStatusTransaction(transaction, buzzed[1], PlayerStatus.FOCUS);
+        await this.timerRepo.startTimerTransaction(transaction, thinkingTime);
+      } else {
+        await this.timerRepo.resetTimerTransaction(transaction);
+      }
     }
   }
 
@@ -82,8 +91,11 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
 
     try {
       await runTransaction(firestore, async (transaction) => {
+        const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
+        const thinkingTime = round.thinkingTime;
+
         await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.FOCUS);
-        // await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.START);
+        await this.timerRepo.startTimerTransaction(transaction, thinkingTime);
 
         console.log(
           'Buzzer head change successfully handled',

@@ -303,7 +303,7 @@ export class GameMatchingQuestion extends GameQuestion {
     let newMatch;
 
     do {
-      newMatch = randomMatch(numCols, numRows);
+      newMatch = this.randomMatch(numCols, numRows);
     } while (
       newMatch.some((index) => correctMatchIndicesSet.has(index)) ||
       incorrectMatchesSet.has(newMatch.join(','))

@@ -1,76 +1,113 @@
 import { TimerStatus } from '@/backend/models/Timer';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 import clsx from 'clsx';
 
-const INTERVAL_MS = 10;
+const INTERVAL_MS = 50;
 const CRITICAL_MS = 5000;
 
 export default function Timer({ timer, serverTimeOffset, onTimerEnd = () => {} }) {
-  const statusRef = useRef(null);
-  const durationRef = useRef(null);
-  const timestampRef = useRef(null);
+  const intervalRef = useRef(null);
+  const endFiredRef = useRef(false);
+  const onTimerEndRef = useRef(onTimerEnd);
 
-  const startMillisecond = timer.forward ? 0 : timer.duration * 1000;
-  const endMillisecond = timer.forward ? timer.duration * 1000 : 0;
-
-  const [milliseconds, setMilliSeconds] = useState(startMillisecond);
-  const timerId = useRef();
-
-  const startTimer = () => {
-    console.log('startTimer', Date.now());
-    timerId.current = setInterval(() => {
-      const elapsedTimeMs = Date.now() - timer.timestamp.toMillis() + serverTimeOffset;
-      const timeLeftMs = milliseconds - elapsedTimeMs;
-      setMilliSeconds(() => (timer.forward ? elapsedTimeMs : timeLeftMs));
-    }, INTERVAL_MS);
-  };
-
-  const stopTimer = () => {
-    clearInterval(timerId.current);
-    timerId.current = startMillisecond;
-  };
-
-  const resetTimer = () => {
-    stopTimer();
-    setMilliSeconds(startMillisecond);
-  };
-
-  const endTimer = () => {
-    stopTimer();
-    onTimerEnd();
-  };
-
+  // Keep callback ref up to date without retriggering effects
   useEffect(() => {
-    if (
-      statusRef.current === timer.status &&
-      durationRef.current === timer.duration &&
-      timestampRef.current === timer.timestamp
-    )
+    onTimerEndRef.current = onTimerEnd;
+  }, [onTimerEnd]);
+
+  // Compute the display value (remaining milliseconds for countdown, elapsed for forward)
+  const computeDisplayMs = useCallback(() => {
+    if (timer.status === TimerStatus.RESET || timer.status === TimerStatus.STOP) {
+      // For RESET and STOP, duration holds the remaining seconds
+      if (timer.forward) {
+        return 0; // forward timers show 0 when not running
+      }
+      return timer.duration * 1000;
+    }
+
+    if (timer.status === TimerStatus.END) {
+      return timer.forward ? timer.duration * 1000 : 0;
+    }
+
+    if (timer.status === TimerStatus.START && timer.timestamp) {
+      const startMs = timer.timestamp.toMillis?.() ?? timer.timestamp;
+      const elapsedMs = Date.now() - startMs + serverTimeOffset;
+
+      if (timer.forward) {
+        return Math.min(elapsedMs, timer.duration * 1000);
+      }
+      return Math.max(timer.duration * 1000 - elapsedMs, 0);
+    }
+
+    return timer.forward ? 0 : timer.duration * 1000;
+  }, [timer.status, timer.duration, timer.timestamp, timer.forward, serverTimeOffset]);
+
+  const [displayMs, setDisplayMs] = useState(computeDisplayMs);
+
+  const clearTimer = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }, []);
+
+  // React to timer state changes from the server
+  useEffect(() => {
+    clearTimer();
+    endFiredRef.current = false;
+
+    if (timer.status === TimerStatus.RESET || timer.status === TimerStatus.STOP) {
+      setDisplayMs(computeDisplayMs());
       return;
-    statusRef.current = timer.status;
-    durationRef.current = timer.duration;
-    timestampRef.current = timer.timestamp;
-    if (statusRef.current === TimerStatus.START) {
-      startTimer();
     }
-    if (statusRef.current === TimerStatus.STOP) {
-      stopTimer();
-    }
-    if (statusRef.current === TimerStatus.RESET) {
-      resetTimer();
-    }
-    if (statusRef.current === TimerStatus.END) {
-      endTimer();
-    }
-  }, [timer.status, timer.duration, timer.timestamp]);
 
-  if ((!timer.forward && milliseconds <= endMillisecond) || (timer.forward && milliseconds >= endMillisecond)) {
-    endTimer();
-  }
+    if (timer.status === TimerStatus.END) {
+      setDisplayMs(timer.forward ? timer.duration * 1000 : 0);
+      return;
+    }
 
-  const isCritical = Math.abs(milliseconds - endMillisecond) <= CRITICAL_MS;
+    if (timer.status === TimerStatus.START && timer.timestamp) {
+      // Set initial display value immediately
+      setDisplayMs(computeDisplayMs());
+
+      intervalRef.current = setInterval(() => {
+        const startMs = timer.timestamp.toMillis?.() ?? timer.timestamp;
+        const elapsedMs = Date.now() - startMs + serverTimeOffset;
+
+        let currentMs;
+        if (timer.forward) {
+          currentMs = Math.min(elapsedMs, timer.duration * 1000);
+        } else {
+          currentMs = Math.max(timer.duration * 1000 - elapsedMs, 0);
+        }
+
+        setDisplayMs(currentMs);
+
+        // Check if timer has naturally ended
+        const hasEnded = timer.forward ? currentMs >= timer.duration * 1000 : currentMs <= 0;
+
+        if (hasEnded && !endFiredRef.current) {
+          endFiredRef.current = true;
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+          // Defer the callback to avoid setState-during-render
+          setTimeout(() => onTimerEndRef.current(), 0);
+        }
+      }, INTERVAL_MS);
+    }
+
+    return clearTimer;
+  }, [timer.status, timer.duration, timer.timestamp, timer.forward, serverTimeOffset, clearTimer, computeDisplayMs]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return clearTimer;
+  }, [clearTimer]);
+
+  const endMillisecond = timer.forward ? timer.duration * 1000 : 0;
+  const isCritical = Math.abs(displayMs - endMillisecond) <= CRITICAL_MS;
 
   return (
     <span
@@ -80,8 +117,7 @@ export default function Timer({ timer, serverTimeOffset, onTimerEnd = () => {} }
         timer.status === TimerStatus.STOP && 'opacity-50'
       )}
     >
-      {/* {milliseconds <= endMillisecond ? '0.00' : `${Math.floor(milliseconds / 1000)}.${(milliseconds % 1000).toString().padStart(2, '0')}`} */}
-      {milliseconds <= endMillisecond ? '0' : Math.ceil(milliseconds / 1000)}
+      {displayMs <= 0 && !timer.forward ? '0' : Math.ceil(displayMs / 1000)}
     </span>
   );
 }

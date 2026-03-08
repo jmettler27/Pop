@@ -20,7 +20,7 @@ export default class TimerService {
   async endTimer() {
     try {
       await runTransaction(firestore, async (transaction) => {
-        this.timerRepo.endTimerTransaction(transaction);
+        await this.timerRepo.endTimerTransaction(transaction);
 
         console.log('Timer ended');
       });

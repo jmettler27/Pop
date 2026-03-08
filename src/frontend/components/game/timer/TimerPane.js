@@ -26,7 +26,7 @@ import Timer from '@/frontend/components/game/timer/Timer';
 import OrganizerTimerController from '@/frontend/components/game/timer/OrganizerTimerController';
 import AuthorizePlayersSwitch from '@/frontend/components/game/main-pane/AuthorizePlayersSwitch';
 
-import { useRef } from 'react';
+import { useRef, useCallback } from 'react';
 
 import { useObject } from 'react-firebase-hooks/database';
 
@@ -43,34 +43,39 @@ function OrganizerTimerPane() {
   const game = useGame();
   const { timerRepo } = useGameRepositories();
 
-  const lastExecuted = useRef(null);
+  const isExecutingRef = useRef(false);
 
-  const handleTimerEnd = async (timer) => {
-    console.log('Last executed:', lastExecuted.current?.toLocaleString());
+  const handleTimerEnd = useCallback(async () => {
+    // Prevent concurrent executions
+    if (isExecutingRef.current) return;
+    isExecutingRef.current = true;
 
-    if (timer.managedBy !== user.id) {
-      console.log('HANDLE TIMER END: NOT MANAGED BY ME');
-      return;
+    try {
+      // Capture current game state at the time of the call
+      const currentStatus = game.status;
+      const currentGameId = game.id;
+      const currentQuestionType = game.currentQuestionType;
+      const currentRound = game.currentRound;
+      const currentQuestion = game.currentQuestion;
+
+      switch (currentStatus) {
+        case GameStatus.GAME_START:
+          await startGame(currentGameId);
+          break;
+        case GameStatus.ROUND_START:
+          await startRound(currentQuestionType, currentGameId, currentRound);
+          break;
+        case GameStatus.QUESTION_ACTIVE:
+          await handleCountdownEnd(currentQuestionType, currentGameId, currentRound, currentQuestion);
+          break;
+        case GameStatus.QUESTION_END:
+          await handleQuestionEnd(currentQuestionType, currentGameId, currentRound, currentQuestion);
+          break;
+      }
+    } finally {
+      isExecutingRef.current = false;
     }
-
-    console.log('HANDLE TIMER END: EXECUTING');
-    lastExecuted.current = Date.now();
-
-    switch (game.status) {
-      case GameStatus.GAME_START:
-        await startGame(game.id);
-        break;
-      case GameStatus.ROUND_START:
-        await startRound(game.currentQuestionType, game.id, game.currentRound);
-        break;
-      case GameStatus.QUESTION_ACTIVE:
-        await handleCountdownEnd(game.currentQuestionType, game.id, game.currentRound, game.currentQuestion);
-        break;
-      case GameStatus.QUESTION_END:
-        await handleQuestionEnd(game.currentQuestionType, game.id, game.currentRound, game.currentQuestion);
-        break;
-    }
-  };
+  }, [game.status, game.id, game.currentQuestionType, game.currentRound, game.currentQuestion]);
 
   const [offsetSnapshot, offsetLoading, offsetError] = useObject(SERVER_TIME_OFFSET_REF);
 
@@ -99,18 +104,10 @@ function OrganizerTimerPane() {
 
   const serverTimeOffset = offsetSnapshot.val();
 
-  console.log('TIMER PANE RENDERED:');
-  console.log('- Server time offset (MS): ', serverTimeOffset);
-  console.log('- Timer:', timer);
-
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-2">
       <TimerHeader />
-      <OrganizerTimerController
-        timer={timer}
-        serverTimeOffset={serverTimeOffset}
-        onTimerEnd={() => handleTimerEnd(timer)}
-      />
+      <OrganizerTimerController timer={timer} serverTimeOffset={serverTimeOffset} onTimerEnd={handleTimerEnd} />
       <AuthorizePlayersSwitch authorized={timer.authorized} />
     </div>
   );
@@ -144,10 +141,6 @@ function SpectatorTimerPane() {
   }
 
   const serverTimeOffset = offsetSnapshot.val();
-
-  console.log('SPECTATOR TIMER PANE RENDERED:');
-  console.log('- Server time offset (MS): ', serverTimeOffset);
-  console.log('- Timer:', timer);
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-2">
