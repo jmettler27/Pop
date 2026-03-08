@@ -16,11 +16,11 @@ const messages = defineMessages('frontend.gameEditor.AddNewQuestion', {
   addToRoundDialogTitle: 'Add this question to the round?',
   addToRound: 'Add',
 });
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { CardContent, Card } from '@/frontend/components/card';
-import { QuestionCard } from '@/frontend/components/questions/QuestionCard';
-import { SearchQuestionDataGrid } from '@/frontend/components/questions/QuestionDataGrid';
+import { QuestionCard } from '@/frontend/components/common/QuestionCard';
+import { SearchQuestionDataGrid } from '@/frontend/components/common/QuestionDataGrid';
 
 import {
   Button,
@@ -261,19 +261,19 @@ function SelectQuestionTypeButton({ type, handleListItemClick }) {
 // New question
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 
-import SubmitBasicQuestionForm from '@/frontend/components/forms/submit-question/SubmitBasicQuestionForm';
-import SubmitBlindtestQuestionForm from '@/frontend/components/forms/submit-question/SubmitBlindtestQuestionForm';
-import SubmitEmojiQuestionForm from '@/frontend/components/forms/submit-question/SubmitEmojiQuestionForm';
-import SubmitEnumerationQuestionForm from '@/frontend/components/forms/submit-question/SubmitEnumerationQuestionForm';
-import SubmitImageQuestionForm from '@/frontend/components/forms/submit-question/SubmitImageQuestionForm';
-import SubmitLabellingQuestionForm from '@/frontend/components/forms/submit-question/SubmitLabellingQuestionForm';
-import SubmitMatchingQuestionForm from '@/frontend/components/forms/submit-question/SubmitMatchingQuestionForm';
-import SubmitMCQForm from '@/frontend/components/forms/submit-question/SubmitMCQQuestionForm';
-import SubmitNaguiQuestionForm from '@/frontend/components/forms/submit-question/SubmitNaguiQuestionForm';
-import SubmitOddOneOutQuestionForm from '@/frontend/components/forms/submit-question/SubmitOddOneOutQuestionForm';
-import SubmitProgressiveCluesQuestionForm from '@/frontend/components/forms/submit-question/SubmitProgressiveCluesQuestionForm';
-import SubmitQuoteQuestionForm from '@/frontend/components/forms/submit-question/SubmitQuoteQuestionForm';
-import SubmitReorderingQuestionForm from '@/frontend/components/forms/submit-question/SubmitReorderingQuestionForm';
+import SubmitBasicQuestionForm from '@/frontend/components/question-forms/SubmitBasicQuestionForm';
+import SubmitBlindtestQuestionForm from '@/frontend/components/question-forms/SubmitBlindtestQuestionForm';
+import SubmitEmojiQuestionForm from '@/frontend/components/question-forms/SubmitEmojiQuestionForm';
+import SubmitEnumerationQuestionForm from '@/frontend/components/question-forms/SubmitEnumerationQuestionForm';
+import SubmitImageQuestionForm from '@/frontend/components/question-forms/SubmitImageQuestionForm';
+import SubmitLabellingQuestionForm from '@/frontend/components/question-forms/SubmitLabellingQuestionForm';
+import SubmitMatchingQuestionForm from '@/frontend/components/question-forms/SubmitMatchingQuestionForm';
+import SubmitMCQForm from '@/frontend/components/question-forms/SubmitMCQQuestionForm';
+import SubmitNaguiQuestionForm from '@/frontend/components/question-forms/SubmitNaguiQuestionForm';
+import SubmitOddOneOutQuestionForm from '@/frontend/components/question-forms/SubmitOddOneOutQuestionForm';
+import SubmitProgressiveCluesQuestionForm from '@/frontend/components/question-forms/SubmitProgressiveCluesQuestionForm';
+import SubmitQuoteQuestionForm from '@/frontend/components/question-forms/SubmitQuoteQuestionForm';
+import SubmitReorderingQuestionForm from '@/frontend/components/question-forms/SubmitReorderingQuestionForm';
 
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 

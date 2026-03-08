@@ -2,8 +2,8 @@
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
-import QuestionFormHeader from '@/frontend/components/forms/QuestionFormHeader';
-import SubmitImageQuestionForm from '@/frontend/components/forms/submit-question/SubmitImageQuestionForm';
+import QuestionFormHeader from '@/frontend/components/common/QuestionFormHeader';
+import SubmitImageQuestionForm from '@/frontend/components/question-forms/SubmitImageQuestionForm';
 
 import { redirect } from 'next/navigation';
 import { useSession } from 'next-auth/react';

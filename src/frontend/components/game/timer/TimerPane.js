@@ -17,11 +17,14 @@ const messages = defineMessages('frontend.game.timer.TimerPane', {
   nextQuestionIn: 'Next question in',
 });
 
-import { useUserContext, useGameContext, useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useUser from '@/frontend/hooks/useUser';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
 
 import Timer from '@/frontend/components/game/timer/Timer';
 import OrganizerTimerController from '@/frontend/components/game/timer/OrganizerTimerController';
-import AuthorizePlayersSwitch from '@/frontend/components/game/bottom-pane/AuthorizePlayersSwitch';
+import AuthorizePlayersSwitch from '@/frontend/components/game/main-pane/AuthorizePlayersSwitch';
 
 import { useRef } from 'react';
 
@@ -31,14 +34,14 @@ import { CircularProgress } from '@mui/material';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
 export default function TimerPane() {
-  const myRole = useRoleContext();
+  const myRole = useRole();
   return myRole === ParticipantRole.ORGANIZER ? <OrganizerTimerPane /> : <SpectatorTimerPane />;
 }
 
 function OrganizerTimerPane() {
-  const user = useUserContext();
-  const game = useGameContext();
-  const { timerRepo } = useGameRepositoriesContext();
+  const user = useUser();
+  const game = useGame();
+  const { timerRepo } = useGameRepositories();
 
   const lastExecuted = useRef(null);
 
@@ -114,7 +117,7 @@ function OrganizerTimerPane() {
 }
 
 function SpectatorTimerPane() {
-  const { timerRepo } = useGameRepositoriesContext();
+  const { timerRepo } = useGameRepositories();
 
   const [offsetSnapshot, offsetLoading, offsetError] = useObject(SERVER_TIME_OFFSET_REF);
   const { timer, timerLoading, timerError } = timerRepo.useTimer();
@@ -157,7 +160,7 @@ function SpectatorTimerPane() {
 }
 
 function TimerHeader() {
-  const game = useGameContext();
+  const game = useGame();
   const intl = useIntl();
 
   switch (game.status) {
@@ -183,9 +186,9 @@ function TimerHeader() {
 // QUESTION END
 function QuestionEndTimerHeader() {
   const intl = useIntl();
-  const game = useGameContext();
+  const game = useGame();
 
-  const { roundRepo } = useGameRepositoriesContext();
+  const { roundRepo } = useGameRepositories();
   const { round, roundLoading, roundError } = roundRepo.useRoundOnce(game.currentRound);
 
   if (roundError) {

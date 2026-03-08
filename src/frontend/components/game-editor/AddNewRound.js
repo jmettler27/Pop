@@ -2,14 +2,14 @@ import { addRoundToGame } from '@/backend/services/edit-game/actions';
 
 import { Round } from '@/backend/models/rounds/Round';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { stringSchema } from '@/frontend/utils/forms/forms';
 import { roundTypeSchema } from '@/frontend/utils/forms/game';
 
-import SelectRoundType from '@/frontend/components/forms/SelectRoundType';
-import { MyNumberInput, MyTextInput } from '@/frontend/components/forms/StyledFormComponents';
-import SubmitFormButton from '@/frontend/components/forms/SubmitFormButton';
+import SelectRoundType from '@/frontend/components/common/SelectRoundType';
+import { MyNumberInput, MyTextInput } from '@/frontend/components/common/StyledFormComponents';
+import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
 
 import { useParams } from 'next/navigation';
 

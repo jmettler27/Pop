@@ -4,7 +4,7 @@ import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
 
-import { useGameRepositoriesContext } from '@/frontend/contexts';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import SpecialRoundProgress from '@/frontend/components/game/sidebar/progress/round/SpecialRoundProgress';
 import RoundQuestionsProgress from '@/frontend/components/game/sidebar/progress/round/RoundQuestionsProgress';
@@ -14,7 +14,7 @@ import { memo } from 'react';
 import { CircularProgress } from '@mui/material';
 
 export default function RoundProgressTabPanel({ game }) {
-  const { roundRepo } = useGameRepositoriesContext();
+  const { roundRepo } = useGameRepositories();
   const { round, roundLoading, roundError } = roundRepo.useRound(game.currentRound);
 
   if (roundError) {

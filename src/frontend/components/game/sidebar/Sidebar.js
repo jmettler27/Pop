@@ -1,6 +1,6 @@
 import { ParticipantRole } from '@/backend/models/users/Participant';
 
-import { useRoleContext } from '@/frontend/contexts';
+import useRole from '@/frontend/hooks/useRole';
 import { useLocale } from '@/app/LocaleProvider';
 import { LOCALES, LOCALE_TO_TITLE } from '@/frontend/utils/locales';
 import globalMessages from '@/i18n/globalMessages';
@@ -29,7 +29,7 @@ import TranslateIcon from '@mui/icons-material/Translate';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 
 export default function Sidebar({}) {
-  const myRole = useRoleContext();
+  const myRole = useRole();
   const intl = useIntl();
   const { locale, setLocale } = useLocale();
 

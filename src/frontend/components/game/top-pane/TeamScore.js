@@ -5,12 +5,13 @@ import { GameType } from '@/backend/models/games/GameType';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 
-import { useGameContext, useGameRepositoriesContext } from '@/frontend/contexts';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import { CircularProgress } from '@mui/material';
 
 export default function TeamScore({ teamId }) {
-  const game = useGameContext();
+  const game = useGame();
 
   if (game.type === GameType.RANDOM) {
     return <TeamGameScore teamId={teamId} />;
@@ -24,7 +25,7 @@ export default function TeamScore({ teamId }) {
 }
 
 function TeamGameScore({ teamId }) {
-  const { scoreRepo } = useGameRepositoriesContext();
+  const { scoreRepo } = useGameRepositories();
   const { gameScores, loading, error } = scoreRepo.useScores();
 
   if (error) {
@@ -49,7 +50,7 @@ function TeamGameScore({ teamId }) {
 }
 
 function TeamRoundScore({ teamId, roundId }) {
-  const game = useGameContext();
+  const game = useGame();
   const roundScoreRepo = new RoundScoreRepository(game.id, roundId);
   const { roundScores, loading, error } = roundScoreRepo.useScores();
 
@@ -108,7 +109,7 @@ function CompletionRatePolicyTeamScore({ teamId, game }) {
 }
 
 function CompletionRatePolicyTeamRoundActiveScore({ teamId, game }) {
-  const { roundRepo } = useGameRepositoriesContext();
+  const { roundRepo } = useGameRepositories();
   const { round, loading, error } = roundRepo.useRound(game.currentRound);
 
   if (error) {

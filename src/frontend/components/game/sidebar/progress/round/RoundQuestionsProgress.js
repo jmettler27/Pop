@@ -4,12 +4,14 @@ import { ParticipantRole } from '@/backend/models/users/Participant';
 import { topicToEmoji } from '@/backend/models/Topic';
 import { BlindtestQuestion } from '@/backend/models/questions/Blindtest';
 
-import { useGameRepositoriesContext, useRoleContext } from '@/frontend/contexts';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+
 import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
 
-import { QuestionCardContent } from '@/frontend/components/questions/QuestionCard';
+import { QuestionCardContent } from '@/frontend/components/common/QuestionCard';
 
 import { useParams } from 'next/navigation';
 
@@ -34,7 +36,7 @@ export default function RoundQuestionsProgress({ game, round }) {
     }
   }, [game.currentQuestion, game.status]);
 
-  const { teamRepo, playerRepo } = useGameRepositoriesContext();
+  const { teamRepo, playerRepo } = useGameRepositories();
 
   const { teams, teamsLoading, teamsError } = teamRepo.useAllTeamsOnce(game.id);
   const { players, playersLoading, playersError } = playerRepo.useAllPlayersOnce(game.id);
@@ -111,7 +113,7 @@ export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({
   players,
 }) {
   const { id: gameId } = useParams();
-  const myRole = useRoleContext();
+  const myRole = useRole();
 
   const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(roundType, gameId, roundId);
   const baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(roundType);

@@ -21,7 +21,7 @@ const messages = defineMessages('frontend.gameEditor.EditRoundInGame', {
 import { QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { doc, getDoc } from 'firebase/firestore';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { useParams } from 'next/navigation';
 
@@ -33,7 +33,7 @@ import {
   AddQuestionToMixedRoundButton,
   AddQuestionToRoundButton,
 } from '@/frontend/components/game-editor/AddNewQuestion';
-import { QuestionCardTitle } from '@/frontend/components/questions/QuestionCard';
+import { QuestionCardTitle } from '@/frontend/components/common/QuestionCard';
 
 import {
   Button,

@@ -2,21 +2,21 @@
 
 import { joinGame } from '@/backend/services/join-game/actions';
 
-import { useGameRepositories, useGameData } from '@/backend/repositories/useGameRepositories';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import Game from '@/backend/models/games/Game';
 import Team from '@/backend/models/Team';
 
-import useAsyncAction from '@/frontend/hooks/async/useAsyncAction';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
-import MyColorPicker from '@/frontend/components/forms/MyColorPicker';
+import MyColorPicker from '@/frontend/components/common/MyColorPicker';
 import {
   MyTextInput,
   MySelect,
   StyledErrorMessage,
   MyRadioGroup,
-} from '@/frontend/components/forms/StyledFormComponents';
-import { Wizard, WizardStep } from '@/frontend/components/forms/MultiStepComponents';
+} from '@/frontend/components/common/StyledFormComponents';
+import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import GameErrorScreen from '@/frontend/components/game/GameErrorScreen';
@@ -77,6 +77,24 @@ function JoinGameHeader() {
     </>
   );
 }
+
+const useGameData = (gameId) => {
+  const repositories = useGameRepositories(gameId);
+
+  const { gameRepo, organizerRepo, playerRepo } = repositories;
+
+  const { game, loading: gameLoading, error: gameError } = gameRepo.useGameOnce(gameId);
+  const { organizers, loading: orgLoading, error: orgError } = organizerRepo.useAllOrganizerIdentitiesOnce();
+  const { players, loading: playerLoading, error: playerError } = playerRepo.useAllPlayerIdentitiesOnce();
+
+  return {
+    game,
+    organizers,
+    players,
+    loading: gameLoading || orgLoading || playerLoading,
+    error: gameError || orgError || playerError,
+  };
+};
 
 export default function Page({ params }) {
   const { data: session } = useSession();
