@@ -46,13 +46,7 @@ export default function BuzzerOrganizerController({ baseQuestion, questionPlayer
     }
     if (buzzerHead.current !== buzzed[0]) {
       buzzerHead.current = buzzed[0];
-      // const handleBuzzerHeadChangedAction = getHandleBuzzerHeadChangedAction();
-      // handleBuzzerHeadChangedAction(gameId, game.currentRound, game.currentQuestion, buzzerHead.current);
-      if (baseQuestion.type !== QuestionType.QUOTE) {
-        handleBuzzerHeadChanged(baseQuestion.type, gameId, game.currentRound, game.currentQuestion, buzzerHead.current);
-      } else {
-        handleQuoteBuzzerHeadChanged(gameId, game.currentRound, game.currentQuestion, buzzerHead.current);
-      }
+      handleBuzzerHeadChanged(baseQuestion.type, gameId, game.currentRound, game.currentQuestion, buzzerHead.current);
     }
   }, [buzzed]);
 

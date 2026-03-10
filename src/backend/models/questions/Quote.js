@@ -230,11 +230,12 @@ export class QuoteQuestion extends BaseQuestion {
 export class GameQuoteQuestion extends GameQuestion {
   static REWARDS_PER_ELEMENT = 1;
   static MAX_TRIES = 2;
-  static THINKING_TIME = 30;
+  static THINKING_TIME = 15;
 
   constructor(data) {
     super(data);
 
+    this.thinkingTime = data.thinkingTime || GameQuoteQuestion.THINKING_TIME;
     this.revealed = data.revealed || data.details.revealed;
     if (!this.revealed) {
       this.initializeRevealed(data);
@@ -266,6 +267,7 @@ export class GameQuoteQuestion extends GameQuestion {
   toObject() {
     return {
       ...super.toObject(),
+      thinkingTime: this.thinkingTime,
       revealed: this.revealed,
     };
   }

@@ -21,11 +21,13 @@ export default class GameMatchingQuestionService extends GameQuestionService {
   }
 
   async resetQuestionTransaction(transaction, questionId) {
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     const chooser = await this.chooserRepo.resetChoosersTransaction(transaction);
     if (chooser && chooser.teamId) {
       await this.playerRepo.updateTeamPlayersStatus(chooser.teamId, PlayerStatus.FOCUS);
     }
     await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
 
     console.log(
       'Matching question successfully reset',
@@ -176,7 +178,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
       // Case 1.1: The matching is correct but not the last one
 
       // Switch to the next competing team
-      const gameQuestion = this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+      const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
       const canceled = gameQuestion.canceled;
       const { chooserOrder, chooserIdx } = await this.chooserRepo.getChooserTransaction(transaction);
 
@@ -189,6 +191,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
 
       await this.gameQuestionRepo.addCorrectMatchTransaction(transaction, questionId, rows[0], userId, teamId);
       await this.soundRepo.addSoundTransaction(transaction, 'OUI');
+      await this.timerRepo.startTimerTransaction(transaction, gameQuestion.thinkingTime * (baseQuestion.numCols - 1));
     }
 
     console.log(
@@ -216,6 +219,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     const { chooserOrder, chooserIdx } = await this.chooserRepo.getChooserTransaction(transaction);
     const round = await roundRepo.getRoundTransaction(transaction, this.roundId);
     const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+    const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
     const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction);
 
     const roundScorePolicy = game.roundScorePolicy;
@@ -276,6 +280,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
         transaction,
         isCanceled ? 'zelda_wind_waker_kaboom' : 'zelda_wind_waker_sploosh'
       );
+      await this.timerRepo.startTimerTransaction(transaction, gameQuestion.thinkingTime * (baseQuestion.numCols - 1));
     } else {
       // All teams have been canceled => End the question
       const { scores: currRoundScores } = roundScores;

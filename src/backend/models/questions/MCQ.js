@@ -1,6 +1,6 @@
 import { BaseQuestion, GameQuestion } from '@/backend/models/questions/Question';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-// MCQ questions
+
 export class MCQQuestion extends BaseQuestion {
   static CHOICES = ['A', 'B', 'C', 'D'];
   static MIN_CHOICES = 2;
@@ -158,13 +158,14 @@ export class MCQQuestion extends BaseQuestion {
 }
 
 export class GameMCQQuestion extends GameQuestion {
-  static THINKING_TIME = 20;
+  static THINKING_TIME = 30;
   static REWARD = 1;
 
   constructor(data) {
     super(data);
     this.constructor.validate(data);
 
+    this.thinkingTime = data.thinkingTime || GameMCQQuestion.THINKING_TIME;
     this.correct = data.correct || null;
     this.choiceIdx = data.choiceIdx || null;
     this.playerId = data.playerId || null;
@@ -175,6 +176,7 @@ export class GameMCQQuestion extends GameQuestion {
   toObject() {
     return {
       ...super.toObject(),
+      thinkingTime: this.thinkingTime,
       correct: this.correct,
       choiceIdx: this.choiceIdx,
       playerId: this.playerId,

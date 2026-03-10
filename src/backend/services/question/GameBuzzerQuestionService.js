@@ -4,7 +4,6 @@ import { firestore } from '@/backend/firebase/firebase';
 import { runTransaction, serverTimestamp } from 'firebase/firestore';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
-import { TimerStatus } from '@/backend/models/Timer';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
 
 export default class GameBuzzerQuestionService extends GameQuestionService {
@@ -14,7 +13,9 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
   }
 
   async resetQuestionTransaction(transaction, questionId) {
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
   }
 
   async endQuestion(questionId) {
@@ -63,12 +64,22 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
   async handleCountdownEndTransaction(transaction, questionId) {
     const questionPlayers = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
     const { buzzed } = questionPlayers;
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+    const thinkingTime = gameQuestion.thinkingTime;
 
     if (buzzed.length === 0) {
-      await this.timerRepo.resetTimerTransaction(transaction);
-      // await this.timerRepo.prepareTimerForReadyTransaction(transaction);
+      await this.timerRepo.resetTimerTransaction(transaction, thinkingTime);
     } else {
       await this.invalidateAnswerTransaction(transaction, questionId, buzzed[0]);
+
+      // If there's a next player in the queue, start their countdown
+      if (buzzed.length > 1) {
+        const thinkingTime = gameQuestion.thinkingTime;
+        await this.playerRepo.updatePlayerStatusTransaction(transaction, buzzed[1], PlayerStatus.FOCUS);
+        await this.timerRepo.startTimerTransaction(transaction, thinkingTime);
+      } else {
+        await this.timerRepo.resetTimerTransaction(transaction, thinkingTime);
+      }
     }
   }
 
@@ -83,8 +94,11 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
 
     try {
       await runTransaction(firestore, async (transaction) => {
+        const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+        const thinkingTime = gameQuestion.thinkingTime;
+
         await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.FOCUS);
-        // await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.START);
+        await this.timerRepo.startTimerTransaction(transaction, thinkingTime);
 
         console.log(
           'Buzzer head change successfully handled',

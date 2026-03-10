@@ -2,14 +2,14 @@ import { TimerStatus } from '@/backend/models/Timer';
 import { Timer } from '@/backend/models/Timer';
 
 import FirebaseDocumentRepository from '@/backend/repositories/FirebaseDocumentRepository';
-import { serverTimestamp } from 'firebase/firestore';
+import { serverTimestamp, Timestamp } from 'firebase/firestore';
 
 export default class TimerRepository extends FirebaseDocumentRepository {
   constructor(gameId) {
     super(['games', gameId, 'realtime', 'timer']);
   }
 
-  async createTimerState(organizerId) {
+  async initializeTimer(organizerId) {
     await this.set({
       authorized: false,
       duration: Timer.READY_COUNTDOWN_SECONDS,
@@ -23,6 +23,10 @@ export default class TimerRepository extends FirebaseDocumentRepository {
     return await super.updateTransaction(transaction, data);
   }
 
+  async getTimerTransaction(transaction) {
+    return await super.getTransaction(transaction);
+  }
+
   async initializeTimerTransaction(transaction, organizerId) {
     await super.setTransaction(transaction, {
       authorized: false,
@@ -30,36 +34,57 @@ export default class TimerRepository extends FirebaseDocumentRepository {
       forward: false,
       managedBy: organizerId,
       status: TimerStatus.RESET,
-      // timestamp: new Date()
     });
   }
 
-  async updateTimerStatusTransaction(transaction, status, duration = 30) {
-    await this.updateTimerTransaction(transaction, {
-      status,
-      duration,
+  async startTimerTransaction(transaction, duration) {
+    const updateData = {
+      status: TimerStatus.START,
       timestamp: serverTimestamp(),
-    });
-  }
-
-  async startTimerTransaction(transaction, duration = 30) {
-    await this.updateTimerStatusTransaction(transaction, TimerStatus.START, duration);
+    };
+    // If duration is provided, use it (fresh start). Otherwise keep current duration (resume from pause).
+    if (duration != null) {
+      updateData.duration = duration;
+    }
+    await this.updateTimerTransaction(transaction, updateData);
   }
 
   async stopTimerTransaction(transaction) {
-    await this.updateTimerStatusTransaction(transaction, TimerStatus.STOP);
+    // Read current timer to compute remaining time
+    const timerData = await this.getTimerTransaction(transaction);
+    if (!timerData || timerData.status !== TimerStatus.START) {
+      // Only compute remaining if the timer was running
+      await this.updateTimerTransaction(transaction, {
+        status: TimerStatus.STOP,
+      });
+      return;
+    }
+
+    const now = Timestamp.now();
+    const elapsedSec = (now.toMillis() - timerData.timestamp.toMillis()) / 1000;
+    const remaining = Math.max(timerData.duration - elapsedSec, 0);
+
+    await this.updateTimerTransaction(transaction, {
+      status: TimerStatus.STOP,
+      duration: remaining,
+    });
   }
 
   async resetTimerTransaction(transaction, duration = 30) {
-    await this.updateTimerStatusTransaction(transaction, TimerStatus.RESET, duration);
+    await this.updateTimerTransaction(transaction, {
+      status: TimerStatus.RESET,
+      duration,
+    });
   }
 
   async endTimerTransaction(transaction) {
-    await this.updateTimerStatusTransaction(transaction, TimerStatus.END);
+    await this.updateTimerTransaction(transaction, {
+      status: TimerStatus.END,
+    });
   }
 
-  async setDuration(duration) {
-    await this.update({
+  async updateDurationTransaction(transaction, duration) {
+    await this.updateTimerTransaction(transaction, {
       duration,
     });
   }

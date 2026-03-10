@@ -8,6 +8,7 @@ import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQ
 import { firestore } from '@/backend/firebase/firebase';
 import { runTransaction, serverTimestamp } from 'firebase/firestore';
 import { GameStatus } from '@/backend/models/games/GameStatus';
+import { Timer } from '@/backend/models/Timer';
 
 /**
  * Service for editing a game
@@ -208,6 +209,64 @@ export default class EditGameService {
   /**
    * Launches a game
    */
+  async updateRoundThinkingTime(roundId, thinkingTime) {
+    if (!roundId) throw new Error('Round ID is required');
+    if (
+      typeof thinkingTime !== 'number' ||
+      thinkingTime < Timer.MIN_THINKING_TIME_SECONDS ||
+      thinkingTime > Timer.MAX_THINKING_TIME_SECONDS
+    )
+      throw new Error(
+        `Thinking time must be between ${Timer.MIN_THINKING_TIME_SECONDS} and ${Timer.MAX_THINKING_TIME_SECONDS} seconds`
+      );
+    await runTransaction(firestore, async (transaction) => {
+      const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
+      const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(round.type, this.gameId, roundId);
+
+      for (const questionId of round.questions) {
+        await gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { thinkingTime });
+      }
+
+      await this.roundRepo.updateRoundTransaction(transaction, roundId, { thinkingTime });
+    });
+
+    console.log(
+      'Round thinking time updated',
+      'gameId:',
+      this.gameId,
+      'roundId:',
+      roundId,
+      'thinkingTime:',
+      thinkingTime
+    );
+  }
+
+  async updateQuestionThinkingTime(questionType, roundId, questionId, thinkingTime) {
+    if (!roundId) throw new Error('Round ID is required');
+    if (!questionId) throw new Error('Question ID is required');
+    if (
+      typeof thinkingTime !== 'number' ||
+      thinkingTime < Timer.MIN_THINKING_TIME_SECONDS ||
+      thinkingTime > Timer.MAX_THINKING_TIME_SECONDS
+    )
+      throw new Error(
+        `Thinking time must be between ${Timer.MIN_THINKING_TIME_SECONDS} and ${Timer.MAX_THINKING_TIME_SECONDS} seconds`
+      );
+    const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(questionType, this.gameId, roundId);
+    await gameQuestionRepo.update(questionId, { thinkingTime });
+    console.log(
+      'Game question thinking time updated',
+      'gameId:',
+      this.gameId,
+      'roundId:',
+      roundId,
+      'questionId:',
+      questionId,
+      'thinkingTime:',
+      thinkingTime
+    );
+  }
+
   async launchGame() {
     try {
       await this.gameRepo.updateGame(this.gameId, {

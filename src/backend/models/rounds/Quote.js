@@ -3,7 +3,7 @@ import { RoundType } from '@/backend/models/rounds/RoundType';
 export class QuoteRound extends Round {
   static MAX_TRIES = 2;
   static DEFAULT_INVALIDATE_TEAM = false;
-  static DEFAULT_THINKING_TIME = 30;
+  static DEFAULT_THINKING_TIME = 15;
   static REWARDS_PER_ELEMENT = 1;
 
   constructor(data) {

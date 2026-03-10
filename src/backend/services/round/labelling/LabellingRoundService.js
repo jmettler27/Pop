@@ -5,8 +5,6 @@ import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import { serverTimestamp } from 'firebase/firestore';
-import { DEFAULT_THINKING_TIME_SECONDS } from '@/backend/utils/question';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { RoundType } from '@/backend/models/rounds/RoundType';
 
 export default class LabellingRoundService extends RoundService {
@@ -58,12 +56,6 @@ export default class LabellingRoundService extends RoundService {
 
     await this.chooserRepo.resetChoosersTransaction(transaction);
 
-    await this.timerRepo.updateTimerTransaction(transaction, {
-      status: TimerStatus.RESET,
-      duration: Timer.READY_COUNTDOWN_SECONDS,
-      authorized: false,
-    });
-
     await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon');
 
     await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
@@ -72,6 +64,8 @@ export default class LabellingRoundService extends RoundService {
       currentQuestionType: this.roundType,
       status: GameStatus.ROUND_START,
     });
+
+    await this.timerRepo.resetTimerTransaction(transaction, Timer.READY_COUNTDOWN_SECONDS);
 
     console.log('Round successfully started', 'game', this.gameId, 'round', roundId);
   }
@@ -83,15 +77,15 @@ export default class LabellingRoundService extends RoundService {
     const playerIds = await this.playerRepo.getAllPlayerIds();
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     const questionId = round.questions[questionOrder];
-    const defaultThinkingTime = DEFAULT_THINKING_TIME_SECONDS[QuestionType.MATCHING];
+    const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
 
     await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
-    await this.timerRepo.resetTimerTransaction(transaction, defaultThinkingTime);
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
     await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
-    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
     await this.roundRepo.setCurrentQuestionIdxTransaction(transaction, roundId, questionOrder);
     await this.gameRepo.setCurrentQuestionTransaction(transaction, this.gameId, questionId, this.roundType);
     await this.readyRepo.resetReadyTransaction(transaction);
+    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
   }
 
   /* =============================================================================================================== */

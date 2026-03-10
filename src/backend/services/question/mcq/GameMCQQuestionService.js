@@ -3,16 +3,22 @@ import { MCQQuestion } from '@/backend/models/questions/MCQ';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { PlayerStatus } from '@/backend/models/users/Player';
 
+import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
+
 import { runTransaction } from 'firebase/firestore';
 import { firestore } from '@/backend/firebase/firebase';
 
 export default class GameMCQQuestionService extends GameQuestionService {
   constructor(gameId, roundId) {
     super(gameId, roundId, QuestionType.MCQ);
+
+    this.chooserRepo = new ChooserRepository(gameId);
   }
 
   async resetQuestionTransaction(transaction, questionId) {
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
     console.log('MCQ question successfully reset', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
   }
 

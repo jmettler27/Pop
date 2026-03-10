@@ -19,8 +19,10 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
   }
 
   async resetQuestionTransaction(transaction, questionId) {
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     await this.chooserRepo.resetChoosersTransaction(transaction);
     await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
     // await super.resetQuestionTransaction(transaction, questionId);
 
     console.log('OOO question successfully reset', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
@@ -132,7 +134,7 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
           newChooserTeamPlayers.map((p) => p.id)
         );
         await this.soundRepo.addSoundTransaction(transaction, 'Bien');
-        await this.timerRepo.resetTimerTransaction(transaction);
+        await this.timerRepo.startTimerTransaction(transaction, gameQuestion.thinkingTime);
       }
 
       // Update player statuses

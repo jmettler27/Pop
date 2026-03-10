@@ -174,7 +174,7 @@ export class GameMatchingQuestion extends GameQuestion {
   static DEFAULT_MISTAKE_PENALTY = 1;
   static MAX_NUM_MISTAKES = 3;
 
-  static THINKING_TIME = 40;
+  static THINKING_TIME = 60;
 
   constructor(data) {
     super(data);
@@ -191,6 +191,7 @@ export class GameMatchingQuestion extends GameQuestion {
   toObject() {
     return {
       ...super.toObject(),
+      thinkingTime: this.thinkingTime,
       canceled: this.canceled,
       teamNumMistakes: this.teamNumMistakes,
     };
@@ -303,7 +304,7 @@ export class GameMatchingQuestion extends GameQuestion {
     let newMatch;
 
     do {
-      newMatch = randomMatch(numCols, numRows);
+      newMatch = this.randomMatch(numCols, numRows);
     } while (
       newMatch.some((index) => correctMatchIndicesSet.has(index)) ||
       incorrectMatchesSet.has(newMatch.join(','))

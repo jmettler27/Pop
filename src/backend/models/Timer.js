@@ -7,6 +7,8 @@ export const TimerStatus = {
 
 export class Timer {
   static READY_COUNTDOWN_SECONDS = 5;
+  static MIN_THINKING_TIME_SECONDS = 5;
+  static MAX_THINKING_TIME_SECONDS = 120;
 
   constructor(status, duration, timestamp) {
     this.status = status;
