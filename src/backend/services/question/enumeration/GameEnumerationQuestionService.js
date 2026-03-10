@@ -208,10 +208,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
         status: EnumerationQuestionStatus.CHALLENGE,
       });
 
-      await this.timerRepo.updateTimerTransaction(transaction, {
-        duration: baseQuestion.challengeTime,
-        status: TimerStatus.RESET,
-      });
+      await this.timerRepo.startTimerTransaction(transaction, baseQuestion.challengeTime);
     }
   }
 

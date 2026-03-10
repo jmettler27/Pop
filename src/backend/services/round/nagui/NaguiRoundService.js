@@ -58,12 +58,6 @@ export default class NaguiRoundService extends RoundService {
 
     await this.chooserRepo.resetChoosersTransaction(transaction);
 
-    await this.timerRepo.updateTimerTransaction(transaction, {
-      status: TimerStatus.RESET,
-      duration: Timer.READY_COUNTDOWN_SECONDS,
-      authorized: false,
-    });
-
     await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon');
 
     await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
@@ -72,6 +66,8 @@ export default class NaguiRoundService extends RoundService {
       currentQuestionType: this.roundType,
       status: GameStatus.ROUND_START,
     });
+
+    await this.timerRepo.resetTimerTransaction(transaction, Timer.READY_COUNTDOWN_SECONDS);
 
     console.log('Round successfully started', 'game', this.gameId, 'round', roundId);
   }
@@ -104,14 +100,12 @@ export default class NaguiRoundService extends RoundService {
       await gameQuestionRepo.updateQuestionTeamTransaction(transaction, questionId, chooserTeamId);
     }
 
-    // await this.timerRepo.resetTimerTransaction(transaction, { status: TimerStatus.RESET, managedBy, duration: defaultThinkingTime })
-    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
-
+    await this.timerRepo.startTimerTransaction(transaction, gameQuestion.thinkingTime);
     await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
-    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
     await this.roundRepo.setCurrentQuestionIdxTransaction(transaction, roundId, questionOrder);
     await this.gameRepo.setCurrentQuestionTransaction(transaction, this.gameId, questionId, this.roundType);
     await this.readyRepo.resetReadyTransaction(transaction);
+    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
   }
 
   /* =============================================================================================================== */

@@ -41,11 +41,18 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
   async handleCountdownEndTransaction(transaction, questionId) {
     const questionPlayers = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
     const { buzzed } = questionPlayers.buzzed;
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
 
     if (buzzed.length === 0) {
-      await this.timerRepo.resetTimerTransaction(transaction);
+      await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
     } else {
       await this.gameQuestionRepo.cancelPlayerTransaction(transaction, questionId, buzzed[0]);
+
+      if (buzzed.length > 1) {
+        await this.timerRepo.startTimerTransaction(transaction, gameQuestion.thinkingTime);
+      } else {
+        await this.timerRepo.startTimerTransaction(transaction, gameQuestion.thinkingTime);
+      }
     }
 
     console.log(

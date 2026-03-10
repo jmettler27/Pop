@@ -253,7 +253,7 @@ export class GameNaguiQuestion extends GameQuestion {
 
   static NAGUI_OPTIONS = ['hide', 'square', 'duo'];
 
-  static THINKING_TIME = 20;
+  static THINKING_TIME = 30;
 
   constructor(data) {
     super(data);

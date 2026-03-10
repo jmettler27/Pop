@@ -6,6 +6,7 @@ import RoundService from '@/backend/services/round/RoundService';
 import { serverTimestamp } from 'firebase/firestore';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { RoundType } from '@/backend/models/rounds/RoundType';
+import { Timer, TimerStatus } from '@/backend/models/Timer';
 
 export default class MatchingRoundService extends RoundService {
   constructor(gameId) {
@@ -57,6 +58,8 @@ export default class MatchingRoundService extends RoundService {
       status: GameStatus.ROUND_START,
     });
 
+    await this.timerRepo.resetTimerTransaction(transaction, Timer.READY_COUNTDOWN_SECONDS);
+
     console.log('Round successfully started', 'game', this.gameId, 'round', roundId);
   }
 
@@ -74,15 +77,12 @@ export default class MatchingRoundService extends RoundService {
     await this.chooserRepo.resetChoosersTransaction(transaction);
     const newChooserTeamId = chooser.chooserOrder[0];
     await this.playerRepo.updateTeamAndOtherTeamsPlayersStatus(newChooserTeamId, PlayerStatus.FOCUS, PlayerStatus.IDLE);
-
-    // await this.timerRepo.resetTimerTransaction(transaction, { status: TimerStatus.RESET, managedBy, duration: defaultThinkingTime * (baseQuestion.numCols - 1) })
-    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime * (baseQuestion.numCols - 1));
-
+    await this.timerRepo.startTimerTransaction(transaction, gameQuestion.thinkingTime * (baseQuestion.numCols - 1));
     await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
-    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
     await this.roundRepo.setCurrentQuestionIdxTransaction(transaction, roundId, questionOrder);
     await this.gameRepo.setCurrentQuestionTransaction(transaction, this.gameId, questionId, this.roundType);
     await this.readyRepo.resetReadyTransaction(transaction);
+    await gameQuestionRepo.startQuestionTransaction(transaction, questionId);
   }
 
   /* =============================================================================================================== */

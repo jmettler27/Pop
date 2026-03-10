@@ -118,13 +118,7 @@ export default class GameService {
 
     // Reset timer
     const managerId = getRandomElement(organizerIds);
-    await this.timerRepo.update({
-      status: TimerStatus.RESET,
-      duration: 60,
-      forward: false,
-      authorized: false,
-      managedBy: managerId,
-    });
+    await this.timerRepo.initializeTimer(managerId);
 
     // Init chooser
     const shuffledTeamIds = shuffle(teamIds);

@@ -4,6 +4,9 @@ import { runTransaction } from 'firebase/firestore';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import SoundRepository from '@/backend/repositories/sound/SoundRepository';
 import TimerRepository from '@/backend/repositories/timer/TimerRepository';
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import { Timer } from '@/backend/models/Timer';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 
 export default class TimerService {
   constructor(gameId) {
@@ -60,7 +63,25 @@ export default class TimerService {
   async resetTimer() {
     try {
       await runTransaction(firestore, async (transaction) => {
-        await this.timerRepo.resetTimerTransaction(transaction);
+        const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
+        let duration = 30; // Default duration to reset to
+        if (
+          game.status === GameStatus.ROUND_START ||
+          game.status === GameStatus.ROUND_END ||
+          game.status === GameStatus.QUESTION_END
+        ) {
+          duration = Timer.READY_COUNTDOWN_SECONDS;
+        } else if (game.status === GameStatus.QUESTION_ACTIVE) {
+          const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(
+            game.currentQuestionType,
+            this.gameId,
+            game.currentRound
+          );
+          const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, game.currentQuestion);
+          console.log('GAME QUESTION', 'gameQuestion', gameQuestion);
+          duration = gameQuestion.thinkingTime;
+        }
+        await this.timerRepo.resetTimerTransaction(transaction, duration);
 
         console.log('Timer reset');
       });

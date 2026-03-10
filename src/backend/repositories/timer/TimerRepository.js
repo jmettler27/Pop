@@ -9,7 +9,7 @@ export default class TimerRepository extends FirebaseDocumentRepository {
     super(['games', gameId, 'realtime', 'timer']);
   }
 
-  async createTimerState(organizerId) {
+  async initializeTimer(organizerId) {
     await this.set({
       authorized: false,
       duration: Timer.READY_COUNTDOWN_SECONDS,
@@ -83,8 +83,8 @@ export default class TimerRepository extends FirebaseDocumentRepository {
     });
   }
 
-  async setDuration(duration) {
-    await this.update({
+  async updateDurationTransaction(transaction, duration) {
+    await this.updateTimerTransaction(transaction, {
       duration,
     });
   }

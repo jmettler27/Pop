@@ -119,7 +119,7 @@ export class ProgressiveCluesQuestion extends BuzzerQuestion {
 export class GameProgressiveCluesQuestion extends GameBuzzerQuestion {
   static REWARD = 1;
   static MAX_TRIES = 2;
-  static THINKING_TIME = 30;
+  static THINKING_TIME = 15;
   static DEFAULT_DELAY = 2;
 
   constructor(data) {

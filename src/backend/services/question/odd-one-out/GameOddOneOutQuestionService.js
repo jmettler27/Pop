@@ -134,7 +134,7 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
           newChooserTeamPlayers.map((p) => p.id)
         );
         await this.soundRepo.addSoundTransaction(transaction, 'Bien');
-        await this.timerRepo.resetTimerTransaction(transaction);
+        await this.timerRepo.startTimerTransaction(transaction, gameQuestion.thinkingTime);
       }
 
       // Update player statuses

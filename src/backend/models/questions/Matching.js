@@ -174,7 +174,7 @@ export class GameMatchingQuestion extends GameQuestion {
   static DEFAULT_MISTAKE_PENALTY = 1;
   static MAX_NUM_MISTAKES = 3;
 
-  static THINKING_TIME = 40;
+  static THINKING_TIME = 60;
 
   constructor(data) {
     super(data);

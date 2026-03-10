@@ -64,20 +64,21 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
   async handleCountdownEndTransaction(transaction, questionId) {
     const questionPlayers = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
     const { buzzed } = questionPlayers;
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+    const thinkingTime = gameQuestion.thinkingTime;
 
     if (buzzed.length === 0) {
-      await this.timerRepo.resetTimerTransaction(transaction);
+      await this.timerRepo.resetTimerTransaction(transaction, thinkingTime);
     } else {
       await this.invalidateAnswerTransaction(transaction, questionId, buzzed[0]);
 
       // If there's a next player in the queue, start their countdown
       if (buzzed.length > 1) {
-        const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
         const thinkingTime = gameQuestion.thinkingTime;
         await this.playerRepo.updatePlayerStatusTransaction(transaction, buzzed[1], PlayerStatus.FOCUS);
         await this.timerRepo.startTimerTransaction(transaction, thinkingTime);
       } else {
-        await this.timerRepo.resetTimerTransaction(transaction);
+        await this.timerRepo.resetTimerTransaction(transaction, thinkingTime);
       }
     }
   }
