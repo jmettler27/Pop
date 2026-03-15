@@ -1,4 +1,8 @@
-import { removeQuestionFromRound, updateQuestionThinkingTime } from '@/backend/services/edit-game/actions';
+import {
+  removeQuestionFromRound,
+  updateQuestionThinkingTime,
+  updateQuestionChallengeTime,
+} from '@/backend/services/edit-game/actions';
 import { Timer } from '@/backend/models/Timer';
 
 import { useParams } from 'next/navigation';
@@ -21,6 +25,9 @@ const messages = defineMessages('frontend.gameEditor.EditQuestionInRound', {
   thinkingTimeInherited: 'Inherited from round',
   editThinkingTime: 'Thinking time (seconds)',
   resetToRound: 'Reset to round default',
+  challengeTimeOverridden: 'Overridden challenge time',
+  challengeTimeInherited: 'Challenge time (inherited from round)',
+  editChallengeTime: 'Challenge time (seconds)',
 });
 
 import { Avatar, Button, Divider, Popover, TextField } from '@mui/material';
@@ -45,6 +52,7 @@ export const EditQuestionCard = memo(function EditQuestionCard({
   questionOrder,
   status,
   roundThinkingTime,
+  roundChallengeTime,
 }) {
   const { id: gameId } = useParams();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -76,6 +84,7 @@ export const EditQuestionCard = memo(function EditQuestionCard({
       questionId={questionId}
       status={status}
       roundThinkingTime={roundThinkingTime}
+      roundChallengeTime={roundChallengeTime}
       isCollapsed={isCollapsed}
       setIsCollapsed={setIsCollapsed}
     />
@@ -89,6 +98,7 @@ function EditQuestionCardInner({
   questionId,
   status,
   roundThinkingTime,
+  roundChallengeTime,
   isCollapsed,
   setIsCollapsed,
 }) {
@@ -116,6 +126,30 @@ function EditQuestionCardInner({
   const handleResetToRound = () => {
     if (roundThinkingTime != null) {
       handleSaveThinkingTime(roundThinkingTime);
+    }
+  };
+
+  const questionChallengeTime = gameQuestion?.challengeTime;
+  const displayedChallengeTime = questionChallengeTime ?? roundChallengeTime;
+  const isChallengeOverridden =
+    questionChallengeTime != null && roundChallengeTime != null && questionChallengeTime !== roundChallengeTime;
+
+  const [anchorElChallenge, setAnchorElChallenge] = useState(null);
+  const [editValueChallenge, setEditValueChallenge] = useState('');
+  const [handleSaveChallengeTime, isSavingChallenge] = useAsyncAction(async (value) => {
+    await updateQuestionChallengeTime(gameId, baseQuestion.type, roundId, questionId, value);
+    setAnchorElChallenge(null);
+  });
+
+  const handleChallengeBadgeClick = (event) => {
+    if (status !== GameStatus.GAME_EDIT) return;
+    setEditValueChallenge(displayedChallengeTime ?? '');
+    setAnchorElChallenge(event.currentTarget);
+  };
+
+  const handleResetChallengeToRound = () => {
+    if (roundChallengeTime != null) {
+      handleSaveChallengeTime(roundChallengeTime);
     }
   };
 
@@ -184,6 +218,73 @@ function EditQuestionCardInner({
                     !editValue ||
                     Number(editValue) < Timer.MIN_THINKING_TIME_SECONDS ||
                     Number(editValue) > Timer.MAX_THINKING_TIME_SECONDS
+                  }
+                >
+                  {intl.formatMessage(globalMessages.save)}
+                </Button>
+              </div>
+            </div>
+          </Popover>
+          {displayedChallengeTime != null && (
+            <Tooltip
+              title={intl.formatMessage(
+                isChallengeOverridden ? messages.challengeTimeOverridden : messages.challengeTimeInherited
+              )}
+            >
+              <span
+                onClick={handleChallengeBadgeClick}
+                className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium ${status === GameStatus.GAME_EDIT ? 'cursor-pointer hover:ring-2 hover:ring-green-400' : ''} ${
+                  isChallengeOverridden
+                    ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 ring-1 ring-orange-300 dark:ring-orange-700'
+                    : 'bg-teal-50 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400'
+                }`}
+              >
+                <TimerIcon sx={{ fontSize: 12 }} />
+                {displayedChallengeTime}s ⚡
+              </span>
+            </Tooltip>
+          )}
+          <Popover
+            open={Boolean(anchorElChallenge)}
+            anchorEl={anchorElChallenge}
+            onClose={() => setAnchorElChallenge(null)}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+          >
+            <div className="p-4 flex flex-col gap-3 min-w-[240px]">
+              <TextField
+                label={intl.formatMessage(messages.editChallengeTime)}
+                type="number"
+                value={editValueChallenge}
+                onChange={(e) => setEditValueChallenge(e.target.value)}
+                inputProps={{ min: Timer.MIN_CHALLENGE_TIME_SECONDS, max: Timer.MAX_CHALLENGE_TIME_SECONDS }}
+                autoFocus
+                fullWidth
+              />
+              <div className="flex gap-2 justify-end">
+                {isChallengeOverridden && roundChallengeTime != null && (
+                  <Button
+                    size="small"
+                    onClick={handleResetChallengeToRound}
+                    disabled={isSavingChallenge}
+                    color="warning"
+                  >
+                    {intl.formatMessage(messages.resetToRound)}
+                  </Button>
+                )}
+                <Button
+                  size="small"
+                  variant="contained"
+                  onClick={() => {
+                    const num = Number(editValueChallenge);
+                    if (num >= Timer.MIN_CHALLENGE_TIME_SECONDS && num <= Timer.MAX_CHALLENGE_TIME_SECONDS)
+                      handleSaveChallengeTime(num);
+                  }}
+                  disabled={
+                    isSavingChallenge ||
+                    !editValueChallenge ||
+                    Number(editValueChallenge) < Timer.MIN_CHALLENGE_TIME_SECONDS ||
+                    Number(editValueChallenge) > Timer.MAX_CHALLENGE_TIME_SECONDS
                   }
                 >
                   {intl.formatMessage(globalMessages.save)}

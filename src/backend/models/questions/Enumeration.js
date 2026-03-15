@@ -1,6 +1,7 @@
 import { BaseQuestion, GameQuestion } from '@/backend/models/questions/Question';
 import { isArray } from '@/backend/utils/arrays';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { Timer } from '@/backend/models/Timer';
 
 export class EnumerationQuestion extends BaseQuestion {
   static TITLE_MAX_LENGTH = 75;
@@ -104,11 +105,11 @@ export class EnumerationQuestion extends BaseQuestion {
     if (typeof thinkingTime !== 'number') {
       throw new Error('Thinking time must be a number');
     }
-    if (thinkingTime < this.constructor.MIN_THINKING_SECONDS) {
-      throw new Error('Thinking time must be at least 60 seconds');
+    if (thinkingTime < Timer.MIN_THINKING_TIME_SECONDS) {
+      throw new Error(`Thinking time must be at least ${Timer.MIN_THINKING_TIME_SECONDS} seconds`);
     }
-    if (thinkingTime > this.constructor.MAX_THINKING_SECONDS) {
-      throw new Error('Thinking time must be at most 300 seconds');
+    if (thinkingTime > Timer.MAX_THINKING_TIME_SECONDS) {
+      throw new Error(`Thinking time must be at most ${Timer.MAX_THINKING_TIME_SECONDS} seconds`);
     }
 
     return true;
@@ -154,7 +155,7 @@ export class EnumerationQuestion extends BaseQuestion {
 }
 
 export const EnumerationQuestionStatus = {
-  REFLECTION: 'reflection_active',
+  THINKING: 'reflection_active',
   CHALLENGE: 'challenge_active',
 };
 
@@ -162,22 +163,17 @@ export class GameEnumerationQuestion extends GameQuestion {
   static REWARD = 1;
   static DEFAULT_BONUS = 1;
 
-  static THINKING_TIME = 60;
-  static MIN_THINKING_SECONDS = 60;
-  static MAX_THINKING_SECONDS = 60 * 5;
-
-  static CHALLENGE_TIME = 30;
-  static MIN_CHALLENGE_SECONDS = 30;
-  static MAX_CHALLENGE_SECONDS = 60 * 2;
+  static DEFAULT_THINKING_TIME = 120;
+  static DEFAULT_CHALLENGE_TIME = 120;
 
   constructor(data) {
     super(data);
 
-    this.status = data.status || EnumerationQuestionStatus.REFLECTION;
+    this.status = data.status || EnumerationQuestionStatus.THINKING;
     this.reward = data.reward || GameEnumerationQuestion.REWARD;
     this.rewardsForBonus = data.rewardsForBonus || GameEnumerationQuestion.DEFAULT_BONUS;
-    this.thinkingTime = data.thinkingTime || GameEnumerationQuestion.THINKING_TIME;
-    this.challengeTime = data.challengeTime || GameEnumerationQuestion.CHALLENGE_TIME;
+    this.thinkingTime = data.thinkingTime || GameEnumerationQuestion.DEFAULT_THINKING_TIME;
+    this.challengeTime = data.challengeTime || GameEnumerationQuestion.DEFAULT_CHALLENGE_TIME;
 
     this.constructor.validate(data);
   }

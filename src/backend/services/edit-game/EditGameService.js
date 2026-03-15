@@ -206,9 +206,6 @@ export default class EditGameService {
   //   console.log('Organizer added successfully', 'gameId: ', this.gameId, 'organizerId: ', organizerId);
   // }
 
-  /**
-   * Launches a game
-   */
   async updateRoundThinkingTime(roundId, thinkingTime) {
     if (!roundId) throw new Error('Round ID is required');
     if (
@@ -264,6 +261,64 @@ export default class EditGameService {
       questionId,
       'thinkingTime:',
       thinkingTime
+    );
+  }
+
+  async updateRoundChallengeTime(roundId, challengeTime) {
+    if (!roundId) throw new Error('Round ID is required');
+    if (
+      typeof challengeTime !== 'number' ||
+      challengeTime < Timer.MIN_CHALLENGE_TIME_SECONDS ||
+      challengeTime > Timer.MAX_CHALLENGE_TIME_SECONDS
+    )
+      throw new Error(
+        `Challenge time must be between ${Timer.MIN_CHALLENGE_TIME_SECONDS} and ${Timer.MAX_CHALLENGE_TIME_SECONDS} seconds`
+      );
+    await runTransaction(firestore, async (transaction) => {
+      const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
+      const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(round.type, this.gameId, roundId);
+
+      for (const questionId of round.questions) {
+        await gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { challengeTime });
+      }
+
+      await this.roundRepo.updateRoundTransaction(transaction, roundId, { challengeTime });
+    });
+
+    console.log(
+      'Round challenge time updated',
+      'gameId:',
+      this.gameId,
+      'roundId:',
+      roundId,
+      'challengeTime:',
+      challengeTime
+    );
+  }
+
+  async updateQuestionChallengeTime(questionType, roundId, questionId, challengeTime) {
+    if (!roundId) throw new Error('Round ID is required');
+    if (!questionId) throw new Error('Question ID is required');
+    if (
+      typeof challengeTime !== 'number' ||
+      challengeTime < Timer.MIN_CHALLENGE_TIME_SECONDS ||
+      challengeTime > Timer.MAX_CHALLENGE_TIME_SECONDS
+    )
+      throw new Error(
+        `Challenge time must be between ${Timer.MIN_CHALLENGE_TIME_SECONDS} and ${Timer.MAX_CHALLENGE_TIME_SECONDS} seconds`
+      );
+    const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(questionType, this.gameId, roundId);
+    await gameQuestionRepo.update(questionId, { challengeTime });
+    console.log(
+      'Game question challenge time updated',
+      'gameId:',
+      this.gameId,
+      'roundId:',
+      roundId,
+      'questionId:',
+      questionId,
+      'challengeTime:',
+      challengeTime
     );
   }
 

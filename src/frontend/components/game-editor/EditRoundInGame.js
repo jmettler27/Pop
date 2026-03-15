@@ -9,7 +9,12 @@ import { Round } from '@/backend/models/rounds/Round';
 
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 
-import { updateRound, removeRoundFromGame, updateRoundThinkingTime } from '@/backend/services/edit-game/actions';
+import {
+  updateRound,
+  removeRoundFromGame,
+  updateRoundThinkingTime,
+  updateRoundChallengeTime,
+} from '@/backend/services/edit-game/actions';
 
 import globalMessages from '@/i18n/globalMessages';
 import { useIntl } from 'react-intl';
@@ -20,6 +25,8 @@ const messages = defineMessages('frontend.gameEditor.EditRoundInGame', {
   deleteDialogConfirm: 'Yes',
   defaultThinkingTime: 'Default thinking time for questions in this round',
   editThinkingTime: 'Thinking time (seconds)',
+  defaultChallengeTime: 'Default challenge time for questions in this round',
+  editChallengeTime: 'Challenge time (seconds)',
 });
 
 import { QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
@@ -116,6 +123,19 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
     setThinkingTimeAnchor(event.currentTarget);
   };
 
+  const [challengeTimeAnchor, setChallengeTimeAnchor] = useState(null);
+  const [challengeTimeEditValue, setChallengeTimeEditValue] = useState('');
+  const [handleSaveChallengeTime, isSavingChallengeTime] = useAsyncAction(async (value) => {
+    await updateRoundChallengeTime(gameId, roundId, value);
+    setChallengeTimeAnchor(null);
+  });
+
+  const handleChallengeTimeBadgeClick = (event) => {
+    if (status !== GameStatus.GAME_EDIT) return;
+    setChallengeTimeEditValue(round?.challengeTime ?? '');
+    setChallengeTimeAnchor(event.currentTarget);
+  };
+
   // Sync with forceCollapse prop
   useEffect(() => {
     setIsCollapsed(forceCollapse);
@@ -189,6 +209,17 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
               </span>
             </Tooltip>
           )}
+          {round.challengeTime != null && (
+            <Tooltip title={intl.formatMessage(messages.defaultChallengeTime)}>
+              <span
+                onClick={handleChallengeTimeBadgeClick}
+                className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 shadow-sm ${status === GameStatus.GAME_EDIT ? 'cursor-pointer hover:ring-2 hover:ring-green-400' : ''}`}
+              >
+                <TimerIcon sx={{ fontSize: 14 }} />
+                {round.challengeTime}s ⚡
+              </span>
+            </Tooltip>
+          )}
           <Popover
             open={Boolean(thinkingTimeAnchor)}
             anchorEl={thinkingTimeAnchor}
@@ -220,6 +251,44 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
                     !thinkingTimeEditValue ||
                     Number(thinkingTimeEditValue) < Timer.MIN_THINKING_TIME_SECONDS ||
                     Number(thinkingTimeEditValue) > Timer.MAX_THINKING_TIME_SECONDS
+                  }
+                >
+                  {intl.formatMessage(globalMessages.save)}
+                </Button>
+              </div>
+            </div>
+          </Popover>
+          <Popover
+            open={Boolean(challengeTimeAnchor)}
+            anchorEl={challengeTimeAnchor}
+            onClose={() => setChallengeTimeAnchor(null)}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+          >
+            <div className="p-4 flex flex-col gap-3 min-w-[240px]">
+              <TextField
+                label={intl.formatMessage(messages.editChallengeTime)}
+                type="number"
+                value={challengeTimeEditValue}
+                onChange={(e) => setChallengeTimeEditValue(e.target.value)}
+                inputProps={{ min: Timer.MIN_CHALLENGE_TIME_SECONDS, max: Timer.MAX_CHALLENGE_TIME_SECONDS }}
+                autoFocus
+                fullWidth
+              />
+              <div className="flex gap-2 justify-end">
+                <Button
+                  size="small"
+                  variant="contained"
+                  onClick={() => {
+                    const num = Number(challengeTimeEditValue);
+                    if (num >= Timer.MIN_CHALLENGE_TIME_SECONDS && num <= Timer.MAX_CHALLENGE_TIME_SECONDS)
+                      handleSaveChallengeTime(num);
+                  }}
+                  disabled={
+                    isSavingChallengeTime ||
+                    !challengeTimeEditValue ||
+                    Number(challengeTimeEditValue) < Timer.MIN_CHALLENGE_TIME_SECONDS ||
+                    Number(challengeTimeEditValue) > Timer.MAX_CHALLENGE_TIME_SECONDS
                   }
                 >
                   {intl.formatMessage(globalMessages.save)}
@@ -272,6 +341,15 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
           >
             <TimerIcon sx={{ fontSize: 14 }} />
             {round.thinkingTime}s
+          </span>
+        )}
+        {round.challengeTime != null && (
+          <span
+            onClick={handleChallengeTimeBadgeClick}
+            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 shadow-sm ${status === GameStatus.GAME_EDIT ? 'cursor-pointer hover:ring-2 hover:ring-green-400' : ''}`}
+          >
+            <TimerIcon sx={{ fontSize: 14 }} />
+            {round.challengeTime}s ⚡
           </span>
         )}
       </div>
@@ -477,6 +555,7 @@ function EditGameRoundQuestionCards({ round, status, isReorderMode, reorderedQue
           questionOrder={idx}
           status={status}
           roundThinkingTime={round.thinkingTime}
+          roundChallengeTime={round.challengeTime}
         />
       ))}
     </div>

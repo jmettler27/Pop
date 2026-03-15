@@ -1,5 +1,4 @@
-import { TimerStatus } from '@/backend/models/Timer';
-import { Timer } from '@/backend/models/Timer';
+import { Timer, TimerStatus } from '@/backend/models/Timer';
 
 import FirebaseDocumentRepository from '@/backend/repositories/FirebaseDocumentRepository';
 import { serverTimestamp, Timestamp } from 'firebase/firestore';

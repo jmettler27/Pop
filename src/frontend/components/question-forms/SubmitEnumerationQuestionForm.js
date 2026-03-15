@@ -1,5 +1,6 @@
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { EnumerationQuestion, GameEnumerationQuestion } from '@/backend/models/questions/Enumeration';
+import { Timer } from '@/backend/models/Timer';
 
 import { submitQuestion } from '@/backend/services/question-creator/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
@@ -213,22 +214,22 @@ export default function SubmitEnumerationQuestionForm({ userId, ...props }) {
         validationSchema={Yup.object({
           thinkingTime: Yup.number()
             .min(
-              GameEnumerationQuestion.MIN_THINKING_SECONDS,
-              `Must be between ${GameEnumerationQuestion.MIN_THINKING_SECONDS} and ${GameEnumerationQuestion.MAX_THINKING_SECONDS} seconds`
+              Timer.MIN_THINKING_TIME_SECONDS,
+              `Must be between ${Timer.MIN_THINKING_TIME_SECONDS} and ${Timer.MAX_THINKING_TIME_SECONDS} seconds`
             )
             .max(
-              GameEnumerationQuestion.MAX_THINKING_SECONDS,
-              `Must be between ${GameEnumerationQuestion.MIN_THINKING_SECONDS} and ${GameEnumerationQuestion.MAX_THINKING_SECONDS} seconds`
+              Timer.MAX_THINKING_TIME_SECONDS,
+              `Must be between ${Timer.MIN_THINKING_TIME_SECONDS} and ${Timer.MAX_THINKING_TIME_SECONDS} seconds`
             )
             .required('Required.'),
           challengeTime: Yup.number()
             .min(
-              GameEnumerationQuestion.MIN_CHALLENGE_SECONDS,
-              `Must be between ${GameEnumerationQuestion.MIN_CHALLENGE_SECONDS} and ${GameEnumerationQuestion.MAX_CHALLENGE_SECONDS} seconds`
+              Timer.MIN_CHALLENGE_TIME_SECONDS,
+              `Must be between ${Timer.MIN_CHALLENGE_TIME_SECONDS} and ${Timer.MAX_CHALLENGE_TIME_SECONDS} seconds`
             )
             .max(
-              GameEnumerationQuestion.MAX_CHALLENGE_SECONDS,
-              `Must be between ${GameEnumerationQuestion.MIN_CHALLENGE_SECONDS} and ${GameEnumerationQuestion.MAX_CHALLENGE_SECONDS} seconds`
+              Timer.MAX_CHALLENGE_TIME_SECONDS,
+              `Must be between ${Timer.MIN_CHALLENGE_TIME_SECONDS} and ${Timer.MAX_CHALLENGE_TIME_SECONDS} seconds`
             )
             .required('Required.'),
         })}
@@ -357,16 +358,16 @@ function EnterTimesStep({ onSubmit, validationSchema }) {
       <MyNumberInput
         label={intl.formatMessage(messages.thinkingTimeLabel)}
         name="thinkingTime"
-        min={GameEnumerationQuestion.MIN_THINKING_SECONDS}
-        max={GameEnumerationQuestion.MAX_THINKING_SECONDS}
+        min={Timer.MIN_THINKING_TIME_SECONDS}
+        max={Timer.MAX_THINKING_TIME_SECONDS}
         // validationSchema={validationSchema}
       />
 
       <MyNumberInput
         label={intl.formatMessage(messages.challengeTimeLabel)}
         name="challengeTime"
-        min={GameEnumerationQuestion.MIN_CHALLENGE_SECONDS}
-        max={GameEnumerationQuestion.MAX_CHALLENGE_SECONDS}
+        min={Timer.MIN_CHALLENGE_TIME_SECONDS}
+        max={Timer.MAX_CHALLENGE_TIME_SECONDS}
         // validationSchema={validationSchema}
       />
     </WizardStep>

@@ -24,9 +24,9 @@ export const addBet = async (gameId, roundId, questionId, playerId, teamId, bet)
   return service.addBet(questionId, playerId, teamId, bet);
 };
 
-export const endReflection = async (gameId, roundId, questionId) => {
+export const endThinking = async (gameId, roundId, questionId) => {
   const service = new GameEnumerationQuestionService(gameId, roundId);
-  return service.endReflection(questionId);
+  return service.endThinking(questionId);
 };
 
 export const validateItem = async (gameId, roundId, questionId, itemIdx) => {
