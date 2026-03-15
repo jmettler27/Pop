@@ -1,7 +1,7 @@
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { EmojiQuestion } from '@/backend/models/questions/Emoji';
 
-import { submitQuestion } from '@/backend/services/question-creator/actions';
+import { submitQuestion, editQuestion } from '@/backend/services/question-creator/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
@@ -59,6 +59,7 @@ export const emojiClueSchema = () =>
 export default function SubmitEmojiQuestionForm({ userId, ...props }) {
   const intl = useIntl();
   const router = useRouter();
+  const q = props.questionToEdit;
 
   const fileRef = useRef(null);
 
@@ -67,26 +68,21 @@ export default function SubmitEmojiQuestionForm({ userId, ...props }) {
       const image = getFileFromRef(fileRef);
 
       const { topic, lang, title, clue, answer_title } = values;
-      const questionId = await submitQuestion(
-        {
-          details: {
-            title,
-            clue,
-            answer: { title: answer_title },
-          },
-          type: QUESTION_TYPE,
-          topic,
-          // subtopics,,
-          lang,
-        },
-        userId,
-        {
-          image: image,
-        }
-      );
+      const data = {
+        details: { title, clue, answer: { title: answer_title } },
+        type: QUESTION_TYPE,
+        topic,
+        lang,
+      };
+      const files = { image: image || undefined };
 
-      if (props.inGameEditor) {
-        await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
+      if (q) {
+        await editQuestion(data, q.id, files);
+      } else {
+        const questionId = await submitQuestion(data, userId, files);
+        if (props.inGameEditor) {
+          await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
+        }
       }
     } catch (error) {
       console.error('Failed to submit your question:', error);
@@ -104,14 +100,25 @@ export default function SubmitEmojiQuestionForm({ userId, ...props }) {
 
   return (
     <Formik
-      initialValues={{
-        lang: DEFAULT_LOCALE,
-        topic: '',
-        title: '',
-        answer_title: '',
-        clue: '',
-        files: '',
-      }}
+      initialValues={
+        q
+          ? {
+              lang: q.lang || DEFAULT_LOCALE,
+              topic: q.topic || '',
+              title: q.title || '',
+              answer_title: q.answer?.title || '',
+              clue: q.clue || '',
+              files: '',
+            }
+          : {
+              lang: DEFAULT_LOCALE,
+              topic: '',
+              title: '',
+              answer_title: '',
+              clue: '',
+              files: '',
+            }
+      }
       onSubmit={async (values) => {
         await submitEmojiQuestion(values, fileRef);
         if (props.inSubmitPage) router.push('/submit');
@@ -120,6 +127,7 @@ export default function SubmitEmojiQuestionForm({ userId, ...props }) {
         }
       }}
       validationSchema={validationSchema}
+      enableReinitialize
     >
       <Form>
         <SelectLanguage name="lang" validationSchema={validationSchema} />
@@ -158,7 +166,12 @@ export default function SubmitEmojiQuestionForm({ userId, ...props }) {
         <EmojiPicker />
 
         {/* Image */}
-        <UploadImage fileRef={fileRef} name="files" validationSchema={validationSchema} />
+        <UploadImage
+          fileRef={fileRef}
+          name="files"
+          validationSchema={validationSchema}
+          existingUrl={q?.answer?.image}
+        />
 
         <SubmitFormButton isSubmitting={isSubmitting} label={intl.formatMessage(questionMessages.submit)} />
       </Form>

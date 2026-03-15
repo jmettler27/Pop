@@ -55,7 +55,7 @@ const UploadFile = ({ fileRef, ...props }) => {
   );
 };
 
-export function UploadImage({ validationSchema, fileRef, name }) {
+export function UploadImage({ validationSchema, fileRef, name, existingUrl = null }) {
   const intl = useIntl();
   const formik = useFormikContext();
   const [, meta] = useField(name);
@@ -74,7 +74,7 @@ export function UploadImage({ validationSchema, fileRef, name }) {
         {intl.formatMessage(messages.acceptedFormats)}: {IMAGE_VALID_TYPES.join(', ')} (max {MAX_IMAGE_SIZE_MB}MB)
       </span>
       <br />
-      {image && (
+      {image ? (
         <>
           <Image
             src={URL.createObjectURL(image)}
@@ -97,13 +97,23 @@ export function UploadImage({ validationSchema, fileRef, name }) {
             {intl.formatMessage(globalMessages.cancel)}
           </Button>
         </>
+      ) : (
+        existingUrl && (
+          <Image
+            src={existingUrl}
+            alt=""
+            width={0}
+            height={0}
+            style={{ width: 'auto', maxWidth: '250px', height: 'auto', maxHeight: '250px' }}
+          />
+        )
       )}
       <UploadFile name={name} fileRef={fileRef} />
     </Box>
   );
 }
 
-export function UploadAudio({ validationSchema, fileRef, name = 'files' }) {
+export function UploadAudio({ validationSchema, fileRef, name = 'files', existingUrl = null }) {
   const intl = useIntl();
   const formik = useFormikContext();
   const [, meta] = useField(name);
@@ -122,7 +132,7 @@ export function UploadAudio({ validationSchema, fileRef, name = 'files' }) {
         {intl.formatMessage(messages.acceptedFormats)}: {AUDIO_VALID_TYPES.join(', ')} (max {MAX_AUDIO_SIZE_MB}MB)
       </span>
       <br />
-      {audio && (
+      {audio ? (
         <>
           <p>
             <span className="italic">{audio.name}</span> {!meta.error && '✅'}
@@ -139,6 +149,8 @@ export function UploadAudio({ validationSchema, fileRef, name = 'files' }) {
             {intl.formatMessage(globalMessages.cancel)}
           </Button>
         </>
+      ) : (
+        existingUrl && <audio src={existingUrl} controls />
       )}
       <UploadFile name={name} fileRef={fileRef} />
     </Box>

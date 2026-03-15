@@ -1,4 +1,4 @@
-import { submitQuestion } from '@/backend/services/question-creator/actions';
+import { submitQuestion, editQuestion } from '@/backend/services/question-creator/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
@@ -77,22 +77,27 @@ const reorderingItemsSchema = () =>
 
 export default function SubmitReorderingQuestionForm({ userId, ...props }) {
   const router = useRouter();
+  const q = props.questionToEdit;
 
   const [submitReorderingQuestion, isSubmitting] = useAsyncAction(async (values) => {
     try {
       const { topic, lang, ...others } = values;
-      const questionId = await submitQuestion(
-        {
-          details: { ...others },
-          type: QUESTION_TYPE,
-          topic,
-          // subtopics,,
-          lang,
-        },
-        userId
-      );
-      if (props.inGameEditor) {
-        await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
+      if (q) {
+        await editQuestion({ details: { ...others }, type: QUESTION_TYPE, topic, lang }, q.id);
+      } else {
+        const questionId = await submitQuestion(
+          {
+            details: { ...others },
+            type: QUESTION_TYPE,
+            topic,
+            // subtopics,,
+            lang,
+          },
+          userId
+        );
+        if (props.inGameEditor) {
+          await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
+        }
       }
     } catch (error) {
       console.error('Failed to submit your question:', error);
@@ -101,13 +106,24 @@ export default function SubmitReorderingQuestionForm({ userId, ...props }) {
 
   return (
     <Wizard
-      initialValues={{
-        lang: DEFAULT_LOCALE,
-        topic: '',
-        title: '',
-        note: '',
-        items: Array(ReorderingQuestion.MIN_NUM_ITEMS).fill({ title: '', explanation: '' }),
-      }}
+      key={q?.id ?? 'new'}
+      initialValues={
+        q
+          ? {
+              lang: q.lang || DEFAULT_LOCALE,
+              topic: q.topic || '',
+              title: q.title || '',
+              note: q.note || '',
+              items: q.items || Array(ReorderingQuestion.MIN_NUM_ITEMS).fill({ title: '', explanation: '' }),
+            }
+          : {
+              lang: DEFAULT_LOCALE,
+              topic: '',
+              title: '',
+              note: '',
+              items: Array(ReorderingQuestion.MIN_NUM_ITEMS).fill({ title: '', explanation: '' }),
+            }
+      }
       onSubmit={async (values) => {
         await submitReorderingQuestion(values);
         if (props.inSubmitPage) {

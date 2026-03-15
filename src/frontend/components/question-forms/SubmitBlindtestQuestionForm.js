@@ -1,7 +1,7 @@
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { BlindtestQuestion, BlindtestType } from '@/backend/models/questions/Blindtest';
 
-import { submitQuestion } from '@/backend/services/question-creator/actions';
+import { submitQuestion, editQuestion } from '@/backend/services/question-creator/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
@@ -50,42 +50,41 @@ const subtypeSchema = () =>
 export default function SubmitBlindtestQuestionForm({ userId, ...props }) {
   const intl = useIntl();
   const router = useRouter();
+  const q = props.questionToEdit;
 
   const [submitBlindtestQuestion, isSubmitting] = useAsyncAction(async (values, imageFileRef, audioFileRef) => {
     try {
       const audio = getFileFromRef(audioFileRef);
-      if (!audio) {
+      if (!audio && !q) {
         throw new Error('No audio file');
       }
       const image = getFileFromRef(imageFileRef);
 
       const { audioFiles, imageFiles, topic, lang, ...others } = values;
       const { title, answer_title, answer_source, answer_author, subtype } = others;
-      const questionId = await submitQuestion(
-        {
-          details: {
-            title,
-            answer: {
-              title: answer_title,
-              source: answer_source,
-              author: answer_author,
-            },
-            subtype,
+      const data = {
+        details: {
+          title,
+          answer: {
+            title: answer_title,
+            source: answer_source,
+            author: answer_author,
           },
-          type: QUESTION_TYPE,
-          topic,
-          // subtopics,,
-          lang,
+          subtype,
         },
-        userId,
-        {
-          audio: audio,
-          image: image,
-        }
-      );
+        type: QUESTION_TYPE,
+        topic,
+        lang,
+      };
+      const files = { audio: audio || undefined, image: image || undefined };
 
-      if (props.inGameEditor) {
-        await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
+      if (q) {
+        await editQuestion(data, q.id, files);
+      } else {
+        const questionId = await submitQuestion(data, userId, files);
+        if (props.inGameEditor) {
+          await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
+        }
       }
     } catch (error) {
       console.error('Failed to submit your question:', error);
@@ -104,23 +103,38 @@ export default function SubmitBlindtestQuestionForm({ userId, ...props }) {
     answer_source: stringSchema(BlindtestQuestion.ANSWER_SOURCE_MAX_LENGTH),
     answer_author: stringSchema(BlindtestQuestion.ANSWER_AUTHOR_MAX_LENGTH, false),
     imageFiles: imageFileSchema(imageFileRef, false),
-    audioFiles: audioFileSchema(audioFileRef, true),
+    audioFiles: audioFileSchema(audioFileRef, !q),
   });
 
   return (
     <Formik
-      initialValues={{
-        lang: DEFAULT_LOCALE,
-        topic: '',
-        subtype: '',
-        title: '',
-        answer_title: '',
-        answer_source: '',
-        answer_author: '',
-        audioFiles: '',
-        imageFiles: '',
-      }}
+      initialValues={
+        q
+          ? {
+              lang: q.lang || DEFAULT_LOCALE,
+              topic: q.topic || '',
+              subtype: q.subtype || '',
+              title: q.title || '',
+              answer_title: q.answer?.title || '',
+              answer_source: q.answer?.source || '',
+              answer_author: q.answer?.author || '',
+              audioFiles: '',
+              imageFiles: '',
+            }
+          : {
+              lang: DEFAULT_LOCALE,
+              topic: '',
+              subtype: '',
+              title: '',
+              answer_title: '',
+              answer_source: '',
+              answer_author: '',
+              audioFiles: '',
+              imageFiles: '',
+            }
+      }
       validationSchema={validationSchema}
+      enableReinitialize
       onSubmit={async (values) => {
         await submitBlindtestQuestion(values, imageFileRef, audioFileRef);
         if (props.inSubmitPage) router.push('/submit');
@@ -179,9 +193,19 @@ export default function SubmitBlindtestQuestionForm({ userId, ...props }) {
           maxLength={BlindtestQuestion.ANSWER_SOURCE_MAX_LENGTH}
         />
 
-        <UploadAudio fileRef={audioFileRef} name="audioFiles" validationSchema={validationSchema} />
+        <UploadAudio
+          fileRef={audioFileRef}
+          name="audioFiles"
+          validationSchema={validationSchema}
+          existingUrl={q?.audio}
+        />
 
-        <UploadImage fileRef={imageFileRef} name="imageFiles" validationSchema={validationSchema} />
+        <UploadImage
+          fileRef={imageFileRef}
+          name="imageFiles"
+          validationSchema={validationSchema}
+          existingUrl={q?.answer?.image}
+        />
 
         <SubmitFormButton isSubmitting={isSubmitting} label={intl.formatMessage(questionMessages.submit)} />
       </Form>

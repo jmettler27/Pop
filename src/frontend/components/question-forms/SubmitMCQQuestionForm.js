@@ -1,7 +1,7 @@
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { MCQQuestion } from '@/backend/models/questions/MCQ';
 
-import { submitQuestion } from '@/backend/services/question-creator/actions';
+import { submitQuestion, editQuestion } from '@/backend/services/question-creator/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
@@ -37,23 +37,28 @@ const MCQ_CHOICES_EXAMPLE = ['101', '303', '404', '506'];
 
 export default function SubmitMCQForm({ userId, ...props }) {
   const router = useRouter();
+  const q = props.questionToEdit;
 
   const [submitMCQ, isSubmitting] = useAsyncAction(async (values) => {
     try {
       const { topic, lang, duoIdx, ...rest } = values;
       const details = rest;
-      const questionId = await submitQuestion(
-        {
-          details,
-          type: QUESTION_TYPE,
-          topic,
-          // subtopics,,
-          lang,
-        },
-        userId
-      );
-      if (props.inGameEditor) {
-        await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
+      if (q) {
+        await editQuestion({ details, type: QUESTION_TYPE, topic, lang }, q.id);
+      } else {
+        const questionId = await submitQuestion(
+          {
+            details,
+            type: QUESTION_TYPE,
+            topic,
+            // subtopics,,
+            lang,
+          },
+          userId
+        );
+        if (props.inGameEditor) {
+          await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
+        }
       }
     } catch (error) {
       console.error('Failed to submit your question:', error);
@@ -62,18 +67,32 @@ export default function SubmitMCQForm({ userId, ...props }) {
 
   return (
     <Wizard
-      initialValues={{
-        lang: DEFAULT_LOCALE,
-        topic: '',
-        source: '',
-        title: '',
-        note: '',
-        explanation: '',
-        choices: Array(MCQQuestion.MAX_NUM_CHOICES).fill(''),
-        answerIdx: -1,
-        // imageFiles: '',
-        // audioFiles: ''
-      }}
+      key={q?.id ?? 'new'}
+      initialValues={
+        q
+          ? {
+              lang: q.lang || DEFAULT_LOCALE,
+              topic: q.topic || '',
+              source: q.source || '',
+              title: q.title || '',
+              note: q.note || '',
+              explanation: q.explanation || '',
+              choices: q.choices || Array(MCQQuestion.MAX_NUM_CHOICES).fill(''),
+              answerIdx: q.answerIdx ?? -1,
+            }
+          : {
+              lang: DEFAULT_LOCALE,
+              topic: '',
+              source: '',
+              title: '',
+              note: '',
+              explanation: '',
+              choices: Array(MCQQuestion.MAX_NUM_CHOICES).fill(''),
+              answerIdx: -1,
+              // imageFiles: '',
+              // audioFiles: ''
+            }
+      }
       onSubmit={async (values) => {
         await submitMCQ(values);
         if (props.inSubmitPage) {

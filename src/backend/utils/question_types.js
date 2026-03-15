@@ -14,15 +14,6 @@ import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects';
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 
-const BUZZER_ROUNDS = [QuestionType.PROGRESSIVE_CLUES, QuestionType.IMAGE, QuestionType.EMOJI, QuestionType.BLINDTEST];
-
-/**
- * Check if a question type is a buzzer round
- * @param {QuestionType} type - The question type to check
- * @returns {boolean} True if the question type is a buzzer round, false otherwise
- */
-export const isBuzzer = (type) => BUZZER_ROUNDS.includes(type);
-
 export function QuestionTypeIcon({ questionType, fontSize = 'small' }) {
   switch (questionType) {
     case QuestionType.BASIC:

@@ -1,7 +1,7 @@
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { ProgressiveCluesQuestion } from '@/backend/models/questions/ProgressiveClues';
 
-import { submitQuestion } from '@/backend/services/question-creator/actions';
+import { submitQuestion, editQuestion } from '@/backend/services/question-creator/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
@@ -91,6 +91,7 @@ const progressiveCluesSchema = () =>
 
 export default function SubmitProgressiveCluesQuestionForm({ userId, ...props }) {
   const router = useRouter();
+  const q = props.questionToEdit;
 
   const [submitProgressiveCluesQuestion, isSubmitting] = useAsyncAction(async (values, fileRef) => {
     try {
@@ -99,27 +100,21 @@ export default function SubmitProgressiveCluesQuestionForm({ userId, ...props })
 
       // Get the file from the ref if it exists
       const image = getFileFromRef(fileRef);
-      const questionId = await submitQuestion(
-        {
-          details: {
-            title,
-            clues,
-            answer: {
-              title: answer_title,
-            },
-          },
-          type: QUESTION_TYPE,
-          topic,
-          lang,
-        },
-        userId,
-        {
-          image: image,
-        }
-      );
+      const data = {
+        details: { title, clues, answer: { title: answer_title } },
+        type: QUESTION_TYPE,
+        topic,
+        lang,
+      };
+      const uploadFiles = { image: image || undefined };
 
-      if (props.inGameEditor) {
-        await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
+      if (q) {
+        await editQuestion(data, q.id, uploadFiles);
+      } else {
+        const questionId = await submitQuestion(data, userId, uploadFiles);
+        if (props.inGameEditor) {
+          await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
+        }
       }
     } catch (error) {
       console.error('Failed to submit your question:', error);
@@ -130,14 +125,26 @@ export default function SubmitProgressiveCluesQuestionForm({ userId, ...props })
 
   return (
     <Wizard
-      initialValues={{
-        lang: DEFAULT_LOCALE,
-        topic: '',
-        title: '',
-        answer_title: '',
-        clues: [''],
-        files: '',
-      }}
+      key={q?.id ?? 'new'}
+      initialValues={
+        q
+          ? {
+              lang: q.lang || DEFAULT_LOCALE,
+              topic: q.topic || '',
+              title: q.title || '',
+              answer_title: q.answer?.title || '',
+              clues: q.clues || [''],
+              files: '',
+            }
+          : {
+              lang: DEFAULT_LOCALE,
+              topic: '',
+              title: '',
+              answer_title: '',
+              clues: [''],
+              files: '',
+            }
+      }
       onSubmit={async (values) => {
         await submitProgressiveCluesQuestion(values, fileRef);
         if (props.inSubmitPage) {
@@ -174,6 +181,7 @@ export default function SubmitProgressiveCluesQuestionForm({ userId, ...props })
           files: imageFileSchema(fileRef, false),
         })}
         fileRef={fileRef}
+        existingUrl={q?.answer?.image}
       />
     </Wizard>
   );
@@ -303,10 +311,10 @@ function ClueTextField({ index }) {
   );
 }
 
-function SelectImageStep({ onSubmit, validationSchema, fileRef }) {
+function SelectImageStep({ onSubmit, validationSchema, fileRef, existingUrl }) {
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
-      <UploadImage fileRef={fileRef} name="files" validationSchema={validationSchema} />
+      <UploadImage fileRef={fileRef} name="files" validationSchema={validationSchema} existingUrl={existingUrl} />
     </WizardStep>
   );
 }

@@ -1,7 +1,7 @@
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { NaguiQuestion } from '@/backend/models/questions/Nagui';
 
-import { submitQuestion } from '@/backend/services/question-creator/actions';
+import { submitQuestion, editQuestion } from '@/backend/services/question-creator/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
@@ -39,23 +39,28 @@ const NAGUI_CHOICES_EXAMPLE = ['101', '303', '404', '506'];
 
 export default function SubmitNaguiQuestionForm({ userId, ...props }) {
   const router = useRouter();
+  const q = props.questionToEdit;
 
   const [submitNaguiQuestion, isSubmitting] = useAsyncAction(async (values) => {
     try {
       const { topic, lang, duoIdx, ...rest } = values;
       const details = { duoIdx, ...rest };
-      const questionId = await submitQuestion(
-        {
-          details,
-          type: QUESTION_TYPE,
-          topic,
-          // subtopics,,
-          lang,
-        },
-        userId
-      );
-      if (props.inGameEditor) {
-        await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
+      if (q) {
+        await editQuestion({ details, type: QUESTION_TYPE, topic, lang }, q.id);
+      } else {
+        const questionId = await submitQuestion(
+          {
+            details,
+            type: QUESTION_TYPE,
+            topic,
+            // subtopics,,
+            lang,
+          },
+          userId
+        );
+        if (props.inGameEditor) {
+          await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
+        }
       }
     } catch (error) {
       console.error('Failed to submit your question:', error);
@@ -64,19 +69,34 @@ export default function SubmitNaguiQuestionForm({ userId, ...props }) {
 
   return (
     <Wizard
-      initialValues={{
-        lang: DEFAULT_LOCALE,
-        topic: '',
-        source: '',
-        title: '',
-        note: '',
-        explanation: '',
-        choices: Array(NaguiQuestion.MAX_CHOICES).fill(''),
-        answerIdx: -1,
-        duoIdx: -1,
-        // imageFiles: '',
-        // audioFiles: ''
-      }}
+      key={q?.id ?? 'new'}
+      initialValues={
+        q
+          ? {
+              lang: q.lang || DEFAULT_LOCALE,
+              topic: q.topic || '',
+              source: q.source || '',
+              title: q.title || '',
+              note: q.note || '',
+              explanation: q.explanation || '',
+              choices: q.choices || Array(NaguiQuestion.MAX_CHOICES).fill(''),
+              answerIdx: q.answerIdx ?? -1,
+              duoIdx: q.duoIdx ?? -1,
+            }
+          : {
+              lang: DEFAULT_LOCALE,
+              topic: '',
+              source: '',
+              title: '',
+              note: '',
+              explanation: '',
+              choices: Array(NaguiQuestion.MAX_CHOICES).fill(''),
+              answerIdx: -1,
+              duoIdx: -1,
+              // imageFiles: '',
+              // audioFiles: ''
+            }
+      }
       onSubmit={async (values) => {
         await submitNaguiQuestion(values);
         if (props.inSubmitPage) {

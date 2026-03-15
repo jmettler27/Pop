@@ -5,8 +5,8 @@ import defineMessages from '@/utils/defineMessages';
 import globalMessages from '@/i18n/globalMessages';
 
 import {
-  QuestionType,
   prependQuestionTypeWithEmoji,
+  QuestionType,
   questionTypeToDescription,
 } from '@/backend/models/questions/QuestionType';
 
@@ -52,7 +52,7 @@ export default function Page() {
 function SubmitQuestionCard({ questionType }) {
   const intl = useIntl();
   return (
-    <Link href={'/submit/' + questionType} className="h-full no-underline group">
+    <Link href={'/submit/' + questionType.replaceAll('_', '-')} className="h-full no-underline group">
       <Card className="h-full flex flex-col overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700 hover:border-blue-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/10 group-hover:to-purple-500/10 transition-all duration-300 pointer-events-none" />
 

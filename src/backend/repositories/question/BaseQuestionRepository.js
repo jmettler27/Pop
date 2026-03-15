@@ -136,6 +136,15 @@ export default class BaseQuestionRepository extends FirebaseRepository {
       baseQuestionsError: error,
     };
   }
+
+  useQuestion(questionId) {
+    const { data, loading, error } = super.useDocument(questionId);
+    return {
+      baseQuestion: data ? QuestionFactory.createBaseQuestion(data.type, data) : null,
+      baseQuestionLoading: loading,
+      baseQuestionError: error,
+    };
+  }
 }
 
 //function applyQuestionQueryFilters(q, { lang, topic, type, keyword, sort, approved = true }) {
