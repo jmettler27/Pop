@@ -5,8 +5,8 @@ export class EnumerationRound extends Round {
   static REWARDS_PER_QUESTION = 1;
   static REWARDS_FOR_BONUS = 1;
 
-  static DEFAULT_REFLECTION_TIME = 60;
-  static DEFAULT_CHALLENGE_TIME = 60;
+  static DEFAULT_THINKING_TIME = 60;
+  static DEFAULT_CHALLENGE_TIME = 120;
 
   constructor(data) {
     super(data);
@@ -14,7 +14,7 @@ export class EnumerationRound extends Round {
 
     this.maxPoints = data.maxPoints || null;
     this.rewardsPerQuestion = data.rewardsPerQuestion || EnumerationRound.REWARDS_PER_QUESTION;
-    this.reflectionTime = data.reflectionTime || EnumerationRound.DEFAULT_REFLECTION_TIME;
+    this.thinkingTime = data.thinkingTime || data.reflectionTime || EnumerationRound.DEFAULT_THINKING_TIME;
     this.challengeTime = data.challengeTime || EnumerationRound.DEFAULT_CHALLENGE_TIME;
     this.rewardsForBonus = data.rewardsForBonus || EnumerationRound.REWARDS_FOR_BONUS;
   }
@@ -24,7 +24,7 @@ export class EnumerationRound extends Round {
       ...super.toObject(),
       type: this.type,
       rewardsPerQuestion: this.rewardsPerQuestion,
-      reflectionTime: this.reflectionTime,
+      thinkingTime: this.thinkingTime,
       challengeTime: this.challengeTime,
       rewardsForBonus: this.rewardsForBonus,
     };

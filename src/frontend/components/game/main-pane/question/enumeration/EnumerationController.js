@@ -5,7 +5,7 @@ import GameEnumerationQuestionRepository from '@/backend/repositories/question/G
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
-import EnumerationReflectionActiveController from '@/frontend/components/game/main-pane/question/enumeration/EnumerationReflectionActiveController';
+import EnumerationThinkingActiveController from '@/frontend/components/game/main-pane/question/enumeration/EnumerationThinkingActiveController';
 import EnumerationChallengeActiveController from '@/frontend/components/game/main-pane/question/enumeration/EnumerationChallengeActiveController';
 
 import { CircularProgress } from '@mui/material';
@@ -47,8 +47,8 @@ export default function EnumerationController({ baseQuestion }) {
   }
 
   switch (gameQuestion.status) {
-    case EnumerationQuestionStatus.REFLECTION:
-      return <EnumerationReflectionActiveController baseQuestion={baseQuestion} timer={timer} />;
+    case EnumerationQuestionStatus.THINKING:
+      return <EnumerationThinkingActiveController baseQuestion={baseQuestion} timer={timer} />;
     case EnumerationQuestionStatus.CHALLENGE:
       return <EnumerationChallengeActiveController />;
   }

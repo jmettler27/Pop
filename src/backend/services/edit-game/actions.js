@@ -42,6 +42,16 @@ export const updateQuestionThinkingTime = async (gameId, questionType, roundId, 
   return service.updateQuestionThinkingTime(questionType, roundId, questionId, thinkingTime);
 };
 
+export const updateRoundChallengeTime = async (gameId, roundId, challengeTime) => {
+  const service = new EditGameService(gameId);
+  return service.updateRoundChallengeTime(roundId, challengeTime);
+};
+
+export const updateQuestionChallengeTime = async (gameId, questionType, roundId, questionId, challengeTime) => {
+  const service = new EditGameService(gameId);
+  return service.updateQuestionChallengeTime(questionType, roundId, questionId, challengeTime);
+};
+
 export const launchGame = async (gameId) => {
   const service = new EditGameService(gameId);
   return service.launchGame();

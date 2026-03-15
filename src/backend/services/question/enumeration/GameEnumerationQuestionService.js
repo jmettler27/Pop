@@ -35,8 +35,8 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
   async handleCountdownEndTransaction(transaction, questionId) {
     const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     const status = gameQuestion.status;
-    if (status === EnumerationQuestionStatus.REFLECTION) {
-      await this.endReflectionTransaction(transaction, questionId);
+    if (status === EnumerationQuestionStatus.THINKING) {
+      await this.endThinkingTransaction(transaction, questionId);
     } else if (status === EnumerationQuestionStatus.CHALLENGE) {
       await this.endQuestionTransaction(transaction, questionId);
     }
@@ -168,20 +168,20 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
     }
   }
 
-  async endReflection(questionId) {
+  async endThinking(questionId) {
     if (!questionId) {
       throw new Error('No question ID has been provided!');
     }
 
     try {
-      await runTransaction(firestore, (transaction) => this.endReflectionTransaction(transaction, questionId));
+      await runTransaction(firestore, (transaction) => this.endThinkingTransaction(transaction, questionId));
     } catch (error) {
-      console.error('Failed to end the enum reflection:', error);
+      console.error('Failed to end the enum thinking:', error);
       throw error;
     }
   }
 
-  async endReflectionTransaction(transaction, questionId) {
+  async endThinkingTransaction(transaction, questionId) {
     const questionPlayers = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
 
     /* No player made a bet */

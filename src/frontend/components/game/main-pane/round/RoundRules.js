@@ -30,7 +30,7 @@ const messages = defineMessages('frontend.game.round.RoundRules', {
   oddOneOutThinkingTime:
     '⏳ You have <u><b>{seconds} seconds</b></u> to decide, otherwise <b>a proposal will be chosen randomly!</b>',
   enumTwoPhases: 'The question takes place in <b>two phases</b>:',
-  enumPhaseReflection: '🤔 A <b>reflection</b> phase during which teams choose their bid.',
+  enumPhaseThinking: '🤔 A <b>thinking</b> phase during which teams choose their bid.',
   enumPhaseAnswer: '🗣️ An <b>answer</b> phase during which the team with the highest bid gives their answers.',
   enumOutcomes: 'There are then two possible outcomes:',
   enumBidMet:
@@ -208,7 +208,7 @@ function EnumRoundRules({ round }) {
     <>
       <RuleP>{fmt(formatMessage, messages.enumTwoPhases, richTags)}</RuleP>
       <ol className="2xl:text-2xl list-decimal pl-10">
-        <li>{fmt(formatMessage, messages.enumPhaseReflection, richTags)}</li>
+        <li>{fmt(formatMessage, messages.enumPhaseThinking, richTags)}</li>
         <li>{fmt(formatMessage, messages.enumPhaseAnswer, richTags)}</li>
       </ol>
       <RuleP>{formatMessage(messages.enumOutcomes)}</RuleP>

@@ -33,26 +33,26 @@ import {
   Select,
 } from '@mui/material';
 
-const messages = defineMessages('frontend.game.bottom.EnumerationReflectionActiveController', {
+const messages = defineMessages('frontend.game.bottom.EnumerationThinkingActiveController', {
   betInputLabel: 'My bet',
-  enumReflectionActiveHeader: 'Waiting for players to bet...',
+  enumThinkingActiveHeader: 'Waiting for players to bet...',
 });
 
-export default function EnumerationReflectionActiveController({ baseQuestion, timer }) {
+export default function EnumerationThinkingActiveController({ baseQuestion, timer }) {
   const myRole = useRole();
 
-  console.log('EnumerationReflectionActiveController', { baseQuestion, timer, myRole });
+  console.log('EnumerationThinkingActiveController', { baseQuestion, timer, myRole });
 
   switch (myRole) {
     case ParticipantRole.PLAYER:
-      return <EnumPlayerReflectionActive baseQuestion={baseQuestion} timer={timer} />;
+      return <EnumPlayerThinkingActive baseQuestion={baseQuestion} timer={timer} />;
     default:
-      return <EnumSpectatorReflectionActive timer={timer} />;
+      return <EnumSpectatorThinkingActive timer={timer} />;
   }
 }
 
 /* ============================================================ Player ============================================================ */
-function EnumPlayerReflectionActive({ baseQuestion, timer }) {
+function EnumPlayerThinkingActive({ baseQuestion, timer }) {
   return (
     <div className="flex flex-col h-full items-center justify-center">
       <AddBetForm baseQuestion={baseQuestion} status={timer.status} />
@@ -192,12 +192,12 @@ function AddBetForm({ baseQuestion, status }) {
 }
 
 /* ============================================================ Spectator ============================================================ */
-function EnumSpectatorReflectionActive({ timer }) {
+function EnumSpectatorThinkingActive({ timer }) {
   const intl = useIntl();
   return (
     <div className="flex flex-col h-full items-center justify-center">
       {timer.status === TimerStatus.START && (
-        <span className="2xl:text-3xl">{intl.formatMessage(messages.enumReflectionActiveHeader)}</span>
+        <span className="2xl:text-3xl">{intl.formatMessage(messages.enumThinkingActiveHeader)}</span>
       )}
     </div>
   );

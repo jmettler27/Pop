@@ -18,7 +18,7 @@ export default class GameEnumerationQuestionRepository extends GameQuestionRepos
     });
 
     await this.updateQuestionTransaction(transaction, questionId, {
-      status: EnumerationQuestionStatus.REFLECTION,
+      status: EnumerationQuestionStatus.THINKING,
       winner: null,
     });
   }
