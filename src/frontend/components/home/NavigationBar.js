@@ -79,6 +79,7 @@ export function NavigationBar() {
     if (idx === 0) router.push('/');
     if (idx === 1) router.push('/edit');
     if (idx === 2) router.push('/submit');
+    if (idx === 3) router.push('/about');
   };
 
   const handleSelectLanguage = (langCode) => {
