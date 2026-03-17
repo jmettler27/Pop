@@ -1,6 +1,6 @@
 import { BasicQuestion } from '@/backend/models/questions/Basic';
 
-import { submitQuestion } from '@/backend/services/question-creator/actions';
+import { submitQuestion, editQuestion } from '@/backend/services/question-creator/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
@@ -26,21 +26,26 @@ import { Form, Formik } from 'formik';
 export default function SubmitBasicQuestionForm({ userId, ...props }) {
   const intl = useIntl();
   const router = useRouter();
+  const q = props.questionToEdit;
 
   const [submitBasicQuestion, isSubmitting] = useAsyncAction(async (values) => {
     try {
       const { topic, lang, ...others } = values;
-      const questionId = await submitQuestion(
-        {
-          details: { ...others },
-          type: QuestionType.BASIC,
-          topic,
-          lang,
-        },
-        userId
-      );
-      if (props.inGameEditor) {
-        await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
+      if (q) {
+        await editQuestion({ details: { ...others }, type: QuestionType.BASIC, topic, lang }, q.id);
+      } else {
+        const questionId = await submitQuestion(
+          {
+            details: { ...others },
+            type: QuestionType.BASIC,
+            topic,
+            lang,
+          },
+          userId
+        );
+        if (props.inGameEditor) {
+          await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
+        }
       }
     } catch (error) {
       console.error('Failed to submit your question:', error);
@@ -59,16 +64,29 @@ export default function SubmitBasicQuestionForm({ userId, ...props }) {
 
   return (
     <Formik
-      initialValues={{
-        lang: DEFAULT_LOCALE,
-        topic: '',
-        source: '',
-        title: '',
-        note: '',
-        answer: '',
-        explanation: '',
-      }}
+      initialValues={
+        q
+          ? {
+              lang: q.lang || DEFAULT_LOCALE,
+              topic: q.topic || '',
+              source: q.source || '',
+              title: q.title || '',
+              note: q.note || '',
+              answer: q.answer || '',
+              explanation: q.explanation || '',
+            }
+          : {
+              lang: DEFAULT_LOCALE,
+              topic: '',
+              source: '',
+              title: '',
+              note: '',
+              answer: '',
+              explanation: '',
+            }
+      }
       validationSchema={validationSchema}
+      enableReinitialize
       onSubmit={async (values) => {
         await submitBasicQuestion(values);
         if (props.inSubmitPage) {

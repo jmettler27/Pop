@@ -1,4 +1,4 @@
-import { submitQuestion } from '@/backend/services/question-creator/actions';
+import { submitQuestion, editQuestion } from '@/backend/services/question-creator/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
@@ -67,6 +67,7 @@ const QUOTE_AUTHOR_EXAMPLE = {
 
 export default function SubmitQuoteQuestionForm({ userId, ...props }) {
   const router = useRouter();
+  const q = props.questionToEdit;
 
   const [submitQuoteQuestion, isSubmitting] = useAsyncAction(async (values) => {
     try {
@@ -76,17 +77,21 @@ export default function SubmitQuoteQuestionForm({ userId, ...props }) {
       } else {
         others.quoteParts = values.quoteParts.sort((a, b) => a.startIdx - b.startIdx);
       }
-      const questionId = await submitQuestion(
-        {
-          details: { ...others },
-          type: QUESTION_TYPE,
-          topic,
-          lang,
-        },
-        userId
-      );
-      if (props.inGameEditor) {
-        await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
+      if (q) {
+        await editQuestion({ details: { ...others }, type: QUESTION_TYPE, topic, lang }, q.id);
+      } else {
+        const questionId = await submitQuestion(
+          {
+            details: { ...others },
+            type: QUESTION_TYPE,
+            topic,
+            lang,
+          },
+          userId
+        );
+        if (props.inGameEditor) {
+          await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
+        }
       }
     } catch (error) {
       console.error('Failed to submit your question:', error);
@@ -95,15 +100,28 @@ export default function SubmitQuoteQuestionForm({ userId, ...props }) {
 
   return (
     <Wizard
-      initialValues={{
-        lang: DEFAULT_LOCALE,
-        topic: '',
-        quote: '',
-        source: '',
-        author: '',
-        toGuess: [],
-        quoteParts: [],
-      }}
+      key={q?.id ?? 'new'}
+      initialValues={
+        q
+          ? {
+              lang: q.lang || DEFAULT_LOCALE,
+              topic: q.topic || '',
+              quote: q.quote || '',
+              source: q.source || '',
+              author: q.author || '',
+              toGuess: q.toGuess || [],
+              quoteParts: q.quoteParts || [],
+            }
+          : {
+              lang: DEFAULT_LOCALE,
+              topic: '',
+              quote: '',
+              source: '',
+              author: '',
+              toGuess: [],
+              quoteParts: [],
+            }
+      }
       onSubmit={async (values) => {
         await submitQuoteQuestion(values);
         if (props.inSubmitPage) {

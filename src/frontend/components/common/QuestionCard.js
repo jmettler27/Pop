@@ -23,11 +23,6 @@ import clsx from 'clsx';
 
 import { Divider, Tooltip } from '@mui/material';
 
-const messages = defineMessages('frontend.questions.QuestionCard', {
-  thinking: 'Thinking',
-  enumeration: 'Enumeration',
-});
-
 export function QuestionCard({ baseQuestion, showType = false }) {
   return (
     <Card>
@@ -437,15 +432,6 @@ const EnumCardMainContent = ({ baseQuestion }) => {
             </li>
           )}
         </ul>
-      </div>
-      <Divider className="my-2 bg-slate-600" />
-      <div className="flex flex-col w-full">
-        <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
-          🤔 {intl.formatMessage(messages.thinking)}: <strong>{thinkingTime}s</strong>
-        </span>
-        <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
-          🗣️ {intl.formatMessage(messages.enumeration)}: <strong>{challengeTime}s</strong>
-        </span>
       </div>
     </>
   );

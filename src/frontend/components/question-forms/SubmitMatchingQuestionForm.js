@@ -1,7 +1,7 @@
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { MatchingQuestion } from '@/backend/models/questions/Matching';
 
-import { submitQuestion } from '@/backend/services/question-creator/actions';
+import { submitQuestion, editQuestion } from '@/backend/services/question-creator/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
@@ -75,6 +75,7 @@ const MATCHING_ANSWER_EXAMPLE_3 = [
 
 export default function SubmitMatchingQuestionForm({ userId, ...props }) {
   const router = useRouter();
+  const q = props.questionToEdit;
 
   const [submitMatchingQuestion, isSubmitting] = useAsyncAction(async (values) => {
     try {
@@ -87,17 +88,24 @@ export default function SubmitMatchingQuestionForm({ userId, ...props }) {
         return acc;
       }, {});
 
-      const questionId = await submitQuestion(
-        {
-          details: { answer, title, note, numCols, numRows },
-          type: QUESTION_TYPE,
-          topic,
-          lang,
-        },
-        userId
-      );
-      if (props.inGameEditor) {
-        await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
+      if (q) {
+        await editQuestion(
+          { details: { answer, title, note, numCols, numRows }, type: QUESTION_TYPE, topic, lang },
+          q.id
+        );
+      } else {
+        const questionId = await submitQuestion(
+          {
+            details: { answer, title, note, numCols, numRows },
+            type: QUESTION_TYPE,
+            topic,
+            lang,
+          },
+          userId
+        );
+        if (props.inGameEditor) {
+          await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
+        }
       }
     } catch (error) {
       console.error('Failed to submit your question:', error);
@@ -106,14 +114,30 @@ export default function SubmitMatchingQuestionForm({ userId, ...props }) {
 
   return (
     <Wizard
-      initialValues={{
-        lang: DEFAULT_LOCALE,
-        topic: '',
-        title: '',
-        note: '',
-        numCols: MatchingQuestion.MIN_NUM_COLS,
-        matches: [],
-      }}
+      key={q?.id ?? 'new'}
+      initialValues={
+        q
+          ? {
+              lang: q.lang || DEFAULT_LOCALE,
+              topic: q.topic || '',
+              title: q.title || '',
+              note: q.note || '',
+              numCols: q.numCols || MatchingQuestion.MIN_NUM_COLS,
+              matches: q.answer
+                ? Object.keys(q.answer)
+                    .sort((a, b) => a - b)
+                    .map((k) => q.answer[k])
+                : [],
+            }
+          : {
+              lang: DEFAULT_LOCALE,
+              topic: '',
+              title: '',
+              note: '',
+              numCols: MatchingQuestion.MIN_NUM_COLS,
+              matches: [],
+            }
+      }
       onSubmit={async (values) => {
         await submitMatchingQuestion(values);
         if (props.inSubmitPage) {

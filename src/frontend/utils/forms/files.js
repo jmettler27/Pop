@@ -65,5 +65,4 @@ export const audioFileSchema = (audioFileRef, required) =>
         return !required;
       }
       return fileIsOfCorrectType(audio, AUDIO_VALID_TYPES);
-    })
-    .required('Required.');
+    });

@@ -1,7 +1,7 @@
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { LabellingQuestion } from '@/backend/models/questions/Labelling';
 
-import { submitQuestion } from '@/backend/services/question-creator/actions';
+import { submitQuestion, editQuestion } from '@/backend/services/question-creator/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
@@ -50,38 +50,32 @@ const labelsSchema = () =>
 export default function SubmitLabellingQuestionForm({ userId, ...props }) {
   const intl = useIntl();
   const router = useRouter();
+  const q = props.questionToEdit;
 
   const [submitLabelQuestion, isSubmitting] = useAsyncAction(async (values, fileRef) => {
     try {
-      // await handleImageFormSubmission(values, session.user.id, fileRef)
       const image = getFileFromRef(fileRef);
-      if (!image) {
+      if (!image && !q) {
         throw new Error('No image file');
       }
       const { files, topic, lang, ...others } = values;
       const { title, labels, note } = others;
 
-      const questionId = await submitQuestion(
-        {
-          details: {
-            title,
-            labels,
-            note,
-          },
-          type: QUESTION_TYPE,
-          topic,
-          // subtopics,
-          lang,
-          createdBy: userId,
-          approved: true,
-        },
-        userId,
-        {
-          image: image,
+      const data = {
+        details: { title, labels, note },
+        type: QUESTION_TYPE,
+        topic,
+        lang,
+      };
+      const uploadFiles = { image: image || undefined };
+
+      if (q) {
+        await editQuestion(data, q.id, uploadFiles);
+      } else {
+        const questionId = await submitQuestion({ ...data, createdBy: userId, approved: true }, userId, uploadFiles);
+        if (props.inGameEditor) {
+          await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
         }
-      );
-      if (props.inGameEditor) {
-        await addQuestionToRound(props.gameId, props.roundId, questionId, userId);
       }
     } catch (error) {
       console.error('Failed to submit your question:', error);
@@ -95,20 +89,31 @@ export default function SubmitLabellingQuestionForm({ userId, ...props }) {
     topic: topicSchema(),
     title: stringSchema(LabellingQuestion.TITLE_MAX_LENGTH),
     note: stringSchema(LabellingQuestion.NOTE_MAX_LENGTH, false),
-    files: imageFileSchema(fileRef, true),
+    files: imageFileSchema(fileRef, !q),
     labels: labelsSchema(),
   });
 
   return (
     <Formik
-      initialValues={{
-        lang: DEFAULT_LOCALE,
-        topic: '',
-        title: '',
-        note: '',
-        files: '',
-        labels: Array(LabellingQuestion.MIN_NUM_LABELS).fill(''),
-      }}
+      initialValues={
+        q
+          ? {
+              lang: q.lang || DEFAULT_LOCALE,
+              topic: q.topic || '',
+              title: q.title || '',
+              note: q.note || '',
+              files: '',
+              labels: q.labels || Array(LabellingQuestion.MIN_NUM_LABELS).fill(''),
+            }
+          : {
+              lang: DEFAULT_LOCALE,
+              topic: '',
+              title: '',
+              note: '',
+              files: '',
+              labels: Array(LabellingQuestion.MIN_NUM_LABELS).fill(''),
+            }
+      }
       onSubmit={async (values) => {
         await submitLabelQuestion(values, fileRef);
         if (props.inSubmitPage) {
@@ -118,6 +123,7 @@ export default function SubmitLabellingQuestionForm({ userId, ...props }) {
         }
       }}
       validationSchema={validationSchema}
+      enableReinitialize
     >
       <Form>
         <SelectLanguage name="lang" validationSchema={validationSchema} />
@@ -142,7 +148,7 @@ export default function SubmitLabellingQuestionForm({ userId, ...props }) {
           maxLength={LabellingQuestion.NOTE_MAX_LENGTH}
         />
 
-        <UploadImage fileRef={fileRef} name="files" validationSchema={validationSchema} />
+        <UploadImage fileRef={fileRef} name="files" validationSchema={validationSchema} existingUrl={q?.image} />
 
         <EnterLabels validationSchema={validationSchema} />
 
