@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react';
 import OngoingGames from '@/frontend/components/home/OngoingGames';
 import GamesUnderConstruction from '@/frontend/components/home/GamesUnderConstruction';
 import EndedGames from '@/frontend/components/home/EndedGames';
-import HomeBar from '@/frontend/components/home/HomeBar';
+import NavigationBar from '@/frontend/components/home/NavigationBar';
 
 export default function Home() {
   const { data: session } = useSession();
@@ -21,7 +21,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <HomeBar />
+      <NavigationBar />
       <UserHome user={user} />
     </div>
   );

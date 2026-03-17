@@ -139,7 +139,7 @@ export default function Page({ params }) {
   }
 
   return (
-    <>
+    <div className="flex flex-col flex-1 p-8">
       <JoinGameHeader />
       <Wizard
         initialValues={{
@@ -203,7 +203,7 @@ export default function Page({ params }) {
           })}
         />
       </Wizard>
-    </>
+    </div>
   );
 }
 

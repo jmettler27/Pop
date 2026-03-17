@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 
 import AppBar from '@mui/material/AppBar';
@@ -44,7 +46,7 @@ const pageIcons = [
   <InfoIcon key="about" sx={{ fontSize: '1.1rem' }} />,
 ];
 
-export function HomeBar() {
+export function NavigationBar() {
   const { data: session } = useSession();
   const { user } = session;
   const { locale, setLocale } = useLocale();
@@ -227,4 +229,4 @@ export function HomeBar() {
   );
 }
 
-export default HomeBar;
+export default NavigationBar;

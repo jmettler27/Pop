@@ -20,7 +20,6 @@ import defineMessages from '@/utils/defineMessages';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import GameErrorScreen from '@/frontend/components/game/GameErrorScreen';
 import { AddNewRoundButton } from '@/frontend/components/game-editor/AddNewRound';
-import AppFooter from '@/frontend/components/AppFooter';
 import { EditGameRoundCard } from '@/frontend/components/game-editor/EditRoundInGame';
 import { LaunchGameButton } from '@/frontend/components/game-editor/LaunchGameButton';
 import globalMessages from '@/i18n/globalMessages';
@@ -74,7 +73,7 @@ export default function Page({ params }) {
   if (!organizerIds.includes(user.id)) redirect('/');
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col flex-1 min-h-0">
       <div className="flex flex-row flex-1 min-h-0">
         {/* Left bar */}
         <div className="flex flex-col w-64 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 border-r border-slate-200 dark:border-slate-800 overflow-y-auto">
@@ -191,7 +190,6 @@ export default function Page({ params }) {
           <EditGameRounds game={game} />
         </div>
       </div>
-      <AppFooter />
     </div>
   );
 }
