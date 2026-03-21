@@ -2,7 +2,7 @@ import { serverTimestamp } from 'firebase/firestore';
 
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { RoundType } from '@/backend/models/rounds/RoundType';
-import { Timer, TimerStatus } from '@/backend/models/Timer';
+import { Timer } from '@/backend/models/Timer';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import RoundService from '@/backend/services/round/RoundService';

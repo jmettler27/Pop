@@ -5,7 +5,6 @@ import { doc, getDoc } from 'firebase/firestore';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { ParticipantRole } from '@/backend/models/users/Participant';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 

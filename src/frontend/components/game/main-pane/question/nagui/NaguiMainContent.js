@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
-import { Avatar, Badge, Button, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Avatar, Badge, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { clsx } from 'clsx';
 
 import { GameStatus } from '@/backend/models/games/GameStatus';

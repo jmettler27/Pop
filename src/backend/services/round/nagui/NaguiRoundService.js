@@ -4,7 +4,7 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 import { HideNaguiOption } from '@/backend/models/questions/Nagui';
 import { RoundType } from '@/backend/models/rounds/RoundType';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
-import { Timer, TimerStatus } from '@/backend/models/Timer';
+import { Timer } from '@/backend/models/Timer';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import GameNaguiQuestionRepository from '@/backend/repositories/question/GameNaguiQuestionRepository';
 import RoundService from '@/backend/services/round/RoundService';

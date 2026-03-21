@@ -3,7 +3,6 @@ import { runTransaction, serverTimestamp } from 'firebase/firestore';
 import Error from '@/app/error';
 import { firestore } from '@/backend/firebase/firebase';
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { TimerStatus } from '@/backend/models/Timer';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';

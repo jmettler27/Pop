@@ -8,7 +8,6 @@ import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
 import { addPlayerToBuzzer, removePlayerFromBuzzer } from '@/backend/services/question/basic/actions';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';

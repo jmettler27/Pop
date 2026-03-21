@@ -4,12 +4,10 @@ import { redirect } from 'next/navigation';
 
 import { useSession } from 'next-auth/react';
 
-import ErrorScreen from '@/frontend/components/ErrorScreen';
 import EndedGames from '@/frontend/components/home/EndedGames';
 import GamesUnderConstruction from '@/frontend/components/home/GamesUnderConstruction';
 import NavigationBar from '@/frontend/components/home/NavigationBar';
 import OngoingGames from '@/frontend/components/home/OngoingGames';
-import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 export default function Home() {
   const { data: session } = useSession();

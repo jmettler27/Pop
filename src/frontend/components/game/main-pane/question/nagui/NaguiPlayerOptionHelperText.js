@@ -2,7 +2,6 @@ import { CircularProgress } from '@mui/material';
 import { useIntl } from 'react-intl';
 
 import NaguiOptionFactory from '@/backend/models/questions/NaguiOptionFactory';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import defineMessages from '@/utils/defineMessages';

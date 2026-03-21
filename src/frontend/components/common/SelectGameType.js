@@ -1,6 +1,5 @@
 import { useIntl } from 'react-intl';
 
-import { GameType, prependGameTypeWithEmoji } from '@/backend/models/games/GameType';
 import { MySelect } from '@/frontend/components/common/StyledFormComponents';
 import defineMessages from '@/utils/defineMessages';
 

@@ -1,5 +1,4 @@
 import FirebaseDocumentRepository from '@/backend/repositories/FirebaseDocumentRepository';
-import { getNextCyclicIndex } from '@/backend/utils/arrays';
 
 export default class ChooserRepository extends FirebaseDocumentRepository {
   constructor(gameId) {

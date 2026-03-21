@@ -16,12 +16,7 @@ import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
-import {
-  MyNumberInput,
-  MySelect,
-  MyTextInput,
-  StyledErrorMessage,
-} from '@/frontend/components/common/StyledFormComponents';
+import { MyNumberInput, MyTextInput, StyledErrorMessage } from '@/frontend/components/common/StyledFormComponents';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
 import { topicSchema } from '@/frontend/helpers/forms/topics';

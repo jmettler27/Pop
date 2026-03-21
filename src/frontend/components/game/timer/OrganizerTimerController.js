@@ -2,10 +2,10 @@ import PauseIcon from '@mui/icons-material/Pause';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
-import { Button, ButtonGroup, IconButton, Tooltip } from '@mui/material';
+import { ButtonGroup, IconButton, Tooltip } from '@mui/material';
 
 import { TimerStatus } from '@/backend/models/Timer';
-import { endTimer, resetTimer, startTimer, stopTimer } from '@/backend/services/timer/actions';
+import { resetTimer, startTimer, stopTimer } from '@/backend/services/timer/actions';
 import Timer from '@/frontend/components/game/timer/Timer';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';

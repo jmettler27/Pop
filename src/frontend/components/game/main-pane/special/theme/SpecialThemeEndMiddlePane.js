@@ -1,5 +1,5 @@
-import { collection, doc, increment } from 'firebase/firestore';
-import { useCollectionData, useDocument, useDocumentData } from 'react-firebase-hooks/firestore';
+import { collection } from 'firebase/firestore';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { useIntl } from 'react-intl';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';

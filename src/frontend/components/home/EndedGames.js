@@ -4,7 +4,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupIcon from '@mui/icons-material/Group';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-import { Box, Chip, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
+import { Box, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 

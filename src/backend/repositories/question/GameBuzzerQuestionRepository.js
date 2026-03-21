@@ -1,6 +1,5 @@
 import { arrayRemove, arrayUnion, Timestamp } from 'firebase/firestore';
 
-import { Player } from '@/backend/models/users/Player';
 import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
 
 export default class GameBuzzerQuestionRepository extends GameQuestionRepository {

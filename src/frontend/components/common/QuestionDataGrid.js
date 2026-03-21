@@ -10,7 +10,6 @@ import { QuoteAuthorElement, QuoteQuestion, QuoteSourceElement } from '@/backend
 import { topicToEmoji } from '@/backend/models/Topic';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 import UserRepository from '@/backend/repositories/user/UserRepository';
-import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { localeToEmoji } from '@/frontend/helpers/locales';
 import { QUESTION_ELEMENT_TO_TITLE } from '@/frontend/helpers/question';
 import { timestampToDate1 } from '@/frontend/helpers/time';

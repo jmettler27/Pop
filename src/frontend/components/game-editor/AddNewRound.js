@@ -10,7 +10,7 @@ import * as Yup from 'yup';
 import { Round } from '@/backend/models/rounds/Round';
 import { addRoundToGame } from '@/backend/services/edit-game/actions';
 import SelectRoundType from '@/frontend/components/common/SelectRoundType';
-import { MyNumberInput, MyTextInput } from '@/frontend/components/common/StyledFormComponents';
+import { MyTextInput } from '@/frontend/components/common/StyledFormComponents';
 import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { roundTypeSchema } from '@/frontend/helpers/forms/game';

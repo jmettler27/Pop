@@ -1,5 +1,4 @@
 import { RoundType } from '@/backend/models/rounds/RoundType';
-import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import RoundService from '@/backend/services/round/RoundService';
 
 export default class MixedRoundService extends RoundService {

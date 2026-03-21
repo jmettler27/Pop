@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import { Badge, Button, CircularProgress, Tooltip } from '@mui/material';
+import { Button, CircularProgress, Tooltip } from '@mui/material';
 import { doc } from 'firebase/firestore';
 import { useDocument } from 'react-firebase-hooks/firestore';
 

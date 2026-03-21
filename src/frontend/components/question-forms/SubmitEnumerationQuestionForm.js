@@ -9,7 +9,7 @@ import { Field, FieldArray, useField, useFormikContext } from 'formik';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 
-import { EnumerationQuestion, GameEnumerationQuestion } from '@/backend/models/questions/Enumeration';
+import { EnumerationQuestion } from '@/backend/models/questions/Enumeration';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { Timer } from '@/backend/models/Timer';
 import { editQuestion, submitQuestion } from '@/backend/services/create-question/actions';
@@ -23,12 +23,7 @@ import {
   MyTextInput,
   StyledErrorMessage,
 } from '@/frontend/components/common/StyledFormComponents';
-import {
-  numCharsIndicator,
-  requiredFieldIndicator,
-  requiredStringInArrayFieldIndicator,
-  stringSchema,
-} from '@/frontend/helpers/forms/forms';
+import { numCharsIndicator, requiredStringInArrayFieldIndicator, stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
 import { topicSchema } from '@/frontend/helpers/forms/topics';
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';

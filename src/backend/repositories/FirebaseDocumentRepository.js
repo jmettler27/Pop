@@ -1,4 +1,4 @@
-import { doc, getDoc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';

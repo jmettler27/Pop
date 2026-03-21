@@ -1,11 +1,10 @@
 import { doc } from 'firebase/firestore';
-import { useDocument, useDocumentData, useDocumentOnce } from 'react-firebase-hooks/firestore';
+import { useDocument, useDocumentOnce } from 'react-firebase-hooks/firestore';
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
 import SpecialThemeActiveBottomPane from '@/frontend/components/game/main-pane/special/SpecialThemeActiveBottomPane';
 import SpecialThemeEndBottomPane from '@/frontend/components/game/main-pane/special/SpecialThemeEndBottomPane';
-import LoadingScreen from '@/frontend/components/LoadingScreen';
 import useGame from '@/frontend/hooks/useGame';
 
 export default function SpecialThemeBottomPane({ round }) {

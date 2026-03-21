@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
+import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { topicToEmoji } from '@/backend/models/Topic';
 import ActiveMatchingQuestionGrid from '@/frontend/components/game/main-pane/question/matching/ActiveMatchingQuestionGrid';
 import EndedMatchingQuestionGrid from '@/frontend/components/game/main-pane/question/matching/EndedMatchingQuestionGrid';

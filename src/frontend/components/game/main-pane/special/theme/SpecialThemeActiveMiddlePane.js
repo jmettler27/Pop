@@ -1,6 +1,6 @@
 import { clsx } from 'clsx';
 import { doc } from 'firebase/firestore';
-import { useDocumentData, useDocumentOnce } from 'react-firebase-hooks/firestore';
+import { useDocumentData } from 'react-firebase-hooks/firestore';
 import { useIntl } from 'react-intl';
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';

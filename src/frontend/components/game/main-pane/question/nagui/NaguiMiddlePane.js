@@ -1,5 +1,5 @@
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
+import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { topicToEmoji } from '@/backend/models/Topic';
 import { ParticipantRole } from '@/backend/models/users/Participant';
 import NaguiMainContent from '@/frontend/components/game/main-pane/question/nagui/NaguiMainContent';

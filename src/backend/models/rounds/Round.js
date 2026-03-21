@@ -1,4 +1,3 @@
-import { isValidRoundType } from '@/backend/models/rounds/RoundType';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 
 export const RoundStatus = {

@@ -1,4 +1,3 @@
-import { CircularProgress } from '@mui/material';
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 

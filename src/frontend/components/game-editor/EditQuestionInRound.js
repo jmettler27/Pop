@@ -7,14 +7,12 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TimerIcon from '@mui/icons-material/Timer';
 import {
-  Avatar,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Divider,
   IconButton,
   Popover,
   TextField,
@@ -33,9 +31,8 @@ import {
   updateQuestionChallengeTime,
   updateQuestionThinkingTime,
 } from '@/backend/services/edit-game/actions';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/frontend/components/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/card';
 import { QuestionCardContent, QuestionCardTitle } from '@/frontend/components/common/QuestionCard';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
 import SubmitBasicQuestionForm from '@/frontend/components/question-forms/SubmitBasicQuestionForm';
 import SubmitBlindtestQuestionForm from '@/frontend/components/question-forms/SubmitBlindtestQuestionForm';
 import SubmitEmojiQuestionForm from '@/frontend/components/question-forms/SubmitEmojiQuestionForm';

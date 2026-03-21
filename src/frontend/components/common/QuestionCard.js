@@ -12,11 +12,9 @@ import { QuestionType, questionTypeToEmoji } from '@/backend/models/questions/Qu
 import { prependTopicWithEmoji, topicToEmoji } from '@/backend/models/Topic';
 import UserRepository from '@/backend/repositories/user/UserRepository';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/frontend/components/card';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
 import { LOCALE_TO_EMOJI } from '@/frontend/helpers/locales';
 import { QUESTION_ELEMENT_TO_EMOJI, QUESTION_ELEMENT_TO_TITLE } from '@/frontend/helpers/question';
 import { timestampToDate } from '@/frontend/helpers/time';
-import defineMessages from '@/utils/defineMessages';
 
 export function QuestionCard({ baseQuestion, showType = false }) {
   return (

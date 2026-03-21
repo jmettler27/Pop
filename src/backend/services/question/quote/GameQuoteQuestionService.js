@@ -3,10 +3,8 @@ import { runTransaction, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '@/backend/firebase/firebase';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { QuoteQuestion } from '@/backend/models/questions/Quote';
-import { TimerStatus } from '@/backend/models/Timer';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import GameBuzzerQuestionService from '@/backend/services/question/GameBuzzerQuestionService';
-import GameQuestionService from '@/backend/services/question/GameQuestionService';
 import { isObjectEmpty } from '@/backend/utils/objects';
 
 export default class GameQuoteQuestionService extends GameBuzzerQuestionService {
