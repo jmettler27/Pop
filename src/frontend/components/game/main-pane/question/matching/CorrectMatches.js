@@ -1,11 +1,10 @@
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-
 import useGame from '@/frontend/hooks/useGame';
 
 import { getNodeId, MatchingEdge } from '@/frontend/components/game/main-pane/question/matching/gridUtils.js';
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import { isObjectEmpty } from '@/backend/utils/objects';
+import { CircularProgress } from '@mui/material';
 
 export default function CorrectMatches({ nodePositions, colIndices }) {
   console.log('CORRECT MATCHES RENDERED');
@@ -16,14 +15,10 @@ export default function CorrectMatches({ nodePositions, colIndices }) {
   const { correctMatches, loading, error } = gameQuestionRepo.useCorrectMatches(game.currentQuestion);
 
   if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (loading) {
-    return <LoadingScreen loadingText="Loading correct matches..." />;
+    return <CircularProgress />;
   }
   if (!correctMatches || isObjectEmpty(correctMatches)) {
     return <></>;

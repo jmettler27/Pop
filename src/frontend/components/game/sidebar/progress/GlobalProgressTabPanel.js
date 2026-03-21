@@ -1,7 +1,7 @@
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 
-import { rankingToEmoji } from '@/backend/utils/emojis';
-import { RoundTypeIcon } from '@/backend/utils/rounds';
+import { rankingToEmoji } from '@/frontend/helpers/emojis';
+import { RoundTypeIcon } from '@/frontend/helpers/question_types';
 
 import { memo } from 'react';
 
@@ -37,22 +37,11 @@ const GameRoundsProgress = memo(function GameRoundsProgress({ gameId }) {
   });
   const { teams, teamsLoading, teamsError } = teamRepo.useAllTeamsOnce(gameId);
 
-  if (roundsError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(roundsError)}</strong>
-      </p>
-    );
-  }
-  if (teamsError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(teamsError)}</strong>
-      </p>
-    );
+  if (roundsError || teamsError) {
+    return <></>;
   }
   if (roundsLoading || teamsLoading) {
-    return <LoadingScreen />;
+    return <LoadingScreen inline />;
   }
   if (!startedRounds || !teams) {
     return <></>;
@@ -80,11 +69,7 @@ function RoundAccordion({ gameId, round, teams, hasEnded, isCurrent }) {
   const { roundScores, loading, error } = roundScoreRepo.useScoresOnce();
 
   if (error) {
-    return (
-      <p>
-        <strong>Error:</strong> {JSON.stringify(error)}
-      </p>
-    );
+    return <></>;
   }
   if (loading) {
     return <CircularProgress />;

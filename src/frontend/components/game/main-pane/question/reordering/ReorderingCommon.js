@@ -9,7 +9,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 
-import { QuestionTypeIcon } from '@/backend/utils/question_types';
+import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import { topicToEmoji } from '@/backend/models/Topic';
 import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';

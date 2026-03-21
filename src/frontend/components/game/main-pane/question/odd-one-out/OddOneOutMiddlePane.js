@@ -1,14 +1,12 @@
-import { selectProposal } from '@/backend/services/question/odd-one-out/actions';
-
-import GameOddOneOutQuestionRepository from '@/backend/repositories/question/GameOddOneOutQuestionRepository';
-
 import { ParticipantRole } from '@/backend/models/users/Participant';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { topicToEmoji } from '@/backend/models/Topic';
 import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
-
 import { shuffleIndices } from '@/backend/utils/arrays';
-import { QuestionTypeIcon } from '@/backend/utils/question_types';
+import { selectProposal } from '@/backend/services/question/odd-one-out/actions';
+import GameOddOneOutQuestionRepository from '@/backend/repositories/question/GameOddOneOutQuestionRepository';
+
+import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 
 import useGame from '@/frontend/hooks/useGame';
 import useTeam from '@/frontend/hooks/useTeam';
@@ -18,6 +16,7 @@ import useRole from '@/frontend/hooks/useRole';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import NoteButton from '@/frontend/components/game/NoteButton';
 
@@ -41,11 +40,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { clsx } from 'clsx';
-import Image from 'next/image';
 
 export default function OddOneOutMiddlePane({ baseQuestion }) {
-  console.log('BASE QUESTION', baseQuestion);
-
   // Randomize the order of the items on the client side
   const randomMapping = useMemo(() => shuffleIndices(baseQuestion.items.length), [baseQuestion.items.length]);
 
@@ -92,29 +88,11 @@ function OddOneOutMainContent({ baseQuestion, randomization }) {
   const { isChooser, chooserLoading, chooserError } = chooserRepo.useIsChooser(myTeam);
   const { timer, timerLoading, timerError } = timerRepo.useTimer();
 
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameQuestionError)}</strong>
-      </p>
-    );
-  }
-  if (chooserError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(chooserError)}</strong>
-      </p>
-    );
-  }
-  if (timerError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(timerError)}</strong>
-      </p>
-    );
+  if (gameQuestionError || chooserError || timerError) {
+    return <ErrorScreen inline />;
   }
   if (gameQuestionLoading || chooserLoading || timerLoading) {
-    return <LoadingScreen />;
+    return <LoadingScreen inline />;
   }
   if (!gameQuestion || !timer) {
     return <></>;
@@ -251,32 +229,7 @@ function ProposalItem({
 function SelectedProposalPlayerAvatar({ playerId }) {
   const { playerRepo } = useGameRepositories();
   const { player, loading, error } = playerRepo.usePlayerOnce(playerId);
-  console.log('SELECTED PROPOSAL PLAYER', playerId, player, loading, error);
-  return !error && !loading && player && <Avatar alt={player.name} src={player.image} sx={{ width: 25, height: 25 }} />;
-}
-
-function OddOneOutAnswerImage({ correct }) {
-  if (correct === true) {
-    return (
-      <Image
-        src={IMAGES.ODD_ONE_OUT.CORRECT}
-        alt="Correct answer"
-        width={0}
-        height={0}
-        style={{ width: '100%', height: 'auto' }}
-      />
-    );
-  }
-  if (correct === false) {
-    return (
-      <Image
-        src={IMAGES.ODD_ONE_OUT.WRONG}
-        alt="Wrong answer"
-        width={0}
-        height={0}
-        style={{ width: '80%', height: 'auto' }}
-      />
-    );
-  }
-  return <></>;
+  return !error && !loading && player ? (
+    <Avatar alt={player.name} src={player.image} sx={{ width: 25, height: 25 }} />
+  ) : null;
 }

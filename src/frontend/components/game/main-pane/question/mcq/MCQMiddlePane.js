@@ -5,7 +5,7 @@ import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
-import { QuestionTypeIcon } from '@/backend/utils/question_types';
+import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import MCQMainContent from '@/frontend/components/game/main-pane/question/mcq/MCQMainContent';
 

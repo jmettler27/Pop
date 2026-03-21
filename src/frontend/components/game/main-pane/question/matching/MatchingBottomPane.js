@@ -33,17 +33,7 @@ export default function MatchingBottomPane({}) {
   const { chooserRepo } = useGameRepositories();
   const { chooser, loading, error } = chooserRepo.useChooser();
 
-  if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
-  }
-  if (loading) {
-    return <></>;
-  }
-  if (!chooser) {
+  if (error || loading || !chooser) {
     return <></>;
   }
 
@@ -86,19 +76,8 @@ function MatchingPlayerQuestionController() {
   const gameQuestionRepo = new GameMatchingQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  if (roundError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(roundError)}</strong>
-      </p>
-    );
-  }
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameQuestionError)}</strong>
-      </p>
-    );
+  if (roundError || gameQuestionError) {
+    return <></>;
   }
   if (roundLoading || gameQuestionLoading) {
     return <CircularProgress />;
@@ -149,22 +128,11 @@ function MatchingRunningOrder({ chooser }) {
   const { teamRepo } = useGameRepositories();
   const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeams();
 
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameQuestionError)}</strong>
-      </p>
-    );
-  }
-  if (teamsError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(teamsError)}</strong>
-      </p>
-    );
+  if (gameQuestionError || teamsError) {
+    return <></>;
   }
   if (gameQuestionLoading || teamsLoading) {
-    return <></>;
+    return <CircularProgress />;
   }
   if (!gameQuestion || !teams) {
     return <></>;

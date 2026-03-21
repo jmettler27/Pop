@@ -16,16 +16,13 @@ import { CircularProgress } from '@mui/material';
 
 export default function NaguiBottomPane({ question: baseQuestion }) {
   const { chooserRepo } = useGameRepositories();
-  const { chooser, loading: chooserLoading, error: chooserError } = chooserRepo.useChooser();
-  if (chooserError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(chooserError)}</strong>
-      </p>
-    );
-  }
-  if (chooserLoading) {
+  const { chooser, loading, error } = chooserRepo.useChooser();
+
+  if (error) {
     return <></>;
+  }
+  if (loading) {
+    return <CircularProgress />;
   }
   if (!chooser) {
     return <></>;
@@ -53,16 +50,12 @@ function NaguiController({ chooser }) {
   const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx];
 
   const gameQuestionRepo = new GameNaguiQuestionRepository(game.id, game.currentRound);
-  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
+  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameQuestionError)}</strong>
-      </p>
-    );
+  if (error) {
+    return <></>;
   }
-  if (gameQuestionLoading) {
+  if (loading) {
     return <CircularProgress />;
   }
   if (!gameQuestion) {

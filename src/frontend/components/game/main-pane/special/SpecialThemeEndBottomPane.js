@@ -7,7 +7,6 @@ import { useCollectionDataOnce } from 'react-firebase-hooks/firestore';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 
-import LoadingScreen from '@/frontend/components/LoadingScreen';
 import GoSpecialHomeButton from '@/frontend/components/game/main-pane/special/GoSpecialHomeButton';
 import EndGameButton from '@/frontend/components/game/main-pane/EndGameButton';
 
@@ -26,17 +25,7 @@ function SpecialThemeEndOrganizerBottomPane({}) {
   const [gameThemes, gameThemesLoading, gameThemesError] = useCollectionDataOnce(
     collection(GAMES_COLLECTION_REF, game.id, 'rounds', game.currentRound, 'themes')
   );
-  if (gameThemesLoading) {
-    return <LoadingScreen loadingText="Loading themes..." />;
-  }
-  if (gameThemesError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameThemesError)}</strong>
-      </p>
-    );
-  }
-  if (!gameThemes) {
+  if (gameThemesLoading || gameThemesError || !gameThemes) {
     return <></>;
   }
 

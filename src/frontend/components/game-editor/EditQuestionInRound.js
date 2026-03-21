@@ -79,20 +79,16 @@ export const EditQuestionCard = memo(function EditQuestionCard({
   console.log('EditQuestionCard', gameId, roundId, questionId);
 
   const baseQuestionRepo = new BaseQuestionRepository();
-  const {
-    baseQuestion,
-    loading: baseQuestionLoading,
-    error: baseQuestionError,
-  } = baseQuestionRepo.useQuestion(questionId);
+  const { baseQuestion, loading, error } = baseQuestionRepo.useQuestion(questionId);
 
-  if (baseQuestionError) {
-    return <p>Error: {JSON.stringify(baseQuestionError)}</p>;
+  if (error) {
+    return <></>;
   }
-  if (baseQuestionLoading) {
+  if (loading) {
     return <QuestionCardSkeleton />;
   }
   if (!baseQuestion) {
-    return <QuestionCardSkeleton />;
+    return <></>;
   }
 
   return (
@@ -384,6 +380,7 @@ function QuestionCardSkeleton() {
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import { GameStatus } from '@/backend/models/games/GameStatus';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 function EditQuestionDialog({ baseQuestion, userId, open, onClose }) {
   const intl = useIntl();

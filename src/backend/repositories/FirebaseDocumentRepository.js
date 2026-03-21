@@ -2,8 +2,12 @@ import { doc, getDoc, setDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { firestore } from '@/backend/firebase/firebase';
 import { useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 
-import { getDocDataTransaction } from '@/backend/services/utils';
 import { isArray } from '@/backend/utils/arrays';
+
+const getDocDataTransaction = async (transaction, docRef) => {
+  const docSnap = await transaction.get(docRef);
+  return docSnap.data();
+};
 
 export default class FirebaseDocumentRepository {
   /**

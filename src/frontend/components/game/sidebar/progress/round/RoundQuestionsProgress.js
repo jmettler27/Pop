@@ -41,19 +41,8 @@ export default function RoundQuestionsProgress({ game, round }) {
   const { teams, teamsLoading, teamsError } = teamRepo.useAllTeamsOnce(game.id);
   const { players, playersLoading, playersError } = playerRepo.useAllPlayersOnce(game.id);
 
-  if (teamsError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(teamsError)}</strong>
-      </p>
-    );
-  }
-  if (playersError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(playersError)}</strong>
-      </p>
-    );
+  if (teamsError || playersError) {
+    return <></>;
   }
 
   if (teamsLoading || playersLoading) {
@@ -121,19 +110,8 @@ export const RoundQuestionAccordion = memo(function RoundQuestionAccordion({
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(questionId);
   const { baseQuestion, baseQuestionLoading, baseQuestionError } = baseQuestionRepo.useQuestionOnce(questionId);
 
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameQuestionError)}</strong>
-      </p>
-    );
-  }
-  if (baseQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(baseQuestionError)}</strong>
-      </p>
-    );
+  if (gameQuestionError || baseQuestionError) {
+    return <></>;
   }
   if (gameQuestionLoading || baseQuestionLoading) {
     return <CircularProgress />;
@@ -336,8 +314,6 @@ function QuestionTitleWithSource({ question }) {
 function QuestionWinner({ winnerTeam, winnerPlayer, question, game }) {
   const intl = useIntl();
   switch (question.type) {
-    case QuestionType.ENUMERATION:
-      return <EnumQuestionWinner winnerTeam={winnerTeam} winnerPlayer={winnerPlayer} question={question} game={game} />;
     case QuestionType.MATCHING:
       return <></>;
     default:
@@ -354,31 +330,4 @@ function QuestionWinner({ winnerTeam, winnerPlayer, question, game }) {
         </Typography>
       );
   }
-}
-
-function EnumQuestionWinner({ winnerTeam, winnerPlayer, question, game }) {
-  return <></>;
-  // const questionPlayersRef = doc(GAMES_COLLECTION_REF, gameIdds', roundId, 'questions', question.id, 'realtime', 'players')
-  // const [players, playersLoading, playersError] = useDocumentDataOnce(questionPlayersRef)
-  // if (playersError) {
-  //     return <p><strong>Error: {JSON.stringify(playersError)}</strong></p>
-  // }
-  // if (playersLoading) {
-  //     return <CircularProgress />
-  // }
-  // if (!players) {
-  //     return <></>
-  // }
-  // const challenger = players.challenger
-  // const bet = challenger?.bet
-  // const numCited = challenger?.cited.length
-
-  // return (
-  //     <Typography>
-  //         🏅 {winnerTeam ?
-  //             <span style={{ color: winnerTeam.color }}>{winnerPlayer.name} {winnerTeam.teamAllowed && `(${winnerTeam.name})`}: {numCited}/{bet}</span> :
-  //             <span className='italic opacity-50'>{NO_WINNER_TEXT[lang]} {players.challenger && <span className='text-red-500'>({numCited}/{bet})</span>}</span>
-  //         }
-  //     </Typography>
-  // )
 }

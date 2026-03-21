@@ -1,4 +1,4 @@
-import { emojiCount } from '@/backend/utils/emojis';
+import { emojiCount } from '@/frontend/helpers/emojis';
 
 /**
  * Returns a string indicating the number of emojis in the input

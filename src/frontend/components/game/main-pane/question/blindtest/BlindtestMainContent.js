@@ -1,7 +1,5 @@
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
-import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
-
 import { useState, useRef, useEffect } from 'react';
 import useGame from '@/frontend/hooks/useGame';
 
@@ -15,7 +13,7 @@ import VolumeDownRounded from '@mui/icons-material/VolumeDownRounded';
 import FastRewindIcon from '@mui/icons-material/FastRewind';
 import FastForwardIcon from '@mui/icons-material/FastForward';
 
-import { QUESTION_ELEMENT_TO_EMOJI } from '@/backend/utils/question';
+import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
 
 export default function BlindtestMainContent({ baseQuestion }) {
   const game = useGame();

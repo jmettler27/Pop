@@ -1,4 +1,4 @@
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { DEFAULT_LOCALE } from '@/frontend/helpers/locales';
 
 export const Topic = {
   VIDEO_GAME: 'video_game',
@@ -117,7 +117,7 @@ export function topicToEmoji(topic) {
   return TopicToEmoji[topic];
 }
 
-import { prependWithEmojiAndSpace } from '@/backend/utils/strings';
+import { prependWithEmojiAndSpace } from '@/frontend/helpers/strings';
 
 export function prependTopicWithEmoji(topic, locale = DEFAULT_LOCALE) {
   const emoji = topicToEmoji(topic);

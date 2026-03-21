@@ -9,9 +9,9 @@ import { firestore } from '@/backend/firebase/firebase';
 /**
  * Service for adding questions to the database
  */
-export default class QuestionCreatorService {
+export default class CreateQuestionService {
   /**
-   * Constructor for the QuestionCreatorService class.
+   * Constructor for the CreateQuestionService class.
    *
    * @param {string} type - The type of question to create.
    */

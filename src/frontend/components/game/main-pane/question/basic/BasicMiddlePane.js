@@ -1,4 +1,4 @@
-import { QuestionTypeIcon } from '@/backend/utils/question_types';
+import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import { topicToEmoji } from '@/backend/models/Topic';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
@@ -15,6 +15,7 @@ const messages = defineMessages('frontend.game.BasicMiddlePane', {
 });
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
@@ -55,17 +56,13 @@ function BasicQuestionMainContent({ baseQuestion }) {
   const myRole = useRole();
 
   const gameQuestionRepo = new GameBasicQuestionRepository(game.id, game.currentRound);
-  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
+  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameQuestionError)}</strong>
-      </p>
-    );
+  if (error) {
+    return <ErrorScreen inline />;
   }
-  if (gameQuestionLoading) {
-    return <LoadingScreen loadingText="Loading..." />;
+  if (loading) {
+    return <LoadingScreen inline />;
   }
   if (!gameQuestion) {
     return <></>;

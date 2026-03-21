@@ -1,6 +1,6 @@
 import { BuzzerQuestion, GameBuzzerQuestion } from '@/backend/models/questions/Buzzer';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { DEFAULT_LOCALE } from '@/frontend/helpers/locales';
 
 // Blindtest type enum with translations
 export class BlindtestType {

@@ -9,6 +9,7 @@ import SpecialThemeEndMiddlePane from '@/frontend/components/game/main-pane/spec
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 export default function SpecialThemeMiddlePane({ round }) {
   const game = useGame();
@@ -19,22 +20,11 @@ export default function SpecialThemeMiddlePane({ round }) {
 
   const [themeDoc, themeLoading, themeError] = useDocumentOnce(themeRef);
   const [gameTheme, gameThemeLoading, gameThemeError] = useDocumentData(gameThemeRef);
-  if (themeError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(themeError)}</strong>
-      </p>
-    );
-  }
-  if (gameThemeError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameThemeError)}</strong>
-      </p>
-    );
+  if (themeError || gameThemeError) {
+    return <ErrorScreen inline />;
   }
   if (themeLoading || gameThemeLoading) {
-    return <LoadingScreen loadingText="Loading theme data and states..." />;
+    return <LoadingScreen inline />;
   }
   if (!themeDoc || !gameTheme) {
     return <></>;

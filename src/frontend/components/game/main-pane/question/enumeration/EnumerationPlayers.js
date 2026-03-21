@@ -1,4 +1,4 @@
-import { rankingToEmoji } from '@/backend/utils/emojis';
+import { rankingToEmoji } from '@/frontend/helpers/emojis';
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 
@@ -23,18 +23,7 @@ export default function EnumerationPlayers() {
     error: playersError,
   } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
 
-  if (playersError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(playersError)}
-      </p>
-    );
-  }
-  if (playersLoading) {
-    return <></>;
-  }
-  if (!questionPlayers) {
+  if (playersError || playersLoading || !questionPlayers) {
     return <></>;
   }
 

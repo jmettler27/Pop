@@ -1,5 +1,5 @@
 import { BuzzerQuestion, GameBuzzerQuestion } from '@/backend/models/questions/Buzzer';
-import { emojiCount, onlyEmojis } from '@/backend/utils/emojis';
+import { emojiCount, onlyEmojis } from '@/frontend/helpers/emojis';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
 // Emoji questions

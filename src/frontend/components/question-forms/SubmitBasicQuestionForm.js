@@ -1,17 +1,17 @@
 import { BasicQuestion } from '@/backend/models/questions/Basic';
 
-import { submitQuestion, editQuestion } from '@/backend/services/question-creator/actions';
+import { submitQuestion, editQuestion } from '@/backend/services/create-question/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
-import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
-import { topicSchema } from '@/frontend/utils/forms/topics';
-import { messages as questionMessages } from '@/frontend/utils/forms/questions';
+import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
+import { topicSchema } from '@/frontend/helpers/forms/topics';
+import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
 
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { useIntl } from 'react-intl';
 
-import { stringSchema } from '@/frontend/utils/forms/forms';
+import { stringSchema } from '@/frontend/helpers/forms/forms';
 
 import { MyTextInput } from '@/frontend/components/common/StyledFormComponents';
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';

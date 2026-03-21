@@ -1,8 +1,10 @@
+import { RoundType } from '@/backend/models/rounds/RoundType';
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
@@ -30,21 +32,13 @@ export default function RoundEndBody({ currentRound }) {
   const { roundScores, loading: roundScoresLoading, error: roundScoresError } = roundScoreRepo.useScoresOnce();
 
   if (teamsError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(teamsError)}</strong>
-      </p>
-    );
+    return <ErrorScreen inline />;
   }
   if (roundScoresError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(roundScoresError)}</strong>
-      </p>
-    );
+    return <ErrorScreen inline />;
   }
   if (teamsLoading || roundScoresLoading) {
-    return <LoadingScreen />;
+    return <LoadingScreen inline />;
   }
   if (!teams || !roundScores) {
     return <></>;
@@ -62,7 +56,7 @@ export default function RoundEndBody({ currentRound }) {
             <RoundScoreboard roundScores={roundScores} teams={teams} />
           </div>
           <div className="flex flex-col h-full w-1/2 items-center justify-center">
-            {currentRound.type !== 'special' && (
+            {currentRound.type !== RoundType.SPECIAL && (
               <RoundScoresChart round={currentRound} roundScores={roundScores} teams={teams} />
             )}
           </div>

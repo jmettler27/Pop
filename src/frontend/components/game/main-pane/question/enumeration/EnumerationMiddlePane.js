@@ -20,11 +20,13 @@ import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import NoteButton from '@/frontend/components/game/NoteButton';
 
-import { QuestionTypeIcon } from '@/backend/utils/question_types';
+import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 
 import { CircularProgress } from '@mui/material';
 
 import clsx from 'clsx';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 const messages = defineMessages('frontend.game.EnumerationMiddlePane', {
   thereAre: 'There are',
@@ -107,32 +109,11 @@ function EnumerationQuestionAnswer({ answer }) {
     error: playersError,
   } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
 
-  if (timerError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(timerError)}
-      </p>
-    );
-  }
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(gameQuestionError)}
-      </p>
-    );
-  }
-  if (playersError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(playersError)}
-      </p>
-    );
+  if (timerError || gameQuestionError || playersError) {
+    return <ErrorScreen inline />;
   }
   if (timerLoading || gameQuestionLoading || playersLoading) {
-    return <CircularProgress />;
+    return <LoadingScreen inline />;
   }
   if (!timer || !gameQuestion || !questionPlayers) {
     return <></>;

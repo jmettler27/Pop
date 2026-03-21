@@ -5,8 +5,8 @@ import GameEnumerationQuestionRepository from '@/backend/repositories/question/G
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
-import EnumerationThinkingActiveController from '@/frontend/components/game/main-pane/question/enumeration/EnumerationThinkingActiveController';
-import EnumerationChallengeActiveController from '@/frontend/components/game/main-pane/question/enumeration/EnumerationChallengeActiveController';
+import EnumerationThinkingController from '@/frontend/components/game/main-pane/question/enumeration/EnumerationThinkingController';
+import EnumerationChallengeController from '@/frontend/components/game/main-pane/question/enumeration/EnumerationChallengeController';
 
 import { CircularProgress } from '@mui/material';
 
@@ -23,21 +23,8 @@ export default function EnumerationController({ baseQuestion }) {
   const { timerRepo } = useGameRepositories();
   const { timer, timerLoading, timerError } = timerRepo.useTimer();
 
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(gameQuestionError)}
-      </p>
-    );
-  }
-  if (timerError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(timerError)}
-      </p>
-    );
+  if (gameQuestionError || timerError) {
+    return <></>;
   }
   if (gameQuestionLoading || timerLoading) {
     return <CircularProgress />;
@@ -48,8 +35,8 @@ export default function EnumerationController({ baseQuestion }) {
 
   switch (gameQuestion.status) {
     case EnumerationQuestionStatus.THINKING:
-      return <EnumerationThinkingActiveController baseQuestion={baseQuestion} timer={timer} />;
+      return <EnumerationThinkingController baseQuestion={baseQuestion} timer={timer} />;
     case EnumerationQuestionStatus.CHALLENGE:
-      return <EnumerationChallengeActiveController />;
+      return <EnumerationChallengeController />;
   }
 }

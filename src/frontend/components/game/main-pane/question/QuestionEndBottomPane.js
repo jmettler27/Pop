@@ -27,11 +27,7 @@ export default function QuestionEndBottomPane({}) {
   const { round, roundLoading, roundError } = roundRepo.useRoundOnce(game.currentRound);
 
   if (roundError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(roundError)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (roundLoading) {
     return <></>;

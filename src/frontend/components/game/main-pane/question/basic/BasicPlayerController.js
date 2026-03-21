@@ -18,6 +18,7 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import PanToolIcon from '@mui/icons-material/PanTool';
 
 import clsx from 'clsx';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 export default function BasicPlayerController({ players: basicPlayers }) {
   const game = useGame();
@@ -34,33 +35,14 @@ export default function BasicPlayerController({ players: basicPlayers }) {
     error: gameQuestionError,
   } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  if (playerError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(playerError)}
-      </p>
-    );
+  if (playerError || roundError || gameQuestionError) {
+    return <></>;
   }
-  if (roundError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(roundError)}
-      </p>
-    );
-  }
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(gameQuestionError)}
-      </p>
-    );
-  }
+
   if (playerLoading || roundLoading || gameQuestionLoading) {
     return <></>;
   }
+
   if (!player || !round || !gameQuestion) {
     return <></>;
   }

@@ -12,6 +12,7 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import GameScoreboard from '@/frontend/components/scores/GameScoreboard';
 import GameScoresChart from '@/frontend/components/scores/GameScoresChart';
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 export default function GameEndMiddlePane({}) {
   const game = useGame();
@@ -48,14 +49,10 @@ function GameEndBody() {
   const { roundScores, loading: roundScoresLoading, error: roundScoresError } = roundScoreRepo.useScoresOnce();
 
   if (finalRoundError || teamsError || roundScoresError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(finalRoundError || teamsError || roundScoresError)}</strong>
-      </p>
-    );
+    return <ErrorScreen inline />;
   }
   if (finalRoundLoading || teamsLoading || roundScoresLoading) {
-    return <LoadingScreen />;
+    return <LoadingScreen inline />;
   }
   if (!finalRound || !teams || !roundScores) {
     return <></>;

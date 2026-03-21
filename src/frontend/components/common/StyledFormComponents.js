@@ -10,8 +10,8 @@ import {
   requiredFieldIndicator,
   numCharsIndicator,
   requiredIndicatorString,
-} from '@/frontend/utils/forms/forms';
-import { numEmojisIndicator } from '@/frontend/utils/forms/emojis';
+} from '@/frontend/helpers/forms/forms';
+import { numEmojisIndicator } from '@/frontend/helpers/forms/emojis';
 
 import { useIntl } from 'react-intl';
 

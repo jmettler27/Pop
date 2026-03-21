@@ -54,17 +54,7 @@ function SpecialThemeActiveOrganizerBottomPane({ theme, gameTheme }) {
     currentSectionId
   );
   const [gameSectionDoc, sectionLoading, sectionError] = useDocument(gameSectionRef);
-  if (sectionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(sectionError)}</strong>
-      </p>
-    );
-  }
-  if (sectionLoading) {
-    return <></>;
-  }
-  if (!gameSectionDoc) {
+  if (sectionError || sectionLoading || !gameSectionDoc) {
     return <></>;
   }
   const gameSection = { id: gameSectionDoc.id, ...gameSectionDoc.data() };

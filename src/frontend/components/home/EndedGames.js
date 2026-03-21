@@ -1,9 +1,10 @@
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
+import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 
 import { gameTypeToEmoji } from '@/backend/models/games/GameType';
-import { timestampToDate } from '@/backend/utils/time';
-import { localeToEmoji } from '@/frontend/utils/locales';
+import { timestampToDate } from '@/frontend/helpers/time';
+import { localeToEmoji } from '@/frontend/helpers/locales';
 
 import React from 'react';
 import { useIntl } from 'react-intl';
@@ -36,14 +37,10 @@ export default function EndedGames() {
   const { games, loading, error } = gameRepo.useGamesByStatus(GameStatus.GAME_END);
 
   if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (loading) {
-    return <LoadingScreen loadingText="Loading ended games..." />;
+    return <LoadingScreen inline />;
   }
   if (!games) {
     // Button to create a new round
@@ -56,9 +53,8 @@ export default function EndedGames() {
     <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-slate-700 shadow-2xl hover:shadow-purple-500/20 transition-all duration-300">
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 border-b border-slate-700">
         <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
-          🔚 {intl.formatMessage(messages.title)} ({sortedGames.length})
+          🔚 {intl.formatMessage(messages.title)}
         </CardTitle>
-        {/* <RemoveRoundFromGameButton roundId={roundId} /> */}
       </CardHeader>
 
       <CardContent className="pt-6">
@@ -84,18 +80,20 @@ export function EndedGameCard({ game }) {
   const user = session.user;
 
   const organizerRepo = new OrganizerRepository(game.id);
-  const { isOrganizer, loading, error } = organizerRepo.useIsOrganizer(user.id);
+  const playerRepo = new PlayerRepository(game.id);
+  const { organizers, loading: organizersLoading, error: organizersError } = organizerRepo.useAllOrganizersOnce();
+  const { players, loading: playersLoading, error: playersError } = playerRepo.useAllPlayersOnce();
 
-  if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
+  if (organizersError || playersError) {
+    return <></>;
   }
-  if (loading) {
+  if (organizersLoading || playersLoading) {
     return <Skeleton variant="rounded" width={210} height={60} />;
   }
+
+  const isOrganizer = organizers.some((o) => o.id === user.id);
+  const isPlayer = players.some((p) => p.id === user.id);
+  if (!isOrganizer && !isPlayer) return null;
 
   return (
     <Card className="bg-slate-800/50 border border-purple-600/20 shadow-lg hover:shadow-purple-500/40 hover:border-purple-400/60 transition-all duration-300 hover:-translate-y-1 overflow-hidden">

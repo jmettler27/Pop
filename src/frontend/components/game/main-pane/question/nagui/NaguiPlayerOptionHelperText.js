@@ -7,6 +7,7 @@ import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 
 import NaguiOptionFactory from '@/backend/models/questions/NaguiOptionFactory';
+import { CircularProgress } from '@mui/material';
 
 const messages = defineMessages('frontend.game.bottom.NaguiPlayerOptionHelperText', {
   hasChosen: 'has chosen',
@@ -20,30 +21,14 @@ export default function NaguiPlayerOptionHelperText({ gameQuestion }) {
   const { player, playerLoading, playerError } = playerRepo.usePlayerOnce(gameQuestion.playerId);
   const { team, teamLoading, teamError } = teamRepo.useTeamOnce(gameQuestion.teamId);
 
-  if (playerError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(playerError)}
-      </p>
-    );
-  }
-  if (teamError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(teamError)}
-      </p>
-    );
+  if (playerError || teamError) {
+    return <></>;
   }
   if (playerLoading || teamLoading) {
-    return myRole === ParticipantRole.ORGANIZER && <p>Loading player info...</p>;
+    return <CircularProgress />;
   }
-  if (!player) {
-    return <p>Player not found</p>;
-  }
-  if (!team) {
-    return <p>Team not found</p>;
+  if (!player || !team) {
+    return <></>;
   }
 
   return (

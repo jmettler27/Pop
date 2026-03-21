@@ -12,8 +12,9 @@ import { GameProvider } from '@/frontend/contexts/GameContext';
 import { GameRepositoriesProvider } from '@/frontend/contexts/GameRepositoriesContext';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import GameErrorScreen from '@/frontend/components/game/GameErrorScreen';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 import GameLayout from '@/frontend/components/game/GameLayout';
+import GameUnderConstructionScreen from '@/frontend/components/game/GameUnderConstructionScreen';
 
 import { redirect, useParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -35,12 +36,16 @@ export default function GamePage() {
   const { organizers, loading: orgLoading, error: orgError } = organizerRepo.useAllOrganizerIdentitiesOnce();
   const { players, loading: playerLoading, error: playerError } = playerRepo.useAllPlayerIdentitiesOnce();
 
-  if (gameError || orgError || playerError) return <GameErrorScreen />;
-  if (gameLoading || orgLoading || playerLoading) return <LoadingScreen loadingText="Loading game..." />;
+  if (gameError || orgError || playerError) {
+    return <ErrorScreen />;
+  }
+  if (gameLoading || orgLoading || playerLoading) {
+    return <LoadingScreen />;
+  }
   if (!game) return null;
 
   if (game.status === GameStatus.GAME_EDIT) {
-    redirect('/');
+    return <GameUnderConstructionScreen />;
   }
 
   // Determine user's role and team

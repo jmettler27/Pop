@@ -1,16 +1,16 @@
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { ProgressiveCluesQuestion } from '@/backend/models/questions/ProgressiveClues';
 
-import { submitQuestion, editQuestion } from '@/backend/services/question-creator/actions';
+import { submitQuestion, editQuestion } from '@/backend/services/create-question/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
-import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
-import { topicSchema } from '@/frontend/utils/forms/topics';
-import { messages as questionMessages } from '@/frontend/utils/forms/questions';
+import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
+import { topicSchema } from '@/frontend/helpers/forms/topics';
+import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
 
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
-import { numCharsIndicator, requiredStringInArrayFieldIndicator, stringSchema } from '@/frontend/utils/forms/forms';
+import { numCharsIndicator, requiredStringInArrayFieldIndicator, stringSchema } from '@/frontend/helpers/forms/forms';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
@@ -20,7 +20,7 @@ const messages = defineMessages('frontend.forms.submitQuestion.progressiveClues'
   numCluesAllowed: 'Number of clues allowed',
   addClue: 'Add clue',
 });
-import { getFileFromRef, imageFileSchema } from '@/frontend/utils/forms/files';
+import { getFileFromRef, imageFileSchema } from '@/frontend/helpers/forms/files';
 
 import { MyTextInput, StyledErrorMessage } from '@/frontend/components/common/StyledFormComponents';
 import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';

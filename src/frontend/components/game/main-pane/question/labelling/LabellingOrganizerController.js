@@ -58,16 +58,12 @@ function LabelOrganizerAnswerController({ buzzed, baseQuestion }) {
   const game = useGame();
 
   const gameQuestionRepo = new GameLabellingQuestionRepository(game.id, game.currentRound);
-  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
+  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameQuestionError)}</strong>
-      </p>
-    );
+  if (error) {
+    return <></>;
   }
-  if (gameQuestionLoading) {
+  if (loading) {
     return <CircularProgress />;
   }
   if (!gameQuestion) {

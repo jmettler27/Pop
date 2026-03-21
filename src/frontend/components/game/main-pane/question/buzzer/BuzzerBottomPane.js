@@ -8,10 +8,10 @@ import BuzzerOrganizerController from '@/frontend/components/game/main-pane/ques
 import BuzzerSpectatorController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerSpectatorController';
 import BuzzerPlayers from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayers';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 export default function BuzzerBottomPane({ baseQuestion }) {
   const game = useGame();
-  console.log('BuzzerBottomPane game', game, baseQuestion);
 
   const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(
     baseQuestion.type,
@@ -21,21 +21,9 @@ export default function BuzzerBottomPane({ baseQuestion }) {
 
   const { data: questionPlayers, loading, error } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
 
-  if (error) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(error)}
-      </p>
-    );
-  }
-  if (loading) {
+  if (error || loading || !questionPlayers) {
     return <></>;
   }
-  if (!questionPlayers) {
-    return <></>;
-  }
-  console.log('BuzzerBottomPane players', questionPlayers);
 
   return (
     <div className="flex flex-row h-full divide-x divide-solid">
@@ -54,7 +42,6 @@ export default function BuzzerBottomPane({ baseQuestion }) {
 
 function BuzzerController({ baseQuestion, questionPlayers }) {
   const myRole = useRole();
-  console.log('BuzzerController myRole', myRole);
 
   switch (myRole) {
     case ParticipantRole.PLAYER:

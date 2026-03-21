@@ -7,7 +7,7 @@ import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { ParticipantRole } from '@/backend/models/users/Participant';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
-import { QuestionTypeIcon } from '@/backend/utils/question_types';
+import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import { isObjectEmpty } from '@/backend/utils/objects';
 
 import useGame from '@/frontend/hooks/useGame';
@@ -15,6 +15,7 @@ import useRole from '@/frontend/hooks/useRole';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 import NextImage from '@/frontend/components/common/NextImage';
 import NoteButton from '@/frontend/components/game/NoteButton';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
@@ -58,16 +59,13 @@ function LabellingMainContent({ baseQuestion }) {
   const game = useGame();
 
   const gameQuestionRepo = new GameLabellingQuestionRepository(game.id, game.currentRound);
-  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameQuestionError)}</strong>
-      </p>
-    );
+  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion);
+
+  if (error) {
+    return <ErrorScreen inline />;
   }
-  if (gameQuestionLoading) {
-    return <LoadingScreen />;
+  if (loading) {
+    return <LoadingScreen inline />;
   }
   if (!gameQuestion) {
     return <></>;

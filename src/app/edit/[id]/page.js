@@ -7,7 +7,7 @@ import Game from '@/backend/models/games/Game';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 
-import { localeToEmoji } from '@/frontend/utils/locales';
+import { localeToEmoji } from '@/frontend/helpers/locales';
 
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -18,7 +18,7 @@ import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import GameErrorScreen from '@/frontend/components/game/GameErrorScreen';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 import { AddNewRoundButton } from '@/frontend/components/game-editor/AddNewRound';
 import { EditGameRoundCard } from '@/frontend/components/game-editor/EditRoundInGame';
 import { LaunchGameButton } from '@/frontend/components/game-editor/LaunchGameButton';
@@ -52,17 +52,12 @@ export default function Page({ params }) {
   const { organizers, loading: organizersLoading, error: organizersError } = organizerRepo.useAllOrganizersOnce();
 
   if (gameError || organizersError) {
-    return <GameErrorScreen />;
+    return <ErrorScreen />;
   }
   if (gameLoading || organizersLoading) {
-    return (
-      <div className="flex h-screen">
-        <LoadingScreen loadingText={intl.formatMessage(globalMessages.loading)} />
-      </div>
-    );
+    return <LoadingScreen />;
   }
   if (!game || !organizers) {
-    console.log('No game or organizers found');
     return <></>;
   }
 

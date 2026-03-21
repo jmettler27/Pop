@@ -42,29 +42,8 @@ export default function BuzzerPlayerController({ questionPlayers }) {
     error: gameQuestionError,
   } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  if (playerError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(playerError)}
-      </p>
-    );
-  }
-  if (roundError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(roundError)}
-      </p>
-    );
-  }
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(gameQuestionError)}
-      </p>
-    );
+  if (playerError || roundError || gameQuestionError) {
+    return <></>;
   }
   if (playerLoading || roundLoading || gameQuestionLoading) {
     return <></>;

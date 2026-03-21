@@ -141,17 +141,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
     setIsCollapsed(forceCollapse);
   }, [forceCollapse]);
 
-  if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
-  }
-  if (loading) {
-    return <></>;
-  }
-  if (!round) {
+  if (error || loading || !round) {
     return <></>;
   }
 
@@ -391,14 +381,8 @@ function SortableQuestionCard({ roundId, questionId, questionOrder, status }) {
   const baseQuestionRepo = new BaseQuestionRepository();
   const { baseQuestion, loading, error } = baseQuestionRepo.useQuestionOnce(questionId);
 
-  if (error) {
-    return <p>Error: {JSON.stringify(error)}</p>;
-  }
-  if (loading) {
-    return <p>Loading the question...</p>;
-  }
-  if (!baseQuestion) {
-    return <p>No data...</p>;
+  if (error || loading || !baseQuestion) {
+    return <></>;
   }
 
   return (

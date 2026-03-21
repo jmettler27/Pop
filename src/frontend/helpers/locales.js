@@ -10,7 +10,7 @@ export const LOCALE_TO_TITLE = {
   fr: 'Français',
 };
 
-import { prependWithEmojiAndSpace } from '@/backend/utils/strings';
+import { prependWithEmojiAndSpace } from '@/frontend/helpers/strings';
 
 function localeToTitle(locale) {
   return LOCALE_TO_TITLE[locale];

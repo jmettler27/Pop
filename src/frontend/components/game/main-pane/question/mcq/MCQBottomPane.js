@@ -1,7 +1,6 @@
 import { ParticipantRole } from '@/backend/models/users/Participant';
-
-import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
 
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
@@ -16,16 +15,13 @@ import { CircularProgress } from '@mui/material';
 
 export default function MCQBottomPane({ baseQuestion }) {
   const { chooserRepo } = useGameRepositories();
-  const { chooser, loading: chooserLoading, error: chooserError } = chooserRepo.useChooser();
-  if (chooserError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(chooserError)}</strong>
-      </p>
-    );
-  }
-  if (chooserLoading) {
+  const { chooser, loading, error } = chooserRepo.useChooser();
+
+  if (error) {
     return <></>;
+  }
+  if (loading) {
+    return <CircularProgress />;
   }
   if (!chooser) {
     return <></>;
@@ -53,16 +49,12 @@ function MCQController({ chooser, baseQuestion }) {
   const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx];
 
   const gameQuestionRepo = new GameMCQQuestionRepository(game.id, game.currentRound);
-  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
+  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameQuestionError)}</strong>
-      </p>
-    );
+  if (error) {
+    return <></>;
   }
-  if (gameQuestionLoading) {
+  if (loading) {
     return <CircularProgress />;
   }
   if (!gameQuestion) {

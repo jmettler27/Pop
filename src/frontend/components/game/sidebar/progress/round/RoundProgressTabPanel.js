@@ -1,5 +1,5 @@
 import { RoundType } from '@/backend/models/rounds/RoundType';
-import { RoundTypeIcon } from '@/backend/utils/rounds';
+import { RoundTypeIcon } from '@/frontend/helpers/question_types';
 import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';
@@ -18,11 +18,7 @@ export default function RoundProgressTabPanel({ game }) {
   const { round, roundLoading, roundError } = roundRepo.useRound(game.currentRound);
 
   if (roundError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(roundError)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (roundLoading) {
     return <CircularProgress />;

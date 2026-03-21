@@ -7,6 +7,8 @@ import TopPane from '@/frontend/components/game/top-pane/TopPane';
 import MiddlePane from '@/frontend/components/game/main-pane/MiddlePane';
 import BottomPane from '@/frontend/components/game/main-pane/BottomPane';
 import Sidebar from '@/frontend/components/game/sidebar/Sidebar';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 // Container components to control re-rendering
 const TopPaneContainer = memo(function TopPaneContainer({}) {
@@ -17,28 +19,8 @@ const TopPaneContainer = memo(function TopPaneContainer({}) {
   const { scores, loading: scoresLoading, error: scoresError } = scoreRepo.useScores();
   const { players, loading: playersLoading, error: playersError } = playerRepo.useAllPlayers();
 
-  if (teamsLoading) return <p>Loading teams...</p>;
-  if (scoresLoading) return <p>Loading scores...</p>;
-  if (playersLoading) return <p>Loading players...</p>;
-
-  if (teamsError)
-    return (
-      <p>
-        <strong>Error loading teams</strong>
-      </p>
-    );
-  if (scoresError)
-    return (
-      <p>
-        <strong>Error loading scores</strong>
-      </p>
-    );
-  if (playersError)
-    return (
-      <p>
-        <strong>Error loading players</strong>
-      </p>
-    );
+  if (teamsError || scoresError || playersError) return <ErrorScreen inline />;
+  if (teamsLoading || scoresLoading || playersLoading) return <LoadingScreen inline />;
 
   return <TopPane teams={teams} players={players} scores={scores} />;
 });

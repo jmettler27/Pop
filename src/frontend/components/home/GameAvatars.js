@@ -9,11 +9,7 @@ export function GameOrganizersAvatarGroup({ gameId, max = 4, size = 'medium' }) 
   const { organizers, loading, error } = organizerRepo.useAllOrganizersOnce();
 
   if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (loading) {
     return <Skeleton variant="rounded" width={210} height={60} />;
@@ -62,11 +58,7 @@ export function GamePlayersAvatarGroup({ gameId, max = 4, size = 'medium' }) {
   const { players, loading, error } = playerRepo.useAllPlayersOnce();
 
   if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (loading) {
     return <Skeleton variant="rounded" width={210} height={60} />;

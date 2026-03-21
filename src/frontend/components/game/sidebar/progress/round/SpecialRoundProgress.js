@@ -57,19 +57,8 @@ function SpecialRoundHomeProgress({ round }) {
 
   const [teams, teamsLoading, teamsError] = useCollectionOnce(collection(GAMES_COLLECTION_REF, gameId, 'teams'));
 
-  if (gameThemesError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameThemesError)}</strong>
-      </p>
-    );
-  }
-  if (teamsError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(teamsError)}</strong>
-      </p>
-    );
+  if (gameThemesError || teamsError) {
+    return <></>;
   }
   if (gameThemesLoading || teamsLoading) {
     return <CircularProgress />;
@@ -146,36 +135,11 @@ function SpecialRoundThemeProgress({ round }) {
     setExpanded(gameTheme.currentSectionIdx);
   }, [gameTheme]);
 
-  if (gameSectionsError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameSectionsError)}</strong>
-      </p>
-    );
-  }
-  if (gameThemeError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameThemeError)}</strong>
-      </p>
-    );
-  }
-  if (themeError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(themeError)}</strong>
-      </p>
-    );
-  }
-  if (teamsError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(teamsError)}</strong>
-      </p>
-    );
+  if (gameSectionsError || gameThemeError || themeError || teamsError) {
+    return <></>;
   }
   if (themeLoading || gameSectionsLoading || gameThemeLoading || teamsLoading) {
-    return <LoadingScreen />;
+    return <LoadingScreen inline />;
   }
   if (!theme || !gameSections || !gameTheme || !teams) {
     return <></>;
@@ -321,12 +285,9 @@ function SectionSummary({ themeId, sectionId, sectionOrder, showComplete, isCurr
   const intl = useIntl();
   const sectionRef = doc(QUESTIONS_COLLECTION_REF, themeId, 'sections', sectionId);
   const [section, sectionLoading, sectionError] = useDocumentDataOnce(sectionRef);
+
   if (sectionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(sectionError)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (sectionLoading) {
     return <CircularProgress />;

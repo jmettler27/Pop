@@ -1,4 +1,4 @@
-import { numberToKeycapEmoji } from '@/backend/utils/emojis';
+import { numberToKeycapEmoji } from '@/frontend/helpers/emojis';
 
 import { RoundType } from '@/backend/models/rounds/RoundType';
 import globalMessages from '@/i18n/globalMessages';

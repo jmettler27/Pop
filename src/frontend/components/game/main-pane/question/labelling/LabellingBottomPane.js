@@ -20,18 +20,7 @@ export default function LabellingBottomPane({ baseQuestion }) {
 
   const { data: questionPlayers, loading, error } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
 
-  if (error) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(error)}
-      </p>
-    );
-  }
-  if (loading) {
-    return <></>;
-  }
-  if (!questionPlayers) {
+  if (error || loading || !questionPlayers) {
     return <></>;
   }
 
@@ -39,7 +28,7 @@ export default function LabellingBottomPane({ baseQuestion }) {
     <div className="flex flex-row h-full divide-x divide-solid">
       {/* Left part: controller */}
       <div className="basis-3/4">
-        <LabelController baseQuestion={baseQuestion} questionPlayers={questionPlayers} />
+        <LabellingController baseQuestion={baseQuestion} questionPlayers={questionPlayers} />
       </div>
 
       {/* Right part: list of buzzer players who buzzed and/or were canceled */}
@@ -50,7 +39,7 @@ export default function LabellingBottomPane({ baseQuestion }) {
   );
 }
 
-function LabelController({ baseQuestion, questionPlayers }) {
+function LabellingController({ baseQuestion, questionPlayers }) {
   const myRole = useRole();
 
   switch (myRole) {

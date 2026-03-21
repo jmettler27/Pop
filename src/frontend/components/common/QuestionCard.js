@@ -6,10 +6,10 @@ import { MCQQuestion } from '@/backend/models/questions/MCQ';
 import { NaguiQuestion } from '@/backend/models/questions/Nagui';
 import { prependTopicWithEmoji, topicToEmoji } from '@/backend/models/Topic';
 
-import { QUESTION_ELEMENT_TO_EMOJI, QUESTION_ELEMENT_TO_TITLE } from '@/backend/utils/question';
-import { timestampToDate } from '@/backend/utils/time';
+import { QUESTION_ELEMENT_TO_EMOJI, QUESTION_ELEMENT_TO_TITLE } from '@/frontend/helpers/question';
+import { timestampToDate } from '@/frontend/helpers/time';
 
-import { LOCALE_TO_EMOJI } from '@/frontend/utils/locales';
+import { LOCALE_TO_EMOJI } from '@/frontend/helpers/locales';
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 
@@ -22,6 +22,7 @@ import React from 'react';
 import clsx from 'clsx';
 
 import { Divider, Tooltip } from '@mui/material';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 export function QuestionCard({ baseQuestion, showType = false }) {
   return (
@@ -102,14 +103,9 @@ function QuestionCardFooter({ baseQuestion }) {
   const intl = useIntl();
   const userRepository = new UserRepository();
   const { user, loading, error } = userRepository.useUserOnce(baseQuestion.createdBy);
-  if (error) {
-    return <p>Error: {JSON.stringify(error)}</p>;
-  }
-  if (loading) {
-    return <p>Loading the creator...</p>;
-  }
-  if (!user) {
-    return <p>User not found</p>;
+
+  if (error || loading || !user) {
+    return <></>;
   }
 
   return (

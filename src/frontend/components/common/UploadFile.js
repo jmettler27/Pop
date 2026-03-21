@@ -9,7 +9,7 @@ import {
   IMAGE_VALID_TYPES,
   MAX_AUDIO_SIZE_MB,
   MAX_IMAGE_SIZE_MB,
-} from '@/frontend/utils/forms/files';
+} from '@/frontend/helpers/forms/files';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
@@ -19,7 +19,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 
 import Image from 'next/image';
 
-import { requiredFileFieldIndicator } from '@/frontend/utils/forms/forms';
+import { requiredFileFieldIndicator } from '@/frontend/helpers/forms/forms';
 
 const messages = defineMessages('frontend.forms.UploadFile', {
   selectImage: 'Select an image file',

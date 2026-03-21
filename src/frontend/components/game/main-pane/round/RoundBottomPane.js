@@ -1,12 +1,11 @@
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import RoundStartBottomPane from '@/frontend/components/game/main-pane/round/RoundStartBottomPane';
 import RoundEndBottomPane from '@/frontend/components/game/main-pane/round/RoundEndBottomPane';
+import { CircularProgress } from '@mui/material';
 
 export default function RoundBottomPane() {
   const game = useGame();
@@ -20,17 +19,12 @@ export default function RoundBottomPane() {
   }
 
   const { round, loading: roundLoading, error: roundError } = roundRepo.useRound(game.currentRound);
-  console.log('round', round);
 
   if (roundError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(roundError)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (roundLoading) {
-    return <LoadingScreen loadingText="Loading round..." />;
+    return <CircularProgress />;
   }
   if (!round) {
     return <></>;

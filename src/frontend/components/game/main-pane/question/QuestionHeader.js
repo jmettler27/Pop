@@ -8,11 +8,7 @@ export default function CurrentRoundQuestionOrder() {
   const { round, roundLoading, roundError } = roundRepo.useRound(game.currentRound);
 
   if (roundError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(roundError)}</strong>
-      </p>
-    );
+    return <>❓</>;
   }
   if (roundLoading || !round) return <>❓</>;
   return <>{round.currentQuestionIdx + 1}</>;

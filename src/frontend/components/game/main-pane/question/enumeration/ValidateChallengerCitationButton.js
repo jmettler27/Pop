@@ -31,12 +31,7 @@ export default function ValidateChallengerCitationButton() {
   const { timer, timerLoading, timerError } = timerRepo.useTimer();
 
   if (timerError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(timerError)}
-      </p>
-    );
+    return <></>;
   }
   if (timerLoading) {
     return <CircularProgress />;

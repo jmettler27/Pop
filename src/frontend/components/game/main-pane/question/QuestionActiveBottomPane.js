@@ -9,11 +9,11 @@ import MCQBottomPane from '@/frontend/components/game/main-pane/question/mcq/MCQ
 import BasicQuestionBottomPane from '@/frontend/components/game/main-pane/question/basic/BasicQuestionBottomPane';
 import NaguiBottomPane from '@/frontend/components/game/main-pane/question/nagui/NaguiBottomPane';
 import ReorderingBottomPane from '@/frontend/components/game/main-pane/question/reordering/ReorderingBottomPane';
-import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import LabellingBottomPane from '@/frontend/components/game/main-pane/question/labelling/LabellingBottomPane';
+import { CircularProgress } from '@mui/material';
 
 export default function QuestionActiveBottomPane({}) {
   const game = useGame();
@@ -30,19 +30,14 @@ export default function QuestionActiveBottomPane({}) {
   );
 
   if (baseQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(baseQuestionError)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (baseQuestionLoading) {
-    return <LoadingScreen />;
+    return <CircularProgress />;
   }
   if (!baseQuestion) {
     return <></>;
   }
-  console.log('baseQuestion', baseQuestion);
 
   switch (baseQuestion.type) {
     case QuestionType.PROGRESSIVE_CLUES:

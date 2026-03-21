@@ -1,5 +1,5 @@
-import { timestampToDate1 } from '@/backend/utils/time';
-import { QUESTION_ELEMENT_TO_TITLE } from '@/backend/utils/question';
+import { timestampToDate1 } from '@/frontend/helpers/time';
+import { QUESTION_ELEMENT_TO_TITLE } from '@/frontend/helpers/question';
 
 import { BlindtestQuestion } from '@/backend/models/questions/Blindtest';
 import { QuoteAuthorElement, QuoteQuestion, QuoteSourceElement } from '@/backend/models/questions/Quote';
@@ -14,9 +14,9 @@ import { QuestionType } from '@/backend/models/questions/QuestionType';
 import UserRepository from '@/backend/repositories/user/UserRepository';
 import { memo, useCallback, useMemo, useState } from 'react';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
-import { localeToEmoji } from '@/frontend/utils/locales';
+import { localeToEmoji } from '@/frontend/helpers/locales';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { Avatar } from '@mui/material';
+import { Avatar, CircularProgress } from '@mui/material';
 
 const messages = defineMessages('frontend.questions.QuestionDataGrid', {
   title: 'Title',
@@ -412,22 +412,11 @@ function SearchQuestionDataGridImpl({
     page: 0,
   });
 
-  if (usersError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(usersError)}</strong>
-      </p>
-    );
-  }
-  if (baseQuestionsError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(baseQuestionsError)}</strong>
-      </p>
-    );
+  if (usersError || baseQuestionsError) {
+    return <></>;
   }
   if (usersLoading || baseQuestionsLoading) {
-    return <LoadingScreen loadingText="Loading questions and users..." />;
+    return <CircularProgress />;
   }
   if (!users || !baseQuestions) {
     return <></>;

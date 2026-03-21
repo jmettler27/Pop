@@ -12,6 +12,7 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { useIntl } from 'react-intl';
 
 import { ParticipantRole } from '@/backend/models/users/Participant';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 export default function SpecialThemeActiveMiddlePane({ theme, gameTheme }) {
   const currentThemeId = theme.id;
   const currentSectionId = theme.details.sections[gameTheme.currentSectionIdx];
@@ -20,14 +21,10 @@ export default function SpecialThemeActiveMiddlePane({ theme, gameTheme }) {
   const [section, sectionLoading, sectionError] = useDocumentData(sectionRef);
 
   if (sectionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(sectionError)}</strong>
-      </p>
-    );
+    return <ErrorScreen inline />;
   }
   if (sectionLoading) {
-    return <LoadingScreen loadingText="Loading section data..." />;
+    return <LoadingScreen inline />;
   }
   if (!section) {
     return <></>;
@@ -78,14 +75,10 @@ function SectionQuestions({ currentThemeId, currentSectionId, sectionQuestions }
   );
   const [gameSection, gameSectionLoading, gameSectionError] = useDocumentData(gameSectionRef);
   if (gameSectionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameSectionError)}</strong>
-      </p>
-    );
+    return <ErrorScreen inline />;
   }
   if (gameSectionLoading) {
-    return <LoadingScreen loadingText="Loading game section data..." />;
+    return <LoadingScreen inline />;
   }
   if (!gameSection) {
     return <></>;

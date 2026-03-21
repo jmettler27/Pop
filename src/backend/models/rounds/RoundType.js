@@ -1,5 +1,5 @@
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { DEFAULT_LOCALE } from '@/frontend/helpers/locales';
 
 export const RoundType = {
   ...QuestionType,
@@ -74,7 +74,7 @@ export function roundTypeToEmoji(roundType) {
   return RoundTypeToEmoji[roundType];
 }
 
-import { prependWithEmojiAndSpace } from '@/backend/utils/strings';
+import { prependWithEmojiAndSpace } from '@/frontend/helpers/strings';
 
 export function prependRoundTypeWithEmoji(roundType, lang = DEFAULT_LOCALE) {
   const emoji = roundTypeToEmoji(roundType);

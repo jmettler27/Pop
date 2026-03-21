@@ -21,17 +21,8 @@ const messages = defineMessages('frontend.game.bottom.OddOneOutBottomPane', {
 export default function OddOneOutBottomPane({}) {
   const { chooserRepo } = useGameRepositories();
   const { chooser, loading, error } = chooserRepo.useChooser();
-  if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
-  }
-  if (loading) {
-    return <></>;
-  }
-  if (!chooser) {
+
+  if (error || loading || !chooser) {
     return <></>;
   }
 
@@ -68,17 +59,8 @@ function OddOneOutChooserController() {
   const intl = useIntl();
   const { timerRepo } = useGameRepositories();
   const { timer, loading, error } = timerRepo.useTimer();
-  if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
-  }
-  if (loading) {
-    return <></>;
-  }
-  if (!timer) {
+
+  if (error || loading || !timer) {
     return <></>;
   }
 

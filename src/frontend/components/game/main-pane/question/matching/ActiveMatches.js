@@ -1,8 +1,5 @@
 import { ParticipantRole } from '@/backend/models/users/Participant';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
-
 import {
   getNode,
   getNodeText,
@@ -20,6 +17,7 @@ import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import { isObjectEmpty } from '@/backend/utils/objects';
+import { CircularProgress } from '@mui/material';
 
 export default function ActiveMatches({ answer, nodePositions, numCols }) {
   console.log('ACTIVE MATCHES RENDERED');
@@ -111,30 +109,12 @@ function ActiveMatchingQuestionNodes({
     error: correctMatchesError,
   } = gameQuestionRepo.useCorrectMatches(game.currentQuestion);
 
-  if (isChooserError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(isChooserError)}</strong>
-      </p>
-    );
-  }
-  if (isCanceledError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(isCanceledError)}</strong>
-      </p>
-    );
-  }
-  if (correctMatchesError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(correctMatchesError)}</strong>
-      </p>
-    );
+  if (isChooserError || isCanceledError || correctMatchesError) {
+    return <></>;
   }
 
   if (isChooserLoading || isCanceledLoading || correctMatchesLoading) {
-    return <LoadingScreen loadingText="Loading..." />;
+    return <CircularProgress />;
   }
 
   if (!foundMatches) {

@@ -1,6 +1,6 @@
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
-import { RoundTypeIcon, ROUND_HEADER_TEXT } from '@/backend/utils/rounds';
+import { RoundTypeIcon } from '@/frontend/helpers/question_types';
 
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -8,6 +8,7 @@ import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import { useIntl } from 'react-intl';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 import RoundStartBody from '@/frontend/components/game/main-pane/round/RoundStartBody';
 import RoundEndBody from '@/frontend/components/game/main-pane/round/RoundEndBody';
 
@@ -25,14 +26,10 @@ export default function RoundMiddlePane() {
   console.log('Round in RoundMiddlePane', round);
 
   if (roundError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(roundError)}</strong>
-      </p>
-    );
+    return <ErrorScreen inline />;
   }
   if (roundLoading) {
-    return <LoadingScreen loadingText="Loading round..." />;
+    return <LoadingScreen inline />;
   }
   if (!round) {
     return <></>;

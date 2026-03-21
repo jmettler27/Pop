@@ -26,11 +26,7 @@ export default function SpecialHomeThemeAvatar({ gameTheme, isChooser }) {
   const [themeDoc, themeDocLoading, themeDocError] = useDocument(themeRef);
 
   if (themeDocError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(themeDocError)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (themeDocLoading) {
     return <CircularProgress />;
@@ -75,7 +71,6 @@ export default function SpecialHomeThemeAvatar({ gameTheme, isChooser }) {
 }
 
 import Image from 'next/image';
-import { topicToEmoji } from '@/backend/models/Topic';
 
 const ThemeImage = ({ theme }) => (
   <Image src={theme.details.image} alt={theme.details.title} width={100} height={100} />

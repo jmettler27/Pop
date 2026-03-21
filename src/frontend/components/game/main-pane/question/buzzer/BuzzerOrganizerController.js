@@ -66,7 +66,6 @@ function BuzzerOrganizerAnswerController({ buzzed, questionType }) {
   const buzzedIsEmpty = buzzed.length === 0;
 
   const [handleValidate, isValidating] = useAsyncAction(async () => {
-    console.log('HANDLE VALIDATE');
     await validateAnswer(game.currentQuestionType, game.id, game.currentRound, game.currentQuestion, buzzed[0]);
   });
 
@@ -134,18 +133,7 @@ function NextClueButton({ baseQuestion }) {
     error: gameQuestionError,
   } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(gameQuestionError)}
-      </p>
-    );
-  }
-  if (gameQuestionLoading) {
-    return <></>;
-  }
-  if (!gameQuestion) {
+  if (gameQuestionError || gameQuestionLoading || !gameQuestion) {
     return <></>;
   }
   const isLastClue = gameQuestion.currentClueIdx >= baseQuestion.clues.length - 1;

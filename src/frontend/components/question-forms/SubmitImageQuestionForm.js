@@ -1,13 +1,13 @@
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { ImageQuestion } from '@/backend/models/questions/Image';
 
-import { submitQuestion, editQuestion } from '@/backend/services/question-creator/actions';
+import { submitQuestion, editQuestion } from '@/backend/services/create-question/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
-import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
-import { topicSchema } from '@/frontend/utils/forms/topics';
-import { messages as questionMessages } from '@/frontend/utils/forms/questions';
-import { stringSchema } from '@/frontend/utils/forms/forms';
+import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
+import { topicSchema } from '@/frontend/helpers/forms/topics';
+import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
+import { stringSchema } from '@/frontend/helpers/forms/forms';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
@@ -16,7 +16,7 @@ const messages = defineMessages('frontend.forms.submitQuestion.image', {
   answerDescription: 'Description of the image',
   answerSource: 'Source of the image',
 });
-import { getFileFromRef, imageFileSchema } from '@/frontend/utils/forms/files';
+import { getFileFromRef, imageFileSchema } from '@/frontend/helpers/forms/files';
 
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 

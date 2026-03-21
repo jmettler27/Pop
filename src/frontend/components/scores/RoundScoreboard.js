@@ -1,6 +1,6 @@
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 
-import { rankingToEmoji } from '@/backend/utils/emojis';
+import { rankingToEmoji } from '@/frontend/helpers/emojis';
 
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -22,17 +22,7 @@ export default function RoundScoreboard({ roundScores, teams }) {
 
   const { roundRepo } = useGameRepositories();
   const { round, loading, error } = roundRepo.useRoundOnce(game.currentRound);
-  if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
-  }
-  if (loading) {
-    return <p>Loading round...</p>;
-  }
-  if (!round) {
+  if (error || loading || !round) {
     return <></>;
   }
 

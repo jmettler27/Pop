@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { revealLabel } from '@/backend/services/question/labelling/actions';
 import { isEmpty } from '@/backend/utils/arrays';
-import { rankingToEmoji } from '@/backend/utils/emojis';
+import { rankingToEmoji } from '@/frontend/helpers/emojis';
 
 import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/i18n/globalMessages';
