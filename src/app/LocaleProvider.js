@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+
 import { IntlProvider } from 'react-intl';
 
 import { DEFAULT_LOCALE } from '@/frontend/helpers/locales';

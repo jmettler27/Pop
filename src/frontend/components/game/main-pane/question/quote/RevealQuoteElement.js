@@ -1,39 +1,34 @@
+import { useState } from 'react';
+
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Menu } from '@mui/material';
+import Collapse from '@mui/material/Collapse';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
+import { useIntl } from 'react-intl';
+
 import {
-  QuoteQuestion,
   QuoteAuthorElement,
-  QuoteSourceElement,
   QuotePartElement,
+  QuoteQuestion,
+  QuoteSourceElement,
 } from '@/backend/models/questions/Quote';
-
 import { revealQuoteElement } from '@/backend/services/question/quote/actions';
-
 import { isEmpty } from '@/backend/utils/arrays';
-
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
 import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/i18n/globalMessages';
-
-import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.RevealQuoteElement', {
   listHeader: 'Reveal an element of the quote',
 });
-
-import { useState } from 'react';
-
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Menu } from '@mui/material';
-import ListSubheader from '@mui/material/ListSubheader';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import Collapse from '@mui/material/Collapse';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 
 export default function RevealQuoteElementButton({ buzzed, baseQuestion, gameQuestion }) {
   const intl = useIntl();

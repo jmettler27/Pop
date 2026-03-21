@@ -1,7 +1,7 @@
-import { GameStatus } from '@/backend/models/games/GameStatus';
+import { runTransaction, serverTimestamp } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
-import { runTransaction, serverTimestamp } from 'firebase/firestore';
+import { GameStatus } from '@/backend/models/games/GameStatus';
 import { PlayerStatus } from '@/backend/models/users/Player';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';

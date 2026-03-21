@@ -1,30 +1,27 @@
-import GameRepository from '@/backend/repositories/game/GameRepository';
-import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
-import TimerRepository from '@/backend/repositories/timer/TimerRepository';
-import SoundRepository from '@/backend/repositories/sound/SoundRepository';
-import TeamRepository from '@/backend/repositories/user/TeamRepository';
-import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
-import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
-import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
-import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
-import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
-import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
-import GameQuestionServiceFactory from '@/backend/services/question/GameQuestionServiceFactory';
-import RoundRepository from '@/backend/repositories/round/RoundRepository';
+import { collection, getDocs, query, runTransaction, where } from 'firebase/firestore';
 
+import { firestore } from '@/backend/firebase/firebase';
+import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
+import { GameStatus } from '@/backend/models/games/GameStatus';
 import { Round } from '@/backend/models/rounds/Round';
 import { RoundType } from '@/backend/models/rounds/RoundType';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
-import { GameStatus } from '@/backend/models/games/GameStatus';
 import { PlayerStatus } from '@/backend/models/users/Player';
-
+import GameRepository from '@/backend/repositories/game/GameRepository';
+import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
+import RoundRepository from '@/backend/repositories/round/RoundRepository';
+import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
+import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
+import SoundRepository from '@/backend/repositories/sound/SoundRepository';
+import TimerRepository from '@/backend/repositories/timer/TimerRepository';
+import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
+import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
+import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
+import TeamRepository from '@/backend/repositories/user/TeamRepository';
+import GameQuestionServiceFactory from '@/backend/services/question/GameQuestionServiceFactory';
 import { aggregateTiedTeams, shuffle } from '@/backend/utils/arrays';
-import { sortAscendingRoundScores } from '@/backend/utils/scores';
-import { sortScores } from '@/backend/utils/scores';
-
-import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { firestore } from '@/backend/firebase/firebase';
-import { collection, getDocs, query, runTransaction, where } from 'firebase/firestore';
+import { sortAscendingRoundScores, sortScores } from '@/backend/utils/scores';
 
 export default class RoundService {
   constructor(gameId, roundType) {

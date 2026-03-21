@@ -1,12 +1,10 @@
 import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
-
-import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import SpecialHomeMiddlePane from '@/frontend/components/game/main-pane/special/home/SpecialHomeMiddlePane';
 import SpecialThemeMiddlePane from '@/frontend/components/game/main-pane/special/theme/SpecialThemeMiddlePane';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 export default function SpecialMiddlePane({}) {
   const game = useGame();

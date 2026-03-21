@@ -1,5 +1,6 @@
 import { Round } from '@/backend/models/rounds/Round';
 import { RoundType } from '@/backend/models/rounds/RoundType';
+
 export class QuoteRound extends Round {
   static MAX_TRIES = 2;
   static DEFAULT_INVALIDATE_TEAM = false;

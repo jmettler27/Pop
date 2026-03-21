@@ -1,11 +1,11 @@
 import { range } from '@/backend/utils/arrays';
-
 import {
-  MatchingNode,
-  MatchingEdge,
-  getNodeText,
   getNodeId,
+  getNodeText,
+  MatchingEdge,
+  MatchingNode,
 } from '@/frontend/components/game/main-pane/question/matching/gridUtils.js';
+
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
 
 export default function EndedMatchingQuestionGrid({ answer, nodePositions, numCols, numRows }) {

@@ -1,51 +1,25 @@
 'use client';
 
-import { Timer } from '@/backend/models/Timer';
-
-import { topicToEmoji } from '@/backend/models/Topic';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { RoundType, roundTypeToEmoji, roundTypeToTitle } from '@/backend/models/rounds/RoundType';
-import { Round } from '@/backend/models/rounds/Round';
-
-import RoundRepository from '@/backend/repositories/round/RoundRepository';
-
-import {
-  updateRound,
-  removeRoundFromGame,
-  updateRoundThinkingTime,
-  updateRoundChallengeTime,
-} from '@/backend/services/edit-game/actions';
-
-import globalMessages from '@/i18n/globalMessages';
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-
-const messages = defineMessages('frontend.gameEditor.EditRoundInGame', {
-  deleteDialogTitle: 'Are you sure you want to remove this round?',
-  deleteDialogConfirm: 'Yes',
-  defaultThinkingTime: 'Default thinking time for questions in this round',
-  editThinkingTime: 'Thinking time (seconds)',
-  defaultChallengeTime: 'Default challenge time for questions in this round',
-  editChallengeTime: 'Challenge time (seconds)',
-});
-
-import { QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { doc, getDoc } from 'firebase/firestore';
-
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
+import React, { memo, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import React, { memo, useEffect, useState } from 'react';
-
-import { CardTitle, CardHeader, CardContent, Card } from '@/frontend/components/card';
-import { EditQuestionCard } from '@/frontend/components/game-editor/EditQuestionInRound';
+import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import {
-  AddQuestionToMixedRoundButton,
-  AddQuestionToRoundButton,
-} from '@/frontend/components/game-editor/AddNewQuestion';
-import { QuestionCardTitle } from '@/frontend/components/common/QuestionCard';
-
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import SwapVertIcon from '@mui/icons-material/SwapVert';
+import TimerIcon from '@mui/icons-material/Timer';
 import {
   Button,
   Dialog,
@@ -58,27 +32,43 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SwapVertIcon from '@mui/icons-material/SwapVert';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import TimerIcon from '@mui/icons-material/Timer';
-
 import clsx from 'clsx';
+import { doc, getDoc } from 'firebase/firestore';
+import { useIntl } from 'react-intl';
 
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-  useSortable,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import { Round } from '@/backend/models/rounds/Round';
+import { RoundType, roundTypeToEmoji, roundTypeToTitle } from '@/backend/models/rounds/RoundType';
+import { Timer } from '@/backend/models/Timer';
+import { topicToEmoji } from '@/backend/models/Topic';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
+import RoundRepository from '@/backend/repositories/round/RoundRepository';
+import {
+  removeRoundFromGame,
+  updateRound,
+  updateRoundChallengeTime,
+  updateRoundThinkingTime,
+} from '@/backend/services/edit-game/actions';
+import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/card';
+import { QuestionCardTitle } from '@/frontend/components/common/QuestionCard';
+import {
+  AddQuestionToMixedRoundButton,
+  AddQuestionToRoundButton,
+} from '@/frontend/components/game-editor/AddNewQuestion';
+import { EditQuestionCard } from '@/frontend/components/game-editor/EditQuestionInRound';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.gameEditor.EditRoundInGame', {
+  deleteDialogTitle: 'Are you sure you want to remove this round?',
+  deleteDialogConfirm: 'Yes',
+  defaultThinkingTime: 'Default thinking time for questions in this round',
+  editThinkingTime: 'Thinking time (seconds)',
+  defaultChallengeTime: 'Default challenge time for questions in this round',
+  editChallengeTime: 'Challenge time (seconds)',
+});
 
 const editGameRoundCardNumCols = (roundType) => {
   switch (roundType) {

@@ -1,24 +1,22 @@
-import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
-import { topicToEmoji } from '@/backend/models/Topic';
+import { useIntl } from 'react-intl';
+
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
+import { topicToEmoji } from '@/backend/models/Topic';
 import { ParticipantRole } from '@/backend/models/users/Participant';
-
 import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
-
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
+import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
 import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.BasicMiddlePane', {
   correct: 'Correct!',
 });
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
-import useGame from '@/frontend/hooks/useGame';
-import useRole from '@/frontend/hooks/useRole';
-import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 
 export default function BasicMiddlePane({ baseQuestion }) {
   return (

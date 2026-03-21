@@ -1,21 +1,18 @@
-import { revealQuoteElement } from '@/backend/services/question/quote/actions';
-
-import { topicToEmoji } from '@/backend/models/Topic';
-import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { GameStatus } from '@/backend/models/games/GameStatus';
+import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
+import { topicToEmoji } from '@/backend/models/Topic';
 import { ParticipantRole } from '@/backend/models/users/Participant';
-
+import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
+import { revealQuoteElement } from '@/backend/services/question/quote/actions';
 import { isObjectEmpty } from '@/backend/utils/objects';
-import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
+import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
-
+import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
-import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
-import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 
 export default function QuoteMiddlePane({ baseQuestion }) {
   return (

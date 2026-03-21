@@ -1,19 +1,14 @@
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-
-import { rankingToEmoji } from '@/frontend/helpers/emojis';
-
-import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-
-import { useIntl } from 'react-intl';
-
-import { scoreboardMessages } from '@/frontend/components/scores/scoreboardUtils';
-
 import { Fragment } from 'react';
 
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import clsx from 'clsx';
+import { useIntl } from 'react-intl';
+
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { scoreboardMessages } from '@/frontend/components/scores/scoreboardUtils';
+import { rankingToEmoji } from '@/frontend/helpers/emojis';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 export default function RoundScoreboard({ roundScores, teams }) {
   const intl = useIntl();

@@ -1,16 +1,26 @@
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { BlindtestQuestion, BlindtestType } from '@/backend/models/questions/Blindtest';
+import React, { useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
-import { submitQuestion, editQuestion } from '@/backend/services/create-question/actions';
-import { addQuestionToRound } from '@/backend/services/edit-game/actions';
-
-import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
-import { topicSchema } from '@/frontend/helpers/forms/topics';
-import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
-
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
+import { Form, Formik } from 'formik';
 import { useIntl } from 'react-intl';
+/* Validation  */
+import * as Yup from 'yup';
+
+import { BlindtestQuestion, BlindtestType } from '@/backend/models/questions/Blindtest';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { editQuestion, submitQuestion } from '@/backend/services/create-question/actions';
+import { addQuestionToRound } from '@/backend/services/edit-game/actions';
+import SelectLanguage from '@/frontend/components/common/SelectLanguage';
+import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
+import { MySelect, MyTextInput } from '@/frontend/components/common/StyledFormComponents';
+import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
+import { UploadAudio, UploadImage } from '@/frontend/components/common/UploadFile';
+import { audioFileSchema, getFileFromRef, imageFileSchema } from '@/frontend/helpers/forms/files';
+import { stringSchema } from '@/frontend/helpers/forms/forms';
+import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
+import { topicSchema } from '@/frontend/helpers/forms/topics';
+import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.forms.submitQuestion.blindtest', {
@@ -21,20 +31,6 @@ const messages = defineMessages('frontend.forms.submitQuestion.blindtest', {
   answerAuthor: 'Author of the audio',
 });
 
-import { stringSchema } from '@/frontend/helpers/forms/forms';
-import { getFileFromRef, audioFileSchema, imageFileSchema } from '@/frontend/helpers/forms/files';
-
-import { MyTextInput, MySelect } from '@/frontend/components/common/StyledFormComponents';
-import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
-import { UploadAudio, UploadImage } from '@/frontend/components/common/UploadFile';
-import SelectLanguage from '@/frontend/components/common/SelectLanguage';
-import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
-
-import { useRouter } from 'next/navigation';
-
-import React, { useRef } from 'react';
-import { Form, Formik } from 'formik';
-
 const BLINDTEST_TITLE_EXAMPLE = 'Film';
 const BLINDTEST_ANSWER_TITLE_EXAMPLE = 'Can You Hear The Music';
 const BLINDTEST_ANSWER_SOURCE_EXAMPLE = 'Oppenheimer';
@@ -42,8 +38,6 @@ const BLINDTEST_ANSWER_AUTHOR_EXAMPLE = 'Ludwig Göransson';
 
 const QUESTION_TYPE = QuestionType.BLINDTEST;
 
-/* Validation  */
-import * as Yup from 'yup';
 const subtypeSchema = () =>
   Yup.string().oneOf(BlindtestType.getAllTypes(), 'Invalid question subtype.').required('Required.');
 

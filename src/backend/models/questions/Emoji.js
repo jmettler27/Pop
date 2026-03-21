@@ -1,6 +1,6 @@
 import { BuzzerQuestion, GameBuzzerQuestion } from '@/backend/models/questions/Buzzer';
-import { emojiCount, onlyEmojis } from '@/frontend/helpers/emojis';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { emojiCount, onlyEmojis } from '@/frontend/helpers/emojis';
 
 // Emoji questions
 export class EmojiQuestion extends BuzzerQuestion {

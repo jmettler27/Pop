@@ -1,27 +1,9 @@
-import { QuestionType, questionTypeToEmoji } from '@/backend/models/questions/QuestionType';
-
-import { addQuestionToRound } from '@/backend/services/edit-game/actions';
-
-import { useState, useCallback } from 'react';
-
+import { useCallback, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 
-import globalMessages from '@/i18n/globalMessages';
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-
-const messages = defineMessages('frontend.gameEditor.AddNewQuestion', {
-  searchExisting: 'Search for an existing question',
-  addToRoundDialogTitle: 'Add this question to the round?',
-  addToRound: 'Add',
-});
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import { CardContent, Card } from '@/frontend/components/card';
-import { QuestionCard } from '@/frontend/components/common/QuestionCard';
-import { SearchQuestionDataGrid } from '@/frontend/components/common/QuestionDataGrid';
-
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import CancelIcon from '@mui/icons-material/Cancel';
 import {
   Button,
   Collapse,
@@ -37,9 +19,38 @@ import {
   Menu,
   MenuItem,
 } from '@mui/material';
+import { useSession } from 'next-auth/react';
+import { useIntl } from 'react-intl';
 
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import CancelIcon from '@mui/icons-material/Cancel';
+import { QuestionType, questionTypeToEmoji } from '@/backend/models/questions/QuestionType';
+// New question
+import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
+import { addQuestionToRound } from '@/backend/services/edit-game/actions';
+import { Card, CardContent } from '@/frontend/components/card';
+import { QuestionCard } from '@/frontend/components/common/QuestionCard';
+import { SearchQuestionDataGrid } from '@/frontend/components/common/QuestionDataGrid';
+import SubmitBasicQuestionForm from '@/frontend/components/question-forms/SubmitBasicQuestionForm';
+import SubmitBlindtestQuestionForm from '@/frontend/components/question-forms/SubmitBlindtestQuestionForm';
+import SubmitEmojiQuestionForm from '@/frontend/components/question-forms/SubmitEmojiQuestionForm';
+import SubmitEnumerationQuestionForm from '@/frontend/components/question-forms/SubmitEnumerationQuestionForm';
+import SubmitImageQuestionForm from '@/frontend/components/question-forms/SubmitImageQuestionForm';
+import SubmitLabellingQuestionForm from '@/frontend/components/question-forms/SubmitLabellingQuestionForm';
+import SubmitMatchingQuestionForm from '@/frontend/components/question-forms/SubmitMatchingQuestionForm';
+import SubmitMCQForm from '@/frontend/components/question-forms/SubmitMCQQuestionForm';
+import SubmitNaguiQuestionForm from '@/frontend/components/question-forms/SubmitNaguiQuestionForm';
+import SubmitOddOneOutQuestionForm from '@/frontend/components/question-forms/SubmitOddOneOutQuestionForm';
+import SubmitProgressiveCluesQuestionForm from '@/frontend/components/question-forms/SubmitProgressiveCluesQuestionForm';
+import SubmitQuoteQuestionForm from '@/frontend/components/question-forms/SubmitQuoteQuestionForm';
+import SubmitReorderingQuestionForm from '@/frontend/components/question-forms/SubmitReorderingQuestionForm';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
+
+const messages = defineMessages('frontend.gameEditor.AddNewQuestion', {
+  searchExisting: 'Search for an existing question',
+  addToRoundDialogTitle: 'Add this question to the round?',
+  addToRound: 'Add',
+});
 
 const CREATE_NEW_QUESTION_EMOJI = '🆕';
 const SEARCH_EXISTING_QUESTION_EMOJI = '🔍';
@@ -257,26 +268,6 @@ function SelectQuestionTypeButton({ type, handleListItemClick }) {
     </>
   );
 }
-
-// New question
-import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
-
-import SubmitBasicQuestionForm from '@/frontend/components/question-forms/SubmitBasicQuestionForm';
-import SubmitBlindtestQuestionForm from '@/frontend/components/question-forms/SubmitBlindtestQuestionForm';
-import SubmitEmojiQuestionForm from '@/frontend/components/question-forms/SubmitEmojiQuestionForm';
-import SubmitEnumerationQuestionForm from '@/frontend/components/question-forms/SubmitEnumerationQuestionForm';
-import SubmitImageQuestionForm from '@/frontend/components/question-forms/SubmitImageQuestionForm';
-import SubmitLabellingQuestionForm from '@/frontend/components/question-forms/SubmitLabellingQuestionForm';
-import SubmitMatchingQuestionForm from '@/frontend/components/question-forms/SubmitMatchingQuestionForm';
-import SubmitMCQForm from '@/frontend/components/question-forms/SubmitMCQQuestionForm';
-import SubmitNaguiQuestionForm from '@/frontend/components/question-forms/SubmitNaguiQuestionForm';
-import SubmitOddOneOutQuestionForm from '@/frontend/components/question-forms/SubmitOddOneOutQuestionForm';
-import SubmitProgressiveCluesQuestionForm from '@/frontend/components/question-forms/SubmitProgressiveCluesQuestionForm';
-import SubmitQuoteQuestionForm from '@/frontend/components/question-forms/SubmitQuoteQuestionForm';
-import SubmitReorderingQuestionForm from '@/frontend/components/question-forms/SubmitReorderingQuestionForm';
-
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
   const { id: gameId } = useParams();

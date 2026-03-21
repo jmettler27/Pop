@@ -1,12 +1,13 @@
-import { QuoteQuestion } from '@/backend/models/questions/Quote';
-import GameQuestionService from '@/backend/services/question/GameQuestionService';
 import { runTransaction, serverTimestamp } from 'firebase/firestore';
-import { PlayerStatus } from '@/backend/models/users/Player';
+
 import { firestore } from '@/backend/firebase/firebase';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { isObjectEmpty } from '@/backend/utils/objects';
-import GameBuzzerQuestionService from '@/backend/services/question/GameBuzzerQuestionService';
+import { QuoteQuestion } from '@/backend/models/questions/Quote';
 import { TimerStatus } from '@/backend/models/Timer';
+import { PlayerStatus } from '@/backend/models/users/Player';
+import GameBuzzerQuestionService from '@/backend/services/question/GameBuzzerQuestionService';
+import GameQuestionService from '@/backend/services/question/GameQuestionService';
+import { isObjectEmpty } from '@/backend/utils/objects';
 
 export default class GameQuoteQuestionService extends GameBuzzerQuestionService {
   constructor(gameId, roundId) {

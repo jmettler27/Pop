@@ -1,16 +1,14 @@
-import { launchGame } from '@/backend/services/edit-game/actions';
-
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
-import { useState } from 'react';
-
-import globalMessages from '@/i18n/globalMessages';
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { useIntl } from 'react-intl';
+
+import { launchGame } from '@/backend/services/edit-game/actions';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.gameEditor.LaunchGameButton', {
   launchGame: 'Launch game',

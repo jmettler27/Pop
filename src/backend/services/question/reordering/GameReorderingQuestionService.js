@@ -1,8 +1,9 @@
-import GameQuestionService from '@/backend/services/question/GameQuestionService';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { runTransaction, Timestamp, increment } from 'firebase/firestore';
+import { increment, runTransaction, Timestamp } from 'firebase/firestore';
+
 import { firestore } from '@/backend/firebase/firebase';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { PlayerStatus } from '@/backend/models/users/Player';
+import GameQuestionService from '@/backend/services/question/GameQuestionService';
 
 export default class GameReorderingQuestionService extends GameQuestionService {
   constructor(gameId, roundId) {

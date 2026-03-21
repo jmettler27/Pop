@@ -1,16 +1,17 @@
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
 import {
-  Chart as ChartJS,
   CategoryScale,
+  Chart as ChartJS,
+  Legend,
   LinearScale,
-  PointElement,
   LineElement,
+  PointElement,
   Title,
   Tooltip,
-  Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { useIntl } from 'react-intl';
+
+import defineMessages from '@/utils/defineMessages';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 

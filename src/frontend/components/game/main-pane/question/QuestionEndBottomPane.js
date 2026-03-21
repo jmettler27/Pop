@@ -1,19 +1,16 @@
+import FastForwardIcon from '@mui/icons-material/FastForward';
+import ScoreboardIcon from '@mui/icons-material/Scoreboard';
+import { Button } from '@mui/material';
+import { useIntl } from 'react-intl';
+
 import { ParticipantRole } from '@/backend/models/users/Participant';
-
 import { handleQuestionEnd } from '@/backend/services/round/actions';
-
+import ReadyPlayerController from '@/frontend/components/game/main-pane/ReadyPlayerController';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
-
-import { Button } from '@mui/material';
-import FastForwardIcon from '@mui/icons-material/FastForward';
-import ScoreboardIcon from '@mui/icons-material/Scoreboard';
-import ReadyPlayerController from '@/frontend/components/game/main-pane/ReadyPlayerController';
 
 const messages = defineMessages('frontend.game.bottom.QuestionEndBottomPane', {
   endRound: 'End the round',

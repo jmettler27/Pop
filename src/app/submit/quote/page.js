@@ -1,12 +1,12 @@
 'use client';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { redirect } from 'next/navigation';
 
+import { useSession } from 'next-auth/react';
+
+import { QuestionType } from '@/backend/models/questions/QuestionType';
 import QuestionFormHeader from '@/frontend/components/common/QuestionFormHeader';
 import SubmitQuoteQuestionForm from '@/frontend/components/question-forms/SubmitQuoteQuestionForm';
-
-import { redirect } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 
 const QUESTION_TYPE = QuestionType.QUOTE;
 

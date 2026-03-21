@@ -5,5 +5,25 @@
   "printWidth": 120,
   "tabWidth": 2,
   "bracketSpacing": true,
-  "arrowParens": "always"
+  "arrowParens": "always",
+  "plugins": [
+    "@ianvs/prettier-plugin-sort-imports"
+  ],
+  "importOrder": [
+    "^react$",
+    "^react-dom$",
+    "^next(/.*)?$",
+    "",
+    "<THIRD_PARTY_MODULES>",
+    "",
+    "^@/(.*)$",
+    "",
+    "^[.]",
+    "",
+    ".css$"
+  ],
+  "importOrderParserPlugins": [
+    "jsx"
+  ],
+  "importOrderCaseSensitive": false
 }

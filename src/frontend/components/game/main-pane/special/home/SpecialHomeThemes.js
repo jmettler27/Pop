@@ -1,16 +1,14 @@
-import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { doc, collection } from 'firebase/firestore';
-import { useDocumentData, useCollectionOnce } from 'react-firebase-hooks/firestore';
-
-import useTeam from '@/frontend/hooks/useTeam';
-
-import SpecialHomeThemeAvatar from '@/frontend/components/game/main-pane/special/home/SpecialHomeThemeAvatar';
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-
 import { useParams } from 'next/navigation';
 
-import { Grid, Box } from '@mui/material';
+import { Box, Grid } from '@mui/material';
+import { collection, doc } from 'firebase/firestore';
+import { useCollectionOnce, useDocumentData } from 'react-firebase-hooks/firestore';
+
+import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
+import SpecialHomeThemeAvatar from '@/frontend/components/game/main-pane/special/home/SpecialHomeThemeAvatar';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import useTeam from '@/frontend/hooks/useTeam';
 
 export default function SpecialHomeThemes({ round }) {
   const { id: gameId } = useParams();

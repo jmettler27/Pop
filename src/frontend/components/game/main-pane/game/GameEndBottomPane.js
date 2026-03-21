@@ -1,4 +1,5 @@
 import { useIntl } from 'react-intl';
+
 import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.GameEndBottomPane', {

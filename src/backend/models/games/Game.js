@@ -1,7 +1,6 @@
-import { GameType, isValidGameType } from '@/backend/models/games/GameType';
 import { GameStatus } from '@/backend/models/games/GameStatus';
+import { GameType, isValidGameType } from '@/backend/models/games/GameType';
 import { createScorePolicy, isValidScorePolicyType } from '@/backend/models/ScorePolicy';
-
 import { isArray } from '@/backend/utils/arrays';
 
 export default class Game {

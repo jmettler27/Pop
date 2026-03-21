@@ -1,17 +1,14 @@
-import { incrementValidItems } from '@/backend/services/question/enumeration/actions';
+import PlusOneIcon from '@mui/icons-material/PlusOne';
+import { CircularProgress, IconButton, Tooltip } from '@mui/material';
+import { useIntl } from 'react-intl';
 
 import { TimerStatus } from '@/backend/models/Timer';
-
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-
-import useGame from '@/frontend/hooks/useGame';
-import useUser from '@/frontend/hooks/useUser';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import { incrementValidItems } from '@/backend/services/question/enumeration/actions';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import { CircularProgress, IconButton, Tooltip } from '@mui/material';
-import PlusOneIcon from '@mui/icons-material/PlusOne';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useUser from '@/frontend/hooks/useUser';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.ValidateChallengerCitationButton', {
   validateCitation: 'Validate citation',

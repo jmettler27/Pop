@@ -4,10 +4,10 @@ import { useState } from 'react';
 
 import { List, ListItemButton, Typography } from '@mui/material';
 
-import useGame from '@/frontend/hooks/useGame';
 import { GameStatus } from '@/backend/models/games/GameStatus';
+import useGame from '@/frontend/hooks/useGame';
 
-import { ReorderingQuestionHeader, ReorderingItemAccordion } from './ReorderingCommon';
+import { ReorderingItemAccordion, ReorderingQuestionHeader } from './ReorderingCommon';
 
 export default function ReorderingSpectatorPane({ baseQuestion, randomMapping }) {
   const game = useGame();

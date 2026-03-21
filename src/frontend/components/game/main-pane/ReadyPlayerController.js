@@ -1,20 +1,20 @@
 import { useMemo } from 'react';
+import { useParams } from 'next/navigation';
 
-import { setPlayerReady } from '@/backend/services/player/actions';
-
-import { getRandomElement } from '@/backend/utils/arrays';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
+import { Button, CircularProgress } from '@mui/material';
+import { useIntl } from 'react-intl';
 
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { ParticipantRole } from '@/backend/models/users/Participant';
-
+import { PlayerStatus } from '@/backend/models/users/Player';
+import { setPlayerReady } from '@/backend/services/player/actions';
+import { getRandomElement } from '@/backend/utils/arrays';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useUser from '@/frontend/hooks/useUser';
-
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 import fmt, { keyChunks } from '@/utils/fmt';
 
@@ -68,12 +68,6 @@ const READY_TEXT_KEYS = [
   'readyText19',
   'readyText20',
 ];
-
-import { useParams } from 'next/navigation';
-
-import { Button, CircularProgress } from '@mui/material';
-import HowToRegIcon from '@mui/icons-material/HowToReg';
-import { PlayerStatus } from '@/backend/models/users/Player';
 
 export default function ReadyPlayerController({ isLastQuestion }) {
   const { id: gameId } = useParams();

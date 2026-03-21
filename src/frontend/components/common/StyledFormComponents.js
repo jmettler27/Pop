@@ -1,19 +1,21 @@
 import React from 'react';
-import { Field, useField, useFormikContext } from 'formik';
 
 import styled from '@emotion/styled';
+import { Field, useField, useFormikContext } from 'formik';
+
 import '@/app/submit/styles.css';
 import '@/app/submit/styles-custom.css';
 
+import { useIntl } from 'react-intl';
+
+import { NumberInput } from '@/frontend/components/common/NumberInput';
+import { numEmojisIndicator } from '@/frontend/helpers/forms/emojis';
 import {
-  requiredIndicator,
-  requiredFieldIndicator,
   numCharsIndicator,
+  requiredFieldIndicator,
+  requiredIndicator,
   requiredIndicatorString,
 } from '@/frontend/helpers/forms/forms';
-import { numEmojisIndicator } from '@/frontend/helpers/forms/emojis';
-
-import { useIntl } from 'react-intl';
 
 export function MyTextInput({ label, maxLength, validationSchema, fieldType = 'string', onlyEmojis, ...props }) {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
@@ -94,7 +96,6 @@ export function MySelect({ label, validationSchema, ...props }) {
   );
 }
 
-import { NumberInput } from '@/frontend/components/common/NumberInput';
 export function MyNumberInput({ label, name, min, max, ...props }) {
   const intl = useIntl();
   const formik = useFormikContext();

@@ -1,13 +1,11 @@
-import { ParticipantRole } from '@/backend/models/users/Participant';
-
+import { CircularProgress } from '@mui/material';
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import useRole from '@/frontend/hooks/useRole';
 
 import NaguiOptionFactory from '@/backend/models/questions/NaguiOptionFactory';
-import { CircularProgress } from '@mui/material';
+import { ParticipantRole } from '@/backend/models/users/Participant';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.NaguiPlayerOptionHelperText', {
   hasChosen: 'has chosen',

@@ -1,29 +1,25 @@
+import React from 'react';
+
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import GroupIcon from '@mui/icons-material/Group';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import { Box, Chip, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
+import { useSession } from 'next-auth/react';
+import { useIntl } from 'react-intl';
+
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import { gameTypeToEmoji } from '@/backend/models/games/GameType';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
-
-import { gameTypeToEmoji } from '@/backend/models/games/GameType';
-import { timestampToDate } from '@/frontend/helpers/time';
-import { localeToEmoji } from '@/frontend/helpers/locales';
-
-import React from 'react';
-import { useIntl } from 'react-intl';
-
-import { useSession } from 'next-auth/react';
-
-import { CardTitle, CardHeader, CardContent, Card } from '@/frontend/components/card';
-import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/card';
 import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from '@/frontend/components/home/GameAvatars';
-
-import { Box, Chip, Skeleton, Tooltip, Typography } from '@mui/material';
-import { IconButton } from '@mui/material';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-import GroupIcon from '@mui/icons-material/Group';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import defineMessages from '@/utils/defineMessages';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { localeToEmoji } from '@/frontend/helpers/locales';
+import { timestampToDate } from '@/frontend/helpers/time';
 import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.home.EndedGames', {
   title: 'Ended games',

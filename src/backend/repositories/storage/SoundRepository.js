@@ -1,7 +1,8 @@
-import StorageRepository from '@/backend/repositories/storage/StorageRepository';
-import { listAll, getDownloadURL } from 'firebase/storage';
 import { runTransaction } from 'firebase/firestore';
+import { getDownloadURL, listAll } from 'firebase/storage';
+
 import { firestore } from '@/backend/firebase/firebase';
+import StorageRepository from '@/backend/repositories/storage/StorageRepository';
 
 /**
  * Repository for sounds

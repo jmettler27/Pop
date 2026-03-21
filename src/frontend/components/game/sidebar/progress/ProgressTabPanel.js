@@ -1,18 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 
-import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
+import { Box, CircularProgress, Tab, Tabs } from '@mui/material';
 import { doc } from 'firebase/firestore';
 import { useDocument } from 'react-firebase-hooks/firestore';
+import { useIntl } from 'react-intl';
 
-import { Tabs, Tab, Box, CircularProgress } from '@mui/material';
-
+import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
+import { GameStatus } from '@/backend/models/games/GameStatus';
 import GlobalProgressTabPanel from '@/frontend/components/game/sidebar/progress/GlobalProgressTabPanel';
 import RoundProgressTabPanel from '@/frontend/components/game/sidebar/progress/round/RoundProgressTabPanel';
-
-import { useParams } from 'next/navigation';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-
-import { useIntl } from 'react-intl';
 import globalMessages from '@/i18n/globalMessages';
 
 export default function ProgressTabPanel({}) {

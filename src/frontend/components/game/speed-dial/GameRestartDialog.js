@@ -1,14 +1,13 @@
-import { Button, DialogContentText } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-
+import { Button, DialogContentText } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
+
 import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.speedDial.GameRestartDialog', {
   dialogTitle: 'Are you sure to restart the game?',

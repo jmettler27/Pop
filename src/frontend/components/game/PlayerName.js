@@ -1,15 +1,13 @@
-import { ParticipantRole } from '@/backend/models/users/Participant';
-
 import { useEffect, useState } from 'react';
-
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import useRole from '@/frontend/hooks/useRole';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
-
 import { useParams } from 'next/navigation';
 
-import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { doc, getDoc } from 'firebase/firestore';
+
+import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
+import { ParticipantRole } from '@/backend/models/users/Participant';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
 
 export default function PlayerName({ playerId, teamColor = true }) {
   const { id: gameId } = useParams();

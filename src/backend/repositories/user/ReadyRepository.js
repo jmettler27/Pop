@@ -1,6 +1,6 @@
-import FirebaseDocumentRepository from '@/backend/repositories/FirebaseDocumentRepository';
-
 import { increment } from 'firebase/firestore';
+
+import FirebaseDocumentRepository from '@/backend/repositories/FirebaseDocumentRepository';
 
 export default class ReadyRepository extends FirebaseDocumentRepository {
   constructor(gameId) {

@@ -1,3 +1,5 @@
+import { useIntl } from 'react-intl';
+
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { ParticipantRole } from '@/backend/models/users/Participant';
 import useGame from '@/frontend/hooks/useGame';
@@ -6,7 +8,6 @@ import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import defineMessages from '@/utils/defineMessages';
 import fmt, { keyChunks } from '@/utils/fmt';
-import { useIntl } from 'react-intl';
 
 const messages = defineMessages('frontend.game.GameChooserTeamAnnouncement', {
   toPlay: 'play',

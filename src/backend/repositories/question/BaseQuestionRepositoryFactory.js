@@ -1,5 +1,4 @@
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-
 import BaseBasicQuestionRepository from '@/backend/repositories/question/BaseBasicQuestionRepository';
 import BaseBlindtestQuestionRepository from '@/backend/repositories/question/BaseBlindtestQuestionRepository';
 import BaseEmojiQuestionRepository from '@/backend/repositories/question/BaseEmojiQuestionRepository';

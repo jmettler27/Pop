@@ -1,32 +1,27 @@
-import { selectChoice } from '@/backend/services/question/nagui/actions';
-
-import GameNaguiQuestionRepository from '@/backend/repositories/question/GameNaguiQuestionRepository';
-
-import { NaguiQuestion, HideNaguiOption, SquareNaguiOption, DuoNaguiOption } from '@/backend/models/questions/Nagui';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { ParticipantRole } from '@/backend/models/users/Participant';
-
-import { shuffleIndices } from '@/backend/utils/arrays';
-
-import useGame from '@/frontend/hooks/useGame';
-import useTeam from '@/frontend/hooks/useTeam';
-import useUser from '@/frontend/hooks/useUser';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import useRole from '@/frontend/hooks/useRole';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-import NoteButton from '@/frontend/components/game/NoteButton';
-
-import { IMAGES } from '@/frontend/constants/images';
-
 import { useMemo } from 'react';
-
-import { Avatar, Badge, Button, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-
-import { clsx } from 'clsx';
+import Image from 'next/image';
 
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import { Avatar, Badge, Button, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { clsx } from 'clsx';
+
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import { DuoNaguiOption, HideNaguiOption, NaguiQuestion, SquareNaguiOption } from '@/backend/models/questions/Nagui';
+import { ParticipantRole } from '@/backend/models/users/Participant';
+import GameNaguiQuestionRepository from '@/backend/repositories/question/GameNaguiQuestionRepository';
+import { selectChoice } from '@/backend/services/question/nagui/actions';
+import { shuffleIndices } from '@/backend/utils/arrays';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
+import NoteButton from '@/frontend/components/game/NoteButton';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { IMAGES } from '@/frontend/constants/images';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+import useTeam from '@/frontend/hooks/useTeam';
+import useUser from '@/frontend/hooks/useUser';
 
 export default function NaguiMainContent({ baseQuestion }) {
   const title = baseQuestion.title;
@@ -48,8 +43,6 @@ export default function NaguiMainContent({ baseQuestion }) {
     </div>
   );
 }
-
-import Image from 'next/image';
 
 function NaguiAnswerImage({ correct }) {
   if (correct === true) {
@@ -117,9 +110,6 @@ const choiceIsDisabled = (choiceIdx, myRole, isChooser, option, duoIdx, answerId
   if (option === SquareNaguiOption.TYPE) return false;
   return true;
 };
-
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 function ActiveNaguiChoices({ baseQuestion, gameQuestion, randomization }) {
   const game = useGame();

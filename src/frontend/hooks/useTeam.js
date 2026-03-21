@@ -1,5 +1,6 @@
-import { TeamContext } from '@/frontend/contexts/TeamContext';
 import { useContext } from 'react';
+
+import { TeamContext } from '@/frontend/contexts/TeamContext';
 
 const useTeam = () => {
   const team = useContext(TeamContext);

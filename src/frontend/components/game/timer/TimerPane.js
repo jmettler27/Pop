@@ -1,13 +1,22 @@
-import { startGame } from '@/backend/services/game/actions';
-import { handleQuestionEnd } from '@/backend/services/round/actions';
-import { handleCountdownEnd } from '@/backend/services/question/actions';
-import { startRound } from '@/backend/services/round/actions';
+import { useCallback, useRef } from 'react';
 
-import { ParticipantRole } from '@/backend/models/users/Participant';
+import { CircularProgress } from '@mui/material';
+import { useObject } from 'react-firebase-hooks/database';
+import { useIntl } from 'react-intl';
 
 import { SERVER_TIME_OFFSET_REF } from '@/backend/firebase/database';
-
-import { useIntl } from 'react-intl';
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import { ParticipantRole } from '@/backend/models/users/Participant';
+import { startGame } from '@/backend/services/game/actions';
+import { handleCountdownEnd } from '@/backend/services/question/actions';
+import { handleQuestionEnd, startRound } from '@/backend/services/round/actions';
+import AuthorizePlayersSwitch from '@/frontend/components/game/main-pane/AuthorizePlayersSwitch';
+import OrganizerTimerController from '@/frontend/components/game/timer/OrganizerTimerController';
+import Timer from '@/frontend/components/game/timer/Timer';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.timer.TimerPane', {
@@ -16,22 +25,6 @@ const messages = defineMessages('frontend.game.timer.TimerPane', {
   roundEndsIn: 'End of round in',
   nextQuestionIn: 'Next question in',
 });
-
-import useGame from '@/frontend/hooks/useGame';
-import useUser from '@/frontend/hooks/useUser';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import useRole from '@/frontend/hooks/useRole';
-
-import Timer from '@/frontend/components/game/timer/Timer';
-import OrganizerTimerController from '@/frontend/components/game/timer/OrganizerTimerController';
-import AuthorizePlayersSwitch from '@/frontend/components/game/main-pane/AuthorizePlayersSwitch';
-
-import { useRef, useCallback } from 'react';
-
-import { useObject } from 'react-firebase-hooks/database';
-
-import { CircularProgress } from '@mui/material';
-import { GameStatus } from '@/backend/models/games/GameStatus';
 
 export default function TimerPane() {
   const myRole = useRole();

@@ -1,14 +1,11 @@
 import { ParticipantRole } from '@/backend/models/users/Participant';
-
-import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import useRole from '@/frontend/hooks/useRole';
-
+import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
 import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import BasicQuestionOrganizerController from '@/frontend/components/game/main-pane/question/basic/BasicQuestionOrganizerController';
-
-import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
 
 export default function BasicQuestionBottomPane({}) {
   const { chooserRepo } = useGameRepositories();

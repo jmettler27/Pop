@@ -1,17 +1,15 @@
-import { startTheme } from '@/backend/services/round/special/actions';
+import Image from 'next/image';
 
-import { ParticipantRole } from '@/backend/models/users/Participant';
-
-import { QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
+import { Badge, Button, CircularProgress, Tooltip } from '@mui/material';
 import { doc } from 'firebase/firestore';
 import { useDocument } from 'react-firebase-hooks/firestore';
 
+import { QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
+import { ParticipantRole } from '@/backend/models/users/Participant';
+import { startTheme } from '@/backend/services/round/special/actions';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
-
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import { Button, Tooltip, CircularProgress, Badge } from '@mui/material';
 
 export default function SpecialHomeThemeAvatar({ gameTheme, isChooser }) {
   const game = useGame();
@@ -69,8 +67,6 @@ export default function SpecialHomeThemeAvatar({ gameTheme, isChooser }) {
     </Tooltip>
   );
 }
-
-import Image from 'next/image';
 
 const ThemeImage = ({ theme }) => (
   <Image src={theme.details.image} alt={theme.details.title} width={100} height={100} />

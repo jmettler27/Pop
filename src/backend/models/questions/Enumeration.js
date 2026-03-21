@@ -1,7 +1,7 @@
 import { BaseQuestion, GameQuestion } from '@/backend/models/questions/Question';
-import { isArray } from '@/backend/utils/arrays';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { Timer } from '@/backend/models/Timer';
+import { isArray } from '@/backend/utils/arrays';
 
 export class EnumerationQuestion extends BaseQuestion {
   static TITLE_MAX_LENGTH = 75;

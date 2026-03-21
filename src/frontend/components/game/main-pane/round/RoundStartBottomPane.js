@@ -1,13 +1,15 @@
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { Button } from '@mui/material';
+import { useIntl } from 'react-intl';
+
 import { ParticipantRole } from '@/backend/models/users/Participant';
 import { startRound } from '@/backend/services/round/actions';
-
+import ReadyPlayerController from '@/frontend/components/game/main-pane/ReadyPlayerController';
+import TimerPane from '@/frontend/components/game/timer/TimerPane';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import TimerPane from '@/frontend/components/game/timer/TimerPane';
-import ReadyPlayerController from '@/frontend/components/game/main-pane/ReadyPlayerController';
-
-import { Button } from '@mui/material';
+import defineMessages from '@/utils/defineMessages';
 
 export default function RoundStartBottomPane({}) {
   return (
@@ -33,10 +35,6 @@ function RoundStartController({}) {
     </div>
   );
 }
-
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.RoundStartBottomPane', {
   launchFirstQuestion: 'Launch the first question',

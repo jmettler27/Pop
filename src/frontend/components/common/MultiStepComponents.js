@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Form, Formik } from 'formik';
 
-import IconButton from '@mui/material/IconButton';
-import Button from '@mui/material/Button';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import SendIcon from '@mui/icons-material/Send';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import { Form, Formik } from 'formik';
+import { useIntl } from 'react-intl';
 
 import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
-import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.forms.MultiStepComponents', {

@@ -1,5 +1,6 @@
-import { RoleContext } from '@/frontend/contexts/RoleContext';
 import { useContext } from 'react';
+
+import { RoleContext } from '@/frontend/contexts/RoleContext';
 
 const useRole = () => {
   const role = useContext(RoleContext);

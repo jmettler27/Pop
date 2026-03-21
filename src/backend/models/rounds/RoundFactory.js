@@ -1,5 +1,3 @@
-import { RoundType } from '@/backend/models/rounds/RoundType';
-
 import { BasicRound } from '@/backend/models/rounds/Basic';
 import { BlindtestRound } from '@/backend/models/rounds/Blindtest';
 import { EmojiRound } from '@/backend/models/rounds/Emoji';
@@ -14,6 +12,7 @@ import { OddOneOutRound } from '@/backend/models/rounds/OddOneOut';
 import { ProgressiveCluesRound } from '@/backend/models/rounds/ProgressiveClues';
 import { QuoteRound } from '@/backend/models/rounds/Quote';
 import { ReorderingRound } from '@/backend/models/rounds/Reordering';
+import { RoundType } from '@/backend/models/rounds/RoundType';
 import { SpecialRound } from '@/backend/models/rounds/Special';
 
 export default class RoundFactory {

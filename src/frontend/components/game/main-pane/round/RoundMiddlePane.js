@@ -1,19 +1,15 @@
-import { GameStatus } from '@/backend/models/games/GameStatus';
-
-import { RoundTypeIcon } from '@/frontend/helpers/question_types';
-
-import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import { useParams } from 'next/navigation';
 
 import { useIntl } from 'react-intl';
 
-import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { GameStatus } from '@/backend/models/games/GameStatus';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
-import RoundStartBody from '@/frontend/components/game/main-pane/round/RoundStartBody';
 import RoundEndBody from '@/frontend/components/game/main-pane/round/RoundEndBody';
-
-import { useParams } from 'next/navigation';
-
+import RoundStartBody from '@/frontend/components/game/main-pane/round/RoundStartBody';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { RoundTypeIcon } from '@/frontend/helpers/question_types';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import globalMessages from '@/i18n/globalMessages';
 
 export default function RoundMiddlePane() {

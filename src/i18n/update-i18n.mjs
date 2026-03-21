@@ -14,7 +14,7 @@
  *   wrapper that prefixes IDs — not parseable by the upstream CLI extractor.
  */
 
-import { readFileSync, writeFileSync, readdirSync, statSync } from 'fs';
+import { readdirSync, readFileSync, statSync, writeFileSync } from 'fs';
 import { join, resolve } from 'path';
 
 // ---------------------------------------------------------------------------

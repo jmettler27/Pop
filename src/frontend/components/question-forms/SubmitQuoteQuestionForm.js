@@ -1,24 +1,35 @@
-import { submitQuestion, editQuestion } from '@/backend/services/create-question/actions';
-import { addQuestionToRound } from '@/backend/services/edit-game/actions';
+import React from 'react';
+import { useRouter } from 'next/navigation';
+
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Button, IconButton } from '@mui/material';
+import Box from '@mui/system/Box';
+import { Field, FieldArray, useField, useFormikContext } from 'formik';
+import { useIntl } from 'react-intl';
+import * as Yup from 'yup';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import {
-  QuoteQuestion,
   QuoteAuthorElement,
   QuotePartElement,
+  QuoteQuestion,
   QuoteSourceElement,
 } from '@/backend/models/questions/Quote';
-
+import { editQuestion, submitQuestion } from '@/backend/services/create-question/actions';
+import { addQuestionToRound } from '@/backend/services/edit-game/actions';
+import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';
+import SelectLanguage from '@/frontend/components/common/SelectLanguage';
+import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
+import { MyTextInput, StyledErrorMessage } from '@/frontend/components/common/StyledFormComponents';
+import { stringSchema } from '@/frontend/helpers/forms/forms';
+import { topicSchema } from '@/frontend/helpers/forms/topics';
+import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
 import { replaceAllNonSpace, replaceSubstrings } from '@/frontend/helpers/strings';
-
-import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
-import { topicSchema } from '@/frontend/helpers/forms/topics';
-import { stringSchema } from '@/frontend/helpers/forms/forms';
-
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.forms.submitQuestion.quote', {
   quoteSource: 'Source of the quote',
@@ -30,24 +41,6 @@ const messages = defineMessages('frontend.forms.submitQuestion.quote', {
   addPart: 'Add part',
   part: 'Part',
 });
-
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import { MyTextInput, StyledErrorMessage } from '@/frontend/components/common/StyledFormComponents';
-import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';
-import SelectLanguage from '@/frontend/components/common/SelectLanguage';
-import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
-
-import { useRouter } from 'next/navigation';
-
-import React from 'react';
-import { Field, FieldArray, useField, useFormikContext } from 'formik';
-import * as Yup from 'yup';
-
-import { Button, IconButton } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
-import Box from '@mui/system/Box';
 
 const QUESTION_TYPE = QuestionType.QUOTE;
 

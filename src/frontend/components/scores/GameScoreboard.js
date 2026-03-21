@@ -1,10 +1,16 @@
 import { Fragment } from 'react';
 
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import RemoveIcon from '@mui/icons-material/Remove';
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useIntl } from 'react-intl';
 
 import { scoreboardMessages } from '@/frontend/components/scores/scoreboardUtils';
 
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import '@/frontend/components/scores/RankDifferenceIcon.css';
+
+import clsx from 'clsx';
 
 export default function GameScoreboard({ roundScores, teams }) {
   const intl = useIntl();
@@ -59,13 +65,6 @@ export default function GameScoreboard({ roundScores, teams }) {
     </TableContainer>
   );
 }
-
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import RemoveIcon from '@mui/icons-material/Remove';
-
-import '@/frontend/components/scores/RankDifferenceIcon.css';
-import clsx from 'clsx';
 
 function RankDifferenceIcon({ rankDiff }) {
   let icon = null;

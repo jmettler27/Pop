@@ -1,19 +1,18 @@
-import useGame from '@/frontend/hooks/useGame';
-
-import BuzzerBottomPane from '@/frontend/components/game/main-pane/question/buzzer/BuzzerBottomPane';
-import QuoteBottomPane from '@/frontend/components/game/main-pane/question/quote/QuoteBottomPane';
-import MatchingBottomPane from '@/frontend/components/game/main-pane/question/matching/MatchingBottomPane';
-import EnumerationBottomPane from '@/frontend/components/game/main-pane/question/enumeration/EnumerationBottomPane';
-import OddOneOutBottomPane from '@/frontend/components/game/main-pane/question/odd-one-out/OddOneOutBottomPane';
-import MCQBottomPane from '@/frontend/components/game/main-pane/question/mcq/MCQBottomPane';
-import BasicQuestionBottomPane from '@/frontend/components/game/main-pane/question/basic/BasicQuestionBottomPane';
-import NaguiBottomPane from '@/frontend/components/game/main-pane/question/nagui/NaguiBottomPane';
-import ReorderingBottomPane from '@/frontend/components/game/main-pane/question/reordering/ReorderingBottomPane';
+import { CircularProgress } from '@mui/material';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
+import BasicQuestionBottomPane from '@/frontend/components/game/main-pane/question/basic/BasicQuestionBottomPane';
+import BuzzerBottomPane from '@/frontend/components/game/main-pane/question/buzzer/BuzzerBottomPane';
+import EnumerationBottomPane from '@/frontend/components/game/main-pane/question/enumeration/EnumerationBottomPane';
 import LabellingBottomPane from '@/frontend/components/game/main-pane/question/labelling/LabellingBottomPane';
-import { CircularProgress } from '@mui/material';
+import MatchingBottomPane from '@/frontend/components/game/main-pane/question/matching/MatchingBottomPane';
+import MCQBottomPane from '@/frontend/components/game/main-pane/question/mcq/MCQBottomPane';
+import NaguiBottomPane from '@/frontend/components/game/main-pane/question/nagui/NaguiBottomPane';
+import OddOneOutBottomPane from '@/frontend/components/game/main-pane/question/odd-one-out/OddOneOutBottomPane';
+import QuoteBottomPane from '@/frontend/components/game/main-pane/question/quote/QuoteBottomPane';
+import ReorderingBottomPane from '@/frontend/components/game/main-pane/question/reordering/ReorderingBottomPane';
+import useGame from '@/frontend/hooks/useGame';
 
 export default function QuestionActiveBottomPane({}) {
   const game = useGame();

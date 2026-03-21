@@ -1,23 +1,18 @@
-import { addPlayerToBuzzer, removePlayerFromBuzzer } from '@/backend/services/question/quote/actions';
+import PanToolIcon from '@mui/icons-material/PanTool';
+import ReplayIcon from '@mui/icons-material/Replay';
+import { Button, IconButton, Tooltip } from '@mui/material';
+import clsx from 'clsx';
+import { useIntl } from 'react-intl';
 
-import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
-
-import { PlayerStatus } from '@/backend/models/users/Player';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-
-import useUser from '@/frontend/hooks/useUser';
+import { PlayerStatus } from '@/backend/models/users/Player';
+import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
+import { addPlayerToBuzzer, removePlayerFromBuzzer } from '@/backend/services/question/quote/actions';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import { useIntl } from 'react-intl';
+import useUser from '@/frontend/hooks/useUser';
 import globalMessages from '@/i18n/globalMessages';
-
-import { Button, IconButton, Tooltip } from '@mui/material';
-import ReplayIcon from '@mui/icons-material/Replay';
-import PanToolIcon from '@mui/icons-material/PanTool';
-
-import clsx from 'clsx';
 
 export default function QuotePlayerController({ players: quotePlayers }) {
   const game = useGame();

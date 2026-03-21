@@ -1,8 +1,8 @@
-import { firestore } from '@/backend/firebase/firebase';
 import { runTransaction } from 'firebase/firestore';
 
-import { PlayerStatus } from '@/backend/models/users/Player';
+import { firestore } from '@/backend/firebase/firebase';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { PlayerStatus } from '@/backend/models/users/Player';
 import GameBuzzerQuestionService from '@/backend/services/question/GameBuzzerQuestionService';
 
 export default class GameProgressiveCluesQuestionService extends GameBuzzerQuestionService {

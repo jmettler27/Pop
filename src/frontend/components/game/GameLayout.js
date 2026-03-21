@@ -1,14 +1,14 @@
 'use client';
 
 import { memo } from 'react';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
-import TopPane from '@/frontend/components/game/top-pane/TopPane';
-import MiddlePane from '@/frontend/components/game/main-pane/MiddlePane';
-import BottomPane from '@/frontend/components/game/main-pane/BottomPane';
-import Sidebar from '@/frontend/components/game/sidebar/Sidebar';
-import LoadingScreen from '@/frontend/components/LoadingScreen';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
+import BottomPane from '@/frontend/components/game/main-pane/BottomPane';
+import MiddlePane from '@/frontend/components/game/main-pane/MiddlePane';
+import Sidebar from '@/frontend/components/game/sidebar/Sidebar';
+import TopPane from '@/frontend/components/game/top-pane/TopPane';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 // Container components to control re-rendering
 const TopPaneContainer = memo(function TopPaneContainer({}) {

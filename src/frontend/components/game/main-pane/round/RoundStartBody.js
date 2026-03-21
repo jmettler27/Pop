@@ -1,20 +1,17 @@
-import { numberToKeycapEmoji } from '@/frontend/helpers/emojis';
-
-import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { collection } from 'firebase/firestore';
 import { useCollection } from 'react-firebase-hooks/firestore';
-
-import useGame from '@/frontend/hooks/useGame';
-
-import { ScorePolicyType } from '@/backend/models/ScorePolicy';
-import { RoundType } from '@/backend/models/rounds/RoundType';
-
-import { RoundDescription } from '@/frontend/components/game/main-pane/round/RoundDescription';
-import { RoundRules } from '@/frontend/components/game/main-pane/round/RoundRules';
-import { RoundRankingPolicy } from '@/frontend/components/game/main-pane/round/RoundRankingPolicy';
-import { RoundCompletionRatePolicy } from '@/frontend/components/game/main-pane/round/RoundCompletionRatePolicy';
-import defineMessages from '@/utils/defineMessages';
 import { useIntl } from 'react-intl';
+
+import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
+import { RoundType } from '@/backend/models/rounds/RoundType';
+import { ScorePolicyType } from '@/backend/models/ScorePolicy';
+import { RoundCompletionRatePolicy } from '@/frontend/components/game/main-pane/round/RoundCompletionRatePolicy';
+import { RoundDescription } from '@/frontend/components/game/main-pane/round/RoundDescription';
+import { RoundRankingPolicy } from '@/frontend/components/game/main-pane/round/RoundRankingPolicy';
+import { RoundRules } from '@/frontend/components/game/main-pane/round/RoundRules';
+import { numberToKeycapEmoji } from '@/frontend/helpers/emojis';
+import useGame from '@/frontend/hooks/useGame';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.round.RoundStartBody', {
   rules: '📜 Rules',

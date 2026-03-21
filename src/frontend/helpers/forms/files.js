@@ -1,3 +1,6 @@
+/* Validation */
+import * as Yup from 'yup';
+
 /* Constants */
 export const MAX_IMAGE_SIZE_MB = 5;
 export const IMAGE_VALID_TYPES = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'avif'];
@@ -19,9 +22,6 @@ const fileIsOfCorrectType = (file, validTypes) => {
   const type = file.type.split('/')[1];
   return validTypes.includes(type);
 };
-
-/* Validation */
-import * as Yup from 'yup';
 
 export const REQUIRED_FILE_TEST_NAME = 'is-file-present';
 

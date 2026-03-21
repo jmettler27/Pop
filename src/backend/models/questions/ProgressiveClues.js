@@ -1,6 +1,6 @@
 import { BuzzerQuestion, GameBuzzerQuestion } from '@/backend/models/questions/Buzzer';
-import { isArray } from '@/backend/utils/arrays';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { isArray } from '@/backend/utils/arrays';
 
 // Progressive Clues questions
 export class ProgressiveCluesQuestion extends BuzzerQuestion {

@@ -1,13 +1,12 @@
+import { useIntl } from 'react-intl';
+
 import { BlindtestQuestion, BlindtestType } from '@/backend/models/questions/Blindtest';
 import { MatchingQuestion } from '@/backend/models/questions/Matching';
 import { OddOneOutQuestion } from '@/backend/models/questions/OddOneOut';
 import { QuoteAuthorElement, QuotePartElement, QuoteSourceElement } from '@/backend/models/questions/Quote';
 import { ReorderingQuestion } from '@/backend/models/questions/Reordering';
-
 import { RoundType } from '@/backend/models/rounds/RoundType';
 import globalMessages from '@/i18n/globalMessages';
-
-import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 import fmt, { keyChunks } from '@/utils/fmt';
 

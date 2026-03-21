@@ -1,5 +1,5 @@
-import NavigationBar from '@/frontend/components/home/NavigationBar';
 import AppFooter from '@/frontend/components/AppFooter';
+import NavigationBar from '@/frontend/components/home/NavigationBar';
 
 export default function JoinLayout({ children }) {
   return (

@@ -1,9 +1,6 @@
 import { useParams } from 'next/navigation';
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
 
 import { CircularProgress } from '@mui/material';
-
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -15,7 +12,10 @@ import {
   Tooltip,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { useIntl } from 'react-intl';
+
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import defineMessages from '@/utils/defineMessages';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 

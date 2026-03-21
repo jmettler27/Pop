@@ -1,18 +1,15 @@
+import { CircularProgress } from '@mui/material';
+
 import { ParticipantRole } from '@/backend/models/users/Participant';
-
 import GameNaguiQuestionRepository from '@/backend/repositories/question/GameNaguiQuestionRepository';
-
+import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
+import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
+import NaguiOrganizerController from '@/frontend/components/game/main-pane/question/nagui/NaguiOrganizerController';
+import NaguiPlayerController from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerController';
+import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
-
-import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
-import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
-import NaguiPlayerController from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerController';
-import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
-import NaguiOrganizerController from '@/frontend/components/game/main-pane/question/nagui/NaguiOrganizerController';
-
-import { CircularProgress } from '@mui/material';
 
 export default function NaguiBottomPane({ question: baseQuestion }) {
   const { chooserRepo } = useGameRepositories();

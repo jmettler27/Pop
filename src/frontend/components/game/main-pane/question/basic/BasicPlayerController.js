@@ -1,24 +1,19 @@
-import { addPlayerToBuzzer, removePlayerFromBuzzer } from '@/backend/services/question/basic/actions';
-
-import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
-
-import { PlayerStatus } from '@/backend/models/users/Player';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-
-import useGame from '@/frontend/hooks/useGame';
-import useUser from '@/frontend/hooks/useUser';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import { useIntl } from 'react-intl';
-import globalMessages from '@/i18n/globalMessages';
-
-import { Button, IconButton, Tooltip } from '@mui/material';
-import ReplayIcon from '@mui/icons-material/Replay';
 import PanToolIcon from '@mui/icons-material/PanTool';
-
+import ReplayIcon from '@mui/icons-material/Replay';
+import { Button, IconButton, Tooltip } from '@mui/material';
 import clsx from 'clsx';
+import { useIntl } from 'react-intl';
+
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { PlayerStatus } from '@/backend/models/users/Player';
+import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
+import { addPlayerToBuzzer, removePlayerFromBuzzer } from '@/backend/services/question/basic/actions';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useUser from '@/frontend/hooks/useUser';
+import globalMessages from '@/i18n/globalMessages';
 
 export default function BasicPlayerController({ players: basicPlayers }) {
   const game = useGame();

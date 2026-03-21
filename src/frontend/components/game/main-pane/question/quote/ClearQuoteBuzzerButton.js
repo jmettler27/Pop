@@ -1,13 +1,11 @@
-import { clearBuzzer } from '@/backend/services/question/quote/actions';
-import globalMessages from '@/i18n/globalMessages';
-
-import useGame from '@/frontend/hooks/useGame';
-
-import { useIntl } from 'react-intl';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import { Button } from '@mui/material';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
+import { Button } from '@mui/material';
+import { useIntl } from 'react-intl';
+
+import { clearBuzzer } from '@/backend/services/question/quote/actions';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import globalMessages from '@/i18n/globalMessages';
 
 export default function ClearBuzzerButton() {
   const intl = useIntl();

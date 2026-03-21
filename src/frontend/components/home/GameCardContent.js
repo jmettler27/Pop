@@ -1,9 +1,8 @@
+import { Box, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
-import globalMessages from '@/i18n/globalMessages';
 
 import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from '@/frontend/components/home/GameAvatars';
-
-import { Box, Typography } from '@mui/material';
+import globalMessages from '@/i18n/globalMessages';
 
 export function GameOrganizersCardContent({ gameId }) {
   const intl = useIntl();

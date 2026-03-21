@@ -1,28 +1,22 @@
-import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { ParticipantRole } from '@/backend/models/users/Participant';
-import { topicToEmoji } from '@/backend/models/Topic';
-import { BlindtestQuestion } from '@/backend/models/questions/Blindtest';
-
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import useRole from '@/frontend/hooks/useRole';
-
-import globalMessages from '@/i18n/globalMessages';
-
-import { useIntl } from 'react-intl';
-
-import { QuestionCardContent } from '@/frontend/components/common/QuestionCard';
-
+import { memo, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import { memo, useEffect, useState } from 'react';
-
-import { Accordion, AccordionDetails, AccordionSummary, CircularProgress, Divider, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
+import { Accordion, AccordionDetails, AccordionSummary, CircularProgress, Divider, Typography } from '@mui/material';
 import clsx from 'clsx';
-import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
+import { useIntl } from 'react-intl';
+
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import { BlindtestQuestion } from '@/backend/models/questions/Blindtest';
+import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
+import { topicToEmoji } from '@/backend/models/Topic';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
+import { QuestionCardContent } from '@/frontend/components/common/QuestionCard';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+import globalMessages from '@/i18n/globalMessages';
 
 export default function RoundQuestionsProgress({ game, round }) {
   const [expandedId, setExpandedId] = useState(game.currentQuestion);

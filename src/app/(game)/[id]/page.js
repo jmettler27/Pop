@@ -1,23 +1,21 @@
 'use client';
 
-import { ParticipantRole } from '@/backend/models/users/Participant';
+import { redirect, useParams } from 'next/navigation';
+
+import { useSession } from 'next-auth/react';
+
 import { GameStatus } from '@/backend/models/games/GameStatus';
-
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-
-import { UserProvider } from '@/frontend/contexts/UserContext';
-import { RoleProvider } from '@/frontend/contexts/RoleContext';
-import { TeamProvider } from '@/frontend/contexts/TeamContext';
-import { GameProvider } from '@/frontend/contexts/GameContext';
-import { GameRepositoriesProvider } from '@/frontend/contexts/GameRepositoriesContext';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import GameLayout from '@/frontend/components/game/GameLayout';
 import GameUnderConstructionScreen from '@/frontend/components/game/GameUnderConstructionScreen';
-
-import { redirect, useParams } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { GameProvider } from '@/frontend/contexts/GameContext';
+import { GameRepositoriesProvider } from '@/frontend/contexts/GameRepositoriesContext';
+import { RoleProvider } from '@/frontend/contexts/RoleContext';
+import { TeamProvider } from '@/frontend/contexts/TeamContext';
+import { UserProvider } from '@/frontend/contexts/UserContext';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 export default function GamePage() {
   const { data: session } = useSession();

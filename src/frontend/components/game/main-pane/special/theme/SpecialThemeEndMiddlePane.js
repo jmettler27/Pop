@@ -1,14 +1,12 @@
-import useGame from '@/frontend/hooks/useGame';
-
-import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { collection, doc, increment } from 'firebase/firestore';
 import { useCollectionData, useDocument, useDocumentData } from 'react-firebase-hooks/firestore';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
+
+import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import useGame from '@/frontend/hooks/useGame';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.middle.SpecialThemeEndMiddlePane', {
   themeEnd: 'End of theme',

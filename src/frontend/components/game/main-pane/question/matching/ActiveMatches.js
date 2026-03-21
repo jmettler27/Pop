@@ -1,5 +1,13 @@
 import { ParticipantRole } from '@/backend/models/users/Participant';
+
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
+
+import { useState } from 'react';
+
+import { CircularProgress } from '@mui/material';
+
+import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
+import { isObjectEmpty } from '@/backend/utils/objects';
 import {
   getNode,
   getNodeText,
@@ -8,16 +16,10 @@ import {
   matchIsComplete,
 } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
 import SubmitMatchDialog from '@/frontend/components/game/main-pane/question/matching/SubmitMatchDialog';
-
-import { useState } from 'react';
-
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
-import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
-import { isObjectEmpty } from '@/backend/utils/objects';
-import { CircularProgress } from '@mui/material';
 
 export default function ActiveMatches({ answer, nodePositions, numCols }) {
   console.log('ACTIVE MATCHES RENDERED');

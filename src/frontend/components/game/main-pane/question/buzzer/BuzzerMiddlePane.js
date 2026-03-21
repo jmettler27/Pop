@@ -1,22 +1,18 @@
-import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
+import { clsx } from 'clsx';
 
-import { topicToEmoji } from '@/backend/models/Topic';
 import { GameStatus } from '@/backend/models/games/GameStatus';
+import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
+import { topicToEmoji } from '@/backend/models/Topic';
 import { ParticipantRole } from '@/backend/models/users/Participant';
-import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-
+import BlindtestMainContent from '@/frontend/components/game/main-pane/question/blindtest/BlindtestMainContent';
+import BuzzerAnswer from '@/frontend/components/game/main-pane/question/buzzer/BuzzerAnswer';
+import EmojiMainContent from '@/frontend/components/game/main-pane/question/emoji/EmojiMainContent';
+import ImageMainContent from '@/frontend/components/game/main-pane/question/image/ImageMainContent';
+import ProgressiveCluesMainContent from '@/frontend/components/game/main-pane/question/progressive-clues/ProgressiveCluesMainContent';
+import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
+import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
-
-import ProgressiveCluesMainContent from '@/frontend/components/game/main-pane/question/progressive-clues/ProgressiveCluesMainContent';
-import ImageMainContent from '@/frontend/components/game/main-pane/question/image/ImageMainContent';
-import BlindtestMainContent from '@/frontend/components/game/main-pane/question/blindtest/BlindtestMainContent';
-import EmojiMainContent from '@/frontend/components/game/main-pane/question/emoji/EmojiMainContent';
-import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
-import BuzzerAnswer from '@/frontend/components/game/main-pane/question/buzzer/BuzzerAnswer';
-
-import { clsx } from 'clsx';
 
 export default function BuzzerMiddlePane({ baseQuestion }) {
   const myRole = useRole();

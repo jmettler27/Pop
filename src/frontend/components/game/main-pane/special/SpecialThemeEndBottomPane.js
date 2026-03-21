@@ -1,14 +1,12 @@
-import { ParticipantRole } from '@/backend/models/users/Participant';
-
-import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { collection } from 'firebase/firestore';
 import { useCollectionDataOnce } from 'react-firebase-hooks/firestore';
 
+import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
+import { ParticipantRole } from '@/backend/models/users/Participant';
+import EndGameButton from '@/frontend/components/game/main-pane/EndGameButton';
+import GoSpecialHomeButton from '@/frontend/components/game/main-pane/special/GoSpecialHomeButton';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
-
-import GoSpecialHomeButton from '@/frontend/components/game/main-pane/special/GoSpecialHomeButton';
-import EndGameButton from '@/frontend/components/game/main-pane/EndGameButton';
 
 export default function SpecialThemeEndBottomPane({}) {
   const myRole = useRole();

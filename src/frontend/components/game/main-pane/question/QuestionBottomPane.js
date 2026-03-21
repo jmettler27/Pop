@@ -1,10 +1,8 @@
 import { GameStatus } from '@/backend/models/games/GameStatus';
-
-import useGame from '@/frontend/hooks/useGame';
-
 import QuestionActiveBottomPane from '@/frontend/components/game/main-pane/question/QuestionActiveBottomPane';
 import QuestionEndBottomPane from '@/frontend/components/game/main-pane/question/QuestionEndBottomPane';
 import TimerPane from '@/frontend/components/game/timer/TimerPane';
+import useGame from '@/frontend/hooks/useGame';
 
 export default function QuestionBottomPane() {
   return (

@@ -1,8 +1,8 @@
 import React from 'react';
-import { useFormikContext } from 'formik';
 
-import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
+import Button from '@mui/material/Button';
+import { useFormikContext } from 'formik';
 
 export default function SubmitFormButton({ isSubmitting, label }) {
   {

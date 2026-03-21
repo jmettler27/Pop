@@ -1,24 +1,23 @@
-import { IRepository } from '@/backend/repositories/IRepository';
-import { isArray } from '@/backend/utils/arrays';
-
-import { firestore } from '@/backend/firebase/firebase';
 import {
+  addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
+  limit,
+  orderBy,
+  query,
   setDoc,
   updateDoc,
-  deleteDoc,
-  query,
   where,
-  orderBy,
-  limit,
-  addDoc,
   writeBatch,
 } from 'firebase/firestore';
+import { useCollection, useCollectionOnce, useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 
-import { useDocumentData, useCollection, useCollectionOnce, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
+import { firestore } from '@/backend/firebase/firebase';
+import { IRepository } from '@/backend/repositories/IRepository';
+import { isArray } from '@/backend/utils/arrays';
 
 export default class FirebaseRepository extends IRepository {
   /**

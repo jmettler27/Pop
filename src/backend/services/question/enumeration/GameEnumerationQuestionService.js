@@ -1,12 +1,11 @@
-import GameQuestionService from '@/backend/services/question/GameQuestionService';
-
 import { runTransaction } from 'firebase/firestore';
 
+import { firestore } from '@/backend/firebase/firebase';
+import { EnumerationQuestionStatus, GameEnumerationQuestion } from '@/backend/models/questions/Enumeration';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { TimerStatus } from '@/backend/models/Timer';
 import { PlayerStatus } from '@/backend/models/users/Player';
-import { EnumerationQuestionStatus, GameEnumerationQuestion } from '@/backend/models/questions/Enumeration';
-import { firestore } from '@/backend/firebase/firebase';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
+import GameQuestionService from '@/backend/services/question/GameQuestionService';
 
 export default class GameEnumerationQuestionService extends GameQuestionService {
   constructor(gameId, roundId) {

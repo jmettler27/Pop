@@ -1,17 +1,15 @@
-import { ParticipantRole } from '@/backend/models/users/Participant';
-
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
 
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { ParticipantRole } from '@/backend/models/users/Participant';
+import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
+import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
+import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
+import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
-
-import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
-import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
-import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
-import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.OddOneOutBottomPane', {
   youCanGo: 'You can go',

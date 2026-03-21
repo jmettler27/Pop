@@ -1,8 +1,8 @@
-import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
-
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { MatchingQuestion } from '@/backend/models/questions/Matching';
 import { arrayUnion, Timestamp } from 'firebase/firestore';
+
+import { MatchingQuestion } from '@/backend/models/questions/Matching';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
 
 export default class GameMatchingQuestionRepository extends GameQuestionRepository {
   static CORRECT_MATCHES_PATH = ['realtime', 'correct'];
