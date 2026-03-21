@@ -1,26 +1,25 @@
 'use client';
 
 import React from 'react';
-import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
 
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Chip from '@mui/material/Chip';
-import Link from '@mui/material/Link';
-
-import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import QuizIcon from '@mui/icons-material/Quiz';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import HistoryIcon from '@mui/icons-material/History';
+import QuizIcon from '@mui/icons-material/Quiz';
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Container from '@mui/material/Container';
+import Link from '@mui/material/Link';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { useSession } from 'next-auth/react';
+import { useIntl } from 'react-intl';
 
-import { RoundType, roundTypeToEmoji, roundTypeToTitle } from '@/backend/models/rounds/RoundType';
 import { questionTypeToDescription } from '@/backend/models/questions/QuestionType';
+import { RoundType, roundTypeToEmoji, roundTypeToTitle } from '@/backend/models/rounds/RoundType';
+import defineMessages from '@/utils/defineMessages';
 
 const ABOUT_ROUND_TYPES = [
   RoundType.PROGRESSIVE_CLUES,

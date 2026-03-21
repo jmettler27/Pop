@@ -1,25 +1,22 @@
-import { RoundType } from '@/backend/models/rounds/RoundType';
-import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
-
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
+import { useParams } from 'next/navigation';
 
 import { useIntl } from 'react-intl';
+
+import { RoundType } from '@/backend/models/rounds/RoundType';
+import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import GameScoreboard from '@/frontend/components/scores/GameScoreboard';
+import GameScoresChart from '@/frontend/components/scores/GameScoresChart';
+import RoundScoreboard from '@/frontend/components/scores/RoundScoreboard';
+import RoundScoresChart from '@/frontend/components/scores/RoundScoresChart';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.middle.RoundEndBody', {
   roundStats: 'Round statistics',
   gameStats: 'Game statistics',
 });
-
-import RoundScoreboard from '@/frontend/components/scores/RoundScoreboard';
-import RoundScoresChart from '@/frontend/components/scores/RoundScoresChart';
-import GameScoreboard from '@/frontend/components/scores/GameScoreboard';
-import GameScoresChart from '@/frontend/components/scores/GameScoresChart';
-
-import { useParams } from 'next/navigation';
 
 export default function RoundEndBody({ currentRound }) {
   const { id: gameId } = useParams();

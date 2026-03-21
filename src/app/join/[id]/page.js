@@ -1,37 +1,29 @@
 'use client';
 
-import { joinGame } from '@/backend/services/join-game/actions';
+import React from 'react';
+import { redirect, useParams, useRouter } from 'next/navigation';
 
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import { CircularProgress } from '@mui/material';
+import { Field, useField, useFormikContext } from 'formik';
+import { useSession } from 'next-auth/react';
+import { useIntl } from 'react-intl';
+import * as Yup from 'yup';
 
 import Game from '@/backend/models/games/Game';
 import Team from '@/backend/models/Team';
-
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
+import { joinGame } from '@/backend/services/join-game/actions';
+import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';
 import MyColorPicker from '@/frontend/components/common/MyColorPicker';
 import {
-  MyTextInput,
-  MySelect,
-  StyledErrorMessage,
   MyRadioGroup,
+  MySelect,
+  MyTextInput,
+  StyledErrorMessage,
 } from '@/frontend/components/common/StyledFormComponents';
-import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
-
-import { redirect, useParams, useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-
-import React from 'react';
-
-import { Field, useField, useFormikContext } from 'formik';
-import * as Yup from 'yup';
-
-import { CircularProgress } from '@mui/material';
-
-import { useIntl } from 'react-intl';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('app.join', {

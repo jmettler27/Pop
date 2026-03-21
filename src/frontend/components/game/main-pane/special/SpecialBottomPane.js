@@ -1,12 +1,10 @@
+import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
+import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
+import GameChooserTeamAnnouncement from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
+import SpecialThemeBottomPane from '@/frontend/components/game/main-pane/special/SpecialThemeBottomPane';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-
-import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-import GameChooserTeamAnnouncement from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
-import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
-import SpecialThemeBottomPane from '@/frontend/components/game/main-pane/special/SpecialThemeBottomPane';
 
 export default function SpecialBottomPane() {
   return (

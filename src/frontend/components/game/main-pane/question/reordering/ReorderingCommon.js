@@ -1,19 +1,18 @@
 'use client';
 
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-
-import { Accordion, AccordionSummary, AccordionDetails, ListItemIcon, Typography } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
+import { Accordion, AccordionDetails, AccordionSummary, ListItemIcon, Typography } from '@mui/material';
+import { useIntl } from 'react-intl';
 
-import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
-import { topicToEmoji } from '@/backend/models/Topic';
 import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
+import { topicToEmoji } from '@/backend/models/Topic';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import NoteButton from '@/frontend/components/game/NoteButton';
+import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
+import defineMessages from '@/utils/defineMessages';
 
 export const messages = defineMessages('frontend.game.middle.ReorderingMiddlePane', {
   submitOrdering: 'Submit ordering',

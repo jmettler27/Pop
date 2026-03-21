@@ -1,17 +1,14 @@
-import { RoundType } from '@/backend/models/rounds/RoundType';
-import { RoundTypeIcon } from '@/frontend/helpers/question_types';
-import globalMessages from '@/i18n/globalMessages';
-
-import { useIntl } from 'react-intl';
-
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-
-import SpecialRoundProgress from '@/frontend/components/game/sidebar/progress/round/SpecialRoundProgress';
-import RoundQuestionsProgress from '@/frontend/components/game/sidebar/progress/round/RoundQuestionsProgress';
-
 import { memo } from 'react';
 
 import { CircularProgress } from '@mui/material';
+import { useIntl } from 'react-intl';
+
+import { RoundType } from '@/backend/models/rounds/RoundType';
+import RoundQuestionsProgress from '@/frontend/components/game/sidebar/progress/round/RoundQuestionsProgress';
+import SpecialRoundProgress from '@/frontend/components/game/sidebar/progress/round/SpecialRoundProgress';
+import { RoundTypeIcon } from '@/frontend/helpers/question_types';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import globalMessages from '@/i18n/globalMessages';
 
 export default function RoundProgressTabPanel({ game }) {
   const { roundRepo } = useGameRepositories();

@@ -1,15 +1,13 @@
-import GameQuestionService from '@/backend/services/question/GameQuestionService';
-
-import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
-
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { OddOneOutQuestion } from '@/backend/models/questions/OddOneOut';
-import { ScorePolicyType } from '@/backend/models/ScorePolicy';
-import { PlayerStatus } from '@/backend/models/users/Player';
-import { getNextCyclicIndex, getRandomIndex, moveToHead } from '@/backend/utils/arrays';
+import { runTransaction, Timestamp } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
-import { runTransaction, Timestamp } from 'firebase/firestore';
+import { OddOneOutQuestion } from '@/backend/models/questions/OddOneOut';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { ScorePolicyType } from '@/backend/models/ScorePolicy';
+import { PlayerStatus } from '@/backend/models/users/Player';
+import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
+import GameQuestionService from '@/backend/services/question/GameQuestionService';
+import { getNextCyclicIndex, getRandomIndex, moveToHead } from '@/backend/utils/arrays';
 
 export default class GameOddOneOutQuestionService extends GameQuestionService {
   constructor(gameId, roundId) {

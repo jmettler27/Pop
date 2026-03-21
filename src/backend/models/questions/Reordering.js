@@ -1,6 +1,6 @@
 import { BaseQuestion, GameQuestion } from '@/backend/models/questions/Question';
-import { isArray } from '@/backend/utils/arrays';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { isArray } from '@/backend/utils/arrays';
 
 // Reordering questions
 export class ReorderingQuestion extends BaseQuestion {

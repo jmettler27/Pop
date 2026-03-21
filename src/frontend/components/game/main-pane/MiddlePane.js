@@ -1,13 +1,11 @@
 import { GameStatus } from '@/backend/models/games/GameStatus';
-
-import useGame from '@/frontend/hooks/useGame';
-
-import GameStartMiddlePane from '@/frontend/components/game/main-pane/game/GameStartMiddlePane';
-import GameHomeMiddlePane from '@/frontend/components/game/main-pane/game/GameHomeMiddlePane';
 import GameEndMiddlePane from '@/frontend/components/game/main-pane/game/GameEndMiddlePane';
-import RoundMiddlePane from '@/frontend/components/game/main-pane/round/RoundMiddlePane';
+import GameHomeMiddlePane from '@/frontend/components/game/main-pane/game/GameHomeMiddlePane';
+import GameStartMiddlePane from '@/frontend/components/game/main-pane/game/GameStartMiddlePane';
 import QuestionMiddlePane from '@/frontend/components/game/main-pane/question/QuestionMiddlePane';
+import RoundMiddlePane from '@/frontend/components/game/main-pane/round/RoundMiddlePane';
 import SpecialMiddlePane from '@/frontend/components/game/main-pane/special/SpecialMiddlePane';
+import useGame from '@/frontend/hooks/useGame';
 
 export default function MiddlePane({}) {
   const game = useGame();

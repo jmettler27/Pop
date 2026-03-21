@@ -1,15 +1,13 @@
+import { useIntl } from 'react-intl';
+
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
-
-import { getRandomElement } from '@/backend/utils/arrays';
-
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-import globalMessages from '@/i18n/globalMessages';
-
-import useGame from '@/frontend/hooks/useGame';
-import { WinnerName } from '@/frontend/components/game/PlayerName';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
+import { getRandomElement } from '@/backend/utils/arrays';
+import { WinnerName } from '@/frontend/components/game/PlayerName';
+import useGame from '@/frontend/hooks/useGame';
+import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.BuzzerAnswer', {
   winnerText1: 'GG',

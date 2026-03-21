@@ -1,26 +1,21 @@
+import { useParams } from 'next/navigation';
+
+import { Avatar, Divider, List, ListItemAvatar, ListItemButton, ListItemText } from '@mui/material';
+import { useIntl } from 'react-intl';
+
+import { RoundType } from '@/backend/models/rounds/RoundType';
 import { ParticipantRole } from '@/backend/models/users/Participant';
-
-import { timestampToHour } from '@/frontend/helpers/time';
+import { handleRoundSelected } from '@/backend/services/round/actions';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { RoundTypeIcon } from '@/frontend/helpers/question_types';
-
+import { timestampToHour } from '@/frontend/helpers/time';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-
-import { useIntl } from 'react-intl';
-
-import { useParams } from 'next/navigation';
-
-import { Avatar, Divider, List, ListItemAvatar, ListItemButton, ListItemText } from '@mui/material';
-import { RoundType } from '@/backend/models/rounds/RoundType';
-import { handleRoundSelected } from '@/backend/services/round/actions';
-
 import defineMessages from '@/utils/defineMessages';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 const messages = defineMessages('frontend.game.middle.GameHomeMiddlePane', {
   title: 'Rounds',

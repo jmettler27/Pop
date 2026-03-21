@@ -1,5 +1,4 @@
 import { range } from '@/backend/utils/arrays';
-
 import ActiveMatches from '@/frontend/components/game/main-pane/question/matching/ActiveMatches';
 import CorrectMatches from '@/frontend/components/game/main-pane/question/matching/CorrectMatches';
 import IncorrectMatches from '@/frontend/components/game/main-pane/question/matching/IncorrectMatches';

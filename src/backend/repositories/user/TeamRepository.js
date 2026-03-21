@@ -1,6 +1,5 @@
-import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
-
 import Team from '@/backend/models/Team';
+import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 import { shuffle } from '@/backend/utils/arrays';
 
 export default class TeamRepository extends FirebaseRepository {

@@ -1,19 +1,16 @@
-import { ParticipantRole } from '@/backend/models/users/Participant';
-
-import { returnToGameHome } from '@/backend/services/game/actions';
+import { useParams } from 'next/navigation';
 
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
+import { ParticipantRole } from '@/backend/models/users/Participant';
+import { returnToGameHome } from '@/backend/services/game/actions';
+import GameChooserTeamAnnouncement from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
+import EndGameButton from '@/frontend/components/game/main-pane/EndGameButton';
+import GoGameHomeButton from '@/frontend/components/game/main-pane/GoGameHomeButton';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
-
-import GameChooserTeamAnnouncement from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
-import GoGameHomeButton from '@/frontend/components/game/main-pane/GoGameHomeButton';
-import EndGameButton from '@/frontend/components/game/main-pane/EndGameButton';
-
-import { useParams } from 'next/navigation';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.RoundEndBottomPane', {
   theRound: 'the round',

@@ -1,31 +1,24 @@
-import { handleBuzzerHeadChanged, invalidateAnswer, validateAnswer } from '@/backend/services/question/buzzer/actions';
-import { revealClue } from '@/backend/services/question/progressive-clues/actions';
-
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-
-import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/GameProgressiveCluesQuestionRepository';
-
-import useGame from '@/frontend/hooks/useGame';
-
-import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
-import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
-import ClearBuzzerButton from '@/frontend/components/game/main-pane/question/buzzer/ClearBuzzerButton';
-import BuzzerHeadPlayer from '@/frontend/components/game/main-pane/question/buzzer/BuzzerHeadPlayer';
-
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import globalMessages from '@/i18n/globalMessages';
-
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-
-import { Button, ButtonGroup } from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-
+import { useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 
-import { useEffect, useRef } from 'react';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Button, ButtonGroup } from '@mui/material';
+import { useIntl } from 'react-intl';
+
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/GameProgressiveCluesQuestionRepository';
+import { handleBuzzerHeadChanged, invalidateAnswer, validateAnswer } from '@/backend/services/question/buzzer/actions';
+import { revealClue } from '@/backend/services/question/progressive-clues/actions';
+import BuzzerHeadPlayer from '@/frontend/components/game/main-pane/question/buzzer/BuzzerHeadPlayer';
+import ClearBuzzerButton from '@/frontend/components/game/main-pane/question/buzzer/ClearBuzzerButton';
+import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
+import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.BuzzerOrganizerController', {
   nextClue: 'Next clue',

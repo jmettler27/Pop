@@ -1,8 +1,6 @@
-import { GameType, prependGameTypeWithEmoji } from '@/backend/models/games/GameType';
+import { useIntl } from 'react-intl';
 
 import { MySelect } from '@/frontend/components/common/StyledFormComponents';
-
-import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.forms.SelectGameType', {

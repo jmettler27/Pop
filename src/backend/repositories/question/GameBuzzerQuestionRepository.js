@@ -1,8 +1,6 @@
-import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
+import { arrayRemove, arrayUnion, Timestamp } from 'firebase/firestore';
 
-import { Player } from '@/backend/models/users/Player';
-import { Timestamp } from 'firebase/firestore';
-import { arrayUnion, arrayRemove } from 'firebase/firestore';
+import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
 
 export default class GameBuzzerQuestionRepository extends GameQuestionRepository {
   static BUZZER_PLAYERS_PATH = ['realtime', 'players'];

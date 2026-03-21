@@ -1,15 +1,13 @@
+import { CircularProgress } from '@mui/material';
+
 import { ParticipantRole } from '@/backend/models/users/Participant';
-
 import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
-
-import useGame from '@/frontend/hooks/useGame';
-import useRole from '@/frontend/hooks/useRole';
-
-import QuoteOrganizerController from '@/frontend/components/game/main-pane/question/quote/QuoteOrganizerController';
-import BuzzerSpectatorController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerSpectatorController';
 import BuzzerPlayerController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayerController';
 import BuzzerPlayers from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayers';
-import { CircularProgress } from '@mui/material';
+import BuzzerSpectatorController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerSpectatorController';
+import QuoteOrganizerController from '@/frontend/components/game/main-pane/question/quote/QuoteOrganizerController';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
 
 export default function QuoteBottomPane({ baseQuestion }) {
   const game = useGame();

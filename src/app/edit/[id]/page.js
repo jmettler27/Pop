@@ -1,28 +1,25 @@
 'use client';
 
-import { gameTypeToEmoji } from '@/backend/models/games/GameType';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import Game from '@/backend/models/games/Game';
-
-import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
-import GameRepository from '@/backend/repositories/game/GameRepository';
-
-import { localeToEmoji } from '@/frontend/helpers/locales';
-
+import React from 'react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+
 import { useSession } from 'next-auth/react';
-
-import React from 'react';
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
 
-import LoadingScreen from '@/frontend/components/LoadingScreen';
+import Game from '@/backend/models/games/Game';
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import { gameTypeToEmoji } from '@/backend/models/games/GameType';
+import GameRepository from '@/backend/repositories/game/GameRepository';
+import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import { AddNewRoundButton } from '@/frontend/components/game-editor/AddNewRound';
 import { EditGameRoundCard } from '@/frontend/components/game-editor/EditRoundInGame';
 import { LaunchGameButton } from '@/frontend/components/game-editor/LaunchGameButton';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { localeToEmoji } from '@/frontend/helpers/locales';
 import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.gameEditor.EditGamePage', {
   analytics: 'Analytics',

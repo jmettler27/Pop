@@ -1,43 +1,41 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { useIntl } from 'react-intl';
-import globalMessages from '@/i18n/globalMessages';
-import { clsx } from 'clsx';
+import { useMemo, useState } from 'react';
 
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
   useSortable,
+  verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {
-  List,
-  ListItemButton,
-  Typography,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  List,
+  ListItemButton,
+  Typography,
 } from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-
-import useGame from '@/frontend/hooks/useGame';
-import useTeam from '@/frontend/hooks/useTeam';
-import useUser from '@/frontend/hooks/useUser';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import { clsx } from 'clsx';
+import { useIntl } from 'react-intl';
 
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { submitOrdering } from '@/backend/services/question/reordering/actions';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import useTeam from '@/frontend/hooks/useTeam';
+import useUser from '@/frontend/hooks/useUser';
+import globalMessages from '@/i18n/globalMessages';
 
-import { ReorderingQuestionHeader, ReorderingItemAccordion, messages } from './ReorderingCommon';
+import { messages, ReorderingItemAccordion, ReorderingQuestionHeader } from './ReorderingCommon';
 
 export default function ReorderingPlayerPane({ baseQuestion, gameQuestion, randomMapping }) {
   const game = useGame();

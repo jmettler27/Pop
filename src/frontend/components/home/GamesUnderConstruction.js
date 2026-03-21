@@ -1,27 +1,22 @@
 import React from 'react';
-import { useIntl } from 'react-intl';
-
-import GameRepository from '@/backend/repositories/game/GameRepository';
-import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
-import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
-
-import { gameTypeToEmoji } from '@/backend/models/games/GameType';
-import { localeToEmoji } from '@/frontend/helpers/locales';
-
-import { useSession } from 'next-auth/react';
-
-import { Box, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
-
-import { CardTitle, CardHeader, CardContent, Card } from '@/frontend/components/card';
-import { GameOrganizersAvatarGroup } from '@/frontend/components/home/GameAvatars';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 import EditIcon from '@mui/icons-material/Edit';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import { Box, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
+import { useSession } from 'next-auth/react';
+import { useIntl } from 'react-intl';
+
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import defineMessages from '@/utils/defineMessages';
+import { gameTypeToEmoji } from '@/backend/models/games/GameType';
+import GameRepository from '@/backend/repositories/game/GameRepository';
+import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
+import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
+import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/card';
+import { GameOrganizersAvatarGroup } from '@/frontend/components/home/GameAvatars';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { localeToEmoji } from '@/frontend/helpers/locales';
 import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.home.GamesUnderConstruction', {
   title: 'Games under construction',

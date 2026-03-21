@@ -1,10 +1,8 @@
-import NextAuth from 'next-auth';
-
-import GoogleProvider from 'next-auth/providers/google';
-import DiscordProvider from 'next-auth/providers/discord';
-
 import { FirestoreAdapter } from '@auth/firebase-adapter';
 import { cert } from 'firebase-admin/app';
+import NextAuth from 'next-auth';
+import DiscordProvider from 'next-auth/providers/discord';
+import GoogleProvider from 'next-auth/providers/google';
 
 export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,

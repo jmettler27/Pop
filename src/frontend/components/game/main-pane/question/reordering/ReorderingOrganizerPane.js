@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+
 import { List } from '@mui/material';
 
-import { ReorderingQuestionHeader, ReorderingItemAccordion } from './ReorderingCommon';
+import { ReorderingItemAccordion, ReorderingQuestionHeader } from './ReorderingCommon';
 
 export default function ReorderingOrganizerPane({ baseQuestion }) {
   const [expandedIdx, setExpandedIdx] = useState(false);

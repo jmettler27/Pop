@@ -1,23 +1,21 @@
-import { firestore } from '@/backend/firebase/firebase';
 import { runTransaction, serverTimestamp } from 'firebase/firestore';
 
-import GameRepository from '@/backend/repositories/game/GameRepository';
-import TimerRepository from '@/backend/repositories/timer/TimerRepository';
-import SoundRepository from '@/backend/repositories/sound/SoundRepository';
-import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
-import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
-import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
-import TeamRepository from '@/backend/repositories/user/TeamRepository';
-import RoundRepository from '@/backend/repositories/round/RoundRepository';
-import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
-import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
-
-import { PlayerStatus } from '@/backend/models/users/Player';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { TimerStatus } from '@/backend/models/Timer';
-import { getRandomElement, shuffle } from '@/backend/utils/arrays';
 import Error from '@/app/error';
+import { firestore } from '@/backend/firebase/firebase';
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import { PlayerStatus } from '@/backend/models/users/Player';
+import GameRepository from '@/backend/repositories/game/GameRepository';
+import RoundRepository from '@/backend/repositories/round/RoundRepository';
+import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
+import SoundRepository from '@/backend/repositories/sound/SoundRepository';
+import TimerRepository from '@/backend/repositories/timer/TimerRepository';
+import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
+import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
+import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
+import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
+import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import RoundServiceFactory from '@/backend/services/round/RoundServiceFactory';
+import { getRandomElement, shuffle } from '@/backend/utils/arrays';
 
 export default class GameService {
   constructor(gameId) {

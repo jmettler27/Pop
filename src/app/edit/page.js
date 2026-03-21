@@ -1,31 +1,27 @@
 'use client';
 
 import React from 'react';
-import { Form, Formik } from 'formik';
-
-import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
 
+import { Form, Formik } from 'formik';
+import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-import globalMessages from '@/i18n/globalMessages';
-
-import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import { MyNumberInput, MyTextInput } from '@/frontend/components/common/StyledFormComponents';
-import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
-import SelectRoundScorePolicy from '@/frontend/components/common/SelectRoundScorePolicy';
-import SelectLanguage from '@/frontend/components/common/SelectLanguage';
-
-import Game from '@/backend/models/games/Game';
-import CreateGameService from '@/backend/services/create-game/CreateGameService';
-import { gameTitleSchema, participantNameSchema } from '@/frontend/helpers/forms/game';
-import { ScorePolicyType } from '@/backend/models/ScorePolicy';
-
 /* Validation */
 import * as Yup from 'yup';
+
+import Game from '@/backend/models/games/Game';
 import { GameType } from '@/backend/models/games/GameType';
+import { ScorePolicyType } from '@/backend/models/ScorePolicy';
+import CreateGameService from '@/backend/services/create-game/CreateGameService';
+import SelectLanguage from '@/frontend/components/common/SelectLanguage';
+import SelectRoundScorePolicy from '@/frontend/components/common/SelectRoundScorePolicy';
+import { MyNumberInput, MyTextInput } from '@/frontend/components/common/StyledFormComponents';
+import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
+import { gameTitleSchema, participantNameSchema } from '@/frontend/helpers/forms/game';
+import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 export const roundScorePolicySchema = () =>
   Yup.string().oneOf(Object.values(ScorePolicyType), 'Invalid round score policy.').required('Required.');

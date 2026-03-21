@@ -1,7 +1,7 @@
-import { Timer, TimerStatus } from '@/backend/models/Timer';
-
-import FirebaseDocumentRepository from '@/backend/repositories/FirebaseDocumentRepository';
 import { serverTimestamp, Timestamp } from 'firebase/firestore';
+
+import { Timer, TimerStatus } from '@/backend/models/Timer';
+import FirebaseDocumentRepository from '@/backend/repositories/FirebaseDocumentRepository';
 
 export default class TimerRepository extends FirebaseDocumentRepository {
   constructor(gameId) {

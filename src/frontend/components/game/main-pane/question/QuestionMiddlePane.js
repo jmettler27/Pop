@@ -1,9 +1,8 @@
-import useGame from '@/frontend/hooks/useGame';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
-
 import BasicMiddlePane from '@/frontend/components/game/main-pane/question/basic/BasicMiddlePane';
+import BuzzerMiddlePane from '@/frontend/components/game/main-pane/question/buzzer/BuzzerMiddlePane';
 import EnumerationMiddlePane from '@/frontend/components/game/main-pane/question/enumeration/EnumerationMiddlePane';
 import LabellingMiddlePane from '@/frontend/components/game/main-pane/question/labelling/LabellingMiddlePane';
 import MatchingMiddlePane from '@/frontend/components/game/main-pane/question/matching/MatchingMiddlePane';
@@ -11,11 +10,9 @@ import MCQMiddlePane from '@/frontend/components/game/main-pane/question/mcq/MCQ
 import NaguiMiddlePane from '@/frontend/components/game/main-pane/question/nagui/NaguiMiddlePane';
 import OddOneOutMiddlePane from '@/frontend/components/game/main-pane/question/odd-one-out/OddOneOutMiddlePane';
 import QuoteMiddlePane from '@/frontend/components/game/main-pane/question/quote/QuoteMiddlePane';
-import BuzzerMiddlePane from '@/frontend/components/game/main-pane/question/buzzer/BuzzerMiddlePane';
 import ReorderingMiddlePane from '@/frontend/components/game/main-pane/question/reordering/ReorderingMiddlePane';
-
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import useGame from '@/frontend/hooks/useGame';
 
 export default function QuestionMiddlePane() {
   const game = useGame();

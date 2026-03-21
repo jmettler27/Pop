@@ -1,17 +1,15 @@
-import { ParticipantRole } from '@/backend/models/users/Participant';
+import { CircularProgress } from '@mui/material';
+
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
-
-import useGame from '@/frontend/hooks/useGame';
-import useRole from '@/frontend/hooks/useRole';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-
 import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
-
-import { CircularProgress } from '@mui/material';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
 
 export default function MCQBottomPane({ baseQuestion }) {
   const { chooserRepo } = useGameRepositories();

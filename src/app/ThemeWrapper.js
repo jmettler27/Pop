@@ -1,6 +1,6 @@
 'use client';
 
-import { CssBaseline, StyledEngineProvider, ThemeProvider, createTheme } from '@mui/material';
+import { createTheme, CssBaseline, StyledEngineProvider, ThemeProvider } from '@mui/material';
 
 export default function ThemeWrapper({ children }) {
   const theme = createTheme({});

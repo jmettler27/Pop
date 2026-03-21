@@ -1,9 +1,8 @@
-import { RoundTypeIcon } from '@/frontend/helpers/question_types';
-import globalMessages from '@/i18n/globalMessages';
-
 import { useIntl } from 'react-intl';
 
 import SpecialHomeThemes from '@/frontend/components/game/main-pane/special/home/SpecialHomeThemes';
+import { RoundTypeIcon } from '@/frontend/helpers/question_types';
+import globalMessages from '@/i18n/globalMessages';
 
 export default function SpecialHomeMiddlePane({ round }) {
   return (

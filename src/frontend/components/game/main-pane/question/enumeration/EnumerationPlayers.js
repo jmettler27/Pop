@@ -1,12 +1,10 @@
-import { rankingToEmoji } from '@/frontend/helpers/emojis';
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
 
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
-
-import useGame from '@/frontend/hooks/useGame';
-
 import PlayerName from '@/frontend/components/game/PlayerName';
+import { rankingToEmoji } from '@/frontend/helpers/emojis';
+import useGame from '@/frontend/hooks/useGame';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.EnumerationPlayers', {
   betsHeader: 'Bets',

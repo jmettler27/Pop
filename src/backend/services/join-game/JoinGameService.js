@@ -1,13 +1,12 @@
+import { runTransaction, serverTimestamp } from 'firebase/firestore';
+
+import { firestore } from '@/backend/firebase/firebase';
+import { PlayerStatus } from '@/backend/models/users/Player';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
-import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
+import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import UserRepository from '@/backend/repositories/user/UserRepository';
-
-import { PlayerStatus } from '@/backend/models/users/Player';
-import { firestore } from '@/backend/firebase/firebase';
-
-import { runTransaction, serverTimestamp } from 'firebase/firestore';
 
 export default class JoinGameService {
   constructor(gameId) {

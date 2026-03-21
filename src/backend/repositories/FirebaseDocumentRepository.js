@@ -1,7 +1,7 @@
-import { doc, getDoc, setDoc, updateDoc, onSnapshot } from 'firebase/firestore';
-import { firestore } from '@/backend/firebase/firebase';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 
+import { firestore } from '@/backend/firebase/firebase';
 import { isArray } from '@/backend/utils/arrays';
 
 const getDocDataTransaction = async (transaction, docRef) => {

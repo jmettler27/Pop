@@ -1,12 +1,10 @@
-import { PlayerStatus } from '@/backend/models/users/Player';
-
-import TeamScore from '@/frontend/components/game/top-pane/TeamScore';
-
 import { memo } from 'react';
 
-import { Stack, Avatar } from '@mui/material';
-
+import { Avatar, Stack } from '@mui/material';
 import clsx from 'clsx';
+
+import { PlayerStatus } from '@/backend/models/users/Player';
+import TeamScore from '@/frontend/components/game/top-pane/TeamScore';
 
 const TopPane = memo(function TopPane({ teams, players }) {
   return (

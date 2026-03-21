@@ -1,10 +1,9 @@
-import useGame from '@/frontend/hooks/useGame';
-
+import HomeIcon from '@mui/icons-material/Home';
 import { Button } from '@mui/material';
 
-import HomeIcon from '@mui/icons-material/Home';
 import { goHome } from '@/backend/services/round/special/actions';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
 
 export default function GoSpecialHomeButton() {
   const game = useGame();

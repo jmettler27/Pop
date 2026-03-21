@@ -1,8 +1,7 @@
-import { MySelect } from '@/frontend/components/common/StyledFormComponents';
+import { useIntl } from 'react-intl';
 
 import { prependScorePolicyTypeWithEmoji, ScorePolicyType } from '@/backend/models/ScorePolicy';
-
-import { useIntl } from 'react-intl';
+import { MySelect } from '@/frontend/components/common/StyledFormComponents';
 import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.forms.SelectRoundScorePolicy', {

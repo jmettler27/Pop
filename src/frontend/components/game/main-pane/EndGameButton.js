@@ -1,12 +1,11 @@
 import { useParams } from 'next/navigation';
 
-import { endGame } from '@/backend/services/game/actions';
-
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
 import { Button } from '@mui/material';
+import { useIntl } from 'react-intl';
+
+import { endGame } from '@/backend/services/game/actions';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.EndGameButton', {
   endGame: 'End Game',

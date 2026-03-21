@@ -1,14 +1,12 @@
-import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
+import { CircularProgress } from '@mui/material';
 
-import { RoundType } from '@/backend/models/rounds/RoundType';
-import { GameType } from '@/backend/models/games/GameType';
 import { GameStatus } from '@/backend/models/games/GameStatus';
+import { GameType } from '@/backend/models/games/GameType';
+import { RoundType } from '@/backend/models/rounds/RoundType';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
-
+import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-
-import { CircularProgress } from '@mui/material';
 
 export default function TeamScore({ teamId }) {
   const game = useGame();

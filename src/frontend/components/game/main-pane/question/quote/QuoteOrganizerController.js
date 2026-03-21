@@ -1,28 +1,26 @@
-import { isEmpty } from '@/backend/utils/arrays';
+import { useEffect, useRef } from 'react';
+import { useParams } from 'next/navigation';
+
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Button, ButtonGroup } from '@mui/material';
+import { useIntl } from 'react-intl';
+
+import { QuestionType } from '@/backend/models/questions/QuestionType';
 import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 import {
-  handleBuzzerHeadChanged,
   cancelPlayer,
+  handleBuzzerHeadChanged,
   validateAllQuoteElements,
 } from '@/backend/services/question/quote/actions';
-
-import { useIntl } from 'react-intl';
-import { useParams } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { isEmpty } from '@/backend/utils/arrays';
+import BuzzerHeadPlayer from '@/frontend/components/game/main-pane/question/buzzer/BuzzerHeadPlayer';
+import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
+import ClearQuoteBuzzerButton from '@/frontend/components/game/main-pane/question/quote/ClearQuoteBuzzerButton';
+import RevealQuoteElementButton from '@/frontend/components/game/main-pane/question/quote/RevealQuoteElement';
+import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-
-import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
-import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
-import ClearQuoteBuzzerButton from '@/frontend/components/game/main-pane/question/quote/ClearQuoteBuzzerButton';
-import BuzzerHeadPlayer from '@/frontend/components/game/main-pane/question/buzzer/BuzzerHeadPlayer';
-import RevealQuoteElementButton from '@/frontend/components/game/main-pane/question/quote/RevealQuoteElement';
-
-import { Button, ButtonGroup } from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-
 import globalMessages from '@/i18n/globalMessages';
 
 export default function QuoteOrganizerController({ baseQuestion, questionPlayers }) {

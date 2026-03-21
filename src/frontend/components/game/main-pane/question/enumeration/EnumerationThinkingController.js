@@ -1,23 +1,4 @@
-import { addBet } from '@/backend/services/question/enumeration/actions';
-
-import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
-
-import { TimerStatus } from '@/backend/models/Timer';
-import { ParticipantRole } from '@/backend/models/users/Participant';
-
-import { range } from '@/backend/utils/arrays';
-
-import useGame from '@/frontend/hooks/useGame';
-import useRole from '@/frontend/hooks/useRole';
-import useTeam from '@/frontend/hooks/useTeam';
-import useUser from '@/frontend/hooks/useUser';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
 import { useState } from 'react';
-
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-import globalMessages from '@/i18n/globalMessages';
 
 import {
   Button,
@@ -32,6 +13,20 @@ import {
   MenuItem,
   Select,
 } from '@mui/material';
+import { useIntl } from 'react-intl';
+
+import { TimerStatus } from '@/backend/models/Timer';
+import { ParticipantRole } from '@/backend/models/users/Participant';
+import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
+import { addBet } from '@/backend/services/question/enumeration/actions';
+import { range } from '@/backend/utils/arrays';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
+import useTeam from '@/frontend/hooks/useTeam';
+import useUser from '@/frontend/hooks/useUser';
+import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.EnumerationThinkingController', {
   betInputLabel: 'My bet',

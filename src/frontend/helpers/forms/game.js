@@ -1,5 +1,7 @@
 import * as Yup from 'yup';
+
 import Game from '@/backend/models/games/Game';
+import { RoundType } from '@/backend/models/rounds/RoundType';
 
 /**
  * Creates a Yup validation schema for game types
@@ -36,8 +38,6 @@ export const teamNameSchema = () =>
     .min(Game.TEAM_NAME_MIN_LENGTH, `Team name must be at least ${Game.TEAM_NAME_MIN_LENGTH} characters`)
     .max(Game.TEAM_MAX_NAME_LENGTH, `Team name must be at most ${Game.TEAM_MAX_NAME_LENGTH} characters`)
     .required('Team name is required');
-
-import { RoundType } from '@/backend/models/rounds/RoundType';
 
 export const roundTypeSchema = () =>
   Yup.string().oneOf(Object.values(RoundType), 'Invalid type.').required('Required.');

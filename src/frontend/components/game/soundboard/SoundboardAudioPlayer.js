@@ -1,16 +1,14 @@
-import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { collection, query, onSnapshot } from 'firebase/firestore';
-
-import { loadSounds } from '@/backend/utils/sounds';
-
+import { memo, useEffect, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import { useState, useRef, useEffect, memo } from 'react';
-
-import { Box, Slider, IconButton, Stack } from '@mui/material';
-import VolumeUpRounded from '@mui/icons-material/VolumeUpRounded';
 import VolumeDownRounded from '@mui/icons-material/VolumeDownRounded';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
+import VolumeUpRounded from '@mui/icons-material/VolumeUpRounded';
+import { Box, IconButton, Slider, Stack } from '@mui/material';
+import { collection, onSnapshot, query } from 'firebase/firestore';
+
+import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
+import { loadSounds } from '@/backend/utils/sounds';
 
 const initVolume = 0.4;
 

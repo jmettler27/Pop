@@ -1,23 +1,19 @@
-import { addPlayerToBuzzer, removePlayerFromBuzzer } from '@/backend/services/question/buzzer/actions';
-import { PlayerStatus } from '@/backend/models/users/Player';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-
-import useGame from '@/frontend/hooks/useGame';
-import useUser from '@/frontend/hooks/useUser';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-import globalMessages from '@/i18n/globalMessages';
-
-import { Button, IconButton, Tooltip } from '@mui/material';
-import ReplayIcon from '@mui/icons-material/Replay';
 import PanToolIcon from '@mui/icons-material/PanTool';
-
+import ReplayIcon from '@mui/icons-material/Replay';
+import { Button, IconButton, Tooltip } from '@mui/material';
 import clsx from 'clsx';
+import { useIntl } from 'react-intl';
+
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { PlayerStatus } from '@/backend/models/users/Player';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
+import { addPlayerToBuzzer, removePlayerFromBuzzer } from '@/backend/services/question/buzzer/actions';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useUser from '@/frontend/hooks/useUser';
+import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.BuzzerPlayerController', {
   numRemainingClues: 'in {remaining} clues',

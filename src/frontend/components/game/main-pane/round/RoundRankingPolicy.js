@@ -1,8 +1,7 @@
-import { rankingToEmoji } from '@/frontend/helpers/emojis';
-import { RoundType } from '@/backend/models/rounds/RoundType';
-
 import { useIntl } from 'react-intl';
 
+import { RoundType } from '@/backend/models/rounds/RoundType';
+import { rankingToEmoji } from '@/frontend/helpers/emojis';
 import defineMessages from '@/utils/defineMessages';
 import fmt, { keyChunks } from '@/utils/fmt';
 

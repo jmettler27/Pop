@@ -1,8 +1,8 @@
 import GameMatchingQuestionRepositoru from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import { isObjectEmpty } from '@/backend/utils/objects';
-
-import useGame from '@/frontend/hooks/useGame';
 import { getNodeId, MatchingEdge } from '@/frontend/components/game/main-pane/question/matching/gridUtils.js';
+import useGame from '@/frontend/hooks/useGame';
+
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
 
 export default function IncorrectMatches({ nodePositions, colIndices }) {

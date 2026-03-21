@@ -1,20 +1,15 @@
-import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
-
-import { rankingToEmoji } from '@/frontend/helpers/emojis';
-import { RoundTypeIcon } from '@/frontend/helpers/question_types';
-
 import { memo } from 'react';
 
-import globalMessages from '@/i18n/globalMessages';
+import { Accordion, AccordionDetails, AccordionSummary, CircularProgress, Typography } from '@mui/material';
+import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-
+import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-
-import { Accordion, AccordionSummary, AccordionDetails, Typography, CircularProgress } from '@mui/material';
-
-import clsx from 'clsx';
+import { rankingToEmoji } from '@/frontend/helpers/emojis';
+import { RoundTypeIcon } from '@/frontend/helpers/question_types';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import globalMessages from '@/i18n/globalMessages';
 
 export default function GlobalProgressTabPanel({ game }) {
   return (

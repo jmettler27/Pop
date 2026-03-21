@@ -1,18 +1,17 @@
+import { useIntl } from 'react-intl';
+
+import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import GameScoreboard from '@/frontend/components/scores/GameScoreboard';
+import GameScoresChart from '@/frontend/components/scores/GameScoresChart';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-
-import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.middle.GameEndMiddlePane', {
   itWas: 'It was',
 });
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-import GameScoreboard from '@/frontend/components/scores/GameScoreboard';
-import GameScoresChart from '@/frontend/components/scores/GameScoresChart';
-import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 export default function GameEndMiddlePane({}) {
   const game = useGame();

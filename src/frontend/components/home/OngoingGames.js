@@ -1,32 +1,28 @@
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { useIntl } from 'react-intl';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { ParticipantRole } from '@/backend/models/users/Participant';
-import { gameTypeToEmoji } from '@/backend/models/games/GameType';
-
-import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { or, query, where } from 'firebase/firestore';
-import { useCollectionOnce } from 'react-firebase-hooks/firestore';
-
-import { localeToEmoji } from '@/frontend/helpers/locales';
-
-import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/card';
-import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from '@/frontend/components/home/GameAvatars';
-
-import { styled } from '@mui/material/styles';
-import { Box, Button, Skeleton, Tooltip, Typography } from '@mui/material';
-
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import GroupIcon from '@mui/icons-material/Group';
 import LoginIcon from '@mui/icons-material/Login';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-import GroupIcon from '@mui/icons-material/Group';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Box, Button, Skeleton, Tooltip, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { or, query, where } from 'firebase/firestore';
+import { useSession } from 'next-auth/react';
+import { useCollectionOnce } from 'react-firebase-hooks/firestore';
+import { useIntl } from 'react-intl';
+
+import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import { gameTypeToEmoji } from '@/backend/models/games/GameType';
+import { ParticipantRole } from '@/backend/models/users/Participant';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
-import defineMessages from '@/utils/defineMessages';
+import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/card';
+import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from '@/frontend/components/home/GameAvatars';
+import { localeToEmoji } from '@/frontend/helpers/locales';
 import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.home.OngoingGames', {
   title: 'Ongoing games',

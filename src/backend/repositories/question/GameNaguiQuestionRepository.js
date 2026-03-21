@@ -1,6 +1,5 @@
-import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
-
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
 
 export default class GameNaguiQuestionRepository extends GameQuestionRepository {
   constructor(gameId, roundId) {

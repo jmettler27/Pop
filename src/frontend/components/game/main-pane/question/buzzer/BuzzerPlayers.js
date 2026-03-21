@@ -1,9 +1,9 @@
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-import globalMessages from '@/i18n/globalMessages';
 
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import { rankingToEmoji } from '@/frontend/helpers/emojis';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.BuzzerPlayers', {
   buzzers: 'Buzzers',

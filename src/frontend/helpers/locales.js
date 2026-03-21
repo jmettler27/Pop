@@ -1,3 +1,8 @@
+/* Validation */
+import * as Yup from 'yup';
+
+import { prependWithEmojiAndSpace } from '@/frontend/helpers/strings';
+
 /* LOCALES */
 export const LOCALES = ['en', 'fr'];
 export const DEFAULT_LOCALE = 'fr';
@@ -10,8 +15,6 @@ export const LOCALE_TO_TITLE = {
   fr: 'Français',
 };
 
-import { prependWithEmojiAndSpace } from '@/frontend/helpers/strings';
-
 function localeToTitle(locale) {
   return LOCALE_TO_TITLE[locale];
 }
@@ -22,8 +25,5 @@ export function localeToEmoji(locale) {
 export function prependLocaleWithEmoji(locale) {
   return prependWithEmojiAndSpace(localeToEmoji(locale), localeToTitle(locale));
 }
-
-/* Validation */
-import * as Yup from 'yup';
 
 export const localeSchema = () => Yup.string().oneOf(LOCALES, 'Invalid language.').required('Required.');

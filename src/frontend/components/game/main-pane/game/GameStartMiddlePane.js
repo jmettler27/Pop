@@ -1,12 +1,10 @@
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
+import { Avatar, Stack } from '@mui/material';
+import { useIntl } from 'react-intl';
 
+import ErrorScreen from '@/frontend/components/ErrorScreen';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-
-import { Stack, Avatar } from '@mui/material';
-
-import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.middlePane.GameStartMiddlePane', {

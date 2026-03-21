@@ -1,7 +1,7 @@
 import { BaseQuestion, GameQuestion } from '@/backend/models/questions/Question';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { isArray } from '@/backend/utils/arrays';
 import { DEFAULT_LOCALE } from '@/frontend/helpers/locales';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { prependWithEmojiAndSpace } from '@/frontend/helpers/strings';
 
 export class NaguiOption {

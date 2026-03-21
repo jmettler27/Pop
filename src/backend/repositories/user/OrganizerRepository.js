@@ -1,6 +1,5 @@
-import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
-
 import { Organizer } from '@/backend/models/users/Organizer';
+import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 
 export default class OrganizerRepository extends FirebaseRepository {
   constructor(gameId) {

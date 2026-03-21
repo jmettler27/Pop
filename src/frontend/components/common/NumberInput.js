@@ -1,8 +1,9 @@
 import * as React from 'react';
+
 import { Unstable_NumberInput as BaseNumberInput } from '@mui/base/Unstable_NumberInput';
-import { styled } from '@mui/system';
-import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import { styled } from '@mui/system';
 
 export const NumberInput = React.forwardRef(function CustomNumberInput(props, ref) {
   return (

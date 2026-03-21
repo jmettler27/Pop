@@ -1,12 +1,12 @@
 'use client';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { redirect } from 'next/navigation';
 
+import { useSession } from 'next-auth/react';
+
+import { QuestionType } from '@/backend/models/questions/QuestionType';
 import QuestionFormHeader from '@/frontend/components/common/QuestionFormHeader';
 import SubmitEnumerationQuestionForm from '@/frontend/components/question-forms/SubmitEnumerationQuestionForm';
-
-import { redirect } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 
 const QUESTION_TYPE = QuestionType.ENUMERATION;
 

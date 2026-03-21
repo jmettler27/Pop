@@ -1,5 +1,6 @@
-import { GameContext } from '@/frontend/contexts/GameContext';
 import { useContext } from 'react';
+
+import { GameContext } from '@/frontend/contexts/GameContext';
 
 const useGame = () => {
   const game = useContext(GameContext);

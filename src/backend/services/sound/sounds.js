@@ -1,7 +1,8 @@
 'use server';
 
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export async function addSound(gameId, filename) {
   const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue');

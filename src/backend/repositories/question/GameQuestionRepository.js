@@ -1,8 +1,7 @@
-import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
+import { serverTimestamp } from 'firebase/firestore';
 
 import QuestionFactory from '@/backend/models/questions/QuestionFactory';
-
-import { serverTimestamp } from 'firebase/firestore';
+import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 
 export default class GameQuestionRepository extends FirebaseRepository {
   constructor(gameId, roundId, questionType) {

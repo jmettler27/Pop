@@ -1,19 +1,14 @@
-import { resetTimer, startTimer, stopTimer, endTimer } from '@/backend/services/timer/actions';
-
-import { TimerStatus } from '@/backend/models/Timer';
-
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import useGame from '@/frontend/hooks/useGame';
-
-import Timer from '@/frontend/components/game/timer/Timer';
-
-import { Button, ButtonGroup, Tooltip, IconButton } from '@mui/material';
-
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
+import { ButtonGroup, IconButton, Tooltip } from '@mui/material';
+
+import { TimerStatus } from '@/backend/models/Timer';
+import { resetTimer, startTimer, stopTimer } from '@/backend/services/timer/actions';
+import Timer from '@/frontend/components/game/timer/Timer';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
 
 export default function OrganizerTimerController({ timer, serverTimeOffset, onTimerEnd }) {
   const game = useGame();

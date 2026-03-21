@@ -1,12 +1,11 @@
-import GameQuestionService from '@/backend/services/question/GameQuestionService';
+import { runTransaction } from 'firebase/firestore';
+
+import { firestore } from '@/backend/firebase/firebase';
 import { MCQQuestion } from '@/backend/models/questions/MCQ';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { PlayerStatus } from '@/backend/models/users/Player';
-
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
-
-import { runTransaction } from 'firebase/firestore';
-import { firestore } from '@/backend/firebase/firebase';
+import GameQuestionService from '@/backend/services/question/GameQuestionService';
 
 export default class GameMCQQuestionService extends GameQuestionService {
   constructor(gameId, roundId) {

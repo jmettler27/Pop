@@ -1,13 +1,14 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useIntl } from 'react-intl';
-import globalMessages from '@/i18n/globalMessages';
-
 import Link from 'next/link';
+
 import HomeIcon from '@mui/icons-material/Home';
 import { Button } from '@mui/material';
+import { useIntl } from 'react-intl';
+
 import { getRandomElement } from '@/backend/utils/arrays';
+import globalMessages from '@/i18n/globalMessages';
 
 const ERROR_TIP_KEYS = [
   'errorTip1',

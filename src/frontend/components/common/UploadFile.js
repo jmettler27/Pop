@@ -1,8 +1,12 @@
-import { useField, useFormikContext } from 'formik';
+import Image from 'next/image';
 
-import { styled } from '@mui/material/styles';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Button from '@mui/material/Button';
+import { styled } from '@mui/material/styles';
 import Box from '@mui/system/Box';
+import { useField, useFormikContext } from 'formik';
+import { useIntl } from 'react-intl';
 
 import {
   AUDIO_VALID_TYPES,
@@ -10,16 +14,9 @@ import {
   MAX_AUDIO_SIZE_MB,
   MAX_IMAGE_SIZE_MB,
 } from '@/frontend/helpers/forms/files';
-
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-import globalMessages from '@/i18n/globalMessages';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import CancelIcon from '@mui/icons-material/Cancel';
-
-import Image from 'next/image';
-
 import { requiredFileFieldIndicator } from '@/frontend/helpers/forms/forms';
+import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.forms.UploadFile', {
   selectImage: 'Select an image file',

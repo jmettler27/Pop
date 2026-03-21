@@ -1,18 +1,16 @@
-import useGame from '@/frontend/hooks/useGame';
-import useRole from '@/frontend/hooks/useRole';
-
-import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { doc } from 'firebase/firestore';
-import { useDocumentData, useDocumentOnce } from 'react-firebase-hooks/firestore';
-
 import { clsx } from 'clsx';
-import globalMessages from '@/i18n/globalMessages';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { doc } from 'firebase/firestore';
+import { useDocumentData } from 'react-firebase-hooks/firestore';
 import { useIntl } from 'react-intl';
 
+import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { ParticipantRole } from '@/backend/models/users/Participant';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import useGame from '@/frontend/hooks/useGame';
+import useRole from '@/frontend/hooks/useRole';
+import globalMessages from '@/i18n/globalMessages';
+
 export default function SpecialThemeActiveMiddlePane({ theme, gameTheme }) {
   const currentThemeId = theme.id;
   const currentSectionId = theme.details.sections[gameTheme.currentSectionIdx];

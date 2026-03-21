@@ -1,18 +1,17 @@
-import { GameStatus } from '@/backend/models/games/GameStatus';
-
-import GameRepository from '@/backend/repositories/game/GameRepository';
-import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
-import TimerRepository from '@/backend/repositories/timer/TimerRepository';
-import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
-import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
-import SoundRepository from '@/backend/repositories/sound/SoundRepository';
-import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
+import { increment, runTransaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
-import { increment, runTransaction } from 'firebase/firestore';
-import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
-import TeamRepository from '@/backend/repositories/user/TeamRepository';
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import GameRepository from '@/backend/repositories/game/GameRepository';
+import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
+import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
+import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
+import SoundRepository from '@/backend/repositories/sound/SoundRepository';
+import TimerRepository from '@/backend/repositories/timer/TimerRepository';
+import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
+import TeamRepository from '@/backend/repositories/user/TeamRepository';
 
 export default class GameQuestionService {
   constructor(gameId, roundId, questionType) {

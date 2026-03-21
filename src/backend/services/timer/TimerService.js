@@ -1,12 +1,12 @@
-import { firestore } from '@/backend/firebase/firebase';
 import { runTransaction } from 'firebase/firestore';
 
-import GameRepository from '@/backend/repositories/game/GameRepository';
-import SoundRepository from '@/backend/repositories/sound/SoundRepository';
-import TimerRepository from '@/backend/repositories/timer/TimerRepository';
+import { firestore } from '@/backend/firebase/firebase';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { Timer } from '@/backend/models/Timer';
+import GameRepository from '@/backend/repositories/game/GameRepository';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
+import SoundRepository from '@/backend/repositories/sound/SoundRepository';
+import TimerRepository from '@/backend/repositories/timer/TimerRepository';
 
 export default class TimerService {
   constructor(gameId) {

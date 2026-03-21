@@ -1,11 +1,10 @@
-import { addSound } from '@/backend/services/sound/sounds';
-import { loadSounds } from '@/backend/utils/sounds';
-
+import { memo, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import { memo, useState, useEffect } from 'react';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 
-import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { addSound } from '@/backend/services/sound/sounds';
+import { loadSounds } from '@/backend/utils/sounds';
 
 const SoundboardController = memo(function SoundboardController({}) {
   const { id: gameId } = useParams();

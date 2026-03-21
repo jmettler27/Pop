@@ -1,9 +1,8 @@
-import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
-
-import QuestionFactory from '@/backend/models/questions/QuestionFactory';
-
 import { query, where } from 'firebase/firestore';
 import { useCollectionOnce } from 'react-firebase-hooks/firestore';
+
+import QuestionFactory from '@/backend/models/questions/QuestionFactory';
+import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 
 export default class BaseQuestionRepository extends FirebaseRepository {
   /**

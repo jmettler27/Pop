@@ -1,18 +1,17 @@
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-
 import { BasicQuestion, GameBasicQuestion } from '@/backend/models/questions/Basic';
 import { BlindtestQuestion, GameBlindtestQuestion } from '@/backend/models/questions/Blindtest';
 import { EmojiQuestion, GameEmojiQuestion } from '@/backend/models/questions/Emoji';
 import { EnumerationQuestion, GameEnumerationQuestion } from '@/backend/models/questions/Enumeration';
-import { ImageQuestion, GameImageQuestion } from '@/backend/models/questions/Image';
-import { LabellingQuestion, GameLabellingQuestion } from '@/backend/models/questions/Labelling';
-import { MatchingQuestion, GameMatchingQuestion } from '@/backend/models/questions/Matching';
-import { MCQQuestion, GameMCQQuestion } from '@/backend/models/questions/MCQ';
-import { NaguiQuestion, GameNaguiQuestion } from '@/backend/models/questions/Nagui';
-import { OddOneOutQuestion, GameOddOneOutQuestion } from '@/backend/models/questions/OddOneOut';
-import { ProgressiveCluesQuestion, GameProgressiveCluesQuestion } from '@/backend/models/questions/ProgressiveClues';
-import { QuoteQuestion, GameQuoteQuestion } from '@/backend/models/questions/Quote';
-import { ReorderingQuestion, GameReorderingQuestion } from '@/backend/models/questions/Reordering';
+import { GameImageQuestion, ImageQuestion } from '@/backend/models/questions/Image';
+import { GameLabellingQuestion, LabellingQuestion } from '@/backend/models/questions/Labelling';
+import { GameMatchingQuestion, MatchingQuestion } from '@/backend/models/questions/Matching';
+import { GameMCQQuestion, MCQQuestion } from '@/backend/models/questions/MCQ';
+import { GameNaguiQuestion, NaguiQuestion } from '@/backend/models/questions/Nagui';
+import { GameOddOneOutQuestion, OddOneOutQuestion } from '@/backend/models/questions/OddOneOut';
+import { GameProgressiveCluesQuestion, ProgressiveCluesQuestion } from '@/backend/models/questions/ProgressiveClues';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { GameQuoteQuestion, QuoteQuestion } from '@/backend/models/questions/Quote';
+import { GameReorderingQuestion, ReorderingQuestion } from '@/backend/models/questions/Reordering';
 
 export default class QuestionFactory {
   /**

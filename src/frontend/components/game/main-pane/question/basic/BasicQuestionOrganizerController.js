@@ -1,18 +1,16 @@
-import { handleAnswer } from '@/backend/services/question/basic/actions';
-import globalMessages from '@/i18n/globalMessages';
-
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Button, ButtonGroup } from '@mui/material';
 import { useIntl } from 'react-intl';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
-import useGame from '@/frontend/hooks/useGame';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { handleAnswer } from '@/backend/services/question/basic/actions';
+import ClearBasicBuzzerButton from '@/frontend/components/game/main-pane/question/basic/ClearBasicBuzzerButton';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
-import ClearBasicBuzzerButton from '@/frontend/components/game/main-pane/question/basic/ClearBasicBuzzerButton';
-
-import { Button, ButtonGroup } from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import globalMessages from '@/i18n/globalMessages';
 
 export default function BasicQuestionOrganizerController({ gameQuestion }) {
   return (

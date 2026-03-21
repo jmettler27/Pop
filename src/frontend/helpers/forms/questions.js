@@ -1,7 +1,7 @@
+import * as Yup from 'yup';
+
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import globalMessages from '@/i18n/globalMessages';
-
-import * as Yup from 'yup';
 import defineMessages from '@/utils/defineMessages';
 
 export const questionTypeSchema = () =>

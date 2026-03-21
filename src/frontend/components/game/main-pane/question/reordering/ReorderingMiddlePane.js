@@ -2,13 +2,13 @@
 
 import { useMemo } from 'react';
 
+import { ParticipantRole } from '@/backend/models/users/Participant';
+import GameReorderingQuestionRepository from '@/backend/repositories/question/GameReorderingQuestionRepository';
+import { shuffleIndices } from '@/backend/utils/arrays';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
-import GameReorderingQuestionRepository from '@/backend/repositories/question/GameReorderingQuestionRepository';
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
-import { shuffleIndices } from '@/backend/utils/arrays';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import ReorderingOrganizerPane from './ReorderingOrganizerPane';
 import ReorderingPlayerPane from './ReorderingPlayerPane';

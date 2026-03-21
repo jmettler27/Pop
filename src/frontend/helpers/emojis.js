@@ -1,4 +1,5 @@
 import emojiRegex from 'emoji-regex';
+
 const regex = emojiRegex();
 
 export const emojiCount = (str) => (str.match(regex) || []).length;

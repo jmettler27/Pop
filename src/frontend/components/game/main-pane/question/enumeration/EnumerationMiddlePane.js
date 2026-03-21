@@ -1,32 +1,24 @@
-import { validateItem } from '@/backend/services/question/enumeration/actions';
-
-import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
+import clsx from 'clsx';
+import { useIntl } from 'react-intl';
 
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { ParticipantRole } from '@/backend/models/users/Participant';
-import { TimerStatus } from '@/backend/models/Timer';
-import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { EnumerationQuestionStatus } from '@/backend/models/questions/Enumeration';
+import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
+import { TimerStatus } from '@/backend/models/Timer';
 import { topicToEmoji } from '@/backend/models/Topic';
-
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-
-import useGame from '@/frontend/hooks/useGame';
-import useRole from '@/frontend/hooks/useRole';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
+import { ParticipantRole } from '@/backend/models/users/Participant';
+import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
+import { validateItem } from '@/backend/services/question/enumeration/actions';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import NoteButton from '@/frontend/components/game/NoteButton';
-
-import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
-
-import { CircularProgress } from '@mui/material';
-
-import clsx from 'clsx';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.EnumerationMiddlePane', {
   thereAre: 'There are',

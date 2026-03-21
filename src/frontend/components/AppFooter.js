@@ -1,13 +1,15 @@
 'use client';
 
-import { useLocale } from '@/app/LocaleProvider';
-import { LOCALES, LOCALE_TO_EMOJI, LOCALE_TO_TITLE } from '@/frontend/helpers/locales';
-import globalMessages from '@/i18n/globalMessages';
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-import LanguageIcon from '@mui/icons-material/Language';
-import HomeIcon from '@mui/icons-material/Home';
 import Link from 'next/link';
+
+import HomeIcon from '@mui/icons-material/Home';
+import LanguageIcon from '@mui/icons-material/Language';
+import { useIntl } from 'react-intl';
+
+import { useLocale } from '@/app/LocaleProvider';
+import { LOCALE_TO_TITLE, LOCALES } from '@/frontend/helpers/locales';
+import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.components.AppFooter', {
   selectLanguage: 'Select language',

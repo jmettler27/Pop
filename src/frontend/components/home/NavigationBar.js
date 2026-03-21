@@ -1,33 +1,32 @@
 'use client';
 
 import * as React from 'react';
-
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
-import ViewListIcon from '@mui/icons-material/ViewList';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import InfoIcon from '@mui/icons-material/Info';
-import LanguageIcon from '@mui/icons-material/Language';
-
-import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import InfoIcon from '@mui/icons-material/Info';
+import LanguageIcon from '@mui/icons-material/Language';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import AppBar from '@mui/material/AppBar';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import { signOut, useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-import globalMessages from '@/i18n/globalMessages';
+
 import { useLocale } from '@/app/LocaleProvider';
-import { LOCALES, LOCALE_TO_EMOJI, LOCALE_TO_TITLE } from '@/frontend/helpers/locales';
+import { LOCALE_TO_EMOJI, LOCALE_TO_TITLE, LOCALES } from '@/frontend/helpers/locales';
+import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.home.HomeBar', {
   games: 'Games',

@@ -1,13 +1,11 @@
-import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
-
-import { firestore } from '@/backend/firebase/firebase';
 import { runTransaction } from 'firebase/firestore';
 
+import { firestore } from '@/backend/firebase/firebase';
 import { Timer, TimerStatus } from '@/backend/models/Timer';
 import { PlayerStatus } from '@/backend/models/users/Player';
-
-import TimerRepository from '@/backend/repositories/timer/TimerRepository';
 import SoundRepository from '@/backend/repositories/sound/SoundRepository';
+import TimerRepository from '@/backend/repositories/timer/TimerRepository';
+import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 
 export default class PlayerService {

@@ -1,37 +1,31 @@
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { ImageQuestion } from '@/backend/models/questions/Image';
+import React, { useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
-import { submitQuestion, editQuestion } from '@/backend/services/create-question/actions';
-import { addQuestionToRound } from '@/backend/services/edit-game/actions';
-
-import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
-import { topicSchema } from '@/frontend/helpers/forms/topics';
-import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
-import { stringSchema } from '@/frontend/helpers/forms/forms';
-
+import { Form, Formik } from 'formik';
 import { useIntl } from 'react-intl';
+import * as Yup from 'yup';
+
+import { ImageQuestion } from '@/backend/models/questions/Image';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { editQuestion, submitQuestion } from '@/backend/services/create-question/actions';
+import { addQuestionToRound } from '@/backend/services/edit-game/actions';
+import SelectLanguage from '@/frontend/components/common/SelectLanguage';
+import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
+import { MyTextInput } from '@/frontend/components/common/StyledFormComponents';
+import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
+import { UploadImage } from '@/frontend/components/common/UploadFile';
+import { getFileFromRef, imageFileSchema } from '@/frontend/helpers/forms/files';
+import { stringSchema } from '@/frontend/helpers/forms/forms';
+import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
+import { topicSchema } from '@/frontend/helpers/forms/topics';
+import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.forms.submitQuestion.image', {
   answerDescription: 'Description of the image',
   answerSource: 'Source of the image',
 });
-import { getFileFromRef, imageFileSchema } from '@/frontend/helpers/forms/files';
-
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import SelectLanguage from '@/frontend/components/common/SelectLanguage';
-import { MyTextInput } from '@/frontend/components/common/StyledFormComponents';
-import { UploadImage } from '@/frontend/components/common/UploadFile';
-import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
-import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
-
-import { useRouter } from 'next/navigation';
-
-import React, { useRef } from 'react';
-
-import { Form, Formik } from 'formik';
-import * as Yup from 'yup';
 
 const QUESTION_TYPE = QuestionType.IMAGE;
 

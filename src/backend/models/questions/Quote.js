@@ -1,10 +1,9 @@
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { BaseQuestion, GameQuestion } from '@/backend/models/questions/Question';
-
+import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { isArray } from '@/backend/utils/arrays';
 import { isObjectEmpty } from '@/backend/utils/objects';
-import { prependWithEmojiAndSpace } from '@/frontend/helpers/strings';
 import { DEFAULT_LOCALE } from '@/frontend/helpers/locales';
+import { prependWithEmojiAndSpace } from '@/frontend/helpers/strings';
 
 export const QUOTE_ELEMENT_TO_TITLE = {
   en: {

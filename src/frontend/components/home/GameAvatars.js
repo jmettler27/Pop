@@ -1,8 +1,7 @@
+import { Avatar, AvatarGroup, Skeleton, Tooltip } from '@mui/material';
+
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
-
-import { Avatar, AvatarGroup, Tooltip } from '@mui/material';
-import { Skeleton } from '@mui/material';
 
 export function GameOrganizersAvatarGroup({ gameId, max = 4, size = 'medium' }) {
   const organizerRepo = new OrganizerRepository(gameId);

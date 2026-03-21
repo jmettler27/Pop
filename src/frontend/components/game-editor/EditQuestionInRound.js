@@ -1,25 +1,38 @@
+import React, { memo, useState } from 'react';
+import { useParams } from 'next/navigation';
+
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import TimerIcon from '@mui/icons-material/Timer';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  Popover,
+  TextField,
+  Tooltip,
+} from '@mui/material';
+import { useSession } from 'next-auth/react';
+import { useIntl } from 'react-intl';
+
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { Timer } from '@/backend/models/Timer';
+import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import {
   removeQuestionFromRound,
-  updateQuestionThinkingTime,
   updateQuestionChallengeTime,
+  updateQuestionThinkingTime,
 } from '@/backend/services/edit-game/actions';
-import { Timer } from '@/backend/models/Timer';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-
-import { useParams } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-
-import React, { useState, memo } from 'react';
-
-import { CardTitle, CardHeader, CardContent, Card, CardFooter } from '@/frontend/components/card';
-import { QuestionCardTitle, QuestionCardContent } from '@/frontend/components/common/QuestionCard';
-
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import globalMessages from '@/i18n/globalMessages';
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-
+import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/card';
+import { QuestionCardContent, QuestionCardTitle } from '@/frontend/components/common/QuestionCard';
 import SubmitBasicQuestionForm from '@/frontend/components/question-forms/SubmitBasicQuestionForm';
 import SubmitBlindtestQuestionForm from '@/frontend/components/question-forms/SubmitBlindtestQuestionForm';
 import SubmitEmojiQuestionForm from '@/frontend/components/question-forms/SubmitEmojiQuestionForm';
@@ -33,6 +46,9 @@ import SubmitOddOneOutQuestionForm from '@/frontend/components/question-forms/Su
 import SubmitProgressiveCluesQuestionForm from '@/frontend/components/question-forms/SubmitProgressiveCluesQuestionForm';
 import SubmitQuoteQuestionForm from '@/frontend/components/question-forms/SubmitQuoteQuestionForm';
 import SubmitReorderingQuestionForm from '@/frontend/components/question-forms/SubmitReorderingQuestionForm';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.gameEditor.EditQuestionInRound', {
   deleteDialogTitle: 'Are you sure you want to remove this question?',
@@ -47,23 +63,6 @@ const messages = defineMessages('frontend.gameEditor.EditQuestionInRound', {
   editQuestion: 'Edit question',
   editQuestionDialogTitle: 'Edit question',
 });
-
-import { Avatar, Button, Divider, Popover, TextField } from '@mui/material';
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  IconButton,
-  Tooltip,
-} from '@mui/material';
-
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import TimerIcon from '@mui/icons-material/Timer';
 
 export const EditQuestionCard = memo(function EditQuestionCard({
   roundId,
@@ -376,11 +375,6 @@ function QuestionCardSkeleton() {
     </Card>
   );
 }
-
-import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
-import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 function EditQuestionDialog({ baseQuestion, userId, open, onClose }) {
   const intl = useIntl();

@@ -1,4 +1,6 @@
 import * as Yup from 'yup';
+
+import { REQUIRED_FILE_TEST_NAME } from '@/frontend/helpers/forms/files';
 import defineMessages from '@/utils/defineMessages';
 
 export const messages = defineMessages('frontend.utils.forms', {
@@ -53,8 +55,6 @@ function objectFieldInArrayFieldIsRequired(yupSchema, outerFieldName, innerField
 
 export const requiredObjectInArrayFieldIndicator = (yupSchema, outerFieldName, innerFieldName, intl) =>
   requiredIndicatorString(objectFieldInArrayFieldIsRequired(yupSchema, outerFieldName, innerFieldName), intl);
-
-import { REQUIRED_FILE_TEST_NAME } from '@/frontend/helpers/forms/files';
 
 // The field is a file (audio, image)
 function fileFieldIsRequired(yupSchema, fieldName) {

@@ -1,11 +1,10 @@
-import { GameStatus } from '@/backend/models/games/GameStatus';
+import { CircularProgress } from '@mui/material';
 
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import RoundEndBottomPane from '@/frontend/components/game/main-pane/round/RoundEndBottomPane';
+import RoundStartBottomPane from '@/frontend/components/game/main-pane/round/RoundStartBottomPane';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-
-import RoundStartBottomPane from '@/frontend/components/game/main-pane/round/RoundStartBottomPane';
-import RoundEndBottomPane from '@/frontend/components/game/main-pane/round/RoundEndBottomPane';
-import { CircularProgress } from '@mui/material';
 
 export default function RoundBottomPane() {
   const game = useGame();

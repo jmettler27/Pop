@@ -1,27 +1,8 @@
-import { ParticipantRole } from '@/backend/models/users/Participant';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { topicToEmoji } from '@/backend/models/Topic';
-import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
-import { shuffleIndices } from '@/backend/utils/arrays';
-import { selectProposal } from '@/backend/services/question/odd-one-out/actions';
-import GameOddOneOutQuestionRepository from '@/backend/repositories/question/GameOddOneOutQuestionRepository';
-
-import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
-
-import useGame from '@/frontend/hooks/useGame';
-import useTeam from '@/frontend/hooks/useTeam';
-import useUser from '@/frontend/hooks/useUser';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import useRole from '@/frontend/hooks/useRole';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
-import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
-import NoteButton from '@/frontend/components/game/NoteButton';
-
 import { useEffect, useMemo, useState } from 'react';
 
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Accordion,
   AccordionDetails,
@@ -34,12 +15,26 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
 import { clsx } from 'clsx';
+
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
+import { topicToEmoji } from '@/backend/models/Topic';
+import { ParticipantRole } from '@/backend/models/users/Participant';
+import GameOddOneOutQuestionRepository from '@/backend/repositories/question/GameOddOneOutQuestionRepository';
+import { selectProposal } from '@/backend/services/question/odd-one-out/actions';
+import { shuffleIndices } from '@/backend/utils/arrays';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
+import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
+import NoteButton from '@/frontend/components/game/NoteButton';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+import useTeam from '@/frontend/hooks/useTeam';
+import useUser from '@/frontend/hooks/useUser';
 
 export default function OddOneOutMiddlePane({ baseQuestion }) {
   // Randomize the order of the items on the client side

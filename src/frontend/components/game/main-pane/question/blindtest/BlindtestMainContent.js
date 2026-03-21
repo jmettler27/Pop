@@ -1,19 +1,18 @@
-import { GameStatus } from '@/backend/models/games/GameStatus';
+import { useEffect, useRef, useState } from 'react';
 
-import { useState, useRef, useEffect } from 'react';
-import useGame from '@/frontend/hooks/useGame';
-
-import NextImage from '@/frontend/components/common/NextImage';
-import { Box, Typography, Slider, IconButton, Stack } from '@mui/material';
-import { styled, useTheme } from '@mui/material/styles';
+import FastForwardIcon from '@mui/icons-material/FastForward';
+import FastRewindIcon from '@mui/icons-material/FastRewind';
 import PauseRounded from '@mui/icons-material/PauseRounded';
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded';
-import VolumeUpRounded from '@mui/icons-material/VolumeUpRounded';
 import VolumeDownRounded from '@mui/icons-material/VolumeDownRounded';
-import FastRewindIcon from '@mui/icons-material/FastRewind';
-import FastForwardIcon from '@mui/icons-material/FastForward';
+import VolumeUpRounded from '@mui/icons-material/VolumeUpRounded';
+import { Box, IconButton, Slider, Stack, Typography } from '@mui/material';
+import { styled, useTheme } from '@mui/material/styles';
 
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import NextImage from '@/frontend/components/common/NextImage';
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
+import useGame from '@/frontend/hooks/useGame';
 
 export default function BlindtestMainContent({ baseQuestion }) {
   const game = useGame();

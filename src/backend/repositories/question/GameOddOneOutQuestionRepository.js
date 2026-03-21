@@ -1,6 +1,5 @@
-import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
-
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
 
 export default class GameOddOneOutQuestionRepository extends GameQuestionRepository {
   static ODD_ONE_OUT_PLAYERS_PATH = ['realtime', 'players'];

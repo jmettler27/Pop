@@ -1,11 +1,13 @@
 'use client';
 
-import { useIntl } from 'react-intl';
-import globalMessages from '@/i18n/globalMessages';
 import Link from 'next/link';
-import HomeIcon from '@mui/icons-material/Home';
+
 import ConstructionIcon from '@mui/icons-material/Construction';
+import HomeIcon from '@mui/icons-material/Home';
 import { Button } from '@mui/material';
+import { useIntl } from 'react-intl';
+
+import globalMessages from '@/i18n/globalMessages';
 
 export default function GameUnderConstructionScreen() {
   const intl = useIntl();

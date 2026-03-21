@@ -1,12 +1,11 @@
-import { firestore } from '@/backend/firebase/firebase';
 import { runTransaction, Timestamp } from 'firebase/firestore';
 
-import { isObjectEmpty } from '@/backend/utils/objects';
-import { range } from '@/backend/utils/arrays';
-
-import { PlayerStatus } from '@/backend/models/users/Player';
+import { firestore } from '@/backend/firebase/firebase';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { PlayerStatus } from '@/backend/models/users/Player';
 import GameBuzzerQuestionService from '@/backend/services/question/GameBuzzerQuestionService';
+import { range } from '@/backend/utils/arrays';
+import { isObjectEmpty } from '@/backend/utils/objects';
 
 export default class GameLabellingQuestionService extends GameBuzzerQuestionService {
   constructor(gameId, roundId) {

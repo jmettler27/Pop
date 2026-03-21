@@ -1,4 +1,4 @@
-import { QuestionType, isValidQuestionType } from '@/backend/models/questions/QuestionType';
+import { isValidQuestionType } from '@/backend/models/questions/QuestionType';
 import { isValidTopic } from '@/backend/models/Topic';
 
 export class Question {

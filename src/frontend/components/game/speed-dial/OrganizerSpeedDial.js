@@ -1,25 +1,22 @@
-import { resetGame, resumeEditing, returnToGameHome } from '@/backend/services/game/actions';
-
-import SoundboardController from '@/frontend/components/game/soundboard/SoundboardController';
-
+import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
-import * as React from 'react';
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-import globalMessages from '@/i18n/globalMessages';
-
+import EditIcon from '@mui/icons-material/Edit';
+import HomeIcon from '@mui/icons-material/Home';
+import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import ShareIcon from '@mui/icons-material/Share';
 import Backdrop from '@mui/material/Backdrop';
 import SpeedDial from '@mui/material/SpeedDial';
-import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
+import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import { styled } from '@mui/material/styles';
+import { useIntl } from 'react-intl';
 
-import ShareIcon from '@mui/icons-material/Share';
-import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
-import HomeIcon from '@mui/icons-material/Home';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import EditIcon from '@mui/icons-material/Edit';
+import { resetGame, resumeEditing, returnToGameHome } from '@/backend/services/game/actions';
+import SoundboardController from '@/frontend/components/game/soundboard/SoundboardController';
+import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.speedDial.OrganizerSpeedDial', {
   share: 'Share',

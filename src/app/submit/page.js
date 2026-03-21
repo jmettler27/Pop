@@ -1,23 +1,21 @@
 'use client';
 
+import React from 'react';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-import globalMessages from '@/i18n/globalMessages';
 
 import {
   prependQuestionTypeWithEmoji,
   QuestionType,
   questionTypeToDescription,
 } from '@/backend/models/questions/QuestionType';
-
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/frontend/components/card';
-
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-
-import React from 'react';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('app.submit', {
   chooseQuestionType: 'Choose a question type to get started',

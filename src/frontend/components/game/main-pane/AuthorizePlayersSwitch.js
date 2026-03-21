@@ -1,12 +1,11 @@
-import { togglePlayerAuthorization } from '@/backend/services/player/actions';
-
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
 import { useParams } from 'next/navigation';
 
 import { FormControlLabel, Switch } from '@mui/material';
+import { useIntl } from 'react-intl';
+
+import { togglePlayerAuthorization } from '@/backend/services/player/actions';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.AuthorizePlayersSwitch', {
   authorizeLabel: 'Authorize players',

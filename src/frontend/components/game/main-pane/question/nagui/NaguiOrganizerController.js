@@ -1,22 +1,17 @@
-import { handleHideAnswer } from '@/backend/services/question/nagui/actions';
-
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import globalMessages from '@/i18n/globalMessages';
-
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Button, ButtonGroup } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-import useGame from '@/frontend/hooks/useGame';
-
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { handleHideAnswer } from '@/backend/services/question/nagui/actions';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
-import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
-
-import { Button, ButtonGroup } from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
+import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import globalMessages from '@/i18n/globalMessages';
 
 export default function NaguiOrganizerController({ gameQuestion }) {
   return (

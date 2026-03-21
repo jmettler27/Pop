@@ -1,13 +1,13 @@
-import { firestore } from '@/backend/firebase/firebase';
 import { runTransaction } from 'firebase/firestore';
 
+import { firestore } from '@/backend/firebase/firebase';
 import GameRepository from '@/backend/repositories/game/GameRepository';
+import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
+import SoundRepository from '@/backend/repositories/sound/SoundRepository';
 import TimerRepository from '@/backend/repositories/timer/TimerRepository';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
-import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
-import SoundRepository from '@/backend/repositories/sound/SoundRepository';
 
 /**
  * Service for creating a new game

@@ -1,13 +1,11 @@
 import { GameStatus } from '@/backend/models/games/GameStatus';
-
-import useGame from '@/frontend/hooks/useGame';
-
+import GameEndBottomPane from '@/frontend/components/game/main-pane/game/GameEndBottomPane';
 import GameHomeBottomPane from '@/frontend/components/game/main-pane/game/GameHomeBottomPane';
 import GameStartBottomPane from '@/frontend/components/game/main-pane/game/GameStartBottomPane';
-import RoundBottomPane from '@/frontend/components/game/main-pane/round/RoundBottomPane';
 import QuestionBottomPane from '@/frontend/components/game/main-pane/question/QuestionBottomPane';
+import RoundBottomPane from '@/frontend/components/game/main-pane/round/RoundBottomPane';
 import SpecialBottomPane from '@/frontend/components/game/main-pane/special/SpecialBottomPane';
-import GameEndBottomPane from '@/frontend/components/game/main-pane/game/GameEndBottomPane';
+import useGame from '@/frontend/hooks/useGame';
 
 export default function BottomPane() {
   const game = useGame();

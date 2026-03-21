@@ -1,10 +1,12 @@
+import { getNodeId, MatchingEdge } from '@/frontend/components/game/main-pane/question/matching/gridUtils.js';
 import useGame from '@/frontend/hooks/useGame';
 
-import { getNodeId, MatchingEdge } from '@/frontend/components/game/main-pane/question/matching/gridUtils.js';
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
+
+import { CircularProgress } from '@mui/material';
+
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import { isObjectEmpty } from '@/backend/utils/objects';
-import { CircularProgress } from '@mui/material';
 
 export default function CorrectMatches({ nodePositions, colIndices }) {
   console.log('CORRECT MATCHES RENDERED');

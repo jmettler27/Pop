@@ -1,28 +1,27 @@
-import { selectChoice } from '@/backend/services/question/mcq/actions';
+import { useMemo } from 'react';
+import Image from 'next/image';
+
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import { Avatar, Badge, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { clsx } from 'clsx';
 
 import { GameStatus } from '@/backend/models/games/GameStatus';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import { MCQQuestion } from '@/backend/models/questions/MCQ';
-
+import { ParticipantRole } from '@/backend/models/users/Participant';
+import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
+import { selectChoice } from '@/backend/services/question/mcq/actions';
 import { shuffleIndices } from '@/backend/utils/arrays';
-
-import useUser from '@/frontend/hooks/useUser';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
+import NoteButton from '@/frontend/components/game/NoteButton';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { IMAGES } from '@/frontend/constants/images';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import { IMAGES } from '@/frontend/constants/images';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-import NoteButton from '@/frontend/components/game/NoteButton';
-
-import { useMemo } from 'react';
-
-import { Avatar, Badge, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-
-import { clsx } from 'clsx';
+import useUser from '@/frontend/hooks/useUser';
 
 export default function MCQMainContent({ baseQuestion }) {
   const title = baseQuestion.title;
@@ -44,8 +43,6 @@ export default function MCQMainContent({ baseQuestion }) {
     </div>
   );
 }
-
-import Image from 'next/image';
 
 function MCQAnswerImage({ correct }) {
   if (correct === true) {
@@ -141,11 +138,6 @@ function ActiveMCQChoices({ baseQuestion, gameQuestion, randomization }) {
     </List>
   );
 }
-
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 function EndedMCQChoices({ baseQuestion, gameQuestion, randomization }) {
   const choices = baseQuestion.choices;

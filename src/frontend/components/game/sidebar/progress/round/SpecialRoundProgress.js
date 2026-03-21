@@ -1,37 +1,30 @@
-import { topicToEmoji } from '@/backend/models/Topic';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { ParticipantRole } from '@/backend/models/users/Participant';
-import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
-import globalMessages from '@/i18n/globalMessages';
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { CircularProgress } from '@mui/material';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Typography from '@mui/material/Typography';
+import clsx from 'clsx';
+import { collection, doc, orderBy, query, where } from 'firebase/firestore';
+import { useCollection, useCollectionOnce, useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 import { useIntl } from 'react-intl';
+
+import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
+import { topicToEmoji } from '@/backend/models/Topic';
+import { ParticipantRole } from '@/backend/models/users/Participant';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import useRole from '@/frontend/hooks/useRole';
+import globalMessages from '@/i18n/globalMessages';
 import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.sidebar.progress.SpecialRoundProgress', {
   theme: 'Theme',
 });
-
-import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { doc, collection, query, where, orderBy } from 'firebase/firestore';
-import { useDocumentData, useCollection, useCollectionOnce, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
-
-import useRole from '@/frontend/hooks/useRole';
-
-import { useParams } from 'next/navigation';
-
-import { useState, useEffect } from 'react';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-
-import { CircularProgress } from '@mui/material';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
-
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
-import clsx from 'clsx';
 
 export default function SpecialRoundProgress({ game, round }) {
   switch (round.status) {

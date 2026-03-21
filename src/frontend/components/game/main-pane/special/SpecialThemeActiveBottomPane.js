@@ -1,26 +1,20 @@
-import { handleQuestionEndOrganizerContinue } from '@/backend/services/round/special/actions';
-
-import { ParticipantRole } from '@/backend/models/users/Participant';
-
-import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Button, ButtonGroup } from '@mui/material';
 import { doc } from 'firebase/firestore';
 import { useDocument } from 'react-firebase-hooks/firestore';
+import { useIntl } from 'react-intl';
 
+import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
+import { ParticipantRole } from '@/backend/models/users/Participant';
+import { handleQuestionEndOrganizerContinue } from '@/backend/services/round/special/actions';
+import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import useUser from '@/frontend/hooks/useUser';
-
 import globalMessages from '@/i18n/globalMessages';
-import { useIntl } from 'react-intl';
-
-import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
-
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import { Button, ButtonGroup } from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
 export default function SpecialThemeActiveBottomPane({ theme, gameTheme }) {
   const myRole = useRole();

@@ -1,28 +1,20 @@
-import UserRepository from '@/backend/repositories/user/UserRepository';
+import React from 'react';
+import Image from 'next/image';
 
-import { QuestionType, questionTypeToEmoji } from '@/backend/models/questions/QuestionType';
+import { Divider, Tooltip } from '@mui/material';
+import clsx from 'clsx';
+import { useIntl } from 'react-intl';
+
 import { BlindtestQuestion } from '@/backend/models/questions/Blindtest';
 import { MCQQuestion } from '@/backend/models/questions/MCQ';
 import { NaguiQuestion } from '@/backend/models/questions/Nagui';
+import { QuestionType, questionTypeToEmoji } from '@/backend/models/questions/QuestionType';
 import { prependTopicWithEmoji, topicToEmoji } from '@/backend/models/Topic';
-
+import UserRepository from '@/backend/repositories/user/UserRepository';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/frontend/components/card';
+import { LOCALE_TO_EMOJI } from '@/frontend/helpers/locales';
 import { QUESTION_ELEMENT_TO_EMOJI, QUESTION_ELEMENT_TO_TITLE } from '@/frontend/helpers/question';
 import { timestampToDate } from '@/frontend/helpers/time';
-
-import { LOCALE_TO_EMOJI } from '@/frontend/helpers/locales';
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-
-import { CardTitle, CardHeader, CardContent, Card, CardFooter } from '@/frontend/components/card';
-
-import Image from 'next/image';
-
-import React from 'react';
-
-import clsx from 'clsx';
-
-import { Divider, Tooltip } from '@mui/material';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 export function QuestionCard({ baseQuestion, showType = false }) {
   return (

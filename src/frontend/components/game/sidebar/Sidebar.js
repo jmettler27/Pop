@@ -1,32 +1,28 @@
-import { ParticipantRole } from '@/backend/models/users/Participant';
+import React, { useState } from 'react';
 
-import useRole from '@/frontend/hooks/useRole';
-import { useLocale } from '@/app/LocaleProvider';
-import { LOCALES, LOCALE_TO_TITLE } from '@/frontend/helpers/locales';
-import globalMessages from '@/i18n/globalMessages';
-
+import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
+import TranslateIcon from '@mui/icons-material/Translate';
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
+
+import { useLocale } from '@/app/LocaleProvider';
+import { ParticipantRole } from '@/backend/models/users/Participant';
+import ProgressTabPanel from '@/frontend/components/game/sidebar/progress/ProgressTabPanel';
+import SoundboardAudioPlayer from '@/frontend/components/game/soundboard/SoundboardAudioPlayer';
+import OrganizerSpeedDial from '@/frontend/components/game/speed-dial/OrganizerSpeedDial';
+import { LOCALE_TO_TITLE, LOCALES } from '@/frontend/helpers/locales';
+import useRole from '@/frontend/hooks/useRole';
+import globalMessages from '@/i18n/globalMessages';
 import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.sidebar.Sidebar', {
   progress: 'Progress',
 });
-
-import SoundboardAudioPlayer from '@/frontend/components/game/soundboard/SoundboardAudioPlayer';
-import ProgressTabPanel from '@/frontend/components/game/sidebar/progress/ProgressTabPanel';
-import OrganizerSpeedDial from '@/frontend/components/game/speed-dial/OrganizerSpeedDial';
-
-import React, { useState } from 'react';
-
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import TranslateIcon from '@mui/icons-material/Translate';
-
-import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 
 export default function Sidebar({}) {
   const myRole = useRole();

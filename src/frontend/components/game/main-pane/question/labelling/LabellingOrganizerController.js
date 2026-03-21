@@ -1,29 +1,27 @@
-import { useParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
+import { useParams } from 'next/navigation';
 
-import { isEmpty } from '@/backend/utils/arrays';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Button, ButtonGroup, CircularProgress } from '@mui/material';
+import { useIntl } from 'react-intl';
+
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
 import {
   cancelPlayer,
-  validateAllLabels,
   handleBuzzerHeadChanged,
+  validateAllLabels,
 } from '@/backend/services/question/labelling/actions';
-import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
-
-import useGame from '@/frontend/hooks/useGame';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import globalMessages from '@/i18n/globalMessages';
-import { useIntl } from 'react-intl';
-import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
-import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
-import ClearBuzzerButton from '@/frontend/components/game/main-pane/question/buzzer/ClearBuzzerButton';
+import { isEmpty } from '@/backend/utils/arrays';
 import BuzzerHeadPlayer from '@/frontend/components/game/main-pane/question/buzzer/BuzzerHeadPlayer';
+import ClearBuzzerButton from '@/frontend/components/game/main-pane/question/buzzer/ClearBuzzerButton';
+import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import RevealLabelButton from '@/frontend/components/game/main-pane/question/labelling/RevealLabelButton.js';
-
-import { Button, ButtonGroup, CircularProgress } from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
+import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import globalMessages from '@/i18n/globalMessages';
 
 export default function LabellingOrganizerController({ baseQuestion, questionPlayers }) {
   const { id: gameId } = useParams();

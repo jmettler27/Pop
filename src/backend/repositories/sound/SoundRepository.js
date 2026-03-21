@@ -1,8 +1,8 @@
-import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 import { runTransaction, serverTimestamp } from 'firebase/firestore';
 
-import { getRandomElement } from '@/backend/utils/arrays';
 import { firestore } from '@/backend/firebase/firebase';
+import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
+import { getRandomElement } from '@/backend/utils/arrays';
 
 const WRONG_ANSWER_SOUNDS = ['roblox_oof', 'oof', 'terraria_male_damage', 'itai'];
 

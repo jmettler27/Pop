@@ -1,24 +1,22 @@
 import { useState } from 'react';
 
-import { revealLabel } from '@/backend/services/question/labelling/actions';
-import { isEmpty } from '@/backend/utils/arrays';
-import { rankingToEmoji } from '@/frontend/helpers/emojis';
-
-import useGame from '@/frontend/hooks/useGame';
-import globalMessages from '@/i18n/globalMessages';
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Menu } from '@mui/material';
-import ListSubheader from '@mui/material/ListSubheader';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
+import { useIntl } from 'react-intl';
 
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import { revealLabel } from '@/backend/services/question/labelling/actions';
+import { isEmpty } from '@/backend/utils/arrays';
+import { rankingToEmoji } from '@/frontend/helpers/emojis';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import globalMessages from '@/i18n/globalMessages';
+import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.RevealLabelButton', {
   revealListHeader: 'Reveal a label',

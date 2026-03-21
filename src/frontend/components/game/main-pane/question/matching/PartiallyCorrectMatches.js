@@ -1,8 +1,8 @@
-import { isObjectEmpty } from '@/backend/utils/objects';
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
-
-import useGame from '@/frontend/hooks/useGame';
+import { isObjectEmpty } from '@/backend/utils/objects';
 import { getNodeId, MatchingEdge } from '@/frontend/components/game/main-pane/question/matching/gridUtils.js';
+import useGame from '@/frontend/hooks/useGame';
+
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
 
 export default function PartiallyCorrectMatches({ nodePositions }) {

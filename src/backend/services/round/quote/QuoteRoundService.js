@@ -1,11 +1,12 @@
-import RoundService from '@/backend/services/round/RoundService';
-import { ScorePolicyType } from '@/backend/models/ScorePolicy';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { PlayerStatus } from '@/backend/models/users/Player';
 import { serverTimestamp } from 'firebase/firestore';
-import { Timer, TimerStatus } from '@/backend/models/Timer';
+
+import { GameStatus } from '@/backend/models/games/GameStatus';
 import { RoundType } from '@/backend/models/rounds/RoundType';
+import { ScorePolicyType } from '@/backend/models/ScorePolicy';
+import { Timer } from '@/backend/models/Timer';
+import { PlayerStatus } from '@/backend/models/users/Player';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
+import RoundService from '@/backend/services/round/RoundService';
 
 export default class QuoteRoundService extends RoundService {
   constructor(gameId) {

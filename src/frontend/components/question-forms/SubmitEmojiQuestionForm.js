@@ -1,44 +1,34 @@
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { EmojiQuestion } from '@/backend/models/questions/Emoji';
-
-import { submitQuestion, editQuestion } from '@/backend/services/create-question/actions';
-import { addQuestionToRound } from '@/backend/services/edit-game/actions';
-
-import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
-import { topicSchema } from '@/frontend/helpers/forms/topics';
-import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
-
-import { stringSchema } from '@/frontend/helpers/forms/forms';
-import { getFileFromRef, imageFileSchema } from '@/frontend/helpers/forms/files';
-
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import { useIntl } from 'react-intl';
-
-import { MyTextInput } from '@/frontend/components/common/StyledFormComponents';
-import { UploadImage } from '@/frontend/components/common/UploadFile';
-import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
-import SelectLanguage from '@/frontend/components/common/SelectLanguage';
-import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
-
-import { useRouter } from 'next/navigation';
-
 import React, { useRef } from 'react';
-
-import * as Yup from 'yup';
-
-import { Form, Formik, useFormikContext } from 'formik';
+import { useRouter } from 'next/navigation';
 
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
+import { Form, Formik, useFormikContext } from 'formik';
+import { useIntl } from 'react-intl';
+import * as Yup from 'yup';
+
+import { EmojiQuestion } from '@/backend/models/questions/Emoji';
+import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { editQuestion, submitQuestion } from '@/backend/services/create-question/actions';
+import { addQuestionToRound } from '@/backend/services/edit-game/actions';
+import SelectLanguage from '@/frontend/components/common/SelectLanguage';
+import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
+import { MyTextInput } from '@/frontend/components/common/StyledFormComponents';
+import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
+import { UploadImage } from '@/frontend/components/common/UploadFile';
+import { emojiCount, onlyEmojis } from '@/frontend/helpers/emojis';
+import { getFileFromRef, imageFileSchema } from '@/frontend/helpers/forms/files';
+import { stringSchema } from '@/frontend/helpers/forms/forms';
+import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
+import { topicSchema } from '@/frontend/helpers/forms/topics';
+import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 const QUESTION_TYPE = QuestionType.EMOJI;
 
 const EMOJI_TITLE_EXAMPLE = 'Film';
 const EMOJI_CLUE_EXAMPLE = '🚢🎻🧊';
 const EMOJI_ANSWER_TITLE_EXAMPLE = 'Titanic';
-
-import { emojiCount, onlyEmojis } from '@/frontend/helpers/emojis';
 
 /* Indicator on the number of emojis being written in a string field composed only of emojis */
 export const numEmojisIndicator = (strField, maxLength) => '(' + emojiCount(strField) + '/' + maxLength + ')';

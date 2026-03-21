@@ -1,13 +1,12 @@
-import { GameStatus } from '@/backend/models/games/GameStatus';
-
-import useGame from '@/frontend/hooks/useGame';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-import NextImage from '@/frontend/components/common/NextImage';
 import { Box } from '@mui/material';
 import { clsx } from 'clsx';
+
+import { GameStatus } from '@/backend/models/games/GameStatus';
 import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/GameProgressiveCluesQuestionRepository';
+import NextImage from '@/frontend/components/common/NextImage';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import useGame from '@/frontend/hooks/useGame';
 
 export default function ProgressiveCluesMainContent({ baseQuestion, showComplete }) {
   const game = useGame();

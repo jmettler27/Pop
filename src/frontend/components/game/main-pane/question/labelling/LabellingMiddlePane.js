@@ -1,26 +1,21 @@
-import { revealLabel } from '@/backend/services/question/labelling/actions';
+import { Box } from '@mui/material';
 
-import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
-
-import { topicToEmoji } from '@/backend/models/Topic';
-import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import { GameStatus } from '@/backend/models/games/GameStatus';
-
-import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
+import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
+import { topicToEmoji } from '@/backend/models/Topic';
+import { ParticipantRole } from '@/backend/models/users/Participant';
+import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
+import { revealLabel } from '@/backend/services/question/labelling/actions';
 import { isObjectEmpty } from '@/backend/utils/objects';
-
+import NextImage from '@/frontend/components/common/NextImage';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
+import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
+import NoteButton from '@/frontend/components/game/NoteButton';
+import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
-import NextImage from '@/frontend/components/common/NextImage';
-import NoteButton from '@/frontend/components/game/NoteButton';
-import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
-
-import { Box } from '@mui/material';
 
 export default function LabellingMiddlePane({ baseQuestion }) {
   return (
