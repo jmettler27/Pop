@@ -1,15 +1,15 @@
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { EmojiQuestion } from '@/backend/models/questions/Emoji';
 
-import { submitQuestion, editQuestion } from '@/backend/services/question-creator/actions';
+import { submitQuestion, editQuestion } from '@/backend/services/create-question/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
-import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
-import { topicSchema } from '@/frontend/utils/forms/topics';
-import { messages as questionMessages } from '@/frontend/utils/forms/questions';
+import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
+import { topicSchema } from '@/frontend/helpers/forms/topics';
+import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
 
-import { stringSchema } from '@/frontend/utils/forms/forms';
-import { getFileFromRef, imageFileSchema } from '@/frontend/utils/forms/files';
+import { stringSchema } from '@/frontend/helpers/forms/forms';
+import { getFileFromRef, imageFileSchema } from '@/frontend/helpers/forms/files';
 
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
@@ -38,7 +38,7 @@ const EMOJI_TITLE_EXAMPLE = 'Film';
 const EMOJI_CLUE_EXAMPLE = '🚢🎻🧊';
 const EMOJI_ANSWER_TITLE_EXAMPLE = 'Titanic';
 
-import { emojiCount, onlyEmojis } from '@/backend/utils/emojis';
+import { emojiCount, onlyEmojis } from '@/frontend/helpers/emojis';
 
 /* Indicator on the number of emojis being written in a string field composed only of emojis */
 export const numEmojisIndicator = (strField, maxLength) => '(' + emojiCount(strField) + '/' + maxLength + ')';

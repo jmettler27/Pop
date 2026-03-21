@@ -1,6 +1,7 @@
 import useGame from '@/frontend/hooks/useGame';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 import BasicMiddlePane from '@/frontend/components/game/main-pane/question/basic/BasicMiddlePane';
 import EnumerationMiddlePane from '@/frontend/components/game/main-pane/question/enumeration/EnumerationMiddlePane';
@@ -25,14 +26,10 @@ export default function QuestionMiddlePane() {
   );
 
   if (baseQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(baseQuestionError)}</strong>
-      </p>
-    );
+    return <ErrorScreen inline />;
   }
   if (baseQuestionLoading) {
-    return <LoadingScreen />;
+    return <LoadingScreen inline />;
   }
   if (!baseQuestion) {
     return <></>;

@@ -10,17 +10,7 @@ export default function GameChooserOrder({ chooser }) {
   const { teamRepo } = useGameRepositories();
   const { teams, loading, error } = teamRepo.useAllTeams();
 
-  if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
-  }
-  if (loading) {
-    return <></>;
-  }
-  if (!teams) {
+  if (error || loading || !teams) {
     return <></>;
   }
 

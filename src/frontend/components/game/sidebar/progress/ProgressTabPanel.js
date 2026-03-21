@@ -14,17 +14,14 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 
 import { useIntl } from 'react-intl';
 import globalMessages from '@/i18n/globalMessages';
+
 export default function ProgressTabPanel({}) {
   const { id: gameId } = useParams();
 
   const gameRef = doc(GAMES_COLLECTION_REF, gameId);
   const [gameDoc, gameDocLoading, gameDocError] = useDocument(gameRef);
   if (gameDocError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameDocError)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (gameDocLoading) {
     return <CircularProgress />;

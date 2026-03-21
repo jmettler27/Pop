@@ -3,9 +3,10 @@ import { useIntl } from 'react-intl';
 
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
+import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 
 import { gameTypeToEmoji } from '@/backend/models/games/GameType';
-import { localeToEmoji } from '@/frontend/utils/locales';
+import { localeToEmoji } from '@/frontend/helpers/locales';
 
 import { useSession } from 'next-auth/react';
 
@@ -33,18 +34,13 @@ export default function GamesUnderConstruction() {
   const gameRepo = new GameRepository();
   const { games, loading, error } = gameRepo.useGamesByStatus(GameStatus.GAME_EDIT);
   if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (loading) {
-    return <LoadingScreen loadingText="Loading games under construction..." />;
+    return <LoadingScreen inline />;
   }
   if (!games) {
-    // Button to create a new round
-    return <div>There are no games under construction yet.</div>;
+    return <></>;
   }
 
   const sortedGames = games.sort((a, b) => b.dateEnd - a.dateEnd);
@@ -53,7 +49,7 @@ export default function GamesUnderConstruction() {
     <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-slate-700 shadow-2xl hover:shadow-yellow-500/20 transition-all duration-300">
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 border-b border-slate-700">
         <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-          🛠️ {intl.formatMessage(messages.title)} ({sortedGames.length})
+          🛠️ {intl.formatMessage(messages.title)}
         </CardTitle>
       </CardHeader>
 
@@ -79,26 +75,24 @@ export function GameUnderConstructionCard({ game }) {
   const { data: session } = useSession();
   const user = session.user;
 
-  console.log(game);
-
   const organizerRepo = new OrganizerRepository(game.id);
-  //    const { isOrganizer, loading, error } = organizerRepo.useIsOrganizer(user.id)
-  const { organizers, loading, error } = organizerRepo.useAllOrganizersOnce();
-  if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
+  const playerRepo = new PlayerRepository(game.id);
+  const { organizers, loading: organizersLoading, error: organizersError } = organizerRepo.useAllOrganizersOnce();
+  const { players, loading: playersLoading, error: playersError } = playerRepo.useAllPlayersOnce();
+
+  if (organizersError || playersError) {
+    return <></>;
   }
-  if (loading) {
+  if (organizersLoading || playersLoading) {
     return <Skeleton variant="rounded" width={210} height={60} />;
   }
-  if (!organizers) {
+  if (!organizers || !players) {
     return <></>;
   }
 
-  const isOrganizer = organizers.find((o) => o.id === user.id);
+  const isPlayer = players.some((p) => p.id === user.id);
+  const isOrganizer = organizers.some((o) => o.id === user.id);
+  if (!isOrganizer && !isPlayer) return null;
 
   return (
     <Card className="bg-slate-800/50 border border-yellow-600/20 shadow-lg hover:shadow-yellow-500/40 hover:border-yellow-400/60 transition-all duration-300 hover:-translate-y-1 overflow-hidden">

@@ -19,7 +19,7 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 import { PlayerStatus } from '@/backend/models/users/Player';
 
 import { aggregateTiedTeams, shuffle } from '@/backend/utils/arrays';
-import { sortAscendingRoundScores } from '@/backend/utils/rounds';
+import { sortAscendingRoundScores } from '@/backend/utils/scores';
 import { sortScores } from '@/backend/utils/scores';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';

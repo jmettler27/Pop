@@ -1,4 +1,4 @@
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { DEFAULT_LOCALE } from '@/frontend/helpers/locales';
 
 export const QUESTION_ELEMENT_TO_TITLE = {
   en: {

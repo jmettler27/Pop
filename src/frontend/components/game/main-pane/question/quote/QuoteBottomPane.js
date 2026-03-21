@@ -9,6 +9,7 @@ import QuoteOrganizerController from '@/frontend/components/game/main-pane/quest
 import BuzzerSpectatorController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerSpectatorController';
 import BuzzerPlayerController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayerController';
 import BuzzerPlayers from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayers';
+import { CircularProgress } from '@mui/material';
 
 export default function QuoteBottomPane({ baseQuestion }) {
   const game = useGame();
@@ -17,15 +18,10 @@ export default function QuoteBottomPane({ baseQuestion }) {
   const { data: questionPlayers, loading, error } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
 
   if (error) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(error)}
-      </p>
-    );
+    return <></>;
   }
   if (loading) {
-    return <></>;
+    return <CircularProgress />;
   }
   if (!questionPlayers) {
     return <></>;

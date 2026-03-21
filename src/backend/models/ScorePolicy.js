@@ -1,4 +1,4 @@
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { DEFAULT_LOCALE } from '@/frontend/helpers/locales';
 
 export const ScorePolicyType = {
   RANKING: 'ranking',
@@ -33,7 +33,7 @@ export function scorePolicyTypeToTitle(type, locale = DEFAULT_LOCALE) {
   return ScorePolicyTypeToTitle[locale]?.[type] || type;
 }
 
-import { prependWithEmojiAndSpace } from '@/backend/utils/strings';
+import { prependWithEmojiAndSpace } from '@/frontend/helpers/strings';
 
 export function prependScorePolicyTypeWithEmoji(type, locale = DEFAULT_LOCALE) {
   const emoji = scorePolicyTypeToEmoji(type);

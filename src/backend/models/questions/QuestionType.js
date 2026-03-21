@@ -1,4 +1,4 @@
-import { DEFAULT_LOCALE } from '@/frontend/utils/locales';
+import { DEFAULT_LOCALE } from '@/frontend/helpers/locales';
 
 export const QuestionType = {
   PROGRESSIVE_CLUES: 'progressive_clues',
@@ -79,7 +79,7 @@ export function questionTypeToTitle(type, locale = DEFAULT_LOCALE) {
   return QuestionTypeToTitle[locale]?.[type] || type;
 }
 
-import { prependWithEmojiAndSpace } from '@/backend/utils/strings';
+import { prependWithEmojiAndSpace } from '@/frontend/helpers/strings';
 
 export function prependQuestionTypeWithEmoji(type, locale = DEFAULT_LOCALE) {
   const emoji = questionTypeToEmoji(type);

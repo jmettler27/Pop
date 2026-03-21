@@ -13,7 +13,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Looks4Icon from '@mui/icons-material/Looks4';
 import LooksTwoIcon from '@mui/icons-material/LooksTwo';
 
-import { Button, ButtonGroup, CircularProgress } from '@mui/material';
+import { Button, ButtonGroup } from '@mui/material';
 
 const NAGUI_OPTION_TO_ICON = {
   hide: <VisibilityOffIcon />,

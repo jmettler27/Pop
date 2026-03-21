@@ -29,11 +29,7 @@ function TeamGameScore({ teamId }) {
   const { gameScores, loading, error } = scoreRepo.useScores();
 
   if (error) {
-    return (
-      <p>
-        <strong>Error:</strong> {JSON.stringify(error)}
-      </p>
-    );
+    return <></>;
   }
   if (loading) {
     return <CircularProgress />;
@@ -55,11 +51,7 @@ function TeamRoundScore({ teamId, roundId }) {
   const { roundScores, loading, error } = roundScoreRepo.useScores();
 
   if (error) {
-    return (
-      <p>
-        <strong>Error:</strong> {JSON.stringify(error)}
-      </p>
-    );
+    return <></>;
   }
   if (loading) {
     return <CircularProgress />;
@@ -113,11 +105,7 @@ function CompletionRatePolicyTeamRoundActiveScore({ teamId, game }) {
   const { round, loading, error } = roundRepo.useRound(game.currentRound);
 
   if (error) {
-    return (
-      <p>
-        <strong>Error:</strong> {JSON.stringify(error)}
-      </p>
-    );
+    return <></>;
   }
   if (loading) {
     return <CircularProgress />;

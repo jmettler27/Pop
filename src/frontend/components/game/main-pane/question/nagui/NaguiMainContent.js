@@ -81,17 +81,13 @@ function NaguiMainContentQuestion({ baseQuestion, randomization }) {
   const game = useGame();
 
   const gameQuestionRepo = new GameNaguiQuestionRepository(game.id, game.currentRound);
-  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
+  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameQuestionError)}</strong>
-      </p>
-    );
+  if (error) {
+    return <ErrorScreen inline />;
   }
-  if (gameQuestionLoading) {
-    return <LoadingScreen loadingText="Loading..." />;
+  if (loading) {
+    return <LoadingScreen inline />;
   }
   if (!gameQuestion) {
     return <></>;
@@ -123,6 +119,7 @@ const choiceIsDisabled = (choiceIdx, myRole, isChooser, option, duoIdx, answerId
 };
 
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 function ActiveNaguiChoices({ baseQuestion, gameQuestion, randomization }) {
   const game = useGame();

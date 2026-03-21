@@ -4,6 +4,7 @@ import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 import SpecialHomeMiddlePane from '@/frontend/components/game/main-pane/special/home/SpecialHomeMiddlePane';
 import SpecialThemeMiddlePane from '@/frontend/components/game/main-pane/special/theme/SpecialThemeMiddlePane';
 
@@ -14,14 +15,10 @@ export default function SpecialMiddlePane({}) {
   const { round, roundLoading, roundError } = roundRepo.useRound(game.currentRound);
 
   if (roundError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(roundError)}</strong>
-      </p>
-    );
+    return <ErrorScreen inline />;
   }
   if (roundLoading) {
-    return <LoadingScreen loadingText="Loading round..." />;
+    return <LoadingScreen inline />;
   }
   if (!round) {
     return <></>;

@@ -1,18 +1,15 @@
+import { isEmpty } from '@/backend/utils/arrays';
+import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 import {
   handleBuzzerHeadChanged,
   cancelPlayer,
   validateAllQuoteElements,
 } from '@/backend/services/question/quote/actions';
 
-import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
-
-import { isEmpty } from '@/backend/utils/arrays';
-import globalMessages from '@/i18n/globalMessages';
-
 import { useIntl } from 'react-intl';
-
+import { useParams } from 'next/navigation';
+import { useEffect, useRef } from 'react';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-
 import useGame from '@/frontend/hooks/useGame';
 
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
@@ -21,14 +18,12 @@ import ClearQuoteBuzzerButton from '@/frontend/components/game/main-pane/questio
 import BuzzerHeadPlayer from '@/frontend/components/game/main-pane/question/buzzer/BuzzerHeadPlayer';
 import RevealQuoteElementButton from '@/frontend/components/game/main-pane/question/quote/RevealQuoteElement';
 
-import { useParams } from 'next/navigation';
-
-import { useEffect, useRef } from 'react';
-
-import { Button, ButtonGroup, CircularProgress } from '@mui/material';
+import { Button, ButtonGroup } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+
+import globalMessages from '@/i18n/globalMessages';
 
 export default function QuoteOrganizerController({ baseQuestion, questionPlayers }) {
   const { id: gameId } = useParams();
@@ -63,23 +58,9 @@ function QuoteOrganizerAnswerController({ buzzed, baseQuestion }) {
   const game = useGame();
 
   const gameQuestionRepo = new GameQuoteQuestionRepository(game.id, game.currentRound);
-  const {
-    gameQuestion,
-    loading: gameQuestionLoading,
-    error: gameQuestionError,
-  } = gameQuestionRepo.useQuestion(game.currentQuestion);
+  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameQuestionError)}</strong>
-      </p>
-    );
-  }
-  if (gameQuestionLoading) {
-    return <CircularProgress />;
-  }
-  if (!gameQuestion) {
+  if (error || loading || !gameQuestion) {
     return <></>;
   }
 
@@ -149,8 +130,6 @@ function CancelQuoteElementButton({ buzzed }) {
     </>
   );
 }
-
-const CANCEL_QUOTE_ELEMENT = undefined; // removed
 
 function QuoteOrganizerQuestionController({}) {
   return (

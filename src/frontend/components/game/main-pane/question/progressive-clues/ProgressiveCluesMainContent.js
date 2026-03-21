@@ -7,6 +7,7 @@ import NextImage from '@/frontend/components/common/NextImage';
 import { Box } from '@mui/material';
 import { clsx } from 'clsx';
 import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/GameProgressiveCluesQuestionRepository';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 export default function ProgressiveCluesMainContent({ baseQuestion, showComplete }) {
   const game = useGame();
@@ -25,17 +26,13 @@ function ProgressiveClues({ baseQuestion, showComplete }) {
   const game = useGame();
 
   const gameQuestionRepo = new GameProgressiveCluesQuestionRepository(game.id, game.currentRound);
-  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
+  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameQuestionError)}</strong>
-      </p>
-    );
+  if (error) {
+    return <ErrorScreen inline />;
   }
-  if (gameQuestionLoading) {
-    return <LoadingScreen />;
+  if (loading) {
+    return <LoadingScreen inline />;
   }
   if (!gameQuestion) {
     return <></>;

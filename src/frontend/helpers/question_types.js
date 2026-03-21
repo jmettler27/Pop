@@ -1,4 +1,5 @@
 import { QuestionType } from '@/backend/models/questions/QuestionType';
+import { RoundType } from '@/backend/models/rounds/RoundType';
 
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import HeadphonesIcon from '@mui/icons-material/Headphones';
@@ -13,6 +14,8 @@ import ChecklistIcon from '@mui/icons-material/Checklist';
 import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects';
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
+import RepeatIcon from '@mui/icons-material/Repeat';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 export function QuestionTypeIcon({ questionType, fontSize = 'small' }) {
   switch (questionType) {
@@ -42,5 +45,16 @@ export function QuestionTypeIcon({ questionType, fontSize = 'small' }) {
       return <FormatQuoteIcon sx={{ fontSize }} />;
     case QuestionType.REORDERING:
       return <ShuffleIcon sx={{ fontSize }} />;
+  }
+}
+
+export function RoundTypeIcon({ roundType, fontSize = 'small' }) {
+  switch (roundType) {
+    case RoundType.MIXED:
+      return <RepeatIcon sx={{ fontSize }} />;
+    case RoundType.SPECIAL:
+      return <EmojiEventsIcon sx={{ fontSize }} />;
+    default:
+      return <QuestionTypeIcon questionType={roundType} fontSize={fontSize} />;
   }
 }

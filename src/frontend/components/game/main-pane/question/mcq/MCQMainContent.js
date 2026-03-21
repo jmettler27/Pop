@@ -74,14 +74,10 @@ function MCQMainContentQuestion({ baseQuestion, randomization }) {
   const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
   if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
+    return <ErrorScreen inline />;
   }
   if (loading) {
-    return <LoadingScreen loadingText="Loading..." />;
+    return <LoadingScreen inline />;
   }
   if (!gameQuestion) {
     return <></>;
@@ -149,6 +145,7 @@ function ActiveMCQChoices({ baseQuestion, gameQuestion, randomization }) {
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 function EndedMCQChoices({ baseQuestion, gameQuestion, randomization }) {
   const choices = baseQuestion.choices;

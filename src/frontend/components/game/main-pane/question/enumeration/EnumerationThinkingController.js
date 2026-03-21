@@ -33,26 +33,24 @@ import {
   Select,
 } from '@mui/material';
 
-const messages = defineMessages('frontend.game.bottom.EnumerationThinkingActiveController', {
+const messages = defineMessages('frontend.game.bottom.EnumerationThinkingController', {
   betInputLabel: 'My bet',
   enumThinkingActiveHeader: 'Waiting for players to bet...',
 });
 
-export default function EnumerationThinkingActiveController({ baseQuestion, timer }) {
+export default function EnumerationThinkingController({ baseQuestion, timer }) {
   const myRole = useRole();
-
-  console.log('EnumerationThinkingActiveController', { baseQuestion, timer, myRole });
 
   switch (myRole) {
     case ParticipantRole.PLAYER:
-      return <EnumPlayerThinkingActive baseQuestion={baseQuestion} timer={timer} />;
+      return <EnumPlayerThinkingController baseQuestion={baseQuestion} timer={timer} />;
     default:
-      return <EnumSpectatorThinkingActive timer={timer} />;
+      return <EnumSpectatorThinkingController timer={timer} />;
   }
 }
 
 /* ============================================================ Player ============================================================ */
-function EnumPlayerThinkingActive({ baseQuestion, timer }) {
+function EnumPlayerThinkingController({ baseQuestion, timer }) {
   return (
     <div className="flex flex-col h-full items-center justify-center">
       <AddBetForm baseQuestion={baseQuestion} status={timer.status} />
@@ -86,12 +84,7 @@ function AddBetForm({ baseQuestion, status }) {
   } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
 
   if (playersError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(playersError)}
-      </p>
-    );
+    return <></>;
   }
   if (playersLoading) {
     return <CircularProgress />;
@@ -100,7 +93,7 @@ function AddBetForm({ baseQuestion, status }) {
     return <></>;
   }
 
-  const hasBet = questionPlayers.bets.some((bet) => bet.playerId == user.id);
+  const hasBet = questionPlayers.bets.some((bet) => bet.playerId === user.id);
   const selectorDisabled = status !== TimerStatus.START || hasValidated || hasBet;
 
   const handleSelectorChange = (event) => {
@@ -192,7 +185,7 @@ function AddBetForm({ baseQuestion, status }) {
 }
 
 /* ============================================================ Spectator ============================================================ */
-function EnumSpectatorThinkingActive({ timer }) {
+function EnumSpectatorThinkingController({ timer }) {
   const intl = useIntl();
   return (
     <div className="flex flex-col h-full items-center justify-center">

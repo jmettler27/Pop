@@ -31,14 +31,10 @@ function SpecialController() {
   const { round, loading, error } = roundRepo.useRound(game.currentRound);
 
   if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (loading) {
-    return <LoadingScreen loadingText="Loading round info..." />;
+    return <LoadingScreen inline />;
   }
   if (!round) {
     return <></>;
@@ -64,11 +60,7 @@ function SpecialChooserOrder() {
   const { chooser, loading, error } = chooserRepo.useChooser(game.id);
 
   if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (loading) {
     return <></>;

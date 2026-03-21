@@ -2,7 +2,7 @@ import { topicToEmoji } from '@/backend/models/Topic';
 import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 
-import { QuestionTypeIcon } from '@/backend/utils/question_types';
+import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 
 import NoteButton from '@/frontend/components/game/NoteButton';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';

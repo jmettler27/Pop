@@ -4,10 +4,21 @@ import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { getRandomElement } from '@/backend/utils/arrays';
 
 import { useIntl } from 'react-intl';
+import defineMessages from '@/utils/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 
 import useGame from '@/frontend/hooks/useGame';
 import { WinnerName } from '@/frontend/components/game/PlayerName';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
+
+const messages = defineMessages('frontend.game.BuzzerAnswer', {
+  winnerText1: 'GG',
+  winnerText2: 'Congrats',
+  winnerText3: 'Hats off',
+  winnerText4: 'Well done',
+});
+
+const WINNER_TEXT_KEYS = ['winnerText1', 'winnerText2', 'winnerText3', 'winnerText4'];
 
 export default function BuzzerAnswer({ baseQuestion }) {
   return (
@@ -38,17 +49,13 @@ function BuzzerWinnerInfo({ baseQuestion }) {
     game.id,
     game.currentRound
   );
-  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
+  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameQuestionError)}</strong>
-      </p>
-    );
+  if (error) {
+    return <></>;
   }
-  if (gameQuestionLoading) {
-    return <p>Loading game question...</p>;
+  if (loading) {
+    return <p>{intl.formatMessage(globalMessages.loading)}</p>;
   }
   if (!gameQuestion) {
     return <></>;
@@ -62,8 +69,8 @@ function BuzzerWinnerInfo({ baseQuestion }) {
     return <></>;
   }
 
-  const winnerText =
-    intl.locale === 'fr' ? getRandomElement(BUZZER_WINNER_TEXT_FR) : getRandomElement(BUZZER_WINNER_TEXT_EN);
+  const key = getRandomElement(WINNER_TEXT_KEYS);
+  const winnerText = intl.formatMessage(messages[key]);
 
   return (
     <span className="2xl:text-3xl">
@@ -75,7 +82,3 @@ function BuzzerWinnerInfo({ baseQuestion }) {
     </span>
   );
 }
-
-const BUZZER_WINNER_TEXT_EN = ['GG', 'Congrats', 'Hats off', 'Well done'];
-
-const BUZZER_WINNER_TEXT_FR = ['GG', 'Bravo', 'Félicitations', 'Chapeau', 'Bien joué', 'Super', 'Excellent', 'Parfait'];

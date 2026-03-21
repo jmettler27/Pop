@@ -19,7 +19,7 @@ import {
 import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';
 
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import GameErrorScreen from '@/frontend/components/game/GameErrorScreen';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 import { redirect, useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -62,19 +62,14 @@ function JoinGameHeader() {
   const { game, loading, error } = gameRepo.useGameOnce(gameId);
   const intl = useIntl();
 
+  if (error || (!loading && !game)) {
+    return <></>;
+  }
+
   return (
-    <>
-      {error && (
-        <p>
-          <strong>Error: {JSON.stringify(error)}</strong>
-        </p>
-      )}
-      {!loading && game && (
-        <h1>
-          {intl.formatMessage(messages.joinGameHeader)}: <i>{game.title}</i>
-        </h1>
-      )}
-    </>
+    <h1>
+      {intl.formatMessage(messages.joinGameHeader)}: <i>{game.title}</i>
+    </h1>
   );
 }
 
@@ -122,8 +117,12 @@ export default function Page({ params }) {
 
   const { game, organizers, players, loading, error } = useGameData(gameId);
 
-  if (error) return <GameErrorScreen />;
-  if (loading) return <LoadingScreen loadingText="Loading game..." />;
+  if (error) {
+    return <ErrorScreen />;
+  }
+  if (loading) {
+    return <LoadingScreen />;
+  }
   if (!game) return null;
 
   if (organizers.some((o) => o.id === user.id)) {
@@ -280,11 +279,7 @@ function JoinOrCreateTeam({ validationSchema }) {
   const { teams, loading, error } = teamRepo.useJoinableTeams();
 
   if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (loading) {
     return <CircularProgress color="inherit" />;
@@ -333,11 +328,7 @@ function SelectTeamOption({ team }) {
   const { players, loading, error } = playerRepo.useTeamPlayers(team.id);
 
   if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (loading) {
     return <option value={team.id}>&quot;{team.name}&quot; (loading players...)</option>;

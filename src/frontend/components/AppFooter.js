@@ -1,7 +1,7 @@
 'use client';
 
 import { useLocale } from '@/app/LocaleProvider';
-import { LOCALES, LOCALE_TO_EMOJI, LOCALE_TO_TITLE } from '@/frontend/utils/locales';
+import { LOCALES, LOCALE_TO_EMOJI, LOCALE_TO_TITLE } from '@/frontend/helpers/locales';
 import globalMessages from '@/i18n/globalMessages';
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';

@@ -8,6 +8,7 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 const messages = defineMessages('frontend.game.middle.SpecialThemeEndMiddlePane', {
   themeEnd: 'End of theme',
@@ -46,14 +47,10 @@ function ThemeScores({ themeId }) {
   );
 
   if (gameSectionsLoading) {
-    return <LoadingScreen loadingText="Loading gameSections..." />;
+    return <LoadingScreen inline />;
   }
   if (gameSectionsError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameSectionsError)}</strong>
-      </p>
-    );
+    return <ErrorScreen inline />;
   }
   if (!gameSections) {
     return <></>;

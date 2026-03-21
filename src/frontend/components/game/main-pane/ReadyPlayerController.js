@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import { setPlayerReady } from '@/backend/services/player/actions';
 
 import { getRandomElement } from '@/backend/utils/arrays';
@@ -14,15 +16,58 @@ import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
+import fmt, { keyChunks } from '@/utils/fmt';
 
 const messages = defineMessages('frontend.game.bottom.ReadyPlayerController', {
   waitingForPlayers: 'Waiting for players...',
-  hotFor: 'Ready for',
-  gameStart: 'starting the game',
-  roundStart: 'the first question',
-  questionEnd: 'the next question',
-  questionEndLast: 'the end of the round',
+  hotForGameStart: 'Ready for <b>starting the game</b>? \uD83E\uDD78',
+  hotForRoundStart: 'Ready for <b>the first question</b>? \uD83E\uDD78',
+  hotForQuestionEnd: 'Ready for <b>the next question</b>? \uD83E\uDD78',
+  hotForQuestionEndLast: 'Ready for <b>the end of the round</b>? \uD83E\uDD78',
+  readyText1: "Let's do this like a boss",
+  readyText2: "I'm geared up and ready to roll",
+  readyText3: 'My body is primed and pumped',
+  readyText4: "I'm prepped like a pro",
+  readyText5: 'My engines are revved and ready to go',
+  readyText6: "I'm itching to get started",
+  readyText7: "I'm fired up and good to go",
+  readyText8: "I'm locked and loaded for action",
+  readyText9: "I'm amped up and raring to go",
+  readyText10: 'My batteries are fully charged',
+  readyText11: "I'm chomping at the bit",
+  readyText12: "I'm all set and ready to rock",
+  readyText13: "I'm hyped up and ready to go",
+  readyText14: "I'm ready to take on the world",
+  readyText15: "Let's get this party started",
+  readyText16: "I'm in the zone and ready to dominate",
+  readyText17: "I'm all systems go",
+  readyText18: "I'm like a coiled spring, ready to unleash",
+  readyText19: "I'm prepped and pumped like a prizefighter",
+  readyText20: "I'm armed and dangerous, ready to tackle whatever comes my way",
 });
+
+const READY_TEXT_KEYS = [
+  'readyText1',
+  'readyText2',
+  'readyText3',
+  'readyText4',
+  'readyText5',
+  'readyText6',
+  'readyText7',
+  'readyText8',
+  'readyText9',
+  'readyText10',
+  'readyText11',
+  'readyText12',
+  'readyText13',
+  'readyText14',
+  'readyText15',
+  'readyText16',
+  'readyText17',
+  'readyText18',
+  'readyText19',
+  'readyText20',
+];
 
 import { useParams } from 'next/navigation';
 
@@ -38,11 +83,7 @@ export default function ReadyPlayerController({ isLastQuestion }) {
   const { timer, timerLoading, timerError } = timerRepo.useTimer(gameId);
 
   if (timerError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(timerError)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (timerLoading) {
     return <CircularProgress />;
@@ -72,11 +113,7 @@ function ReadyPlayerHeader({ isLastQuestion }) {
   const { ready, readyLoading, readyError } = readyRepo.useReady();
 
   if (readyError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(readyError)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (readyLoading) {
     return <CircularProgress />;
@@ -89,30 +126,19 @@ function ReadyPlayerHeader({ isLastQuestion }) {
     return <span className="2xl:text-4xl">Letzgo! 🚀</span>;
   }
 
+  const b = (chunks) => <strong>{keyChunks(chunks)}</strong>;
+
   if (myRole === ParticipantRole.PLAYER) {
-    switch (game.status) {
-      case GameStatus.GAME_START:
-        return (
-          <span className="2xl:text-4xl">
-            {intl.formatMessage(messages.hotFor)} <strong>{intl.formatMessage(messages.gameStart)}</strong>? 🥸
-          </span>
-        );
-      case GameStatus.ROUND_START:
-        return (
-          <span className="2xl:text-4xl">
-            {intl.formatMessage(messages.hotFor)} <strong>{intl.formatMessage(messages.roundStart)}</strong>? 🥸
-          </span>
-        );
-      case GameStatus.QUESTION_END:
-        return (
-          <span className="2xl:text-4xl">
-            {intl.formatMessage(messages.hotFor)}{' '}
-            <strong>
-              {isLastQuestion ? intl.formatMessage(messages.questionEndLast) : intl.formatMessage(messages.questionEnd)}
-            </strong>
-            ? 🥸
-          </span>
-        );
+    const msg =
+      game.status === GameStatus.GAME_START
+        ? messages.hotForGameStart
+        : game.status === GameStatus.ROUND_START
+          ? messages.hotForRoundStart
+          : isLastQuestion
+            ? messages.hotForQuestionEndLast
+            : messages.hotForQuestionEnd;
+    if (msg) {
+      return <span className="2xl:text-4xl">{fmt(intl.formatMessage, msg, { b })}</span>;
     }
   }
 
@@ -136,11 +162,7 @@ export function ReadyPlayerButton() {
   const { player, playerLoading, playerError } = playerRepo.usePlayer(user.id);
 
   if (playerError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(playerError)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (playerLoading) {
     return <CircularProgress />;
@@ -149,8 +171,10 @@ export function ReadyPlayerButton() {
     return <></>;
   }
 
-  const readyButtonText =
-    intl.locale === 'fr' ? getRandomElement(READY_BUTTON_TEXT_FR) : getRandomElement(READY_BUTTON_TEXT_EN);
+  const readyButtonText = useMemo(() => {
+    const key = getRandomElement(READY_TEXT_KEYS);
+    return intl.formatMessage(messages[key]);
+  }, [intl]);
 
   return (
     <Button
@@ -166,43 +190,3 @@ export function ReadyPlayerButton() {
     </Button>
   );
 }
-
-// Taken from https://responsefully.com/funny-ways-to-say-im-ready/
-const READY_BUTTON_TEXT_EN = [
-  "Let's do this like a boss",
-  "I'm geared up and ready to roll",
-  'My body is primed and pumped',
-  "I'm prepped like a pro",
-  'My engines are revved and ready to go',
-  "I'm itching to get started",
-  "I'm fired up and good to go",
-  "I'm locked and loaded for action",
-  "I'm amped up and raring to go",
-  'My batteries are fully charged',
-  "I'm chomping at the bit",
-  "I'm all set and ready to rock",
-  "I'm hyped up and ready to go",
-  "I'm ready to take on the world",
-  "Let's get this party started",
-  "I'm in the zone and ready to dominate",
-  "I'm all systems go",
-  "I'm like a coiled spring, ready to unleash",
-  "I'm prepped and pumped like a prizefighter",
-  "I'm armed and dangerous, ready to tackle whatever comes my way",
-];
-
-const READY_BUTTON_TEXT_FR = [
-  'Chui prêt',
-  'Je suis prêt comme un ninja devant un buffet!',
-  'Prêt à décoller comme une fusée en chocolat!',
-  'Je suis prêt à affronter les licornes et les dragons!',
-  'Prêt comme un écureuil devant une noisette!',
-  'Je suis prêt à dévorer les énigmes comme un détective affamé!',
-  'Prêt à rouler comme une boule de neige en descente!',
-  'Je suis prêt à briller comme une étoile du rire!',
-  "Prêt à plonger dans l'inconnu comme un explorateur de canapé!",
-  'Je suis prêt comme un chat à la chasse aux souris!',
-  "Prêt à déguster les défis comme un chef étoilé de l'aventure!",
-  'Je suis prêt à bondir comme un kangourou en pleine forme!',
-  "Prêt à m'envoler comme un oiseau de nuit!",
-];

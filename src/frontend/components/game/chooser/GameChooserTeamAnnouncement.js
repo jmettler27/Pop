@@ -1,42 +1,35 @@
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { ParticipantRole } from '@/backend/models/users/Participant';
-
-import { useIntl } from 'react-intl';
-import defineMessages from '@/utils/defineMessages';
-
-const messages = defineMessages('frontend.game.GameChooserTeamAnnouncement', {
-  toPlay: 'play',
-  toChoose: 'choose',
-});
-
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
+import defineMessages from '@/utils/defineMessages';
+import fmt, { keyChunks } from '@/utils/fmt';
+import { useIntl } from 'react-intl';
 
-export default function GameChooserTeamAnnouncement({}) {
-  const game = useGame();
+const messages = defineMessages('frontend.game.GameChooserTeamAnnouncement', {
+  toPlay: 'play',
+  toChoose: 'choose',
+  chooserYourTeamTurn: "🫵 It's your team's turn to {action}",
+  chooserYourTurn: "🫵 It's your turn to {action}",
+  teamTurn: "It's Team <team>{teamName}</team>'s turn to {action}",
+  playerTurn: "It's <team>{playerName}</team>'s turn to {action}",
+});
 
+export default function GameChooserTeamAnnouncement() {
   const { chooserRepo } = useGameRepositories();
   const { chooser, chooserLoading, chooserError } = chooserRepo.useChooser();
 
-  if (chooserError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(chooserError)}
-      </p>
-    );
-  }
-  if (chooserLoading) {
-    return <></>;
-  }
-  if (!chooser) {
-    return <></>;
-  }
+  if (chooserError || chooserLoading || !chooser) return null;
 
   const chooserTeamId = chooser.chooserOrder.length > 0 ? chooser.chooserOrder[chooser.chooserIdx] : null;
-  return chooserTeamId && <GameChooserHelperText chooserTeamId={chooserTeamId} />;
+
+  return chooserTeamId ? <GameChooserHelperText chooserTeamId={chooserTeamId} /> : null;
+}
+
+function TeamColorSpan({ color, chunks }) {
+  return <span style={{ color }}>{keyChunks(chunks)}</span>;
 }
 
 export function GameChooserHelperText({ chooserTeamId }) {
@@ -44,76 +37,31 @@ export function GameChooserHelperText({ chooserTeamId }) {
   const myTeam = useTeam();
   const myRole = useRole();
   const intl = useIntl();
-
-  const { teamRepo, playerRepo, chooserRepo } = useGameRepositories();
+  const { teamRepo, playerRepo } = useGameRepositories();
 
   const { team, loading: teamLoading, error: teamError } = teamRepo.useTeam(chooserTeamId);
   const { players, loading: playersLoading, error: playersError } = playerRepo.useTeamPlayers(chooserTeamId);
 
-  if (teamError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(teamError)}</strong>
-      </p>
-    );
-  }
-  if (playersError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(playersError)}</strong>
-      </p>
-    );
-  }
-  if (teamLoading || playersLoading) {
-    return <></>;
-  }
-  if (!team || !players) {
-    return <></>;
+  if (teamError || playersError || teamLoading || playersLoading || !team || !players) {
+    return null;
   }
 
   const isChooser = myRole === ParticipantRole.PLAYER && chooserTeamId === myTeam;
   const teamHasManyPlayers = players.length > 1;
-  const chooserActionText = chooserAction(game.status, intl);
+  const action =
+    game.status === GameStatus.QUESTION_ACTIVE
+      ? intl.formatMessage(messages.toPlay)
+      : intl.formatMessage(messages.toChoose);
+  const teamTag = (chunks) => <TeamColorSpan color={team.color} chunks={chunks} />;
 
   if (isChooser) {
-    if (intl.locale === 'fr')
-      return (
-        <span>
-          🫵 C&apos;est à <span style={{ color: team.color }}>{teamHasManyPlayers ? 'ton équipe' : 'toi'}</span> de{' '}
-          {chooserActionText}{' '}
-        </span>
-      );
-    return <span>🫵 It&apos;s your turn to {chooserActionText}</span>;
+    const msg = teamHasManyPlayers ? messages.chooserYourTeamTurn : messages.chooserYourTurn;
+    return <span>{fmt(intl.formatMessage, msg, { action, team: teamTag })}</span>;
   }
-  if (teamHasManyPlayers) {
-    if (intl.locale === 'fr')
-      return (
-        <span>
-          C&apos;est à l&apos;équipe <span style={{ color: team.color }}>{team.name}</span> de {chooserActionText}
-        </span>
-      );
-    return (
-      <span>
-        It&apos;s Team <span style={{ color: team.color }}>{team.name}</span>&apos;s turn to {chooserActionText}
-      </span>
-    );
-  }
-  const chooserPlayerName = team.name;
-  if (intl.locale === 'fr')
-    return (
-      <span>
-        C&apos;est à <span style={{ color: team.color }}>{chooserPlayerName}</span> de {chooserActionText}
-      </span>
-    );
-  return (
-    <span>
-      It&apos;s <span style={{ color: team.color }}>{chooserPlayerName}</span>&apos;s turn to {chooserActionText}
-    </span>
-  );
-}
 
-const chooserAction = (gameStatus, intl) => {
-  return gameStatus === GameStatus.QUESTION_ACTIVE
-    ? intl.formatMessage(messages.toPlay)
-    : intl.formatMessage(messages.toChoose);
-};
+  if (teamHasManyPlayers) {
+    return <span>{fmt(intl.formatMessage, messages.teamTurn, { teamName: team.name, action, team: teamTag })}</span>;
+  }
+
+  return <span>{fmt(intl.formatMessage, messages.playerTurn, { playerName: team.name, action, team: teamTag })}</span>;
+}

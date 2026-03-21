@@ -4,8 +4,8 @@ import { Round } from '@/backend/models/rounds/Round';
 
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
-import { stringSchema } from '@/frontend/utils/forms/forms';
-import { roundTypeSchema } from '@/frontend/utils/forms/game';
+import { stringSchema } from '@/frontend/helpers/forms/forms';
+import { roundTypeSchema } from '@/frontend/helpers/forms/game';
 
 import SelectRoundType from '@/frontend/components/common/SelectRoundType';
 import { MyNumberInput, MyTextInput } from '@/frontend/components/common/StyledFormComponents';

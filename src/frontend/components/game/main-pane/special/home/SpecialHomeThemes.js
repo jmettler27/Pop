@@ -10,6 +10,7 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { useParams } from 'next/navigation';
 
 import { Grid, Box } from '@mui/material';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 export default function SpecialHomeThemes({ round }) {
   const { id: gameId } = useParams();
@@ -21,25 +22,11 @@ export default function SpecialHomeThemes({ round }) {
   const [chooser, chooserLoading, chooserError] = useDocumentData(chooserRef);
   const [gameThemeDocs, gameThemesLoading, gameThemesError] = useCollectionOnce(gameThemesCollectionRef);
 
-  if (chooserError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(chooserError)}</strong>
-      </p>
-    );
+  if (chooserError || gameThemesError) {
+    return <ErrorScreen inline />;
   }
-  if (gameThemesError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameThemesError)}</strong>
-      </p>
-    );
-  }
-  if (chooserLoading) {
-    return <LoadingScreen loadingText="Loading game states..." />;
-  }
-  if (gameThemesLoading) {
-    return <LoadingScreen loadingText="Loading game themes..." />;
+  if (chooserLoading || gameThemesLoading) {
+    return <LoadingScreen inline />;
   }
   if (!chooser || !gameThemeDocs) {
     return <></>;

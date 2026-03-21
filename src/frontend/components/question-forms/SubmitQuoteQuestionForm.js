@@ -1,4 +1,4 @@
-import { submitQuestion, editQuestion } from '@/backend/services/question-creator/actions';
+import { submitQuestion, editQuestion } from '@/backend/services/create-question/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
@@ -9,12 +9,12 @@ import {
   QuoteSourceElement,
 } from '@/backend/models/questions/Quote';
 
-import { QUESTION_ELEMENT_TO_EMOJI } from '@/backend/utils/question';
-import { replaceAllNonSpace, replaceSubstrings } from '@/backend/utils/strings';
+import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
+import { replaceAllNonSpace, replaceSubstrings } from '@/frontend/helpers/strings';
 
-import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
-import { topicSchema } from '@/frontend/utils/forms/topics';
-import { stringSchema } from '@/frontend/utils/forms/forms';
+import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
+import { topicSchema } from '@/frontend/helpers/forms/topics';
+import { stringSchema } from '@/frontend/helpers/forms/forms';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';

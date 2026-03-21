@@ -1,9 +1,10 @@
-import { rankingToEmoji } from '@/backend/utils/emojis';
+import { rankingToEmoji } from '@/frontend/helpers/emojis';
 import { RoundType } from '@/backend/models/rounds/RoundType';
+
 import { useIntl } from 'react-intl';
+
 import defineMessages from '@/utils/defineMessages';
 import fmt, { keyChunks } from '@/utils/fmt';
-import globalMessages from '@/i18n/globalMessages';
 
 const messages = defineMessages('frontend.game.round.RoundRankingPolicy', {
   scale: 'The scale',
@@ -28,7 +29,7 @@ const richTags = { b };
 export function RoundRankingPolicy({ round }) {
   const { formatMessage } = useIntl();
   switch (round.type) {
-    case 'special':
+    case RoundType.SPECIAL:
       return <SpecialRoundRankingPolicy round={round} />;
     default:
       const orderKey =

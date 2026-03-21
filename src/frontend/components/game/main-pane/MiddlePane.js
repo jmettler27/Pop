@@ -8,7 +8,6 @@ import GameEndMiddlePane from '@/frontend/components/game/main-pane/game/GameEnd
 import RoundMiddlePane from '@/frontend/components/game/main-pane/round/RoundMiddlePane';
 import QuestionMiddlePane from '@/frontend/components/game/main-pane/question/QuestionMiddlePane';
 import SpecialMiddlePane from '@/frontend/components/game/main-pane/special/SpecialMiddlePane';
-import BuildMiddlePane from '@/frontend/components/game/main-pane/build/BuildMiddlePane';
 
 export default function MiddlePane({}) {
   const game = useGame();
@@ -33,9 +32,6 @@ export default function MiddlePane({}) {
 
     case GameStatus.GAME_END:
       return <GameEndMiddlePane />;
-
-    case GameStatus.GAME_EDIT:
-      return <BuildMiddlePane />;
 
     default:
       return <></>;

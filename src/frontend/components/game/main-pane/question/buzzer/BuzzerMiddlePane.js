@@ -1,4 +1,4 @@
-import { QuestionTypeIcon } from '@/backend/utils/question_types';
+import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 
 import { topicToEmoji } from '@/backend/models/Topic';
 import { GameStatus } from '@/backend/models/games/GameStatus';

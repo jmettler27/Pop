@@ -1,30 +1,18 @@
 import GameMatchingQuestionRepositoru from '@/backend/repositories/question/GameMatchingQuestionRepository';
-
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-
-import useGame from '@/frontend/hooks/useGame';
-
-import { getNodeId, MatchingEdge } from '@/frontend/components/game/main-pane/question/matching/gridUtils.js';
-import '@/frontend/components/game/main-pane/question/matching/styles.scss';
 import { isObjectEmpty } from '@/backend/utils/objects';
 
-export default function IncorrectMatches({ nodePositions, colIndices }) {
-  console.log('INCORRECT MATCHES RENDERED');
+import useGame from '@/frontend/hooks/useGame';
+import { getNodeId, MatchingEdge } from '@/frontend/components/game/main-pane/question/matching/gridUtils.js';
+import '@/frontend/components/game/main-pane/question/matching/styles.scss';
 
+export default function IncorrectMatches({ nodePositions, colIndices }) {
   const game = useGame();
 
   const gameQuestionRepo = new GameMatchingQuestionRepositoru(game.id, game.currentRound);
   const { incorrectMatches, loading, error } = gameQuestionRepo.useIncorrectMatches(game.currentQuestion);
 
-  if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
-  }
-  if (loading) {
-    return <LoadingScreen loadingText="Loading incorrect matches..." />;
+  if (error || loading) {
+    return <></>;
   }
   if (!incorrectMatches || isObjectEmpty(incorrectMatches)) {
     return <></>;

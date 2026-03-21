@@ -8,23 +8,12 @@ import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrde
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import BasicQuestionOrganizerController from '@/frontend/components/game/main-pane/question/basic/BasicQuestionOrganizerController';
 
-import { CircularProgress } from '@mui/material';
 import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
 
 export default function BasicQuestionBottomPane({}) {
   const { chooserRepo } = useGameRepositories();
   const { chooser, chooserLoading, chooserError } = chooserRepo.useChooser();
-  if (chooserError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(chooserError)}</strong>
-      </p>
-    );
-  }
-  if (chooserLoading) {
-    return <CircularProgress />;
-  }
-  if (!chooser) {
+  if (chooserError || chooserLoading || !chooser) {
     return <></>;
   }
 
@@ -47,17 +36,7 @@ function BasicQuestionController({}) {
   const gameQuestionRepo = new GameBasicQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useDocument(game.currentQuestion);
 
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameQuestionError)}</strong>
-      </p>
-    );
-  }
-  if (gameQuestionLoading) {
-    return <CircularProgress />;
-  }
-  if (!gameQuestion) {
+  if (gameQuestionError || gameQuestionLoading || !gameQuestion) {
     return <></>;
   }
 

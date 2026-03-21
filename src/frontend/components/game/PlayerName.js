@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 import { useParams } from 'next/navigation';
 
@@ -42,12 +43,7 @@ export default function PlayerName({ playerId, teamColor = true }) {
   }, [player]);
 
   if (playerError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(playerError)}
-      </p>
-    );
+    return <></>;
   }
   if (playerLoading || (teamColor && teamLoading)) {
     return myRole === ParticipantRole.ORGANIZER && <span>Loading player info...</span>;
@@ -56,12 +52,7 @@ export default function PlayerName({ playerId, teamColor = true }) {
     return <span>Player not found</span>;
   }
   if (teamColor && teamError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {teamError}
-      </p>
-    );
+    return <></>;
   }
 
   return <span style={{ color: team?.color }}>{player.name}</span>;
@@ -75,21 +66,8 @@ export function WinnerName({ playerId, teamId }) {
   const { player, loading: playerLoading, error: playerError } = playerRepo.usePlayerOnce(playerId);
   const { team, loading: teamLoading, error: teamError } = teamRepo.useTeamOnce(teamId);
 
-  if (playerError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(playerError)}
-      </p>
-    );
-  }
-  if (teamError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(teamError)}
-      </p>
-    );
+  if (playerError || teamError) {
+    return <></>;
   }
   if (playerLoading || teamLoading) {
     return myRole === ParticipantRole.ORGANIZER && <span>Loading player info...</span>;

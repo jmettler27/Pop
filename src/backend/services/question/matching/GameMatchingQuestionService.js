@@ -8,7 +8,7 @@ import { GameMatchingQuestion } from '@/backend/models/questions/Matching';
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 
-import { sortAscendingRoundScores } from '@/backend/utils/rounds';
+import { sortAscendingRoundScores } from '@/backend/utils/scores';
 import { sortScores } from '@/backend/utils/scores';
 import { aggregateTiedTeams, findNextAvailableChooser, shuffle } from '@/backend/utils/arrays';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';

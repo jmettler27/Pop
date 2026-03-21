@@ -1,4 +1,4 @@
-import { RoundTypeIcon } from '@/backend/utils/rounds';
+import { RoundTypeIcon } from '@/frontend/helpers/question_types';
 import globalMessages from '@/i18n/globalMessages';
 
 import { useIntl } from 'react-intl';

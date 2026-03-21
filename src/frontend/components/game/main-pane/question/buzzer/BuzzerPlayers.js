@@ -3,7 +3,7 @@ import defineMessages from '@/utils/defineMessages';
 import globalMessages from '@/i18n/globalMessages';
 
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import { rankingToEmoji } from '@/backend/utils/emojis';
+import { rankingToEmoji } from '@/frontend/helpers/emojis';
 
 const messages = defineMessages('frontend.game.bottom.BuzzerPlayers', {
   buzzers: 'Buzzers',
@@ -15,18 +15,7 @@ export default function BuzzerPlayers({ questionPlayers }) {
   const { playerRepo } = useGameRepositories();
   const { players, loading, error } = playerRepo.useAllPlayersOnce();
 
-  if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
-  }
-  if (loading) {
-    return <></>;
-  }
-  if (!players) {
-    console.error('BuzzerPlayers: players is null or undefined');
+  if (error || loading || !players) {
     return <></>;
   }
 
@@ -72,7 +61,6 @@ function BuzzedPlayers({ buzzed, players }) {
 }
 
 function CanceledPlayers({ canceled, players }) {
-  console.log('CanceledPlayers', { canceled, players });
   return (
     <ol className="overflow-auto">
       {canceled.map((item, index) => (

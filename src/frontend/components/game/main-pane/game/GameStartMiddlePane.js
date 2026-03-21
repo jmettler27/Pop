@@ -1,5 +1,5 @@
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import GameErrorScreen from '@/frontend/components/game/GameErrorScreen';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -24,8 +24,8 @@ export default function GameStartMiddlePane({}) {
     error: organizersError,
   } = organizerRepo.useAllOrganizerIdentitiesOnce();
 
-  if (organizersLoading) return <LoadingScreen />;
-  if (organizersError) return <GameErrorScreen />;
+  if (organizersLoading) return <LoadingScreen inline />;
+  if (organizersError) return <ErrorScreen inline />;
 
   return (
     <div className="flex flex-col h-full items-center justify-center">

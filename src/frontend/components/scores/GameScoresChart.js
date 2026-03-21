@@ -68,19 +68,8 @@ export default function GameScoresChart({ currentRoundOrder, teams }) {
 
   const { gameScores, loading: gameScoresLoading, error: gameScoresError } = scoreRepo.useScoresOnce();
 
-  if (roundsError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(roundsError)}</strong>
-      </p>
-    );
-  }
-  if (gameScoresError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameScoresError)}</strong>
-      </p>
-    );
+  if (roundsError || gameScoresError) {
+    return <></>;
   }
   if (roundsLoading || gameScoresLoading) {
     return <CircularProgress />;

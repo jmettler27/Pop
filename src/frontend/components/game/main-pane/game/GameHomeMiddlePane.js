@@ -1,7 +1,7 @@
 import { ParticipantRole } from '@/backend/models/users/Participant';
 
-import { timestampToHour } from '@/backend/utils/time';
-import { RoundTypeIcon } from '@/backend/utils/rounds';
+import { timestampToHour } from '@/frontend/helpers/time';
+import { RoundTypeIcon } from '@/frontend/helpers/question_types';
 
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
@@ -20,6 +20,7 @@ import { RoundType } from '@/backend/models/rounds/RoundType';
 import { handleRoundSelected } from '@/backend/services/round/actions';
 
 import defineMessages from '@/utils/defineMessages';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 const messages = defineMessages('frontend.game.middle.GameHomeMiddlePane', {
   title: 'Rounds',
@@ -58,25 +59,17 @@ function GameHomeRounds() {
   const { isChooser, loading: isChooserLoading, error: isChooserError } = chooserRepo.useIsChooser(myTeam);
 
   if (roundsError || isChooserError) {
-    console.error('GameHomeRounds.error', roundsError || isChooserError);
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(roundsError || isChooserError)}</strong>
-      </p>
-    );
+    return <ErrorScreen inline />;
   }
   if (roundsLoading || isChooserLoading) {
-    return <LoadingScreen loadingText="Loading..." />;
+    return <LoadingScreen inline />;
   }
   if (!rounds || isChooser === null) {
-    console.log('GameHomeRounds.noRoundsOrChooser', rounds, isChooser);
     return <></>;
   }
 
-  console.log('GameHomeRounds.rounds', rounds);
-
   const endedRounds = rounds.filter((r) => r.dateEnd !== null).map((r) => r.id);
-  const nonSpecialRounds = rounds.filter((r) => r.type !== 'special');
+  const nonSpecialRounds = rounds.filter((r) => r.type !== RoundType.SPECIAL);
   const activeNonSpecialRounds = nonSpecialRounds
     .filter((r) => r.order === null)
     .sort((a, b) => {
@@ -85,13 +78,7 @@ function GameHomeRounds() {
       return 0;
     });
   const endedNonSpecialRounds = nonSpecialRounds.filter((r) => r.order !== null).sort((a, b) => a.order - b.order);
-  const specialRound = rounds.find((r) => r.type === 'special');
-
-  console.log('GameHomeRounds.rounds', rounds);
-  console.log('GameHomeRounds.endedRounds', endedRounds);
-  console.log('GameHomeRounds.nonSpecialRounds', nonSpecialRounds);
-  console.log('GameHomeRounds.activeNonSpecialRounds', activeNonSpecialRounds);
-  console.log('GameHomeRounds.endedNonSpecialRounds', endedNonSpecialRounds);
+  const specialRound = rounds.find((r) => r.type === RoundType.SPECIAL);
 
   const roundIsDisabled = (roundId) => {
     if (endedRounds.includes(roundId)) return true;

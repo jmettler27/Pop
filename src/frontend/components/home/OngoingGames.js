@@ -10,11 +10,10 @@ import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { or, query, where } from 'firebase/firestore';
 import { useCollectionOnce } from 'react-firebase-hooks/firestore';
 
-import { localeToEmoji } from '@/frontend/utils/locales';
+import { localeToEmoji } from '@/frontend/helpers/locales';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/card';
 import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from '@/frontend/components/home/GameAvatars';
-import GameErrorScreen from '@/frontend/components/game/GameErrorScreen';
 
 import { styled } from '@mui/material/styles';
 import { Box, Button, Skeleton, Tooltip, Typography } from '@mui/material';
@@ -54,11 +53,7 @@ export default function OngoingGames() {
     )
   );
   if (gamesError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gamesError)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (gamesLoading) {
     return <Skeleton variant="rounded" width={210} height={60} />;
@@ -108,24 +103,27 @@ const GameCard = ({ game }) => {
   const { players, loading: playersLoading, error: playersError } = playerRepo.useAllPlayersOnce();
 
   if (organizersError || playersError) {
-    return <GameErrorScreen />;
+    return <></>;
   }
   if (organizersLoading || playersLoading) {
     return <Skeleton variant="rounded" width={210} height={60} />;
   }
   if (!organizers || !players) {
-    return <GameErrorScreen />; // TODO: Change this
+    return <></>;
   }
 
-  const organizerIds = organizers.map((doc) => doc.id);
-  const playerIds = players.map((doc) => doc.id);
-
+  const organizerIds = organizers.map((o) => o.id);
+  const playerIds = players.map((p) => p.id);
   const isFull = playerIds.length >= game.maxPlayers;
 
-  let myRole = null;
-  if (organizerIds.includes(user.id)) {
+  const isPlayer = playerIds.some((id) => id === user.id);
+  const isOrganizer = organizerIds.some((id) => id === user.id);
+
+  let myRole;
+
+  if (isOrganizer) {
     myRole = ParticipantRole.ORGANIZER;
-  } else if (playerIds.includes(user.id)) {
+  } else if (isPlayer) {
     myRole = ParticipantRole.PLAYER;
   } else {
     myRole = ParticipantRole.SPECTATOR;

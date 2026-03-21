@@ -1,6 +1,6 @@
 import { MySelect } from '@/frontend/components/common/StyledFormComponents';
 
-import { LOCALES, prependLocaleWithEmoji } from '@/frontend/utils/locales';
+import { LOCALES, prependLocaleWithEmoji } from '@/frontend/helpers/locales';
 
 import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';

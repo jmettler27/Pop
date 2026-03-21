@@ -6,6 +6,7 @@ import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import GameReorderingQuestionRepository from '@/backend/repositories/question/GameReorderingQuestionRepository';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 import { shuffleIndices } from '@/backend/utils/arrays';
 import { ParticipantRole } from '@/backend/models/users/Participant';
 
@@ -22,17 +23,13 @@ export default function ReorderingMiddlePane({ baseQuestion }) {
 
   // Get game question data
   const gameQuestionRepo = new GameReorderingQuestionRepository(game.id, game.currentRound);
-  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
+  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameQuestionError)}</strong>
-      </p>
-    );
+  if (error) {
+    return <ErrorScreen inline />;
   }
-  if (gameQuestionLoading) {
-    return <LoadingScreen />;
+  if (loading) {
+    return <LoadingScreen inline />;
   }
   if (!gameQuestion) {
     return <></>;

@@ -95,16 +95,6 @@ export default class FirebaseRepository extends IRepository {
     return data.length;
   }
 
-  // async getAll() {
-  //   const q = query(this.collectionRef);
-  //   // Fallback for environments where transaction query reads are unstable.
-  //   const querySnapshot = await getDocs(q);
-  //   return querySnapshot.docs.map((doc) => ({
-  //     id: doc.id,
-  //     ...doc.data(),
-  //   }));
-  // }
-
   async getByQuery(queryOptions = {}) {
     let q = query(this.collectionRef);
     if (queryOptions.where) {
@@ -348,93 +338,6 @@ export default class FirebaseRepository extends IRepository {
           id: doc.id,
           ...doc.data(),
         })) || [],
-      loading,
-      error,
-    };
-  }
-
-  /**
-   * Get a document from a deep path relative to this collection
-   * @param {string[]} path - Array of path segments to the document
-   * @returns {Promise<Object>} The document data with ID
-   */
-  async getDeepDocument(path) {
-    if (!isArray(path) || path.length === 0) {
-      throw new Error('Path must be a non-empty array of path segments');
-    }
-
-    const docRef = doc(this.collectionRef, ...path);
-    const docSnap = await getDoc(docRef);
-
-    if (!docSnap.exists()) {
-      return null;
-    }
-
-    return {
-      id: docSnap.id,
-      ...docSnap.data(),
-    };
-  }
-
-  /**
-   * Get a document from a deep path relative to this collection within a transaction
-   * @param {Transaction} transaction - The transaction
-   * @param {string[]} path - Array of path segments to the document
-   * @returns {Promise<Object>} The document data with ID
-   */
-  async getDeepDocumentTransaction(transaction, path) {
-    if (!isArray(path) || path.length === 0) {
-      throw new Error('Path must be a non-empty array of path segments');
-    }
-
-    const docRef = doc(this.collectionRef, ...path);
-    const docSnap = await transaction.get(docRef);
-
-    if (!docSnap.exists()) {
-      return null;
-    }
-
-    return {
-      id: docSnap.id,
-      ...docSnap.data(),
-    };
-  }
-
-  /**
-   * React hook to get a document from a deep path relative to this collection
-   * @param {string[]} path - Array of path segments to the document
-   * @returns {Object} The document data with loading and error states
-   */
-  useDeepDocument(path) {
-    if (!isArray(path) || path.length === 0) {
-      throw new Error('Path must be a non-empty array of path segments');
-    }
-
-    const docRef = doc(this.collectionRef, ...path);
-    const [data, loading, error] = useDocumentData(docRef);
-
-    return {
-      data: data ? { id: docRef.id, ...data } : null,
-      loading,
-      error,
-    };
-  }
-
-  /**
-   * React hook to get a document from a deep path relative to this collection once
-   * @param {string[]} path - Array of path segments to the document
-   * @returns {Object} The document data with loading and error states
-   */
-  useDeepDocumentOnce(path) {
-    if (!isArray(path) || path.length === 0) {
-      throw new Error('Path must be a non-empty array of path segments');
-    }
-
-    const docRef = doc(this.collectionRef, ...path);
-    const [data, loading, error] = useDocumentDataOnce(docRef);
-
-    return {
-      data: data ? { id: docRef.id, ...data } : null,
       loading,
       error,
     };

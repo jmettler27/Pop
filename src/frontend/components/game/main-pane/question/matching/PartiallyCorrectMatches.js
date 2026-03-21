@@ -1,11 +1,9 @@
+import { isObjectEmpty } from '@/backend/utils/objects';
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 
-import LoadingScreen from '@/frontend/components/LoadingScreen';
 import useGame from '@/frontend/hooks/useGame';
-
 import { getNodeId, MatchingEdge } from '@/frontend/components/game/main-pane/question/matching/gridUtils.js';
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
-import { isObjectEmpty } from '@/backend/utils/objects';
 
 export default function PartiallyCorrectMatches({ nodePositions }) {
   const game = useGame();
@@ -13,19 +11,14 @@ export default function PartiallyCorrectMatches({ nodePositions }) {
   const gameQuestionRepo = new GameMatchingQuestionRepository(game.id, game.currentRound);
   const { partiallyCorrectMatches, loading, error } = gameQuestionRepo.usePartiallyCorrectMatches(game.currentQuestion);
 
-  if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
+  if (error || loading) {
+    return <></>;
   }
-  if (loading) {
-    return <LoadingScreen loadingText="Loading partially correct matches..." />;
-  }
+
   if (!partiallyCorrectMatches || isObjectEmpty(partiallyCorrectMatches)) {
     return <></>;
   }
+
   // elem = {uid: ..., teamId: ..., timestamp: ..., colIndices: [...], matchIdx: ...}
 
   return partiallyCorrectMatches.map((elem, idx) => {

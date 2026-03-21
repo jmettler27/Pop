@@ -10,7 +10,7 @@ import { useIntl } from 'react-intl';
 import defineMessages from '@/utils/defineMessages';
 import globalMessages from '@/i18n/globalMessages';
 
-import { DEFAULT_LOCALE, localeSchema } from '@/frontend/utils/locales';
+import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 
 import { MyNumberInput, MyTextInput } from '@/frontend/components/common/StyledFormComponents';
@@ -20,7 +20,7 @@ import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 
 import Game from '@/backend/models/games/Game';
 import CreateGameService from '@/backend/services/create-game/CreateGameService';
-import { gameTitleSchema, participantNameSchema } from '@/frontend/utils/forms/game';
+import { gameTitleSchema, participantNameSchema } from '@/frontend/helpers/forms/game';
 import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 
 /* Validation */

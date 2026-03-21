@@ -81,19 +81,8 @@ function OrganizerTimerPane() {
 
   const { timer, timerLoading, timerError } = timerRepo.useTimer();
 
-  if (offsetError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(offsetError)}</strong>
-      </p>
-    );
-  }
-  if (timerError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(timerError)}</strong>
-      </p>
-    );
+  if (offsetError || timerError) {
+    return <></>;
   }
   if (offsetLoading || timerLoading) {
     return <CircularProgress />;
@@ -119,19 +108,8 @@ function SpectatorTimerPane() {
   const [offsetSnapshot, offsetLoading, offsetError] = useObject(SERVER_TIME_OFFSET_REF);
   const { timer, timerLoading, timerError } = timerRepo.useTimer();
 
-  if (offsetError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(offsetError)}</strong>
-      </p>
-    );
-  }
-  if (timerError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(timerError)}</strong>
-      </p>
-    );
+  if (offsetError || timerError) {
+    return <></>;
   }
   if (offsetLoading || timerLoading) {
     return <CircularProgress />;
@@ -185,11 +163,7 @@ function QuestionEndTimerHeader() {
   const { round, roundLoading, roundError } = roundRepo.useRoundOnce(game.currentRound);
 
   if (roundError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(roundError)}</strong>
-      </p>
-    );
+    return <></>;
   }
   if (roundLoading) {
     return <></>;

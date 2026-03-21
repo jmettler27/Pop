@@ -276,6 +276,7 @@ import SubmitQuoteQuestionForm from '@/frontend/components/question-forms/Submit
 import SubmitReorderingQuestionForm from '@/frontend/components/question-forms/SubmitReorderingQuestionForm';
 
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 
 function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
   const { id: gameId } = useParams();
@@ -506,18 +507,8 @@ function AddExistingQuestionToRoundDialogContent({ selectedQuestionId }) {
   const questionRepo = new BaseQuestionRepository();
   const { baseQuestion, loading, error } = questionRepo.useQuestionOnce(selectedQuestionId);
 
-  if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
-  }
-  if (loading) {
-    return <span>Loading question...</span>;
-  }
-  if (!baseQuestion) {
-    return <span>No question found</span>;
+  if (error || loading || !baseQuestion) {
+    return <></>;
   }
 
   return <DialogContent>{selectedQuestionId && <QuestionCard baseQuestion={baseQuestion} />}</DialogContent>;

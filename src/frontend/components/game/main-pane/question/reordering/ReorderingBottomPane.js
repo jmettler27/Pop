@@ -23,19 +23,9 @@ const messages = defineMessages('frontend.game.bottom.ReorderingBottomPane', {
 export default function ReorderingBottomPane({ baseQuestion }) {
   const game = useGame();
   const gameQuestionRepo = new GameReorderingQuestionRepository(game.id, game.currentRound);
-  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
+  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameQuestionError)}</strong>
-      </p>
-    );
-  }
-  if (gameQuestionLoading) {
-    return <></>;
-  }
-  if (!gameQuestion) {
+  if (error || loading || !gameQuestion) {
     return <></>;
   }
 
@@ -78,17 +68,7 @@ function ReorderingSubmittedTeams({ gameQuestion }) {
   const { teamRepo } = useGameRepositories();
   const { teams, loading, error } = teamRepo.useAllTeamsOnce();
 
-  if (error) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(error)}</strong>
-      </p>
-    );
-  }
-  if (loading) {
-    return <></>;
-  }
-  if (!teams) {
+  if (error || loading || !teams) {
     return <></>;
   }
 

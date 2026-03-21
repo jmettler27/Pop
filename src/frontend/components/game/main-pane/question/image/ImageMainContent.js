@@ -1,6 +1,6 @@
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { ParticipantRole } from '@/backend/models/users/Participant';
-import { QUESTION_ELEMENT_TO_EMOJI } from '@/backend/utils/question';
+import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
 
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';

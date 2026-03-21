@@ -6,14 +6,15 @@ import { GameStatus } from '@/backend/models/games/GameStatus';
 import { ParticipantRole } from '@/backend/models/users/Participant';
 
 import { isObjectEmpty } from '@/backend/utils/objects';
-import { QuestionTypeIcon } from '@/backend/utils/question_types';
-import { QUESTION_ELEMENT_TO_EMOJI } from '@/backend/utils/question';
+import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
+import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
 
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import ErrorScreen from '@/frontend/components/ErrorScreen';
 import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 
 export default function QuoteMiddlePane({ baseQuestion }) {
@@ -47,17 +48,13 @@ function QuoteMainContent({ baseQuestion }) {
   const game = useGame();
 
   const gameQuestionRepo = new GameQuoteQuestionRepository(game.id, game.currentRound);
-  const { gameQuestion, gameQuestionLoading, gameQuestionError } = gameQuestionRepo.useQuestion(game.currentQuestion);
+  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
-  if (gameQuestionError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameQuestionError)}</strong>
-      </p>
-    );
+  if (error) {
+    return <ErrorScreen inline />;
   }
-  if (gameQuestionLoading) {
-    return <LoadingScreen />;
+  if (loading) {
+    return <LoadingScreen inline />;
   }
   if (!gameQuestion) {
     return <></>;

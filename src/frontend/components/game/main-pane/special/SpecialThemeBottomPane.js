@@ -19,22 +19,11 @@ export default function SpecialThemeBottomPane({ round }) {
 
   const [baseThemeDoc, baseThemeLoading, baseThemeError] = useDocumentOnce(baseThemeRef);
   const [gameThemeDoc, gameThemeLoading, gameThemeError] = useDocument(gameThemeRef);
-  if (baseThemeError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(baseThemeError)}</strong>
-      </p>
-    );
-  }
-  if (gameThemeError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(gameThemeError)}</strong>
-      </p>
-    );
+  if (baseThemeError || gameThemeError) {
+    return <></>;
   }
   if (baseThemeLoading || gameThemeLoading) {
-    return <LoadingScreen loadingText="Loading..." />;
+    return <></>;
   }
   if (!baseThemeDoc || !gameThemeDoc) {
     return <></>;

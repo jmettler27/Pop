@@ -1,4 +1,4 @@
-import { numberToKeycapEmoji } from '@/backend/utils/emojis';
+import { numberToKeycapEmoji } from '@/frontend/helpers/emojis';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { collection } from 'firebase/firestore';

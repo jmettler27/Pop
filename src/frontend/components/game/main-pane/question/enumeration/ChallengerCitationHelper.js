@@ -24,18 +24,7 @@ export default function ChallengerCitationHelper({}) {
     error: playersError,
   } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion);
 
-  if (playersError) {
-    return (
-      <p>
-        <strong>Error: </strong>
-        {JSON.stringify(playersError)}
-      </p>
-    );
-  }
-  if (playersLoading) {
-    return <></>;
-  }
-  if (!questionPlayers) {
+  if (playersError || playersLoading || !questionPlayers) {
     return <></>;
   }
 
@@ -53,17 +42,7 @@ function ChallengerName({ challengerId }) {
   const { playerRepo } = useGameRepositories();
   const { player, loading: playerLoading, error: playerError } = playerRepo.usePlayer(challengerId);
 
-  if (playerError) {
-    return (
-      <p>
-        <strong>Error: {JSON.stringify(playerError)}</strong>
-      </p>
-    );
-  }
-  if (playerLoading) {
-    return <></>;
-  }
-  if (!player) {
+  if (playerError || playerLoading || !player) {
     return <></>;
   }
 
