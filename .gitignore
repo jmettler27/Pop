@@ -37,6 +37,11 @@ next-env.d.ts
 
 /.firebase/
 
+# Firebase Emulator Suite
+/emulator-data/
+*.log
+firebase-export-*
+
 .env
 /config/
 

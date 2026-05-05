@@ -67,29 +67,68 @@ The app will be available at `http://localhost:3000`.
 
 | Command | Description |
 |---|---|
-| `npm run dev` | Start the development server |
+| `npm run dev` | Start the development server (uses production Firebase) |
+| `npm run dev:emulators` | Start emulators + dev server together (local data) |
+| `npm run emulators` | Start Firebase Emulator Suite only |
+| `npm run seed` | Seed the running emulators with sample data |
 | `npm run build` | Build for production |
 | `npm run start` | Start the production server |
 | `npm run lint` | Run ESLint |
+
+## Local Development with Emulators
+
+You can develop entirely offline using the **Firebase Emulator Suite**, which emulates Firestore, Realtime Database, and Storage locally. 
+
+### Quick Start
+
+```bash
+# Install dependencies
+npm install
+
+# Start the emulators + Next.js dev server
+npm run dev:emulators
+
+# In another terminal, seed the emulators with sample data (first time only)
+npm run seed
+```
+
+- **App**: http://localhost:3000
+- **Emulator UI**: http://localhost:4000 (browse Firestore data, Storage files, etc.)
+
+### How It Works
+
+- `.env.development` sets `NEXT_PUBLIC_USE_EMULATORS=true` and uses a demo project (`demo-pop`)
+- When this flag is set, the app connects to local emulators instead of production Firebase
+- Running `npm run dev` without `.env.development` still connects to your real Firebase project (backwards compatible)
+- Emulator data is persisted in `emulator-data/` (git-ignored) via `--export-on-exit`
+
+### Emulator Ports
+
+| Service | Port |
+|---|---|
+| Firestore | 8080 |
+| Realtime Database | 9000 |
+| Storage | 9199 |
+| Emulator UI | 4000 |
 
 ## Project Structure
 
 ```
 src/
-├── app/            # Next.js App Router pages & layouts
-│   ├── (game)/     # Game pages
-│   ├── api/        # API routes (NextAuth)
-│   ├── edit/       # Game editor
-│   ├── join/       # Join game flow
-│   └── submit/     # Question submission forms
-├── backend/        # Server-side logic
-│   ├── firebase/   # Firebase configuration
-│   ├── models/     # Data models
-│   ├── repositories/ # Data access layer
-│   └── services/   # Business logic
-├── frontend/       # Client-side components & utilities
-│   ├── components/ # React components
-│   ├── hooks/      # Custom React hooks
-│   └── utils/      # Client utilities
-└── i18n/           # Internationalization (EN/FR)
+├── app/                # Next.js App Router pages & layouts
+│   ├── (game)/         # Game pages
+│   ├── api/            # API routes (NextAuth)
+│   ├── edit/           # Game editor
+│   ├── join/           # Join game flow
+│   └── submit/         # Question submission forms
+├── backend/            # Server-side logic
+│   ├── firebase/       # Firebase configuration
+│   ├── models/         # Data models
+│   ├── repositories/   # Data access layer
+│   └── services/       # Business logic
+├── frontend/           # Client-side components & utilities
+│   ├── components/     # React components
+│   ├── hooks/          # Custom React hooks
+│   └── helpers/        # Client utilities
+└── i18n/               # Internationalization (EN/FR)
 ```

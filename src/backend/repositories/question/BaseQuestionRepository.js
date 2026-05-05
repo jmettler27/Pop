@@ -47,22 +47,6 @@ export default class BaseQuestionRepository extends FirebaseRepository {
   }
 
   /**
-   * Creates a question with the given data.
-   * @param {Object} data - The data to create the question with.
-   * @returns {BaseQuestion} The created question.
-   */
-  async createQuestion(data) {
-    try {
-      await runTransaction(firestore, async (transaction) => {
-        return await this.createQuestionTransaction(transaction, data);
-      });
-    } catch (error) {
-      console.error('Error creating question:', error);
-      throw error;
-    }
-  }
-
-  /**
    * Creates a question with the given data using a transaction.
    * @param {Transaction} transaction - The transaction to use.
    * @param {Object} data - The data to create the question with.
