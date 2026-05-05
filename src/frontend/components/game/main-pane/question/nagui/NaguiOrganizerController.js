@@ -18,7 +18,7 @@ export default function NaguiOrganizerController({ gameQuestion }) {
     <div className="flex flex-col h-full w-full items-center justify-around">
       {/* <BuzzerHeadPlayer gameQuestion={gameQuestion} />
        */}
-      {gameQuestion.option === null && (
+      {gameQuestion.option === null && gameQuestion.teamId && (
         <span className="2xl:text-4xl font-bold">
           <GameChooserHelperText chooserTeamId={gameQuestion.teamId} />
         </span>
