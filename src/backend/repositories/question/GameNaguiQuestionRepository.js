@@ -14,8 +14,6 @@ export default class GameNaguiQuestionRepository extends GameQuestionRepository 
 
   async resetQuestionTransaction(transaction, questionId) {
     await this.updateQuestionTransaction(transaction, questionId, {
-      playerId: null,
-      teamId: null,
       option: null,
       reward: null,
       correct: null,

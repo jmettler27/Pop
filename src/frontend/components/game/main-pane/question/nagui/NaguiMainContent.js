@@ -6,6 +6,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Avatar, Badge, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { clsx } from 'clsx';
 
+import naguiCorrect from '@/assets/images/nagui-correct.png';
+import naguiWrong from '@/assets/images/nagui-wrong.png';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { DuoNaguiOption, HideNaguiOption, NaguiQuestion, SquareNaguiOption } from '@/backend/models/questions/Nagui';
 import { ParticipantRole } from '@/backend/models/users/Participant';
@@ -15,7 +17,6 @@ import { shuffleIndices } from '@/backend/utils/arrays';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import NoteButton from '@/frontend/components/game/NoteButton';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import { IMAGES } from '@/frontend/constants/images';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -45,27 +46,12 @@ export default function NaguiMainContent({ baseQuestion }) {
 }
 
 function NaguiAnswerImage({ correct }) {
+  console.log('NaguiAnswerImage', { correct });
   if (correct === true) {
-    return (
-      <Image
-        src={IMAGES.NAGUI.CORRECT}
-        alt="Correct answer"
-        width={0}
-        height={0}
-        style={{ width: '100%', height: 'auto' }}
-      />
-    );
+    return <Image src={naguiCorrect} alt="Correct answer" style={{ width: '100%', height: 'auto' }} />;
   }
   if (correct === false) {
-    return (
-      <Image
-        src={IMAGES.NAGUI.WRONG}
-        alt="Wrong answer"
-        width={0}
-        height={0}
-        style={{ width: '80%', height: 'auto' }}
-      />
-    );
+    return <Image src={naguiWrong} alt="Wrong answer" style={{ width: '80%', height: 'auto' }} />;
   }
   return <></>;
 }
@@ -85,6 +71,7 @@ function NaguiMainContentQuestion({ baseQuestion, randomization }) {
   if (!gameQuestion) {
     return <></>;
   }
+  console.log('NaguiMainContentQuestion', { gameQuestion });
 
   return (
     <div className="flex flex-row h-full w-full items-center justify-center">

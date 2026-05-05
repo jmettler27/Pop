@@ -166,7 +166,7 @@ export class GameMCQQuestion extends GameQuestion {
     this.constructor.validate(data);
 
     this.thinkingTime = data.thinkingTime || GameMCQQuestion.THINKING_TIME;
-    this.correct = data.correct || null;
+    this.correct = data.correct;
     this.choiceIdx = data.choiceIdx || null;
     this.playerId = data.playerId || null;
     this.reward = data.reward || null;

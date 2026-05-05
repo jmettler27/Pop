@@ -6,6 +6,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Avatar, Badge, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { clsx } from 'clsx';
 
+import mcqCorrect from '@/assets/images/mcq-correct.png';
+import mcqWrong from '@/assets/images/mcq-wrong.png';
 import { GameStatus } from '@/backend/models/games/GameStatus';
 import { MCQQuestion } from '@/backend/models/questions/MCQ';
 import { ParticipantRole } from '@/backend/models/users/Participant';
@@ -15,7 +17,6 @@ import { shuffleIndices } from '@/backend/utils/arrays';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import NoteButton from '@/frontend/components/game/NoteButton';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import { IMAGES } from '@/frontend/constants/images';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -45,21 +46,12 @@ export default function MCQMainContent({ baseQuestion }) {
 }
 
 function MCQAnswerImage({ correct }) {
+  console.log('MCQAnswerImage - correct:', correct);
   if (correct === true) {
-    return (
-      <Image
-        src={IMAGES.MCQ.CORRECT}
-        alt="Correct answer"
-        width={0}
-        height={0}
-        style={{ width: '70%', height: 'auto' }}
-      />
-    );
+    return <Image src={mcqCorrect} alt="Correct answer" style={{ width: '70%', height: 'auto' }} />;
   }
   if (correct === false) {
-    return (
-      <Image src={IMAGES.MCQ.WRONG} alt="Wrong answer" width={0} height={0} style={{ width: '80%', height: 'auto' }} />
-    );
+    return <Image src={mcqWrong} alt="Wrong answer" style={{ width: '80%', height: 'auto' }} />;
   }
   return <></>;
 }
