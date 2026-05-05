@@ -63,46 +63,15 @@ export default class GameReorderingQuestionService extends GameQuestionService {
       });
     } else {
       // Regular case: at least one ordering has been submitted, calculate scores as normal
-      const players = await this.playerRepo.getAllPlayers();
-
-      // Build a map of teamId -> reward for this question
-      const teamRewards = {};
-      for (const submission of orderings) {
-        const { teamId, score } = submission;
-        teamRewards[teamId] = score * round.rewardsPerElement;
-      }
-
-      // Build the new round progress for ALL teams (not just those who submitted)
-      const newRoundProgress = {};
-      for (const tid of Object.keys(currRoundScores)) {
-        const reward = teamRewards[tid] || 0;
-        newRoundProgress[tid] = {
-          ...currRoundProgress[tid],
-          [questionId]: currRoundScores[tid] + reward,
-        };
-      }
-
-      // Build score increments using Firestore increment
-      const scoreUpdates = { scoresProgress: newRoundProgress };
-      for (const [teamId, reward] of Object.entries(teamRewards)) {
-        if (reward > 0) {
-          scoreUpdates[`scores.${teamId}`] = increment(reward);
-        }
-      }
-
-      // Write phase: update all player statuses
-      for (const submission of orderings) {
-        const { teamId, score } = submission;
-        const playerIds = players.filter((p) => p.teamId === teamId).map((p) => p.id);
-        await this.playerRepo.updateAllPlayersStatusTransaction(
-          transaction,
-          score === maxScore ? PlayerStatus.CORRECT : PlayerStatus.WRONG,
-          playerIds
-        );
-      }
-
-      // Write phase: update all scores in a single call
-      await this.roundScoreRepo.updateScoresTransaction(transaction, scoreUpdates);
+      await this.calculateRewardsAndProgressTransaction(
+        orderings,
+        round,
+        currRoundScores,
+        currRoundProgress,
+        questionId,
+        transaction,
+        maxScore
+      );
     }
 
     await super.endQuestionTransaction(transaction, questionId);
@@ -116,6 +85,60 @@ export default class GameReorderingQuestionService extends GameQuestionService {
       'question',
       questionId
     );
+  }
+
+  async calculateRewardsAndProgressTransaction(
+    orderings,
+    round,
+    currRoundScores,
+    currRoundProgress,
+    questionId,
+    transaction,
+    maxScore
+  ) {
+    const players = await this.playerRepo.getAllPlayers();
+
+    // Build a map of teamId -> reward for this question
+    const teamRewards = {};
+    for (const submission of orderings) {
+      const { teamId, score } = submission;
+      teamRewards[teamId] = score * round.rewardsPerElement;
+    }
+
+    // Build the new round progress for ALL teams (not just those who submitted)
+    const newRoundProgress = {};
+    for (const tid of Object.keys(currRoundScores)) {
+      const reward = teamRewards[tid] || 0;
+      newRoundProgress[tid] = {
+        ...currRoundProgress[tid],
+        [questionId]: currRoundScores[tid] + reward,
+      };
+    }
+
+    // Build score increments using Firestore increment
+    const scoreUpdates = {};
+    for (const tid of Object.keys(newRoundProgress)) {
+      scoreUpdates[`scoresProgress.${tid}`] = newRoundProgress[tid];
+    }
+    for (const [teamId, reward] of Object.entries(teamRewards)) {
+      if (reward > 0) {
+        scoreUpdates[`scores.${teamId}`] = increment(reward);
+      }
+    }
+
+    // Write phase: update all player statuses
+    for (const submission of orderings) {
+      const { teamId, score } = submission;
+      const playerIds = players.filter((p) => p.teamId === teamId).map((p) => p.id);
+      await this.playerRepo.updateAllPlayersStatusTransaction(
+        transaction,
+        score === maxScore ? PlayerStatus.CORRECT : PlayerStatus.WRONG,
+        playerIds
+      );
+    }
+
+    // Write phase: update all scores in a single call
+    await this.roundScoreRepo.updateScoresTransaction(transaction, scoreUpdates);
   }
 
   /* =============================================================================================================== */
@@ -154,6 +177,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
   async submitOrderingTransaction(transaction, questionId, playerId, teamId, ordering) {
     const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
+    const numTeams = await this.teamRepo.getNumTeams(transaction);
 
     // Check if team has already submitted
     const teamAlreadySubmitted = gameQuestion.orderings && gameQuestion.orderings.some((o) => o.teamId === teamId);
@@ -186,16 +210,32 @@ export default class GameReorderingQuestionService extends GameQuestionService {
     const orderings = gameQuestion.orderings || [];
     orderings.push(newOrdering);
 
-    // Update game question with new ordering
-    await this.gameQuestionRepo.updateTransaction(transaction, questionId, {
-      orderings,
-    });
-
     // Check if all teams have submitted
-    const numTeams = await this.teamRepo.getNumTeams(transaction);
     if (orderings.length >= numTeams) {
+      const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
+      const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction);
+
+      const maxScore = baseQuestion.items.length;
+      const { scores: currRoundScores, scoresProgress: currRoundProgress } = roundScores;
+
       // All teams have submitted, end the question
-      await this.endQuestionTransaction(transaction, questionId);
+      await this.calculateRewardsAndProgressTransaction(
+        orderings,
+        round,
+        currRoundScores,
+        currRoundProgress,
+        questionId,
+        transaction,
+        maxScore
+      );
+      await this.gameQuestionRepo.updateTransaction(transaction, questionId, {
+        orderings,
+      });
+      await super.endQuestionTransaction(transaction, questionId);
+    } else {
+      await this.gameQuestionRepo.updateTransaction(transaction, questionId, {
+        orderings,
+      });
     }
 
     console.log('Reordering submitted successfully', 'questionId', questionId, 'teamId', teamId, 'score', score);
