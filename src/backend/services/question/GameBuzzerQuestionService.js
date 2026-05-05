@@ -384,7 +384,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     await this.gameQuestionRepo.cancelPlayerTransaction(transaction, questionId, playerId, clueIdx);
     await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.WRONG);
     await this.soundRepo.addWrongAnswerSoundToQueueTransaction(transaction);
-    // await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.RESET)
+    await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.RESET);
 
     // } else {
     //     /* Penalize only the player */

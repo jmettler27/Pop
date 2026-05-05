@@ -155,6 +155,11 @@ export function ReadyPlayerButton() {
   const { playerRepo } = useGameRepositories();
   const { player, playerLoading, playerError } = playerRepo.usePlayer(user.id);
 
+  const readyButtonText = useMemo(() => {
+    const key = getRandomElement(READY_TEXT_KEYS);
+    return intl.formatMessage(messages[key]);
+  }, [intl]);
+
   if (playerError) {
     return <></>;
   }
@@ -164,11 +169,6 @@ export function ReadyPlayerButton() {
   if (!player) {
     return <></>;
   }
-
-  const readyButtonText = useMemo(() => {
-    const key = getRandomElement(READY_TEXT_KEYS);
-    return intl.formatMessage(messages[key]);
-  }, [intl]);
 
   return (
     <Button

@@ -147,7 +147,7 @@ export default function Page({ params }) {
       >
         {/* Step 1: General info */}
         <GeneralInfoStep
-          onSubmit={() => { }}
+          onSubmit={() => {}}
           validationSchema={Yup.object({
             playerName: Yup.string()
               .min(Game.PARTICIPANT_NAME_MIN_LENGTH, `Must be ${Game.PARTICIPANT_NAME_MIN_LENGTH} characters or more!`)
@@ -169,7 +169,7 @@ export default function Page({ params }) {
 
         {/* Step 2 (optional): create a new team */}
         <CreateTeamStep
-          onSubmit={() => { }}
+          onSubmit={() => {}}
           validationSchema={Yup.object({
             teamName: Yup.string()
               .when(['playInTeams', 'joinTeam'], {
