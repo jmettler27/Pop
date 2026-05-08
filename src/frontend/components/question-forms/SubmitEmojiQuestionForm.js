@@ -1,8 +1,7 @@
 import React, { useRef } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 
-import data from '@emoji-mart/data';
-import Picker from '@emoji-mart/react';
 import { Form, Formik, useFormikContext } from 'formik';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
@@ -169,14 +168,34 @@ export default function SubmitEmojiQuestionForm({ userId, ...props }) {
   );
 }
 
+const DynamicEmojiPicker = dynamic(() => import('emoji-picker-react'), { ssr: false });
+
+const EMOJI_LOCALE_DATA = {
+  fr: () => import('emoji-picker-react/dist/data/emojis-fr.json'),
+};
+
 function EmojiPicker() {
+  const intl = useIntl();
   const formik = useFormikContext();
+  const [emojiData, setEmojiData] = React.useState(null);
+
+  React.useEffect(() => {
+    const loader = EMOJI_LOCALE_DATA[intl.locale];
+    if (loader) {
+      loader().then((mod) => setEmojiData(mod.default));
+    } else {
+      setEmojiData(null);
+    }
+  }, [intl.locale]);
 
   return (
-    <Picker
-      data={data}
-      onEmojiSelect={(emoji) => {
-        formik.setFieldValue('clue', formik.values.clue + emoji.native);
+    <DynamicEmojiPicker
+      emojiStyle="native"
+      emojiData={emojiData}
+      width="15%"
+      height={400}
+      onEmojiClick={(emojiData) => {
+        formik.setFieldValue('clue', formik.values.clue + emojiData.emoji);
       }}
     />
   );
