@@ -114,7 +114,6 @@ export function MyNumberInput({ label, name, min, max, ...props }) {
         max={max}
         onChange={(event, newValue) => {
           helpers.setValue(newValue);
-          event.preventDefault();
         }}
         onBlur={formik.handleBlur}
         error={meta.touched && meta.error}

@@ -1,31 +1,33 @@
 import * as React from 'react';
 
-import { Unstable_NumberInput as BaseNumberInput } from '@mui/base/Unstable_NumberInput';
+import { NumberField } from '@base-ui/react/number-field';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { styled } from '@mui/system';
 
 export const NumberInput = React.forwardRef(function CustomNumberInput(props, ref) {
+  const { onChange, onBlur, error, style, ...rest } = props;
+
   return (
-    <BaseNumberInput
-      slots={{
-        root: StyledInputRoot,
-        input: StyledInput,
-        incrementButton: StyledButton,
-        decrementButton: StyledButton,
+    <NumberField.Root
+      {...rest}
+      onValueChange={(value, event) => {
+        if (onChange) {
+          onChange(event, value);
+        }
       }}
-      slotProps={{
-        incrementButton: {
-          children: <AddIcon fontSize="small" />,
-          className: 'increment',
-        },
-        decrementButton: {
-          children: <RemoveIcon fontSize="small" />,
-        },
-      }}
-      {...props}
       ref={ref}
-    />
+    >
+      <NumberField.Group render={<StyledInputRoot style={style} />}>
+        <NumberField.Decrement render={<StyledButton />}>
+          <RemoveIcon fontSize="small" />
+        </NumberField.Decrement>
+        <NumberField.Input render={<StyledInput />} onBlur={onBlur} />
+        <NumberField.Increment render={<StyledButton className="increment" />}>
+          <AddIcon fontSize="small" />
+        </NumberField.Increment>
+      </NumberField.Group>
+    </NumberField.Root>
   );
 });
 
