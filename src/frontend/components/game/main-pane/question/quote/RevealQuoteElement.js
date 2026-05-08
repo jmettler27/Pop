@@ -76,9 +76,7 @@ export default function RevealQuoteElementButton({ buzzed, baseQuestion, gameQue
         anchorEl={anchorEl}
         open={menuOpen}
         onClose={handleMenuClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
+        slotProps={{ list: { 'aria-labelledby': 'basic-button' } }}
       >
         <List
           sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}

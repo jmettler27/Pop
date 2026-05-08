@@ -174,7 +174,6 @@ function GameHomeRoundItem({ round, isDisabled, onSelectRound }) {
           <RoundTypeIcon roundType={round.type} fontSize={30} />
         </Avatar>
       </ListItemAvatar>
-
       <ListItemText
         sx={{
           color: round.dateEnd ? 'text.disabled' : 'text.primary',
@@ -186,12 +185,15 @@ function GameHomeRoundItem({ round, isDisabled, onSelectRound }) {
           },
         }}
         primary={round.title}
-        primaryTypographyProps={{
-          className: '2xl:text-2xl',
-        }}
         secondary={secondaryText()}
-        secondaryTypographyProps={{
-          className: 'text-lg',
+        slotProps={{
+          primary: {
+            className: '2xl:text-2xl',
+          },
+
+          secondary: {
+            className: 'text-lg',
+          },
         }}
       />
     </ListItemButton>

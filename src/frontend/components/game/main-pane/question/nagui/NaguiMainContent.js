@@ -143,8 +143,10 @@ function ActiveNaguiChoices({ baseQuestion, gameQuestion, randomization }) {
             >
               <ListItemText
                 primary={`${NaguiQuestion.CHOICES[idx]}. ${choices[origIdx]}`}
-                primaryTypographyProps={{
-                  className: '2xl:text-2xl',
+                slotProps={{
+                  primary: {
+                    className: '2xl:text-2xl',
+                  },
                 }}
               />
             </ListItemButton>
@@ -224,7 +226,9 @@ function EndedNaguiChoices({ baseQuestion, gameQuestion, randomization }) {
         >
           <ListItemText
             primary={`${NaguiQuestion.CHOICES[idx]}. ${choices[origIdx]}`}
-            primaryTypographyProps={{ className: clsx('2xl:text-2xl', getTextColor(origIdx)) }}
+            slotProps={{
+              primary: { className: clsx('2xl:text-2xl', getTextColor(origIdx)) },
+            }}
           />
           {getListItemIcon(origIdx)}
         </ListItemButton>

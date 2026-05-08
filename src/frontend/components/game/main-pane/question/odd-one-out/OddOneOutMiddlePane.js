@@ -213,8 +213,10 @@ function ProposalItem({
       <ListItemText
         sx={{ color: 'text.primary' }}
         primary={item.title}
-        primaryTypographyProps={{
-          className: '2xl:text-xl',
+        slotProps={{
+          primary: {
+            className: '2xl:text-xl',
+          },
         }}
       />
     </ListItemButton>
