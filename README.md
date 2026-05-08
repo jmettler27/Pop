@@ -99,7 +99,7 @@ npm run seed
 
 - `.env.development` sets `NEXT_PUBLIC_USE_EMULATORS=true` and uses a demo project (`demo-pop`)
 - When this flag is set, the app connects to local emulators instead of production Firebase
-- Running `npm run dev` without `.env.development` still connects to your real Firebase project (backwards compatible)
+- Running `npm run dev` without `.env.development` still connects to your real Firebase project
 - Emulator data is persisted in `emulator-data/` (git-ignored) via `--export-on-exit`
 
 ### Emulator Ports
