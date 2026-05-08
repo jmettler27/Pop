@@ -7,18 +7,23 @@ const nextConfig = {
     },
     images: {
         formats: ['image/avif', 'image/webp'],
-        domains: ['firebasestorage.googleapis.com', 'localhost', '127.0.0.1'],
         remotePatterns: [
             {
                 protocol: 'https',
                 hostname: 'firebasestorage.googleapis.com',
                 port: '',
-                pathname: '/image/upload/**',
+                pathname: '/**',
+            },
+            {
+                protocol: 'http',
+                hostname: 'localhost',
+                port: '**',
+                pathname: '/**',
             },
             {
                 protocol: 'http',
                 hostname: '127.0.0.1',
-                port: '9199',
+                port: '**',
                 pathname: '/**',
             },
         ],
