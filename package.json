@@ -54,7 +54,7 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-firebase-hooks": "^5.1.1",
-    "react-intl": "^6.8.9",
+    "react-intl": "^10.0.0",
     "sass": "^1.77.6",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
