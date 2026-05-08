@@ -34,8 +34,6 @@ const QUESTION_TYPE = QuestionType.MATCHING;
 
 const MATCHING_TITLE_EXAMPLE = 'Link these houses of Westeros to their seat';
 
-const MATCHING_NOTE_EXAMPLE = '';
-
 const MATCHING_ANSWER_EXAMPLE_2 = [
   { 0: 'Targaryen', 1: 'Dragonstone' },
   { 0: 'Stark', 1: 'Winterfell' },

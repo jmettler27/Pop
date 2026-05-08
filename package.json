@@ -9,7 +9,10 @@
     "lint": "next lint",
     "prettier-write": "npx prettier src --write",
     "prettier-check": "npx prettier src --check",
-    "update-i18n": "node src/i18n/update-i18n.mjs"
+    "update-i18n": "node src/i18n/update-i18n.mjs",
+    "emulators": "firebase emulators:start --import=./emulator-data --export-on-exit=./emulator-data",
+    "dev:emulators": "concurrently --names emu,next --prefix-colors blue,green \"npm run emulators\" \"cross-env NEXT_PUBLIC_USE_EMULATORS=true next dev\"",
+    "seed": "node scripts/seed-emulators.js"
   },
   "dependencies": {
     "@auth/firebase-adapter": "^2.7.1",
@@ -40,8 +43,8 @@
     "emoji-mart": "^5.6.0",
     "emoji-regex": "^10.3.0",
     "encoding": "^0.1.13",
-    "firebase": "^10.12.2",
-    "firebase-admin": "^12.6.0",
+    "firebase": "^12.13.0",
+    "firebase-admin": "^13.9.0",
     "formik": "^2.4.9",
     "lucide-react": "^0.396.0",
     "next": "^16.1.1",
@@ -60,9 +63,12 @@
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
     "autoprefixer": "^10.4.19",
+    "concurrently": "^9.1.2",
+    "cross-env": "^10.1.0",
     "eslint": "^9.5.0",
     "eslint-config-next": "^15.2.1",
     "eslint-config-prettier": "^10.1.5",
+    "firebase-tools": "^13.29.1",
     "postcss": "^8.4.31",
     "prettier": "^3.5.3",
     "tailwindcss": "^3.4.4"
