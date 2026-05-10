@@ -41,12 +41,14 @@ if (useEmulators) {
       },
       async authorize(credentials) {
         const name = credentials?.name || 'Alice';
+        const validUsers = ['alice', 'bob', 'charlie', 'david', 'eve', 'frank'];
+        const id = validUsers.includes(name.toLowerCase()) ? name.toLowerCase() : 'alice';
         // Return a mock user — the id must match a seeded user for full functionality
         return {
-          id: name.toLowerCase() === 'bob' ? 'user_bob' : 'user_alice',
-          name,
-          email: `${name.toLowerCase()}@demo.local`,
-          image: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name.toLowerCase()}`,
+          id,
+          name: id.charAt(0).toUpperCase() + id.slice(1),
+          email: `${id}@demo.local`,
+          image: `https://api.dicebear.com/7.x/avataaars/svg?seed=${id}`,
         };
       },
     })

@@ -141,7 +141,9 @@ export default function RevealQuoteElementButton({ buzzed, baseQuestion, gameQue
 }
 
 function RevealQuoteElementItemButton({ gameQuestion, quoteElement, quoteElementStr, onClick }) {
-  const itemText = `${QuoteQuestion.elementToEmoji(quoteElementStr)} ("${quoteElement}")`;
+  const intl = useIntl();
+  const lang = intl.locale;
+  const itemText = `${QuoteQuestion.prependElementWithEmoji(quoteElementStr, lang)} ("${quoteElement}")`;
 
   return (
     <ListItemButton onClick={onClick} disabled={gameQuestion.quoteElementIsRevealed(quoteElementStr)}>
@@ -153,6 +155,8 @@ function RevealQuoteElementItemButton({ gameQuestion, quoteElement, quoteElement
 function RevealQuotePartItemButton({ gameQuestion, quote, quoteParts, setQuotePartIdx, handleListItemClick }) {
   const [open, setOpen] = useState(true);
 
+  const intl = useIntl();
+  const lang = intl.locale;
   const itemText = (quotePart) => {
     return `"${quote.substring(quotePart.startIdx, quotePart.endIdx + 1)}"`;
   };
@@ -165,7 +169,7 @@ function RevealQuotePartItemButton({ gameQuestion, quote, quoteParts, setQuotePa
   return (
     <>
       <ListItemButton onClick={() => setOpen(!open)} disabled={gameQuestion.quoteElementIsRevealed('quote')}>
-        <ListItemText primary={QuoteQuestion.prependElementWithEmoji('quote')} />
+        <ListItemText primary={QuoteQuestion.prependElementWithEmoji('quote', lang)} />
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open} timeout="auto" unmountOnExit>

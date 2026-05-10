@@ -47,23 +47,18 @@ export function QuestionCardTitle({ baseQuestion, showType = false }) {
         <span>
           {showType && emoji}
           {BlindtestQuestion.typeToEmoji(baseQuestion.subtype)}
-          {topicToEmoji(baseQuestion.topic)} &quot;{baseQuestion.title}&quot;
+          {topicToEmoji(baseQuestion.topic)} {baseQuestion.title}
         </span>
       );
     case QuestionType.MATCHING:
       return (
         <span>
           {showType && emoji}
-          {topicToEmoji(baseQuestion.topic)} <strong>({baseQuestion.numCols} col)</strong> &quot;{baseQuestion.title}
-          &quot;
+          {topicToEmoji(baseQuestion.topic)} <strong>({baseQuestion.numCols} col)</strong> {baseQuestion.title}
         </span>
       );
     case QuestionType.EMOJI:
-    case QuestionType.ENUMERATION:
     case QuestionType.IMAGE:
-    case QuestionType.LABELLING:
-    case QuestionType.ODD_ONE_OUT:
-    case QuestionType.PROGRESSIVE_CLUES:
     case QuestionType.QUOTE:
       return (
         <span>
@@ -71,11 +66,15 @@ export function QuestionCardTitle({ baseQuestion, showType = false }) {
           {prependTopicWithEmoji(baseQuestion.topic, intl.locale)}
         </span>
       );
+    case QuestionType.ENUMERATION:
+    case QuestionType.LABELLING:
+    case QuestionType.ODD_ONE_OUT:
+    case QuestionType.PROGRESSIVE_CLUES:
     case QuestionType.REORDERING:
       return (
         <span>
           {showType && emoji}
-          {topicToEmoji(baseQuestion.topic)} &quot;{baseQuestion.title}&quot;
+          {topicToEmoji(baseQuestion.topic)} {baseQuestion.title}
         </span>
       );
     case QuestionType.BASIC:
@@ -84,8 +83,7 @@ export function QuestionCardTitle({ baseQuestion, showType = false }) {
       return (
         <span>
           {showType && emoji}
-          {topicToEmoji(baseQuestion.topic)} {baseQuestion.source && <i>{baseQuestion.source}:</i>} &quot;
-          {baseQuestion.title}&quot;
+          {topicToEmoji(baseQuestion.topic)} {baseQuestion.source && <i>{baseQuestion.source}:</i>} {baseQuestion.title}
         </span>
       );
   }

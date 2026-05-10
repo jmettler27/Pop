@@ -7,6 +7,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
+import { QuoteQuestion } from '@/backend/models/questions/Quote';
+
 export default function CancelQuoteElementList({ toGuess }) {
   const [checked, setChecked] = React.useState([0]);
 

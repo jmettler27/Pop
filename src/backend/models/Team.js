@@ -9,6 +9,7 @@ export default class Team {
     this.id = data.id;
     this.name = data.name;
     this.color = data.color;
+    this.teamAllowed = data.teamAllowed;
   }
 
   static validateName(name) {
