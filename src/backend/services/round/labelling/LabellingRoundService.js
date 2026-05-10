@@ -95,7 +95,7 @@ export default class LabellingRoundService extends RoundService {
     const questions = await Promise.all(
       round.questions.map((id) => this.baseQuestionRepo.getQuestionTransaction(transaction, id))
     );
-    // The total number of quote elements to guess in the round
+    // The total number of labels to guess in the round
     const totalNumElements = questions.reduce((acc, baseQuestion) => {
       return acc + baseQuestion.labels.length;
     }, 0);

@@ -79,9 +79,9 @@ export class QuotePartElement {
     return this.TYPE_TO_EMOJI;
   }
 
-  // static elementToTitle(lang = DEFAULT_LOCALE) {
-  //   return this.TYPE_TO_TITLE[lang];
-  // }
+  static elementToTitle(lang = DEFAULT_LOCALE) {
+    return this.TYPE_TO_TITLE[lang];
+  }
 
   static prependElementWithEmoji(lang = DEFAULT_LOCALE) {
     return prependWithEmojiAndSpace(this.elementToEmoji(), this.elementToTitle(lang));
@@ -133,6 +133,10 @@ export class QuoteQuestion extends BaseQuestion {
     if (element === QuoteSourceElement.TYPE) return QuoteSourceElement.elementToEmoji();
     if (element === QuoteAuthorElement.TYPE) return QuoteAuthorElement.elementToEmoji();
     if (element === QuotePartElement.TYPE) return QuotePartElement.elementToEmoji();
+  }
+
+  static prependElementWithEmoji(element, lang = DEFAULT_LOCALE) {
+    return prependWithEmojiAndSpace(this.elementToEmoji(element), this.elementToTitle(element, lang));
   }
 
   static validate(data) {
