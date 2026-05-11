@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutlined';
 import InfoIcon from '@mui/icons-material/Info';
 import LanguageIcon from '@mui/icons-material/Language';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
@@ -185,7 +185,7 @@ export function NavigationBar() {
             >
               {LOCALES.map((code) => (
                 <MenuItem key={code} onClick={() => handleSelectLanguage(code)} selected={locale === code}>
-                  <Typography textAlign="center">
+                  <Typography sx={{ textAlign: 'center' }}>
                     {LOCALE_TO_EMOJI[code]} {LOCALE_TO_TITLE[code]}
                   </Typography>
                 </MenuItem>
@@ -218,7 +218,7 @@ export function NavigationBar() {
                     handleCloseUserMenu();
                   }}
                 >
-                  <Typography textAlign="center">{setting.label}</Typography>
+                  <Typography sx={{ textAlign: 'center' }}>{setting.label}</Typography>
                 </MenuItem>
               ))}
             </Menu>

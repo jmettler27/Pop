@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { useParams } from 'next/navigation';
 
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutlined';
 import CancelIcon from '@mui/icons-material/Cancel';
 import {
   Button,
@@ -125,9 +125,7 @@ export function AddQuestionToRoundButton({ round, disabled }) {
             anchorEl={anchorEl}
             open={menuOpen}
             onClose={handleMenuClose}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button',
-            }}
+            slotProps={{ list: { 'aria-labelledby': 'basic-button' } }}
           >
             <MenuItem onClick={() => setDialog('new-question')}>
               {prependCreateNewQuestionWithEmoji(intl.formatMessage(globalMessages.createNewQuestion))}
@@ -203,9 +201,7 @@ export function AddQuestionToMixedRoundButton({ roundId, disabled }) {
             anchorEl={anchorEl}
             open={menuOpen}
             onClose={handleMenuClose}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button',
-            }}
+            slotProps={{ list: { 'aria-labelledby': 'basic-button' } }}
           >
             <List
               sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
@@ -422,7 +418,7 @@ function SearchQuestionDialog({ roundId, questionType, onDialogClose }) {
     if (newRowSelectionModel.length > 0) {
       setValidationDialogOpen(true);
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <>
       <SearchQuestionDataGrid

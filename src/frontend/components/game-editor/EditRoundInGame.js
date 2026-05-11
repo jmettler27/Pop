@@ -213,9 +213,11 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
                 type="number"
                 value={thinkingTimeEditValue}
                 onChange={(e) => setThinkingTimeEditValue(e.target.value)}
-                inputProps={{ min: Timer.MIN_THINKING_TIME_SECONDS, max: Timer.MAX_THINKING_TIME_SECONDS }}
                 autoFocus
                 fullWidth
+                slotProps={{
+                  htmlInput: { min: Timer.MIN_THINKING_TIME_SECONDS, max: Timer.MAX_THINKING_TIME_SECONDS },
+                }}
               />
               <div className="flex gap-2 justify-end">
                 <Button
@@ -251,9 +253,11 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({ roundId, stat
                 type="number"
                 value={challengeTimeEditValue}
                 onChange={(e) => setChallengeTimeEditValue(e.target.value)}
-                inputProps={{ min: Timer.MIN_CHALLENGE_TIME_SECONDS, max: Timer.MAX_CHALLENGE_TIME_SECONDS }}
                 autoFocus
                 fullWidth
+                slotProps={{
+                  htmlInput: { min: Timer.MIN_CHALLENGE_TIME_SECONDS, max: Timer.MAX_CHALLENGE_TIME_SECONDS },
+                }}
               />
               <div className="flex gap-2 justify-end">
                 <Button

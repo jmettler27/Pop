@@ -215,9 +215,11 @@ function EditQuestionCardInner({
                 type="number"
                 value={editValue}
                 onChange={(e) => setEditValue(e.target.value)}
-                inputProps={{ min: Timer.MIN_THINKING_TIME_SECONDS, max: Timer.MAX_THINKING_TIME_SECONDS }}
                 autoFocus
                 fullWidth
+                slotProps={{
+                  htmlInput: { min: Timer.MIN_THINKING_TIME_SECONDS, max: Timer.MAX_THINKING_TIME_SECONDS },
+                }}
               />
               <div className="flex gap-2 justify-end">
                 {isOverridden && roundThinkingTime != null && (
@@ -277,9 +279,11 @@ function EditQuestionCardInner({
                 type="number"
                 value={editValueChallenge}
                 onChange={(e) => setEditValueChallenge(e.target.value)}
-                inputProps={{ min: Timer.MIN_CHALLENGE_TIME_SECONDS, max: Timer.MAX_CHALLENGE_TIME_SECONDS }}
                 autoFocus
                 fullWidth
+                slotProps={{
+                  htmlInput: { min: Timer.MIN_CHALLENGE_TIME_SECONDS, max: Timer.MAX_CHALLENGE_TIME_SECONDS },
+                }}
               />
               <div className="flex gap-2 justify-end">
                 {isChallengeOverridden && roundChallengeTime != null && (
@@ -340,13 +344,11 @@ function EditQuestionCardInner({
         </div>
         {/* <UpdateCreatorButton roundId={roundId} questionId={questionId} /> */}
       </CardHeader>
-
       {!isCollapsed && (
         <CardContent className="flex flex-col justify-center items-center w-full p-4 bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-800 dark:to-slate-900/50">
           <QuestionCardContent baseQuestion={baseQuestion} />
         </CardContent>
       )}
-
       <EditQuestionDialog
         baseQuestion={baseQuestion}
         userId={userId}

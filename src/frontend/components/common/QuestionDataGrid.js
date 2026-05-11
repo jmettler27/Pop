@@ -1,7 +1,7 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 
 import { Avatar, CircularProgress } from '@mui/material';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { DataGrid } from '@mui/x-data-grid';
 import { useIntl } from 'react-intl';
 
 import { BlindtestQuestion } from '@/backend/models/questions/Blindtest';
@@ -428,21 +428,21 @@ function SearchQuestionDataGridImpl({
       <DataGrid
         rows={rows}
         columns={columns}
-        onRowSelectionModelChange={memoizedOnSelectionChange}
-        rowSelectionModel={questionSelectionModel}
+        onRowSelectionModelChange={(newModel) => {
+          const idsArray = Array.from(newModel.ids || []);
+          memoizedOnSelectionChange(idsArray);
+        }}
+        rowSelectionModel={{ type: 'include', ids: new Set(questionSelectionModel) }}
         pageSizeOptions={[10, 20, 50, 100]}
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
         checkboxSelection
-        disableSelectionOnClick
+        disableRowSelectionOnClick
         density="compact"
-        slots={{
-          toolbar: GridToolbar,
-        }}
+        showToolbar
         slotProps={{
           toolbar: {
             showQuickFilter: true,
-            quickFilterProps: { debounceMs: 500 },
           },
         }}
         sx={{

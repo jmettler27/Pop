@@ -47,7 +47,9 @@ export default function CancelQuoteElementList({ toGuess }) {
                   checked={checked.indexOf(quoteElem) !== -1}
                   tabIndex={-1}
                   disableRipple
-                  inputProps={{ 'aria-labelledby': labelId }}
+                  slotProps={{
+                    input: { 'aria-labelledby': labelId },
+                  }}
                 />
               </ListItemIcon>
               <ListItemText id={labelId} primary={QuoteQuestion.prependElementWithEmoji(quoteElem)} />

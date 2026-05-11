@@ -132,10 +132,6 @@ video {
   }
 }
 
-/* <div class="text-center animate-glow-ready">
-  <!-- content -->
-</div> */
-
 .glow-correct {
   text-align: center;
   -webkit-animation: glow-correct 1s ease-in-out infinite alternate;

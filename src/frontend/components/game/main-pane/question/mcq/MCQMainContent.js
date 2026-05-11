@@ -121,8 +121,10 @@ function ActiveMCQChoices({ baseQuestion, gameQuestion, randomization }) {
         >
           <ListItemText
             primary={`${MCQQuestion.CHOICES[idx]}. ${choices[origIdx]}`}
-            primaryTypographyProps={{
-              className: '2xl:text-2xl',
+            slotProps={{
+              primary: {
+                className: '2xl:text-2xl',
+              },
             }}
           />
         </ListItemButton>
@@ -194,7 +196,9 @@ function EndedMCQChoices({ baseQuestion, gameQuestion, randomization }) {
         >
           <ListItemText
             primary={`${MCQQuestion.CHOICES[idx]}. ${choices[origIdx]}`}
-            primaryTypographyProps={{ className: clsx('2xl:text-2xl', getTextColor(origIdx)) }}
+            slotProps={{
+              primary: { className: clsx('2xl:text-2xl', getTextColor(origIdx)) },
+            }}
           />
           {getListItemIcon(origIdx)}
         </ListItemButton>

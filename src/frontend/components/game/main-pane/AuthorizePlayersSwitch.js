@@ -26,7 +26,9 @@ export default function AuthorizePlayersSwitch({ authorized }) {
           checked={authorized}
           onChange={handleAuthorizePlayers}
           disabled={isAuthorizing}
-          inputProps={{ 'aria-label': 'controlled' }}
+          slotProps={{
+            input: { 'aria-label': 'controlled' },
+          }}
         />
       }
       label={intl.formatMessage(messages.authorizeLabel)}

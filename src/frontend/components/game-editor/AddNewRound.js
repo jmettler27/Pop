@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutlined';
 import { Button, Dialog, DialogContent, DialogTitle } from '@mui/material';
 import { Form, Formik } from 'formik';
 import { useIntl } from 'react-intl';
