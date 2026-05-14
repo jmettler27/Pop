@@ -177,7 +177,7 @@ function EditQuestionCardInner({
   return (
     <Card className="border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800 rounded-xl overflow-hidden group hover:scale-[1.02]">
       <CardHeader
-        className={`flex flex-row items-center justify-between bg-gradient-to-r from-slate-50 to-blue-50/50 dark:from-slate-800 dark:to-slate-900 py-2 px-3 ${!isCollapsed ? 'border-b border-slate-200 dark:border-slate-700' : ''}`}
+        className={`flex flex-row items-center justify-between bg-linear-to-r from-slate-50 to-blue-50/50 dark:from-slate-800 dark:to-slate-900 py-2 px-3 ${!isCollapsed ? 'border-b border-slate-200 dark:border-slate-700' : ''}`}
       >
         {/* <span className='text-base md:text-lg dark:text-white'>#{questionOrder + 1}</span> */}
         <CardTitle className="text-sm md:text-base dark:text-white font-semibold">
@@ -343,7 +343,7 @@ function EditQuestionCardInner({
       </CardHeader>
 
       {!isCollapsed && (
-        <CardContent className="flex flex-col justify-center items-center w-full p-4 bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-800 dark:to-slate-900/50">
+        <CardContent className="flex flex-col justify-center items-center w-full p-4 bg-linear-to-br from-white to-slate-50/50 dark:from-slate-800 dark:to-slate-900/50">
           <QuestionCardContent baseQuestion={baseQuestion} />
         </CardContent>
       )}
@@ -361,17 +361,17 @@ function EditQuestionCardInner({
 function QuestionCardSkeleton() {
   return (
     <Card className="border border-slate-200 dark:border-slate-700 shadow-lg bg-white dark:bg-slate-800 rounded-xl overflow-hidden">
-      <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-slate-50 to-blue-50/50 dark:from-slate-800 dark:to-slate-900 py-2 px-3 border-b border-slate-200 dark:border-slate-700">
-        <div className="h-4 w-2/3 rounded bg-slate-200 dark:bg-slate-700 animate-pulse" />
+      <CardHeader className="flex flex-row items-center justify-between bg-linear-to-r from-slate-50 to-blue-50/50 dark:from-slate-800 dark:to-slate-900 py-2 px-3 border-b border-slate-200 dark:border-slate-700">
+        <div className="h-4 w-2/3 rounded-sm bg-slate-200 dark:bg-slate-700 animate-pulse" />
         <div className="flex gap-1">
           <div className="h-7 w-7 rounded-full bg-slate-200 dark:bg-slate-700 animate-pulse" />
           <div className="h-7 w-7 rounded-full bg-slate-200 dark:bg-slate-700 animate-pulse" />
         </div>
       </CardHeader>
-      <CardContent className="flex flex-col gap-3 p-4 bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-800 dark:to-slate-900/50">
+      <CardContent className="flex flex-col gap-3 p-4 bg-linear-to-br from-white to-slate-50/50 dark:from-slate-800 dark:to-slate-900/50">
         <div className="h-36 w-full rounded-lg bg-slate-200 dark:bg-slate-700 animate-pulse" />
-        <div className="h-4 w-5/6 rounded bg-slate-200 dark:bg-slate-700 animate-pulse" />
-        <div className="h-4 w-2/3 rounded bg-slate-200 dark:bg-slate-700 animate-pulse" />
+        <div className="h-4 w-5/6 rounded-sm bg-slate-200 dark:bg-slate-700 animate-pulse" />
+        <div className="h-4 w-2/3 rounded-sm bg-slate-200 dark:bg-slate-700 animate-pulse" />
       </CardContent>
     </Card>
   );

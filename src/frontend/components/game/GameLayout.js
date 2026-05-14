@@ -50,7 +50,7 @@ const GameLayout = memo(function GameLayout({}) {
           <TopPaneContainer />
         </div>
         {/* Middle pane - main game content */}
-        <div className="h-[70%] overflow-auto bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-800 via-slate-800 to-slate-900">
+        <div className="h-[70%] overflow-auto bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-slate-800 via-slate-800 to-slate-900">
           <MiddlePaneContainer />
         </div>
         {/* Bottom pane - controls and timer */}

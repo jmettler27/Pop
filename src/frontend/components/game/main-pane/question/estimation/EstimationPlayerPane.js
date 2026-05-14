@@ -78,7 +78,7 @@ function BetTypeCard({ icon, title, description, selected, onClick, disabled }) 
       >
         {title}
       </span>
-      <span className="text-sm 2xl:text-base text-center text-slate-400 px-3 leading-tight min-h-[2.5rem] 2xl:min-h-[3rem] flex items-start justify-center">
+      <span className="text-sm 2xl:text-base text-center text-slate-400 px-3 leading-tight min-h-10 2xl:min-h-12 flex items-start justify-center">
         {description}
       </span>
     </div>

@@ -46,9 +46,9 @@ export default function EndedGames() {
   const sortedGames = games.sort((a, b) => b.dateEnd - a.dateEnd);
 
   return (
-    <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-slate-700 shadow-2xl hover:shadow-purple-500/20 transition-all duration-300">
+    <Card className="bg-linear-to-br from-slate-800 to-slate-900 border-2 border-slate-700 shadow-2xl hover:shadow-purple-500/20 transition-all duration-300">
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 border-b border-slate-700">
-        <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+        <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold bg-linear-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
           🔚 {intl.formatMessage(messages.title)}
         </CardTitle>
       </CardHeader>
@@ -94,16 +94,16 @@ export function EndedGameCard({ game }) {
   return (
     <Card className="bg-slate-800/50 border border-purple-600/20 shadow-lg hover:shadow-purple-500/40 hover:border-purple-400/60 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
       {/* Compact Header */}
-      <CardHeader className="pb-3 pt-4 px-4 bg-gradient-to-br from-purple-900/20 to-transparent">
+      <CardHeader className="pb-3 pt-4 px-4 bg-linear-to-br from-purple-900/20 to-transparent">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <Tooltip title={game.title} placement="top">
               <div className="flex items-center gap-2">
-                <span className="text-lg flex-shrink-0">{gameTypeToEmoji(game.type)}</span>
+                <span className="text-lg shrink-0">{gameTypeToEmoji(game.type)}</span>
                 <CardTitle className="text-sm sm:text-base font-semibold text-white truncate leading-tight">
                   {game.title}
                 </CardTitle>
-                <span className="text-base flex-shrink-0">{localeToEmoji(game.lang)}</span>
+                <span className="text-base shrink-0">{localeToEmoji(game.lang)}</span>
               </div>
             </Tooltip>
           </div>

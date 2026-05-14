@@ -295,7 +295,7 @@ function ClueTextField({ index }) {
       onBlur={formik.handleBlur}
       error={formik.touched.email && Boolean(formik.errors.email)}
       helperText={formik.touched.email && formik.errors.email}
-      // className='placeholder-red-500 text-base bg-[color:var(--gray-800)] text-[white] border-[color:var(--gray-700)] appearance-none px-2 py-[0.65rem] rounded-[10px] border-2 border-solid w-[400px]'
+      // className='placeholder-red-500 text-base bg-(--gray-800) text-[white] border-(--gray-700) appearance-none px-2 py-[0.65rem] rounded-[10px] border-2 border-solid w-[400px]'
       sx={{
         width: '400px',
         // 'MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline css-1sqnrkk-MuiInputBase-input-MuiOutlinedInput-input'
