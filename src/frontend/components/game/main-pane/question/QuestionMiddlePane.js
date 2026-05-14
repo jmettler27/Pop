@@ -4,6 +4,7 @@ import ErrorScreen from '@/frontend/components/ErrorScreen';
 import BasicMiddlePane from '@/frontend/components/game/main-pane/question/basic/BasicMiddlePane';
 import BuzzerMiddlePane from '@/frontend/components/game/main-pane/question/buzzer/BuzzerMiddlePane';
 import EnumerationMiddlePane from '@/frontend/components/game/main-pane/question/enumeration/EnumerationMiddlePane';
+import EstimationMiddlePane from '@/frontend/components/game/main-pane/question/estimation/EstimationMiddlePane';
 import LabellingMiddlePane from '@/frontend/components/game/main-pane/question/labelling/LabellingMiddlePane';
 import MatchingMiddlePane from '@/frontend/components/game/main-pane/question/matching/MatchingMiddlePane';
 import MCQMiddlePane from '@/frontend/components/game/main-pane/question/mcq/MCQMiddlePane';
@@ -42,6 +43,8 @@ export default function QuestionMiddlePane() {
       return <BuzzerMiddlePane baseQuestion={baseQuestion} />;
     case QuestionType.ENUMERATION:
       return <EnumerationMiddlePane baseQuestion={baseQuestion} />;
+    case QuestionType.ESTIMATION:
+      return <EstimationMiddlePane baseQuestion={baseQuestion} />;
     case QuestionType.LABELLING:
       return <LabellingMiddlePane baseQuestion={baseQuestion} />;
     case QuestionType.MATCHING:

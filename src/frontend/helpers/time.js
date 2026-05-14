@@ -54,6 +54,34 @@ export function timestampToHour(timestamp, locale) {
 }
 
 /**
+ * Compute elapsed seconds between two Firestore Timestamps.
+ * When end is omitted, uses the current time.
+ *
+ * @param {Timestamp} start
+ * @param {Timestamp} [end]
+ * @returns {number}
+ */
+export function timestampElapsedSeconds(start, end) {
+  if (!start) return 0;
+  const startMs = start.seconds * 1000;
+  const endMs = end ? end.seconds * 1000 : Date.now();
+  return Math.max(0, Math.round((endMs - startMs) / 1000));
+}
+
+/**
+ * Format a duration in seconds as a locale-aware string using Intl.DurationFormat.
+ *
+ * @param {number} totalSeconds
+ * @param {string} locale
+ * @returns {string}
+ */
+export function formatDuration(totalSeconds, locale) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return new Intl.DurationFormat(locale, { style: 'narrow' }).format({ minutes, seconds });
+}
+
+/**
  * Format seconds to minutes and seconds
  *
  * @param {number} seconds - The seconds to format

@@ -1,17 +1,17 @@
 import { Round } from '@/backend/models/rounds/Round';
 import { RoundType } from '@/backend/models/rounds/RoundType';
 
-export class ReorderingRound extends Round {
-  static DEFAULT_THINKING_TIME = 60;
-  static REWARDS_PER_ELEMENT = 1;
+export class EstimationRound extends Round {
+  static DEFAULT_THINKING_TIME = 90;
+  static REWARDS_PER_QUESTION = 1;
 
   constructor(data) {
     super(data);
-    this.type = RoundType.REORDERING;
+    this.type = RoundType.ESTIMATION;
 
     this.maxPoints = data.maxPoints || null;
-    this.thinkingTime = data.thinkingTime || ReorderingRound.DEFAULT_THINKING_TIME;
-    this.rewardsPerElement = data.rewardsPerElement || ReorderingRound.REWARDS_PER_ELEMENT;
+    this.rewardsPerQuestion = data.rewardsPerQuestion || EstimationRound.REWARDS_PER_QUESTION;
+    this.thinkingTime = data.thinkingTime || EstimationRound.DEFAULT_THINKING_TIME;
   }
 
   toObject() {
@@ -20,7 +20,7 @@ export class ReorderingRound extends Round {
       type: this.type,
       maxPoints: this.maxPoints,
       thinkingTime: this.thinkingTime,
-      rewardsPerElement: this.rewardsPerElement,
+      rewardsPerQuestion: this.rewardsPerQuestion,
     };
   }
 
@@ -33,8 +33,6 @@ export class ReorderingRound extends Round {
   }
 
   calculateMaxPointsTransaction() {
-    return this.questions.reduce((acc, { details: { ordering } }) => {
-      return acc + ordering.length * this.rewardsPerElement;
-    }, 0);
+    return this.questions.length * this.rewardsPerQuestion;
   }
 }

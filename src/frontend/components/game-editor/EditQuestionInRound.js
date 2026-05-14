@@ -37,6 +37,7 @@ import SubmitBasicQuestionForm from '@/frontend/components/question-forms/Submit
 import SubmitBlindtestQuestionForm from '@/frontend/components/question-forms/SubmitBlindtestQuestionForm';
 import SubmitEmojiQuestionForm from '@/frontend/components/question-forms/SubmitEmojiQuestionForm';
 import SubmitEnumerationQuestionForm from '@/frontend/components/question-forms/SubmitEnumerationQuestionForm';
+import SubmitEstimationQuestionForm from '@/frontend/components/question-forms/SubmitEstimationQuestionForm';
 import SubmitImageQuestionForm from '@/frontend/components/question-forms/SubmitImageQuestionForm';
 import SubmitLabellingQuestionForm from '@/frontend/components/question-forms/SubmitLabellingQuestionForm';
 import SubmitMatchingQuestionForm from '@/frontend/components/question-forms/SubmitMatchingQuestionForm';
@@ -399,6 +400,8 @@ function EditQuestionFormByType({ baseQuestion, userId, onClose }) {
       return <SubmitEmojiQuestionForm {...commonProps} />;
     case QuestionType.ENUMERATION:
       return <SubmitEnumerationQuestionForm {...commonProps} />;
+    case QuestionType.ESTIMATION:
+      return <SubmitEstimationQuestionForm {...commonProps} />;
     case QuestionType.IMAGE:
       return <SubmitImageQuestionForm {...commonProps} />;
     case QuestionType.LABELLING:

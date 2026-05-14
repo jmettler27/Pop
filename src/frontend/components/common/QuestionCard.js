@@ -12,6 +12,7 @@ import { QuestionType, questionTypeToEmoji } from '@/backend/models/questions/Qu
 import { prependTopicWithEmoji, topicToEmoji } from '@/backend/models/Topic';
 import UserRepository from '@/backend/repositories/user/UserRepository';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/frontend/components/card';
+import { formatAnswerValue } from '@/frontend/components/game/main-pane/question/estimation/EstimationCommon';
 import { LOCALE_TO_EMOJI } from '@/frontend/helpers/locales';
 import { QUESTION_ELEMENT_TO_EMOJI, QUESTION_ELEMENT_TO_TITLE } from '@/frontend/helpers/question';
 import { timestampToDate } from '@/frontend/helpers/time';
@@ -77,6 +78,7 @@ export function QuestionCardTitle({ baseQuestion, showType = false }) {
           {topicToEmoji(baseQuestion.topic)} {baseQuestion.title}
         </span>
       );
+    case QuestionType.ESTIMATION:
     case QuestionType.BASIC:
     case QuestionType.MCQ:
     case QuestionType.NAGUI:
@@ -115,7 +117,9 @@ export function QuestionCardContent({ baseQuestion }) {
     case QuestionType.EMOJI:
       return <EmojiCardMainContent baseQuestion={baseQuestion} />;
     case QuestionType.ENUMERATION:
-      return <EnumCardMainContent baseQuestion={baseQuestion} />;
+      return <EnumerationCardMainContent baseQuestion={baseQuestion} />;
+    case QuestionType.ESTIMATION:
+      return <EstimationCardMainContent baseQuestion={baseQuestion} />;
     case QuestionType.IMAGE:
       return <ImageCardMainContent baseQuestion={baseQuestion} />;
     case QuestionType.LABELLING:
@@ -139,101 +143,20 @@ export function QuestionCardContent({ baseQuestion }) {
   }
 }
 
-const ProgressiveCluesCardMainContent = ({ baseQuestion }) => {
-  const clues = baseQuestion.clues;
-  const image = baseQuestion.answer.image;
-  const title = baseQuestion.answer.title;
+const BasicCardMainContent = ({ baseQuestion }) => {
+  const note = baseQuestion.note;
+  const answer = baseQuestion.answer;
+  const explanation = baseQuestion.explanation;
 
   return (
     <div className="flex flex-col w-full space-y-2">
-      {image && (
-        <Image
-          src={image}
-          alt={title}
-          priority={true}
-          height={0}
-          width={0}
-          style={{
-            width: 'auto',
-            height: '150px',
-            objectFit: 'cover',
-          }}
-          className="self-center"
-        />
+      {note && (
+        <p className="text-xs sm:text-sm 2xl:text-base dark:text-white italic">
+          {QUESTION_ELEMENT_TO_EMOJI['note']} {note}
+        </p>
       )}
-      <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
-        <strong>{title}</strong>
-      </span>
-      <ol className="list-decimal py-1 pl-5">
-        {clues.map((clue, idx) => (
-          <li className="text-xs sm:text-sm 2xl:text-base dark:text-white" key={idx}>
-            {clue}
-          </li>
-        ))}
-      </ol>
-    </div>
-  );
-};
-
-const ImageCardMainContent = ({ baseQuestion }) => {
-  const image = baseQuestion.image;
-  const description = baseQuestion.answer.description;
-  const source = baseQuestion.answer.source;
-  console.log('baseQuestion', baseQuestion);
-
-  return (
-    <div className="flex flex-col w-full space-y-2">
-      <Image
-        src={image}
-        alt={description ? `${description} - ${source}` : source}
-        priority={true}
-        height={0}
-        width={0}
-        style={{
-          width: 'auto',
-          height: '150px',
-          objectFit: 'cover',
-        }}
-        className="self-center"
-      />
-      {description && (
-        <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
-          {QUESTION_ELEMENT_TO_EMOJI['description']} {description}
-        </span>
-      )}
-      <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
-        {QUESTION_ELEMENT_TO_EMOJI['source']} <i>{source}</i>
-      </span>
-    </div>
-  );
-};
-
-const EmojiCardMainContent = ({ baseQuestion }) => {
-  const image = baseQuestion.answer.image;
-  const title = baseQuestion.answer.title;
-  const clue = baseQuestion.clue;
-
-  return (
-    <div className="flex flex-col w-full space-y-2">
-      {image && (
-        <Image
-          src={image}
-          alt={title}
-          priority={true}
-          height={0}
-          width={0}
-          style={{
-            width: 'auto',
-            height: '150px',
-            objectFit: 'cover',
-          }}
-          className="self-center"
-        />
-      )}
-      <span className="text-2xl sm:text-3xl self-center">{clue}</span>
-      <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
-        <strong>{title}</strong>
-      </span>
+      <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">{answer}</span>
+      {explanation && <p className="text-xs sm:text-sm 2xl:text-base dark:text-white">👉 {explanation}</p>}
     </div>
   );
 };
@@ -281,76 +204,10 @@ const BlindtestCardMainContent = ({ baseQuestion }) => {
   );
 };
 
-const QuoteCardMainContent = ({ baseQuestion }) => {
-  const quote = baseQuestion.quote;
-  const source = baseQuestion.source;
-  const author = baseQuestion.author;
-  const toGuess = baseQuestion.toGuess;
-  const quoteParts = baseQuestion.quoteParts;
-
-  return (
-    <div className="flex flex-col w-full space-y-2">
-      <blockquote className="text-xs sm:text-sm 2xl:text-base dark:text-white">
-        &quot;{<DisplayedQuote toGuess={toGuess} quote={quote} quoteParts={quoteParts} />}&quot;
-      </blockquote>
-      {author && (
-        <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
-          {QUESTION_ELEMENT_TO_EMOJI['author']} {<DisplayedAuthor toGuess={toGuess} author={author} />}
-        </span>
-      )}
-      {source && (
-        <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
-          {QUESTION_ELEMENT_TO_EMOJI['source']} <i>{<DisplayedSource toGuess={toGuess} source={source} />}</i>
-        </span>
-      )}
-    </div>
-  );
-};
-
-const DisplayedAuthor = ({ toGuess, author }) => {
-  if (toGuess.includes('author')) {
-    return <span className="text-yellow-500">{author}</span>;
-  }
-  return <span>{author}</span>;
-};
-
-const DisplayedSource = ({ toGuess, source }) => {
-  if (toGuess.includes('source')) {
-    return <span className="text-yellow-500">{source}</span>;
-  }
-  return <span>{source}</span>;
-};
-
-const DisplayedQuote = ({ toGuess, quote, quoteParts }) => {
-  if (toGuess.includes('quote') && quoteParts.length > 0) {
-    let parts = [];
-    let lastIndex = 0;
-
-    quoteParts
-      .sort((a, b) => a.startIdx - b.startIdx)
-      .forEach((quotePart, idx) => {
-        const before = quote.substring(lastIndex, quotePart.startIdx);
-        const within = quote.substring(quotePart.startIdx, quotePart.endIdx + 1);
-        lastIndex = quotePart.endIdx + 1;
-
-        parts.push(<span key={`before_${idx}`}>{before}</span>);
-        parts.push(
-          <span key={`within_${idx}`} className="text-yellow-500">
-            {within}
-          </span>
-        );
-      });
-
-    parts.push(<span key={'lastIndex'}>{quote.substring(lastIndex)}</span>);
-    return <>{parts}</>;
-  }
-  return <span>{quote}</span>;
-};
-
-const LabellingCardMainContent = ({ baseQuestion }) => {
-  const title = baseQuestion.title;
-  const image = baseQuestion.image;
-  const labels = baseQuestion.labels;
+const EmojiCardMainContent = ({ baseQuestion }) => {
+  const image = baseQuestion.answer.image;
+  const title = baseQuestion.answer.title;
+  const clue = baseQuestion.clue;
 
   return (
     <div className="flex flex-col w-full space-y-2">
@@ -369,20 +226,49 @@ const LabellingCardMainContent = ({ baseQuestion }) => {
           className="self-center"
         />
       )}
-      <ol className="list-decimal py-1 pl-5">
-        {labels.map((label, idx) => (
-          <li className="text-xs sm:text-sm 2xl:text-base dark:text-white" key={idx}>
-            {label}
-          </li>
-        ))}
-      </ol>
+      <span className="text-2xl sm:text-3xl self-center">{clue}</span>
+      <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
+        <strong>{title}</strong>
+      </span>
+    </div>
+  );
+};
+
+const ImageCardMainContent = ({ baseQuestion }) => {
+  const image = baseQuestion.image;
+  const description = baseQuestion.answer.description;
+  const source = baseQuestion.answer.source;
+
+  return (
+    <div className="flex flex-col w-full space-y-2">
+      <Image
+        src={image}
+        alt={description ? `${description} - ${source}` : source}
+        priority={true}
+        height={0}
+        width={0}
+        style={{
+          width: 'auto',
+          height: '150px',
+          objectFit: 'cover',
+        }}
+        className="self-center"
+      />
+      {description && (
+        <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
+          {QUESTION_ELEMENT_TO_EMOJI['description']} {description}
+        </span>
+      )}
+      <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
+        {QUESTION_ELEMENT_TO_EMOJI['source']} <i>{source}</i>
+      </span>
     </div>
   );
 };
 
 const ENUM_MAX_NUM_ELEMENTS = 10;
 
-const EnumCardMainContent = ({ baseQuestion }) => {
+const EnumerationCardMainContent = ({ baseQuestion }) => {
   const intl = useIntl();
   const note = baseQuestion.note;
   const maxIsKnown = baseQuestion.maxIsKnown;
@@ -423,10 +309,12 @@ const EnumCardMainContent = ({ baseQuestion }) => {
   );
 };
 
-const OOOCardMainContent = ({ baseQuestion }) => {
+const EstimationCardMainContent = ({ baseQuestion }) => {
+  const intl = useIntl();
+  const answer = baseQuestion.answer;
+  const answerType = baseQuestion.answerType;
+  const explanation = baseQuestion.explanation;
   const note = baseQuestion.note;
-  const items = baseQuestion.items;
-  const answerIdx = baseQuestion.answerIdx;
 
   return (
     <div className="flex flex-col w-full space-y-2">
@@ -435,39 +323,40 @@ const OOOCardMainContent = ({ baseQuestion }) => {
           {QUESTION_ELEMENT_TO_EMOJI['note']} {note}
         </p>
       )}
-      <ul className="list-disc py-1 pl-5">
-        {items.map((item, idx) => (
-          <li
-            key={idx}
-            className={clsx(idx === answerIdx ? 'text-red-500' : 'dark:text-white', 'hover:font-bold cursor-pointer')}
-          >
-            <Tooltip key={idx} title={item.explanation} placement="right-start" arrow>
-              <span>{item.title}</span>
-            </Tooltip>
-          </li>
-        ))}
-      </ul>
+      <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
+        {formatAnswerValue(answerType, answer, intl.locale)}
+      </span>
+      {explanation && <p className="text-xs sm:text-sm 2xl:text-base dark:text-white">👉 {explanation}</p>}
     </div>
   );
 };
 
-const ReorderingCardMainContent = ({ baseQuestion }) => {
-  const note = baseQuestion.note;
-  const items = baseQuestion.items;
+const LabellingCardMainContent = ({ baseQuestion }) => {
+  const title = baseQuestion.title;
+  const image = baseQuestion.image;
+  const labels = baseQuestion.labels;
 
   return (
     <div className="flex flex-col w-full space-y-2">
-      {note && (
-        <p className="text-xs sm:text-sm 2xl:text-base dark:text-white italic">
-          {QUESTION_ELEMENT_TO_EMOJI['note']} {note}
-        </p>
+      {image && (
+        <Image
+          src={image}
+          alt={title}
+          priority={true}
+          height={0}
+          width={0}
+          style={{
+            width: 'auto',
+            height: '150px',
+            objectFit: 'cover',
+          }}
+          className="self-center"
+        />
       )}
       <ol className="list-decimal py-1 pl-5">
-        {items.map((item, idx) => (
-          <li key={idx} className="hover:font-bold cursor-pointer">
-            <Tooltip key={idx} title={item.explanation} placement="right-start" arrow>
-              <span>{item.title}</span>
-            </Tooltip>
+        {labels.map((label, idx) => (
+          <li className="text-xs sm:text-sm 2xl:text-base dark:text-white" key={idx}>
+            {label}
           </li>
         ))}
       </ol>
@@ -561,10 +450,10 @@ const NaguiCardMainContent = ({ baseQuestion }) => {
   );
 };
 
-const BasicCardMainContent = ({ baseQuestion }) => {
+const OOOCardMainContent = ({ baseQuestion }) => {
   const note = baseQuestion.note;
-  const answer = baseQuestion.answer;
-  const explanation = baseQuestion.explanation;
+  const items = baseQuestion.items;
+  const answerIdx = baseQuestion.answerIdx;
 
   return (
     <div className="flex flex-col w-full space-y-2">
@@ -573,8 +462,144 @@ const BasicCardMainContent = ({ baseQuestion }) => {
           {QUESTION_ELEMENT_TO_EMOJI['note']} {note}
         </p>
       )}
-      <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">{answer}</span>
-      {explanation && <p className="text-xs sm:text-sm 2xl:text-base dark:text-white">👉 {explanation}</p>}
+      <ul className="list-disc py-1 pl-5">
+        {items.map((item, idx) => (
+          <li
+            key={idx}
+            className={clsx(idx === answerIdx ? 'text-red-500' : 'dark:text-white', 'hover:font-bold cursor-pointer')}
+          >
+            <Tooltip key={idx} title={item.explanation} placement="right-start" arrow>
+              <span>{item.title}</span>
+            </Tooltip>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+const ProgressiveCluesCardMainContent = ({ baseQuestion }) => {
+  const clues = baseQuestion.clues;
+  const image = baseQuestion.answer.image;
+  const title = baseQuestion.answer.title;
+
+  return (
+    <div className="flex flex-col w-full space-y-2">
+      {image && (
+        <Image
+          src={image}
+          alt={title}
+          priority={true}
+          height={0}
+          width={0}
+          style={{
+            width: 'auto',
+            height: '150px',
+            objectFit: 'cover',
+          }}
+          className="self-center"
+        />
+      )}
+      <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
+        <strong>{title}</strong>
+      </span>
+      <ol className="list-decimal py-1 pl-5">
+        {clues.map((clue, idx) => (
+          <li className="text-xs sm:text-sm 2xl:text-base dark:text-white" key={idx}>
+            {clue}
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+};
+
+const QuoteCardMainContent = ({ baseQuestion }) => {
+  const quote = baseQuestion.quote;
+  const source = baseQuestion.source;
+  const author = baseQuestion.author;
+  const toGuess = baseQuestion.toGuess;
+  const quoteParts = baseQuestion.quoteParts;
+
+  return (
+    <div className="flex flex-col w-full space-y-2">
+      <blockquote className="text-xs sm:text-sm 2xl:text-base dark:text-white">
+        &quot;{<DisplayedQuote toGuess={toGuess} quote={quote} quoteParts={quoteParts} />}&quot;
+      </blockquote>
+      {author && (
+        <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
+          {QUESTION_ELEMENT_TO_EMOJI['author']} {<DisplayedAuthor toGuess={toGuess} author={author} />}
+        </span>
+      )}
+      {source && (
+        <span className="text-xs sm:text-sm 2xl:text-base dark:text-white">
+          {QUESTION_ELEMENT_TO_EMOJI['source']} <i>{<DisplayedSource toGuess={toGuess} source={source} />}</i>
+        </span>
+      )}
+    </div>
+  );
+};
+
+const DisplayedAuthor = ({ toGuess, author }) => {
+  if (toGuess.includes('author')) {
+    return <span className="text-yellow-500">{author}</span>;
+  }
+  return <span>{author}</span>;
+};
+
+const DisplayedSource = ({ toGuess, source }) => {
+  if (toGuess.includes('source')) {
+    return <span className="text-yellow-500">{source}</span>;
+  }
+  return <span>{source}</span>;
+};
+
+const DisplayedQuote = ({ toGuess, quote, quoteParts }) => {
+  if (toGuess.includes('quote') && quoteParts.length > 0) {
+    let parts = [];
+    let lastIndex = 0;
+
+    quoteParts
+      .sort((a, b) => a.startIdx - b.startIdx)
+      .forEach((quotePart, idx) => {
+        const before = quote.substring(lastIndex, quotePart.startIdx);
+        const within = quote.substring(quotePart.startIdx, quotePart.endIdx + 1);
+        lastIndex = quotePart.endIdx + 1;
+
+        parts.push(<span key={`before_${idx}`}>{before}</span>);
+        parts.push(
+          <span key={`within_${idx}`} className="text-yellow-500">
+            {within}
+          </span>
+        );
+      });
+
+    parts.push(<span key={'lastIndex'}>{quote.substring(lastIndex)}</span>);
+    return <>{parts}</>;
+  }
+  return <span>{quote}</span>;
+};
+
+const ReorderingCardMainContent = ({ baseQuestion }) => {
+  const note = baseQuestion.note;
+  const items = baseQuestion.items;
+
+  return (
+    <div className="flex flex-col w-full space-y-2">
+      {note && (
+        <p className="text-xs sm:text-sm 2xl:text-base dark:text-white italic">
+          {QUESTION_ELEMENT_TO_EMOJI['note']} {note}
+        </p>
+      )}
+      <ol className="list-decimal py-1 pl-5">
+        {items.map((item, idx) => (
+          <li key={idx} className="hover:font-bold cursor-pointer">
+            <Tooltip key={idx} title={item.explanation} placement="right-start" arrow>
+              <span>{item.title}</span>
+            </Tooltip>
+          </li>
+        ))}
+      </ol>
     </div>
   );
 };

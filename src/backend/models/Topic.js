@@ -129,7 +129,9 @@ export function prependTopicWithEmoji(topic, locale = DEFAULT_LOCALE) {
 }
 
 export function allTopicsToTitle(lang = DEFAULT_LOCALE, withEmoji = true) {
-  return Object.keys(TopicToTitle[lang]).map((topic) => {
-    return [topic, withEmoji ? prependTopicWithEmoji(topic, lang) : topicToTitle(topic, lang)];
-  });
+  return Object.keys(TopicToTitle[lang])
+    .sort((a, b) => topicToTitle(a, lang).localeCompare(topicToTitle(b, lang)))
+    .map((topic) => {
+      return [topic, withEmoji ? prependTopicWithEmoji(topic, lang) : topicToTitle(topic, lang)];
+    });
 }

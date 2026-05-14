@@ -2,6 +2,7 @@ import { BasicQuestion, GameBasicQuestion } from '@/backend/models/questions/Bas
 import { BlindtestQuestion, GameBlindtestQuestion } from '@/backend/models/questions/Blindtest';
 import { EmojiQuestion, GameEmojiQuestion } from '@/backend/models/questions/Emoji';
 import { EnumerationQuestion, GameEnumerationQuestion } from '@/backend/models/questions/Enumeration';
+import { EstimationQuestion, GameEstimationQuestion } from '@/backend/models/questions/Estimation';
 import { GameImageQuestion, ImageQuestion } from '@/backend/models/questions/Image';
 import { GameLabellingQuestion, LabellingQuestion } from '@/backend/models/questions/Labelling';
 import { GameMatchingQuestion, MatchingQuestion } from '@/backend/models/questions/Matching';
@@ -30,6 +31,8 @@ export default class QuestionFactory {
         return new EmojiQuestion(data);
       case QuestionType.ENUMERATION:
         return new EnumerationQuestion(data);
+      case QuestionType.ESTIMATION:
+        return new EstimationQuestion(data);
       case QuestionType.IMAGE:
         return new ImageQuestion(data);
       case QuestionType.LABELLING:
@@ -70,6 +73,8 @@ export default class QuestionFactory {
         return new GameEmojiQuestion(data);
       case QuestionType.ENUMERATION:
         return new GameEnumerationQuestion(data);
+      case QuestionType.ESTIMATION:
+        return new GameEstimationQuestion(data);
       case QuestionType.IMAGE:
         return new GameImageQuestion(data);
       case QuestionType.LABELLING:

@@ -22,18 +22,20 @@ import { RoundType, roundTypeToEmoji, roundTypeToTitle } from '@/backend/models/
 import defineMessages from '@/utils/defineMessages';
 
 const ABOUT_ROUND_TYPES = [
-  RoundType.PROGRESSIVE_CLUES,
-  RoundType.IMAGE,
-  RoundType.EMOJI,
+  RoundType.BASIC,
   RoundType.BLINDTEST,
-  RoundType.QUOTE,
-  RoundType.LABELLING,
+  RoundType.EMOJI,
   RoundType.ENUMERATION,
-  RoundType.ODD_ONE_OUT,
+  RoundType.ESTIMATION,
+  RoundType.IMAGE,
+  RoundType.LABELLING,
   RoundType.MATCHING,
-  RoundType.REORDERING,
   RoundType.MCQ,
   RoundType.NAGUI,
+  RoundType.ODD_ONE_OUT,
+  RoundType.PROGRESSIVE_CLUES,
+  RoundType.QUOTE,
+  RoundType.REORDERING,
   RoundType.SPECIAL,
 ];
 

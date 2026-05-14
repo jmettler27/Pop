@@ -16,6 +16,7 @@ const messages = defineMessages('frontend.game.round.RoundDescription', {
   emoji1: '🧐 Find the work or place/character/object/... hidden behind each combination of emojis.',
   emoji2: '🧩 This combination may evoke <b>general ideas</b>, or it may just be a <b>rebus</b>, it depends.',
   enumeration: '💬 Name as many elements as possible that answer the question.',
+  estimation: '🎯 For each question, estimate a 🔢 number or a 📅 date: an <b>exact value</b> or a <b>range</b>.',
   image: '🧐 Find the work or place/character/object/... hidden behind each image.',
   labelling1: 'Each question consists of an image with numbered markers.',
   labelling2: '🫳 Find the labels corresponding to the markers.',
@@ -58,9 +59,11 @@ export function RoundDescription({ round }) {
       return <EmojiRoundDescription />;
     case RoundType.ENUMERATION:
       return <EnumerationRoundDescription />;
+    case RoundType.ESTIMATION:
+      return <EstimationRoundDescription />;
     case RoundType.IMAGE:
       return <ImageRoundDescription />;
-    case RoundType.LABEL:
+    case RoundType.LABELLING:
       return <LabellingRoundDescription />;
     case RoundType.MATCHING:
       return <MatchingRoundDescription />;
@@ -119,6 +122,11 @@ function EmojiRoundDescription() {
 function EnumerationRoundDescription() {
   const { formatMessage } = useIntl();
   return <RuleP>{formatMessage(messages.enumeration)}</RuleP>;
+}
+
+function EstimationRoundDescription() {
+  const { formatMessage } = useIntl();
+  return <RuleP>{fmt(formatMessage, messages.estimation, richTags)}</RuleP>;
 }
 
 function ImageRoundDescription() {

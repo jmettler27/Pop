@@ -65,6 +65,7 @@ function RoundRankingPolicyTitle({ round }) {
     case RoundType.BLINDTEST:
     case RoundType.EMOJI:
     case RoundType.ENUMERATION:
+    case RoundType.ESTIMATION:
     case RoundType.IMAGE:
     case RoundType.NAGUI:
       return <BuzzerRoundRankingPolicyTitle round={round} />;

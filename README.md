@@ -2,7 +2,7 @@
 
 # Pop!
 
-**Pop!** is a real-time, interactive quiz game web app built with [Next.js](https://nextjs.org/) and [Firebase](https://firebase.google.com), hosted on [Vercel](https://vercel.com/).
+**Pop!** is a real-time, interactive quiz game web app built with [Next.js](https://nextjs.org/) and [Firebase](https://firebase.google.com).
 
 Create, organize, play, and spectate quiz games with friends — covering **video games**, **movies**, **anime/manga**, **music**, **literature**, **Internet culture**, and more.
 
@@ -11,14 +11,11 @@ Create, organize, play, and spectate quiz games with friends — covering **vide
 ## Features
 
 - **Real-time multiplayer** — play with friends in teams or solo
-- **12 unique round types** — Progressive Clues, Image, Emoji, Blindtest, Quote, Labelling, Enumeration, Odd One Out, Matching, Reordering, MCQ, and Nagui
+- **14 unique question types**
 - **Role-based gameplay** — organizers control the game, players answer, spectators watch
-- **Buzzer system** — race to answer first in buzzer-based rounds
 - **Scoring & leaderboards** — round scores, global scores, and dynamic charts
-- **Sound effects & soundboard** — immersive audio feedback
 - **Question database** — submit, review, and reuse community questions
 - **OAuth2 authentication** — sign in with Google or Discord
-- **Internationalization** — English and French
 
 ## Documentation
 
@@ -33,35 +30,13 @@ For detailed gameplay rules, round type descriptions, scoring mechanics, and mor
 | **Auth** | [NextAuth.js](https://next-auth.js.org/) (Google, Discord) |
 | **Database** | [Firestore](https://firebase.google.com/docs/firestore) |
 | **Storage** | [Firebase Storage](https://firebase.google.com/docs/storage) |
-| **Hosting** | [Vercel](https://vercel.com/) |
 | **Forms** | [Formik](https://formik.org/), [Yup](https://github.com/jquense/yup) |
 
 ## Getting Started
 
 ### Prerequisites
-
 - [Node.js](https://nodejs.org/) (v18+)
-- A [Firebase](https://firebase.google.com/) project (Firestore + Storage)
-- OAuth credentials for [Google](https://console.cloud.google.com/) and/or [Discord](https://discord.com/developers/applications)
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/jmettler27/Pop.git
-cd Pop
-
-# Install dependencies
-npm install
-
-# Set up environment variables
-# Copy process.env and fill in your Firebase + OAuth credentials
-
-# Start the development server
-npm run dev
-```
-
-The app will be available at `http://localhost:3000`.
+- [JDK](https://www.oracle.com/java/technologies/downloads/) (v21+)
 
 ### Available Scripts
 
@@ -99,7 +74,7 @@ npm run seed
 
 - `.env.development` sets `NEXT_PUBLIC_USE_EMULATORS=true` and uses a demo project (`demo-pop`)
 - When this flag is set, the app connects to local emulators instead of production Firebase
-- Running `npm run dev` without `.env.development` still connects to your real Firebase project
+- Running `npm run dev` without `.env.development` connects to your real Firebase project
 - Emulator data is persisted in `emulator-data/` (git-ignored) via `--export-on-exit`
 
 ### Emulator Ports
@@ -117,10 +92,12 @@ npm run seed
 src/
 ├── app/                # Next.js App Router pages & layouts
 │   ├── (game)/         # Game pages
+│   ├── about/          # About page
 │   ├── api/            # API routes (NextAuth)
 │   ├── edit/           # Game editor
 │   ├── join/           # Join game flow
 │   └── submit/         # Question submission forms
+├── assets/             # App assets (images, audio)
 ├── backend/            # Server-side logic
 │   ├── firebase/       # Firebase configuration
 │   ├── models/         # Data models
@@ -128,7 +105,8 @@ src/
 │   └── services/       # Business logic
 ├── frontend/           # Client-side components & utilities
 │   ├── components/     # React components
-│   ├── hooks/          # Custom React hooks
-│   └── helpers/        # Client utilities
+│   ├── contexts/       # React contexts
+│   ├── helpers/        # Client utilities
+│   └── hooks/          # Custom React hooks
 └── i18n/               # Internationalization (EN/FR)
 ```

@@ -90,6 +90,7 @@ const globalMessages = defineMessages('i18n', {
   errorTip17: 'Well, that escalated quickly.',
   gameUnderConstructionTitle: 'Game Under Construction',
   gameUnderConstructionDescription: 'This game is still being prepared. Please check back later!',
+  submittedTeams: 'Submitter teams',
 });
 
 export default globalMessages;

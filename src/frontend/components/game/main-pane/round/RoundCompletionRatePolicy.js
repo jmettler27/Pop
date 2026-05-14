@@ -69,6 +69,7 @@ function RoundMaxNumPoints({ round }) {
     case RoundType.BLINDTEST:
     case RoundType.EMOJI:
     case RoundType.ENUMERATION:
+    case RoundType.ESTIMATION:
     case RoundType.IMAGE:
     case RoundType.LABELLING:
     case RoundType.MCQ:

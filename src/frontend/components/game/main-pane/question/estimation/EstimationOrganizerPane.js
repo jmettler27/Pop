@@ -1,0 +1,36 @@
+'use client';
+
+import { useIntl } from 'react-intl';
+
+import { GameStatus } from '@/backend/models/games/GameStatus';
+import useGame from '@/frontend/hooks/useGame';
+
+import { EstimationEndView, EstimationQuestionHeader, formatAnswerValue, messages } from './EstimationCommon';
+
+export default function EstimationOrganizerPane({ baseQuestion, gameQuestion }) {
+  const intl = useIntl();
+  const game = useGame();
+
+  return (
+    <div className="flex flex-col h-full items-center">
+      <div className="h-[15%] w-full flex flex-col items-center justify-center">
+        <EstimationQuestionHeader baseQuestion={baseQuestion} />
+      </div>
+      <div className="h-[85%] w-full flex flex-col items-center justify-center">
+        {game.status !== GameStatus.QUESTION_END && (
+          <div className="flex flex-row items-center gap-3 px-5 py-2.5 rounded-2xl border border-green-500/40 bg-green-500/10">
+            <span className="text-sm uppercase tracking-widest text-slate-400 font-semibold">
+              {intl.formatMessage(messages.correctAnswer)}
+            </span>
+            <span className="text-5xl 2xl:text-6xl font-bold text-green-400 tabular-nums">
+              {formatAnswerValue(baseQuestion.answerType, baseQuestion.answer, intl.locale)}
+            </span>
+          </div>
+        )}
+        {game.status === GameStatus.QUESTION_END && (
+          <EstimationEndView gameQuestion={gameQuestion} baseQuestion={baseQuestion} />
+        )}
+      </div>
+    </div>
+  );
+}

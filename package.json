@@ -10,6 +10,7 @@
     "prettier-write": "npx prettier src --write",
     "prettier-check": "npx prettier src --check",
     "update-i18n": "node src/i18n/update-i18n.mjs",
+    "preemulators": "kill-port 8080 9000",
     "emulators": "firebase emulators:start --import=./emulator-data --export-on-exit=./emulator-data",
     "dev:emulators": "concurrently --names emu,next --prefix-colors blue,green \"npm run emulators\" \"cross-env NEXT_PUBLIC_USE_EMULATORS=true next dev\"",
     "seed": "node scripts/seed-emulators.js"
@@ -29,6 +30,7 @@
     "@uiw/react-color-sketch": "^2.3.0",
     "chart.js": "^4.4.3",
     "clsx": "^2.1.1",
+    "dayjs": "^1.11.20",
     "emoji-picker-react": "^4.19.1",
     "emoji-regex": "^10.3.0",
     "firebase": "^12.13.0",
@@ -55,6 +57,7 @@
     "eslint-config-next": "^15.2.1",
     "eslint-config-prettier": "^10.1.5",
     "firebase-tools": "^15.17.0",
+    "kill-port": "^2.0.1",
     "postcss": "^8.4.31",
     "prettier": "^3.5.3",
     "tailwindcss": "^3.4.4"

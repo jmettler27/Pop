@@ -3,6 +3,7 @@ import BaseBasicQuestionRepository from '@/backend/repositories/question/BaseBas
 import BaseBlindtestQuestionRepository from '@/backend/repositories/question/BaseBlindtestQuestionRepository';
 import BaseEmojiQuestionRepository from '@/backend/repositories/question/BaseEmojiQuestionRepository';
 import BaseEnumerationQuestionRepository from '@/backend/repositories/question/BaseEnumerationQuestionRepository';
+import BaseEstimationQuestionRepository from '@/backend/repositories/question/BaseEstimationQuestionRepository';
 import BaseImageQuestionRepository from '@/backend/repositories/question/BaseImageQuestionRepository';
 import BaseLabellingQuestionRepository from '@/backend/repositories/question/BaseLabellingQuestionRepository';
 import BaseMatchingQuestionRepository from '@/backend/repositories/question/BaseMatchingQuestionRepository';
@@ -24,6 +25,8 @@ export default class BaseQuestionRepositoryFactory {
         return new BaseEmojiQuestionRepository();
       case QuestionType.ENUMERATION:
         return new BaseEnumerationQuestionRepository();
+      case QuestionType.ESTIMATION:
+        return new BaseEstimationQuestionRepository();
       case QuestionType.IMAGE:
         return new BaseImageQuestionRepository();
       case QuestionType.LABELLING:
