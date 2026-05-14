@@ -72,16 +72,17 @@ const messages = defineMessages('frontend.gameEditor.EditRoundInGame', {
 
 const editGameRoundCardNumCols = (roundType) => {
   switch (roundType) {
-    case RoundType.PROGRESSIVE_CLUES:
     case RoundType.MATCHING:
+    case RoundType.PROGRESSIVE_CLUES:
       return 'md:grid-cols-2';
-    case RoundType.ODD_ONE_OUT:
+    case RoundType.BASIC:
     case RoundType.ENUMERATION:
+    case RoundType.ESTIMATION:
+    case RoundType.LABELLING:
     case RoundType.MCQ:
     case RoundType.NAGUI:
-    case RoundType.BASIC:
+    case RoundType.ODD_ONE_OUT:
     case RoundType.QUOTE:
-    case RoundType.LABELLING:
     case RoundType.REORDERING:
       return 'md:grid-cols-3';
     default:

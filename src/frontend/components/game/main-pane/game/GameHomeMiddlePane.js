@@ -9,7 +9,7 @@ import { handleRoundSelected } from '@/backend/services/round/actions';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { RoundTypeIcon } from '@/frontend/helpers/question_types';
-import { timestampToHour } from '@/frontend/helpers/time';
+import { formatDuration, timestampElapsedSeconds, timestampToHour } from '@/frontend/helpers/time';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
@@ -19,8 +19,8 @@ import defineMessages from '@/utils/defineMessages';
 
 const messages = defineMessages('frontend.game.middle.GameHomeMiddlePane', {
   title: 'Rounds',
-  roundStarted: 'Started at {time} ({elapsed} min ago)',
-  roundEnded: 'Round ended at {time} ({duration} min)',
+  roundStarted: 'Started at {time} ({elapsed} ago)',
+  roundEnded: 'Round ended at {time} ({duration})',
 });
 
 export default function GameHomeMiddlePane({}) {
@@ -142,16 +142,13 @@ function GameHomeRoundItem({ round, isDisabled, onSelectRound }) {
     const startTime = timestampToHour(round.dateStart, intl.locale);
 
     if (!round.dateEnd) {
-      const now = new Date();
-      const elapsedSecs = now.getTime() / 1000 - round.dateStart.seconds;
-      const elapsedMins = Math.floor(elapsedSecs / 60);
-      return intl.formatMessage(messages.roundStarted, { time: startTime, elapsed: elapsedMins });
+      const elapsed = formatDuration(timestampElapsedSeconds(round.dateStart), intl.locale);
+      return intl.formatMessage(messages.roundStarted, { time: startTime, elapsed });
     }
 
     const endTime = timestampToHour(round.dateEnd, intl.locale);
-    const durationSecs = round.dateEnd.seconds - round.dateStart.seconds;
-    const durationMins = Math.floor(durationSecs / 60);
-    return intl.formatMessage(messages.roundEnded, { time: endTime, duration: durationMins });
+    const duration = formatDuration(timestampElapsedSeconds(round.dateStart, round.dateEnd), intl.locale);
+    return intl.formatMessage(messages.roundEnded, { time: endTime, duration });
   };
 
   return (

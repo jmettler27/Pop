@@ -46,42 +46,33 @@ const progressiveCluesQuestionColumns = (intl) => [
   },
 ];
 
-// IMAGE
-const imageQuestionRow = (question) => {
+// BASIC
+const basicQuestionRow = (question) => {
+  const answer = question.answer;
+  const explanation = question.explanation;
+  const note = question.note;
+  const source = question.source;
   const title = question.title;
-  const description = question.answer.description;
-  const source = question.answer.source;
   return {
-    title,
-    description,
+    answer,
+    // explanation,
+    // note,
     source,
+    title,
   };
 };
-const imageQuestionColumns = (intl) => [
-  { field: 'title', headerName: 'Question', width: 250 },
-  { field: 'description', headerName: 'Description', width: 250 },
+const basicQuestionColumns = (intl) => [
   {
     field: 'source',
     headerName: QUESTION_ELEMENT_TO_TITLE[intl.locale]?.['source'] ?? QUESTION_ELEMENT_TO_TITLE['en']['source'],
+    width: 200,
+  },
+  { field: 'title', headerName: 'Question', width: 500 },
+  {
+    field: 'answer',
+    headerName: QUESTION_ELEMENT_TO_TITLE[intl.locale]?.['answer'] ?? QUESTION_ELEMENT_TO_TITLE['en']['answer'],
     width: 250,
   },
-];
-
-// EMOJI
-const emojiQuestionRow = (question) => {
-  const title = question.title;
-  const answer = question.answer;
-  const clue = question.clue;
-  return {
-    title,
-    answer: answer.title,
-    clue,
-  };
-};
-const emojiQuestionColumns = (intl) => [
-  { field: 'title', headerName: 'Question', width: 225 },
-  { field: 'answer', headerName: intl.formatMessage(globalMessages.answer), width: 225 },
-  { field: 'clue', headerName: intl.formatMessage(globalMessages.clue), width: 200 },
 ];
 
 // BLINDTEST
@@ -105,8 +96,25 @@ const blindtestQuestionColumns = (intl) => [
   { field: 'answer_title', headerName: intl.formatMessage(messages.title), width: 200 },
 ];
 
-// ENUM
-const enumQuestionRow = (question) => {
+// EMOJI
+const emojiQuestionRow = (question) => {
+  const title = question.title;
+  const answer = question.answer;
+  const clue = question.clue;
+  return {
+    title,
+    answer: answer.title,
+    clue,
+  };
+};
+const emojiQuestionColumns = (intl) => [
+  { field: 'title', headerName: 'Question', width: 225 },
+  { field: 'answer', headerName: intl.formatMessage(globalMessages.answer), width: 225 },
+  { field: 'clue', headerName: intl.formatMessage(globalMessages.clue), width: 200 },
+];
+
+// ENUMERATION
+const enumerationQuestionRow = (question) => {
   const title = question.title;
   const note = question.note;
   const answer = question.answer;
@@ -121,7 +129,7 @@ const enumQuestionRow = (question) => {
     challengeTime,
   };
 };
-const enumQuestionColumns = (intl) => [
+const enumerationQuestionColumns = (intl) => [
   { field: 'title', headerName: 'Question', width: 400 },
   { field: 'note', headerName: 'Note', width: 250 },
   { field: 'numAnswers', headerName: intl.formatMessage(messages.enumAnswers), width: 100 },
@@ -129,19 +137,69 @@ const enumQuestionColumns = (intl) => [
   { field: 'challengeTime', headerName: 'Challenge (s)', width: 100 },
 ];
 
-// ODD ONE OUT
-const oddOneOutQuestionRow = (question) => {
-  const answerIdx = question.answerIdx;
-  const items = question.items;
+// ESTIMATION
+const estimationQuestionRow = (question) => {
+  const answer = question.answer;
+  const explanation = question.explanation;
+  const note = question.note;
+  const source = question.source;
   const title = question.title;
   return {
+    answer,
+    // explanation,
+    // note,
+    source,
     title,
-    oddOneOut: items[answerIdx].title,
   };
 };
-const oddOneOutQuestionColumns = (intl) => [
+const estimationQuestionColumns = (intl) => [
+  {
+    field: 'source',
+    headerName: QUESTION_ELEMENT_TO_TITLE[intl.locale]?.['source'] ?? QUESTION_ELEMENT_TO_TITLE['en']['source'],
+    width: 200,
+  },
   { field: 'title', headerName: 'Question', width: 500 },
-  { field: 'oddOneOut', headerName: intl.formatMessage(messages.oddOneOut), width: 250 },
+  {
+    field: 'answer',
+    headerName: QUESTION_ELEMENT_TO_TITLE[intl.locale]?.['answer'] ?? QUESTION_ELEMENT_TO_TITLE['en']['answer'],
+    width: 250,
+  },
+];
+
+// IMAGE
+const imageQuestionRow = (question) => {
+  const title = question.title;
+  const description = question.answer.description;
+  const source = question.answer.source;
+  return {
+    title,
+    description,
+    source,
+  };
+};
+const imageQuestionColumns = (intl) => [
+  { field: 'title', headerName: 'Question', width: 250 },
+  { field: 'description', headerName: 'Description', width: 250 },
+  {
+    field: 'source',
+    headerName: QUESTION_ELEMENT_TO_TITLE[intl.locale]?.['source'] ?? QUESTION_ELEMENT_TO_TITLE['en']['source'],
+    width: 250,
+  },
+];
+
+// LABELLING
+const labellingQuestionRow = (question) => {
+  const title = question.title;
+  const labels = question.labels;
+
+  return {
+    numLabels: labels.length,
+    title,
+  };
+};
+const labellingQuestionColumns = (intl) => [
+  { field: 'numLabels', headerName: intl.formatMessage(messages.numLabels), width: 100 },
+  { field: 'title', headerName: 'Question', width: 400 },
 ];
 
 // MATCHING
@@ -161,59 +219,6 @@ const matchingQuestionColumns = (intl) => [
   { field: 'numRows', headerName: 'Matches', width: 100 },
 ];
 
-// QUOTE
-const quoteQuestionRow = (question) => {
-  const author = question.author;
-  const quote = question.quote;
-  const source = question.source;
-  const toGuess = question.toGuess;
-
-  const sortedToGuess = toGuess.sort((a, b) => {
-    return QuoteQuestion.ELEMENTS_SORT_ORDER.indexOf(a) - QuoteQuestion.ELEMENTS_SORT_ORDER.indexOf(b);
-  });
-  const toGuessWithEmojis = sortedToGuess.map((item) => QuoteQuestion.elementToEmoji(item)).join(', ');
-
-  return {
-    author,
-    quote: `"${quote}"`,
-    source,
-    toGuess: toGuessWithEmojis,
-  };
-};
-const quoteQuestionColumns = (intl) => [
-  { field: 'source', headerName: QuoteSourceElement.elementToTitle(), width: 200 },
-  { field: 'author', headerName: QuoteAuthorElement.elementToTitle(), width: 200 },
-  { field: 'quote', headerName: intl.formatMessage(globalMessages.quote), width: 500 },
-  { field: 'toGuess', headerName: intl.formatMessage(messages.quoteToGuess), width: 100 },
-];
-
-// LABEL
-const labelQuestionRow = (question) => {
-  const title = question.title;
-  const labels = question.labels;
-
-  return {
-    numLabels: labels.length,
-    title,
-  };
-};
-
-const labelQuestionColumns = (intl) => [
-  { field: 'numLabels', headerName: intl.formatMessage(messages.numLabels), width: 100 },
-  { field: 'title', headerName: 'Question', width: 400 },
-];
-
-// ODD ONE OUT
-const reorderingQuestionRow = (question) => {
-  const answerIdx = question.answerIdx;
-  const items = question.items;
-  const title = question.title;
-  return {
-    title,
-  };
-};
-const reorderingQuestionColumns = [{ field: 'title', headerName: 'Question', width: 500 }];
-
 // MCQ
 const mcqQuestionRow = (question) => {
   const answerIdx = question.answerIdx;
@@ -231,7 +236,6 @@ const mcqQuestionRow = (question) => {
     title,
   };
 };
-
 const mcqQuestionColumns = (intl) => [
   { field: 'numChoices', headerName: intl.formatMessage(messages.choices), width: 75 },
   {
@@ -277,65 +281,90 @@ const naguiQuestionColumns = (intl) => [
   },
 ];
 
-// BASIC
-const basicQuestionRow = (question) => {
-  const answer = question.answer;
-  const explanation = question.explanation;
-  const note = question.note;
-  const source = question.source;
+// ODD ONE OUT
+const oddOneOutQuestionRow = (question) => {
+  const answerIdx = question.answerIdx;
+  const items = question.items;
   const title = question.title;
   return {
-    answer,
-    // explanation,
-    // note,
+    title,
+    oddOneOut: items[answerIdx].title,
+  };
+};
+const oddOneOutQuestionColumns = (intl) => [
+  { field: 'title', headerName: 'Question', width: 500 },
+  { field: 'oddOneOut', headerName: intl.formatMessage(messages.oddOneOut), width: 250 },
+];
+
+// QUOTE
+const quoteQuestionRow = (question) => {
+  const author = question.author;
+  const quote = question.quote;
+  const source = question.source;
+  const toGuess = question.toGuess;
+
+  const sortedToGuess = toGuess.sort((a, b) => {
+    return QuoteQuestion.ELEMENTS_SORT_ORDER.indexOf(a) - QuoteQuestion.ELEMENTS_SORT_ORDER.indexOf(b);
+  });
+  const toGuessWithEmojis = sortedToGuess.map((item) => QuoteQuestion.elementToEmoji(item)).join(', ');
+
+  return {
+    author,
+    quote: `"${quote}"`,
     source,
+    toGuess: toGuessWithEmojis,
+  };
+};
+const quoteQuestionColumns = (intl) => [
+  { field: 'source', headerName: QuoteSourceElement.elementToTitle(), width: 200 },
+  { field: 'author', headerName: QuoteAuthorElement.elementToTitle(), width: 200 },
+  { field: 'quote', headerName: intl.formatMessage(globalMessages.quote), width: 500 },
+  { field: 'toGuess', headerName: intl.formatMessage(messages.quoteToGuess), width: 100 },
+];
+
+// REORDERING
+const reorderingQuestionRow = (question) => {
+  const answerIdx = question.answerIdx;
+  const items = question.items;
+  const title = question.title;
+  return {
     title,
   };
 };
-const basicQuestionColumns = (intl) => [
-  {
-    field: 'source',
-    headerName: QUESTION_ELEMENT_TO_TITLE[intl.locale]?.['source'] ?? QUESTION_ELEMENT_TO_TITLE['en']['source'],
-    width: 200,
-  },
-  { field: 'title', headerName: 'Question', width: 500 },
-  {
-    field: 'answer',
-    headerName: QUESTION_ELEMENT_TO_TITLE[intl.locale]?.['answer'] ?? QUESTION_ELEMENT_TO_TITLE['en']['answer'],
-    width: 250,
-  },
-];
+const reorderingQuestionColumns = [{ field: 'title', headerName: 'Question', width: 500 }];
 
 const questionTypeToRow = {
-  [QuestionType.PROGRESSIVE_CLUES]: progressiveCluesQuestionRow,
-  [QuestionType.IMAGE]: imageQuestionRow,
-  [QuestionType.EMOJI]: emojiQuestionRow,
+  [QuestionType.BASIC]: basicQuestionRow,
   [QuestionType.BLINDTEST]: blindtestQuestionRow,
-  [QuestionType.ENUMERATION]: enumQuestionRow,
-  [QuestionType.ODD_ONE_OUT]: oddOneOutQuestionRow,
+  [QuestionType.EMOJI]: emojiQuestionRow,
+  [QuestionType.IMAGE]: imageQuestionRow,
+  [QuestionType.ENUMERATION]: enumerationQuestionRow,
+  [QuestionType.ESTIMATION]: estimationQuestionRow,
+  [QuestionType.LABELLING]: labellingQuestionRow,
   [QuestionType.MATCHING]: matchingQuestionRow,
-  [QuestionType.QUOTE]: quoteQuestionRow,
-  [QuestionType.LABELLING]: labelQuestionRow,
-  [QuestionType.REORDERING]: reorderingQuestionRow,
   [QuestionType.MCQ]: mcqQuestionRow,
   [QuestionType.NAGUI]: naguiQuestionRow,
-  [QuestionType.BASIC]: basicQuestionRow,
+  [QuestionType.ODD_ONE_OUT]: oddOneOutQuestionRow,
+  [QuestionType.PROGRESSIVE_CLUES]: progressiveCluesQuestionRow,
+  [QuestionType.QUOTE]: quoteQuestionRow,
+  [QuestionType.REORDERING]: reorderingQuestionRow,
 };
 
 const questionTypeToColumns = {
-  [QuestionType.PROGRESSIVE_CLUES]: progressiveCluesQuestionColumns,
-  [QuestionType.IMAGE]: imageQuestionColumns,
-  [QuestionType.EMOJI]: emojiQuestionColumns,
+  [QuestionType.BASIC]: basicQuestionColumns,
   [QuestionType.BLINDTEST]: blindtestQuestionColumns,
-  [QuestionType.ENUMERATION]: enumQuestionColumns,
-  [QuestionType.ODD_ONE_OUT]: oddOneOutQuestionColumns,
+  [QuestionType.EMOJI]: emojiQuestionColumns,
+  [QuestionType.IMAGE]: imageQuestionColumns,
+  [QuestionType.ENUMERATION]: enumerationQuestionColumns,
+  [QuestionType.ESTIMATION]: estimationQuestionColumns,
+  [QuestionType.LABELLING]: labellingQuestionColumns,
   [QuestionType.MATCHING]: matchingQuestionColumns,
-  [QuestionType.QUOTE]: quoteQuestionColumns,
-  [QuestionType.LABELLING]: labelQuestionColumns,
-  [QuestionType.REORDERING]: reorderingQuestionColumns,
   [QuestionType.MCQ]: mcqQuestionColumns,
   [QuestionType.NAGUI]: naguiQuestionColumns,
-  [QuestionType.BASIC]: basicQuestionColumns,
+  [QuestionType.ODD_ONE_OUT]: oddOneOutQuestionColumns,
+  [QuestionType.PROGRESSIVE_CLUES]: progressiveCluesQuestionColumns,
+  [QuestionType.QUOTE]: quoteQuestionColumns,
+  [QuestionType.REORDERING]: reorderingQuestionColumns,
 };
 
 const commonQuestionRow = (question, users) => {

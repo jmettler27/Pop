@@ -5,6 +5,7 @@ import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQ
 import BasicQuestionBottomPane from '@/frontend/components/game/main-pane/question/basic/BasicQuestionBottomPane';
 import BuzzerBottomPane from '@/frontend/components/game/main-pane/question/buzzer/BuzzerBottomPane';
 import EnumerationBottomPane from '@/frontend/components/game/main-pane/question/enumeration/EnumerationBottomPane';
+import EstimationBottomPane from '@/frontend/components/game/main-pane/question/estimation/EstimationBottomPane';
 import LabellingBottomPane from '@/frontend/components/game/main-pane/question/labelling/LabellingBottomPane';
 import MatchingBottomPane from '@/frontend/components/game/main-pane/question/matching/MatchingBottomPane';
 import MCQBottomPane from '@/frontend/components/game/main-pane/question/mcq/MCQBottomPane';
@@ -50,6 +51,8 @@ export default function QuestionActiveBottomPane({}) {
       return <LabellingBottomPane baseQuestion={baseQuestion} />;
     case QuestionType.ENUMERATION:
       return <EnumerationBottomPane baseQuestion={baseQuestion} />;
+    case QuestionType.ESTIMATION:
+      return <EstimationBottomPane baseQuestion={baseQuestion} />;
     case QuestionType.ODD_ONE_OUT:
       return <OddOneOutBottomPane />;
     case QuestionType.MATCHING:

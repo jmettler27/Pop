@@ -3,6 +3,7 @@ import GameBasicQuestionRepository from '@/backend/repositories/question/GameBas
 import GameBlindtestQuestionRepository from '@/backend/repositories/question/GameBlindtestQuestionRepository';
 import GameEmojiQuestionRepository from '@/backend/repositories/question/GameEmojiQuestionRepository';
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
+import GameEstimationQuestionRepository from '@/backend/repositories/question/GameEstimationQuestionRepository';
 import GameImageQuestionRepository from '@/backend/repositories/question/GameImageQuestionRepository';
 import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
@@ -25,6 +26,8 @@ export default class GameQuestionRepositoryFactory {
         return new GameEmojiQuestionRepository(gameId, roundId);
       case QuestionType.ENUMERATION:
         return new GameEnumerationQuestionRepository(gameId, roundId);
+      case QuestionType.ESTIMATION:
+        return new GameEstimationQuestionRepository(gameId, roundId);
       case QuestionType.IMAGE:
         return new GameImageQuestionRepository(gameId, roundId);
       case QuestionType.LABELLING:

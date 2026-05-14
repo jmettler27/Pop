@@ -64,7 +64,7 @@ function MCQController({ chooser, baseQuestion }) {
       return <MCQOrganizerController gameQuestion={gameQuestion} />;
     case ParticipantRole.PLAYER:
       return (
-        <MCQPlayerController chooserTeamId={chooserTeamId} gameQuestion={gameQuestion} baseQuestion={baseQuestion} />
+        <MCQPlayerController chooserTeamId={chooserTeamId} baseQuestion={baseQuestion} gameQuestion={gameQuestion} />
       );
     default:
       return <MCQSpectatorController chooserTeamId={chooserTeamId} />;

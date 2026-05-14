@@ -21,7 +21,6 @@ export default function ReorderingMiddlePane({ baseQuestion }) {
   // Initialize random order (consistent for the session)
   const randomMapping = useMemo(() => shuffleIndices(baseQuestion.items.length), [baseQuestion.items.length]);
 
-  // Get game question data
   const gameQuestionRepo = new GameReorderingQuestionRepository(game.id, game.currentRound);
   const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion);
 
@@ -35,7 +34,6 @@ export default function ReorderingMiddlePane({ baseQuestion }) {
     return <></>;
   }
 
-  // Route to the appropriate pane based on role
   switch (myRole) {
     case ParticipantRole.ORGANIZER:
       return <ReorderingOrganizerPane baseQuestion={baseQuestion} />;

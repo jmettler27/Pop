@@ -30,7 +30,6 @@ export class LabellingRound extends Round {
   }
 
   calculateMaxPointsTransaction() {
-    // The total number of quote elements to guess in the round
     return (
       this.questions.reduce((acc, { details: { labels } }) => {
         return acc + labels.length;

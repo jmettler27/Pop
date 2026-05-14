@@ -1,5 +1,6 @@
 import { useIntl } from 'react-intl';
 
+import { GameEnumerationQuestion } from '@/backend/models/questions/Enumeration';
 import { GameMatchingQuestion, MatchingQuestion } from '@/backend/models/questions/Matching';
 import { NaguiQuestion } from '@/backend/models/questions/Nagui';
 import { OddOneOutQuestion } from '@/backend/models/questions/OddOneOut';
@@ -36,6 +37,14 @@ const messages = defineMessages('frontend.game.round.RoundRules', {
   enumBidMet:
     'The bid is <correct>met</correct>: the team earns <b>{points} point</b>, <b>+{bonus} bonus point</b> if they give even more answers than announced.',
   enumBidNotMet: 'The bid is <incorrect>not met</incorrect>: all other teams earn <b>{points} point</b>.',
+  estimationBetInstruction: '💡 Each team submits a bet: an <b>exact value</b> or a <b>range</b>.',
+  estimationExactWins: 'Exact bets are checked first: a <correct>perfect match</correct> on the answer wins.',
+  estimationRangeFallback:
+    'Otherwise, the team(s) with the <b>smallest range</b> containing the correct answer win(s).',
+  estimationReward: '🏆 Winner(s) earn <b>{points} point</b>.',
+  estimationOneSubmission: '⚠️ <b>One submission per team</b> — once submitted, your bet is final!',
+  estimationThinkingTime:
+    '⏳ You have <u><b>{seconds} seconds</b></u> to submit, otherwise <b>no points will be awarded!</b>',
   matchingInstruction:
     '🖱️ Each team takes turns and <b>clicks on the proposals</b> for the link it considers correct, <u>left to right</u>.',
   matchingCorrect: 'If the link is <correct>correct</correct>, we move to the next team.',
@@ -157,7 +166,9 @@ export function RoundRules({ round }) {
     case RoundType.EMOJI:
       return <BuzzerRoundRules round={round} />;
     case RoundType.ENUMERATION:
-      return <EnumRoundRules round={round} />;
+      return <EnumerationRoundRules round={round} />;
+    case RoundType.ESTIMATION:
+      return <EstimationRoundRules round={round} />;
     case RoundType.IMAGE:
       return <BuzzerRoundRules round={round} />;
     case RoundType.LABELLING:
@@ -182,27 +193,22 @@ export function RoundRules({ round }) {
       return <SpecialRoundRules round={round} />;
   }
 }
-
-function OddOneOutRoundRules({ round }) {
+function BasicRoundRules({ round }) {
   const { formatMessage } = useIntl();
-  const { order, mistakePenalty } = round;
   return (
     <>
-      <RuleP>{fmt(formatMessage, messages.oddOneOutInstruction, richTags)}</RuleP>
+      <RuleP>{formatMessage(messages.basicInstruction)}</RuleP>
       <RuleList>
-        <li>{fmt(formatMessage, messages.oddOneOutCorrect, richTags)}</li>
-        <li>{fmt(formatMessage, messages.oddOneOutIncorrect, { penalty: mistakePenalty, ...richTags })}</li>
+        <li>{fmt(formatMessage, messages.basicCorrect, { points: round.rewardsPerQuestion, ...richTags })}</li>
+        <li>{fmt(formatMessage, messages.basicIncorrect, richTags)}</li>
       </RuleList>
-      <RuleP>{fmt(formatMessage, messages.oddOneOutNote, richTags)}</RuleP>
-      <RuleP>
-        {fmt(formatMessage, messages.oddOneOutThinkingTime, { seconds: OddOneOutQuestion.THINKING_TIME, ...richTags })}
-      </RuleP>
-      <TurnOrderRule order={order} />
+      <ThinkingTimeRule seconds={round.thinkingTime} />
+      <TurnOrderRule order={round.order} />
     </>
   );
 }
 
-function EnumRoundRules({ round }) {
+function EnumerationRoundRules({ round }) {
   const { formatMessage } = useIntl();
   return (
     <>
@@ -222,6 +228,27 @@ function EnumRoundRules({ round }) {
         </li>
         <li>{fmt(formatMessage, messages.enumBidNotMet, { points: round.rewardsPerQuestion, ...richTags })}</li>
       </RuleList>
+    </>
+  );
+}
+
+function EstimationRoundRules({ round }) {
+  const { formatMessage } = useIntl();
+  return (
+    <>
+      <RuleP>{fmt(formatMessage, messages.estimationBetInstruction, richTags)}</RuleP>
+      <RuleP>{fmt(formatMessage, messages.estimationOneSubmission, richTags)}</RuleP>
+      <RuleList>
+        <li>{fmt(formatMessage, messages.estimationExactWins, richTags)}</li>
+        <li>{fmt(formatMessage, messages.estimationRangeFallback, richTags)}</li>
+      </RuleList>
+      <RuleP>{fmt(formatMessage, messages.estimationReward, { points: round.rewardsPerQuestion, ...richTags })}</RuleP>
+      <RuleP>
+        {fmt(formatMessage, messages.estimationThinkingTime, {
+          seconds: round.thinkingTime || GameEnumerationQuestion.THINKING_TIME,
+          ...richTags,
+        })}
+      </RuleP>
     </>
   );
 }
@@ -286,30 +313,21 @@ function NaguiRoundRules({ round }) {
   );
 }
 
-function BasicRoundRules({ round }) {
+function OddOneOutRoundRules({ round }) {
   const { formatMessage } = useIntl();
+  const { order, mistakePenalty } = round;
   return (
     <>
-      <RuleP>{formatMessage(messages.basicInstruction)}</RuleP>
+      <RuleP>{fmt(formatMessage, messages.oddOneOutInstruction, richTags)}</RuleP>
       <RuleList>
-        <li>{fmt(formatMessage, messages.basicCorrect, { points: round.rewardsPerQuestion, ...richTags })}</li>
-        <li>{fmt(formatMessage, messages.basicIncorrect, richTags)}</li>
+        <li>{fmt(formatMessage, messages.oddOneOutCorrect, richTags)}</li>
+        <li>{fmt(formatMessage, messages.oddOneOutIncorrect, { penalty: mistakePenalty, ...richTags })}</li>
       </RuleList>
-      <ThinkingTimeRule seconds={round.thinkingTime} />
-      <TurnOrderRule order={round.order} />
-    </>
-  );
-}
-
-function SpecialRoundRules() {
-  const { formatMessage } = useIntl();
-  return (
-    <>
+      <RuleP>{fmt(formatMessage, messages.oddOneOutNote, richTags)}</RuleP>
       <RuleP>
-        <strong>{formatMessage(messages.specialInstruction)}</strong>
+        {fmt(formatMessage, messages.oddOneOutThinkingTime, { seconds: OddOneOutQuestion.THINKING_TIME, ...richTags })}
       </RuleP>
-      <RuleP>{formatMessage(messages.specialPrecision)}</RuleP>
-      <RuleP>{formatMessage(messages.specialCalm)}</RuleP>
+      <TurnOrderRule order={order} />
     </>
   );
 }
@@ -327,6 +345,19 @@ function ReorderingRoundRules({ round }) {
           ...richTags,
         })}
       </RuleP>
+    </>
+  );
+}
+
+function SpecialRoundRules() {
+  const { formatMessage } = useIntl();
+  return (
+    <>
+      <RuleP>
+        <strong>{formatMessage(messages.specialInstruction)}</strong>
+      </RuleP>
+      <RuleP>{formatMessage(messages.specialPrecision)}</RuleP>
+      <RuleP>{formatMessage(messages.specialCalm)}</RuleP>
     </>
   );
 }

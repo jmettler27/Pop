@@ -13,6 +13,7 @@ import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import RepeatIcon from '@mui/icons-material/Repeat';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import SpeakerNotesIcon from '@mui/icons-material/SpeakerNotes';
+import StraightenIcon from '@mui/icons-material/Straighten';
 
 import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { RoundType } from '@/backend/models/rounds/RoundType';
@@ -27,6 +28,8 @@ export function QuestionTypeIcon({ questionType, fontSize = 'small' }) {
       return <EmojiEmotionsIcon sx={{ fontSize }} />;
     case QuestionType.ENUMERATION:
       return <SpeakerNotesIcon sx={{ fontSize }} />;
+    case QuestionType.ESTIMATION:
+      return <StraightenIcon sx={{ fontSize }} />;
     case QuestionType.IMAGE:
       return <ImageIcon sx={{ fontSize }} />;
     case QuestionType.LABELLING:

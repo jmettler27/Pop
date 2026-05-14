@@ -3,6 +3,7 @@ import BasicRoundService from '@/backend/services/round/basic/BasicRoundService'
 import BlindtestRoundService from '@/backend/services/round/blindtest/BlindtestRoundService';
 import EmojiRoundService from '@/backend/services/round/emoji/EmojiRoundService';
 import EnumerationRoundService from '@/backend/services/round/enumeration/EnumerationRoundService';
+import EstimationRoundService from '@/backend/services/round/estimation/EstimationRoundService';
 import ImageRoundService from '@/backend/services/round/image/ImageRoundService';
 import LabellingRoundService from '@/backend/services/round/labelling/LabellingRoundService';
 import MatchingRoundService from '@/backend/services/round/matching/MatchingRoundService';
@@ -25,6 +26,8 @@ export default class RoundServiceFactory {
         return new EmojiRoundService(gameId);
       case RoundType.ENUMERATION:
         return new EnumerationRoundService(gameId);
+      case RoundType.ESTIMATION:
+        return new EstimationRoundService(gameId);
       case RoundType.IMAGE:
         return new ImageRoundService(gameId);
       case RoundType.LABELLING:

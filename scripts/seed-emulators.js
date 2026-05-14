@@ -93,9 +93,12 @@ const USER_6_ID = 'frank';
 
 // Uppercase only the first letter
 function testUser(userId) {
+  const name = userId.charAt(0).toUpperCase() + userId.slice(1);
+  const image = `https://api.dicebear.com/7.x/avataaars/svg?seed=${userId.toLowerCase()}`;
   return {
-    name: userId.charAt(0).toUpperCase() + userId.slice(1),
-    image: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userId.toLowerCase()}`,
+    id: userId,
+    name: name,
+    image: image,
   };
 }
 
@@ -120,6 +123,7 @@ const ROUND_BASIC_ID = 'round_basic';
 const ROUND_BLINDTEST_ID = 'round_blindtest';
 const ROUND_EMOJI_ID = 'round_emoji';
 const ROUND_ENUMERATION_ID = 'round_enumeration';
+const ROUND_ESTIMATION_ID = 'round_estimation';
 const ROUND_IMAGE_ID = 'round_image';
 const ROUND_LABELLING_ID = 'round_labelling';
 const ROUND_MATCHING_ID = 'round_matching';
@@ -139,6 +143,10 @@ const Q_EMOJI_1 = 'emoji_1';
 const Q_EMOJI_2 = 'emoji_2';
 const Q_ENUMERATION_1 = 'enumeration_1';
 const Q_ENUMERATION_2 = 'enumeration_2';
+const Q_ESTIMATION_1 = 'estimation_1';
+const Q_ESTIMATION_2 = 'estimation_2';
+const Q_ESTIMATION_3 = 'estimation_3';
+const Q_ESTIMATION_4 = 'estimation_4';
 const Q_IMAGE_1 = 'image_1';
 const Q_IMAGE_2 = 'image_2';
 const Q_LABELLING_1 = 'labelling_1';
@@ -397,6 +405,105 @@ function testGameEnumerationQuestion(baseEnumerationQuestion, challengeTime, thi
 
 function testBaseEnumerationQuestions() {
   return [testBaseEnumerationQuestion1(), testBaseEnumerationQuestion2()];
+}
+
+
+function testBaseEstimationQuestion1() {
+  return {
+    id: Q_ESTIMATION_1,
+    type: 'estimation',
+    topic: 'literature',
+    approved: true,
+    createdAt: now,
+    createdBy: USER_1_ID,
+    lang: 'en',
+    details: {
+      answer: '7',
+      answerType: 'integer',
+      explanation: '',
+      note: '',
+      source: '',
+      title: 'How many episodes of the Harry Potter series are there?',
+    },
+  };
+}
+
+function testBaseEstimationQuestion2() {
+  return {
+    id: Q_ESTIMATION_2,
+    type: 'estimation',
+    topic: 'sports',
+    approved: true,
+    createdAt: now,
+    createdBy: USER_1_ID,
+    lang: 'en',
+    details: {
+      answer: '4.38',
+      answerType: 'decimal',
+      explanation: '',
+      note: '',
+      source: '',
+      title: 'What is the average number of goals scored in a soccer match?',
+    },
+  };
+}
+
+function testBaseEstimationQuestion3() {
+  return {
+    id: Q_ESTIMATION_3,
+    type: 'estimation',
+    topic: 'science',
+    approved: true,
+    createdAt: now,
+    createdBy: USER_1_ID,
+    lang: 'en',
+    details: {
+      answer: '1957',
+      answerType: 'year',
+      explanation: '',
+      note: '',
+      source: '',
+      title: 'In which year was the first artificial satellite launched?',
+    },
+  };
+}
+
+function testBaseEstimationQuestion4() {
+  return {
+    id: Q_ESTIMATION_4,
+    type: 'estimation',
+    topic: 'video_game',
+    approved: true,
+    createdAt: now,
+    createdBy: USER_1_ID,
+    lang: 'en',
+    details: {
+      answer: '1985-09-13',
+      answerType: 'date',
+      explanation: '',
+      note: '',
+      source: '',
+      title: 'When was released the first Super Mario Bros. game in Japan?',
+    },
+  };
+}
+
+
+function testBaseEstimationQuestions() {
+  return [testBaseEstimationQuestion1(), testBaseEstimationQuestion2(), testBaseEstimationQuestion3(), testBaseEstimationQuestion4()];
+}
+
+function testGameEstimationQuestion(baseEstimationQuestion, reward, thinkingTime) {
+  return {
+    bets: null,
+    dateEnd: null,
+    dateStart: null,
+    managedBy: USER_1_ID,
+    reward: reward,
+    thinkingTime: thinkingTime,
+    type: 'estimation',
+    winners: [],
+  };
 }
 
 function testBaseImageQuestion1() {
@@ -1000,6 +1107,12 @@ async function seedBaseQuestions() {
   await setDocument('questions', Q_ENUMERATION_1, testBaseEnumerationQuestion1());
   await setDocument('questions', Q_ENUMERATION_2, testBaseEnumerationQuestion2());
 
+  // Estimation questions
+  await setDocument('questions', Q_ESTIMATION_1, testBaseEstimationQuestion1());
+  await setDocument('questions', Q_ESTIMATION_2, testBaseEstimationQuestion2());
+  await setDocument('questions', Q_ESTIMATION_3, testBaseEstimationQuestion3());
+  await setDocument('questions', Q_ESTIMATION_4, testBaseEstimationQuestion4());
+
   // Image questions
   await setDocument('questions', Q_IMAGE_1, testBaseImageQuestion1());
   await setDocument('questions', Q_IMAGE_2, testBaseImageQuestion2());
@@ -1054,6 +1167,7 @@ async function seedGame(gameId) {
       ROUND_BLINDTEST_ID,
       ROUND_EMOJI_ID,
       ROUND_ENUMERATION_ID,
+      ROUND_ESTIMATION_ID,
       ROUND_IMAGE_ID,
       ROUND_LABELLING_ID,
       ROUND_MATCHING_ID,
@@ -1152,6 +1266,7 @@ async function seedRounds(gameId) {
   await seedBlindtestRound(gameId, ROUND_BLINDTEST_ID);
   await seedEmojiRound(gameId, ROUND_EMOJI_ID);
   await seedEnumerationRound(gameId, ROUND_ENUMERATION_ID);
+  await seedEstimationRound(gameId, ROUND_ESTIMATION_ID);
   await seedImageRound(gameId, ROUND_IMAGE_ID);
   await seedLabellingRound(gameId, ROUND_LABELLING_ID);
   await seedMatchingRound(gameId, ROUND_MATCHING_ID);
@@ -1311,6 +1426,39 @@ async function seedEnumerationRound(gameId, roundId) {
 
   await seedRoundScores(gameId, roundId, teamIds);
 }
+
+async function seedEstimationRound(gameId, roundId) {
+  const questions = testBaseEstimationQuestions();
+  const thinkingTime = 90;
+  const rewardsForBonus = 1;
+  const rewardsPerQuestion = 1;
+  const maxPoints = questions.length * (rewardsPerQuestion + rewardsForBonus);
+
+  await setDocument(`games/${gameId}/rounds`, roundId, {
+    createdAt: now,
+    currentQuestionIdx: 0,
+    dateEnd: null,
+    dateStart: null,
+    maxPoints: maxPoints,
+    order: null,
+    questions: [Q_ESTIMATION_1, Q_ESTIMATION_2, Q_ESTIMATION_3, Q_ESTIMATION_4],
+    rewardsPerQuestion: rewardsPerQuestion,
+    thinkingTime: thinkingTime,
+    title: 'Estimation Round',
+    type: 'estimation',
+  });
+
+  for (const question of questions) {
+    await setDocument(
+      `games/${gameId}/rounds/${roundId}/questions`,
+      question.id,
+      testGameEstimationQuestion(question, thinkingTime)
+    );
+  }
+
+  await seedRoundScores(gameId, roundId, teamIds);
+}
+
 
 async function seedImageRound(gameId, roundId) {
   const questions = testBaseImageQuestions();

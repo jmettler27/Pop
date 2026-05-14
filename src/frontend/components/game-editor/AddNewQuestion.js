@@ -33,6 +33,7 @@ import SubmitBasicQuestionForm from '@/frontend/components/question-forms/Submit
 import SubmitBlindtestQuestionForm from '@/frontend/components/question-forms/SubmitBlindtestQuestionForm';
 import SubmitEmojiQuestionForm from '@/frontend/components/question-forms/SubmitEmojiQuestionForm';
 import SubmitEnumerationQuestionForm from '@/frontend/components/question-forms/SubmitEnumerationQuestionForm';
+import SubmitEstimationQuestionForm from '@/frontend/components/question-forms/SubmitEstimationQuestionForm';
 import SubmitImageQuestionForm from '@/frontend/components/question-forms/SubmitImageQuestionForm';
 import SubmitLabellingQuestionForm from '@/frontend/components/question-forms/SubmitLabellingQuestionForm';
 import SubmitMatchingQuestionForm from '@/frontend/components/question-forms/SubmitMatchingQuestionForm';
@@ -308,6 +309,16 @@ function SubmitQuestionDialog({ roundId, questionType, onDialogClose }) {
     case QuestionType.ENUMERATION:
       return (
         <SubmitEnumerationQuestionForm
+          userId={userId}
+          inGameEditor={true}
+          gameId={gameId}
+          roundId={roundId}
+          onDialogClose={onDialogClose}
+        />
+      );
+    case QuestionType.ESTIMATION:
+      return (
+        <SubmitEstimationQuestionForm
           userId={userId}
           inGameEditor={true}
           gameId={gameId}

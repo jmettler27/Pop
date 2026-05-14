@@ -3,6 +3,7 @@ import GameBasicQuestionService from '@/backend/services/question/basic/GameBasi
 import GameBlindtestQuestionService from '@/backend/services/question/blindtest/GameBlindtestQuestionService';
 import GameEmojiQuestionService from '@/backend/services/question/emoji/GameEmojiQuestionService';
 import GameEnumerationQuestionService from '@/backend/services/question/enumeration/GameEnumerationQuestionService';
+import GameEstimationQuestionService from '@/backend/services/question/estimation/GameEstimationQuestionService';
 import GameImageQuestionService from '@/backend/services/question/image/GameImageQuestionService';
 import GameLabellingQuestionService from '@/backend/services/question/labelling/GameLabellingQuestionService';
 import GameMatchingQuestionService from '@/backend/services/question/matching/GameMatchingQuestionService';
@@ -25,6 +26,8 @@ export default class GameQuestionServiceFactory {
         return new GameEmojiQuestionService(gameId, roundId);
       case QuestionType.ENUMERATION:
         return new GameEnumerationQuestionService(gameId, roundId);
+      case QuestionType.ESTIMATION:
+        return new GameEstimationQuestionService(gameId, roundId);
       case QuestionType.IMAGE:
         return new GameImageQuestionService(gameId, roundId);
       case QuestionType.LABELLING:

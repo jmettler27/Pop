@@ -2,6 +2,7 @@ import { BasicRound } from '@/backend/models/rounds/Basic';
 import { BlindtestRound } from '@/backend/models/rounds/Blindtest';
 import { EmojiRound } from '@/backend/models/rounds/Emoji';
 import { EnumerationRound } from '@/backend/models/rounds/Enumeration';
+import { EstimationRound } from '@/backend/models/rounds/Estimation';
 import { ImageRound } from '@/backend/models/rounds/Image';
 import { LabellingRound } from '@/backend/models/rounds/Labelling';
 import { MatchingRound } from '@/backend/models/rounds/Matching';
@@ -32,6 +33,8 @@ export default class RoundFactory {
         return new EmojiRound(data);
       case RoundType.ENUMERATION:
         return new EnumerationRound(data);
+      case RoundType.ESTIMATION:
+        return new EstimationRound(data);
       case RoundType.IMAGE:
         return new ImageRound(data);
       case RoundType.LABELLING:

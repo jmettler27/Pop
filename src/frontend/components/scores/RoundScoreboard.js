@@ -22,16 +22,18 @@ export default function RoundScoreboard({ roundScores, teams }) {
   }
 
   const completionRounds = [
-    QuestionType.PROGRESSIVE_CLUES,
-    QuestionType.IMAGE,
-    QuestionType.EMOJI,
+    QuestionType.BASIC,
     QuestionType.BLINDTEST,
-    QuestionType.QUOTE,
-    QuestionType.LABELLING,
+    QuestionType.EMOJI,
     QuestionType.ENUMERATION,
+    QuestionType.ESTIMATION,
+    QuestionType.IMAGE,
+    QuestionType.LABELLING,
     QuestionType.MCQ,
     QuestionType.NAGUI,
-    QuestionType.BASIC,
+    QuestionType.PROGRESSIVE_CLUES,
+    QuestionType.QUOTE,
+    QuestionType.REORDERING,
     QuestionType.MIXED,
   ];
   const isCompletionRound = completionRounds.includes(round.type);
@@ -78,7 +80,7 @@ export default function RoundScoreboard({ roundScores, teams }) {
                 const hasLostPoints = item.reward < 0;
                 return (
                   <TableRow key={teamId}>
-                    <TableCell className="text-xs sm:text-sm 2xl:text-base 2xl:text-xl" sx={{ color: teamData.color }}>
+                    <TableCell className="text-xs sm:text-sm 2xl:text-base" sx={{ color: teamData.color }}>
                       {teamData.name}
                     </TableCell>
 
