@@ -1,4 +1,4 @@
-import { runTransaction } from 'firebase/firestore';
+import { runTransaction, serverTimestamp } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
 import { Timer, TimerStatus } from '@/backend/models/Timer';
@@ -46,6 +46,7 @@ export default class PlayerService {
             duration: Timer.READY_COUNTDOWN_SECONDS,
             forward: false,
             authorized: false,
+            timestamp: serverTimestamp(),
           });
           // await this.togglePlayerAuthorizationTransaction(transaction, false);
         }
