@@ -22,7 +22,7 @@ export default async function RootLayout({ children }) {
 
   return (
     // lang is managed client-side by LocaleProvider (updates document.documentElement.lang)
-    <html lang="fr">
+    <html lang="fr" className="dark">
       <ThemeWrapper>
         <body className={`${inter.className} bg-slate-800 text-slate-100`}>
           <SessionProvider session={session}>

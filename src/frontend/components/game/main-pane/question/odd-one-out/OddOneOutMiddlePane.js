@@ -176,7 +176,7 @@ function ProposalItem({
     (myRole === ParticipantRole.PLAYER && isChooser && authorized && !showExplanation);
 
   return showExplanation ? (
-    <Accordion className="flex-grow" expanded={expanded} onChange={onAccordionChange} disabled={false} disableGutters>
+    <Accordion className="grow" expanded={expanded} onChange={onAccordionChange} disabled={false} disableGutters>
       <AccordionSummary expandIcon={showComplete && <ExpandMoreIcon />}>
         <ListItemIcon>
           <Badge

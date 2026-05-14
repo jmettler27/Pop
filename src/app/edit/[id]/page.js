@@ -68,11 +68,11 @@ export default function Page({ params }) {
     <div className="flex flex-col flex-1 min-h-0">
       <div className="flex flex-row flex-1 min-h-0">
         {/* Left bar */}
-        <div className="flex flex-col w-64 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 border-r border-slate-200 dark:border-slate-800 overflow-y-auto">
-          <div className="flex h-20 items-center px-6 border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
+        <div className="flex flex-col w-64 bg-linear-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 border-r border-slate-200 dark:border-slate-800 overflow-y-auto">
+          <div className="flex h-20 items-center px-6 border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xs">
             {/* <Link className='flex items-center gap-2 font-semibold' href='#'> */}
             {/* <Package2Icon className='h-6 w-6' /> */}
-            <span className="text-lg md:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="text-lg md:text-xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               {gameTypeToEmoji(game.type)} {localeToEmoji(game.lang)} {game.title}
             </span>
             {/* </Link> */}
@@ -125,9 +125,9 @@ export default function Page({ params }) {
         </div>
 
         {/* Main content */}
-        <div className="flex flex-col flex-1 min-h-0 bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+        <div className="flex flex-col flex-1 min-h-0 bg-linear-to-br from-slate-50 via-blue-50/30 to-purple-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
           {/* Search bar + user menu */}
-          <header className="flex h-20 items-center gap-4 border-b border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md px-8 shadow-sm">
+          <header className="flex h-20 items-center gap-4 border-b border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md px-8 shadow-xs">
             <Link className="lg:hidden" href="#">
               <Package2Icon className="h-6 w-6" />
               <span className="sr-only">{intl.formatMessage(globalMessages.home)}</span>
@@ -232,7 +232,7 @@ function EditGameRounds({ game }) {
           ))}
         </div>
         {status === GameStatus.GAME_EDIT && (
-          <div className="sticky bottom-0 flex justify-center items-center gap-4 bg-gradient-to-t from-slate-50/60 to-slate-50/40 dark:from-slate-950/60 dark:to-slate-950/40 border-t border-slate-200 dark:border-slate-800 backdrop-blur-sm p-4 shadow-lg">
+          <div className="sticky bottom-0 flex justify-center items-center gap-4 bg-linear-to-t from-slate-50/60 to-slate-50/40 dark:from-slate-950/60 dark:to-slate-950/40 border-t border-slate-200 dark:border-slate-800 backdrop-blur-xs p-4 shadow-lg">
             <AddNewRoundButton disabled={roundIds.length >= Game.MAX_NUM_ROUNDS} />
             <LaunchGameButton />
           </div>

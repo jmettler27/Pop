@@ -57,7 +57,7 @@ export function ReorderingItemAccordion({
 
   return (
     <Accordion
-      className="flex-grow"
+      className="grow"
       expanded={expanded}
       onChange={onAccordionChange}
       disabled={false}
@@ -82,7 +82,7 @@ export function ReorderingItemAccordion({
             {displayOrder + 1}.
           </Typography>
         </ListItemIcon>
-        <div className="flex flex-col flex-grow">
+        <div className="flex flex-col grow">
           <Typography sx={{ marginRight: '10px' }} variant="h6">
             {item.title}
           </Typography>

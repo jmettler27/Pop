@@ -1,74 +1,45 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-/* https://tailwindcss.com/docs/preflight */
-/* Default margins are removed */
-blockquote,
-dl,
-dd,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-hr,
-figure,
-p,
-pre {
-  margin: 0;
+@plugin 'tailwindcss-animate';
+
+/* Class-based dark mode: add class="dark" to <html> to enable dark variants */
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --background-image-gradient-radial: radial-gradient(
+    ellipse_at_center,
+    _var(--tw-gradient-stops)
+  );
+  --background-image-gradient-conic: conic-gradient(
+    from 180deg at 50% 50%,
+    var(--tw-gradient-stops)
+  );
+
+  --color-idle: inherit;
+  --color-focus: cyan;
+  --color-wrong: red;
+  --color-correct: lightgreen;
+  --color-ready: purple;
 }
 
-/* Headings are unstyled */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-size: inherit;
-  font-weight: inherit;
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
 }
 
-/* Lists are unstyled */
-ol,
-ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-/* Images are block-level */
-img,
-svg,
-video,
-canvas,
-audio,
-iframe,
-embed,
-object {
-  display: block;
-  vertical-align: middle;
-}
-
-/* Images are constrained to the parent width */
-img,
-video {
-  max-width: 100%;
-  height: auto;
-}
-
-/* https://github.com/tailwindlabs/tailwindcss/issues/6979#issuecomment-1008565109 */
-/* Border styles are reset globally */
-*,
-::before,
-::after {
-  border-width: 0;
-  border-style: solid;
-  /* border-color: 'gray-200' */
-  border-color: theme('borderColor.DEFAULT', currentColor);
-}
 
 .glow-focus {
   text-align: center;
@@ -131,10 +102,6 @@ video {
       0 0 80px #ff4da6;
   }
 }
-
-/* <div class="text-center animate-glow-ready">
-  <!-- content -->
-</div> */
 
 .glow-correct {
   text-align: center;
