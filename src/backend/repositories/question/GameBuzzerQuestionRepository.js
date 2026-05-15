@@ -64,11 +64,11 @@ export default class GameBuzzerQuestionRepository extends GameQuestionRepository
     });
   }
 
-  async cancelPlayerTransaction(transaction, questionId, playerId, clueIdx = 0) {
+  async cancelPlayerTransaction(transaction, questionId, playerId, teamId, clueIdx = 0) {
     await this.updatePlayersTransaction(transaction, questionId, {
       canceled: arrayUnion({
         clueIdx,
-        playerId,
+        teamId,
         timestamp: Timestamp.now(),
       }),
       buzzed: arrayRemove(playerId),
