@@ -1,0 +1,171 @@
+import { useState } from 'react';
+
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Menu } from '@mui/material';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
+import { useIntl } from 'react-intl';
+
+import { revealLabel } from '@/backend/services/question/labelling/actions';
+import { isEmpty } from '@/backend/utils/arrays';
+import { rankingToEmoji } from '@/frontend/helpers/emojis';
+import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGame from '@/frontend/hooks/useGame';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import type { GameRounds } from '@/models/games/game';
+import { GameLabellingQuestion, LabellingQuestion } from '@/models/questions/labelling';
+
+const messages = defineMessages('frontend.game.bottom.RevealLabelButton', {
+  revealListHeader: 'Reveal a label',
+});
+
+interface RevealLabelButtonProps {
+  buzzed: string[];
+  baseQuestion: LabellingQuestion;
+  gameQuestion: GameLabellingQuestion;
+}
+
+export default function RevealLabelButton({ buzzed, baseQuestion, gameQuestion }: RevealLabelButtonProps) {
+  const intl = useIntl();
+  const buzzedIsEmpty = isEmpty(buzzed);
+
+  const labels = baseQuestion.labels;
+
+  const [labelIdx, setLabelIdx] = useState<number | null>(null);
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const menuOpen = Boolean(anchorEl);
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const onDialogClose = () => {
+    setDialogOpen(false);
+    handleMenuClose();
+  };
+
+  const handleRevealButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleRevealLabel = (idx: number) => {
+    setLabelIdx(idx);
+    setDialogOpen(true);
+  };
+
+  return (
+    <>
+      <Button color="info" startIcon={<VisibilityIcon />} onClick={handleRevealButtonClick} disabled={!buzzedIsEmpty}>
+        {intl.formatMessage(globalMessages.reveal)}
+      </Button>
+
+      <Menu
+        id="reveal-quote-element-menu"
+        anchorEl={anchorEl}
+        open={menuOpen}
+        onClose={handleMenuClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+      >
+        <List
+          sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+          component="nav"
+          aria-labelledby="nested-list-subheader"
+          subheader={
+            <ListSubheader component="div" id="nested-list-subheader">
+              {intl.formatMessage(messages.revealListHeader)}
+            </ListSubheader>
+          }
+        >
+          {(labels ?? []).map((label, idx) => (
+            <RevealLabelItemButton
+              key={idx}
+              gameQuestion={gameQuestion}
+              label={label}
+              labelIdx={idx}
+              onClick={() => handleRevealLabel(idx)}
+            />
+          ))}
+        </List>
+      </Menu>
+
+      <RevealLabelDialog
+        baseQuestion={baseQuestion}
+        labelIdx={labelIdx}
+        dialogOpen={dialogOpen}
+        onDialogClose={onDialogClose}
+      />
+    </>
+  );
+}
+
+interface RevealLabelItemButtonProps {
+  gameQuestion: GameLabellingQuestion;
+  label: string;
+  labelIdx: number;
+  onClick: () => void;
+}
+
+function RevealLabelItemButton({ gameQuestion, label, labelIdx, onClick }: RevealLabelItemButtonProps) {
+  const itemText = `${rankingToEmoji(labelIdx)} ("${label}")`;
+
+  return (
+    <ListItemButton onClick={onClick} disabled={gameQuestion.labelIsRevealed(labelIdx)}>
+      <ListItemText primary={itemText} />
+    </ListItemButton>
+  );
+}
+
+interface RevealLabelDialogProps {
+  baseQuestion: LabellingQuestion;
+  labelIdx: number | null;
+  dialogOpen: boolean;
+  onDialogClose: () => void;
+}
+
+function RevealLabelDialog({ baseQuestion, labelIdx, dialogOpen, onDialogClose }: RevealLabelDialogProps) {
+  const intl = useIntl();
+  const game = useGame();
+  if (!game || labelIdx === null) return null;
+
+  const [handleRevealLabel, isRevealing] = useAsyncAction(async () => {
+    await revealLabel(game.id as string, game.currentRound as string, game.currentQuestion as string, labelIdx!);
+    onDialogClose();
+  });
+
+  const labelToReveal = baseQuestion.labels?.[labelIdx];
+
+  return (
+    <Dialog disableEscapeKeyDown open={dialogOpen} onClose={onDialogClose}>
+      <DialogTitle>{intl.formatMessage(messages.revealListHeader)}</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          {intl.formatMessage(globalMessages.areYouSureReveal)} <strong>&quot;{labelToReveal}&quot;</strong>?
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<CheckCircleIcon />}
+          onClick={handleRevealLabel}
+          disabled={isRevealing}
+        >
+          {intl.formatMessage(globalMessages.yes)}
+        </Button>
+
+        <Button variant="outlined" color="error" startIcon={<CancelIcon />} onClick={onDialogClose} autoFocus>
+          {intl.formatMessage(globalMessages.no)}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}

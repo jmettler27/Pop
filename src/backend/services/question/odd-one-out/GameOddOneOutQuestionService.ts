@@ -1,0 +1,212 @@
+import { runTransaction, Timestamp, Transaction } from 'firebase/firestore';
+
+import { firestore } from '@/backend/firebase/firebase';
+import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
+import GameQuestionService from '@/backend/services/question/GameQuestionService';
+import { getNextCyclicIndex, getRandomIndex, moveToHead } from '@/backend/utils/arrays';
+import { OddOneOutItem, OddOneOutQuestion, SelectedItem } from '@/models/questions/odd-one-out';
+import { QuestionType } from '@/models/questions/question-type';
+import { OddOneOutRound } from '@/models/rounds/odd-one-out';
+import { ScorePolicyType } from '@/models/score-policy';
+import { Player, PlayerStatus } from '@/models/users/player';
+
+export default class GameOddOneOutQuestionService extends GameQuestionService {
+  readonly chooserRepo: ChooserRepository;
+
+  constructor(gameId: string, roundId: string) {
+    super(gameId, roundId, QuestionType.ODD_ONE_OUT);
+
+    this.chooserRepo = new ChooserRepository(gameId);
+  }
+
+  async resetQuestionTransaction(transaction: Transaction, questionId: string) {
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+    await this.chooserRepo.resetChoosersTransaction(transaction);
+    await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
+    // await super.resetQuestionTransaction(transaction, questionId);
+
+    console.log('OOO question successfully reset', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+  }
+
+  async endQuestionTransaction(transaction: Transaction, questionId: string) {
+    await super.endQuestionTransaction(transaction, questionId);
+    // await this.gameQuestionRepo.clearBuzzedPlayersTransaction(transaction, questionId);
+    console.log('OOO question successfully ended', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+  }
+
+  async handleCountdownEndTransaction(transaction: Transaction, questionId: string) {
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+
+    const selectedIdxsSet = new Set(gameQuestion.selectedItems.map((item: SelectedItem) => item.idx));
+    const remainingItems = [];
+    for (let i = 0; i < OddOneOutQuestion.MAX_NUM_ITEMS; i++) {
+      if (!selectedIdxsSet.has(i)) {
+        remainingItems.push(i);
+      }
+    }
+
+    const randomIdx = getRandomIndex(remainingItems);
+    await this.selectProposalTransaction(transaction, questionId, 'system', randomIdx);
+
+    console.log(
+      'OOO question countdown end successfully handled',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId
+    );
+  }
+
+  /* =============================================================================================================== */
+
+  /**
+   * Select a proposal in an Odd One Out question
+   * @param {string} questionId - ID of the question
+   * @param {string} playerId - ID of the player
+   * @param {number} idx - Index of the selected proposal
+   * @returns {Promise<void>}
+   */
+  async selectProposal(questionId: string, playerId: string, idx: number): Promise<void> {
+    if (!questionId) {
+      throw new Error('No question ID has been provided!');
+    }
+    if (!playerId) {
+      throw new Error('No player ID has been provided!');
+    }
+    if (idx < 0 || idx >= OddOneOutQuestion.MAX_NUM_ITEMS) {
+      throw new Error('Invalid proposal index!');
+    }
+
+    await runTransaction(
+      firestore,
+      async (transaction) => await this.selectProposalTransaction(transaction, questionId, playerId, idx)
+    );
+  }
+
+  async selectProposalTransaction(
+    transaction: Transaction,
+    questionId: string,
+    playerId: string,
+    idx: number
+  ): Promise<void> {
+    const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
+    if (!game) {
+      console.log();
+      throw new Error();
+    }
+
+    const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
+    if (!round) {
+      console.log();
+      throw new Error();
+    }
+    const oddOneOutRound = round as OddOneOutRound;
+
+    const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
+    if (!baseQuestion) {
+      console.log();
+      throw new Error();
+    }
+
+    const gameQuestion = await this.gameQuestionRepo.getQuestionTransaction(transaction, questionId);
+    if (!gameQuestion) {
+      console.log();
+      throw new Error();
+    }
+
+    const chooser = await this.chooserRepo.getChooserTransaction(transaction);
+    if (!chooser) {
+      console.log();
+      throw new Error();
+    }
+    const chooserOrder = chooser.chooserOrder;
+    const chooserIdx = chooser.chooserIdx;
+    const teamId = chooserOrder[chooserIdx];
+
+    const teamPlayers = await this.playerRepo.getPlayersByTeamId(teamId);
+    if (!teamPlayers) {
+      console.log();
+      throw new Error();
+    }
+
+    if (idx === baseQuestion.answerIdx) {
+      // The selected proposal is the odd one out
+      const roundScorePolicy = game.roundScorePolicy;
+      const mistakePenalty = oddOneOutRound.mistakePenalty;
+
+      if (roundScorePolicy === ScorePolicyType.RANKING) {
+        await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, mistakePenalty);
+      } else if (roundScorePolicy === ScorePolicyType.COMPLETION_RATE) {
+        await this.increaseGlobalTeamScoreTransaction(transaction, questionId, mistakePenalty, teamId);
+      }
+
+      // Move winner to head of chooser list
+      const newChooserOrder = moveToHead(teamId, chooserOrder);
+      await this.chooserRepo.updateChooserOrderTransaction(transaction, newChooserOrder);
+
+      // Update question winner and end question
+      await this.gameQuestionRepo.updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId);
+      await this.soundRepo.addSoundTransaction(transaction, 'hysterical5');
+      await this.endQuestionTransaction(transaction, questionId);
+    } else {
+      // The selected proposal is correct
+      const newNumClicked = gameQuestion.selectedItems.length + 1;
+
+      if (newNumClicked === baseQuestion.items.length - 1) {
+        // No one selected the odd one out
+        await this.soundRepo.addSoundTransaction(transaction, 'zelda_secret_door');
+        await this.endQuestionTransaction(transaction, questionId);
+      } else {
+        // The selected proposal is not the last remaining one
+        const newChooserIdx = getNextCyclicIndex(chooserIdx, chooserOrder.length);
+        await this.chooserRepo.updateChooserIndexTransaction(transaction, newChooserIdx);
+        const newChooserTeamId = chooserOrder[newChooserIdx];
+        const newChooserTeamPlayers = await this.playerRepo.getPlayersByTeamId(newChooserTeamId);
+        await this.playerRepo.updateAllPlayersStatusTransaction(
+          transaction,
+          PlayerStatus.FOCUS,
+          newChooserTeamPlayers.map((p: Player) => p.id!)
+        );
+        await this.soundRepo.addSoundTransaction(transaction, 'bien');
+        await this.timerRepo.startTimerTransaction(transaction, gameQuestion.thinkingTime);
+      }
+
+      // Update player statuses
+      await this.playerRepo.updateAllPlayersStatusTransaction(
+        transaction,
+        PlayerStatus.IDLE,
+        teamPlayers.map((p: Player) => p.id!)
+      );
+    }
+
+    // Update selected items and timer
+    await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
+      selectedItems: [
+        ...gameQuestion.selectedItems,
+        {
+          idx,
+          playerId,
+          timestamp: Timestamp.now(),
+        },
+      ],
+    });
+    await this.timerRepo.updateAuthorized(false);
+
+    console.log(
+      'OOO proposal successfully selected',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId,
+      'player',
+      playerId,
+      'option',
+      idx
+    );
+  }
+}

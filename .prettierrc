@@ -23,6 +23,7 @@
     ".css$"
   ],
   "importOrderParserPlugins": [
+    "typescript",
     "jsx"
   ],
   "importOrderCaseSensitive": false
