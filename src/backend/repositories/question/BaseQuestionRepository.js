@@ -1,5 +1,5 @@
+import { useCollectionQuery } from '@tanstack-query-firebase/react/firestore';
 import { query, where } from 'firebase/firestore';
-import { useCollectionOnce } from 'react-firebase-hooks/firestore';
 
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 import QuestionFactory from '@/models/questions/QuestionFactory';
@@ -104,17 +104,17 @@ export default class BaseQuestionRepository extends FirebaseRepository {
   }
 
   useQuestionsOnce(approved = true) {
-    // Build query with multiple where clauses for type and approved status
     const q = query(this.collectionRef, where('type', '==', this.questionType), where('approved', '==', approved));
+    const queryKey = [this.collectionRef.path, 'once', 'type', this.questionType, 'approved', String(approved)];
 
-    const [data, loading, error] = useCollectionOnce(q);
+    const { data: snap, isPending: loading, error } = useCollectionQuery(q, { queryKey });
 
     return {
       baseQuestions:
-        data?.docs.map((doc) => {
+        snap?.docs.map((doc) => {
           const docData = { id: doc.id, ...doc.data() };
           return QuestionFactory.createBaseQuestion(docData.type, docData);
-        }) || null,
+        }) ?? null,
       baseQuestionsLoading: loading,
       baseQuestionsError: error,
     };

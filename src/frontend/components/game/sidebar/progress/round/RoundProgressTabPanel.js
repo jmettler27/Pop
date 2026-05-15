@@ -4,11 +4,9 @@ import { CircularProgress } from '@mui/material';
 import { useIntl } from 'react-intl';
 
 import RoundQuestionsProgress from '@/frontend/components/game/sidebar/progress/round/RoundQuestionsProgress';
-import SpecialRoundProgress from '@/frontend/components/game/sidebar/progress/round/SpecialRoundProgress';
 import { RoundTypeIcon } from '@/frontend/helpers/question_types';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import globalMessages from '@/frontend/i18n/globalMessages';
-import { RoundType } from '@/models/rounds/RoundType';
 
 export default function RoundProgressTabPanel({ game }) {
   const { roundRepo } = useGameRepositories();
@@ -27,11 +25,7 @@ export default function RoundProgressTabPanel({ game }) {
   return (
     <div className="flex flex-col w-full items-center">
       <RoundProgressHeader roundType={round.type} roundOrder={round.order} roundTitle={round.title} />
-      {round.type == RoundType.SPECIAL ? (
-        <SpecialRoundProgress game={game} round={round} />
-      ) : (
-        <RoundQuestionsProgress game={game} round={round} />
-      )}
+      <RoundQuestionsProgress game={game} round={round} />
     </div>
   );
 }

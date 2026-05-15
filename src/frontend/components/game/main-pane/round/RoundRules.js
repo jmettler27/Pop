@@ -66,9 +66,6 @@ const messages = defineMessages('frontend.game.round.RoundRules', {
   reorderingOneSubmission: '⚠️ <b>One submission per team</b> — once submitted, your ordering is final!',
   reorderingThinkingTime:
     '⏳ You have <u><b>{seconds} seconds</b></u> to submit, otherwise <b>no points will be awarded!</b>',
-  specialInstruction: '🗣️ Answer the questions directly — there are no answer choices.',
-  specialPrecision: '⚠️ Be precise in your answer!',
-  specialCalm: '💜 Stay calm, it will be fine.',
   mixedInstruction: 'Rules depend on the question type.',
 });
 
@@ -189,8 +186,6 @@ export function RoundRules({ round }) {
       return <BuzzerPartialCreditRoundRules round={round} />;
     case RoundType.REORDERING:
       return <ReorderingRoundRules round={round} />;
-    case RoundType.SPECIAL:
-      return <SpecialRoundRules round={round} />;
   }
 }
 function BasicRoundRules({ round }) {
@@ -345,19 +340,6 @@ function ReorderingRoundRules({ round }) {
           ...richTags,
         })}
       </RuleP>
-    </>
-  );
-}
-
-function SpecialRoundRules() {
-  const { formatMessage } = useIntl();
-  return (
-    <>
-      <RuleP>
-        <strong>{formatMessage(messages.specialInstruction)}</strong>
-      </RuleP>
-      <RuleP>{formatMessage(messages.specialPrecision)}</RuleP>
-      <RuleP>{formatMessage(messages.specialCalm)}</RuleP>
     </>
   );
 }

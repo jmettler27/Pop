@@ -37,7 +37,6 @@ const messages = defineMessages('frontend.game.round.RoundDescription', {
   quoteAuthor: 'The <b>person</b> who said it',
   quoteSource: 'The <b>work</b> it came from',
   quoteHidden: '🫳 <b>One, two or three</b> of these elements are <b>hidden</b>: find them.',
-  special: '<b>25 questions</b> organized into <b>5 levels</b>.',
 });
 
 const b = (chunks) => <strong>{keyChunks(chunks)}</strong>;
@@ -81,8 +80,6 @@ export function RoundDescription({ round }) {
       return <ReorderingRoundDescription />;
     case RoundType.QUOTE:
       return <QuoteRoundDescription />;
-    case RoundType.SPECIAL:
-      return <SpecialRoundDescription />;
     default:
       return <></>;
   }
@@ -244,9 +241,4 @@ function ReorderingRoundDescription() {
       <RuleP>{fmt(formatMessage, messages.reordering3, richTags)}</RuleP>
     </>
   );
-}
-
-function SpecialRoundDescription() {
-  const { formatMessage } = useIntl();
-  return <RuleP>{fmt(formatMessage, messages.special, richTags)}</RuleP>;
 }

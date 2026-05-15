@@ -2,7 +2,7 @@
  * update-i18n
  *
  * Extracts all English messages from defineMessages() calls in the codebase,
- * writes src/i18n/locale/en.json, then re-orders src/i18n/locale/fr.json so both files
+ * writes src/frontend/i18n/locale/en.json, then re-orders src/frontend/i18n/locale/fr.json so both files
  * share identical alphabetical key order.
  *
  * Sorting uses the same comparator convention as @formatjs/cli custom formatters:
@@ -94,7 +94,7 @@ const enSorted = Object.fromEntries(sortedKeys.map((k) => [k, extracted[k]]));
 // 3. Write en.json
 // ---------------------------------------------------------------------------
 
-writeFileSync('src/i18n/locale/en.json', JSON.stringify(enSorted, null, 4) + '\n', 'utf8');
+writeFileSync('src/frontend/i18n/locale/en.json', JSON.stringify(enSorted, null, 4) + '\n', 'utf8');
 
 // ---------------------------------------------------------------------------
 // 4. Re-order fr.json to match the same key order
@@ -102,7 +102,7 @@ writeFileSync('src/i18n/locale/en.json', JSON.stringify(enSorted, null, 4) + '\n
 //    - Keys only in fr.json are appended at the end (sorted)
 // ---------------------------------------------------------------------------
 
-const frRaw = JSON.parse(readFileSync('src/i18n/locale/fr.json', 'utf8'));
+const frRaw = JSON.parse(readFileSync('src/frontend/i18n/locale/fr.json', 'utf8'));
 
 const frOnlyKeys = Object.keys(frRaw)
   .filter((k) => !(k in enSorted))
@@ -115,7 +115,7 @@ const frSorted = {};
 for (const k of sortedKeys) frSorted[k] = frRaw[k] ?? '';
 for (const k of frOnlyKeys) frSorted[k] = frRaw[k];
 
-writeFileSync('src/i18n/locale/fr.json', JSON.stringify(frSorted, null, 4) + '\n', 'utf8');
+writeFileSync('src/frontend/i18n/locale/fr.json', JSON.stringify(frSorted, null, 4) + '\n', 'utf8');
 
 // ---------------------------------------------------------------------------
 // 5. Report

@@ -3,7 +3,6 @@ import GameHomeBottomPane from '@/frontend/components/game/main-pane/game/GameHo
 import GameStartBottomPane from '@/frontend/components/game/main-pane/game/GameStartBottomPane';
 import QuestionBottomPane from '@/frontend/components/game/main-pane/question/QuestionBottomPane';
 import RoundBottomPane from '@/frontend/components/game/main-pane/round/RoundBottomPane';
-import SpecialBottomPane from '@/frontend/components/game/main-pane/special/SpecialBottomPane';
 import useGame from '@/frontend/hooks/useGame';
 import { GameStatus } from '@/models/games/GameStatus';
 
@@ -24,9 +23,6 @@ export default function BottomPane() {
     case GameStatus.QUESTION_ACTIVE:
     case GameStatus.QUESTION_END:
       return <QuestionBottomPane />;
-
-    case GameStatus.SPECIAL:
-      return <SpecialBottomPane />;
 
     case GameStatus.GAME_END:
       return <GameEndBottomPane />;

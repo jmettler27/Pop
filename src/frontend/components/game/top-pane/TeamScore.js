@@ -71,7 +71,6 @@ function RankingPolicyTeamScore({ teamId, game }) {
     case GameStatus.GAME_START:
     case GameStatus.GAME_HOME:
     case GameStatus.GAME_END:
-    case GameStatus.SPECIAL:
     case GameStatus.ROUND_START:
     case GameStatus.ROUND_END:
       return <TeamGameScore teamId={teamId} />;
@@ -86,7 +85,6 @@ function CompletionRatePolicyTeamScore({ teamId, game }) {
     case GameStatus.GAME_START:
     case GameStatus.GAME_HOME:
     case GameStatus.GAME_END:
-    case GameStatus.SPECIAL:
     case GameStatus.ROUND_START:
     case GameStatus.ROUND_END:
       return <TeamGameScore teamId={teamId} />;

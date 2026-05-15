@@ -9,10 +9,10 @@ import { Box, Button, Skeleton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { or, query, where } from 'firebase/firestore';
 import { useSession } from 'next-auth/react';
-import { useCollectionOnce } from 'react-firebase-hooks/firestore';
 import { useIntl } from 'react-intl';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
+import { useCollectionOnce } from '@/backend/firebase/firestoreHooks';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/card';
@@ -34,7 +34,11 @@ const messages = defineMessages('frontend.home.OngoingGames', {
 
 export default function OngoingGames() {
   const intl = useIntl();
-  const [games, gamesLoading, gamesError] = useCollectionOnce(
+  const {
+    data: games,
+    loading: gamesLoading,
+    error: gamesError,
+  } = useCollectionOnce(
     query(
       GAMES_COLLECTION_REF,
       or(
@@ -43,10 +47,10 @@ export default function OngoingGames() {
         where('status', '==', GameStatus.ROUND_START),
         where('status', '==', GameStatus.QUESTION_ACTIVE),
         where('status', '==', GameStatus.QUESTION_END),
-        where('status', '==', GameStatus.ROUND_END),
-        where('status', '==', GameStatus.SPECIAL)
+        where('status', '==', GameStatus.ROUND_END)
       )
-    )
+    ),
+    ['games', 'ongoing']
   );
   if (gamesError) {
     return <></>;

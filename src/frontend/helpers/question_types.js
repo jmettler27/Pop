@@ -55,8 +55,6 @@ export function RoundTypeIcon({ roundType, fontSize = 'small' }) {
   switch (roundType) {
     case RoundType.MIXED:
       return <RepeatIcon sx={{ fontSize }} />;
-    case RoundType.SPECIAL:
-      return <EmojiEventsIcon sx={{ fontSize }} />;
     default:
       return <QuestionTypeIcon questionType={roundType} fontSize={fontSize} />;
   }

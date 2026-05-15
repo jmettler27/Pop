@@ -1,10 +1,8 @@
 import { useCallback, useRef } from 'react';
 
 import { CircularProgress } from '@mui/material';
-import { useObject } from 'react-firebase-hooks/database';
 import { useIntl } from 'react-intl';
 
-import { SERVER_TIME_OFFSET_REF } from '@/backend/firebase/database';
 import { startGame } from '@/backend/services/game/actions';
 import { handleCountdownEnd } from '@/backend/services/question/actions';
 import { handleQuestionEnd, startRound } from '@/backend/services/round/actions';
@@ -14,6 +12,7 @@ import Timer from '@/frontend/components/game/timer/Timer';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
+import { useServerTimeOffset } from '@/frontend/hooks/useServerTimeOffset';
 import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { GameStatus } from '@/models/games/GameStatus';
@@ -70,8 +69,7 @@ function OrganizerTimerPane() {
     }
   }, [game.status, game.id, game.currentQuestionType, game.currentRound, game.currentQuestion]);
 
-  const [offsetSnapshot, offsetLoading, offsetError] = useObject(SERVER_TIME_OFFSET_REF);
-
+  const { serverTimeOffset, loading: offsetLoading, error: offsetError } = useServerTimeOffset();
   const { timer, timerLoading, timerError } = timerRepo.useTimer();
 
   if (offsetError || timerError) {
@@ -80,11 +78,9 @@ function OrganizerTimerPane() {
   if (offsetLoading || timerLoading) {
     return <CircularProgress />;
   }
-  if (!offsetSnapshot || !timer) {
+  if (!timer) {
     return <></>;
   }
-
-  const serverTimeOffset = offsetSnapshot.val();
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-2">
@@ -98,7 +94,7 @@ function OrganizerTimerPane() {
 function SpectatorTimerPane() {
   const { timerRepo } = useGameRepositories();
 
-  const [offsetSnapshot, offsetLoading, offsetError] = useObject(SERVER_TIME_OFFSET_REF);
+  const { serverTimeOffset, loading: offsetLoading, error: offsetError } = useServerTimeOffset();
   const { timer, timerLoading, timerError } = timerRepo.useTimer();
 
   if (offsetError || timerError) {
@@ -107,11 +103,9 @@ function SpectatorTimerPane() {
   if (offsetLoading || timerLoading) {
     return <CircularProgress />;
   }
-  if (!offsetSnapshot || !timer) {
+  if (!timer) {
     return <></>;
   }
-
-  const serverTimeOffset = offsetSnapshot.val();
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-2">

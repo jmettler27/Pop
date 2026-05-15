@@ -8,7 +8,6 @@ export const GameStatus = {
   ROUND_END: 'round_end',
   QUESTION_ACTIVE: 'question_active',
   QUESTION_END: 'question_end',
-  SPECIAL: 'special',
 };
 
 export function isValidGameStatus(status) {

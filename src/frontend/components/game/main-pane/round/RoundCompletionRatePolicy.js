@@ -15,7 +15,6 @@ const messages = defineMessages('frontend.game.round.RoundCompletionRatePolicy',
     '✨ Selecting an incorrect proposal = <incorrect>{penalty} point(s) on the global score</incorrect>',
   matchingPenalty: '✨ Drawing an incorrect link = <incorrect>{penalty} point(s) on the global score</incorrect>',
   naguiTitle: '✨ A <b>variable number of points</b> per correct answer',
-  specialTitle: '😨 Your <b>accumulated points</b> so far = your <b>number of mistake allowances</b>',
   pointsPerCorrectPosition: '✨ <correct>{points} point per item in correct position</correct>',
 });
 
@@ -143,21 +142,5 @@ function ReorderingRoundCompletionRatePolicyTitle({ round }) {
     <h1 className="2xl:text-3xl text-center">
       {fmt(formatMessage, messages.pointsPerCorrectPosition, { points: round.rewardsPerElement, ...richTags })}
     </h1>
-  );
-}
-
-export function SpecialRoundCompletionRatePolicy({ round }) {
-  const { formatMessage } = useIntl();
-  const orderText =
-    round.order > 0
-      ? formatMessage(globalMessages.reverseRankingFromRound, { roundNumber: round.order })
-      : formatMessage(globalMessages.randomOrder);
-  return (
-    <div className="flex flex-col items-center justify-start space-y-4">
-      <h1 className="2xl:text-3xl text-center">{fmt(formatMessage, messages.specialTitle, richTags)}</h1>
-      <div className="flex flex-col items-center justify-start">
-        <p className="2xl:text-2xl text-center">{formatMessage(globalMessages.turnOrder, { order: orderText })}</p>
-      </div>
-    </div>
   );
 }

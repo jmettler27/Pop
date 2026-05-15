@@ -1,12 +1,11 @@
 'use client';
 
 import { CircularProgress } from '@mui/material';
-import { useObject } from 'react-firebase-hooks/database';
 
-import { SERVER_TIME_OFFSET_REF } from '@/backend/firebase/database';
 import Timer from '@/frontend/components/game/timer/Timer';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import { useServerTimeOffset } from '@/frontend/hooks/useServerTimeOffset';
 import { GameStatus } from '@/models/games/GameStatus';
 
 import { EstimationEndView, EstimationQuestionHeader } from './EstimationCommon';
@@ -31,16 +30,16 @@ export default function EstimationSpectatorPane({ baseQuestion, gameQuestion }) 
 
 function EstimationSpectatorActiveView() {
   const { timerRepo } = useGameRepositories();
-  const [offsetSnapshot, offsetLoading, offsetError] = useObject(SERVER_TIME_OFFSET_REF);
+  const { serverTimeOffset, loading: offsetLoading, error: offsetError } = useServerTimeOffset();
   const { timer, timerLoading, timerError } = timerRepo.useTimer();
 
-  if (offsetError || timerError || offsetLoading || timerLoading || !offsetSnapshot || !timer) {
+  if (offsetError || timerError || offsetLoading || timerLoading || !timer) {
     return offsetLoading || timerLoading ? <CircularProgress /> : <></>;
   }
 
   return (
     <span className="text-6xl sm:text-7xl lg:text-8xl font-bold tabular-nums">
-      ⌛ <Timer timer={timer} serverTimeOffset={offsetSnapshot.val()} />
+      ⌛ <Timer timer={timer} serverTimeOffset={serverTimeOffset} />
     </span>
   );
 }

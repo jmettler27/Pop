@@ -36,7 +36,6 @@ const ABOUT_ROUND_TYPES = [
   RoundType.PROGRESSIVE_CLUES,
   RoundType.QUOTE,
   RoundType.REORDERING,
-  RoundType.SPECIAL,
 ];
 
 const messages = defineMessages('app.about', {

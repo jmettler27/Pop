@@ -11,7 +11,6 @@ import RoundScoreboard from '@/frontend/components/scores/RoundScoreboard';
 import RoundScoresChart from '@/frontend/components/scores/RoundScoresChart';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/frontend/i18n/defineMessages';
-import { RoundType } from '@/models/rounds/RoundType';
 
 const messages = defineMessages('frontend.game.middle.RoundEndBody', {
   roundStats: 'Round statistics',
@@ -53,9 +52,7 @@ export default function RoundEndBody({ currentRound }) {
             <RoundScoreboard roundScores={roundScores} teams={teams} />
           </div>
           <div className="flex flex-col h-full w-1/2 items-center justify-center">
-            {currentRound.type !== RoundType.SPECIAL && (
-              <RoundScoresChart round={currentRound} roundScores={roundScores} teams={teams} />
-            )}
+            <RoundScoresChart round={currentRound} roundScores={roundScores} teams={teams} />
           </div>
         </div>
       </div>

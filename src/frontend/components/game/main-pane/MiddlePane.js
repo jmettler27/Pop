@@ -3,7 +3,6 @@ import GameHomeMiddlePane from '@/frontend/components/game/main-pane/game/GameHo
 import GameStartMiddlePane from '@/frontend/components/game/main-pane/game/GameStartMiddlePane';
 import QuestionMiddlePane from '@/frontend/components/game/main-pane/question/QuestionMiddlePane';
 import RoundMiddlePane from '@/frontend/components/game/main-pane/round/RoundMiddlePane';
-import SpecialMiddlePane from '@/frontend/components/game/main-pane/special/SpecialMiddlePane';
 import useGame from '@/frontend/hooks/useGame';
 import { GameStatus } from '@/models/games/GameStatus';
 
@@ -24,9 +23,6 @@ export default function MiddlePane({}) {
     case GameStatus.QUESTION_ACTIVE:
     case GameStatus.QUESTION_END:
       return <QuestionMiddlePane />;
-
-    case GameStatus.SPECIAL:
-      return <SpecialMiddlePane />;
 
     case GameStatus.GAME_END:
       return <GameEndMiddlePane />;

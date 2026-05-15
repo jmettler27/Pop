@@ -198,7 +198,7 @@ export default class RoundService {
       // Result: roundSortedTeams = [{score: score1, teams: [teamId1, teamId2, ...]}, {score: score2, teams: [teamId3, teamId4, ...]}, ...]
       roundSortedTeams = aggregateTiedTeams(sortedUniqueRoundScores, roundScores);
 
-      if (![RoundType.ODD_ONE_OUT, RoundType.MATCHING, RoundType.SPECIAL].includes(roundType)) {
+      if (![RoundType.ODD_ONE_OUT, RoundType.MATCHING].includes(roundType)) {
         // Add the calculated rates to the global scores of each team
         const updateGlobalScores = (completionRates) => {
           Object.keys(completionRates).forEach((teamId) => {

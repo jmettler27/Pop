@@ -14,7 +14,6 @@ import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/frontend/i18n/defineMessages';
-import { RoundType } from '@/models/rounds/RoundType';
 import { ParticipantRole } from '@/models/users/Participant';
 
 const messages = defineMessages('frontend.game.middle.GameHomeMiddlePane', {
@@ -64,16 +63,14 @@ function GameHomeRounds() {
   }
 
   const endedRounds = rounds.filter((r) => r.dateEnd !== null).map((r) => r.id);
-  const nonSpecialRounds = rounds.filter((r) => r.type !== RoundType.SPECIAL);
-  const activeNonSpecialRounds = nonSpecialRounds
+  const activeRounds = rounds
     .filter((r) => r.order === null)
     .sort((a, b) => {
       if (a.title < b.title) return -1;
       if (a.title > b.title) return 1;
       return 0;
     });
-  const endedNonSpecialRounds = nonSpecialRounds.filter((r) => r.order !== null).sort((a, b) => a.order - b.order);
-  const specialRound = rounds.find((r) => r.type === RoundType.SPECIAL);
+  const sortedEndedRounds = rounds.filter((r) => r.order !== null).sort((a, b) => a.order - b.order);
 
   const roundIsDisabled = (roundId) => {
     if (endedRounds.includes(roundId)) return true;
@@ -82,54 +79,38 @@ function GameHomeRounds() {
     return true;
   };
 
-  const showSpecial =
-    specialRound &&
-    (myRole === ParticipantRole.ORGANIZER ||
-      (endedRounds.length === nonSpecialRounds.length && !endedRounds.includes(specialRound.id)));
-
   /* Rounds */
   return (
     <>
-      {activeNonSpecialRounds.length > 0 && (
+      {activeRounds.length > 0 && (
         <List className="rounded-lg w-1/3" sx={{ bgcolor: 'background.paper' }}>
-          {activeNonSpecialRounds.map((round, idx) => (
+          {activeRounds.map((round, idx) => (
             <div key={round.id}>
               <GameHomeRoundItem
                 round={round}
                 isDisabled={isHandling || roundIsDisabled(round.id)}
                 onSelectRound={() => handleSelect(round.id, round.type)}
               />
-              {idx < activeNonSpecialRounds.length - 1 && <Divider variant="inset" component="li" />}
+              {idx < activeRounds.length - 1 && <Divider variant="inset" component="li" />}
             </div>
           ))}
         </List>
       )}
 
-      {endedNonSpecialRounds.length > 0 && (
+      {sortedEndedRounds.length > 0 && (
         <List className="rounded-lg w-1/3" sx={{ bgcolor: 'background.paper' }}>
-          {endedNonSpecialRounds.map((round, idx) => (
+          {sortedEndedRounds.map((round, idx) => (
             <div key={round.id}>
               <GameHomeRoundItem
                 round={round}
                 isDisabled={isHandling || roundIsDisabled(round.id)}
                 onSelectRound={() => handleSelect(round.id, round.type)}
               />
-              {idx < endedNonSpecialRounds.length - 1 && <Divider variant="inset" component="li" />}
+              {idx < sortedEndedRounds.length - 1 && <Divider variant="inset" component="li" />}
             </div>
           ))}
         </List>
       )}
-
-      <List className="rounded-full w-1/8" sx={{ bgcolor: 'background.paper' }}>
-        {showSpecial && (
-          <GameHomeRoundItem
-            key={specialRound.id}
-            round={specialRound}
-            isDisabled={isHandling || myRole !== ParticipantRole.ORGANIZER}
-            onSelectRound={() => handleSelect(specialRound.id, RoundType.SPECIAL)}
-          />
-        )}
-      </List>
     </>
   );
 }

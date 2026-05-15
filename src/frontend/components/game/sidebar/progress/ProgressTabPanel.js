@@ -1,32 +1,18 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
 
-import { Box, CircularProgress, Tab, Tabs } from '@mui/material';
-import { doc } from 'firebase/firestore';
-import { useDocument } from 'react-firebase-hooks/firestore';
+import { Box, Tab, Tabs } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import GlobalProgressTabPanel from '@/frontend/components/game/sidebar/progress/GlobalProgressTabPanel';
 import RoundProgressTabPanel from '@/frontend/components/game/sidebar/progress/round/RoundProgressTabPanel';
+import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameStatus } from '@/models/games/GameStatus';
 
 export default function ProgressTabPanel({}) {
-  const { id: gameId } = useParams();
+  const game = useGame();
 
-  const gameRef = doc(GAMES_COLLECTION_REF, gameId);
-  const [gameDoc, gameDocLoading, gameDocError] = useDocument(gameRef);
-  if (gameDocError) {
-    return <></>;
-  }
-  if (gameDocLoading) {
-    return <CircularProgress />;
-  }
-  if (!gameDoc) {
-    return <></>;
-  }
-  const game = { id: gameDoc.id, ...gameDoc.data() };
+  if (!game) return <></>;
 
   return <ProgressTabPanelMainContent game={game} />;
 }
@@ -78,8 +64,7 @@ function ProgressTabPanelMainContent({ game }) {
         (game.status === GameStatus.ROUND_START ||
           game.status === GameStatus.ROUND_END ||
           game.status === GameStatus.QUESTION_ACTIVE ||
-          game.status === GameStatus.QUESTION_END ||
-          game.status === GameStatus.SPECIAL) && (
+          game.status === GameStatus.QUESTION_END) && (
           <CustomTabPanel value={value} index={1}>
             <RoundProgressTabPanel game={game} />
           </CustomTabPanel>

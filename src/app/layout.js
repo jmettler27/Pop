@@ -6,6 +6,7 @@ import { getServerSession } from 'next-auth';
 
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import LocaleProvider from '@/app/LocaleProvider';
+import QueryProvider from '@/app/QueryProvider';
 import SessionProvider from '@/app/SessionProvider';
 // https://github.com/mui/material-ui/issues/34898#issuecomment-1568462651
 import ThemeWrapper from '@/app/ThemeWrapper';
@@ -25,9 +26,11 @@ export default async function RootLayout({ children }) {
     <html lang="fr">
       <ThemeWrapper>
         <body className={`${inter.className} bg-slate-800 text-slate-100`}>
-          <SessionProvider session={session}>
-            <LocaleProvider>{children}</LocaleProvider>
-          </SessionProvider>
+          <QueryProvider>
+            <SessionProvider session={session}>
+              <LocaleProvider>{children}</LocaleProvider>
+            </SessionProvider>
+          </QueryProvider>
         </body>
       </ThemeWrapper>
     </html>

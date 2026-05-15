@@ -1,7 +1,7 @@
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { useDocument, useDocumentOnce } from '@/backend/firebase/firestoreHooks';
 import { isArray } from '@/backend/utils/arrays';
 
 const getDocDataTransaction = async (transaction, docRef) => {
@@ -108,18 +108,18 @@ export default class FirebaseDocumentRepository {
 
   // React hooks
   useDocument() {
-    const [data, loading, error] = useDocumentData(this.docRef);
+    const { data: snap, loading, error } = useDocument(this.docRef);
     return {
-      data: data ? { id: this.docRef.id, ...data } : null,
+      data: snap?.exists() ? { id: snap.id, ...snap.data() } : null,
       loading,
       error,
     };
   }
 
   useDocumentOnce() {
-    const [data, loading, error] = useDocumentDataOnce(this.docRef);
+    const { data: snap, loading, error } = useDocumentOnce(this.docRef);
     return {
-      data: data ? { id: this.docRef.id, ...data } : null,
+      data: snap?.exists() ? { id: snap.id, ...snap.data() } : null,
       loading,
       error,
     };

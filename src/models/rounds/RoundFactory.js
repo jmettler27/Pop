@@ -14,7 +14,6 @@ import { ProgressiveCluesRound } from '@/models/rounds/ProgressiveClues';
 import { QuoteRound } from '@/models/rounds/Quote';
 import { ReorderingRound } from '@/models/rounds/Reordering';
 import { RoundType } from '@/models/rounds/RoundType';
-import { SpecialRound } from '@/models/rounds/Special';
 
 export default class RoundFactory {
   /**
@@ -55,8 +54,6 @@ export default class RoundFactory {
         return new QuoteRound(data);
       case RoundType.REORDERING:
         return new ReorderingRound(data);
-      case RoundType.SPECIAL:
-        return new SpecialRound(data);
       default:
         throw new Error(`Unknown round type: ${type}`);
     }

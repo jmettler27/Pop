@@ -13,9 +13,9 @@ import {
   where,
   writeBatch,
 } from 'firebase/firestore';
-import { useCollection, useCollectionOnce, useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { useCollection, useCollectionOnce, useDocument, useDocumentOnce } from '@/backend/firebase/firestoreHooks';
 import { IRepository } from '@/backend/repositories/IRepository';
 import { isArray } from '@/backend/utils/arrays';
 
@@ -246,15 +246,15 @@ export default class FirebaseRepository extends IRepository {
   }
 
   /**
-   * React hook to get a document by ID or path
+   * React hook to get a document by ID or path (real-time)
    * @param {string|string[]} idOrPath - Document ID or array of path segments
    * @returns {Object} The document data with loading and error states
    */
   useDocument(idOrPath) {
     const docRef = this.getDocumentRef(idOrPath);
-    const [data, loading, error] = useDocumentData(docRef);
+    const { data: snap, loading, error } = useDocument(docRef);
     return {
-      data: data ? { id: docRef.id, ...data } : null,
+      data: snap?.exists() ? { id: snap.id, ...snap.data() } : null,
       loading,
       error,
     };
@@ -267,9 +267,9 @@ export default class FirebaseRepository extends IRepository {
    */
   useDocumentOnce(idOrPath) {
     const docRef = this.getDocumentRef(idOrPath);
-    const [data, loading, error] = useDocumentDataOnce(docRef);
+    const { data: snap, loading, error } = useDocumentOnce(docRef);
     return {
-      data: data ? { id: docRef.id, ...data } : null,
+      data: snap?.exists() ? { id: snap.id, ...snap.data() } : null,
       loading,
       error,
     };
@@ -279,7 +279,6 @@ export default class FirebaseRepository extends IRepository {
   useCollection(queryOptions = {}) {
     let q = query(this.collectionRef);
 
-    // Apply query options
     if (queryOptions.where) {
       q = query(q, where(queryOptions.where.field, queryOptions.where.operator, queryOptions.where.value));
     }
@@ -290,13 +289,9 @@ export default class FirebaseRepository extends IRepository {
       q = query(q, limit(queryOptions.limit));
     }
 
-    const [data, loading, error] = useCollection(q);
+    const { data: snap, loading, error } = useCollection(q);
     return {
-      data:
-        data?.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) || [],
+      data: snap?.docs.map((doc) => ({ id: doc.id, ...doc.data() })) || [],
       loading,
       error,
     };
@@ -305,7 +300,6 @@ export default class FirebaseRepository extends IRepository {
   useCollectionOnce(queryOptions = {}) {
     let q = query(this.collectionRef);
 
-    // Apply query options
     if (queryOptions.where) {
       q = query(q, where(queryOptions.where.field, queryOptions.where.operator, queryOptions.where.value));
     }
@@ -316,13 +310,10 @@ export default class FirebaseRepository extends IRepository {
       q = query(q, limit(queryOptions.limit));
     }
 
-    const [data, loading, error] = useCollectionOnce(q);
+    const queryKey = [this.collectionRef.path, 'once', JSON.stringify(queryOptions)];
+    const { data: snap, loading, error } = useCollectionOnce(q, queryKey);
     return {
-      data:
-        data?.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) || [],
+      data: snap?.docs.map((doc) => ({ id: doc.id, ...doc.data() })) || [],
       loading,
       error,
     };
@@ -330,13 +321,9 @@ export default class FirebaseRepository extends IRepository {
 
   useQuery(queryBuilder) {
     const q = queryBuilder(this.collectionRef);
-    const [data, loading, error] = useCollection(q);
+    const { data: snap, loading, error } = useCollection(q);
     return {
-      data:
-        data?.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) || [],
+      data: snap?.docs.map((doc) => ({ id: doc.id, ...doc.data() })) || [],
       loading,
       error,
     };

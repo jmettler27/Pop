@@ -5,7 +5,6 @@ import { QuestionType } from '@/models/questions/QuestionType';
 export const RoundType = {
   ...QuestionType,
   MIXED: 'mixed',
-  SPECIAL: 'special',
 };
 
 export function isValidRoundType(type) {
@@ -28,7 +27,6 @@ export const RoundTypeToEmoji = {
   [RoundType.QUOTE]: '💬',
   [RoundType.REORDERING]: '🔀',
   [RoundType.MIXED]: '🔀',
-  [RoundType.SPECIAL]: '🎉',
 };
 
 export const RoundTypeToTitle = {
@@ -48,7 +46,6 @@ export const RoundTypeToTitle = {
     [RoundType.QUOTE]: 'Quotes',
     [RoundType.REORDERING]: 'Reorderings',
     [RoundType.MIXED]: 'Mixed',
-    [RoundType.SPECIAL]: 'Special Round',
   },
   fr: {
     [RoundType.BASIC]: 'Questions basiques',
@@ -66,7 +63,6 @@ export const RoundTypeToTitle = {
     [RoundType.QUOTE]: 'Répliques',
     [RoundType.REORDERING]: 'Rangements',
     [RoundType.MIXED]: 'Mixte',
-    [RoundType.SPECIAL]: 'Manche spéciale',
   },
 };
 

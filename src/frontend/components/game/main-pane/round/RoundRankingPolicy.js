@@ -17,7 +17,6 @@ const messages = defineMessages('frontend.game.round.RoundRankingPolicy', {
   pointsPerIncorrectLink: '<b>{points, plural, one {# point} other {# points}}</b> per incorrect link',
   variablePointsPerAnswer: 'A variable number of points per correct answer',
   pointsPerCorrectPosition: '<b>{points} point</b> per item in correct position',
-  specialTitle: '😨 Your <b>accumulated points</b> so far = your <b>number of mistake allowances</b>',
   turnOrderInverse: 'Turn order = Inverse ranking from round {roundNumber}.',
   turnOrderRandom: 'Turn order = Random order.',
 });
@@ -27,35 +26,30 @@ const richTags = { b };
 
 export function RoundRankingPolicy({ round }) {
   const { formatMessage } = useIntl();
-  switch (round.type) {
-    case RoundType.SPECIAL:
-      return <SpecialRoundRankingPolicy round={round} />;
-    default:
-      const orderKey =
-        round.type === RoundType.ODD_ONE_OUT || round.type === RoundType.MATCHING
-          ? formatMessage(messages.ascending)
-          : formatMessage(messages.descending);
-      return (
-        <div className="flex flex-col items-center justify-start space-y-4 p-2">
-          <RoundRankingPolicyTitle round={round} />
-          <div className="flex flex-col items-center justify-start">
-            <p className="text-xs sm:text-sm 2xl:text-base 2xl:text-xl">{formatMessage(messages.scale)}</p>
-            <ol className="2xl:text-2xl border-solid border-yellow-500 border-2 p-2">
-              {round.rewards.map((reward, index) => (
-                <li key={index}>
-                  {rankingToEmoji(index)} {formatMessage(messages.pts, { reward })}
-                </li>
-              ))}
-              {/* <li key={round.rewards.length - 1}>...  0 pts</li> */}
-            </ol>
-            <br></br>
-            <p className="2xl:text-2xl text-center">
-              {fmt(formatMessage, messages.teamsRankedOrder, { order: orderKey, ...richTags })}
-            </p>
-          </div>
-        </div>
-      );
-  }
+  const orderKey =
+    round.type === RoundType.ODD_ONE_OUT || round.type === RoundType.MATCHING
+      ? formatMessage(messages.ascending)
+      : formatMessage(messages.descending);
+  return (
+    <div className="flex flex-col items-center justify-start space-y-4 p-2">
+      <RoundRankingPolicyTitle round={round} />
+      <div className="flex flex-col items-center justify-start">
+        <p className="text-xs sm:text-sm 2xl:text-base 2xl:text-xl">{formatMessage(messages.scale)}</p>
+        <ol className="2xl:text-2xl border-solid border-yellow-500 border-2 p-2">
+          {round.rewards.map((reward, index) => (
+            <li key={index}>
+              {rankingToEmoji(index)} {formatMessage(messages.pts, { reward })}
+            </li>
+          ))}
+          {/* <li key={round.rewards.length - 1}>...  0 pts</li> */}
+        </ol>
+        <br></br>
+        <p className="2xl:text-2xl text-center">
+          {fmt(formatMessage, messages.teamsRankedOrder, { order: orderKey, ...richTags })}
+        </p>
+      </div>
+    </div>
+  );
 }
 
 function RoundRankingPolicyTitle({ round }) {
@@ -148,21 +142,5 @@ function ReorderingRoundRankingPolicyTitle({ round }) {
     <h1 className="2xl:text-3xl">
       {fmt(formatMessage, messages.pointsPerCorrectPosition, { points: round.rewardsPerElement, ...richTags })}
     </h1>
-  );
-}
-
-function SpecialRoundRankingPolicy({ round }) {
-  const { formatMessage } = useIntl();
-  return (
-    <div className="flex flex-col items-center justify-start space-y-4">
-      <h1 className="2xl:text-3xl text-center">{fmt(formatMessage, messages.specialTitle, richTags)}</h1>
-      <div className="flex flex-col items-center justify-start">
-        <p className="2xl:text-2xl text-center">
-          {round.order > 0
-            ? formatMessage(messages.turnOrderInverse, { roundNumber: round.order })
-            : formatMessage(messages.turnOrderRandom)}
-        </p>
-      </div>
-    </div>
   );
 }
