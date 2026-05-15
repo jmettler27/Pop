@@ -1,12 +1,12 @@
 import { CircularProgress } from '@mui/material';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { GameType } from '@/backend/models/games/GameType';
-import { RoundType } from '@/backend/models/rounds/RoundType';
-import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import { GameStatus } from '@/models/games/GameStatus';
+import { GameType } from '@/models/games/GameType';
+import { RoundType } from '@/models/rounds/RoundType';
+import { ScorePolicyType } from '@/models/ScorePolicy';
 
 export default function TeamScore({ teamId }) {
   const game = useGame();

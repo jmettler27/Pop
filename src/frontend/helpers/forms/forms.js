@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 
 import { REQUIRED_FILE_TEST_NAME } from '@/frontend/helpers/forms/files';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
 
 export const messages = defineMessages('frontend.utils.forms', {
   optional: 'Optional',

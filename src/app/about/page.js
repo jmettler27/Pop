@@ -17,9 +17,9 @@ import Typography from '@mui/material/Typography';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import { questionTypeToDescription } from '@/backend/models/questions/QuestionType';
-import { RoundType, roundTypeToEmoji, roundTypeToTitle } from '@/backend/models/rounds/RoundType';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import { questionTypeToDescription } from '@/models/questions/QuestionType';
+import { RoundType, roundTypeToEmoji, roundTypeToTitle } from '@/models/rounds/RoundType';
 
 const ABOUT_ROUND_TYPES = [
   RoundType.BASIC,

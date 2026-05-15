@@ -7,8 +7,8 @@ import { useIntl } from 'react-intl';
 
 import { launchGame } from '@/backend/services/edit-game/actions';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
 
 const messages = defineMessages('frontend.gameEditor.LaunchGameButton', {
   launchGame: 'Launch game',

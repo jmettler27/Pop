@@ -17,10 +17,6 @@ import {
 } from '@mui/material';
 import { clsx } from 'clsx';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
-import { topicToEmoji } from '@/backend/models/Topic';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import GameOddOneOutQuestionRepository from '@/backend/repositories/question/GameOddOneOutQuestionRepository';
 import { selectProposal } from '@/backend/services/question/odd-one-out/actions';
 import { shuffleIndices } from '@/backend/utils/arrays';
@@ -35,6 +31,10 @@ import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
+import { GameStatus } from '@/models/games/GameStatus';
+import { questionTypeToTitle } from '@/models/questions/QuestionType';
+import { topicToEmoji } from '@/models/Topic';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function OddOneOutMiddlePane({ baseQuestion }) {
   // Randomize the order of the items on the client side

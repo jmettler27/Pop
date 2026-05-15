@@ -1,7 +1,7 @@
 import { arrayRemove, arrayUnion, Timestamp } from 'firebase/firestore';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import GameBuzzerQuestionRepository from '@/backend/repositories/question/GameBuzzerQuestionRepository';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 export default class GameQuoteQuestionRepository extends GameBuzzerQuestionRepository {
   static QUOTE_PLAYERS_PATH = ['realtime', 'players'];

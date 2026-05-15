@@ -5,7 +5,7 @@ import { useIntl } from 'react-intl';
 
 import { togglePlayerAuthorization } from '@/backend/services/player/actions';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.AuthorizePlayersSwitch', {
   authorizeLabel: 'Authorize players',

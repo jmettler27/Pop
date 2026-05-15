@@ -1,6 +1,5 @@
 import { CircularProgress } from '@mui/material';
 
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 import BuzzerPlayerController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayerController';
 import BuzzerPlayers from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayers';
@@ -8,6 +7,7 @@ import BuzzerSpectatorController from '@/frontend/components/game/main-pane/ques
 import QuoteOrganizerController from '@/frontend/components/game/main-pane/question/quote/QuoteOrganizerController';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function QuoteBottomPane({ baseQuestion }) {
   const game = useGame();

@@ -15,8 +15,6 @@ import {
 } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-import { TimerStatus } from '@/backend/models/Timer';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 import { addBet } from '@/backend/services/question/enumeration/actions';
 import { range } from '@/backend/utils/arrays';
@@ -25,8 +23,10 @@ import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { TimerStatus } from '@/models/Timer';
+import { ParticipantRole } from '@/models/users/Participant';
 
 const messages = defineMessages('frontend.game.bottom.EnumerationThinkingController', {
   betInputLabel: 'My bet',

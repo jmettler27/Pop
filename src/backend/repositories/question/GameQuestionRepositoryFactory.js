@@ -1,4 +1,3 @@
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
 import GameBlindtestQuestionRepository from '@/backend/repositories/question/GameBlindtestQuestionRepository';
 import GameEmojiQuestionRepository from '@/backend/repositories/question/GameEmojiQuestionRepository';
@@ -13,6 +12,7 @@ import GameOddOneOutQuestionRepository from '@/backend/repositories/question/Gam
 import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/GameProgressiveCluesQuestionRepository';
 import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 import GameReorderingQuestionRepository from '@/backend/repositories/question/GameReorderingQuestionRepository';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 export default class GameQuestionRepositoryFactory {
   static createRepository(questionType, gameId, roundId) {

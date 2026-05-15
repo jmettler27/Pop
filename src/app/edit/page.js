@@ -9,9 +9,6 @@ import { useIntl } from 'react-intl';
 /* Validation */
 import * as Yup from 'yup';
 
-import Game from '@/backend/models/games/Game';
-import { GameType } from '@/backend/models/games/GameType';
-import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import CreateGameService from '@/backend/services/create-game/CreateGameService';
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import SelectRoundScorePolicy from '@/frontend/components/common/SelectRoundScorePolicy';
@@ -20,8 +17,11 @@ import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
 import { gameTitleSchema, participantNameSchema } from '@/frontend/helpers/forms/game';
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import Game from '@/models/games/Game';
+import { GameType } from '@/models/games/GameType';
+import { ScorePolicyType } from '@/models/ScorePolicy';
 
 export const roundScorePolicySchema = () =>
   Yup.string().oneOf(Object.values(ScorePolicyType), 'Invalid round score policy.').required('Required.');

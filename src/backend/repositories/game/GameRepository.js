@@ -1,8 +1,8 @@
 import { arrayRemove, arrayUnion } from 'firebase/firestore';
 
-import GameFactory from '@/backend/models/games/GameFactory';
-import { GameStatus } from '@/backend/models/games/GameStatus';
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
+import GameFactory from '@/models/games/GameFactory';
+import { GameStatus } from '@/models/games/GameStatus';
 
 export default class GameRepository extends FirebaseRepository {
   static ORGANIZERS_PATH = ['organizers'];

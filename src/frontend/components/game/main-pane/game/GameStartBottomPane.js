@@ -1,4 +1,3 @@
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import { startGame } from '@/backend/services/game/actions';
 import GoGameHomeButton from '@/frontend/components/game/main-pane/GoGameHomeButton';
 import ReadyPlayerController from '@/frontend/components/game/main-pane/ReadyPlayerController';
@@ -6,6 +5,7 @@ import TimerPane from '@/frontend/components/game/timer/TimerPane';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function GameStartBottomPane() {
   return (

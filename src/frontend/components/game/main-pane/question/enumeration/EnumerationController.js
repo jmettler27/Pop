@@ -1,11 +1,11 @@
 import { CircularProgress } from '@mui/material';
 
-import { EnumerationQuestionStatus } from '@/backend/models/questions/Enumeration';
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 import EnumerationChallengeController from '@/frontend/components/game/main-pane/question/enumeration/EnumerationChallengeController';
 import EnumerationThinkingController from '@/frontend/components/game/main-pane/question/enumeration/EnumerationThinkingController';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import { EnumerationQuestionStatus } from '@/models/questions/Enumeration';
 
 export default function EnumerationController({ baseQuestion }) {
   const game = useGame();

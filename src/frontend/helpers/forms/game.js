@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 
-import Game from '@/backend/models/games/Game';
-import { RoundType } from '@/backend/models/rounds/RoundType';
+import Game from '@/models/games/Game';
+import { RoundType } from '@/models/rounds/RoundType';
 
 /**
  * Creates a Yup validation schema for game types

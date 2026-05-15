@@ -2,7 +2,6 @@ import { useParams } from 'next/navigation';
 
 import { useIntl } from 'react-intl';
 
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import { returnToGameHome } from '@/backend/services/game/actions';
 import GameChooserTeamAnnouncement from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import EndGameButton from '@/frontend/components/game/main-pane/EndGameButton';
@@ -10,7 +9,8 @@ import GoGameHomeButton from '@/frontend/components/game/main-pane/GoGameHomeBut
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import { ParticipantRole } from '@/models/users/Participant';
 
 const messages = defineMessages('frontend.game.bottom.RoundEndBottomPane', {
   theRound: 'the round',

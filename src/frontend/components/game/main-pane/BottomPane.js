@@ -1,4 +1,3 @@
-import { GameStatus } from '@/backend/models/games/GameStatus';
 import GameEndBottomPane from '@/frontend/components/game/main-pane/game/GameEndBottomPane';
 import GameHomeBottomPane from '@/frontend/components/game/main-pane/game/GameHomeBottomPane';
 import GameStartBottomPane from '@/frontend/components/game/main-pane/game/GameStartBottomPane';
@@ -6,6 +5,7 @@ import QuestionBottomPane from '@/frontend/components/game/main-pane/question/Qu
 import RoundBottomPane from '@/frontend/components/game/main-pane/round/RoundBottomPane';
 import SpecialBottomPane from '@/frontend/components/game/main-pane/special/SpecialBottomPane';
 import useGame from '@/frontend/hooks/useGame';
+import { GameStatus } from '@/models/games/GameStatus';
 
 export default function BottomPane() {
   const game = useGame();

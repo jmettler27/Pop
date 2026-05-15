@@ -1,6 +1,5 @@
 import { CircularProgress } from '@mui/material';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import BasicQuestionBottomPane from '@/frontend/components/game/main-pane/question/basic/BasicQuestionBottomPane';
 import BuzzerBottomPane from '@/frontend/components/game/main-pane/question/buzzer/BuzzerBottomPane';
@@ -14,6 +13,7 @@ import OddOneOutBottomPane from '@/frontend/components/game/main-pane/question/o
 import QuoteBottomPane from '@/frontend/components/game/main-pane/question/quote/QuoteBottomPane';
 import ReorderingBottomPane from '@/frontend/components/game/main-pane/question/reordering/ReorderingBottomPane';
 import useGame from '@/frontend/hooks/useGame';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 export default function QuestionActiveBottomPane({}) {
   const game = useGame();

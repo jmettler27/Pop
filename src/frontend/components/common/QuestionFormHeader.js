@@ -1,7 +1,7 @@
 import { useIntl } from 'react-intl';
 
-import { prependQuestionTypeWithEmoji } from '@/backend/models/questions/QuestionType';
-import globalMessages from '@/i18n/globalMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { prependQuestionTypeWithEmoji } from '@/models/questions/QuestionType';
 
 export default function QuestionFormHeader({ questionType }) {
   const intl = useIntl();

@@ -7,7 +7,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Button, ButtonGroup } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/GameProgressiveCluesQuestionRepository';
 import { handleBuzzerHeadChanged, invalidateAnswer, validateAnswer } from '@/backend/services/question/buzzer/actions';
 import { revealClue } from '@/backend/services/question/progressive-clues/actions';
@@ -17,8 +16,9 @@ import EndQuestionButton from '@/frontend/components/game/main-pane/question/End
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 const messages = defineMessages('frontend.game.bottom.BuzzerOrganizerController', {
   nextClue: 'Next clue',

@@ -25,8 +25,8 @@ import { useIntl } from 'react-intl';
 
 import { useLocale } from '@/app/LocaleProvider';
 import { LOCALE_TO_EMOJI, LOCALE_TO_TITLE, LOCALES } from '@/frontend/helpers/locales';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
 
 const messages = defineMessages('frontend.home.HomeBar', {
   games: 'Games',

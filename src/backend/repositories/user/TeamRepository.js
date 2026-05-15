@@ -1,6 +1,6 @@
-import Team from '@/backend/models/Team';
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 import { shuffle } from '@/backend/utils/arrays';
+import Team from '@/models/Team';
 
 export default class TeamRepository extends FirebaseRepository {
   constructor(gameId) {

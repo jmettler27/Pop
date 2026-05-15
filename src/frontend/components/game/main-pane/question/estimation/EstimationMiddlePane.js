@@ -1,11 +1,11 @@
 'use client';
 
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import GameEstimationQuestionRepository from '@/backend/repositories/question/GameEstimationQuestionRepository';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
+import { ParticipantRole } from '@/models/users/Participant';
 
 import EstimationOrganizerPane from './EstimationOrganizerPane';
 import EstimationPlayerPane from './EstimationPlayerPane';

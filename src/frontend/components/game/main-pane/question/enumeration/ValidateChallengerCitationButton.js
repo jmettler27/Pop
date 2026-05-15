@@ -2,13 +2,13 @@ import PlusOneIcon from '@mui/icons-material/PlusOne';
 import { CircularProgress, IconButton, Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-import { TimerStatus } from '@/backend/models/Timer';
 import { incrementValidItems } from '@/backend/services/question/enumeration/actions';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useUser from '@/frontend/hooks/useUser';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import { TimerStatus } from '@/models/Timer';
 
 const messages = defineMessages('frontend.game.bottom.ValidateChallengerCitationButton', {
   validateCitation: 'Validate citation',

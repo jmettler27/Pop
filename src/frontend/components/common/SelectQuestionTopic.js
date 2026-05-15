@@ -1,8 +1,8 @@
 import { useIntl } from 'react-intl';
 
-import { allTopicsToTitle } from '@/backend/models/Topic';
 import { MySelect } from '@/frontend/components/common/StyledFormComponents';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import { allTopicsToTitle } from '@/models/Topic';
 
 const messages = defineMessages('frontend.forms.SelectQuestionTopic', {
   label: 'Topic of the question',

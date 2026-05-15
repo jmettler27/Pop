@@ -2,7 +2,6 @@ import { useParams } from 'next/navigation';
 
 import { useIntl } from 'react-intl';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import RoundEndBody from '@/frontend/components/game/main-pane/round/RoundEndBody';
 import RoundStartBody from '@/frontend/components/game/main-pane/round/RoundStartBody';
@@ -10,7 +9,8 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { RoundTypeIcon } from '@/frontend/helpers/question_types';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import globalMessages from '@/i18n/globalMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { GameStatus } from '@/models/games/GameStatus';
 
 export default function RoundMiddlePane() {
   const game = useGame();

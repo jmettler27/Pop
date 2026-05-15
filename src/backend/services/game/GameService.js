@@ -2,8 +2,6 @@ import { runTransaction, serverTimestamp } from 'firebase/firestore';
 
 import Error from '@/app/error';
 import { firestore } from '@/backend/firebase/firebase';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { PlayerStatus } from '@/backend/models/users/Player';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
@@ -16,6 +14,8 @@ import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import RoundServiceFactory from '@/backend/services/round/RoundServiceFactory';
 import { getRandomElement, shuffle } from '@/backend/utils/arrays';
+import { GameStatus } from '@/models/games/GameStatus';
+import { PlayerStatus } from '@/models/users/Player';
 
 export default class GameService {
   constructor(gameId) {

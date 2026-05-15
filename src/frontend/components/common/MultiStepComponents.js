@@ -7,7 +7,7 @@ import { Form, Formik } from 'formik';
 import { useIntl } from 'react-intl';
 
 import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
 
 const messages = defineMessages('frontend.forms.MultiStepComponents', {
   step: 'Step',

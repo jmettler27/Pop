@@ -21,9 +21,6 @@ import {
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { Timer } from '@/backend/models/Timer';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import {
@@ -48,8 +45,11 @@ import SubmitProgressiveCluesQuestionForm from '@/frontend/components/question-f
 import SubmitQuoteQuestionForm from '@/frontend/components/question-forms/SubmitQuoteQuestionForm';
 import SubmitReorderingQuestionForm from '@/frontend/components/question-forms/SubmitReorderingQuestionForm';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { GameStatus } from '@/models/games/GameStatus';
+import { QuestionType } from '@/models/questions/QuestionType';
+import { Timer } from '@/models/Timer';
 
 const messages = defineMessages('frontend.gameEditor.EditQuestionInRound', {
   deleteDialogTitle: 'Are you sure you want to remove this question?',

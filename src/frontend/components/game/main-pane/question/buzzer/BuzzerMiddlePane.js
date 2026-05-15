@@ -1,9 +1,5 @@
 import { clsx } from 'clsx';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
-import { topicToEmoji } from '@/backend/models/Topic';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import BlindtestMainContent from '@/frontend/components/game/main-pane/question/blindtest/BlindtestMainContent';
 import BuzzerAnswer from '@/frontend/components/game/main-pane/question/buzzer/BuzzerAnswer';
 import EmojiMainContent from '@/frontend/components/game/main-pane/question/emoji/EmojiMainContent';
@@ -13,6 +9,10 @@ import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/ques
 import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
+import { GameStatus } from '@/models/games/GameStatus';
+import { QuestionType, questionTypeToTitle } from '@/models/questions/QuestionType';
+import { topicToEmoji } from '@/models/Topic';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function BuzzerMiddlePane({ baseQuestion }) {
   const myRole = useRole();

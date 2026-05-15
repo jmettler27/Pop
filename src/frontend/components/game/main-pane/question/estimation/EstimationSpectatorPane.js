@@ -4,10 +4,10 @@ import { CircularProgress } from '@mui/material';
 import { useObject } from 'react-firebase-hooks/database';
 
 import { SERVER_TIME_OFFSET_REF } from '@/backend/firebase/database';
-import { GameStatus } from '@/backend/models/games/GameStatus';
 import Timer from '@/frontend/components/game/timer/Timer';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import { GameStatus } from '@/models/games/GameStatus';
 
 import { EstimationEndView, EstimationQuestionHeader } from './EstimationCommon';
 

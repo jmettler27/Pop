@@ -1,9 +1,5 @@
 import { Box } from '@mui/material';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
-import { topicToEmoji } from '@/backend/models/Topic';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
 import { revealLabel } from '@/backend/services/question/labelling/actions';
 import { isObjectEmpty } from '@/backend/utils/objects';
@@ -16,6 +12,10 @@ import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
+import { GameStatus } from '@/models/games/GameStatus';
+import { questionTypeToTitle } from '@/models/questions/QuestionType';
+import { topicToEmoji } from '@/models/Topic';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function LabellingMiddlePane({ baseQuestion }) {
   return (

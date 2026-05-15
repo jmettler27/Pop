@@ -7,14 +7,14 @@ import { useDocument } from 'react-firebase-hooks/firestore';
 import { useIntl } from 'react-intl';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import { handleQuestionEndOrganizerContinue } from '@/backend/services/round/special/actions';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import useUser from '@/frontend/hooks/useUser';
-import globalMessages from '@/i18n/globalMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function SpecialThemeActiveBottomPane({ theme, gameTheme }) {
   const myRole = useRole();

@@ -13,18 +13,13 @@ import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import { useIntl } from 'react-intl';
 
-import {
-  QuoteAuthorElement,
-  QuotePartElement,
-  QuoteQuestion,
-  QuoteSourceElement,
-} from '@/backend/models/questions/Quote';
 import { revealQuoteElement } from '@/backend/services/question/quote/actions';
 import { isEmpty } from '@/backend/utils/arrays';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { QuoteAuthorElement, QuotePartElement, QuoteQuestion, QuoteSourceElement } from '@/models/questions/Quote';
 
 const messages = defineMessages('frontend.game.bottom.RevealQuoteElement', {
   listHeader: 'Reveal an element of the quote',

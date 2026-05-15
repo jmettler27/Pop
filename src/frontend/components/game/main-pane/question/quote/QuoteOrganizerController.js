@@ -6,7 +6,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Button, ButtonGroup } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 import {
   cancelPlayer,
@@ -21,7 +20,8 @@ import RevealQuoteElementButton from '@/frontend/components/game/main-pane/quest
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-import globalMessages from '@/i18n/globalMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 export default function QuoteOrganizerController({ baseQuestion, questionPlayers }) {
   const { id: gameId } = useParams();

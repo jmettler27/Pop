@@ -1,11 +1,11 @@
 import { Box } from '@mui/material';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import NextImage from '@/frontend/components/common/NextImage';
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
+import { GameStatus } from '@/models/games/GameStatus';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function ImageMainContent({ baseQuestion }) {
   const image = baseQuestion.image;

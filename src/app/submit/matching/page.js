@@ -4,9 +4,9 @@ import { redirect } from 'next/navigation';
 
 import { useSession } from 'next-auth/react';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import QuestionFormHeader from '@/frontend/components/common/QuestionFormHeader';
 import SubmitMatchingQuestionForm from '@/frontend/components/question-forms/SubmitMatchingQuestionForm';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 const QUESTION_TYPE = QuestionType.MATCHING;
 

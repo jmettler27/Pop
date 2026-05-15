@@ -1,11 +1,11 @@
 import { runTransaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
-import { GameNaguiQuestion, NAGUI_OPTION_TO_SOUND, NaguiQuestion } from '@/backend/models/questions/Nagui';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { PlayerStatus } from '@/backend/models/users/Player';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
+import { GameNaguiQuestion, NAGUI_OPTION_TO_SOUND, NaguiQuestion } from '@/models/questions/Nagui';
+import { QuestionType } from '@/models/questions/QuestionType';
+import { PlayerStatus } from '@/models/users/Player';
 
 export default class GameNaguiQuestionService extends GameQuestionService {
   constructor(gameId, roundId) {

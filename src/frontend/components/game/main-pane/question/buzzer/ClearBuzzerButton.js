@@ -5,7 +5,7 @@ import { useIntl } from 'react-intl';
 import { clearBuzzer } from '@/backend/services/question/buzzer/actions';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-import globalMessages from '@/i18n/globalMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
 
 export default function ClearBuzzerButton({ questionType }) {
   const intl = useIntl();

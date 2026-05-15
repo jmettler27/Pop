@@ -6,7 +6,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Button, ButtonGroup, CircularProgress } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
 import {
   cancelPlayer,
@@ -21,7 +20,8 @@ import RevealLabelButton from '@/frontend/components/game/main-pane/question/lab
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-import globalMessages from '@/i18n/globalMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 export default function LabellingOrganizerController({ baseQuestion, questionPlayers }) {
   const { id: gameId } = useParams();

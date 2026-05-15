@@ -4,17 +4,17 @@ import { Avatar, CircularProgress } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { useIntl } from 'react-intl';
 
-import { BlindtestQuestion } from '@/backend/models/questions/Blindtest';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { QuoteAuthorElement, QuoteQuestion, QuoteSourceElement } from '@/backend/models/questions/Quote';
-import { topicToEmoji } from '@/backend/models/Topic';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 import UserRepository from '@/backend/repositories/user/UserRepository';
 import { localeToEmoji } from '@/frontend/helpers/locales';
 import { QUESTION_ELEMENT_TO_TITLE } from '@/frontend/helpers/question';
 import { timestampToDate1 } from '@/frontend/helpers/time';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { BlindtestQuestion } from '@/models/questions/Blindtest';
+import { QuestionType } from '@/models/questions/QuestionType';
+import { QuoteAuthorElement, QuoteQuestion, QuoteSourceElement } from '@/models/questions/Quote';
+import { topicToEmoji } from '@/models/Topic';
 
 const messages = defineMessages('frontend.questions.QuestionDataGrid', {
   title: 'Title',

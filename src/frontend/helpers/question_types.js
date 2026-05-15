@@ -15,8 +15,8 @@ import ShuffleIcon from '@mui/icons-material/Shuffle';
 import SpeakerNotesIcon from '@mui/icons-material/SpeakerNotes';
 import StraightenIcon from '@mui/icons-material/Straighten';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { RoundType } from '@/backend/models/rounds/RoundType';
+import { QuestionType } from '@/models/questions/QuestionType';
+import { RoundType } from '@/models/rounds/RoundType';
 
 export function QuestionTypeIcon({ questionType, fontSize = 'small' }) {
   switch (questionType) {

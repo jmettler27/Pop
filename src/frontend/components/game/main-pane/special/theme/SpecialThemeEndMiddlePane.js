@@ -6,7 +6,7 @@ import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import useGame from '@/frontend/hooks/useGame';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
 
 const messages = defineMessages('frontend.game.middle.SpecialThemeEndMiddlePane', {
   themeEnd: 'End of theme',

@@ -1,9 +1,9 @@
 import { useIntl } from 'react-intl';
 
-import { RoundType } from '@/backend/models/rounds/RoundType';
 import { rankingToEmoji } from '@/frontend/helpers/emojis';
-import defineMessages from '@/utils/defineMessages';
-import fmt, { keyChunks } from '@/utils/fmt';
+import fmt, { keyChunks } from '@/frontend/helpers/fmt';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import { RoundType } from '@/models/rounds/RoundType';
 
 const messages = defineMessages('frontend.game.round.RoundRankingPolicy', {
   scale: 'The scale',

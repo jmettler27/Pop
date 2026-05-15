@@ -1,10 +1,10 @@
 import { useIntl } from 'react-intl';
 
-import { RoundType } from '@/backend/models/rounds/RoundType';
 import { numberToKeycapEmoji } from '@/frontend/helpers/emojis';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
-import fmt, { keyChunks } from '@/utils/fmt';
+import fmt, { keyChunks } from '@/frontend/helpers/fmt';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { RoundType } from '@/models/rounds/RoundType';
 
 const messages = defineMessages('frontend.game.round.RoundCompletionRatePolicy', {
   maxPoints: 'Max points / team: <b>{points}</b>',

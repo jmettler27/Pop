@@ -13,16 +13,16 @@ import { useCollectionOnce } from 'react-firebase-hooks/firestore';
 import { useIntl } from 'react-intl';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { gameTypeToEmoji } from '@/backend/models/games/GameType';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/card';
 import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from '@/frontend/components/home/GameAvatars';
 import { localeToEmoji } from '@/frontend/helpers/locales';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { GameStatus } from '@/models/games/GameStatus';
+import { gameTypeToEmoji } from '@/models/games/GameType';
+import { ParticipantRole } from '@/models/users/Participant';
 
 const messages = defineMessages('frontend.home.OngoingGames', {
   title: 'Ongoing games',

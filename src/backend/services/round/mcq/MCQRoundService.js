@@ -1,13 +1,13 @@
 import { serverTimestamp } from 'firebase/firestore';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { RoundType } from '@/backend/models/rounds/RoundType';
-import { ScorePolicyType } from '@/backend/models/ScorePolicy';
-import { Timer, TimerStatus } from '@/backend/models/Timer';
-import { PlayerStatus } from '@/backend/models/users/Player';
 import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
 import RoundService from '@/backend/services/round/RoundService';
 import { getNextCyclicIndex, shuffle } from '@/backend/utils/arrays';
+import { GameStatus } from '@/models/games/GameStatus';
+import { RoundType } from '@/models/rounds/RoundType';
+import { ScorePolicyType } from '@/models/ScorePolicy';
+import { Timer, TimerStatus } from '@/models/Timer';
+import { PlayerStatus } from '@/models/users/Player';
 
 export default class MCQRoundService extends RoundService {
   constructor(gameId) {

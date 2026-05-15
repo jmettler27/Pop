@@ -1,12 +1,6 @@
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { EnumerationQuestionStatus } from '@/backend/models/questions/Enumeration';
-import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
-import { TimerStatus } from '@/backend/models/Timer';
-import { topicToEmoji } from '@/backend/models/Topic';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 import { validateItem } from '@/backend/services/question/enumeration/actions';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
@@ -18,7 +12,13 @@ import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import { GameStatus } from '@/models/games/GameStatus';
+import { EnumerationQuestionStatus } from '@/models/questions/Enumeration';
+import { questionTypeToTitle } from '@/models/questions/QuestionType';
+import { TimerStatus } from '@/models/Timer';
+import { topicToEmoji } from '@/models/Topic';
+import { ParticipantRole } from '@/models/users/Participant';
 
 const messages = defineMessages('frontend.game.EnumerationMiddlePane', {
   thereAre: 'There are',

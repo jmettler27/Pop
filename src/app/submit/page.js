@@ -8,14 +8,10 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import {
-  prependQuestionTypeWithEmoji,
-  QuestionType,
-  questionTypeToDescription,
-} from '@/backend/models/questions/QuestionType';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/frontend/components/card';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { prependQuestionTypeWithEmoji, QuestionType, questionTypeToDescription } from '@/models/questions/QuestionType';
 
 const messages = defineMessages('app.submit', {
   chooseQuestionType: 'Choose a question type to get started',

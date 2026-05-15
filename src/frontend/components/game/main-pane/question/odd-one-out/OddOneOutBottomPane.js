@@ -1,7 +1,5 @@
 import { useIntl } from 'react-intl';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
@@ -9,7 +7,9 @@ import ResetQuestionButton from '@/frontend/components/game/main-pane/question/R
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import { QuestionType } from '@/models/questions/QuestionType';
+import { ParticipantRole } from '@/models/users/Participant';
 
 const messages = defineMessages('frontend.game.bottom.OddOneOutBottomPane', {
   youCanGo: 'You can go',

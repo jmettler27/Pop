@@ -2,12 +2,12 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { Button } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-import { PlayerStatus } from '@/backend/models/users/Player';
 import { resetQuestion } from '@/backend/services/question/actions';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import { PlayerStatus } from '@/models/users/Player';
 
 const messages = defineMessages('frontend.game.bottom.ResetQuestionButton', {
   resetQuestion: 'Reset question',

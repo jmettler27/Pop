@@ -1,8 +1,8 @@
 import { useIntl } from 'react-intl';
 
-import { prependRoundTypeWithEmoji, RoundType } from '@/backend/models/rounds/RoundType';
 import { MySelect } from '@/frontend/components/common/StyledFormComponents';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import { prependRoundTypeWithEmoji, RoundType } from '@/models/rounds/RoundType';
 
 const messages = defineMessages('frontend.forms.SelectRoundType', {
   label: 'Type of the round',
