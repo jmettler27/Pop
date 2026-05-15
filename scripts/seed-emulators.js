@@ -1151,6 +1151,8 @@ async function seedBaseQuestions() {
 }
 
 async function seedGame(gameId) {
+  console.log('  Seeding game...');
+
   // Main game document
   await setDocument('games', gameId, {
     currentQuestion: null,
