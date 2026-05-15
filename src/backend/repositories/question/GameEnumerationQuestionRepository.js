@@ -44,7 +44,10 @@ export default class GameEnumerationQuestionRepository extends GameQuestionRepos
   }
 
   async deletePlayersTransaction(transaction, questionId) {
-    await this.deleteTransaction(transaction, [questionId, ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH]);
+    await this.deleteTransaction(transaction, [
+      questionId,
+      ...GameEnumerationQuestionRepository.ENUMERATION_PLAYERS_PATH,
+    ]);
   }
 
   async setPlayersTransaction(transaction, questionId, data) {
