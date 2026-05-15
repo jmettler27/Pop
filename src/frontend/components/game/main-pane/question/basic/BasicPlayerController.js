@@ -4,15 +4,15 @@ import { Button, IconButton, Tooltip } from '@mui/material';
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { PlayerStatus } from '@/backend/models/users/Player';
 import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
 import { addPlayerToBuzzer, removePlayerFromBuzzer } from '@/backend/services/question/basic/actions';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useUser from '@/frontend/hooks/useUser';
-import globalMessages from '@/i18n/globalMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { QuestionType } from '@/models/questions/QuestionType';
+import { PlayerStatus } from '@/models/users/Player';
 
 export default function BasicPlayerController({ players: basicPlayers }) {
   const game = useGame();

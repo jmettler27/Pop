@@ -1,7 +1,6 @@
 import { increment, runTransaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
-import { GameStatus } from '@/backend/models/games/GameStatus';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
@@ -12,6 +11,7 @@ import SoundRepository from '@/backend/repositories/sound/SoundRepository';
 import TimerRepository from '@/backend/repositories/timer/TimerRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
+import { GameStatus } from '@/models/games/GameStatus';
 
 export default class GameQuestionService {
   constructor(gameId, roundId, questionType) {

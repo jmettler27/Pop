@@ -9,14 +9,14 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import { clsx } from 'clsx';
 import { useIntl } from 'react-intl';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { EstimationQuestion } from '@/backend/models/questions/Estimation';
 import { submitBet } from '@/backend/services/question/estimation/actions';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
-import globalMessages from '@/i18n/globalMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { GameStatus } from '@/models/games/GameStatus';
+import { EstimationQuestion } from '@/models/questions/Estimation';
 
 import { EstimationEndView, EstimationQuestionHeader, formatAnswerValue, messages } from './EstimationCommon';
 

@@ -1,10 +1,10 @@
 import { runTransaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
-import QuestionFactory from '@/backend/models/questions/QuestionFactory';
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import QuestionAudioRepository from '@/backend/repositories/storage/QuestionAudioRepository';
 import QuestionImageRepository from '@/backend/repositories/storage/QuestionImageRepository';
+import QuestionFactory from '@/models/questions/QuestionFactory';
 
 /**
  * Service for adding questions to the database

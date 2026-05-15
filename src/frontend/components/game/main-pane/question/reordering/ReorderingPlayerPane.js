@@ -27,13 +27,13 @@ import {
 import { clsx } from 'clsx';
 import { useIntl } from 'react-intl';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
 import { submitOrdering } from '@/backend/services/question/reordering/actions';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
-import globalMessages from '@/i18n/globalMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { GameStatus } from '@/models/games/GameStatus';
 
 import { messages, ReorderingItemAccordion, ReorderingQuestionHeader } from './ReorderingCommon';
 

@@ -1,4 +1,3 @@
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import BaseBasicQuestionRepository from '@/backend/repositories/question/BaseBasicQuestionRepository';
 import BaseBlindtestQuestionRepository from '@/backend/repositories/question/BaseBlindtestQuestionRepository';
 import BaseEmojiQuestionRepository from '@/backend/repositories/question/BaseEmojiQuestionRepository';
@@ -13,6 +12,7 @@ import BaseOddOneOutQuestionRepository from '@/backend/repositories/question/Bas
 import BaseProgressiveCluesQuestionRepository from '@/backend/repositories/question/BaseProgressiveCluesQuestionRepository';
 import BaseQuoteQuestionRepository from '@/backend/repositories/question/BaseQuoteQuestionRepository';
 import BaseReorderingQuestionRepository from '@/backend/repositories/question/BaseReorderingQuestionRepository';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 export default class BaseQuestionRepositoryFactory {
   static createRepository(questionType) {

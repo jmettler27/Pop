@@ -1,12 +1,12 @@
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
-import { topicToEmoji } from '@/backend/models/Topic';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import MCQMainContent from '@/frontend/components/game/main-pane/question/mcq/MCQMainContent';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
+import { GameStatus } from '@/models/games/GameStatus';
+import { questionTypeToTitle } from '@/models/questions/QuestionType';
+import { topicToEmoji } from '@/models/Topic';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function MCQMiddlePane({ baseQuestion }) {
   const game = useGame();

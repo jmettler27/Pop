@@ -9,7 +9,7 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { rankingToEmoji } from '@/frontend/helpers/emojis';
 import { RoundTypeIcon } from '@/frontend/helpers/question_types';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import globalMessages from '@/i18n/globalMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
 
 export default function GlobalProgressTabPanel({ game }) {
   return (

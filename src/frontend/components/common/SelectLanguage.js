@@ -2,7 +2,7 @@ import { useIntl } from 'react-intl';
 
 import { MySelect } from '@/frontend/components/common/StyledFormComponents';
 import { LOCALES, prependLocaleWithEmoji } from '@/frontend/helpers/locales';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
 
 const messages = defineMessages('frontend.forms.SelectLanguage', {
   label: 'Language of the question',

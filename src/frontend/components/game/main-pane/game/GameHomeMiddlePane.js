@@ -3,8 +3,6 @@ import { useParams } from 'next/navigation';
 import { Avatar, Divider, List, ListItemAvatar, ListItemButton, ListItemText } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-import { RoundType } from '@/backend/models/rounds/RoundType';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import { handleRoundSelected } from '@/backend/services/round/actions';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
@@ -15,7 +13,9 @@ import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import { RoundType } from '@/models/rounds/RoundType';
+import { ParticipantRole } from '@/models/users/Participant';
 
 const messages = defineMessages('frontend.game.middle.GameHomeMiddlePane', {
   title: 'Rounds',

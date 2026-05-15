@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import clsx from 'clsx';
 
-import { TimerStatus } from '@/backend/models/Timer';
+import { TimerStatus } from '@/models/Timer';
 
 const INTERVAL_MS = 50;
 const CRITICAL_MS = 5000;

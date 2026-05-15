@@ -3,7 +3,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Button, ButtonGroup } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { handleHideAnswer } from '@/backend/services/question/nagui/actions';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
@@ -11,7 +10,8 @@ import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/qu
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-import globalMessages from '@/i18n/globalMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 export default function NaguiOrganizerController({ gameQuestion }) {
   return (

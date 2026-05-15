@@ -4,9 +4,9 @@ import { useParams } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function PlayerName({ playerId, teamColor = true }) {
   const { id: gameId } = useParams();

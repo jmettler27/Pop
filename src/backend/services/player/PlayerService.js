@@ -1,12 +1,12 @@
 import { runTransaction, serverTimestamp } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
-import { Timer, TimerStatus } from '@/backend/models/Timer';
-import { PlayerStatus } from '@/backend/models/users/Player';
 import SoundRepository from '@/backend/repositories/sound/SoundRepository';
 import TimerRepository from '@/backend/repositories/timer/TimerRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
+import { Timer, TimerStatus } from '@/models/Timer';
+import { PlayerStatus } from '@/models/users/Player';
 
 export default class PlayerService {
   constructor(gameId) {

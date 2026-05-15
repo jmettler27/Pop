@@ -7,7 +7,6 @@ import { Form, Formik } from 'formik';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 
-import { Round } from '@/backend/models/rounds/Round';
 import { addRoundToGame } from '@/backend/services/edit-game/actions';
 import SelectRoundType from '@/frontend/components/common/SelectRoundType';
 import { MyTextInput } from '@/frontend/components/common/StyledFormComponents';
@@ -15,8 +14,9 @@ import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { roundTypeSchema } from '@/frontend/helpers/forms/game';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { Round } from '@/models/rounds/Round';
 
 const messages = defineMessages('frontend.gameEditor.AddNewRound', {
   addRound: 'Add round',

@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 
-import { GameMatchingQuestion } from '@/backend/models/questions/Matching';
+import { GameMatchingQuestion } from '@/models/questions/Matching';
 
 const NODE_RADIUS = 1.5;
 

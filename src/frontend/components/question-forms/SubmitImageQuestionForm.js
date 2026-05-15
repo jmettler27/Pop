@@ -5,8 +5,6 @@ import { Form, Formik } from 'formik';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 
-import { ImageQuestion } from '@/backend/models/questions/Image';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { editQuestion, submitQuestion } from '@/backend/services/create-question/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';
@@ -20,7 +18,9 @@ import { messages as questionMessages } from '@/frontend/helpers/forms/questions
 import { topicSchema } from '@/frontend/helpers/forms/topics';
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import { ImageQuestion } from '@/models/questions/Image';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 const messages = defineMessages('frontend.forms.submitQuestion.image', {
   answerDescription: 'Description of the image',

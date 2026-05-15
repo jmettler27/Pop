@@ -1,4 +1,3 @@
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import BasicMiddlePane from '@/frontend/components/game/main-pane/question/basic/BasicMiddlePane';
@@ -14,6 +13,7 @@ import QuoteMiddlePane from '@/frontend/components/game/main-pane/question/quote
 import ReorderingMiddlePane from '@/frontend/components/game/main-pane/question/reordering/ReorderingMiddlePane';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import useGame from '@/frontend/hooks/useGame';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 export default function QuestionMiddlePane() {
   const game = useGame();

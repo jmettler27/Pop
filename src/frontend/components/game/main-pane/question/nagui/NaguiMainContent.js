@@ -8,9 +8,6 @@ import { clsx } from 'clsx';
 
 import naguiCorrect from '@/assets/images/nagui-correct.png';
 import naguiWrong from '@/assets/images/nagui-wrong.png';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { DuoNaguiOption, HideNaguiOption, NaguiQuestion, SquareNaguiOption } from '@/backend/models/questions/Nagui';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import GameNaguiQuestionRepository from '@/backend/repositories/question/GameNaguiQuestionRepository';
 import { selectChoice } from '@/backend/services/question/nagui/actions';
 import { shuffleIndices } from '@/backend/utils/arrays';
@@ -23,6 +20,9 @@ import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
+import { GameStatus } from '@/models/games/GameStatus';
+import { DuoNaguiOption, HideNaguiOption, NaguiQuestion, SquareNaguiOption } from '@/models/questions/Nagui';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function NaguiMainContent({ baseQuestion }) {
   const title = baseQuestion.title;

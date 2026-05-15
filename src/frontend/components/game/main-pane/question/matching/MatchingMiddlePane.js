@@ -1,8 +1,5 @@
 import { useMemo } from 'react';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
-import { topicToEmoji } from '@/backend/models/Topic';
 import ActiveMatchingQuestionGrid from '@/frontend/components/game/main-pane/question/matching/ActiveMatchingQuestionGrid';
 import EndedMatchingQuestionGrid from '@/frontend/components/game/main-pane/question/matching/EndedMatchingQuestionGrid';
 import { generateShuffledNodePositions } from '@/frontend/components/game/main-pane/question/matching/gridUtils.js';
@@ -10,6 +7,9 @@ import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/ques
 import NoteButton from '@/frontend/components/game/NoteButton';
 import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import useGame from '@/frontend/hooks/useGame';
+import { GameStatus } from '@/models/games/GameStatus';
+import { questionTypeToTitle } from '@/models/questions/QuestionType';
+import { topicToEmoji } from '@/models/Topic';
 
 export default function MatchingMiddlePane({ baseQuestion }) {
   return (

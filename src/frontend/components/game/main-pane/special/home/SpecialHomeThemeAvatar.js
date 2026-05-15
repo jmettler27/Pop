@@ -5,11 +5,11 @@ import { doc } from 'firebase/firestore';
 import { useDocument } from 'react-firebase-hooks/firestore';
 
 import { QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import { startTheme } from '@/backend/services/round/special/actions';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function SpecialHomeThemeAvatar({ gameTheme, isChooser }) {
   const game = useGame();

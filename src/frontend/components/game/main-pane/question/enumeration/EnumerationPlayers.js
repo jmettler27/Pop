@@ -4,7 +4,7 @@ import GameEnumerationQuestionRepository from '@/backend/repositories/question/G
 import PlayerName from '@/frontend/components/game/PlayerName';
 import { rankingToEmoji } from '@/frontend/helpers/emojis';
 import useGame from '@/frontend/hooks/useGame';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.EnumerationPlayers', {
   betsHeader: 'Bets',

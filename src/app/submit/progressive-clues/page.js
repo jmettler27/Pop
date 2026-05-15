@@ -4,9 +4,9 @@ import { redirect } from 'next/navigation';
 
 import { useSession } from 'next-auth/react';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import QuestionFormHeader from '@/frontend/components/common/QuestionFormHeader';
 import SubmitProgressiveCluesQuestionForm from '@/frontend/components/question-forms/SubmitProgressiveCluesQuestionForm';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 const QUESTION_TYPE = QuestionType.PROGRESSIVE_CLUES;
 

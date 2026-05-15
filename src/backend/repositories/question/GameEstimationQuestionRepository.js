@@ -1,5 +1,5 @@
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 export default class GameEstimationQuestionRepository extends GameQuestionRepository {
   constructor(gameId, roundId) {

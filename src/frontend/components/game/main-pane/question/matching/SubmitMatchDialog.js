@@ -5,13 +5,13 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-import { GameMatchingQuestion } from '@/backend/models/questions/Matching';
 import { submitMatch } from '@/backend/services/question/matching/actions';
 import { matchIsComplete } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useUser from '@/frontend/hooks/useUser';
-import globalMessages from '@/i18n/globalMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { GameMatchingQuestion } from '@/models/questions/Matching';
 
 export default function SubmitMatchDialog({ edges, setEdges, numCols, setNewEdgeSource, answer }) {
   const intl = useIntl();

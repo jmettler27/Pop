@@ -6,8 +6,6 @@ import { useIntl } from 'react-intl';
 /* Validation  */
 import * as Yup from 'yup';
 
-import { BlindtestQuestion, BlindtestType } from '@/backend/models/questions/Blindtest';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { editQuestion, submitQuestion } from '@/backend/services/create-question/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';
@@ -21,7 +19,9 @@ import { messages as questionMessages } from '@/frontend/helpers/forms/questions
 import { topicSchema } from '@/frontend/helpers/forms/topics';
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import { BlindtestQuestion, BlindtestType } from '@/models/questions/Blindtest';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 const messages = defineMessages('frontend.forms.submitQuestion.blindtest', {
   type: 'Type of the blindtest',

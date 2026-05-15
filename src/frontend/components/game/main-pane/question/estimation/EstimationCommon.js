@@ -5,15 +5,15 @@ import { CircularProgress } from '@mui/material';
 import { clsx } from 'clsx';
 import { useIntl } from 'react-intl';
 
-import { EstimationQuestion } from '@/backend/models/questions/Estimation';
-import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
-import { topicToEmoji } from '@/backend/models/Topic';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import NoteButton from '@/frontend/components/game/NoteButton';
 import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import { formatDuration, timestampElapsedSeconds } from '@/frontend/helpers/time';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import { EstimationQuestion } from '@/models/questions/Estimation';
+import { questionTypeToTitle } from '@/models/questions/QuestionType';
+import { topicToEmoji } from '@/models/Topic';
 
 export const messages = defineMessages('frontend.game.middle.EstimationMiddlePane', {
   submitBet: 'Submit bet',

@@ -1,4 +1,3 @@
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import BuzzerPlayerController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayerController';
 import BuzzerPlayers from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayers';
@@ -6,6 +5,7 @@ import BuzzerSpectatorController from '@/frontend/components/game/main-pane/ques
 import LabellingOrganizerController from '@/frontend/components/game/main-pane/question/labelling/LabellingOrganizerController';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function LabellingBottomPane({ baseQuestion }) {
   const game = useGame();

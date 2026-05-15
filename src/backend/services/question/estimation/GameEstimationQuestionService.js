@@ -1,10 +1,10 @@
 import { increment, runTransaction, Timestamp } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
-import { EstimationQuestion } from '@/backend/models/questions/Estimation';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { PlayerStatus } from '@/backend/models/users/Player';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
+import { EstimationQuestion } from '@/models/questions/Estimation';
+import { QuestionType } from '@/models/questions/QuestionType';
+import { PlayerStatus } from '@/models/users/Player';
 
 export default class GameEstimationQuestionService extends GameQuestionService {
   constructor(gameId, roundId) {

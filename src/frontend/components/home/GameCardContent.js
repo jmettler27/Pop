@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
 
 import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from '@/frontend/components/home/GameAvatars';
-import globalMessages from '@/i18n/globalMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
 
 export function GameOrganizersCardContent({ gameId }) {
   const intl = useIntl();

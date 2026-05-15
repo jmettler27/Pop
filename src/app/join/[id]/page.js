@@ -9,8 +9,6 @@ import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 
-import Game from '@/backend/models/games/Game';
-import Team from '@/backend/models/Team';
 import { joinGame } from '@/backend/services/join-game/actions';
 import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';
 import MyColorPicker from '@/frontend/components/common/MyColorPicker';
@@ -24,7 +22,9 @@ import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import Game from '@/models/games/Game';
+import Team from '@/models/Team';
 
 const messages = defineMessages('app.join', {
   joinGameHeader: 'Join a game',

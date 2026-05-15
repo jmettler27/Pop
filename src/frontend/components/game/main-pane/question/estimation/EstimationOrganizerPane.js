@@ -2,8 +2,8 @@
 
 import { useIntl } from 'react-intl';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
 import useGame from '@/frontend/hooks/useGame';
+import { GameStatus } from '@/models/games/GameStatus';
 
 import { EstimationEndView, EstimationQuestionHeader, formatAnswerValue, messages } from './EstimationCommon';
 

@@ -4,8 +4,8 @@ import { useState } from 'react';
 
 import { List, ListItemButton, Typography } from '@mui/material';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
 import useGame from '@/frontend/hooks/useGame';
+import { GameStatus } from '@/models/games/GameStatus';
 
 import { ReorderingItemAccordion, ReorderingQuestionHeader } from './ReorderingCommon';
 

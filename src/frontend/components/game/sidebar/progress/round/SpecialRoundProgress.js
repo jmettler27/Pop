@@ -13,14 +13,14 @@ import { useCollection, useCollectionOnce, useDocumentData, useDocumentDataOnce 
 import { useIntl } from 'react-intl';
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
-import { topicToEmoji } from '@/backend/models/Topic';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import useRole from '@/frontend/hooks/useRole';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { GameStatus } from '@/models/games/GameStatus';
+import { SpecialRoundStatus } from '@/models/rounds/Special';
+import { topicToEmoji } from '@/models/Topic';
+import { ParticipantRole } from '@/models/users/Participant';
 
 const messages = defineMessages('frontend.game.sidebar.progress.SpecialRoundProgress', {
   theme: 'Theme',

@@ -9,13 +9,6 @@ import { Field, FieldArray, useField, useFormikContext } from 'formik';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import {
-  QuoteAuthorElement,
-  QuotePartElement,
-  QuoteQuestion,
-  QuoteSourceElement,
-} from '@/backend/models/questions/Quote';
 import { editQuestion, submitQuestion } from '@/backend/services/create-question/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';
@@ -28,8 +21,10 @@ import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
 import { replaceAllNonSpace, replaceSubstrings } from '@/frontend/helpers/strings';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { QuestionType } from '@/models/questions/QuestionType';
+import { QuoteAuthorElement, QuotePartElement, QuoteQuestion, QuoteSourceElement } from '@/models/questions/Quote';
 
 const messages = defineMessages('frontend.forms.submitQuestion.quote', {
   quoteSource: 'Source of the quote',

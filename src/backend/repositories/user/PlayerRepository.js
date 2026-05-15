@@ -1,8 +1,8 @@
 import { doc, query, where, writeBatch } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
-import { Player } from '@/backend/models/users/Player';
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
+import { Player } from '@/models/users/Player';
 
 export default class PlayerRepository extends FirebaseRepository {
   constructor(gameId) {

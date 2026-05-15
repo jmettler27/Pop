@@ -1,5 +1,5 @@
-import { RoundType } from '@/backend/models/rounds/RoundType';
 import RoundService from '@/backend/services/round/RoundService';
+import { RoundType } from '@/models/rounds/RoundType';
 
 export default class MixedRoundService extends RoundService {
   constructor(gameId) {

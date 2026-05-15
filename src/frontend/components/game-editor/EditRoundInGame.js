@@ -37,11 +37,6 @@ import { doc, getDoc } from 'firebase/firestore';
 import { useIntl } from 'react-intl';
 
 import { QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { Round } from '@/backend/models/rounds/Round';
-import { RoundType, roundTypeToEmoji, roundTypeToTitle } from '@/backend/models/rounds/RoundType';
-import { Timer } from '@/backend/models/Timer';
-import { topicToEmoji } from '@/backend/models/Topic';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import {
@@ -58,8 +53,13 @@ import {
 } from '@/frontend/components/game-editor/AddNewQuestion';
 import { EditQuestionCard } from '@/frontend/components/game-editor/EditQuestionInRound';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { GameStatus } from '@/models/games/GameStatus';
+import { Round } from '@/models/rounds/Round';
+import { RoundType, roundTypeToEmoji, roundTypeToTitle } from '@/models/rounds/RoundType';
+import { Timer } from '@/models/Timer';
+import { topicToEmoji } from '@/models/Topic';
 
 const messages = defineMessages('frontend.gameEditor.EditRoundInGame', {
   deleteDialogTitle: 'Are you sure you want to remove this round?',

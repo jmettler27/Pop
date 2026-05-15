@@ -15,8 +15,8 @@ import {
   MAX_IMAGE_SIZE_MB,
 } from '@/frontend/helpers/forms/files';
 import { requiredFileFieldIndicator } from '@/frontend/helpers/forms/forms';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
 
 const messages = defineMessages('frontend.forms.UploadFile', {
   selectImage: 'Select an image file',

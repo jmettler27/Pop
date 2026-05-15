@@ -4,9 +4,9 @@ import { redirect } from 'next/navigation';
 
 import { useSession } from 'next-auth/react';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import QuestionFormHeader from '@/frontend/components/common/QuestionFormHeader';
 import SubmitOddOneOutQuestionForm from '@/frontend/components/question-forms/SubmitOddOneOutQuestionForm';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 const QUESTION_TYPE = QuestionType.ODD_ONE_OUT;
 

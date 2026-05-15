@@ -1,11 +1,11 @@
 import { serverTimestamp } from 'firebase/firestore';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { RoundType } from '@/backend/models/rounds/RoundType';
-import { Timer } from '@/backend/models/Timer';
-import { PlayerStatus } from '@/backend/models/users/Player';
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import RoundService from '@/backend/services/round/RoundService';
+import { GameStatus } from '@/models/games/GameStatus';
+import { RoundType } from '@/models/rounds/RoundType';
+import { Timer } from '@/models/Timer';
+import { PlayerStatus } from '@/models/users/Player';
 
 export default class MatchingRoundService extends RoundService {
   constructor(gameId) {

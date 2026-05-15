@@ -1,4 +1,4 @@
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
 
 export const scoreboardMessages = defineMessages('frontend.scores.scoreboardUtils', {
   ranking: 'Ranking',

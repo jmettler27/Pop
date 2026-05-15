@@ -3,7 +3,6 @@ import LooksTwoIcon from '@mui/icons-material/LooksTwo';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Button, ButtonGroup } from '@mui/material';
 
-import { DuoNaguiOption, HideNaguiOption, SquareNaguiOption } from '@/backend/models/questions/Nagui';
 import { selectOption } from '@/backend/services/question/nagui/actions';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
@@ -11,6 +10,7 @@ import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
+import { DuoNaguiOption, HideNaguiOption, SquareNaguiOption } from '@/models/questions/Nagui';
 
 const NAGUI_OPTION_TO_ICON = {
   hide: <VisibilityOffIcon />,
