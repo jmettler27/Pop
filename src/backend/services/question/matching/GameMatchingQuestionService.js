@@ -188,7 +188,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
       }
 
       await this.gameQuestionRepo.addCorrectMatchTransaction(transaction, questionId, rows[0], userId, teamId);
-      await this.soundRepo.addSoundTransaction(transaction, 'OUI');
+      await this.soundRepo.addSoundTransaction(transaction, 'oui');
       await this.timerRepo.startTimerTransaction(transaction, gameQuestion.thinkingTime * (baseQuestion.numCols - 1));
     }
 

@@ -82,7 +82,7 @@ export default class GameBasicQuestionService extends GameQuestionService {
           await this.playerRepo.updatePlayerStatusTransaction(transaction, c.id, PlayerStatus.READY);
         }
 
-        await this.soundRepo.addSoundTransaction(transaction, correct ? 'Anime wow' : 'hysterical5');
+        await this.soundRepo.addSoundTransaction(transaction, correct ? 'anime_wow' : 'hysterical5');
         await this.endQuestionTransaction(transaction, questionId);
 
         console.log(

@@ -144,7 +144,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     try {
       await runTransaction(firestore, async (transaction) => {
         await this.gameQuestionRepo.addPlayerToBuzzerTransaction(transaction, questionId, playerId);
-        await this.soundRepo.addSoundTransaction(transaction, 'sfx-menu-validate');
+        await this.soundRepo.addSoundTransaction(transaction, 'sfx_menu_validate');
 
         console.log(
           'Player successfully added to buzzer',
@@ -192,7 +192,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
       await runTransaction(firestore, async (transaction) => {
         await this.gameQuestionRepo.removePlayerFromBuzzerTransaction(transaction, questionId, playerId);
         await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.IDLE);
-        await this.soundRepo.addSoundTransaction(transaction, 'JPP_de_lair');
+        await this.soundRepo.addSoundTransaction(transaction, 'jpp_de_lair');
         // const players = await this.gameQuestionRepo.getPlayersTransaction(transaction, questionId);
         // const { buzzed } = players;
         // if (buzzed[0] === playerId) {
@@ -327,7 +327,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
 
     // Update the question winner team
     await this.gameQuestionRepo.updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId);
-    await this.soundRepo.addSoundTransaction(transaction, 'Anime wow');
+    await this.soundRepo.addSoundTransaction(transaction, 'anime_wow');
 
     await this.endQuestionTransaction(transaction, questionId);
 

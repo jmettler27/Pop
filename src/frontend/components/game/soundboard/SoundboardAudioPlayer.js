@@ -8,24 +8,15 @@ import { Box, IconButton, Slider, Stack } from '@mui/material';
 import { collection, onSnapshot, query } from 'firebase/firestore';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { loadSounds } from '@/backend/utils/sounds';
+import sounds from '@/data/sounds';
 
 const initVolume = 0.4;
 
 const SoundboardAudioPlayer = memo(function SoundboardAudioPlayer({}) {
   const { id: gameId } = useParams();
-  const [sounds, setSounds] = useState(null);
   const [volume, setVolume] = useState(initVolume);
 
   const newestSoundIdRef = useRef(null);
-
-  useEffect(() => {
-    const loadSoundsData = async () => {
-      const loadedSounds = await loadSounds();
-      setSounds(loadedSounds);
-    };
-    loadSoundsData();
-  }, []);
 
   useEffect(() => {
     if (sounds && Object.keys(sounds).length > 0) {

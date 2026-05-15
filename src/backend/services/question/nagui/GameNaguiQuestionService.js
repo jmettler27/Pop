@@ -161,7 +161,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
           reward,
           correct,
         });
-        await this.soundRepo.addSoundTransaction(transaction, correct ? 'Anime wow' : 'hysterical5');
+        await this.soundRepo.addSoundTransaction(transaction, correct ? 'anime_wow' : 'hysterical5');
         await this.endQuestionTransaction(transaction, questionId);
         console.log(
           'Nagui choice selection successfully handled',
@@ -225,7 +225,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
 
         await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward);
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { playerId, reward, correct });
-        await this.soundRepo.addSoundTransaction(transaction, correct ? 'Anime wow' : 'hysterical5');
+        await this.soundRepo.addSoundTransaction(transaction, correct ? 'anime_wow' : 'hysterical5');
         await this.endQuestionTransaction(transaction, questionId);
 
         console.log(

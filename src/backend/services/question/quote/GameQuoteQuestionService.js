@@ -248,7 +248,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
 
         // If all revealed
         if (allRevealed) {
-          await this.soundRepo.addSoundTransaction(transaction, 'Anime wow');
+          await this.soundRepo.addSoundTransaction(transaction, 'anime_wow');
           await this.endQuestionTransaction(transaction, questionId);
           console.log(
             'All quote element successfully revealed',
@@ -355,7 +355,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
 
         await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.CORRECT);
         await this.gameQuestionRepo.updateQuestionRevealedElementsTransaction(transaction, questionId, newRevealed);
-        await this.soundRepo.addSoundTransaction(transaction, 'Anime wow');
+        await this.soundRepo.addSoundTransaction(transaction, 'anime_wow');
         await this.endQuestionTransaction(transaction, questionId);
 
         console.log(

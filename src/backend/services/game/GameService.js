@@ -81,7 +81,7 @@ export default class GameService {
           numReady: 0,
         });
 
-        await this.soundRepo.addSoundTransaction(transaction, 'ui-confirmation-alert-b2');
+        await this.soundRepo.addSoundTransaction(transaction, 'ui_confirmation_alert_b2');
 
         await this.timerRepo.resetTimerTransaction(transaction);
 
@@ -160,7 +160,7 @@ export default class GameService {
   async returnToGameHome() {
     try {
       await runTransaction(firestore, async (transaction) => {
-        await this.soundRepo.addSoundTransaction(transaction, 'ui-confirmation-alert-b2');
+        await this.soundRepo.addSoundTransaction(transaction, 'ui_confirmation_alert_b2');
         await this.gameRepo.updateGameStatusTransaction(transaction, this.gameId, GameStatus.GAME_HOME);
 
         console.log('Round end to game home successfully completed.', 'game', this.gameId);

@@ -36,7 +36,7 @@ export default class TimerService {
   async startTimer(duration) {
     try {
       await runTransaction(firestore, async (transaction) => {
-        await this.soundRepo.addSoundTransaction(transaction, 'message-incoming');
+        await this.soundRepo.addSoundTransaction(transaction, 'message_incoming');
         await this.timerRepo.startTimerTransaction(transaction, duration);
 
         console.log('Timer started');
