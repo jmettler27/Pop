@@ -91,7 +91,7 @@ export default class GameMCQQuestionService extends GameQuestionService {
           reward,
           correct,
         });
-        await this.soundRepo.addSoundTransaction(transaction, correct ? 'Anime wow' : 'hysterical5');
+        await this.soundRepo.addSoundTransaction(transaction, correct ? 'anime_wow' : 'hysterical5');
         await this.endQuestionTransaction(transaction, questionId);
 
         console.log(

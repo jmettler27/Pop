@@ -406,7 +406,7 @@ export default class RoundService {
     await this.readyRepo.resetReadyTransaction(transaction);
     await this.roundRepo.endRoundTransaction(transaction, roundId);
     await this.gameRepo.updateGameStatusTransaction(transaction, this.gameId, GameStatus.ROUND_END);
-    await this.soundRepo.addSoundTransaction(transaction, 'level-passed');
+    await this.soundRepo.addSoundTransaction(transaction, 'level_passed');
     await this.timerRepo.resetTimerTransaction(transaction);
   }
 

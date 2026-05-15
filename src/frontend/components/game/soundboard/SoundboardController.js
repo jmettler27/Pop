@@ -1,22 +1,13 @@
-import { memo, useEffect, useState } from 'react';
+import { memo } from 'react';
 import { useParams } from 'next/navigation';
 
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 
 import { addSound } from '@/backend/services/sound/sounds';
-import { loadSounds } from '@/backend/utils/sounds';
+import sounds from '@/data/sounds';
 
 const SoundboardController = memo(function SoundboardController({}) {
   const { id: gameId } = useParams();
-
-  const [sounds, setSounds] = useState({});
-  useEffect(() => {
-    const loadSoundsData = async () => {
-      const loadedSounds = await loadSounds();
-      setSounds(loadedSounds);
-    };
-    loadSoundsData();
-  }, []);
 
   const handleSelectSound = async (e) => {
     e.preventDefault();

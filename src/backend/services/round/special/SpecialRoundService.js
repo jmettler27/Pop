@@ -36,7 +36,7 @@ export default class SpecialRoundService extends RoundService {
     //     status: SpecialRoundStatus.HOME
     // })
     // await updateGameStatusTransaction(transaction, this.gameId,  SpecialRoundStatus.HOME)
-    // await this.soundRepo.addSoundTransaction(transaction, this.gameId, 'ui-confirmation-alert-b2')
+    // await this.soundRepo.addSoundTransaction(transaction, this.gameId, 'ui_confirmation_alert_b2')
     // console.log("Special round successfully started.");
   }
 
@@ -227,7 +227,7 @@ export default class SpecialRoundService extends RoundService {
     //         /* Last question in section, Last section in the theme */
     //         // End the theme
     //         await this.endThemeTransaction(transaction, themeId)
-    //         await this.soundRepo.addSoundTransaction(transaction, 'level-passed')
+    //         await this.soundRepo.addSoundTransaction(transaction, 'level_passed')
     //         console.log("Special question_end successfully handled.");
     //     });
     // }

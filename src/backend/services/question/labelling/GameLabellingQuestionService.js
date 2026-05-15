@@ -112,7 +112,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
 
         // If all revealed
         if (allRevealed) {
-          await this.soundRepo.addSoundTransaction(transaction, 'Anime wow');
+          await this.soundRepo.addSoundTransaction(transaction, 'anime_wow');
           await this.endQuestionTransaction(transaction, questionId);
           return;
         }
@@ -159,7 +159,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
 
         await this.gameQuestionRepo.updateQuestionRevealedElementsTransaction(transaction, questionId, newRevealed);
 
-        await this.soundRepo.addSoundTransaction(transaction, 'Anime wow');
+        await this.soundRepo.addSoundTransaction(transaction, 'anime_wow');
         await this.endQuestionTransaction(transaction, questionId);
 
         console.log('Labelling question all labels validated successfully', questionId);
