@@ -71,7 +71,8 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     if (buzzed.length === 0) {
       await this.timerRepo.resetTimerTransaction(transaction, thinkingTime);
     } else {
-      await this.invalidateAnswerTransaction(transaction, questionId, buzzed[0]);
+      const playerId = buzzed[0];
+      await this.invalidateAnswerTransaction(transaction, questionId, playerId);
 
       // If there's a next player in the queue, start their countdown
       if (buzzed.length > 1) {
@@ -382,7 +383,9 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     const gameQuestion = await this.gameQuestionRepo.getQuestion(questionId);
     const clueIdx = gameQuestion.currentClueIdx || 0;
 
-    await this.gameQuestionRepo.cancelPlayerTransaction(transaction, questionId, playerId, clueIdx);
+    const player = await this.playerRepo.getPlayerTransaction(transaction, playerId);
+    const teamId = player.teamId;
+    await this.gameQuestionRepo.cancelPlayerTransaction(transaction, questionId, playerId, teamId, clueIdx);
     await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.WRONG);
     await this.soundRepo.addWrongAnswerSoundToQueueTransaction(transaction);
     await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.RESET);

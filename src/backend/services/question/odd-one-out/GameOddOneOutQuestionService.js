@@ -109,6 +109,11 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
       await this.chooserRepo.updateChooserOrderTransaction(transaction, newChooserOrder);
 
       // Update question winner and end question
+      await this.playerRepo.updateAllPlayersStatusTransaction(
+        transaction,
+        PlayerStatus.WRONG,
+        teamPlayers.map((p) => p.id)
+      );
       await this.gameQuestionRepo.updateQuestionWinnerTransaction(transaction, questionId, playerId, teamId);
       await this.soundRepo.addSoundTransaction(transaction, 'hysterical5');
       await this.endQuestionTransaction(transaction, questionId);
