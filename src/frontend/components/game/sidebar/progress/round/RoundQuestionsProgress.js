@@ -6,17 +6,17 @@ import { Accordion, AccordionDetails, AccordionSummary, CircularProgress, Divide
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { BlindtestQuestion } from '@/backend/models/questions/Blindtest';
-import { QuestionType, questionTypeToTitle } from '@/backend/models/questions/QuestionType';
-import { topicToEmoji } from '@/backend/models/Topic';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import { QuestionCardContent } from '@/frontend/components/common/QuestionCard';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
-import globalMessages from '@/i18n/globalMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { GameStatus } from '@/models/games/GameStatus';
+import { BlindtestQuestion } from '@/models/questions/Blindtest';
+import { QuestionType, questionTypeToTitle } from '@/models/questions/QuestionType';
+import { topicToEmoji } from '@/models/Topic';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function RoundQuestionsProgress({ game, round }) {
   const [expandedId, setExpandedId] = useState(game.currentQuestion);

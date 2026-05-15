@@ -1,15 +1,15 @@
 import { runTransaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
-import { GameMatchingQuestion } from '@/backend/models/questions/Matching';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { ScorePolicyType } from '@/backend/models/ScorePolicy';
-import { PlayerStatus } from '@/backend/models/users/Player';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
 import { aggregateTiedTeams, findNextAvailableChooser, shuffle } from '@/backend/utils/arrays';
 import { sortAscendingRoundScores, sortScores } from '@/backend/utils/scores';
+import { GameMatchingQuestion } from '@/models/questions/Matching';
+import { QuestionType } from '@/models/questions/QuestionType';
+import { ScorePolicyType } from '@/models/ScorePolicy';
+import { PlayerStatus } from '@/models/users/Player';
 
 export default class GameMatchingQuestionService extends GameQuestionService {
   constructor(gameId, roundId) {

@@ -2,11 +2,6 @@ import { collection, getDocs, query, runTransaction, where } from 'firebase/fire
 
 import { firestore } from '@/backend/firebase/firebase';
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { Round } from '@/backend/models/rounds/Round';
-import { RoundType } from '@/backend/models/rounds/RoundType';
-import { ScorePolicyType } from '@/backend/models/ScorePolicy';
-import { PlayerStatus } from '@/backend/models/users/Player';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
@@ -22,6 +17,11 @@ import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import GameQuestionServiceFactory from '@/backend/services/question/GameQuestionServiceFactory';
 import { aggregateTiedTeams, shuffle } from '@/backend/utils/arrays';
 import { sortAscendingRoundScores, sortScores } from '@/backend/utils/scores';
+import { GameStatus } from '@/models/games/GameStatus';
+import { Round } from '@/models/rounds/Round';
+import { RoundType } from '@/models/rounds/RoundType';
+import { ScorePolicyType } from '@/models/ScorePolicy';
+import { PlayerStatus } from '@/models/users/Player';
 
 export default class RoundService {
   constructor(gameId, roundType) {

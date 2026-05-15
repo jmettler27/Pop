@@ -1,9 +1,5 @@
 import { useIntl } from 'react-intl';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { questionTypeToTitle } from '@/backend/models/questions/QuestionType';
-import { topicToEmoji } from '@/backend/models/Topic';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
@@ -11,8 +7,12 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { GameStatus } from '@/models/games/GameStatus';
+import { questionTypeToTitle } from '@/models/questions/QuestionType';
+import { topicToEmoji } from '@/models/Topic';
+import { ParticipantRole } from '@/models/users/Participant';
 
 const messages = defineMessages('frontend.game.BasicMiddlePane', {
   correct: 'Correct!',

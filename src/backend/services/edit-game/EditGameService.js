@@ -1,14 +1,14 @@
 import { runTransaction, serverTimestamp } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { Timer } from '@/backend/models/Timer';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
+import { GameStatus } from '@/models/games/GameStatus';
+import { Timer } from '@/models/Timer';
 
 /**
  * Service for editing a game

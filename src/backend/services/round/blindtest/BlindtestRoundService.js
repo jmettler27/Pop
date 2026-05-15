@@ -1,7 +1,7 @@
-import { RoundType } from '@/backend/models/rounds/RoundType';
-import { PlayerStatus } from '@/backend/models/users/Player';
 import GameBlindtestQuestionRepository from '@/backend/repositories/question/GameBlindtestQuestionRepository';
 import BuzzerRoundService from '@/backend/services/round/BuzzerRoundService';
+import { RoundType } from '@/models/rounds/RoundType';
+import { PlayerStatus } from '@/models/users/Player';
 
 export default class BlindtestRoundService extends BuzzerRoundService {
   constructor(gameId) {

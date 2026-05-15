@@ -7,7 +7,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import { Button } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-import globalMessages from '@/i18n/globalMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
 
 export default function GameUnderConstructionScreen() {
   const intl = useIntl();

@@ -1,4 +1,3 @@
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import GameBasicQuestionService from '@/backend/services/question/basic/GameBasicQuestionService';
 import GameBlindtestQuestionService from '@/backend/services/question/blindtest/GameBlindtestQuestionService';
 import GameEmojiQuestionService from '@/backend/services/question/emoji/GameEmojiQuestionService';
@@ -13,6 +12,7 @@ import GameOddOneOutQuestionService from '@/backend/services/question/odd-one-ou
 import GameProgressiveCluesQuestionService from '@/backend/services/question/progressive-clues/GameProgressiveCluesQuestionService';
 import GameQuoteQuestionService from '@/backend/services/question/quote/GameQuoteQuestionService';
 import GameReorderingQuestionService from '@/backend/services/question/reordering/GameReorderingQuestionService';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 export default class GameQuestionServiceFactory {
   static createService(questionType, gameId, roundId) {

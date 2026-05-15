@@ -3,15 +3,15 @@ import { useCollection } from 'react-firebase-hooks/firestore';
 import { useIntl } from 'react-intl';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { RoundType } from '@/backend/models/rounds/RoundType';
-import { ScorePolicyType } from '@/backend/models/ScorePolicy';
 import { RoundCompletionRatePolicy } from '@/frontend/components/game/main-pane/round/RoundCompletionRatePolicy';
 import { RoundDescription } from '@/frontend/components/game/main-pane/round/RoundDescription';
 import { RoundRankingPolicy } from '@/frontend/components/game/main-pane/round/RoundRankingPolicy';
 import { RoundRules } from '@/frontend/components/game/main-pane/round/RoundRules';
 import { numberToKeycapEmoji } from '@/frontend/helpers/emojis';
 import useGame from '@/frontend/hooks/useGame';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import { RoundType } from '@/models/rounds/RoundType';
+import { ScorePolicyType } from '@/models/ScorePolicy';
 
 const messages = defineMessages('frontend.game.round.RoundStartBody', {
   rules: '📜 Rules',

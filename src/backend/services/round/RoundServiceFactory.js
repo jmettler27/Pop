@@ -1,4 +1,3 @@
-import { RoundType } from '@/backend/models/rounds/RoundType';
 import BasicRoundService from '@/backend/services/round/basic/BasicRoundService';
 import BlindtestRoundService from '@/backend/services/round/blindtest/BlindtestRoundService';
 import EmojiRoundService from '@/backend/services/round/emoji/EmojiRoundService';
@@ -13,6 +12,7 @@ import OddOneOutRoundService from '@/backend/services/round/odd-one-out/OddOneOu
 import ProgressiveCluesRoundService from '@/backend/services/round/progressive-clues/ProgressiveCluesRoundService';
 import QuoteRoundService from '@/backend/services/round/quote/QuoteRoundService';
 import ReorderingRoundService from '@/backend/services/round/reordering/ReorderingRoundService';
+import { RoundType } from '@/models/rounds/RoundType';
 
 export default class RoundServiceFactory {
   static createService(roundType, gameId) {

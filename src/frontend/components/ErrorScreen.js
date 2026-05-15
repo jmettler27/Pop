@@ -8,7 +8,7 @@ import { Button } from '@mui/material';
 import { useIntl } from 'react-intl';
 
 import { getRandomElement } from '@/backend/utils/arrays';
-import globalMessages from '@/i18n/globalMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
 
 const ERROR_TIP_KEYS = [
   'errorTip1',

@@ -22,7 +22,6 @@ import {
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import { QuestionType, questionTypeToEmoji } from '@/backend/models/questions/QuestionType';
 // New question
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
@@ -44,8 +43,9 @@ import SubmitProgressiveCluesQuestionForm from '@/frontend/components/question-f
 import SubmitQuoteQuestionForm from '@/frontend/components/question-forms/SubmitQuoteQuestionForm';
 import SubmitReorderingQuestionForm from '@/frontend/components/question-forms/SubmitReorderingQuestionForm';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { QuestionType, questionTypeToEmoji } from '@/models/questions/QuestionType';
 
 const messages = defineMessages('frontend.gameEditor.AddNewQuestion', {
   searchExisting: 'Search for an existing question',

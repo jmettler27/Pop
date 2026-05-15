@@ -4,11 +4,11 @@ import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { scoreboardMessages } from '@/frontend/components/scores/scoreboardUtils';
 import { rankingToEmoji } from '@/frontend/helpers/emojis';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 export default function RoundScoreboard({ roundScores, teams }) {
   const intl = useIntl();

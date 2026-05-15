@@ -1,6 +1,5 @@
 import { CircularProgress } from '@mui/material';
 
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import GameNaguiQuestionRepository from '@/backend/repositories/question/GameNaguiQuestionRepository';
 import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
@@ -10,6 +9,7 @@ import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/qu
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function NaguiBottomPane({ question: baseQuestion }) {
   const { chooserRepo } = useGameRepositories();

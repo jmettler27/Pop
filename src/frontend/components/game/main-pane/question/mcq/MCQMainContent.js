@@ -8,9 +8,6 @@ import { clsx } from 'clsx';
 
 import mcqCorrect from '@/assets/images/mcq-correct.png';
 import mcqWrong from '@/assets/images/mcq-wrong.png';
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { MCQQuestion } from '@/backend/models/questions/MCQ';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
 import { selectChoice } from '@/backend/services/question/mcq/actions';
 import { shuffleIndices } from '@/backend/utils/arrays';
@@ -23,6 +20,9 @@ import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
+import { GameStatus } from '@/models/games/GameStatus';
+import { MCQQuestion } from '@/models/questions/MCQ';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function MCQMainContent({ baseQuestion }) {
   const title = baseQuestion.title;

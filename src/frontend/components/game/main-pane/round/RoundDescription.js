@@ -1,14 +1,14 @@
 import { useIntl } from 'react-intl';
 
-import { BlindtestQuestion, BlindtestType } from '@/backend/models/questions/Blindtest';
-import { MatchingQuestion } from '@/backend/models/questions/Matching';
-import { OddOneOutQuestion } from '@/backend/models/questions/OddOneOut';
-import { QuoteAuthorElement, QuotePartElement, QuoteSourceElement } from '@/backend/models/questions/Quote';
-import { ReorderingQuestion } from '@/backend/models/questions/Reordering';
-import { RoundType } from '@/backend/models/rounds/RoundType';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
-import fmt, { keyChunks } from '@/utils/fmt';
+import fmt, { keyChunks } from '@/frontend/helpers/fmt';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { BlindtestQuestion, BlindtestType } from '@/models/questions/Blindtest';
+import { MatchingQuestion } from '@/models/questions/Matching';
+import { OddOneOutQuestion } from '@/models/questions/OddOneOut';
+import { QuoteAuthorElement, QuotePartElement, QuoteSourceElement } from '@/models/questions/Quote';
+import { ReorderingQuestion } from '@/models/questions/Reordering';
+import { RoundType } from '@/models/rounds/RoundType';
 
 const messages = defineMessages('frontend.game.round.RoundDescription', {
   blindtest1: '👂 Listen to the music ({songEmoji}) or the sound ({soundEmoji}), and answer the question.',

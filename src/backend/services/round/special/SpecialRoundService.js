@@ -1,5 +1,5 @@
-import { RoundType } from '@/backend/models/rounds/RoundType';
 import RoundService from '@/backend/services/round/RoundService';
+import { RoundType } from '@/models/rounds/RoundType';
 
 // import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
 // import { firestore } from '@/backend/firebase/firebase'
@@ -15,14 +15,14 @@ import RoundService from '@/backend/services/round/RoundService';
 //     setDoc,
 // } from 'firebase/firestore'
 
-// import { GameStatus } from '@/backend/models/games/GameStatus';
-// import { PlayerStatus } from '@/backend/models/users/Player';
+// import { GameStatus } from '@/models/games/GameStatus';
+// import { PlayerStatus } from '@/models/users/Player';
 
 // import { getDocDataTransaction } from '@/backend/services/utils';
 // import { resetRoundInfo, updateRoundFields } from '@/backend/services/round/actions';
 // import { initRoundScores } from '@/backend/services/scoring/scores';
 // import { getNextCyclicIndex } from '@/backend/utils/arrays';
-// import { SpecialRoundStatus } from '@/backend/models/rounds/Special';
+// import { SpecialRoundStatus } from '@/models/rounds/Special';
 
 export default class SpecialRoundService extends RoundService {
   constructor(gameId) {

@@ -9,7 +9,7 @@
     "lint": "next lint",
     "prettier-write": "npx prettier src --write",
     "prettier-check": "npx prettier src --check",
-    "update-i18n": "node src/i18n/update-i18n.mjs",
+    "update-i18n": "node src/frontend/i18n/update-i18n.mjs",
     "preemulators": "kill-port 8080 9000",
     "emulators": "firebase emulators:start --import=./emulator-data --export-on-exit=./emulator-data",
     "dev:emulators": "concurrently --names emu,next --prefix-colors blue,green \"npm run emulators\" \"cross-env NEXT_PUBLIC_USE_EMULATORS=true next dev\"",

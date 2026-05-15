@@ -1,8 +1,8 @@
 import * as Yup from 'yup';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 export const questionTypeSchema = () =>
   Yup.string().oneOf(Object.values(QuestionType), 'Invalid type.').required('Required.');

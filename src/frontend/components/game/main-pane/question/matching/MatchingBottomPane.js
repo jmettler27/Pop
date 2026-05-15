@@ -2,9 +2,6 @@ import { CircularProgress } from '@mui/material';
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
-import { GameMatchingQuestion } from '@/backend/models/questions/Matching';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
@@ -13,8 +10,11 @@ import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { GameMatchingQuestion } from '@/models/questions/Matching';
+import { QuestionType } from '@/models/questions/QuestionType';
+import { ParticipantRole } from '@/models/users/Participant';
 
 const messages = defineMessages('frontend.game.bottom.MatchingBottomPane', {
   maxMistakesExceeded: 'You have exceeded the maximum number of mistakes!',

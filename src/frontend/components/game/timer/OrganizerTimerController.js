@@ -4,11 +4,11 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import { ButtonGroup, IconButton, Tooltip } from '@mui/material';
 
-import { TimerStatus } from '@/backend/models/Timer';
 import { resetTimer, startTimer, stopTimer } from '@/backend/services/timer/actions';
 import Timer from '@/frontend/components/game/timer/Timer';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
+import { TimerStatus } from '@/models/Timer';
 
 export default function OrganizerTimerController({ timer, serverTimeOffset, onTimerEnd }) {
   const game = useGame();

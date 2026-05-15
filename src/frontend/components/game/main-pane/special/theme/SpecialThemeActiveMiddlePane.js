@@ -4,12 +4,12 @@ import { useDocumentData } from 'react-firebase-hooks/firestore';
 import { useIntl } from 'react-intl';
 
 import { GAMES_COLLECTION_REF, QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
-import globalMessages from '@/i18n/globalMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function SpecialThemeActiveMiddlePane({ theme, gameTheme }) {
   const currentThemeId = theme.id;

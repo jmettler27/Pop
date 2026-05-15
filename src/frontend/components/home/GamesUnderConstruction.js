@@ -6,8 +6,6 @@ import { Box, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { gameTypeToEmoji } from '@/backend/models/games/GameType';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
@@ -15,8 +13,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/
 import { GameOrganizersAvatarGroup } from '@/frontend/components/home/GameAvatars';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { localeToEmoji } from '@/frontend/helpers/locales';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { GameStatus } from '@/models/games/GameStatus';
+import { gameTypeToEmoji } from '@/models/games/GameType';
 
 const messages = defineMessages('frontend.home.GamesUnderConstruction', {
   title: 'Games under construction',

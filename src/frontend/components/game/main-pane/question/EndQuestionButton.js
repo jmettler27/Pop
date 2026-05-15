@@ -5,7 +5,7 @@ import { useIntl } from 'react-intl';
 import { endQuestion } from '@/backend/services/question/actions';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.EndQuestionButton', {
   endQuestion: 'End question',

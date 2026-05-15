@@ -1,7 +1,7 @@
 import { useIntl } from 'react-intl';
 
 import { MySelect } from '@/frontend/components/common/StyledFormComponents';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
 
 const messages = defineMessages('frontend.forms.SelectGameType', {
   label: 'Type of the game',

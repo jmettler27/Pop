@@ -2,7 +2,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import { Button } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.GoGameHomeButton', {
   goHome: 'Go to Home',

@@ -6,8 +6,6 @@ import { Field, FieldArray, useField, useFormikContext } from 'formik';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 
-import { NaguiQuestion } from '@/backend/models/questions/Nagui';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import { editQuestion, submitQuestion } from '@/backend/services/create-question/actions';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';
@@ -19,8 +17,10 @@ import { messages as questionMessages } from '@/frontend/helpers/forms/questions
 import { topicSchema } from '@/frontend/helpers/forms/topics';
 import { DEFAULT_LOCALE, localeSchema } from '@/frontend/helpers/locales';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { NaguiQuestion } from '@/models/questions/Nagui';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 const messages = defineMessages('frontend.forms.submitQuestion.nagui', {
   duoIdxLabel: 'What other proposal do you want for the duo?',

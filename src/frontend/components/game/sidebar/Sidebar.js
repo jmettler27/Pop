@@ -11,14 +11,14 @@ import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
 
 import { useLocale } from '@/app/LocaleProvider';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import ProgressTabPanel from '@/frontend/components/game/sidebar/progress/ProgressTabPanel';
 import SoundboardAudioPlayer from '@/frontend/components/game/soundboard/SoundboardAudioPlayer';
 import OrganizerSpeedDial from '@/frontend/components/game/speed-dial/OrganizerSpeedDial';
 import { LOCALE_TO_TITLE, LOCALES } from '@/frontend/helpers/locales';
 import useRole from '@/frontend/hooks/useRole';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { ParticipantRole } from '@/models/users/Participant';
 
 const messages = defineMessages('frontend.game.sidebar.Sidebar', {
   progress: 'Progress',

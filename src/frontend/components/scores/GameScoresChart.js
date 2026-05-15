@@ -15,7 +15,7 @@ import { Line } from 'react-chartjs-2';
 import { useIntl } from 'react-intl';
 
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 

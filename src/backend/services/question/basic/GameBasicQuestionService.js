@@ -1,10 +1,10 @@
 import { runTransaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { PlayerStatus } from '@/backend/models/users/Player';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
+import { QuestionType } from '@/models/questions/QuestionType';
+import { PlayerStatus } from '@/models/users/Player';
 
 export default class GameBasicQuestionService extends GameQuestionService {
   constructor(gameId, roundId) {

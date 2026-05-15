@@ -1,7 +1,7 @@
 import { arrayRemove, arrayUnion, serverTimestamp } from 'firebase/firestore';
 
-import RoundFactory from '@/backend/models/rounds/RoundFactory';
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
+import RoundFactory from '@/models/rounds/RoundFactory';
 
 export default class RoundRepository extends FirebaseRepository {
   constructor(gameId) {

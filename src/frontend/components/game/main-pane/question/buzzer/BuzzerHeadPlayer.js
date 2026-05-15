@@ -1,7 +1,7 @@
 import { useIntl } from 'react-intl';
 
 import PlayerName from '@/frontend/components/game/PlayerName';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.BuzzerHeadPlayer', {
   noBuzzersYet: 'No one has guessed yet',

@@ -9,10 +9,10 @@ import VolumeUpRounded from '@mui/icons-material/VolumeUpRounded';
 import { Box, IconButton, Slider, Stack, Typography } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
 import NextImage from '@/frontend/components/common/NextImage';
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
 import useGame from '@/frontend/hooks/useGame';
+import { GameStatus } from '@/models/games/GameStatus';
 
 export default function BlindtestMainContent({ baseQuestion }) {
   const game = useGame();

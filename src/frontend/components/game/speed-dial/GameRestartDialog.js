@@ -6,8 +6,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useIntl } from 'react-intl';
 
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
 
 const messages = defineMessages('frontend.game.speedDial.GameRestartDialog', {
   dialogTitle: 'Are you sure to restart the game?',

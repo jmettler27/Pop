@@ -2,14 +2,14 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Button } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import { startRound } from '@/backend/services/round/actions';
 import ReadyPlayerController from '@/frontend/components/game/main-pane/ReadyPlayerController';
 import TimerPane from '@/frontend/components/game/timer/TimerPane';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function RoundStartBottomPane({}) {
   return (

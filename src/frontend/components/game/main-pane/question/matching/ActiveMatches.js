@@ -1,4 +1,4 @@
-import { ParticipantRole } from '@/backend/models/users/Participant';
+import { ParticipantRole } from '@/models/users/Participant';
 
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
 

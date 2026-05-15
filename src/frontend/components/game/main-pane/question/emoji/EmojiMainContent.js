@@ -1,8 +1,8 @@
 import { Box } from '@mui/material';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
 import NextImage from '@/frontend/components/common/NextImage';
 import useGame from '@/frontend/hooks/useGame';
+import { GameStatus } from '@/models/games/GameStatus';
 
 export default function EmojiMainContent({ baseQuestion }) {
   const game = useGame();

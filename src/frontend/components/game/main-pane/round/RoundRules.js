@@ -1,14 +1,14 @@
 import { useIntl } from 'react-intl';
 
-import { GameEnumerationQuestion } from '@/backend/models/questions/Enumeration';
-import { GameMatchingQuestion, MatchingQuestion } from '@/backend/models/questions/Matching';
-import { NaguiQuestion } from '@/backend/models/questions/Nagui';
-import { OddOneOutQuestion } from '@/backend/models/questions/OddOneOut';
-import { GameReorderingQuestion } from '@/backend/models/questions/Reordering';
-import { RoundType } from '@/backend/models/rounds/RoundType';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
-import fmt, { keyChunks } from '@/utils/fmt';
+import fmt, { keyChunks } from '@/frontend/helpers/fmt';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { GameEnumerationQuestion } from '@/models/questions/Enumeration';
+import { GameMatchingQuestion, MatchingQuestion } from '@/models/questions/Matching';
+import { NaguiQuestion } from '@/models/questions/Nagui';
+import { OddOneOutQuestion } from '@/models/questions/OddOneOut';
+import { GameReorderingQuestion } from '@/models/questions/Reordering';
+import { RoundType } from '@/models/rounds/RoundType';
 
 const messages = defineMessages('frontend.game.round.RoundRules', {
   buzzInstruction:

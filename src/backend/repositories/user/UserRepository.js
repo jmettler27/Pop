@@ -1,5 +1,5 @@
-import User from '@/backend/models/users/User';
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
+import User from '@/models/users/User';
 
 export default class UserRepository extends FirebaseRepository {
   constructor() {

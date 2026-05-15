@@ -1,7 +1,5 @@
 import { CircularProgress } from '@mui/material';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
 import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
@@ -10,6 +8,8 @@ import ResetQuestionButton from '@/frontend/components/game/main-pane/question/R
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
+import { QuestionType } from '@/models/questions/QuestionType';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function MCQBottomPane({ baseQuestion }) {
   const { chooserRepo } = useGameRepositories();

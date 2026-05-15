@@ -1,5 +1,5 @@
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import GameBuzzerQuestionService from '@/backend/services/question/GameBuzzerQuestionService';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 export default class GameBlindtestQuestionService extends GameBuzzerQuestionService {
   constructor(gameId, roundId) {

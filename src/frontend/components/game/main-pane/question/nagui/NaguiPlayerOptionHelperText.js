@@ -1,10 +1,10 @@
 import { CircularProgress } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-import NaguiOptionFactory from '@/backend/models/questions/NaguiOptionFactory';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import NaguiOptionFactory from '@/models/questions/NaguiOptionFactory';
 
 const messages = defineMessages('frontend.game.bottom.NaguiPlayerOptionHelperText', {
   hasChosen: 'has chosen',

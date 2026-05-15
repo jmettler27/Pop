@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import globalMessages from '@/i18n/globalMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
 
 export default function GameChooserOrder({ chooser }) {
   const intl = useIntl();

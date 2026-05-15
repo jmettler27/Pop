@@ -5,18 +5,18 @@ import HowToRegIcon from '@mui/icons-material/HowToReg';
 import { Button, CircularProgress } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-import { GameStatus } from '@/backend/models/games/GameStatus';
-import { ParticipantRole } from '@/backend/models/users/Participant';
-import { PlayerStatus } from '@/backend/models/users/Player';
 import { setPlayerReady } from '@/backend/services/player/actions';
 import { getRandomElement } from '@/backend/utils/arrays';
+import fmt, { keyChunks } from '@/frontend/helpers/fmt';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useUser from '@/frontend/hooks/useUser';
-import defineMessages from '@/utils/defineMessages';
-import fmt, { keyChunks } from '@/utils/fmt';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import { GameStatus } from '@/models/games/GameStatus';
+import { ParticipantRole } from '@/models/users/Participant';
+import { PlayerStatus } from '@/models/users/Player';
 
 const messages = defineMessages('frontend.game.bottom.ReadyPlayerController', {
   waitingForPlayers: 'Waiting for players...',

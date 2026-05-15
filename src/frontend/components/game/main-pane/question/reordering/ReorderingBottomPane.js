@@ -3,16 +3,16 @@
 import { List, ListItem, ListItemText } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-import { QuestionType } from '@/backend/models/questions/QuestionType';
-import { ParticipantRole } from '@/backend/models/users/Participant';
 import GameReorderingQuestionRepository from '@/backend/repositories/question/GameReorderingQuestionRepository';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
-import globalMessages from '@/i18n/globalMessages';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
+import globalMessages from '@/frontend/i18n/globalMessages';
+import { QuestionType } from '@/models/questions/QuestionType';
+import { ParticipantRole } from '@/models/users/Participant';
 
 export default function ReorderingBottomPane({ baseQuestion }) {
   const game = useGame();

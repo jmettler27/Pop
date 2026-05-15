@@ -7,7 +7,7 @@ import GameScoreboard from '@/frontend/components/scores/GameScoreboard';
 import GameScoresChart from '@/frontend/components/scores/GameScoresChart';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
-import defineMessages from '@/utils/defineMessages';
+import defineMessages from '@/frontend/i18n/defineMessages';
 
 const messages = defineMessages('frontend.game.middle.GameEndMiddlePane', {
   itWas: 'It was',

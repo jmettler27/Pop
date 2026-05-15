@@ -1,8 +1,8 @@
 import { arrayUnion, increment, serverTimestamp, Timestamp } from 'firebase/firestore';
 
-import { EnumerationQuestionStatus } from '@/backend/models/questions/Enumeration';
-import { QuestionType } from '@/backend/models/questions/QuestionType';
 import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
+import { EnumerationQuestionStatus } from '@/models/questions/Enumeration';
+import { QuestionType } from '@/models/questions/QuestionType';
 
 export default class GameEnumerationQuestionRepository extends GameQuestionRepository {
   static ENUMERATION_PLAYERS_PATH = ['realtime', 'players'];
