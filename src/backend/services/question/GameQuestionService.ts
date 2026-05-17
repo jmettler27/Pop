@@ -1,0 +1,219 @@
+import { increment, runTransaction, Transaction } from 'firebase/firestore';
+
+import { firestore } from '@/backend/firebase/firebase';
+import GameRepository from '@/backend/repositories/game/GameRepository';
+import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
+import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
+import RoundRepository from '@/backend/repositories/round/RoundRepository';
+import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
+import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
+import SoundRepository from '@/backend/repositories/sound/SoundRepository';
+import TimerRepository from '@/backend/repositories/timer/TimerRepository';
+import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
+import TeamRepository from '@/backend/repositories/user/TeamRepository';
+import { GameStatus } from '@/models/games/game-status';
+import { QuestionType } from '@/models/questions/question-type';
+import { GameScores, RoundScores, ScoresProgress } from '@/models/scores';
+
+export default class GameQuestionService {
+  protected gameId: string;
+  protected questionType: QuestionType;
+  protected gameRepo: GameRepository;
+  protected gameScoreRepo: GameScoreRepository;
+  protected playerRepo: PlayerRepository;
+  protected teamRepo: TeamRepository;
+  protected timerRepo: TimerRepository;
+  protected soundRepo: SoundRepository;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  protected baseQuestionRepo: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  protected gameQuestionRepo: any;
+
+  protected roundId: string;
+  protected roundRepo: RoundRepository;
+  protected roundScoreRepo: RoundScoreRepository;
+
+  constructor(gameId: string, roundId: string, questionType: QuestionType) {
+    if (!gameId) {
+      throw new Error('Game ID is required');
+    }
+    if (!roundId) {
+      throw new Error('Round ID is required');
+    }
+    if (!questionType) {
+      throw new Error('Question type is required');
+    }
+
+    this.gameId = gameId;
+    this.gameRepo = new GameRepository();
+    this.gameScoreRepo = new GameScoreRepository(gameId);
+    this.playerRepo = new PlayerRepository(gameId);
+    this.teamRepo = new TeamRepository(gameId);
+    this.timerRepo = new TimerRepository(gameId);
+    this.soundRepo = new SoundRepository(gameId);
+
+    this.questionType = questionType;
+    this.baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(questionType);
+
+    this.roundId = roundId;
+    this.roundRepo = new RoundRepository(gameId);
+    this.roundScoreRepo = new RoundScoreRepository(gameId, roundId);
+    this.gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(questionType, gameId, roundId);
+  }
+
+  async resetQuestion(questionId: string) {
+    if (!questionId) {
+      throw new Error('Question ID is required');
+    }
+
+    try {
+      await runTransaction(firestore, (transaction) => this.resetQuestionTransaction(transaction, questionId));
+    } catch (error) {
+      console.error(
+        'Failed to reset the question',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'err',
+        error
+      );
+      throw error;
+    }
+  }
+
+  async resetQuestionTransaction(transaction: Transaction, questionId: string) {
+    // this.gameQuestionRepo.updateTransaction(transaction, questionId, {
+    //     winner: null,
+    //     selectedItems: [],
+    // });
+
+    // if (alone) {
+    //     this.timerRepo.resetTimerTransaction(transaction, questionId);
+    // }
+    throw new Error('Not implemented');
+  }
+
+  /* ==================================================================================================== */
+
+  async endQuestion(questionId: string) {
+    if (!questionId) {
+      throw new Error('Question ID is required');
+    }
+
+    try {
+      await runTransaction(firestore, (transaction) => this.endQuestionTransaction(transaction, questionId));
+    } catch (error) {
+      console.error(
+        'Failed to end the question',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'err',
+        error
+      );
+      throw error;
+    }
+  }
+
+  async endQuestionTransaction(transaction: Transaction, questionId: string) {
+    await this.gameRepo.updateGameStatusTransaction(transaction, this.gameId, GameStatus.QUESTION_END);
+    await this.gameQuestionRepo.endQuestionTransaction(transaction, questionId);
+    await this.timerRepo.prepareTimerForReadyTransaction(transaction);
+
+    console.log(
+      'Buzzer question successfully ended',
+      'game',
+      this.gameId,
+      'round',
+      this.roundId,
+      'question',
+      questionId,
+      'type',
+      this.questionType
+    );
+  }
+
+  /* ==================================================================================================== */
+
+  async handleCountdownEnd(questionId: string) {
+    if (!questionId) {
+      throw new Error('Question ID is required');
+    }
+
+    try {
+      await runTransaction(firestore, (transaction) => this.handleCountdownEndTransaction(transaction, questionId));
+    } catch (error) {
+      console.error(
+        'Failed to handle question countdown',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'err',
+        error
+      );
+      throw error;
+    }
+  }
+
+  async handleCountdownEndTransaction(transaction: Transaction, questionId: string) {
+    throw new Error('Not implemented');
+  }
+
+  async increaseGlobalTeamScoreTransaction(
+    transaction: Transaction,
+    questionId: string,
+    points: number,
+    teamId: string | null = null
+  ) {
+    const gameScoresData = await this.gameScoreRepo.getScoresTransaction(transaction);
+    const roundScoresData = await this.roundScoreRepo.getScoresTransaction(transaction);
+    if (!gameScoresData || !roundScoresData) {
+      throw new Error('Game scores and round scores must be initialized before increasing team score');
+    }
+
+    const gameScores = gameScoresData as GameScores;
+    const roundScores = roundScoresData as RoundScores;
+
+    // Increase the team's global score by the given points (which can be negative in case of a penalty)
+    const currentGameScores = gameScores.scores;
+    const currentGameProgress = gameScores.scoresProgress;
+    const newGameProgress: ScoresProgress = {};
+    for (const tid of Object.keys(currentGameScores)) {
+      newGameProgress[tid] = {
+        ...(currentGameProgress[tid] || {}),
+        [this.roundId]: currentGameScores[tid] + (tid === teamId ? points : 0),
+      };
+    }
+
+    await this.gameScoreRepo.updateScoresTransaction(transaction, {
+      [`scores.${teamId}`]: increment(points),
+      scoresProgress: newGameProgress,
+    });
+
+    // In case of penalty: Increase the team's round "score" to 1.
+    // In this context, 1 is rather an increment to the counter of mistakes of the team in the round, that a point added to round score
+    const currRoundScores = roundScores.scores;
+    const currRoundProgress = roundScores.scoresProgress;
+    const newRoundProgress: ScoresProgress = {};
+    for (const tid of Object.keys(currRoundScores)) {
+      newRoundProgress[tid] = {
+        ...(currRoundProgress[tid] || {}),
+        [questionId]: currRoundScores[tid] + (tid === teamId ? (points > 0 ? points : 1) : 0),
+      };
+    }
+    await this.roundScoreRepo.updateScoresTransaction(transaction, {
+      [`scores.${teamId}`]: increment(points > 0 ? points : 1),
+      scoresProgress: newRoundProgress,
+    });
+  }
+}

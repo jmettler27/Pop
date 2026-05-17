@@ -1,0 +1,30 @@
+import { useIntl } from 'react-intl';
+import type { ObjectSchema } from 'yup';
+
+import { MySelect } from '@/frontend/components/common/StyledFormComponents';
+import { LOCALES, prependLocaleWithEmoji } from '@/frontend/helpers/locales';
+import defineMessages from '@/frontend/i18n/defineMessages';
+
+const messages = defineMessages('frontend.forms.SelectLanguage', {
+  label: 'Language of the question',
+  header: 'Select the language',
+});
+
+interface SelectLanguageProps {
+  validationSchema?: ObjectSchema<Record<string, unknown>>;
+  name?: string;
+}
+
+export default function SelectLanguage({ validationSchema, name = 'lang' }: SelectLanguageProps) {
+  const intl = useIntl();
+  return (
+    <MySelect label={intl.formatMessage(messages.label)} name={name} validationSchema={validationSchema}>
+      <option value="">{intl.formatMessage(messages.header)}</option>
+      {LOCALES.map((locale) => (
+        <option key={locale} value={locale}>
+          {prependLocaleWithEmoji(locale)}
+        </option>
+      ))}
+    </MySelect>
+  );
+}

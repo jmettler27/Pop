@@ -1,0 +1,77 @@
+import {
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+import { useIntl } from 'react-intl';
+
+import defineMessages from '@/frontend/i18n/defineMessages';
+import { AnyRound } from '@/models/rounds/RoundFactory';
+import Team from '@/models/team';
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+
+const messages = defineMessages('frontend.scores.RoundScoresChart', {
+  title: 'Round scores',
+});
+
+export const options = (title: string) => {
+  return {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      title: {
+        display: true,
+        text: title,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
+    // maintainAspectRatio: false,
+    // aspectRatio: 1
+  };
+};
+
+interface RoundScores {
+  teamsScoresSequences: Record<string, number[]>;
+  [key: string]: unknown;
+}
+
+interface RoundScoresChartProps {
+  round: AnyRound;
+  teams: Team[];
+  roundScores: RoundScores;
+}
+
+export default function RoundScoresChart({ round, teams, roundScores }: RoundScoresChartProps) {
+  const intl = useIntl();
+  const labels = ['', ...round.questions.map((_question: unknown, idx: number) => `Q${idx + 1}`)];
+
+  const datasets = teams.map((team) => ({
+    id: team.id,
+    label: team.name,
+    data: [0, ...roundScores.teamsScoresSequences[team.id]],
+    borderColor: team.color,
+    backgroundColor: team.color + '50',
+    fill: false,
+    tension: 0.1,
+  }));
+
+  const data = {
+    labels,
+    datasets,
+  };
+
+  return <Line datasetIdKey={round.id} options={options(intl.formatMessage(messages.title))} data={data} />;
+}
