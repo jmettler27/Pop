@@ -56,3 +56,8 @@ export const launchGame = async (gameId) => {
   const service = new EditGameService(gameId);
   return service.launchGame();
 };
+
+export const updateOrganizerName = async (gameId, organizerId, newName) => {
+  const service = new EditGameService(gameId);
+  return service.updateOrganizerName(organizerId, newName);
+};

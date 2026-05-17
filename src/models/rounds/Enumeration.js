@@ -5,7 +5,7 @@ export class EnumerationRound extends Round {
   static REWARDS_PER_QUESTION = 1;
   static REWARDS_FOR_BONUS = 1;
 
-  static DEFAULT_THINKING_TIME = 60;
+  static DEFAULT_THINKING_TIME = 120;
   static DEFAULT_CHALLENGE_TIME = 120;
 
   constructor(data) {

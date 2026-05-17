@@ -7,6 +7,7 @@ import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQ
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
+import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import { GameStatus } from '@/models/games/GameStatus';
 import { Timer } from '@/models/Timer';
 
@@ -29,6 +30,7 @@ export default class EditGameService {
     this.roundRepo = new RoundRepository(gameId);
     this.gameScoreRepo = new GameScoreRepository(gameId);
     this.baseQuestionRepo = new BaseQuestionRepository();
+    this.organizerRepo = new OrganizerRepository(gameId);
   }
 
   /**
@@ -333,5 +335,15 @@ export default class EditGameService {
       console.error('Failed to launch the game:', error);
       throw error;
     }
+  }
+
+  async updateOrganizerName(organizerId, newName) {
+    if (!organizerId) throw new Error('Organizer ID is required');
+    if (!newName || typeof newName !== 'string') throw new Error('Name is required');
+    const trimmed = newName.trim();
+    if (trimmed.length < 2 || trimmed.length > 50) throw new Error('Name must be between 2 and 50 characters');
+
+    await this.organizerRepo.updateOrganizer(organizerId, { name: trimmed });
+    console.log('Organizer name updated', 'gameId:', this.gameId, 'organizerId:', organizerId, 'name:', trimmed);
   }
 }
