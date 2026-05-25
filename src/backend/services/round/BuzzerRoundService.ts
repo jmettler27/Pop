@@ -20,25 +20,25 @@ export default class BuzzerRoundService extends RoundService {
   async handleRoundSelectedTransaction(transaction: Transaction, roundId: string, userId: string) {
     const playerIds = await this.playerRepo.getAllPlayerIds();
     if (playerIds.length === 0) {
-      console.log('No players in the game, cannot start round');
+      console.error('No players in the game, cannot start round', 'game', this.gameId, 'round', roundId);
       throw new Error('No players in the game, cannot start round');
     }
 
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     if (!round) {
-      console.log('Round not found, cannot start round');
+      console.error('Round not found, cannot start round', 'game', this.gameId, 'round', roundId);
       throw new Error('Round not found, cannot start round');
     }
 
     const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     if (!chooser) {
-      console.log('Chooser not found, cannot start round');
+      console.error('Chooser not found, cannot start round', 'game', this.gameId, 'round', roundId);
       throw new Error('Chooser not found, cannot start round');
     }
 
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
     if (!game) {
-      console.log('Game not found, cannot start round');
+      console.error('Game not found, cannot start round', 'game', this.gameId, 'round', roundId);
       throw new Error('Game not found, cannot start round');
     }
 
@@ -50,8 +50,8 @@ export default class BuzzerRoundService extends RoundService {
     if (currentRound) {
       const prevRound = await this.roundRepo.getRoundTransaction(transaction, currentRound);
       if (!prevRound) {
-        console.log();
-        throw new Error();
+        console.error('Previous round not found', 'game', this.gameId, 'round', roundId);
+        throw new Error('Previous round not found');
       }
       prevOrder = prevRound.order!;
     }
@@ -112,20 +112,28 @@ export default class BuzzerRoundService extends RoundService {
     /* Game: fetch next question and reset every player's state */
     const playerIds = await this.playerRepo.getAllPlayerIds();
     if (playerIds.length === 0) {
-      console.log('No players in the game, cannot move to next question');
+      console.error('No players in the game, cannot move to next question', 'game', this.gameId, 'round', roundId);
       throw new Error('No players in the game, cannot move to next question');
     }
 
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     if (!round) {
-      console.log('Round not found, cannot move to next question');
+      console.error('Round not found, cannot move to next question', 'game', this.gameId, 'round', roundId);
       throw new Error('Round not found, cannot move to next question');
     }
 
     const questionId = round.questions[questionOrder];
     const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     if (!gameQuestion) {
-      console.log('Question not found, cannot move to next question');
+      console.error(
+        'Question not found, cannot move to next question',
+        'game',
+        this.gameId,
+        'round',
+        roundId,
+        'question',
+        questionId
+      );
       throw new Error('Question not found, cannot move to next question');
     }
 

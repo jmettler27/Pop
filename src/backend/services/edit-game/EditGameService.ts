@@ -54,7 +54,12 @@ export default class EditGameService {
     try {
       await runTransaction(firestore, async (transaction) => {
         const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
-        const roundScorePolicy = game!.roundScorePolicy as ScorePolicyType;
+        if (!game) {
+          console.error();
+          throw new Error();
+        }
+
+        const roundScorePolicy = game.roundScorePolicy as ScorePolicyType;
 
         const round = await this.roundRepo.createRoundTransaction(transaction, roundType, {
           title: roundTitle,

@@ -18,8 +18,8 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
   async resetQuestionTransaction(transaction: Transaction, questionId: string) {
     const baseQuestion = (await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId)) as QuoteQuestion;
     if (!baseQuestion) {
-      throw new Error();
-      console.log();
+      console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Base question not found');
     }
     const toGuess = baseQuestion.toGuess;
 
@@ -28,8 +28,8 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
       questionId
     )) as GameQuoteQuestion;
     if (!gameQuestion) {
-      throw new Error();
-      console.log();
+      console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Game question not found');
     }
 
     await (this.gameQuestionRepo as GameQuoteQuestionRepository).resetPlayersTransaction(transaction, questionId);
@@ -88,6 +88,8 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
       questionId
     )) as BuzzerQuestionPlayers;
     if (!questionPlayers) {
+      console.error('Question players not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Question players not found');
     }
 
     const { buzzed } = questionPlayers;
@@ -97,6 +99,8 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
       questionId
     )) as GameQuoteQuestion;
     if (!gameQuestion) {
+      console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Game question not found');
     }
 
     const thinkingTime = gameQuestion.thinkingTime;
@@ -132,8 +136,20 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
           questionId
         )) as GameQuoteQuestion;
         if (!gameQuestion) {
-          console.log();
-          throw new Error();
+          console.error(
+            'Game question not found',
+            'game',
+            this.gameId,
+            'round',
+            this.roundId,
+            'question',
+            questionId,
+            'type',
+            this.questionType,
+            'player',
+            playerId
+          );
+          throw new Error('Game question not found');
         }
 
         const thinkingTime = gameQuestion.thinkingTime;
@@ -257,14 +273,14 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
           questionId
         )) as QuoteQuestion;
         if (!baseQuestion) {
-          console.log();
-          throw new Error();
+          console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          throw new Error('Base question not found');
         }
 
         const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as QuoteRound;
         if (!round) {
-          console.log();
-          throw new Error();
+          console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          throw new Error('Round not found');
         }
 
         const gameQuestion = (await this.gameQuestionRepo.getQuestionTransaction(
@@ -272,17 +288,25 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
           questionId
         )) as GameQuoteQuestion;
         if (!gameQuestion) {
-          console.log();
-          throw new Error();
+          console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          throw new Error('Game question not found');
         }
 
         const questionPlayers = (await (this.gameQuestionRepo as GameQuoteQuestionRepository).getPlayersTransaction(
           transaction,
           questionId
         )) as BuzzerQuestionPlayers;
-        if (!gameQuestion) {
-          console.log();
-          throw new Error();
+        if (!questionPlayers) {
+          console.error(
+            'Question players not found',
+            'game',
+            this.gameId,
+            'round',
+            this.roundId,
+            'question',
+            questionId
+          );
+          throw new Error('Question players not found');
         }
         const playerId = questionPlayers.buzzed[0] || null;
 
@@ -368,7 +392,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
         );
       });
     } catch (error) {
-      console.log(
+      console.error(
         'Failed to reveal quote element',
         'game',
         this.gameId,
@@ -408,14 +432,14 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
           questionId
         )) as QuoteQuestion;
         if (!baseQuestion) {
-          console.log();
-          throw new Error();
+          console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          throw new Error('Base question not found');
         }
 
         const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as QuoteRound;
         if (!round) {
-          console.log();
-          throw new Error();
+          console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          throw new Error('Round not found');
         }
 
         const gameQuestion = (await this.gameQuestionRepo.getQuestionTransaction(
@@ -423,14 +447,24 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
           questionId
         )) as GameQuoteQuestion;
         if (!gameQuestion) {
-          console.log();
-          throw new Error();
+          console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          throw new Error('Game question not found');
         }
 
         const player = await this.playerRepo.getPlayerTransaction(transaction, playerId);
         if (!player) {
-          console.log();
-          throw new Error();
+          console.error(
+            'Player not found',
+            'game',
+            this.gameId,
+            'round',
+            this.roundId,
+            'question',
+            questionId,
+            'player',
+            playerId
+          );
+          throw new Error('Player not found');
         }
 
         const newRevealed = gameQuestion.revealed!;

@@ -21,20 +21,20 @@ export default class NaguiRoundService extends RoundService {
   async handleRoundSelectedTransaction(transaction: Transaction, roundId: string, userId: string) {
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     if (!round) {
-      console.log();
-      throw new Error();
+      console.error('Round not found', 'game', this.gameId, 'round', roundId);
+      throw new Error('Round not found');
     }
 
     const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     if (!chooser) {
-      console.log();
-      throw new Error();
+      console.error('Chooser not found', 'game', this.gameId, 'round', roundId);
+      throw new Error('Chooser not found');
     }
 
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
     if (!game) {
-      console.log();
-      throw new Error();
+      console.error('Game not found', 'game', this.gameId, 'round', roundId);
+      throw new Error('Game not found');
     }
 
     const questionIds = round.questions;
@@ -46,8 +46,8 @@ export default class NaguiRoundService extends RoundService {
     if (currentRound) {
       const prevRound = await this.roundRepo.getRoundTransaction(transaction, currentRound);
       if (!prevRound) {
-        console.log();
-        throw new Error();
+        console.error('Previous round not found', 'game', this.gameId, 'round', roundId);
+        throw new Error('Previous round not found');
       }
       prevOrder = prevRound.order!;
     }
@@ -100,21 +100,21 @@ export default class NaguiRoundService extends RoundService {
     /* Game: fetch next question and reset every player's state */
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     if (!round) {
-      console.log();
-      throw new Error();
+      console.error('Round not found', 'game', this.gameId, 'round', roundId);
+      throw new Error('Round not found');
     }
 
     const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     if (!chooser) {
-      console.log();
-      throw new Error();
+      console.error('Chooser not found', 'game', this.gameId, 'round', roundId);
+      throw new Error('Chooser not found');
     }
 
     const questionId = round.questions[questionOrder];
     const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     if (!gameQuestion) {
-      console.log();
-      throw new Error();
+      console.error('Game question not found', 'game', this.gameId, 'round', roundId, 'question', questionId);
+      throw new Error('Game question not found');
     }
 
     const chooserOrder = chooser.chooserOrder;

@@ -57,7 +57,7 @@ export default function BuzzerOrganizerController({ baseQuestion, questionPlayer
         buzzerHead.current as string
       );
     }
-  }, [buzzed]);
+  }, [buzzed, bq.type, currentRound, game, gameId]);
 
   return (
     <div className="flex flex-col h-full w-full items-center justify-around">

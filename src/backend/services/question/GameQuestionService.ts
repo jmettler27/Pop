@@ -86,14 +86,6 @@ export default class GameQuestionService {
   }
 
   async resetQuestionTransaction(transaction: Transaction, questionId: string) {
-    // this.gameQuestionRepo.updateTransaction(transaction, questionId, {
-    //     winner: null,
-    //     selectedItems: [],
-    // });
-
-    // if (alone) {
-    //     this.timerRepo.resetTimerTransaction(transaction, questionId);
-    // }
     throw new Error('Not implemented');
   }
 

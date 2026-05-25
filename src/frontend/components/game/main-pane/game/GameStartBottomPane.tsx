@@ -36,6 +36,9 @@ function GameStartOrganizerController() {
   const game = useGame();
 
   const [handleStartGame, isStarting] = useAsyncAction(async () => {
+    if (!game) {
+      return;
+    }
     await startGame(game!.id as string);
   });
 

@@ -27,8 +27,16 @@ export default class GameProgressiveCluesQuestionService extends GameBuzzerQuest
           this.gameQuestionRepo as GameProgressiveCluesQuestionRepository
         ).getPlayersTransaction(transaction, questionId);
         if (!questionPlayers) {
-          console.log();
-          throw new Error();
+          console.error(
+            'Question players not found',
+            'game',
+            this.gameId,
+            'round',
+            this.roundId,
+            'question',
+            questionId
+          );
+          throw new Error('Question players not found');
         }
 
         const { buzzed, canceled } = questionPlayers;
@@ -38,14 +46,14 @@ export default class GameProgressiveCluesQuestionService extends GameBuzzerQuest
           questionId
         )) as GameProgressiveCluesQuestion;
         if (!gameQuestion) {
-          console.log();
-          throw new Error();
+          console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          throw new Error('Game question not found');
         }
 
         const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as ProgressiveCluesRound;
         if (!round) {
-          console.log();
-          throw new Error();
+          console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          throw new Error('Round not found');
         }
 
         // If there is a buzzed player, update his status to idle

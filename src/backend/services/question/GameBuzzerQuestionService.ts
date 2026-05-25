@@ -79,8 +79,18 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
       questionId
     );
     if (!questionPlayers) {
-      console.log();
-      throw new Error();
+      console.error(
+        'Question players not found',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'type',
+        this.questionType
+      );
+      throw new Error('Question players not found');
     }
     const buzzed = questionPlayers.buzzed;
     const gameQuestion = (await (this.gameQuestionRepo as GameBuzzerQuestionRepository).getQuestionTransaction(
@@ -225,11 +235,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
         );
         await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.IDLE);
         await this.soundRepo.addSoundTransaction(transaction, 'jpp_de_lair');
-        // const players = await (this.gameQuestionRepo as GameBuzzerQuestionRepository).getPlayersTransaction(transaction, questionId);
-        // const { buzzed } = players;
-        // if (buzzed[0] === playerId) {
-        //     await this.timerRepo.resetTimerTransaction(transaction);
-        // }
+
         console.log(
           'Player successfully removed from buzzer',
           'game',
@@ -276,8 +282,18 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
           questionId
         );
         if (!questionPlayers) {
-          console.log();
-          throw new Error();
+          console.error(
+            'Question players not found',
+            'game',
+            this.gameId,
+            'round',
+            this.roundId,
+            'question',
+            questionId,
+            'type',
+            this.questionType
+          );
+          throw new Error('Question players not found');
         }
 
         const buzzed = questionPlayers.buzzed!;
@@ -336,7 +352,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
         this.validateAnswerTransaction(transaction, questionId, playerId)
       );
     } catch (error) {
-      console.log(
+      console.error(
         'Failed to validate answer to buzzer question',
         'game',
         this.gameId,
@@ -408,7 +424,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
         this.invalidateAnswerTransaction(transaction, questionId, playerId)
       );
     } catch (error) {
-      console.log(
+      console.error(
         'Failed to invalidate answer to buzzer question',
         'game',
         this.gameId,
@@ -432,8 +448,18 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
       questionId
     )) as GameBuzzerQuestion;
     if (!gameQuestion) {
-      console.log();
-      throw new Error();
+      console.error(
+        'Game question not found',
+        'game',
+        this.gameId,
+        'round',
+        this.roundId,
+        'question',
+        questionId,
+        'type',
+        this.questionType
+      );
+      throw new Error('Game question not found');
     }
 
     const clueIdx = (gameQuestion as GameBuzzerQuestion & { currentClueIdx?: number }).currentClueIdx ?? 0;

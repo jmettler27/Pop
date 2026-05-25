@@ -63,15 +63,15 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
   async endQuestionTransaction(transaction: Transaction, questionId: string) {
     const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
     if (!round) {
-      console.log();
-      throw new Error();
+      console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Round not found');
     }
     const enumRound = round as EnumerationRound;
 
     const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction);
     if (!roundScores) {
-      console.log();
-      throw new Error();
+      console.error('Round scores not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Round scores not found');
     }
 
     const questionPlayers = await (this.gameQuestionRepo as GameEnumerationQuestionRepository).getPlayersTransaction(
@@ -79,8 +79,8 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
       questionId
     );
     if (!questionPlayers) {
-      console.log();
-      throw new Error();
+      console.error('Question players not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Question players not found');
     }
 
     const { scores: currRoundScores, scoresProgress: currRoundProgress } = roundScores!;
@@ -110,22 +110,30 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
       const { teamId, playerId, numCorrect, bet } = challenger;
       const challengers = await this.playerRepo.getPlayersByTeamId(teamId);
       if (!challengers || challengers.length <= 0) {
-        console.log();
-        throw new Error();
+        console.error('Challengers not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+        throw new Error('Challengers not found');
       }
 
       const spectators = await this.playerRepo.getAllOtherPlayers(teamId);
       if (!spectators || spectators.length <= 0) {
-        console.log();
-        throw new Error();
+        console.error('Spectators not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+        throw new Error('Spectators not found');
       }
 
       if (numCorrect < bet) {
         // The challenger did not succeed in its challenge
         const spectatorTeams = await this.teamRepo.getOtherTeams(teamId);
         if (!spectatorTeams || spectatorTeams.length <= 0) {
-          console.log();
-          throw new Error();
+          console.error(
+            'Spectator teams not found',
+            'game',
+            this.gameId,
+            'round',
+            this.roundId,
+            'question',
+            questionId
+          );
+          throw new Error('Spectator teams not found');
         }
 
         const reward = enumRound.rewardsPerQuestion;

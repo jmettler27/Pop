@@ -39,14 +39,14 @@ export default class GameMCQQuestionService extends GameQuestionService {
       questionId
     )) as GameMCQQuestion;
     if (!gameQuestion) {
-      console.log();
-      throw new Error();
+      console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Game question not found');
     }
 
     const teamId = await this.chooserRepo.getChooserIdTransaction(transaction);
     if (!teamId) {
-      console.log();
-      throw new Error();
+      console.error('Chooser team not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Chooser team not found');
     }
     const playerId = gameQuestion.playerId;
     const choiceIdx = gameQuestion.choiceIdx;
@@ -100,14 +100,14 @@ export default class GameMCQQuestionService extends GameQuestionService {
           questionId
         )) as MCQQuestion;
         if (!baseQuestion) {
-          console.log();
-          throw new Error();
+          console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          throw new Error('Base question not found');
         }
 
         const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as MCQRound;
         if (!round) {
-          console.log();
-          throw new Error();
+          console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          throw new Error('Round not found');
         }
         const mcqRound = round as MCQRound;
 

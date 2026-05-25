@@ -100,14 +100,14 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
   ): Promise<void> {
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
     if (!game) {
-      console.log();
-      throw new Error();
+      console.error('Game not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Game not found');
     }
 
     const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as OddOneOutRound;
     if (!round) {
-      console.log();
-      throw new Error();
+      console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Round not found');
     }
 
     const baseQuestion = (await this.baseQuestionRepo.getQuestionTransaction(
@@ -115,8 +115,8 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
       questionId
     )) as OddOneOutQuestion;
     if (!baseQuestion) {
-      console.log();
-      throw new Error();
+      console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Base question not found');
     }
 
     const gameQuestion = (await this.gameQuestionRepo.getQuestionTransaction(
@@ -124,14 +124,14 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
       questionId
     )) as GameOddOneOutQuestion;
     if (!gameQuestion) {
-      console.log();
-      throw new Error();
+      console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Game question not found');
     }
 
     const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     if (!chooser) {
-      console.log();
-      throw new Error();
+      console.error('Chooser not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Chooser not found');
     }
     const chooserOrder = chooser.chooserOrder;
     const chooserIdx = chooser.chooserIdx;
@@ -139,8 +139,8 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
 
     const teamPlayers = await this.playerRepo.getPlayersByTeamId(teamId);
     if (!teamPlayers) {
-      console.log();
-      throw new Error();
+      console.error('Team players not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Team players not found');
     }
 
     if (idx === baseQuestion.answerIdx) {

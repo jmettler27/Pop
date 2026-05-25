@@ -44,8 +44,8 @@ export default class GameReorderingQuestionService extends GameQuestionService {
       questionId
     )) as ReorderingQuestion;
     if (!baseQuestion) {
-      console.log();
-      throw new Error();
+      console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Base question not found');
     }
 
     const gameQuestion = (await this.gameQuestionRepo.getQuestionTransaction(
@@ -53,20 +53,20 @@ export default class GameReorderingQuestionService extends GameQuestionService {
       questionId
     )) as GameReorderingQuestion;
     if (!gameQuestion) {
-      console.log();
-      throw new Error();
+      console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Game question not found');
     }
 
     const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as ReorderingRound;
     if (!round) {
-      console.log();
-      throw new Error();
+      console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Round not found');
     }
 
     const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction);
     if (!roundScores) {
-      console.log();
-      throw new Error();
+      console.error('Round scores not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Round scores not found');
     }
 
     const maxScore = baseQuestion.items!.length;

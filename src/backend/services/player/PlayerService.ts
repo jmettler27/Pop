@@ -74,8 +74,8 @@ export default class PlayerService {
         if (authorized === null) {
           const timer = await this.timerRepo.getTimerTransaction(transaction);
           if (!timer) {
-            console.log();
-            throw new Error();
+            console.error('Timer not found', 'game', this.gameId);
+            throw new Error('Timer not found');
           }
 
           newVal = !timer.authorized;

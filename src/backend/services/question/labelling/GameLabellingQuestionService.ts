@@ -21,8 +21,8 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
       questionId
     )) as LabellingQuestion;
     if (!baseQuestion) {
-      console.log();
-      throw new Error();
+      console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Base question not found');
     }
 
     const gameQuestion = (await (this.gameQuestionRepo as GameLabellingQuestionRepository).getQuestionTransaction(
@@ -30,14 +30,14 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
       questionId
     )) as GameLabellingQuestion;
     if (!gameQuestion) {
-      console.log();
-      throw new Error();
+      console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Game question not found');
     }
 
     const playerIds = await this.playerRepo.getAllPlayerIds();
     if (!playerIds) {
-      console.log();
-      throw new Error();
+      console.error('Player IDs not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Player IDs not found');
     }
 
     await (this.gameQuestionRepo as GameLabellingQuestionRepository).resetPlayersTransaction(transaction, questionId);
@@ -70,8 +70,8 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
       questionId
     );
     if (!questionPlayers) {
-      console.log();
-      throw new Error();
+      console.error('Question players not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Question players not found');
     }
 
     const buzzed = questionPlayers.buzzed;
@@ -81,8 +81,8 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
       questionId
     )) as GameLabellingQuestion;
     if (!gameQuestion) {
-      console.log();
-      throw new Error();
+      console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      throw new Error('Game question not found');
     }
 
     if (buzzed.length === 0) {
@@ -129,8 +129,8 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
           questionId
         )) as LabellingQuestion;
         if (!baseQuestion) {
-          console.log();
-          throw new Error();
+          console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          throw new Error('Base question not found');
         }
 
         const gameQuestion = (await (this.gameQuestionRepo as GameLabellingQuestionRepository).getQuestionTransaction(
@@ -138,14 +138,14 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
           questionId
         )) as GameLabellingQuestion;
         if (!gameQuestion) {
-          console.log();
-          throw new Error();
+          console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          throw new Error('Game question not found');
         }
 
         const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as LabellingRound;
         if (!round) {
-          console.log();
-          throw new Error();
+          console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          throw new Error('Round not found');
         }
         const labellingRound = round as LabellingRound;
 
@@ -154,8 +154,16 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
           questionId
         );
         if (!questionPlayers) {
-          console.log();
-          throw new Error();
+          console.error(
+            'Question players not found',
+            'game',
+            this.gameId,
+            'round',
+            this.roundId,
+            'question',
+            questionId
+          );
+          throw new Error('Question players not found');
         }
         const playerId = questionPlayers.buzzed[0] || null;
 
@@ -169,8 +177,8 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
         if (playerId) {
           const player = await this.playerRepo.getPlayerTransaction(transaction, playerId);
           if (!player) {
-            console.log();
-            throw new Error();
+            console.error('Player not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+            throw new Error('Player not found');
           }
 
           await this.roundScoreRepo.increaseTeamScoreTransaction(
@@ -228,8 +236,8 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
           questionId
         )) as LabellingQuestion;
         if (!baseQuestion) {
-          console.log();
-          throw new Error();
+          console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          throw new Error('Base question not found');
         }
 
         const gameQuestion = (await (this.gameQuestionRepo as GameLabellingQuestionRepository).getQuestionTransaction(
@@ -237,20 +245,20 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
           questionId
         )) as GameLabellingQuestion;
         if (!gameQuestion) {
-          console.log();
-          throw new Error();
+          console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          throw new Error('Game question not found');
         }
 
         const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as LabellingRound;
         if (!round) {
-          console.log();
-          throw new Error();
+          console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          throw new Error('Round not found');
         }
 
         const player = await this.playerRepo.getPlayerTransaction(transaction, playerId);
         if (!player) {
-          console.log();
-          throw new Error();
+          console.error('Player not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          throw new Error('Player not found');
         }
 
         const newRevealed = gameQuestion.revealed;
