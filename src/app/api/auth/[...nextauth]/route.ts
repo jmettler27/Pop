@@ -12,15 +12,24 @@ if (useEmulators) {
   delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
 }
 
-const firestoreAdapter = useEmulators
-  ? FirestoreAdapter(getFirestore(getApps().length === 0 ? initializeApp({ projectId: 'demo-pop' }) : getApps()[0]))
-  : FirestoreAdapter({
+let _adapter: ReturnType<typeof FirestoreAdapter> | undefined;
+function getAdapter() {
+  if (_adapter) return _adapter;
+  if (useEmulators) {
+    _adapter = FirestoreAdapter(
+      getFirestore(getApps().length === 0 ? initializeApp({ projectId: 'demo-pop' }) : getApps()[0])
+    );
+  } else {
+    _adapter = FirestoreAdapter({
       credential: cert({
         projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
         privateKey: process.env.FIREBASE_PRIVATE_KEY ? JSON.parse(process.env.FIREBASE_PRIVATE_KEY) : undefined,
       }),
     });
+  }
+  return _adapter;
+}
 
 const providers: NextAuthOptions['providers'] = [];
 if (useEmulators) {
@@ -60,7 +69,17 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   providers,
   session: { strategy: useEmulators ? 'jwt' : 'database' },
-  ...(useEmulators ? {} : { adapter: firestoreAdapter }),
+  get adapter() {
+    if (useEmulators) return undefined;
+    if (
+      !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ||
+      !process.env.FIREBASE_CLIENT_EMAIL ||
+      !process.env.FIREBASE_PRIVATE_KEY
+    ) {
+      return undefined;
+    }
+    return getAdapter();
+  },
   callbacks: {
     async session({ session, token, user }) {
       if (token) {
@@ -73,5 +92,13 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
-export const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
+// Lazy handler so NextAuth(authOptions) — which may access the adapter — is deferred
+// until the first real request, not at module load time during Next.js build.
+let _handler: ReturnType<typeof NextAuth> | undefined;
+function getHandler() {
+  if (!_handler) _handler = NextAuth(authOptions);
+  return _handler;
+}
+
+export const GET = (...args: Parameters<ReturnType<typeof NextAuth>>) => getHandler()(...args);
+export const POST = (...args: Parameters<ReturnType<typeof NextAuth>>) => getHandler()(...args);
