@@ -27,7 +27,7 @@ function* walkFiles(dir) {
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry);
     if (statSync(full).isDirectory()) yield* walkFiles(full);
-    else if (full.endsWith('.js') || full.endsWith('.jsx')) yield full;
+    else if (/\.[jt]sx?$/.test(full)) yield full;
   }
 }
 
