@@ -43,7 +43,7 @@ export default function SubmitMatchDialog({
     ) {
       setDialogOpen(true);
     }
-  }, [edges]);
+  }, [edges, numCols]);
 
   const handleMatchCancel = () => {
     setEdges([]);

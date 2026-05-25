@@ -47,7 +47,7 @@ export default function PlayerName({ playerId, teamColor = true }: PlayerNamePro
           setTeamLoading(false);
         });
     }
-  }, [player]);
+  }, [player, gameId, teamColor]);
 
   if (playerError) {
     return <></>;

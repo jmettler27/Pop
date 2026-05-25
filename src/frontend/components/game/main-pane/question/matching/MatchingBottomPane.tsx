@@ -175,7 +175,7 @@ function MatchingRunningOrder({ chooser }: { chooser: Chooser }) {
                 isCanceled && 'line-through opacity-25'
               )}
             >
-              {idx + 1}. {getTeamName(teams as Team[], teamId)}{' '}
+              {getTeamName(teams as Team[], teamId)}{' '}
               {teamId in teamNumMistakes && `(${teamNumMistakes[teamId]})`}
             </li>
           );

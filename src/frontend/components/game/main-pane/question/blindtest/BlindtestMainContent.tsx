@@ -59,7 +59,7 @@ function ActiveBlindtestMainContent({ baseQuestion }: ActiveBlindtestMainContent
       audioRef.current.play();
       setIsPlaying(true);
     }
-  }, [game!.status]);
+  }, [game, volume]);
 
   const theme = useTheme();
   const mainIconColor = theme.palette.mode === 'dark' ? '#fff' : '#000';

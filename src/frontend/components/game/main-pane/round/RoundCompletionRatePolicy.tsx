@@ -7,6 +7,11 @@ import { useIntl } from 'react-intl';
 import { numberToKeycapEmoji } from '@/frontend/helpers/emojis';
 import fmt, { keyChunks } from '@/frontend/helpers/fmt';
 import defineMessages from '@/frontend/i18n/defineMessages';
+import { LabellingRound } from '@/models/rounds/labelling';
+import { MatchingRound } from '@/models/rounds/matching';
+import { OddOneOutRound } from '@/models/rounds/odd-one-out';
+import { QuoteRound } from '@/models/rounds/quote';
+import { ReorderingRound } from '@/models/rounds/reordering';
 import { RoundType } from '@/models/rounds/round-type';
 import { AnyRound } from '@/models/rounds/RoundFactory';
 
@@ -49,17 +54,17 @@ function RoundCompletionRatePolicyTitle({ round }: { round: AnyRound }) {
     case RoundType.PROGRESSIVE_CLUES:
       return <BuzzerRoundCompletionRatePolicyTitle round={round} />;
     case RoundType.LABELLING:
-      return <LabellingRoundCompletionRatePolicyTitle round={round} />;
+      return <LabellingRoundCompletionRatePolicyTitle round={round as LabellingRound} />;
     case RoundType.MATCHING:
-      return <MatchingRoundCompletionRatePolicyTitle round={round} />;
+      return <MatchingRoundCompletionRatePolicyTitle round={round as MatchingRound} />;
     case RoundType.NAGUI:
       return <NaguiRoundCompletionRatePolicyTitle />;
     case RoundType.ODD_ONE_OUT:
-      return <OddOneOutRoundCompletionRatePolicyTitle round={round} />;
+      return <OddOneOutRoundCompletionRatePolicyTitle round={round as OddOneOutRound} />;
     case RoundType.QUOTE:
-      return <QuoteRoundCompletionRatePolicyTitle round={round} />;
+      return <QuoteRoundCompletionRatePolicyTitle round={round as QuoteRound} />;
     case RoundType.REORDERING:
-      return <ReorderingRoundCompletionRatePolicyTitle round={round} />;
+      return <ReorderingRoundCompletionRatePolicyTitle round={round as ReorderingRound} />;
     default:
       return <></>;
   }
@@ -105,48 +110,48 @@ function BuzzerRoundCompletionRatePolicyTitle({ round }: { round: AnyRound }) {
   );
 }
 
-function QuoteRoundCompletionRatePolicyTitle({ round }: { round: AnyRound }) {
+function QuoteRoundCompletionRatePolicyTitle({ round }: { round: QuoteRound }) {
   const { formatMessage } = useIntl();
   return (
     <h1 className="2xl:text-3xl text-center">
       {fmt(formatMessage, messages.pointsPerElementFound, {
-        points: (round as unknown as { rewardsPerElement: number }).rewardsPerElement,
+        points: round.rewardsPerElement,
         ...richTags,
       })}
     </h1>
   );
 }
 
-function LabellingRoundCompletionRatePolicyTitle({ round }: { round: AnyRound }) {
+function LabellingRoundCompletionRatePolicyTitle({ round }: { round: LabellingRound }) {
   const { formatMessage } = useIntl();
   return (
     <h1 className="2xl:text-3xl text-center">
       {fmt(formatMessage, messages.pointsPerLabelFound, {
-        points: (round as unknown as { rewardsPerElement: number }).rewardsPerElement,
+        points: round.rewardsPerElement,
         ...richTags,
       })}
     </h1>
   );
 }
 
-function OddOneOutRoundCompletionRatePolicyTitle({ round }: { round: AnyRound }) {
+function OddOneOutRoundCompletionRatePolicyTitle({ round }: { round: OddOneOutRound }) {
   const { formatMessage } = useIntl();
   return (
     <h1 className="2xl:text-2xl text-center">
       {fmt(formatMessage, messages.oddOneOutPenalty, {
-        penalty: (round as unknown as { mistakePenalty: number }).mistakePenalty,
+        penalty: round.mistakePenalty,
         ...richTags,
       })}
     </h1>
   );
 }
 
-function MatchingRoundCompletionRatePolicyTitle({ round }: { round: AnyRound }) {
+function MatchingRoundCompletionRatePolicyTitle({ round }: { round: MatchingRound }) {
   const { formatMessage } = useIntl();
   return (
     <h1 className="2xl:text-2xl text-center">
       {fmt(formatMessage, messages.matchingPenalty, {
-        penalty: (round as unknown as { mistakePenalty: number }).mistakePenalty,
+        penalty: round.mistakePenalty,
         ...richTags,
       })}
     </h1>
@@ -158,12 +163,12 @@ function NaguiRoundCompletionRatePolicyTitle() {
   return <h1 className="2xl:text-3xl text-center">{fmt(formatMessage, messages.naguiTitle, richTags)}</h1>;
 }
 
-function ReorderingRoundCompletionRatePolicyTitle({ round }: { round: AnyRound }) {
+function ReorderingRoundCompletionRatePolicyTitle({ round }: { round: ReorderingRound }) {
   const { formatMessage } = useIntl();
   return (
     <h1 className="2xl:text-3xl text-center">
       {fmt(formatMessage, messages.pointsPerCorrectPosition, {
-        points: (round as unknown as { rewardsPerElement: number }).rewardsPerElement,
+        points: round.rewardsPerElement,
         ...richTags,
       })}
     </h1>

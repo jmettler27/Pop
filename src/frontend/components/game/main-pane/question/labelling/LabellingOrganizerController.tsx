@@ -58,7 +58,7 @@ export default function LabellingOrganizerController({
         buzzerHeadId
       );
     }
-  }, [buzzed, game]);
+  }, [buzzed, game, gameId]);
 
   if (!game) return null;
 

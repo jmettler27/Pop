@@ -45,10 +45,7 @@ interface SelectedItem {
 }
 
 export default function OddOneOutMiddlePane({ baseQuestion }: { baseQuestion: OddOneOutQuestion }) {
-  const randomMapping = useMemo(
-    () => shuffleIndices((baseQuestion.items ?? []).length),
-    [(baseQuestion.items ?? []).length]
-  );
+  const randomMapping = useMemo(() => shuffleIndices((baseQuestion.items ?? []).length), [baseQuestion.items]);
 
   return (
     <div className="flex flex-col h-full items-center">
@@ -167,7 +164,7 @@ function OddOneOutProposals({
     } else if (selectedItems.length > 0) {
       setExpandedIdx(selectedItems[selectedItems.length - 1]!.idx);
     }
-  }, [selectedItems, game?.status]);
+  }, [selectedItems, game?.status, baseQuestion.answerIdx, game]);
 
   const proposalIsExpanded = (origIdx: number) => origIdx === expandedIdx;
   const handleAccordionChange = (origIdx: number) => {

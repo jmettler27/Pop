@@ -26,7 +26,7 @@ export default function GameChooserOrder({ chooser }: { chooser: Chooser }) {
       <ol className="overflow-auto">
         {(chooser.chooserOrder as string[]).map((teamId: string, idx: number) => (
           <li key={idx} className={clsx('xl:text-xl 2xl:text-2xl', idx === chooser.chooserIdx && 'text-focus')}>
-            {idx + 1}. {getTeamName(teams, teamId)}
+            {getTeamName(teams, teamId)}
           </li>
         ))}
       </ol>
