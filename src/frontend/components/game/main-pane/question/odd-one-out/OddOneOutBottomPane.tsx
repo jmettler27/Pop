@@ -75,9 +75,7 @@ function OddOneOutChooserController() {
     return <></>;
   }
 
-  const timerData = timer as unknown as { authorized: boolean };
-
-  return timerData.authorized ? (
+  return timer.authorized ? (
     <span className="text-3xl text-green-500 font-bold">👍 {intl.formatMessage(messages.youCanGo)}</span>
   ) : (
     <span className="text-3xl text-yellow-500">🤨 {intl.formatMessage(messages.waitForAuth)}</span>

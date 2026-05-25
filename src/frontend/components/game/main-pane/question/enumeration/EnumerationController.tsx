@@ -6,7 +6,6 @@ import EnumerationThinkingController from '@/frontend/components/game/main-pane/
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import { EnumerationQuestion, EnumerationQuestionStatus } from '@/models/questions/enumeration';
-import { Timer } from '@/models/timer';
 
 export default function EnumerationController({ baseQuestion }: { baseQuestion: EnumerationQuestion }) {
   const game = useGame();
@@ -39,7 +38,7 @@ export default function EnumerationController({ baseQuestion }: { baseQuestion: 
 
   switch (gameQuestionStatus) {
     case EnumerationQuestionStatus.THINKING:
-      return <EnumerationThinkingController baseQuestion={baseQuestion} timer={timer as unknown as Timer} />;
+      return <EnumerationThinkingController baseQuestion={baseQuestion} timer={timer} />;
     case EnumerationQuestionStatus.CHALLENGE:
       return <EnumerationChallengeController />;
   }

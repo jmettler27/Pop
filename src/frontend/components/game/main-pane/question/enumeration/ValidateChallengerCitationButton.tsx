@@ -41,7 +41,7 @@ export default function ValidateChallengerCitationButton() {
     return <></>;
   }
 
-  const isClickable = (timer as { status?: string }).status === TimerStatus.START;
+  const isClickable = timer.status === TimerStatus.START;
 
   return (
     <Tooltip

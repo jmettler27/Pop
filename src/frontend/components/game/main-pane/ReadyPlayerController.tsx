@@ -95,7 +95,7 @@ export default function ReadyPlayerController({ isLastQuestion }: ReadyPlayerCon
 
   return (
     <div className="flex flex-col items-center justify-center space-y-5">
-      {(timer as { authorized?: boolean }).authorized && (
+      {timer.authorized && (
         <>
           <ReadyPlayerHeader isLastQuestion={isLastQuestion} />
           {myRole === ParticipantRole.PLAYER && <ReadyPlayerButton />}

@@ -143,7 +143,7 @@ function EnumerationQuestionAnswerContent({
 
   const showComplete = game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER;
 
-  const timerStatus = (timer as { status?: string }).status;
+  const timerStatus = timer.status;
   const gameQuestionStatus = (gameQuestion as unknown as { status?: string }).status;
   const challenger = (questionPlayers as { challenger?: { cited?: Record<string, unknown> } }).challenger;
 

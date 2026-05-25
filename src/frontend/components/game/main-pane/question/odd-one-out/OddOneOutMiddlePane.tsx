@@ -117,7 +117,6 @@ function OddOneOutMainContent({
   }
 
   const gameQuestionData = gameQuestion as unknown as GameOddOneOutQuestion;
-  const timerData = timer as unknown as { authorized: boolean };
 
   return (
     <OddOneOutProposals
@@ -125,7 +124,7 @@ function OddOneOutMainContent({
       randomization={randomization}
       selectedItems={gameQuestionData.selectedItems as unknown as SelectedItem[]}
       isChooser={isChooser ?? false}
-      authorized={timerData.authorized}
+      authorized={timer.authorized}
     />
   );
 }

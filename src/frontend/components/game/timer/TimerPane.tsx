@@ -93,13 +93,16 @@ function OrganizerTimerPane() {
   }
 
   const serverTimeOffset = offsetSnapshot.val() as number;
-  const timerData = timer as unknown as TimerData;
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-2">
       <TimerHeader />
-      <OrganizerTimerController timer={timerData} serverTimeOffset={serverTimeOffset} onTimerEnd={handleTimerEnd} />
-      <AuthorizePlayersSwitch authorized={timerData.authorized ?? false} />
+      <OrganizerTimerController
+        timer={timer as unknown as TimerData}
+        serverTimeOffset={serverTimeOffset}
+        onTimerEnd={handleTimerEnd}
+      />
+      <AuthorizePlayersSwitch authorized={timer.authorized ?? false} />
     </div>
   );
 }
