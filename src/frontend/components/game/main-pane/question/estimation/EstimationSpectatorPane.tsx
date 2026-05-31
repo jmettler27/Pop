@@ -24,10 +24,10 @@ export default function EstimationSpectatorPane({ baseQuestion, gameQuestion }: 
 
   return (
     <div className="flex flex-col h-full items-center">
-      <div className="h-[15%] w-full flex flex-col items-center justify-center">
+      <div className="flex-shrink-0 w-full flex flex-col items-center justify-center py-3">
         <EstimationQuestionHeader baseQuestion={baseQuestion} />
       </div>
-      <div className="h-[85%] w-full flex flex-col items-center justify-center">
+      <div className="flex-1 min-h-0 w-full flex flex-col items-center justify-center">
         {game!.status === GameStatus.QUESTION_ACTIVE && <EstimationSpectatorActiveView />}
         {game!.status === GameStatus.QUESTION_END && (
           <EstimationEndView gameQuestion={gameQuestion} baseQuestion={baseQuestion} />
