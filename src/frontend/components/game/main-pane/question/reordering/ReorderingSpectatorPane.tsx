@@ -1,23 +1,26 @@
 'use client';
 
-import { useState } from 'react';
-
 import { List, ListItemButton, Typography } from '@mui/material';
 
 import {
-  ReorderingItemAccordion,
+  ReorderingEndView,
   ReorderingQuestionHeader,
 } from '@/frontend/components/game/main-pane/question/reordering/ReorderingCommon';
 import useGame from '@/frontend/hooks/useGame';
 import { GameStatus } from '@/models/games/game-status';
-import { ReorderingQuestion } from '@/models/questions/reordering';
+import { GameReorderingQuestion, ReorderingQuestion } from '@/models/questions/reordering';
 
 interface ReorderingSpectatorPaneProps {
   baseQuestion: ReorderingQuestion;
+  gameQuestion: GameReorderingQuestion;
   randomMapping: number[];
 }
 
-export default function ReorderingSpectatorPane({ baseQuestion, randomMapping }: ReorderingSpectatorPaneProps) {
+export default function ReorderingSpectatorPane({
+  baseQuestion,
+  gameQuestion,
+  randomMapping,
+}: ReorderingSpectatorPaneProps) {
   const game = useGame();
   if (!game) return null;
 
@@ -30,13 +33,21 @@ export default function ReorderingSpectatorPane({ baseQuestion, randomMapping }:
         {game.status === GameStatus.QUESTION_ACTIVE && (
           <ReorderingSpectatorActiveView baseQuestion={baseQuestion} randomMapping={randomMapping} />
         )}
-        {game.status === GameStatus.QUESTION_END && <ReorderingSpectatorEndView baseQuestion={baseQuestion} />}
+        {game.status === GameStatus.QUESTION_END && (
+          <ReorderingEndView baseQuestion={baseQuestion} gameQuestion={gameQuestion} />
+        )}
       </div>
     </div>
   );
 }
 
-function ReorderingSpectatorActiveView({ baseQuestion, randomMapping }: ReorderingSpectatorPaneProps) {
+function ReorderingSpectatorActiveView({
+  baseQuestion,
+  randomMapping,
+}: {
+  baseQuestion: ReorderingQuestion;
+  randomMapping: number[];
+}) {
   const items = baseQuestion.items ?? [];
   return (
     <div className="w-full flex flex-col items-center justify-center p-4">
@@ -67,34 +78,6 @@ function ReorderingSpectatorActiveView({ baseQuestion, randomMapping }: Reorderi
               </Typography>
             </ListItemButton>
           </div>
-        ))}
-      </List>
-    </div>
-  );
-}
-
-function ReorderingSpectatorEndView({ baseQuestion }: { baseQuestion: ReorderingQuestion }) {
-  const [expandedIdx, setExpandedIdx] = useState<number | false>(false);
-  const items = baseQuestion.items ?? [];
-  const displayOrder = items.map((_: unknown, i: number) => i);
-
-  const handleAccordionChange = (idx: number) => {
-    setExpandedIdx(expandedIdx === idx ? false : idx);
-  };
-
-  return (
-    <div className="flex flex-col items-center w-1/2 max-h-[90%]">
-      <List className="rounded-lg w-full overflow-y-auto mb-3 bg-white dark:bg-slate-900">
-        {displayOrder.map((idx: number, position: number) => (
-          <ReorderingItemAccordion
-            key={idx}
-            item={items[idx]}
-            displayOrder={position}
-            expanded={expandedIdx === idx}
-            onAccordionChange={() => handleAccordionChange(idx)}
-            teamPlacedAt={undefined}
-            isCorrect={undefined}
-          />
         ))}
       </List>
     </div>

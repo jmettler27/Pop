@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import {
   closestCenter,
@@ -38,7 +38,7 @@ import { useIntl } from 'react-intl';
 import { submitOrdering } from '@/backend/services/question/reordering/actions';
 import {
   messages,
-  ReorderingItemAccordion,
+  ReorderingEndView,
   ReorderingQuestionHeader,
 } from '@/frontend/components/game/main-pane/question/reordering/ReorderingCommon';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
@@ -47,7 +47,7 @@ import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameStatus } from '@/models/games/game-status';
-import { GameReorderingQuestion, Ordering, ReorderingItem, ReorderingQuestion } from '@/models/questions/reordering';
+import { GameReorderingQuestion, ReorderingItem, ReorderingQuestion } from '@/models/questions/reordering';
 
 interface ReorderingPlayerPaneProps {
   baseQuestion: ReorderingQuestion;
@@ -57,22 +57,6 @@ interface ReorderingPlayerPaneProps {
 
 export default function ReorderingPlayerPane({ baseQuestion, gameQuestion, randomMapping }: ReorderingPlayerPaneProps) {
   const game = useGame();
-  const myTeam = useTeam();
-
-  // Get team's submission
-  const orderings = gameQuestion?.orderings ?? [];
-  const teamSubmission = myTeam ? orderings.find((o) => o.teamId === myTeam) : undefined;
-  const teamSubmitted = !!teamSubmission;
-
-  // Build placement map for score comparison
-  const teamPlacementMap = useMemo(() => {
-    if (!teamSubmission) return {} as Record<number, number>;
-    const map: Record<number, number> = {};
-    teamSubmission.ordering.forEach((itemIdx: number, positionPlaced: number) => {
-      map[itemIdx] = positionPlaced;
-    });
-    return map;
-  }, [teamSubmission]);
 
   if (!game) return null;
 
@@ -90,12 +74,7 @@ export default function ReorderingPlayerPane({ baseQuestion, gameQuestion, rando
           />
         )}
         {game.status === GameStatus.QUESTION_END && (
-          <ReorderingPlayerEndView
-            baseQuestion={baseQuestion}
-            teamSubmission={teamSubmission}
-            teamSubmitted={teamSubmitted}
-            teamPlacementMap={teamPlacementMap}
-          />
+          <ReorderingEndView gameQuestion={gameQuestion} baseQuestion={baseQuestion} />
         )}
       </div>
     </div>
@@ -303,70 +282,6 @@ function ReorderingItemDraggable({ itemIdx, displayOrder, item, isLast, disabled
           </div>
         </ListItemButton>
       </div>
-    </div>
-  );
-}
-
-interface ReorderingPlayerEndViewProps {
-  baseQuestion: ReorderingQuestion;
-  teamSubmission: Ordering | undefined;
-  teamSubmitted: boolean;
-  teamPlacementMap: Record<number, number>;
-}
-
-function ReorderingPlayerEndView({
-  baseQuestion,
-  teamSubmission,
-  teamSubmitted,
-  teamPlacementMap,
-}: ReorderingPlayerEndViewProps) {
-  const intl = useIntl();
-  const [expandedIdx, setExpandedIdx] = useState<number | false>(false);
-  const items = baseQuestion.items ?? [];
-  const displayOrder = items.map((_: unknown, i: number) => i);
-
-  const handleAccordionChange = (idx: number) => {
-    setExpandedIdx(expandedIdx === idx ? false : idx);
-  };
-
-  return (
-    <div className="flex flex-col items-center w-1/2 max-h-[90%]">
-      <List className="rounded-lg w-full overflow-y-auto mb-3 bg-white dark:bg-slate-900">
-        {displayOrder.map((idx: number, position: number) => (
-          <ReorderingItemAccordion
-            key={idx}
-            item={items[idx]}
-            displayOrder={position}
-            expanded={expandedIdx === idx}
-            onAccordionChange={() => handleAccordionChange(idx)}
-            teamSubmitted={teamSubmitted}
-            teamPlacedAt={teamPlacementMap[idx]}
-            isCorrect={teamPlacementMap[idx] === position}
-          />
-        ))}
-      </List>
-
-      {teamSubmitted && teamSubmission && (
-        <div className="flex items-center justify-center mt-2 mb-3">
-          <Typography
-            variant="h5"
-            className="font-bold"
-            sx={{
-              color:
-                teamSubmission.score === items.length
-                  ? 'success.main'
-                  : teamSubmission.score >= items.length / 2
-                    ? 'warning.main'
-                    : 'error.main',
-            }}
-          >
-            {intl.formatMessage(messages.yourScore, {
-              score: teamSubmission.score,
-              maxScore: items.length,
-            })}
-          </Typography>
-        </div>
-      )}
     </div>
   );
 }

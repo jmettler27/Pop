@@ -39,8 +39,8 @@ export const messages = defineMessages('frontend.game.middle.EstimationMiddlePan
   correctAnswer: 'Correct answer',
   bounds: 'Between {min} and {max}',
   noSubmission: 'No answer',
-  noBetsSubmitted: 'No bets were submitted this round',
-  noWinner: 'Nobody got it right this round',
+  noBetsSubmitted: 'No bets were submitted',
+  noWinner: 'Nobody got it right',
 });
 
 interface TeamRecord {

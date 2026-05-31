@@ -36,7 +36,9 @@ export default function ReorderingMiddlePane({ baseQuestion }: { baseQuestion: R
 
   switch (myRole) {
     case ParticipantRole.ORGANIZER:
-      return <ReorderingOrganizerPane baseQuestion={baseQuestion} />;
+      return (
+        <ReorderingOrganizerPane baseQuestion={baseQuestion} gameQuestion={gameQuestion as GameReorderingQuestion} />
+      );
     case ParticipantRole.PLAYER:
       return (
         <ReorderingPlayerPane
@@ -46,7 +48,13 @@ export default function ReorderingMiddlePane({ baseQuestion }: { baseQuestion: R
         />
       );
     case ParticipantRole.SPECTATOR:
-      return <ReorderingSpectatorPane baseQuestion={baseQuestion} randomMapping={randomMapping} />;
+      return (
+        <ReorderingSpectatorPane
+          baseQuestion={baseQuestion}
+          gameQuestion={gameQuestion as GameReorderingQuestion}
+          randomMapping={randomMapping}
+        />
+      );
     default:
       return <></>;
   }
