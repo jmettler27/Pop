@@ -11,6 +11,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
+import { restrictToFirstScrollableAncestor, restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
   arrayMove,
   SortableContext,
@@ -65,7 +66,7 @@ export default function ReorderingPlayerPane({ baseQuestion, gameQuestion, rando
       <div className="h-[15%] w-full flex flex-col items-center justify-center">
         <ReorderingQuestionHeader baseQuestion={baseQuestion} />
       </div>
-      <div className="h-[85%] w-full flex flex-col items-center justify-center">
+      <div className="h-[85%] w-full flex flex-col items-center justify-center overflow-hidden">
         {game.status === GameStatus.QUESTION_ACTIVE && (
           <ReorderingPlayerActiveView
             baseQuestion={baseQuestion}
@@ -139,8 +140,8 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
 
   if (teamSubmitted && teamSubmission) {
     return (
-      <div className="w-full flex flex-col items-center justify-center p-4 space-y-4">
-        <List className="rounded-lg max-h-[80%] w-1/2 overflow-y-auto mb-3 bg-white dark:bg-slate-900">
+      <div className="h-full w-full flex flex-col items-center justify-center p-4 space-y-4">
+        <List className="rounded-lg w-1/2 max-h-[60vh] overflow-y-auto mb-3 bg-white dark:bg-slate-900">
           {teamSubmission.map((idx: number, displayOrder: number) => (
             <ListItemButton key={idx} divider={displayOrder !== teamSubmission.length - 1} disabled>
               <Typography variant="h6" className="flex items-center">
@@ -162,10 +163,15 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
   }
 
   return (
-    <div className="w-full flex flex-col items-center justify-center p-4">
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+    <div className="h-full w-full flex flex-col items-center justify-center py-4">
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+        modifiers={[restrictToVerticalAxis, restrictToFirstScrollableAncestor]}
+      >
         <SortableContext items={orderedIndices} strategy={verticalListSortingStrategy}>
-          <List className="rounded-2xl max-h-[90%] w-[55%] overflow-y-auto mb-3 bg-slate-900/70 p-2 shadow-lg ring-1 ring-slate-700/70">
+          <List className="rounded-2xl w-[55vw] max-h-[60vh] overflow-y-auto mb-3 bg-slate-900/70 p-2 shadow-lg ring-1 ring-slate-700/70">
             {orderedIndices.map((idx: number, displayOrder: number) => (
               <ReorderingItemDraggable
                 key={idx}
@@ -184,7 +190,7 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
         variant="contained"
         color="success"
         size="large"
-        className="rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 mt-3"
+        className="flex-shrink-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 mt-3"
         onClick={handleOpenDialog}
         disabled={isSubmitting || teamSubmitted}
       >
