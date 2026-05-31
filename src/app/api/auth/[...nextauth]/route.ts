@@ -1,7 +1,7 @@
 import { FirestoreAdapter } from '@auth/firebase-adapter';
 import { cert, getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import NextAuth, { type NextAuthOptions } from 'next-auth';
+import NextAuth, { Profile, type NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import DiscordProvider from 'next-auth/providers/discord';
 import GoogleProvider from 'next-auth/providers/google';
@@ -71,6 +71,15 @@ export const authOptions: NextAuthOptions = {
         session.user.id = user.id;
       }
       return session;
+    },
+  },
+  events: {
+    async signIn({ user, account, profile }) {
+      if (!firestoreAdapter?.updateUser || !account || !profile) return;
+      const newImage = (profile as Profile).image;
+      if (newImage && newImage !== user.image) {
+        await firestoreAdapter.updateUser({ id: user.id, image: newImage });
+      }
     },
   },
 };
