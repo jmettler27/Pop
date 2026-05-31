@@ -17,56 +17,71 @@ const SoundboardAudioPlayer = memo(function SoundboardAudioPlayer() {
   const gameId = id as string;
   const [volume, setVolume] = useState(initVolume);
 
-  const newestSoundIdRef = useRef<string | null>(null);
+  // Ref so the onSnapshot callback always reads the latest volume without needing to re-subscribe.
+  const volumeRef = useRef(volume);
+
+  // Sounds blocked by the browser's autoplay policy; drained on the next user gesture.
+  const pendingSoundsRef = useRef<string[]>([]);
 
   useEffect(() => {
-    if (sounds && Object.keys(sounds).length > 0) {
-      const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId as string, 'realtime', 'sounds', 'queue');
-      const q = query(queueCollectionRef);
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === 'added') {
-            const newSound = { ...change.doc.data(), id: change.doc.id } as { id: string; filename: string };
-            const playedSounds: string[] = JSON.parse(localStorage.getItem('playedSounds') ?? '[]');
-            if (newSound.id !== newestSoundIdRef.current && !playedSounds.includes(newSound.id)) {
-              newestSoundIdRef.current = newSound.id;
-              playedSounds.push(newSound.id);
-              localStorage.setItem('playedSounds', JSON.stringify(playedSounds));
-              console.log('New sound: ', newSound);
-              const soundEntry = (sounds as Record<string, { name: string; url: string }>)[newSound.filename];
-              if (soundEntry) {
-                const audio = new Audio(soundEntry.url);
-                audio.volume = volume;
-                audio.autoplay = true;
-                audio.play();
-              }
-            }
-          }
+    volumeRef.current = volume;
+  }, [volume]);
+
+  // Plays any sounds that were buffered because the browser had not yet received a user gesture.
+  const playPending = () => {
+    const pending = pendingSoundsRef.current.splice(0);
+    pending.forEach((url) => {
+      const a = new Audio(url);
+      a.volume = volumeRef.current;
+      a.play().catch(() => {});
+    });
+  };
+
+  useEffect(() => {
+    const q = query(collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue'));
+    let isInitialLoad = true;
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      // Skip the first snapshot: Firestore reports all pre-existing docs as 'added' on subscribe,
+      // which would play every sound queued since the last reset for players joining mid-game.
+      if (isInitialLoad) {
+        isInitialLoad = false;
+        return;
+      }
+      snapshot.docChanges().forEach((change) => {
+        if (change.type !== 'added') {
+          return;
+        }
+        const { filename } = change.doc.data() as { filename: string };
+        const soundEntry = (sounds as Record<string, { url: string }>)[filename];
+        if (!soundEntry) {
+          return;
+        }
+        const audio = new Audio(soundEntry.url);
+        audio.volume = volumeRef.current;
+        // play() may reject if no user gesture has occurred yet (browser autoplay policy).
+        // Buffer the URL so it can be retried on the next interaction with the volume controls.
+        audio.play().catch(() => {
+          pendingSoundsRef.current.push(soundEntry.url);
         });
       });
-      // Clean up the listener when the component unmounts
-      return () => unsubscribe();
-    }
-  }, [volume, gameId]);
+    });
+    return () => unsubscribe();
+  }, [gameId]);
 
   const handleVolumeChange = (_event: Event, value: number | number[]) => {
     setVolume(typeof value === 'number' ? value : value[0]);
+    playPending();
   };
 
   return (
     <Box className="w-full overflow-hidden">
-      {/* Volume controller */}
       <Stack spacing={2} direction="row" sx={{ mb: 1, px: 1 }} alignItems="center">
-        {/* Mute/unmute button */}
         <IconButton
           size="small"
           aria-label="play/pause"
           onClick={() => {
-            if (volume === 0) {
-              setVolume(initVolume);
-            } else {
-              setVolume(0);
-            }
+            setVolume((v) => (v === 0 ? initVolume : 0));
+            playPending();
           }}
           sx={{
             '& .MuiSvgIcon-root': {
@@ -77,7 +92,6 @@ const SoundboardAudioPlayer = memo(function SoundboardAudioPlayer() {
           {volume === 0 ? <VolumeOffIcon /> : volume < 0.5 ? <VolumeDownRounded /> : <VolumeUpRounded />}
         </IconButton>
 
-        {/* Volume slider */}
         <Slider
           aria-label="Volume"
           orientation="horizontal"
