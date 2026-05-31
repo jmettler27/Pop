@@ -1,3 +1,5 @@
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { useIntl } from 'react-intl';
 
 import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
@@ -25,15 +27,23 @@ interface BasicMiddlePaneProps {
 }
 
 export default function BasicMiddlePane({ baseQuestion }: BasicMiddlePaneProps) {
+  const bq = baseQuestion as { title?: string; source?: string; note?: string };
   return (
     <div className="flex flex-col h-full items-center">
-      <div className="flex h-[10%] flex-col items-center justify-center">
+      <div className="flex-shrink-0 flex flex-col items-center justify-center gap-1.5 py-2 w-full px-4">
         <BasicQuestionHeader baseQuestion={baseQuestion} />
+        <h2 className="2xl:text-4xl text-center">
+          {bq.source && <span className="text-slate-400 font-normal">{bq.source} : </span>}
+          {bq.title}
+        </h2>
+        {bq.note && (
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs 2xl:text-sm max-w-lg">
+            <WarningAmberIcon sx={{ fontSize: 13, flexShrink: 0 }} />
+            <span className="italic">{bq.note}</span>
+          </div>
+        )}
       </div>
-      <div className="flex h-[10%] w-full items-center justify-center space-y-2">
-        <h2 className="2xl:text-4xl">{(baseQuestion as { title?: string }).title}</h2>
-      </div>
-      <div className="flex h-[80%] w-full items-center justify-center">
+      <div className="flex-1 min-h-0 w-full flex items-center justify-center">
         <BasicQuestionMainContent baseQuestion={baseQuestion} />
       </div>
     </div>
@@ -52,8 +62,7 @@ function BasicQuestionHeader({ baseQuestion }: BasicQuestionHeaderProps) {
         {baseQuestion.topic ? topicToEmoji(baseQuestion.topic) : ''}{' '}
         <strong>
           {questionTypeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
-        </strong>{' '}
-        - {(baseQuestion as { source?: string }).source}
+        </strong>
       </h1>
     </div>
   );
@@ -82,14 +91,22 @@ function BasicQuestionMainContent({ baseQuestion }: BasicQuestionMainContentProp
     return <></>;
   }
 
+  const explanation = (baseQuestion as { explanation?: string }).explanation;
+
   return (
     <div className="flex flex-col h-full w-full">
-      <div className="flex h-[80%] w-full items-center justify-center">
+      <div className="flex-1 min-h-0 w-full flex items-center justify-center">
         <BasicQuestionAnswer baseQuestion={baseQuestion} gameQuestion={gameQuestion as GameBasicQuestion} />
       </div>
-      <div className="flex h-[20%] w-full items-center justify-center">
+      <div className="flex-shrink-0 w-full flex flex-col items-center justify-center gap-2 py-2 px-4">
         {(game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER) && (
-          <BasicQuestionFooter baseQuestion={baseQuestion} gameQuestion={gameQuestion as GameBasicQuestion} />
+          <BasicQuestionPlayerAnswerText gameQuestion={gameQuestion as GameBasicQuestion} />
+        )}
+        {game.status === GameStatus.QUESTION_END && explanation && (
+          <div className="flex items-start gap-2 px-3 py-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-200 text-sm 2xl:text-base w-full max-w-2xl">
+            <InfoOutlinedIcon sx={{ fontSize: 16, color: 'rgb(147 197 253)', flexShrink: 0, mt: '2px' }} />
+            <span className="leading-snug">{explanation}</span>
+          </div>
         )}
       </div>
     </div>
@@ -120,26 +137,6 @@ function BasicQuestionAnswer({ baseQuestion, gameQuestion }: BasicQuestionAnswer
         {(baseQuestion as { answer?: string }).answer}
       </span>
     )
-  );
-}
-
-interface BasicQuestionFooterProps {
-  baseQuestion: BasicQuestion;
-  gameQuestion: GameBasicQuestion;
-}
-
-function BasicQuestionFooter({ baseQuestion, gameQuestion }: BasicQuestionFooterProps) {
-  const explanation = (baseQuestion as { explanation?: string }).explanation;
-
-  return (
-    <div className="flex flex-col h-full items-center justify-center">
-      <span className="text-4xl">
-        {(gameQuestion as { correct?: boolean | null }).correct !== null && (
-          <BasicQuestionPlayerAnswerText gameQuestion={gameQuestion} />
-        )}
-      </span>
-      {explanation && <span className="text-xs sm:text-sm 2xl:text-base 2xl:text-xl">👉 {explanation}</span>}
-    </div>
   );
 }
 

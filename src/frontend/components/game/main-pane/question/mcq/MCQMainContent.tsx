@@ -3,6 +3,7 @@ import Image from 'next/image';
 
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { Avatar, Badge, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { clsx } from 'clsx';
 
@@ -12,7 +13,6 @@ import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQu
 import { selectChoice } from '@/backend/services/question/mcq/actions';
 import { shuffleIndices } from '@/backend/utils/arrays';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
-import NoteButton from '@/frontend/components/game/NoteButton';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
@@ -25,19 +25,26 @@ import { GameMCQQuestion, MCQQuestion } from '@/models/questions/mcq';
 import { ParticipantRole } from '@/models/users/participant';
 
 export default function MCQMainContent({ baseQuestion }: { baseQuestion: MCQQuestion }) {
-  const title = baseQuestion.title;
-  const note = baseQuestion.note;
+  const { title, note, source } = baseQuestion;
   const choices = baseQuestion.choices ?? [];
 
   const randomMapping = useMemo(() => shuffleIndices(choices.length), [choices.length]);
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center">
-      <div className="h-[25%] w-full flex flex-row items-center justify-center space-x-1">
-        <h2 className="2xl:text-4xl font-bold">{title}</h2>
-        {note && <NoteButton note={note} />}
+      <div className="flex-shrink-0 w-full flex flex-col items-center justify-center gap-1.5 py-1 px-4">
+        <h2 className="2xl:text-4xl font-bold text-center">
+          {source && <span className="text-slate-400 font-normal">{source} : </span>}
+          {title}
+        </h2>
+        {note && (
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs 2xl:text-sm max-w-lg">
+            <WarningAmberIcon sx={{ fontSize: 13, flexShrink: 0 }} />
+            <span className="italic">{note}</span>
+          </div>
+        )}
       </div>
-      <div className="h-[75%] w-full flex items-center justify-center">
+      <div className="flex-1 min-h-0 w-full flex items-center justify-center">
         <MCQMainContentQuestion baseQuestion={baseQuestion} randomization={randomMapping} />
       </div>
     </div>
