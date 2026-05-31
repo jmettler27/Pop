@@ -76,16 +76,16 @@ function ReorderingSubmittedTeams({ gameQuestion }: { gameQuestion: GameReorderi
     return team ? team.name : teamId;
   };
 
-  const orderings = gameQuestion.orderings ? Object.entries(gameQuestion.orderings) : [];
+  const orderings = gameQuestion.orderings;
 
   return (
     <div className="flex flex-col h-full w-full justify-start p-2">
       <h2 className="font-bold text-xl">{intl.formatMessage(globalMessages.submittedTeams)}</h2>
       {orderings.length > 0 ? (
         <List className="overflow-auto">
-          {orderings.map(([teamId]) => (
-            <ListItem key={teamId} dense>
-              <ListItemText primary={getTeamName(teamId)} />
+          {orderings.map((o, index) => (
+            <ListItem key={o.teamId} dense>
+              <ListItemText primary={`${index + 1}. ${getTeamName(o.teamId)}`} />
             </ListItem>
           ))}
         </List>
