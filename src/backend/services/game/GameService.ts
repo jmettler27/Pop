@@ -118,7 +118,7 @@ export default class GameService {
     const playerIds = await this.playerRepo.getAllPlayerIds();
     const organizerIds = await this.organizerRepo.getAllOrganizerIds();
 
-    const { teamIds, initTeamGameScores, initTeamGameScoresProgress } = (teams as unknown as Team[]).reduce(
+    const { teamIds, initTeamGameScores, initTeamGameScoresProgress } = teams.reduce(
       (
         acc: {
           teamIds: string[];
@@ -135,6 +135,13 @@ export default class GameService {
       { teamIds: [], initTeamGameScores: {}, initTeamGameScoresProgress: {} }
     );
 
+    // Init chooser
+    const shuffledTeamIds = shuffle(teamIds);
+    await this.chooserRepo.updateChooser({
+      chooserIdx: 0,
+      chooserOrder: shuffledTeamIds,
+    });
+
     // Reset all rounds - assuming a method exists in gameRepo
     await this.resetAllRounds();
 
@@ -144,13 +151,6 @@ export default class GameService {
     // Reset timer
     const managerId = getRandomElement(organizerIds);
     await this.timerRepo.initializeTimer(managerId);
-
-    // Init chooser
-    const shuffledTeamIds = shuffle(teamIds);
-    await this.chooserRepo.updateChooser({
-      chooserIdx: 0,
-      chooserOrder: shuffledTeamIds,
-    });
 
     // Init global scores
     await this.gameScoreRepo.setScores({

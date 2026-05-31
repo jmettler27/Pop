@@ -9,9 +9,13 @@ import { submitMatch } from '@/backend/services/question/matching/actions';
 import { matchIsComplete } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
+import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useRole from '@/frontend/hooks/useRole';
+import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameMatchingQuestion, MatchingAnswer, MatchingEdgeData } from '@/models/questions/matching';
+import { ParticipantRole } from '@/models/users/participant';
 
 interface SubmitMatchDialogProps {
   edges: MatchingEdgeData[];
@@ -31,8 +35,21 @@ export default function SubmitMatchDialog({
   const intl = useIntl();
   const user = useUser();
   const game = useGame();
+  const myTeam = useTeam();
+  const myRole = useRole();
+  const gameRepositories = useGameRepositories();
+  const { isChooser } = gameRepositories?.chooserRepo.useIsChooser(myTeam as string) ?? {};
 
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  // Closes the dialog when no longer chooser (i.e. other player in team has submitted)
+  useEffect(() => {
+    if (dialogOpen && myRole === ParticipantRole.PLAYER && !isChooser) {
+      setEdges([]);
+      setNewEdgeSource(null);
+      setDialogOpen(false);
+    }
+  }, [isChooser, myRole, dialogOpen, setEdges, setNewEdgeSource]);
 
   useEffect(() => {
     if (

@@ -8,7 +8,6 @@ import { GameStatus } from '@/models/games/game-status';
 import { GameBuzzerQuestion } from '@/models/questions/buzzer';
 import { QuestionType } from '@/models/questions/question-type';
 import { BuzzerRound } from '@/models/rounds/buzzer';
-import { TimerStatus } from '@/models/timer';
 import { PlayerStatus } from '@/models/users/player';
 
 export default class GameBuzzerQuestionService extends GameQuestionService {
@@ -472,7 +471,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     );
     await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.WRONG);
     await this.soundRepo.addWrongAnswerSoundToQueueTransaction(transaction);
-    await this.timerRepo.updateTimerStatusTransaction(transaction, TimerStatus.RESET);
+    await this.timerRepo.resetTimerTransaction(transaction);
 
     console.log(
       'Answer to buzzer question successfully invalidated',
