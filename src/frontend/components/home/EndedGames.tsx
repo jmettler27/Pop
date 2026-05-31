@@ -14,7 +14,7 @@ import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/card';
 import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from '@/frontend/components/home/GameAvatars';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import { Locale, localeToEmoji } from '@/frontend/helpers/locales';
+import { localeToEmoji } from '@/frontend/helpers/locales';
 import { timestampToDate, type FirestoreTimestamp } from '@/frontend/helpers/time';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -109,7 +109,7 @@ export function EndedGameCard({ game }: EndedGameCardProps) {
                   {game.title}
                 </CardTitle>
                 <span className="text-base flex-shrink-0">
-                  {localeToEmoji((game as unknown as { lang: Locale }).lang)}
+                  {localeToEmoji(game.lang!)}
                 </span>
               </div>
             </Tooltip>

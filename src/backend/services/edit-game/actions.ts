@@ -2,6 +2,7 @@
 
 import EditGameService from '@/backend/services/edit-game/EditGameService';
 import { QuestionType } from '@/models/questions/question-type';
+import { RoundData } from '@/models/rounds/round';
 import { RoundType } from '@/models/rounds/round-type';
 
 export const addRoundToGame = async (gameId: string, roundTitle: string, roundType: RoundType) => {
@@ -29,7 +30,7 @@ export const removeQuestionFromRound = async (
   return service.removeQuestionFromRound(questionType, roundId, questionId);
 };
 
-export const updateRound = async (gameId: string, roundId: string, roundData: any) => {
+export const updateRound = async (gameId: string, roundId: string, roundData: RoundData) => {
   const service = new EditGameService(gameId);
   return service.updateRound(roundId, roundData);
 };

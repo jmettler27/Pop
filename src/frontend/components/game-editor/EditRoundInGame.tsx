@@ -66,7 +66,7 @@ import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameStatus } from '@/models/games/game-status';
 import { QuestionType } from '@/models/questions/question-type';
-import { Round } from '@/models/rounds/round';
+import { Round, RoundData } from '@/models/rounds/round';
 import { RoundType, roundTypeToEmoji, roundTypeToTitle } from '@/models/rounds/round-type';
 import { AnyRound } from '@/models/rounds/RoundFactory';
 import { Timer } from '@/models/timer';
@@ -179,7 +179,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({
         const v = val as { toDate?: () => Date } | null | undefined;
         return v?.toDate?.() ? v.toDate().toISOString() : val;
       };
-      const updatedRoundData = {
+      const updatedRoundData: RoundData = {
         ...roundObj,
         questions: reorderedQuestions,
         createdAt: toDateSafe(roundObj.createdAt),

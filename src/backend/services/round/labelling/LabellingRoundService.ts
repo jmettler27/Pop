@@ -85,11 +85,19 @@ export default class LabellingRoundService extends RoundService {
 
     /* Game: fetch next question and reset every player's state */
     const playerIds = await this.playerRepo.getAllPlayerIds();
+
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
-    if (!round) throw new Error('Round not found');
+    if (!round) {
+      console.error('Round not found', 'gameId', this.gameId, 'roundId', roundId);
+      throw new Error('Round not found');
+    }
     const questionId = round.questions[questionOrder];
+
     const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
-    if (!gameQuestion) throw new Error('Game question not found');
+    if (!gameQuestion) {
+      console.error('Game question not found', 'gameId', this.gameId, 'roundId', roundId, 'questionId', questionId);
+      throw new Error('Game question not found');
+    }
 
     await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
     await this.timerRepo.resetTimerTransaction(transaction, (gameQuestion as GameLabellingQuestion).thinkingTime);

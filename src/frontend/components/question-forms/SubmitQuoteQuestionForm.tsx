@@ -25,7 +25,7 @@ import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { QuestionType } from '@/models/questions/question-type';
-import { QuoteAuthorElement, QuotePartElement, QuoteQuestion, QuoteSourceElement } from '@/models/questions/quote';
+import { QuoteAuthorElement, QuotePart, QuotePartElement, QuoteQuestion, QuoteSourceElement } from '@/models/questions/quote';
 import { Topic } from '@/models/topic';
 
 const messages = defineMessages('frontend.forms.submitQuestion.quote', {
@@ -54,11 +54,6 @@ const QUOTE_AUTHOR_EXAMPLE: Record<string, string> = {
   en: 'Commander Shepard',
   fr: 'Commandant Shepard',
 };
-
-interface QuotePart {
-  startIdx: number;
-  endIdx: number;
-}
 
 interface QuoteFormValues {
   lang: string;
