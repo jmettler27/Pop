@@ -7,7 +7,7 @@ import GameBuzzerQuestionService from '@/backend/services/question/GameBuzzerQue
 import { isObjectEmpty } from '@/backend/utils/objects';
 import { BuzzerQuestionPlayers } from '@/models/questions/buzzer';
 import { QuestionType } from '@/models/questions/question-type';
-import { GameQuoteQuestion, QuoteQuestion } from '@/models/questions/quote';
+import { GameQuoteQuestion, QuotePart, QuoteQuestion } from '@/models/questions/quote';
 import { QuoteRound } from '@/models/rounds/quote';
 import { PlayerStatus } from '@/models/users/player';
 
@@ -44,8 +44,8 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
       {}
     );
     if ((toGuess as string[]).includes('quote')) {
-      initialRevealed['quote'] = (baseQuestion.quoteParts as unknown[]).reduce(
-        (acc: Record<string, Record<string, unknown>>, _: unknown, idx: number) => {
+      initialRevealed['quote'] = (baseQuestion.quoteParts as QuotePart[]).reduce(
+        (acc: Record<string, Record<string, unknown>>, _: QuotePart, idx: number) => {
           acc[idx] = {};
           return acc;
         },
@@ -264,14 +264,14 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
         }
 
         const toGuess = baseQuestion.toGuess;
-        const quoteParts = baseQuestion.quoteParts;
+        const quoteParts = baseQuestion.quoteParts as QuotePart[];
 
         const temp1 = (toGuess as string[]).every(
           (elem: string) => newRevealed[elem] && !isObjectEmpty(newRevealed[elem])
         );
         const newRevealedQuote = newRevealed['quote'];
-        const temp2 = (quoteParts as unknown[]).every(
-          (_: unknown, idx: number) =>
+        const temp2 = quoteParts.every(
+          (_: QuotePart, idx: number) =>
             newRevealedQuote[idx] && !isObjectEmpty(newRevealedQuote[idx] as Record<string, unknown>)
         );
         const allRevealed = temp1 && temp2;

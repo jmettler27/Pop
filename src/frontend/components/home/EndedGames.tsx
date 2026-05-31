@@ -110,7 +110,7 @@ export function EndedGameCard({ game }: EndedGameCardProps) {
                 <CardTitle className="text-sm sm:text-base font-semibold text-white truncate leading-tight">
                   {game.title}
                 </CardTitle>
-                <span className="text-base shrink-0">{localeToEmoji((game as unknown as { lang: Locale }).lang)}</span>
+                <span className="text-base shrink-0">{localeToEmoji(game.lang!)}</span>
               </TooltipTrigger>
               <TooltipContent>{game.title}</TooltipContent>
             </Tooltip>
