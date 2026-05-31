@@ -420,10 +420,10 @@ function testBaseEstimationQuestion1() {
     details: {
       answer: '7',
       answerType: 'integer',
-      explanation: '',
-      note: '',
-      source: '',
-      title: 'How many episodes of the Harry Potter series are there?',
+      explanation: "Philosopher's Stone, Chamber of Secrets, Prisoner of Azkaban, Goblet of Fire, Order of the Phoenix, Half-Blood Prince, Deathly Hallows",
+      note: "Only take into account the books from the main series!",
+      source: 'Harry Potter',
+      title: 'How many episodes are there?',
     },
   };
 }

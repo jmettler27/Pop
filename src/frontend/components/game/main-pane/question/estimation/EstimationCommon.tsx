@@ -1,12 +1,13 @@
 'use client';
 
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { CircularProgress } from '@mui/material';
 import { clsx } from 'clsx';
 import { useIntl } from 'react-intl';
 
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
-import NoteButton from '@/frontend/components/game/NoteButton';
 import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import { formatDuration, timestampElapsedSeconds, type FirestoreTimestamp } from '@/frontend/helpers/time';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -54,7 +55,7 @@ interface PlayerRecord {
 
 export function EstimationQuestionHeader({ baseQuestion }: { baseQuestion: EstimationQuestion }) {
   return (
-    <div className="flex flex-col items-center justify-center space-y-2">
+    <div className="flex flex-col items-center justify-center gap-1.5 w-full px-4">
       <div className="flex flex-row items-center justify-center space-x-1">
         <QuestionTypeIcon questionType={baseQuestion.type} fontSize={50} />
         <h1 className="2xl:text-5xl">
@@ -64,10 +65,16 @@ export function EstimationQuestionHeader({ baseQuestion }: { baseQuestion: Estim
           </strong>
         </h1>
       </div>
-      <div className="flex flex-row items-center justify-center space-x-1">
-        <h2 className="2xl:text-4xl">{baseQuestion.title}</h2>
-        {baseQuestion.note && <NoteButton note={baseQuestion.note} />}
-      </div>
+      <h2 className="2xl:text-4xl text-center">
+        {baseQuestion.source && <span className="text-slate-400 font-normal">{baseQuestion.source} : </span>}
+        {baseQuestion.title}
+      </h2>
+      {baseQuestion.note && (
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs 2xl:text-sm max-w-lg mt-0.5">
+          <WarningAmberIcon sx={{ fontSize: 13, flexShrink: 0 }} />
+          <span className="italic">{baseQuestion.note}</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -271,6 +278,12 @@ export function EstimationEndView({ gameQuestion, baseQuestion }: EstimationEndV
           {formatAnswerValue(baseQuestion.answerType, baseQuestion.answer, intl.locale)}
         </span>
       </div>
+      {baseQuestion.explanation && (
+        <div className="flex items-start gap-2 px-3 py-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-200 text-sm 2xl:text-base w-full flex-shrink-0">
+          <InfoOutlinedIcon sx={{ fontSize: 16, color: 'rgb(147 197 253)', flexShrink: 0, mt: '2px' }} />
+          <span className="leading-snug">{baseQuestion.explanation}</span>
+        </div>
+      )}
       <EstimationResultsTable gameQuestion={gameQuestion} baseQuestion={baseQuestion} />
     </div>
   );

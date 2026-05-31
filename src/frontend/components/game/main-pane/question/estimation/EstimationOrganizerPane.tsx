@@ -23,10 +23,10 @@ export default function EstimationOrganizerPane({ baseQuestion, gameQuestion }: 
 
   return (
     <div className="flex flex-col h-full items-center">
-      <div className="h-[15%] w-full flex flex-col items-center justify-center">
+      <div className="flex-shrink-0 w-full flex flex-col items-center justify-center py-3">
         <EstimationQuestionHeader baseQuestion={baseQuestion} />
       </div>
-      <div className="h-[85%] w-full flex flex-col items-center justify-center">
+      <div className="flex-1 min-h-0 w-full flex flex-col items-center justify-center">
         {game!.status !== GameStatus.QUESTION_END && (
           <div className="flex flex-row items-center gap-3 px-5 py-2.5 rounded-2xl border border-green-500/40 bg-green-500/10">
             <span className="text-sm uppercase tracking-widest text-slate-400 font-semibold">
