@@ -1,6 +1,7 @@
 import { runTransaction, Transaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
 import { GameMCQQuestion, MCQQuestion } from '@/models/questions/mcq';
@@ -13,7 +14,7 @@ export default class GameMCQQuestionService extends GameQuestionService {
 
   constructor(gameId: string, roundId: string) {
     super(gameId, roundId, QuestionType.MCQ);
-
+    this.log = logger.child({ module: 'GameMCQQuestionService', game: gameId, round: roundId });
     this.chooserRepo = new ChooserRepository(gameId);
   }
 
@@ -24,12 +25,12 @@ export default class GameMCQQuestionService extends GameQuestionService {
     )) as GameMCQQuestion;
     await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
     await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
-    console.log('MCQ question successfully reset', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+    this.log.info({ question: questionId }, 'MCQ question reset');
   }
 
   async endQuestionTransaction(transaction: Transaction, questionId: string) {
     await super.endQuestionTransaction(transaction, questionId);
-    console.log('MCQ question successfully ended', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+    this.log.info({ question: questionId }, 'MCQ question ended');
   }
 
   async handleCountdownEndTransaction(transaction: Transaction, questionId: string) {
@@ -39,13 +40,13 @@ export default class GameMCQQuestionService extends GameQuestionService {
       questionId
     )) as GameMCQQuestion;
     if (!gameQuestion) {
-      console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Game question not found');
       throw new Error('Game question not found');
     }
 
     const teamId = await this.chooserRepo.getChooserIdTransaction(transaction);
     if (!teamId) {
-      console.error('Chooser team not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Chooser team not found');
       throw new Error('Chooser team not found');
     }
     const playerId = gameQuestion.playerId;
@@ -66,15 +67,7 @@ export default class GameMCQQuestionService extends GameQuestionService {
     await this.soundRepo.addWrongAnswerSoundToQueueTransaction(transaction);
     await this.endQuestionTransaction(transaction, questionId);
 
-    console.log(
-      'MCQ question countdown end successfully handled',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId
-    );
+    this.log.info({ question: questionId }, 'MCQ question countdown end handled');
   }
 
   /* =============================================================================================================== */
@@ -100,13 +93,13 @@ export default class GameMCQQuestionService extends GameQuestionService {
           questionId
         )) as MCQQuestion;
         if (!baseQuestion) {
-          console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          this.log.warn({ question: questionId }, 'Base question not found');
           throw new Error('Base question not found');
         }
 
         const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as MCQRound;
         if (!round) {
-          console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          this.log.warn({ question: questionId }, 'Round not found');
           throw new Error('Round not found');
         }
         const mcqRound = round as MCQRound;
@@ -126,39 +119,15 @@ export default class GameMCQQuestionService extends GameQuestionService {
         await this.soundRepo.addSoundTransaction(transaction, correct ? 'anime_wow' : 'hysterical5');
         await this.endQuestionTransaction(transaction, questionId);
 
-        console.log(
-          'MCQ choice selection successfully handled',
-          'game',
-          this.gameId,
-          'round',
-          this.roundId,
-          'question',
-          questionId,
-          'player',
-          playerId,
-          'team',
-          teamId,
-          'choice',
-          choiceIdx
+        this.log.info(
+          { question: questionId, player: playerId, team: teamId, choice: choiceIdx },
+          'MCQ choice selected'
         );
       });
     } catch (error) {
-      console.error(
-        'Failed to select the MCQ choice',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'player',
-        playerId,
-        'team',
-        teamId,
-        'choice',
-        choiceIdx,
-        'err',
-        error
+      this.log.error(
+        { question: questionId, player: playerId, team: teamId, choice: choiceIdx, err: error },
+        'Failed to select the MCQ choice'
       );
       throw error;
     }

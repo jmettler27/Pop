@@ -4,6 +4,8 @@ import { connectDatabaseEmulator, getDatabase } from 'firebase/database';
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 import { connectStorageEmulator, getStorage } from 'firebase/storage';
 
+import { logger } from '@/backend/logger';
+
 const useEmulators = process.env.NEXT_PUBLIC_USE_EMULATORS === 'true';
 
 export const firebaseConfig: FirebaseOptions = {
@@ -24,11 +26,12 @@ export const storage = getStorage(firebaseApp);
 export const database = getDatabase(firebaseApp);
 
 if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
+  const log = logger.child({ module: 'firebase' });
   try {
     connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
     connectDatabaseEmulator(database, '127.0.0.1', 9000);
     connectStorageEmulator(storage, '127.0.0.1', 9199);
-    console.log('Connected to Firebase Emulator Suite (projectId:', firebaseConfig.projectId, ')');
+    log.info({ projectId: firebaseConfig.projectId }, 'Connected to Firebase Emulator Suite');
   } catch {
     // Emulators already connected (hot reload)
   }

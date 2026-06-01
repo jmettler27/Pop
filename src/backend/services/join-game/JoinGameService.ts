@@ -1,6 +1,8 @@
 import { runTransaction, serverTimestamp } from 'firebase/firestore';
+import type { Logger } from 'pino';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
@@ -15,6 +17,7 @@ export default class JoinGameService {
   private playerRepo: PlayerRepository;
   private teamRepo: TeamRepository;
   private readyRepo: ReadyRepository;
+  private log: Logger;
 
   constructor(gameId: string) {
     this.gameId = gameId;
@@ -22,6 +25,7 @@ export default class JoinGameService {
       throw new Error('Game ID is required');
     }
 
+    this.log = logger.child({ module: 'JoinGameService', game: this.gameId });
     this.userRepo = new UserRepository();
     this.gameRepo = new GameRepository();
     this.playerRepo = new PlayerRepository(gameId);
@@ -45,7 +49,7 @@ export default class JoinGameService {
         }
 
         if (!data.playInTeams) {
-          console.log('JOIN SOLO', data);
+          this.log.debug({ data }, 'Join solo');
           // Single player
           const team = await this.teamRepo.createTeamTransaction(transaction, {
             color: data.teamColor,
@@ -56,7 +60,7 @@ export default class JoinGameService {
           });
           data.teamId = team.id;
         } else if (!data.joinTeam) {
-          console.log('JOIN TEAM', data);
+          this.log.debug({ data }, 'Join team');
           // Player that creates a new team
           const team = await this.teamRepo.createTeamTransaction(transaction, {
             color: data.teamColor,
@@ -85,7 +89,7 @@ export default class JoinGameService {
         await this.readyRepo.incrementReadyTransaction(transaction);
       });
     } catch (error) {
-      console.error('Error joining game:', error);
+      this.log.error({ err: error }, 'Error joining game');
       throw error;
     }
   }

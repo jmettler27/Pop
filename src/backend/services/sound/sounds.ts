@@ -3,6 +3,9 @@
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
+import { logger } from '@/backend/logger';
+
+const log = logger.child({ module: 'sounds' });
 
 export async function addSound(gameId: string, filename: string) {
   const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue');
@@ -10,5 +13,5 @@ export async function addSound(gameId: string, filename: string) {
     timestamp: serverTimestamp(),
     filename: filename,
   });
-  console.log(`Game ${gameId} Sound ${filename} added to queue`);
+  log.info({ game: gameId, filename }, 'Sound added to queue');
 }

@@ -1,12 +1,15 @@
 import { runTransaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import QuestionAudioRepository from '@/backend/repositories/storage/QuestionAudioRepository';
 import QuestionImageRepository from '@/backend/repositories/storage/QuestionImageRepository';
 import { UpdateBaseQuestionData, type CreateBaseQuestionData } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
 import QuestionFactory from '@/models/questions/QuestionFactory';
+
+const log = logger.child({ module: 'CreateQuestionService' });
 
 /**
  * Service for adding questions to the database
@@ -78,7 +81,7 @@ export default class CreateQuestionService {
         return questionId;
       });
     } catch (error) {
-      console.error('Error editing question:', error);
+      log.error({ err: error }, 'Error editing question');
       throw error;
     }
   }
@@ -143,7 +146,7 @@ export default class CreateQuestionService {
         return baseQuestion.id;
       });
     } catch (error) {
-      console.error('Error creating question:', error);
+      log.error({ err: error }, 'Error creating question');
       throw error;
     }
   }

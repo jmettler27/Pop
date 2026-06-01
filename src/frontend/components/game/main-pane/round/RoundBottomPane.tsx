@@ -17,7 +17,6 @@ export default function RoundBottomPane() {
   const { roundRepo } = gameRepositories;
 
   const currentRound = game.currentRound as string;
-  console.log('Current round', currentRound);
 
   if (!currentRound) {
     return <></>;

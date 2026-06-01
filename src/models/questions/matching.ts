@@ -232,7 +232,7 @@ export class GameMatchingQuestion extends GameQuestion {
       const [origRow, col] = id.split('_').map(Number);
       return answer[origRow!]?.[col!] ?? '';
     };
-    return leftToRightPath.map((id) => getNodeText(id)).join(' - ');
+    return leftToRightPath.map((id: string) => getNodeText(id)).join(' - ');
   }
 
   static matchingTeamIsCanceled(teamId: string, teamNumMistakes: Record<string, number>, maxMistakes: number): boolean {

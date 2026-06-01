@@ -71,7 +71,6 @@ interface WinnerNameProps {
 }
 
 export function WinnerName({ playerId, teamId }: WinnerNameProps) {
-  console.log('WinnerName - playerId:', playerId, 'teamId:', teamId);
   const myRole = useRole();
 
   const repos = useGameRepositories();

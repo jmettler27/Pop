@@ -87,8 +87,6 @@ export const EditQuestionCard = memo(function EditQuestionCard({
   const gameId = id as string;
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  console.log('EditQuestionCard', gameId, roundId, questionId);
-
   const baseQuestionRepo = new BaseQuestionRepository(QuestionType.BASIC);
   const { baseQuestion, baseQuestionLoading, baseQuestionError } = baseQuestionRepo.useQuestion(questionId);
 

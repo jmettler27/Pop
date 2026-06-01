@@ -12,7 +12,6 @@ import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 
 // Container components to control re-rendering
 const TopPaneContainer = memo(function TopPaneContainer({}) {
-  console.log('TopPaneContainer');
   const repos = useGameRepositories();
   if (!repos) return <ErrorScreen inline />;
   const { teamRepo, scoreRepo, playerRepo } = repos;
@@ -28,17 +27,14 @@ const TopPaneContainer = memo(function TopPaneContainer({}) {
 });
 
 const MiddlePaneContainer = memo(function MiddlePaneContainer({}) {
-  console.log('MiddlePaneContainer');
   return <MiddlePane />;
 });
 
 const BottomPaneContainer = memo(function BottomPaneContainer({}) {
-  console.log('BottomPaneContainer');
   return <BottomPane />;
 });
 
 const SidebarContainer = memo(function SidebarContainer({}) {
-  console.log('SidebarContainer');
   return <Sidebar />;
 });
 

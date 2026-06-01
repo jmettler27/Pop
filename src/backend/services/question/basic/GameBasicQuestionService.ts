@@ -1,6 +1,7 @@
 import { runTransaction, Transaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import GameBuzzerQuestionService from '@/backend/services/question/GameBuzzerQuestionService';
 import { GameBasicQuestion } from '@/models/questions/basic';
@@ -13,7 +14,7 @@ export default class GameBasicQuestionService extends GameBuzzerQuestionService 
 
   constructor(gameId: string, roundId: string) {
     super(gameId, roundId, QuestionType.BASIC);
-
+    this.log = logger.child({ module: 'GameBasicQuestionService', game: gameId, round: roundId });
     this.chooserRepo = new ChooserRepository(gameId);
   }
 
@@ -25,27 +26,19 @@ export default class GameBasicQuestionService extends GameBuzzerQuestionService 
     await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
     await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
 
-    console.log(
-      'Basic question successfully reset',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId
-    );
+    this.log.info({ question: questionId }, 'Basic question reset');
   }
 
   async handleCountdownEndTransaction(transaction: Transaction, questionId: string) {
     const teamId = await this.chooserRepo.getChooserIdTransaction(transaction);
     if (!teamId) {
-      console.log('No team is currently choosing, cannot handle countdown end');
+      this.log.warn({ question: questionId }, 'No team is currently choosing, cannot handle countdown end');
       throw new Error('No team is currently choosing, cannot handle countdown end');
     }
 
     const choosers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId);
     if (choosers.length === 0) {
-      console.log('No choosers found for team, cannot handle countdown end');
+      this.log.warn({ question: questionId }, 'No choosers found for team, cannot handle countdown end');
       throw new Error('No choosers found for team, cannot handle countdown end');
     }
 
@@ -61,15 +54,7 @@ export default class GameBasicQuestionService extends GameBuzzerQuestionService 
     await this.soundRepo.addWrongAnswerSoundToQueueTransaction(transaction);
     await this.endQuestionTransaction(transaction, questionId);
 
-    console.log(
-      'Basic question countdown end successfully handled',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId
-    );
+    this.log.info({ question: questionId }, 'Basic question countdown end handled');
   }
 
   /* =============================================================================================================== */
@@ -86,13 +71,13 @@ export default class GameBasicQuestionService extends GameBuzzerQuestionService 
       await runTransaction(firestore, async (transaction: Transaction) => {
         const choosers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId);
         if (choosers.length === 0) {
-          console.log('No choosers found for team, cannot handle answer');
+          this.log.warn({ question: questionId, team: teamId }, 'No choosers found for team, cannot handle answer');
           throw new Error('No choosers found for team, cannot handle answer');
         }
 
         const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
         if (!round) {
-          console.log('Round not found, cannot handle answer');
+          this.log.warn({ question: questionId }, 'Round not found, cannot handle answer');
           throw new Error('Round not found, cannot handle answer');
         }
 
@@ -110,33 +95,12 @@ export default class GameBasicQuestionService extends GameBuzzerQuestionService 
         await this.soundRepo.addSoundTransaction(transaction, correct ? 'anime_wow' : 'hysterical5');
         await this.endQuestionTransaction(transaction, questionId);
 
-        console.log(
-          'Answer to basic question successfully handled',
-          'game',
-          this.gameId,
-          'round',
-          this.roundId,
-          'question',
-          questionId,
-          'team',
-          teamId,
-          'correct',
-          correct
-        );
+        this.log.info({ question: questionId, team: teamId, correct }, 'Answer to basic question handled');
       });
     } catch (error) {
-      console.error(
-        'Failed to handle answer to basic question',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'team',
-        teamId,
-        'correct',
-        correct
+      this.log.error(
+        { question: questionId, team: teamId, correct, err: error },
+        'Failed to handle answer to basic question'
       );
       throw error;
     }

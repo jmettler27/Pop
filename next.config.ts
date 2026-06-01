@@ -41,6 +41,8 @@ const nextConfig: NextConfig = {
     '@firebase/logger',
     '@grpc/grpc-js',
     '@grpc/proto-loader',
+    'pino',
+    'pino-pretty',
   ],
   turbopack: {},
 };

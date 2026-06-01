@@ -266,16 +266,10 @@ function EnterMatchesStep({ onSubmit }: { onSubmit: () => void }) {
     );
   };
 
-  console.log('==============================================================');
-
   const matches = values.matches;
-  console.log('Matches:', matches);
-  console.log('Errors:', errors);
-
   const validationSchema = Yup.object({
     matches: matchingItemsSchema(values.numCols),
   });
-  console.log('Validation schema', validationSchema);
 
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>

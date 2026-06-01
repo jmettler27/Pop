@@ -1,6 +1,7 @@
 import { runTransaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
 import SoundRepository from '@/backend/repositories/sound/SoundRepository';
@@ -9,6 +10,8 @@ import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import { CreateGameRoundsData } from '@/models/games/game';
+
+const log = logger.child({ module: 'CreateGameService' });
 
 /**
  * Service for creating a new game
@@ -31,21 +34,15 @@ export default class CreateGameService {
     if (!data) {
       throw new Error('Data is required');
     }
-    console.log('Creating game with data:', data);
+    log.debug({ data }, 'Creating game');
 
     try {
       return await runTransaction(firestore, async (transaction) => {
         const { title, type, lang, maxPlayers, roundScorePolicy, organizerName, organizerId, organizerImage } = data;
-        console.log('Creating game with data:', {
-          title,
-          type,
-          lang,
-          maxPlayers,
-          roundScorePolicy,
-          organizerName,
-          organizerId,
-          organizerImage,
-        });
+        log.debug(
+          { title, type, lang, maxPlayers, roundScorePolicy, organizerName, organizerId, organizerImage },
+          'Creating game'
+        );
 
         const game = await this.gameRepo.createGameTransaction(transaction, data);
         const gameId = game.id;
@@ -73,11 +70,11 @@ export default class CreateGameService {
         const soundRepo = new SoundRepository(gameId);
         await soundRepo.initializeSoundsTransaction(transaction);
 
-        console.log('Game created successfully.', 'gameId: ', gameId);
+        log.info({ gameId }, 'Game created successfully');
         return gameId;
       });
     } catch (error) {
-      console.error('Error creating game:', error);
+      log.error({ err: error }, 'Error creating game');
       throw error;
     }
   }

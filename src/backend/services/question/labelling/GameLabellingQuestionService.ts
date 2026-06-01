@@ -1,6 +1,7 @@
 import { runTransaction, Timestamp, Transaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
 import GameBuzzerQuestionService from '@/backend/services/question/GameBuzzerQuestionService';
 import { range } from '@/backend/utils/arrays';
@@ -13,6 +14,7 @@ import { PlayerStatus } from '@/models/users/player';
 export default class GameLabellingQuestionService extends GameBuzzerQuestionService {
   constructor(gameId: string, roundId: string) {
     super(gameId, roundId, QuestionType.LABELLING);
+    this.log = logger.child({ module: 'GameLabellingQuestionService', game: gameId, round: roundId });
   }
 
   async resetQuestionTransaction(transaction: Transaction, questionId: string): Promise<void> {
@@ -21,7 +23,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
       questionId
     )) as LabellingQuestion;
     if (!baseQuestion) {
-      console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Base question not found');
       throw new Error('Base question not found');
     }
 
@@ -30,13 +32,13 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
       questionId
     )) as GameLabellingQuestion;
     if (!gameQuestion) {
-      console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Game question not found');
       throw new Error('Game question not found');
     }
 
     const playerIds = await this.playerRepo.getAllPlayerIds();
     if (!playerIds) {
-      console.error('Player IDs not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Player IDs not found');
       throw new Error('Player IDs not found');
     }
 
@@ -53,15 +55,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
 
     await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
 
-    console.log(
-      'Labelling question successfully reset',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId
-    );
+    this.log.info({ question: questionId }, 'Labelling question reset');
   }
 
   async handleCountdownEndTransaction(transaction: Transaction, questionId: string) {
@@ -70,7 +64,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
       questionId
     );
     if (!questionPlayers) {
-      console.error('Question players not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Question players not found');
       throw new Error('Question players not found');
     }
 
@@ -81,7 +75,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
       questionId
     )) as GameLabellingQuestion;
     if (!gameQuestion) {
-      console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Game question not found');
       throw new Error('Game question not found');
     }
 
@@ -101,15 +95,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
       }
     }
 
-    console.log(
-      'Labelling question countdown end successfully handled',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId
-    );
+    this.log.info({ question: questionId }, 'Labelling question countdown end handled');
   }
 
   /* =============================================================================================================== */
@@ -129,7 +115,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
           questionId
         )) as LabellingQuestion;
         if (!baseQuestion) {
-          console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          this.log.warn({ question: questionId }, 'Base question not found');
           throw new Error('Base question not found');
         }
 
@@ -138,13 +124,13 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
           questionId
         )) as GameLabellingQuestion;
         if (!gameQuestion) {
-          console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          this.log.warn({ question: questionId }, 'Game question not found');
           throw new Error('Game question not found');
         }
 
         const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as LabellingRound;
         if (!round) {
-          console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          this.log.warn({ question: questionId }, 'Round not found');
           throw new Error('Round not found');
         }
         const labellingRound = round as LabellingRound;
@@ -154,15 +140,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
           questionId
         );
         if (!questionPlayers) {
-          console.error(
-            'Question players not found',
-            'game',
-            this.gameId,
-            'round',
-            this.roundId,
-            'question',
-            questionId
-          );
+          this.log.warn({ question: questionId }, 'Question players not found');
           throw new Error('Question players not found');
         }
         const playerId = questionPlayers.buzzed[0] || null;
@@ -177,7 +155,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
         if (playerId) {
           const player = await this.playerRepo.getPlayerTransaction(transaction, playerId);
           if (!player) {
-            console.error('Player not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+            this.log.warn({ question: questionId }, 'Player not found');
             throw new Error('Player not found');
           }
 
@@ -213,10 +191,10 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
           playerId ? 'super_mario_world_coin' : 'cartoon_mystery_musical_tone_002'
         );
 
-        console.log('Labelling question label revealed successfully', questionId, labelIdx);
+        this.log.info({ question: questionId, labelIdx }, 'Labelling question label revealed');
       });
     } catch (error) {
-      console.error('Failed to reveal the label', error);
+      this.log.error({ question: questionId, err: error }, 'Failed to reveal the label');
       throw error;
     }
   }
@@ -236,7 +214,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
           questionId
         )) as LabellingQuestion;
         if (!baseQuestion) {
-          console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          this.log.warn({ question: questionId }, 'Base question not found');
           throw new Error('Base question not found');
         }
 
@@ -245,19 +223,19 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
           questionId
         )) as GameLabellingQuestion;
         if (!gameQuestion) {
-          console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          this.log.warn({ question: questionId }, 'Game question not found');
           throw new Error('Game question not found');
         }
 
         const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as LabellingRound;
         if (!round) {
-          console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          this.log.warn({ question: questionId }, 'Round not found');
           throw new Error('Round not found');
         }
 
         const player = await this.playerRepo.getPlayerTransaction(transaction, playerId);
         if (!player) {
-          console.error('Player not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          this.log.warn({ question: questionId }, 'Player not found');
           throw new Error('Player not found');
         }
 
@@ -283,10 +261,10 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
         await this.soundRepo.addSoundTransaction(transaction, 'anime_wow');
         await this.endQuestionTransaction(transaction, questionId);
 
-        console.log('Labelling question all labels validated successfully', questionId);
+        this.log.info({ question: questionId }, 'Labelling question all labels validated');
       });
     } catch (error) {
-      console.error('Failed to validate all labels', error);
+      this.log.error({ question: questionId, err: error }, 'Failed to validate all labels');
       throw error;
     }
   }
@@ -310,10 +288,10 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
         await this.soundRepo.addSoundTransaction(transaction, 'cartoon_mystery_musical_tone_002');
         await this.timerRepo.resetTimerTransaction(transaction);
 
-        console.log('Labelling player canceled successfully', questionId, playerId);
+        this.log.info({ question: questionId, player: playerId }, 'Labelling player canceled');
       });
     } catch (error) {
-      console.error('Failed to cancel the player', error);
+      this.log.error({ question: questionId, err: error }, 'Failed to cancel the player');
       throw error;
     }
   }

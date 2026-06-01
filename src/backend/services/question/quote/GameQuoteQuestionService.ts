@@ -1,6 +1,7 @@
 import { runTransaction, serverTimestamp, Transaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 import GameBuzzerQuestionService from '@/backend/services/question/GameBuzzerQuestionService';
 import { isObjectEmpty } from '@/backend/utils/objects';
@@ -13,12 +14,13 @@ import { PlayerStatus } from '@/models/users/player';
 export default class GameQuoteQuestionService extends GameBuzzerQuestionService {
   constructor(gameId: string, roundId: string) {
     super(gameId, roundId, QuestionType.QUOTE);
+    this.log = logger.child({ module: 'GameQuoteQuestionService', game: gameId, round: roundId });
   }
 
   async resetQuestionTransaction(transaction: Transaction, questionId: string) {
     const baseQuestion = (await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId)) as QuoteQuestion;
     if (!baseQuestion) {
-      console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Base question not found');
       throw new Error('Base question not found');
     }
     const toGuess = baseQuestion.toGuess;
@@ -28,7 +30,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
       questionId
     )) as GameQuoteQuestion;
     if (!gameQuestion) {
-      console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Game question not found');
       throw new Error('Game question not found');
     }
 
@@ -56,30 +58,14 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
 
     await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
 
-    console.log(
-      'Quote question successfully reset',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId
-    );
+    this.log.info({ question: questionId }, 'Quote question reset');
   }
 
   async endQuestionTransaction(transaction: Transaction, questionId: string) {
     await super.endQuestionTransaction(transaction, questionId);
     await (this.gameQuestionRepo as GameQuoteQuestionRepository).clearBuzzedPlayersTransaction(transaction, questionId);
 
-    console.log(
-      'Quote question successfully ended',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId
-    );
+    this.log.info({ question: questionId }, 'Quote question ended');
   }
 
   async handleCountdownEndTransaction(transaction: Transaction, questionId: string) {
@@ -88,7 +74,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
       questionId
     )) as BuzzerQuestionPlayers;
     if (!questionPlayers) {
-      console.error('Question players not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Question players not found');
       throw new Error('Question players not found');
     }
 
@@ -99,7 +85,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
       questionId
     )) as GameQuoteQuestion;
     if (!gameQuestion) {
-      console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Game question not found');
       throw new Error('Game question not found');
     }
 
@@ -136,19 +122,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
           questionId
         )) as GameQuoteQuestion;
         if (!gameQuestion) {
-          console.error(
-            'Game question not found',
-            'game',
-            this.gameId,
-            'round',
-            this.roundId,
-            'question',
-            questionId,
-            'type',
-            this.questionType,
-            'player',
-            playerId
-          );
+          this.log.warn({ question: questionId, type: this.questionType, player: playerId }, 'Game question not found');
           throw new Error('Game question not found');
         }
 
@@ -157,33 +131,15 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
         await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.FOCUS);
         await this.timerRepo.startTimerTransaction(transaction, thinkingTime);
 
-        console.log(
-          'Buzzer head change successfully handled',
-          'game',
-          this.gameId,
-          'round',
-          this.roundId,
-          'question',
-          questionId,
-          'type',
-          this.questionType,
-          'player',
-          playerId
+        this.log.info(
+          { question: questionId, type: this.questionType, player: playerId },
+          'Buzzer head change handled'
         );
       });
     } catch (error) {
-      console.error(
-        'Failed to handle buzzer head change',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'type',
-        this.questionType,
-        'err',
-        error
+      this.log.error(
+        { question: questionId, type: this.questionType, err: error },
+        'Failed to handle buzzer head change'
       );
       throw error;
     }
@@ -195,7 +151,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
    * @param playerId
    * @returns {Promise<void>}
    */
-  async cancelPlayer(questionId: string, playerId: string) {
+  async cancelPlayer(questionId: string, playerId: string): Promise<void> {
     if (!questionId) {
       throw new Error('No question ID has been provided!');
     }
@@ -206,19 +162,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
         async (transaction) => await this.cancelPlayerTransaction(transaction, questionId, playerId)
       );
     } catch (error) {
-      console.error(
-        'Failed to cancel quote player',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'player',
-        playerId,
-        'err',
-        error
-      );
+      this.log.error({ question: questionId, player: playerId, err: error }, 'Failed to cancel quote player');
       throw error;
     }
   }
@@ -233,17 +177,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
     await this.soundRepo.addWrongAnswerSoundToQueueTransaction(transaction);
     // this.timerRepo.updateTimerStateTransaction(transaction, gameId, TimerStatus.RESET)
 
-    console.log(
-      'Quote player canceled successfully cleared successfully',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId,
-      'type',
-      this.questionType
-    );
+    this.log.info({ question: questionId, type: this.questionType }, 'Quote player canceled');
   }
 
   /* =============================================================================================================== */
@@ -256,7 +190,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
    * @param quotePartIdx the quote part index (if quoteElem is 'quote')
    * @returns {Promise<void>}
    */
-  async revealQuoteElement(questionId: string, quoteElem: any, quotePartIdx: number | null = null) {
+  async revealQuoteElement(questionId: string, quoteElem: any, quotePartIdx: number | null = null): Promise<void> {
     if (!questionId) {
       throw new Error('No question ID has been provided!');
     }
@@ -273,13 +207,13 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
           questionId
         )) as QuoteQuestion;
         if (!baseQuestion) {
-          console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          this.log.warn({ question: questionId }, 'Base question not found');
           throw new Error('Base question not found');
         }
 
         const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as QuoteRound;
         if (!round) {
-          console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          this.log.warn({ question: questionId }, 'Round not found');
           throw new Error('Round not found');
         }
 
@@ -288,7 +222,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
           questionId
         )) as GameQuoteQuestion;
         if (!gameQuestion) {
-          console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          this.log.warn({ question: questionId }, 'Game question not found');
           throw new Error('Game question not found');
         }
 
@@ -297,15 +231,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
           questionId
         )) as BuzzerQuestionPlayers;
         if (!questionPlayers) {
-          console.error(
-            'Question players not found',
-            'game',
-            this.gameId,
-            'round',
-            this.roundId,
-            'question',
-            questionId
-          );
+          this.log.warn({ question: questionId }, 'Question players not found');
           throw new Error('Question players not found');
         }
         const playerId = questionPlayers.buzzed[0] || null;
@@ -326,7 +252,10 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
         /* Update the winner team scores */
         if (playerId) {
           const player = await this.playerRepo.getPlayerTransaction(transaction, playerId);
-          if (!player || !round) throw new Error('Player or round not found');
+          if (!player) {
+            this.log.warn({ question: questionId, player: playerId }, 'Player not found');
+            throw new Error('Player not found');
+          }
           const teamId = player.teamId;
           const points = (round as QuoteRound).rewardsPerElement;
 
@@ -357,19 +286,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
         if (allRevealed) {
           await this.soundRepo.addSoundTransaction(transaction, 'anime_wow');
           await this.endQuestionTransaction(transaction, questionId);
-          console.log(
-            'All quote element successfully revealed',
-            'game',
-            this.gameId,
-            'round',
-            this.roundId,
-            'question',
-            questionId,
-            'quoteElem',
-            quoteElem,
-            'quotePartIdx',
-            quotePartIdx
-          );
+          this.log.info({ question: questionId, quoteElem, quotePartIdx }, 'All quote elements revealed');
           return;
         }
         await this.soundRepo.addSoundTransaction(
@@ -377,36 +294,10 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
           playerId ? 'super_mario_world_coin' : 'cartoon_mystery_musical_tone_002'
         );
 
-        console.log(
-          'Quote element successfully revealed',
-          'game',
-          this.gameId,
-          'round',
-          this.roundId,
-          'question',
-          questionId,
-          'quoteElem',
-          quoteElem,
-          'quotePartIdx',
-          quotePartIdx
-        );
+        this.log.info({ question: questionId, quoteElem, quotePartIdx }, 'Quote element revealed');
       });
     } catch (error) {
-      console.error(
-        'Failed to reveal quote element',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'quoteElem',
-        quoteElem,
-        'quotePartIdx',
-        quotePartIdx,
-        'err',
-        error
-      );
+      this.log.error({ question: questionId, quoteElem, quotePartIdx, err: error }, 'Failed to reveal quote element');
       throw error;
     }
   }
@@ -418,7 +309,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
    * @param playerId the player ID who guessed
    * @returns {Promise<void>}
    */
-  async validateAllQuoteElements(questionId: string, playerId: string) {
+  async validateAllQuoteElements(questionId: string, playerId: string): Promise<void> {
     if (!questionId) {
       throw new Error('No question ID has been provided!');
     }
@@ -432,13 +323,13 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
           questionId
         )) as QuoteQuestion;
         if (!baseQuestion) {
-          console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          this.log.warn({ question: questionId }, 'Base question not found');
           throw new Error('Base question not found');
         }
 
         const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as QuoteRound;
         if (!round) {
-          console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          this.log.warn({ question: questionId }, 'Round not found');
           throw new Error('Round not found');
         }
 
@@ -447,23 +338,13 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
           questionId
         )) as GameQuoteQuestion;
         if (!gameQuestion) {
-          console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          this.log.warn({ question: questionId }, 'Game question not found');
           throw new Error('Game question not found');
         }
 
         const player = await this.playerRepo.getPlayerTransaction(transaction, playerId);
         if (!player) {
-          console.error(
-            'Player not found',
-            'game',
-            this.gameId,
-            'round',
-            this.roundId,
-            'question',
-            questionId,
-            'player',
-            playerId
-          );
+          this.log.warn({ question: questionId, player: playerId }, 'Player not found');
           throw new Error('Player not found');
         }
 
@@ -488,7 +369,6 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
           }
         }
 
-        if (!player || !round) throw new Error('Player or round not found');
         /* Update the winner team scores */
         const teamId = player.teamId;
         const rewardsPerElement = (round as QuoteRound).rewardsPerElement;
@@ -507,32 +387,10 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
         await this.soundRepo.addSoundTransaction(transaction, 'anime_wow');
         await this.endQuestionTransaction(transaction, questionId);
 
-        console.log(
-          'All quote elements validated successfully',
-          'game',
-          this.gameId,
-          'round',
-          this.roundId,
-          'question',
-          questionId,
-          'player',
-          playerId
-        );
+        this.log.info({ question: questionId, player: playerId }, 'All quote elements validated');
       });
     } catch (error) {
-      console.error(
-        'Failed to validate all quote elements',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'player',
-        playerId,
-        'err',
-        error
-      );
+      this.log.error({ question: questionId, player: playerId, err: error }, 'Failed to validate all quote elements');
       throw error;
     }
   }

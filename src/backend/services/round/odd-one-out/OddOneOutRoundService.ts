@@ -1,5 +1,6 @@
 import { serverTimestamp, Transaction } from 'firebase/firestore';
 
+import { logger } from '@/backend/logger';
 import GameOddOneOutQuestionRepository from '@/backend/repositories/question/GameOddOneOutQuestionRepository';
 import RoundService from '@/backend/services/round/RoundService';
 import { GameStatus } from '@/models/games/game-status';
@@ -11,24 +12,25 @@ import { PlayerStatus } from '@/models/users/player';
 export default class OddOneOutRoundService extends RoundService {
   constructor(gameId: string) {
     super(gameId, RoundType.ODD_ONE_OUT);
+    this.log = logger.child({ module: 'OddOneOutRoundService', game: gameId });
   }
 
   async handleRoundSelectedTransaction(transaction: Transaction, roundId: string, userId: string) {
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     if (!round) {
-      console.error('Round not found', 'game', this.gameId, 'round', roundId);
+      this.log.warn({ round: roundId }, 'Round not found');
       throw new Error('Round not found');
     }
 
     const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     if (!chooser) {
-      console.error('Chooser not found', 'game', this.gameId, 'round', roundId);
+      this.log.warn({ round: roundId }, 'Chooser not found');
       throw new Error('Chooser not found');
     }
 
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
     if (!game) {
-      console.error('Game not found', 'game', this.gameId, 'round', roundId);
+      this.log.warn({ round: roundId }, 'Game not found');
       throw new Error('Game not found');
     }
 
@@ -39,7 +41,7 @@ export default class OddOneOutRoundService extends RoundService {
     if (currentRound) {
       const prevRound = await this.roundRepo.getRoundTransaction(transaction, currentRound);
       if (!prevRound) {
-        console.error('Previous round not found', 'game', this.gameId, 'round', roundId);
+        this.log.warn({ round: roundId }, 'Previous round not found');
         throw new Error('Previous round not found');
       }
       prevOrder = prevRound.order!;
@@ -78,7 +80,7 @@ export default class OddOneOutRoundService extends RoundService {
 
     await this.timerRepo.resetTimerTransaction(transaction, Timer.READY_COUNTDOWN_SECONDS);
 
-    console.log('Round successfully started', 'game', this.gameId, 'round', roundId);
+    this.log.info({ round: roundId }, 'Round successfully started');
   }
 
   async moveToNextQuestionTransaction(transaction: Transaction, roundId: string, questionOrder: number) {
@@ -87,20 +89,20 @@ export default class OddOneOutRoundService extends RoundService {
     /* Game: fetch next question and reset every player's state */
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     if (!round) {
-      console.error('Round not found', 'game', this.gameId, 'round', roundId);
+      this.log.warn({ round: roundId }, 'Round not found');
       throw new Error('Round not found');
     }
 
     const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     if (!chooser) {
-      console.error('Chooser not found', 'game', this.gameId, 'round', roundId);
+      this.log.warn({ round: roundId }, 'Chooser not found');
       throw new Error('Chooser not found');
     }
 
     const questionId = round.questions[questionOrder];
     const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     if (!gameQuestion) {
-      console.error('Game question not found', 'game', this.gameId, 'round', roundId, 'question', questionId);
+      this.log.warn({ round: roundId, question: questionId }, 'Game question not found');
       throw new Error('Game question not found');
     }
     await this.chooserRepo.resetChoosersTransaction(transaction);

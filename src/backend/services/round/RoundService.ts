@@ -1,7 +1,9 @@
 import { collection, getDocs, query, runTransaction, Transaction, where } from 'firebase/firestore';
+import type { Logger } from 'pino';
 
 import { firestore } from '@/backend/firebase/firebase';
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
+import { logger } from '@/backend/logger';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
@@ -41,6 +43,7 @@ export default class RoundService {
   protected soundRepo: SoundRepository;
   protected readyRepo: ReadyRepository;
   protected baseQuestionRepo: BaseQuestionRepository;
+  protected log: Logger;
 
   constructor(gameId: string, roundType: RoundType) {
     if (!gameId) {
@@ -51,6 +54,8 @@ export default class RoundService {
     }
 
     this.gameId = gameId;
+    this.log = logger.child({ module: 'RoundService', game: this.gameId });
+
     this.gameRepo = new GameRepository();
     this.gameScoreRepo = new GameScoreRepository(this.gameId);
 
@@ -82,17 +87,33 @@ export default class RoundService {
     const roundScoreRepo = new RoundScoreRepository(this.gameId, roundId);
 
     const questions = await gameQuestionRepo.getAllQuestions();
+    if (!questions) {
+      this.log.warn({ round: roundId }, 'No questions found when resetting round');
+      throw new Error('No questions found when resetting round');
+    }
+
     const initTeamScores = await this.getInitTeamScores();
+    if (!initTeamScores) {
+      this.log.warn({ round: roundId }, 'Failed to get initial team scores when resetting round');
+      throw new Error('Failed to get initial team scores when resetting round');
+    }
 
     for (const question of questions) {
       await gameQuestionService.resetQuestion(question.id as string);
     }
     await roundScoreRepo.resetScores(initTeamScores);
     await this.roundRepo.resetRound(roundId, this.roundType);
+
+    this.log.info({ round: roundId }, 'Round successfully reset');
   }
 
   async getInitTeamScores() {
     const teams = await this.teamRepo.getAllTeams();
+    if (!teams) {
+      this.log.warn('No teams found when getting initial team scores');
+      throw new Error('No teams found when getting initial team scores');
+    }
+
     return Object.fromEntries(teams.map((t) => [t.id, 0]));
   }
 
@@ -103,7 +124,7 @@ export default class RoundService {
     try {
       await runTransaction(firestore, (transaction) => this.startRoundTransaction(transaction, roundId));
     } catch (error) {
-      console.error('Error starting round:', error);
+      this.log.error({ err: error }, 'Error starting round');
       throw error;
     }
   }
@@ -111,7 +132,7 @@ export default class RoundService {
   async startRoundTransaction(transaction: Transaction, roundId: string) {
     await this.moveToNextQuestionTransaction(transaction, roundId, 0);
 
-    console.log('Round successfully started', 'game', this.gameId, 'round', roundId);
+    this.log.info({ round: roundId }, 'Round successfully started');
   }
 
   async moveToNextQuestionTransaction(transaction: Transaction, roundId: string, questionOrder: number) {
@@ -135,14 +156,17 @@ export default class RoundService {
         this.handleQuestionEndTransaction(transaction, roundId, questionId)
       );
     } catch (error) {
-      console.error('Error handling question end:', error);
+      this.log.error({ err: error }, 'Error handling question end');
       throw error;
     }
   }
 
   async handleQuestionEndTransaction(transaction: Transaction, roundId: string, questionId: string) {
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
-    if (!round) throw new Error('Round not found');
+    if (!round) {
+      this.log.warn({ round: roundId }, 'Round not found');
+      throw new Error('Round not found');
+    }
     const isRoundOver = (round.currentQuestionIdx ?? 0) === round.questions.length - 1;
 
     isRoundOver
@@ -165,7 +189,7 @@ export default class RoundService {
     try {
       await runTransaction(firestore, async (transaction) => await this.endRoundTransaction(transaction, roundId));
     } catch (error) {
-      console.error('Error ending round:', error);
+      this.log.error({ err: error }, 'Error ending round');
       throw error;
     }
   }
@@ -179,16 +203,28 @@ export default class RoundService {
     const roundScoreRepo = new RoundScoreRepository(this.gameId, roundId);
 
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
+    if (!game) {
+      this.log.warn({ round: roundId }, 'Game not found');
+      throw new Error('Game not found');
+    }
+
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
-    if (!game || !round) throw new Error('Game or round not found');
+    if (!round) {
+      this.log.warn({ round: roundId }, 'Round not found');
+      throw new Error('Round not found');
+    }
 
     const gameScoresData = await this.gameScoreRepo.getScoresTransaction(transaction);
+    if (!gameScoresData) {
+      this.log.warn({ round: roundId }, 'Game scores not found when ending round');
+      throw new Error('Game scores not found when ending round');
+    }
+
     const roundScoresData = await roundScoreRepo.getScoresTransaction(transaction);
-
-    console.log('gameScoresData', gameScoresData);
-    console.log('roundScoresData', roundScoresData);
-
-    const roundScorePolicy = game.roundScorePolicy;
+    if (!roundScoresData) {
+      this.log.warn({ round: roundId }, 'Round scores not found when ending round');
+      throw new Error('Round scores not found when ending round');
+    }
 
     const currentGlobalScores: Scores = (gameScoresData!.scores ?? {}) as Scores;
     const currentGlobalScoresProgress: ScoresProgress = gameScoresData!.scoresProgress ?? {};
@@ -200,7 +236,7 @@ export default class RoundService {
     >;
 
     const questionIds = round.questions;
-    const roundType = round.type;
+    const roundType = round.type as string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rewardsPerQuestion = (round as any).rewardsPerQuestion;
 
@@ -213,13 +249,18 @@ export default class RoundService {
     // For most rounds, the most performant team is the one with the highest score, but on error-based rounds it is the opposite (e.g., odd one out, matching)
     // Here we calculate the UNIQUE scores, i.e., we remove the duplicates which appear when several teams have the same score
     // Result: sortedUniqueRoundScores = [score1, score2, ...]
-    const sortedUniqueRoundScores = sortScores(roundScores, sortAscendingRoundScores(roundType as string));
+    const sortedUniqueRoundScores = sortScores(roundScores, sortAscendingRoundScores(roundType));
 
     /* ================================ Update the global scores of each team according to their performance in this round ================================ */
+    const roundScorePolicy = game.roundScorePolicy;
     if (roundScorePolicy === ScorePolicyType.COMPLETION_RATE) {
       const gameQuestions = await Promise.all(
-        (questionIds as string[]).map((id) => gameQuestionRepo.getQuestionTransaction(transaction, id))
+        questionIds.map((id: string) => gameQuestionRepo.getQuestionTransaction(transaction, id))
       );
+      if (!gameQuestions) {
+        this.log.warn({ round: roundId }, 'Game questions not found when ending round');
+        throw new Error('Game questions not found when ending round');
+      }
 
       // Score policy: calculate the "completion rate" of each team w.r.t. the maximum number of points of the round
       // This rate (min 0, max 100) is the score that is added to the global score of the team
@@ -229,7 +270,7 @@ export default class RoundService {
       // Result: roundSortedTeams = [{score: score1, teams: [teamId1, teamId2, ...]}, {score: score2, teams: [teamId3, teamId4, ...]}, ...]
       roundSortedTeams = aggregateTiedTeams(sortedUniqueRoundScores, roundScores);
 
-      if (!([RoundType.ODD_ONE_OUT, RoundType.MATCHING] as string[]).includes(roundType as string)) {
+      if (!([RoundType.ODD_ONE_OUT, RoundType.MATCHING] as string[]).includes(roundType)) {
         // Add the calculated rates to the global scores of each team
         const updateGlobalScores = (completionRates: Record<string, number>) => {
           Object.keys(completionRates).forEach((teamId) => {
@@ -238,7 +279,7 @@ export default class RoundService {
           });
         };
 
-        if (([RoundType.MCQ, RoundType.NAGUI] as string[]).includes(roundType as string)) {
+        if (([RoundType.MCQ, RoundType.NAGUI] as string[]).includes(roundType)) {
           // Aggregate team stats
           const teamStats = (gameQuestions as AnyGameQuestion[]).reduce(
             (acc: Record<string, { sumRewards: number; numQuestions: number }>, q: any) => {
@@ -267,7 +308,7 @@ export default class RoundService {
             {}
           );
 
-          console.log(teamStats);
+          this.log.debug({ teamStats }, 'Team stats');
 
           updateGlobalScores(roundCompletionRates);
         } else {
@@ -300,7 +341,7 @@ export default class RoundService {
       const globalScores = updatedGlobalScores as Scores;
 
       // Aggregates teams with the same score in this round
-      roundSortedTeams = (sortedUniqueRoundScores as number[]).map((score, index) => {
+      roundSortedTeams = sortedUniqueRoundScores.map((score: number, index: number) => {
         const tiedTeams = Object.keys(scores).filter((teamId) => scores[teamId] === score);
         const shuffledTiedTeams = shuffle(tiedTeams);
         const reward = index < (roundRewards as unknown[]).length ? roundRewards[index] : 0;
@@ -354,7 +395,7 @@ export default class RoundService {
       },
       {}
     );
-    console.log('teamsScoresSequences', teamsScoresSequences);
+    this.log.debug({ teamsScoresSequences }, 'Teams scores sequences');
 
     /* ================================================ GLOBAL PROGRESS ================================================ */
 
@@ -401,12 +442,17 @@ export default class RoundService {
       const prevRound = prevRounds[0];
 
       if (!prevRound) {
+        this.log.warn({ round: roundId }, 'Previous round not found');
         throw new Error('Previous round not found');
       }
-      console.log('prevRound', prevRound);
+      this.log.debug({ prevRound }, 'Previous round');
 
       const prevRoundScoreRepo = new RoundScoreRepository(this.gameId, prevRound.id as string);
       const prevRoundScores = await prevRoundScoreRepo.getScoresTransaction(transaction);
+      if (!prevRoundScores) {
+        this.log.warn({ round: roundId }, 'Previous round scores not found');
+        throw new Error('Previous round scores not found');
+      }
 
       rankingDiffs = Round.calculateRankDifferences(prevRoundScores!.gameSortedTeams, gameSortedTeams);
     }
@@ -427,6 +473,7 @@ export default class RoundService {
 
     // If the round is not the last one, update the running order of teams for the next round
     if ((round.order ?? 0) < game.rounds.length - 1) {
+      this.log.debug({ round: roundId, newChooserOrder }, 'Updating chooser order for the next round');
       // The first team in the running order - the "chooser" team - chooses the next round, hence the status 'focus'
       // All other teams are set to 'idle'
       const playersCollectionRef = collection(GAMES_COLLECTION_REF, this.gameId, 'players');
@@ -445,6 +492,7 @@ export default class RoundService {
         chooserOrder: newChooserOrder,
       });
     } else {
+      this.log.debug({ round: roundId }, 'Last round ended, updating game scores');
       await this.gameScoreRepo.updateScoresTransaction(transaction, {
         gameSortedTeams,
       });
@@ -475,7 +523,7 @@ export default class RoundService {
         async (transaction) => await this.handleRoundSelectedTransaction(transaction, roundId, userId)
       );
     } catch (error) {
-      console.error('Error handling round selected:', error);
+      this.log.error({ err: error }, 'Error handling round selected');
       throw error;
     }
   }

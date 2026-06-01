@@ -1,7 +1,7 @@
 'use server';
 
 import GameMatchingQuestionService from '@/backend/services/question/matching/GameMatchingQuestionService';
-import { MatchingEdgeData } from '@/models/questions/matching';
+import { ColumnIndices, MatchingEdgeData } from '@/models/questions/matching';
 
 export const resetQuestion = async (gameId: string, roundId: string, questionId: string) => {
   const service = new GameMatchingQuestionService(gameId, roundId);
@@ -24,10 +24,10 @@ export const submitMatch = async (
   gameId: string,
   roundId: string,
   questionId: string,
-  userId: string,
+  playerId: string,
   edges: MatchingEdgeData[],
-  match: any
+  match: ColumnIndices | null
 ) => {
   const service = new GameMatchingQuestionService(gameId, roundId);
-  return service.submitMatch(questionId, userId, edges, match);
+  return service.submitMatch(questionId, playerId, edges, match);
 };

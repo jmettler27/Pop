@@ -16,7 +16,6 @@ import { QuestionType } from '@/models/questions/question-type';
 
 export default class GameQuestionServiceFactory {
   static createService(questionType: QuestionType, gameId: string, roundId: string) {
-    console.log('createService', questionType, gameId, roundId);
     switch (questionType) {
       case QuestionType.BASIC:
         return new GameBasicQuestionService(gameId, roundId);

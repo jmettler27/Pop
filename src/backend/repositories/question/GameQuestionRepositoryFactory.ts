@@ -16,7 +16,6 @@ import { QuestionType } from '@/models/questions/question-type';
 
 export default class GameQuestionRepositoryFactory {
   static createRepository(questionType: QuestionType, gameId: string, roundId: string) {
-    console.log('createRepository', questionType, gameId, roundId);
     switch (questionType) {
       case QuestionType.BASIC:
         return new GameBasicQuestionRepository(gameId, roundId);

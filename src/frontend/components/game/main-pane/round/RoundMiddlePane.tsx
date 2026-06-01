@@ -26,7 +26,6 @@ export default function RoundMiddlePane() {
   const { roundRepo } = gameRepositories;
 
   const { round, loading: roundLoading, error: roundError } = roundRepo.useRound(game.currentRound as string);
-  console.log('Round in RoundMiddlePane', round);
 
   if (roundError) {
     return <ErrorScreen inline />;

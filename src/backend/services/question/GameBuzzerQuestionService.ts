@@ -1,6 +1,7 @@
 import { runTransaction, serverTimestamp, Transaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import GameBuzzerQuestionRepository from '@/backend/repositories/question/GameBuzzerQuestionRepository';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
@@ -13,6 +14,7 @@ import { PlayerStatus } from '@/models/users/player';
 export default class GameBuzzerQuestionService extends GameQuestionService {
   constructor(gameId: string, roundId: string, questionType: QuestionType) {
     super(gameId, roundId, questionType);
+    this.log = logger.child({ module: 'GameBuzzerQuestionService', game: gameId, round: roundId });
     this.roundRepo = new RoundRepository(gameId);
   }
 
@@ -42,32 +44,10 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
         });
         await this.timerRepo.prepareTimerForReadyTransaction(transaction);
 
-        console.log(
-          'Buzzer question successfully reset',
-          'game',
-          this.gameId,
-          'round',
-          this.roundId,
-          'question',
-          questionId,
-          'type',
-          this.questionType
-        );
+        this.log.info({ question: questionId, type: this.questionType }, 'Buzzer question ended');
       });
     } catch (error) {
-      console.error(
-        'Failed to end buzzer question',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'type',
-        this.questionType,
-        'err',
-        error
-      );
+      this.log.error({ question: questionId, type: this.questionType, err: error }, 'Failed to end buzzer question');
       throw error;
     }
   }
@@ -78,17 +58,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
       questionId
     );
     if (!questionPlayers) {
-      console.error(
-        'Question players not found',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'type',
-        this.questionType
-      );
+      this.log.warn({ question: questionId, type: this.questionType }, 'Question players not found');
       throw new Error('Question players not found');
     }
     const buzzed = questionPlayers.buzzed;
@@ -129,38 +99,19 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
           transaction,
           questionId
         )) as GameBuzzerQuestion;
-        const thinkingTime = gameQuestion.thinkingTime;
 
         await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.FOCUS);
-        await this.timerRepo.startTimerTransaction(transaction, thinkingTime);
+        await this.timerRepo.startTimerTransaction(transaction, gameQuestion.thinkingTime);
 
-        console.log(
-          'Buzzer head change successfully handled',
-          'game',
-          this.gameId,
-          'round',
-          this.roundId,
-          'question',
-          questionId,
-          'type',
-          this.questionType,
-          'player',
-          playerId
+        this.log.info(
+          { question: questionId, type: this.questionType, player: playerId },
+          'Buzzer head change handled'
         );
       });
     } catch (error) {
-      console.error(
-        'Failed to handle buzzer head change',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'type',
-        this.questionType,
-        'err',
-        error
+      this.log.error(
+        { question: questionId, type: this.questionType, err: error },
+        'Failed to handle buzzer head change'
       );
       throw error;
     }
@@ -183,35 +134,12 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
         );
         await this.soundRepo.addSoundTransaction(transaction, 'sfx_menu_validate');
 
-        console.log(
-          'Player successfully added to buzzer',
-          'game',
-          this.gameId,
-          'round',
-          this.roundId,
-          'question',
-          questionId,
-          'type',
-          this.questionType,
-          'player',
-          playerId
-        );
+        this.log.info({ question: questionId, type: this.questionType, player: playerId }, 'Player added to buzzer');
       });
     } catch (error) {
-      console.error(
-        'Failed to add player to buzzer',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'type',
-        this.questionType,
-        'player',
-        playerId,
-        'err',
-        error
+      this.log.error(
+        { question: questionId, type: this.questionType, player: playerId, err: error },
+        'Failed to add player to buzzer'
       );
       throw error;
     }
@@ -232,38 +160,27 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
           questionId,
           playerId
         );
+        const gameQuestion = await (this.gameQuestionRepo as GameBuzzerQuestionRepository).getQuestionTransaction(
+          transaction,
+          questionId
+        );
+        if (!gameQuestion) {
+          this.log.warn({ question: questionId }, 'Game question not found when removing player from buzzer');
+          throw new Error('Game question not found when removing player from buzzer');
+        }
+
         await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.IDLE);
         await this.soundRepo.addSoundTransaction(transaction, 'jpp_de_lair');
 
-        console.log(
-          'Player successfully removed from buzzer',
-          'game',
-          this.gameId,
-          'round',
-          this.roundId,
-          'question',
-          questionId,
-          'type',
-          this.questionType,
-          'player',
-          playerId
+        this.log.info(
+          { question: questionId, type: this.questionType, player: playerId },
+          'Player removed from buzzer'
         );
       });
     } catch (error) {
-      console.error(
-        'Failed to remove player from buzzer',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'type',
-        this.questionType,
-        'player',
-        playerId,
-        'err',
-        error
+      this.log.error(
+        { question: questionId, type: this.questionType, player: playerId, err: error },
+        'Failed to remove player from buzzer'
       );
       throw error;
     }
@@ -276,22 +193,21 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
 
     try {
       await runTransaction(firestore, async (transaction) => {
+        const gameQuestion = await (this.gameQuestionRepo as GameBuzzerQuestionRepository).getQuestionTransaction(
+          transaction,
+          questionId
+        );
+        if (!gameQuestion) {
+          this.log.warn({ question: questionId }, 'Game question not found when clearing buzzer');
+          throw new Error('Game question not found when clearing buzzer');
+        }
+
         const questionPlayers = await (this.gameQuestionRepo as GameBuzzerQuestionRepository).getPlayersTransaction(
           transaction,
           questionId
         );
         if (!questionPlayers) {
-          console.error(
-            'Question players not found',
-            'game',
-            this.gameId,
-            'round',
-            this.roundId,
-            'question',
-            questionId,
-            'type',
-            this.questionType
-          );
+          this.log.warn({ question: questionId, type: this.questionType }, 'Question players not found');
           throw new Error('Question players not found');
         }
 
@@ -304,35 +220,13 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
           transaction,
           questionId
         );
-        await this.timerRepo.resetTimerTransaction(transaction);
+        await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
         await this.soundRepo.addSoundTransaction(transaction, 'robinet_desert');
 
-        console.log(
-          'Buzzer cleared successfully',
-          'game',
-          this.gameId,
-          'round',
-          this.roundId,
-          'question',
-          questionId,
-          'type',
-          this.questionType
-        );
+        this.log.info({ question: questionId, type: this.questionType }, 'Buzzer cleared');
       });
     } catch (error) {
-      console.error(
-        'Failed to clear buzzer',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'type',
-        this.questionType,
-        'err',
-        error
-      );
+      this.log.error({ question: questionId, type: this.questionType, err: error }, 'Failed to clear buzzer');
 
       throw error;
     }
@@ -351,20 +245,9 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
         this.validateAnswerTransaction(transaction, questionId, playerId)
       );
     } catch (error) {
-      console.error(
-        'Failed to validate answer to buzzer question',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'type',
-        this.questionType,
-        'player',
-        playerId,
-        'err',
-        error
+      this.log.error(
+        { question: questionId, type: this.questionType, player: playerId, err: error },
+        'Failed to validate answer to buzzer question'
       );
       throw error;
     }
@@ -373,8 +256,16 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
   async validateAnswerTransaction(transaction: Transaction, questionId: string, playerId: string) {
     // Update the winner team scores
     const player = await this.playerRepo.getPlayerTransaction(transaction, playerId);
+    if (!player) {
+      this.log.warn({ question: questionId, player: playerId }, 'Player not found');
+      throw new Error('Player not found');
+    }
+
     const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
-    if (!player || !round) throw new Error('Player or round not found');
+    if (!round) {
+      this.log.warn({ question: questionId, round: this.roundId }, 'Round not found');
+      throw new Error('Round not found');
+    }
 
     const teamId = player.teamId;
     const points = (round as BuzzerRound).rewardsPerQuestion;
@@ -395,19 +286,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
 
     await this.endQuestionTransaction(transaction, questionId);
 
-    console.log(
-      'Answer to buzzer question successfully validated',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId,
-      'type',
-      this.questionType,
-      'player',
-      playerId
-    );
+    this.log.info({ question: questionId, type: this.questionType, player: playerId }, 'Answer validated');
   }
 
   async invalidateAnswer(questionId: string, playerId: string) {
@@ -423,20 +302,9 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
         this.invalidateAnswerTransaction(transaction, questionId, playerId)
       );
     } catch (error) {
-      console.error(
-        'Failed to invalidate answer to buzzer question',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'type',
-        this.questionType,
-        'player',
-        playerId,
-        'err',
-        error
+      this.log.error(
+        { question: questionId, type: this.questionType, player: playerId, err: error },
+        'Failed to invalidate answer to buzzer question'
       );
       throw error;
     }
@@ -447,17 +315,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
       questionId
     )) as GameBuzzerQuestion;
     if (!gameQuestion) {
-      console.error(
-        'Game question not found',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'type',
-        this.questionType
-      );
+      this.log.warn({ question: questionId, type: this.questionType }, 'Game question not found');
       throw new Error('Game question not found');
     }
 
@@ -471,20 +329,8 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     );
     await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.WRONG);
     await this.soundRepo.addWrongAnswerSoundToQueueTransaction(transaction);
-    await this.timerRepo.resetTimerTransaction(transaction);
+    await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
 
-    console.log(
-      'Answer to buzzer question successfully invalidated',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId,
-      'type',
-      this.questionType,
-      'player',
-      playerId
-    );
+    this.log.info({ question: questionId, type: this.questionType, player: playerId }, 'Answer invalidated');
   }
 }

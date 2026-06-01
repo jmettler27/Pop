@@ -57,7 +57,6 @@ const RoundProgressHeader = memo(function RoundProgressHeader({
   roundTitle,
 }: RoundProgressHeaderProps) {
   const intl = useIntl();
-  console.log('RENDERED RoundProgressHeader');
   return (
     <div className="flex flex-row items-center w-full justify-center space-x-1 mt-1">
       <RoundTypeIcon roundType={roundType} fontSize={20} />

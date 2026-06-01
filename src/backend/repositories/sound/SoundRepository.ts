@@ -1,6 +1,8 @@
 import { runTransaction, serverTimestamp, type Transaction } from 'firebase/firestore';
+import type { Logger } from 'pino';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 import { getRandomElement } from '@/backend/utils/arrays';
 
@@ -8,10 +10,12 @@ const WRONG_ANSWER_SOUNDS = ['roblox_oof', 'oof', 'terraria_male_damage', 'itai'
 
 export default class SoundRepository extends FirebaseRepository {
   private gameId: string;
+  private log: Logger;
 
   constructor(gameId: string) {
     super(['games', gameId, 'realtime', 'sounds', 'queue']);
     this.gameId = gameId;
+    this.log = logger.child({ module: 'SoundRepository', game: this.gameId });
   }
 
   async initializeSoundsTransaction(transaction: Transaction): Promise<Record<string, unknown>> {
@@ -28,7 +32,7 @@ export default class SoundRepository extends FirebaseRepository {
     try {
       await runTransaction(firestore, (transaction) => this.addSoundTransaction(transaction, filename));
     } catch (error) {
-      console.error('Error adding sound', error);
+      this.log.error({ err: error }, 'Error adding sound');
       throw error;
     }
   }
@@ -38,7 +42,7 @@ export default class SoundRepository extends FirebaseRepository {
       filename,
       timestamp: serverTimestamp(),
     });
-    console.log('Sound added', 'game', this.gameId, 'filename', filename);
+    this.log.debug({ filename }, 'Sound added');
     return sound;
   }
 
@@ -49,10 +53,10 @@ export default class SoundRepository extends FirebaseRepository {
         for (const sound of sounds) {
           await this.deleteTransaction(transaction, sound.id as string);
         }
-        console.log('All sounds cleared', 'game', this.gameId);
+        this.log.info('All sounds cleared');
       });
     } catch (error) {
-      console.error('Error clearing sounds', error);
+      this.log.error({ err: error }, 'Error clearing sounds');
       throw error;
     }
   }

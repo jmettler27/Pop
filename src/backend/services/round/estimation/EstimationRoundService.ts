@@ -1,5 +1,6 @@
 import { serverTimestamp, Transaction } from 'firebase/firestore';
 
+import { logger } from '@/backend/logger';
 import GameEstimationQuestionRepository from '@/backend/repositories/question/GameEstimationQuestionRepository';
 import RoundService from '@/backend/services/round/RoundService';
 import { GameStatus } from '@/models/games/game-status';
@@ -14,24 +15,25 @@ import { PlayerStatus } from '@/models/users/player';
 export default class EstimationRoundService extends RoundService {
   constructor(gameId: string) {
     super(gameId, RoundType.ESTIMATION);
+    this.log = logger.child({ module: 'EstimationRoundService', game: gameId });
   }
 
   async handleRoundSelectedTransaction(transaction: Transaction, roundId: string, userId: string) {
     const playerIds = await this.playerRepo.getAllPlayerIds();
     if (!playerIds) {
-      console.error('Player IDs not found', 'game', this.gameId, 'round', roundId);
+      this.log.warn({ round: roundId }, 'Player IDs not found');
       throw new Error('Player IDs not found');
     }
 
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     if (!round) {
-      console.error('Round not found', 'game', this.gameId, 'round', roundId);
+      this.log.warn({ round: roundId }, 'Round not found');
       throw new Error('Round not found');
     }
 
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
     if (!game) {
-      console.error('Game not found', 'game', this.gameId, 'round', roundId);
+      this.log.warn({ round: roundId }, 'Game not found');
       throw new Error('Game not found');
     }
 
@@ -41,7 +43,7 @@ export default class EstimationRoundService extends RoundService {
     if (currentRound) {
       const prevRound = await this.roundRepo.getRoundTransaction(transaction, currentRound);
       if (!prevRound) {
-        console.error('Previous round not found', 'game', this.gameId, 'round', roundId);
+        this.log.warn({ round: roundId }, 'Previous round not found');
         throw new Error('Previous round not found');
       }
       prevOrder = prevRound.order!;
@@ -51,10 +53,12 @@ export default class EstimationRoundService extends RoundService {
     let maxPoints = null;
     if (roundScorePolicy === ScorePolicyType.COMPLETION_RATE) {
       maxPoints = await this.calculateMaxPointsTransaction(transaction, round);
+      this.log.debug({ round: roundId, maxPoints }, 'Max points calculated for completion rate policy');
     }
 
     if (round.dateStart && !round.dateEnd && currentQuestion) {
       await this.gameRepo.updateGameStatusTransaction(transaction, this.gameId, GameStatus.QUESTION_ACTIVE);
+      this.log.debug({ round: roundId }, 'Round already started, moving to next question');
       return;
     }
 
@@ -70,19 +74,16 @@ export default class EstimationRoundService extends RoundService {
     });
 
     await this.chooserRepo.resetChoosersTransaction(transaction);
-
     await this.soundRepo.addSoundTransaction(transaction, 'super_mario_odyssey_moon');
-
     await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
       currentRound: roundId,
       currentQuestion: null,
       currentQuestionType: this.roundType,
       status: GameStatus.ROUND_START,
     });
-
     await this.timerRepo.resetTimerTransaction(transaction, Timer.READY_COUNTDOWN_SECONDS);
 
-    console.log('Round successfully started', 'game', this.gameId, 'round', roundId);
+    this.log.info({ round: roundId }, 'Round successfully started');
   }
 
   async moveToNextQuestionTransaction(transaction: Transaction, roundId: string, questionOrder: number) {
@@ -91,20 +92,20 @@ export default class EstimationRoundService extends RoundService {
     /* Game: fetch next question and reset every player's state */
     const playerIds = await this.playerRepo.getAllPlayerIds();
     if (!playerIds) {
-      console.error('Player IDs not found', 'game', this.gameId, 'round', roundId);
+      this.log.warn({ round: roundId }, 'Player IDs not found');
       throw new Error('Player IDs not found');
     }
 
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     if (!round) {
-      console.error('Round not found', 'game', this.gameId, 'round', roundId);
+      this.log.warn({ round: roundId }, 'Round not found');
       throw new Error('Round not found');
     }
 
     const questionId = round.questions[questionOrder];
     const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     if (!gameQuestion) {
-      console.error('Game question not found', 'game', this.gameId, 'round', roundId, 'question', questionId);
+      this.log.warn({ round: roundId, question: questionId }, 'Game question not found');
       throw new Error('Game question not found');
     }
 

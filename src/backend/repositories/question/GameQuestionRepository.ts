@@ -1,8 +1,11 @@
 import { serverTimestamp, type Transaction } from 'firebase/firestore';
 
+import { logger } from '@/backend/logger';
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 import { type QuestionType } from '@/models/questions/question-type';
 import QuestionFactory, { type AnyGameQuestion } from '@/models/questions/QuestionFactory';
+
+const log = logger.child({ module: 'GameQuestionRepository' });
 
 export default class GameQuestionRepository extends FirebaseRepository {
   protected questionType: QuestionType;
@@ -52,7 +55,7 @@ export default class GameQuestionRepository extends FirebaseRepository {
       const createData = await super.createTransaction(transaction, question.toObject(), questionId);
       return QuestionFactory.createGameQuestion(this.questionType, createData);
     } catch (error) {
-      console.error('Failed to create the question:', error);
+      log.error({ err: error }, 'Failed to create the question');
       throw error;
     }
   }
@@ -61,7 +64,7 @@ export default class GameQuestionRepository extends FirebaseRepository {
     try {
       await super.deleteTransaction(transaction, questionId);
     } catch (error) {
-      console.error('Failed to delete the question:', error);
+      log.error({ err: error }, 'Failed to delete the question');
       throw error;
     }
   }

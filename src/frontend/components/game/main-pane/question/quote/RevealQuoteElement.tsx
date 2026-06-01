@@ -214,7 +214,7 @@ function RevealQuotePartItemButton({
       </ListItemButton>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          {quoteParts.map((part, idx) => (
+          {quoteParts.map((part: QuotePart, idx: number) => (
             <ListItemButton
               key={idx}
               sx={{ pl: 4 }}

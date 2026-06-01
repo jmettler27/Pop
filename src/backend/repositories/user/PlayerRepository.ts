@@ -89,7 +89,7 @@ export default class PlayerRepository extends FirebaseRepository {
 
   async updateAllPlayersStatus(status: string, playerIds: string[]): Promise<void> {
     const batch = writeBatch(firestore);
-    playerIds.forEach((id) => batch.update(doc(this.collectionRef, id), { status }));
+    playerIds.forEach((id: string) => batch.update(doc(this.collectionRef, id), { status }));
     await batch.commit();
   }
 
@@ -98,7 +98,7 @@ export default class PlayerRepository extends FirebaseRepository {
     status: string,
     playerIds: string[]
   ): Promise<void> {
-    playerIds.map((id) => doc(this.collectionRef, id)).forEach((ref) => transaction.update(ref, { status }));
+    playerIds.map((id: string) => doc(this.collectionRef, id)).forEach((ref) => transaction.update(ref, { status }));
   }
 
   async updateTeamPlayersStatus(teamId: string, status: string): Promise<void> {

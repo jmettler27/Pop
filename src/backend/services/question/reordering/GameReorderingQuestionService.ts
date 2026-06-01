@@ -1,6 +1,7 @@
 import { increment, runTransaction, Timestamp, Transaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
 import { QuestionType } from '@/models/questions/question-type';
 import { GameReorderingQuestion, Ordering, ReorderingQuestion, SubmittedOrdering } from '@/models/questions/reordering';
@@ -11,6 +12,7 @@ import { PlayerStatus } from '@/models/users/player';
 export default class GameReorderingQuestionService extends GameQuestionService {
   constructor(gameId: string, roundId: string) {
     super(gameId, roundId, QuestionType.REORDERING);
+    this.log = logger.child({ module: 'GameReorderingQuestionService', game: gameId, round: roundId });
   }
 
   async resetQuestionTransaction(transaction: Transaction, questionId: string) {
@@ -21,21 +23,13 @@ export default class GameReorderingQuestionService extends GameQuestionService {
     await this.gameQuestionRepo.resetQuestionTransaction(transaction, questionId);
     await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
 
-    console.log(
-      'Reordering question successfully reset',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId
-    );
+    this.log.info({ question: questionId }, 'Reordering question reset');
   }
 
   async handleCountdownEndTransaction(transaction: Transaction, questionId: string) {
     await this.endQuestionTransaction(transaction, questionId);
 
-    console.log('Reordering question countdown end successfully handled', questionId);
+    this.log.info({ question: questionId }, 'Reordering question countdown end handled');
   }
 
   async endQuestionTransaction(transaction: Transaction, questionId: string) {
@@ -44,7 +38,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
       questionId
     )) as ReorderingQuestion;
     if (!baseQuestion) {
-      console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Base question not found');
       throw new Error('Base question not found');
     }
 
@@ -53,19 +47,19 @@ export default class GameReorderingQuestionService extends GameQuestionService {
       questionId
     )) as GameReorderingQuestion;
     if (!gameQuestion) {
-      console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Game question not found');
       throw new Error('Game question not found');
     }
 
     const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as ReorderingRound;
     if (!round) {
-      console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Round not found');
       throw new Error('Round not found');
     }
 
     const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction);
     if (!roundScores) {
-      console.error('Round scores not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Round scores not found');
       throw new Error('Round scores not found');
     }
 
@@ -74,8 +68,16 @@ export default class GameReorderingQuestionService extends GameQuestionService {
     const { scores: currRoundScores, scoresProgress: currRoundProgress } = roundScores;
 
     if (orderings.length === 0) {
+      this.log.debug(
+        { question: questionId },
+        'No orderings submitted for this question, skipping rewards calculation'
+      );
       // We end the question before any ordering is submitted
       const teams = await this.teamRepo.getAllTeams();
+      if (!teams) {
+        this.log.warn({ question: questionId }, 'No teams found when ending question');
+        throw new Error('No teams found when ending question');
+      }
 
       const newRoundScores: Scores = {};
       const newRoundProgress: ScoresProgress = {};
@@ -93,6 +95,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
         scoresProgress: newRoundProgress,
       });
     } else {
+      this.log.debug({ question: questionId }, 'Calculating rewards for submitted orderings');
       // Regular case: at least one ordering has been submitted, calculate scores as normal
       await this.calculateRewardsAndProgressTransaction(
         orderings,
@@ -107,15 +110,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
 
     await super.endQuestionTransaction(transaction, questionId);
 
-    console.log(
-      'Reordering question successfully ended',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId
-    );
+    this.log.info({ question: questionId }, 'Reordering question ended');
   }
 
   async calculateRewardsAndProgressTransaction(
@@ -128,6 +123,10 @@ export default class GameReorderingQuestionService extends GameQuestionService {
     maxScore: number
   ) {
     const players = await this.playerRepo.getAllPlayers();
+    if (!players) {
+      this.log.warn({ question: questionId }, 'No players found when calculating rewards');
+      throw new Error('No players found when calculating rewards');
+    }
 
     // Build a map of teamId -> reward for this question
     const teamRewards: Scores = {};
@@ -183,19 +182,15 @@ export default class GameReorderingQuestionService extends GameQuestionService {
     if (!questionId) {
       throw new Error('No question ID has been provided!');
     }
-
     if (!playerId) {
       throw new Error('No player ID has been provided!');
     }
-
     if (!teamId) {
       throw new Error('No team ID has been provided!');
     }
-
     if (!ordering) {
       throw new Error('No ordering has been provided!');
     }
-
     if (!Array.isArray(ordering)) {
       throw new Error('Ordering must be an array');
     }
@@ -205,7 +200,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
         await this.submitOrderingTransaction(transaction, questionId, playerId, teamId, ordering);
       });
     } catch (error) {
-      console.error('Failed to submit the ordering:', error);
+      this.log.error({ question: questionId, err: error }, 'Failed to submit the ordering');
       throw error;
     }
   }
@@ -222,6 +217,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
       questionId
     )) as GameReorderingQuestion;
     if (!gameQuestion) {
+      this.log.warn({ question: questionId }, 'Game question not found when submitting ordering');
       throw new Error('Game question not found');
     }
 
@@ -230,33 +226,28 @@ export default class GameReorderingQuestionService extends GameQuestionService {
       questionId
     )) as ReorderingQuestion;
     if (!baseQuestion) {
+      this.log.warn({ question: questionId }, 'Base question not found when submitting ordering');
       throw new Error('Base question not found');
     }
 
     const numTeams = await this.teamRepo.getNumTeams();
-    if (!numTeams) {
-      throw new Error('No teams found');
-    }
+    const orderings = gameQuestion.orderings || [];
 
     // Check if team has already submitted
-    const teamAlreadySubmitted =
-      gameQuestion.orderings && gameQuestion.orderings.some((o: Ordering) => o.teamId === teamId);
+    const teamAlreadySubmitted = orderings.some((o: Ordering) => o.teamId === teamId);
     if (teamAlreadySubmitted) {
+      this.log.warn({ question: questionId, team: teamId }, 'Team has already submitted an ordering');
       throw new Error('Your team has already submitted an ordering!');
     }
 
     // Validate ordering length matches items
     if (ordering.length !== baseQuestion.items!.length) {
+      this.log.warn({ question: questionId }, 'Ordering length does not match items length');
       throw new Error('Ordering length does not match items length');
     }
 
-    // Calculate score: number of items in correct position
-    let score = 0;
-    for (let i = 0; i < ordering.length; i++) {
-      if (ordering[i] === i) {
-        score++;
-      }
-    }
+    // Score = number of items in correct position
+    const score = ordering.filter((item: number, i: number) => item === i).length;
 
     // Add submission to orderings array
     const newOrdering = {
@@ -267,18 +258,19 @@ export default class GameReorderingQuestionService extends GameQuestionService {
       submittedAt: Timestamp.now(),
     };
 
-    const orderings = gameQuestion.orderings || [];
     orderings.push(newOrdering);
 
     // Check if all teams have submitted
     if (orderings.length >= numTeams) {
       const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as ReorderingRound;
       if (!round) {
+        this.log.warn({ question: questionId }, 'Round not found');
         throw new Error('Round not found');
       }
 
       const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction);
       if (!roundScores) {
+        this.log.warn({ question: questionId }, 'Round scores not found');
         throw new Error('Round scores not found');
       }
 
@@ -295,16 +287,12 @@ export default class GameReorderingQuestionService extends GameQuestionService {
         transaction,
         maxScore
       );
-      await this.gameQuestionRepo.updateTransaction(transaction, questionId, {
-        orderings,
-      });
+      await this.gameQuestionRepo.updateTransaction(transaction, questionId, { orderings });
       await super.endQuestionTransaction(transaction, questionId);
     } else {
-      await this.gameQuestionRepo.updateTransaction(transaction, questionId, {
-        orderings,
-      });
+      await this.gameQuestionRepo.updateTransaction(transaction, questionId, { orderings });
     }
 
-    console.log('Reordering submitted successfully', 'questionId', questionId, 'teamId', teamId, 'score', score);
+    this.log.info({ question: questionId, team: teamId, score }, 'Reordering submitted');
   }
 }
