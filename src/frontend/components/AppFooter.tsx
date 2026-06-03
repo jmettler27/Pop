@@ -21,7 +21,7 @@ export default function AppFooter() {
   const intl = useIntl();
 
   return (
-    <footer className="w-full border-t border-gray-700 bg-gray-900/80 backdrop-blur-sm mt-auto">
+    <footer className="w-full border-t border-gray-700 bg-gray-900/80 backdrop-blur-xs mt-auto">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
         <Link
           href="/"
@@ -48,7 +48,7 @@ export default function AppFooter() {
                 className={[
                   'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all duration-200 cursor-pointer',
                   locale === loc
-                    ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/30'
+                    ? 'bg-blue-600 text-white shadow-xs shadow-blue-500/30'
                     : 'text-gray-800 hover:bg-gray-200 hover:text-gray-900',
                 ].join(' ')}
               >

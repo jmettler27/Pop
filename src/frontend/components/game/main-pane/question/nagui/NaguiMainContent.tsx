@@ -40,7 +40,7 @@ export default function NaguiMainContent({ baseQuestion }: { baseQuestion: Nagui
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center">
-      <div className="flex-shrink-0 w-full flex flex-col items-center justify-center gap-1.5 py-1 px-4">
+      <div className="shrink-0 w-full flex flex-col items-center justify-center gap-1.5 py-1 px-4">
         <h2 className="2xl:text-4xl font-bold text-center">
           {source && <span className="text-slate-400 font-normal">{source} : </span>}
           {title}

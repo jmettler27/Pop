@@ -85,7 +85,7 @@ export function ReorderingItemAccordion({
 
   return (
     <Accordion
-      className="flex-grow"
+      className="grow"
       expanded={expanded}
       onChange={onAccordionChange}
       disabled={false}
@@ -110,7 +110,7 @@ export function ReorderingItemAccordion({
             {displayOrder + 1}.
           </Typography>
         </ListItemIcon>
-        <div className="flex flex-col flex-grow">
+        <div className="flex flex-col grow">
           <Typography sx={{ marginRight: '10px' }} variant="h6">
             {item.title}
           </Typography>
@@ -241,7 +241,7 @@ function ReorderingTeamResultRow({ team, player, ordering, baseQuestion }: Reord
     >
       <AccordionSummary expandIcon={ordering ? <ExpandMoreIcon /> : null}>
         <div className="flex items-center gap-3 w-full pr-2">
-          <div className="w-10 h-10 2xl:w-12 2xl:h-12 rounded-full overflow-hidden flex-shrink-0 bg-slate-700 border border-slate-600 flex items-center justify-center text-sm font-bold text-slate-300 select-none">
+          <div className="w-10 h-10 2xl:w-12 2xl:h-12 rounded-full overflow-hidden shrink-0 bg-slate-700 border border-slate-600 flex items-center justify-center text-sm font-bold text-slate-300 select-none">
             {player?.image ? (
               <img src={player.image} alt={player.name} className="w-full h-full object-cover" />
             ) : (
@@ -255,16 +255,14 @@ function ReorderingTeamResultRow({ team, player, ordering, baseQuestion }: Reord
           {ordering ? (
             <span
               className={clsx(
-                'text-xl 2xl:text-2xl font-bold tabular-nums flex-shrink-0',
+                'text-xl 2xl:text-2xl font-bold tabular-nums shrink-0',
                 isPerfect ? 'text-green-400' : isGood ? 'text-yellow-400' : 'text-red-400'
               )}
             >
               {score}/{maxScore}
             </span>
           ) : (
-            <span className="text-sm italic text-slate-500 flex-shrink-0">
-              {intl.formatMessage(messages.noSubmission)}
-            </span>
+            <span className="text-sm italic text-slate-500 shrink-0">{intl.formatMessage(messages.noSubmission)}</span>
           )}
         </div>
       </AccordionSummary>

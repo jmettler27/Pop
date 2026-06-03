@@ -190,7 +190,7 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
         variant="contained"
         color="success"
         size="large"
-        className="flex-shrink-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 mt-3"
+        className="shrink-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 mt-3"
         onClick={handleOpenDialog}
         disabled={isSubmitting || teamSubmitted}
       >

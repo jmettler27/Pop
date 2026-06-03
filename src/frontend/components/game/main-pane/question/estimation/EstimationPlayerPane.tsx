@@ -57,7 +57,7 @@ export default function EstimationPlayerPane({ baseQuestion, gameQuestion }: Est
 
   return (
     <div className="flex flex-col h-full items-center">
-      <div className="flex-shrink-0 w-full flex flex-col items-center justify-center py-3">
+      <div className="shrink-0 w-full flex flex-col items-center justify-center py-3">
         <EstimationQuestionHeader baseQuestion={baseQuestion} />
       </div>
       <div className="flex-1 min-h-0 w-full flex flex-col items-center justify-center">
@@ -101,7 +101,7 @@ function BetTypeCard({ icon, title, description, selected, onClick, disabled }: 
       >
         {title}
       </span>
-      <span className="text-sm 2xl:text-base text-center text-slate-400 px-3 leading-tight min-h-[2.5rem] 2xl:min-h-[3rem] flex items-start justify-center">
+      <span className="text-sm 2xl:text-base text-center text-slate-400 px-3 leading-tight min-h-10 2xl:min-h-12 flex items-start justify-center">
         {description}
       </span>
     </div>

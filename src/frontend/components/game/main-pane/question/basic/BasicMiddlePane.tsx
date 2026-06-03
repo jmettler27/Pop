@@ -30,7 +30,7 @@ export default function BasicMiddlePane({ baseQuestion }: BasicMiddlePaneProps) 
   const bq = baseQuestion as { title?: string; source?: string; note?: string };
   return (
     <div className="flex flex-col h-full items-center">
-      <div className="flex-shrink-0 flex flex-col items-center justify-center gap-1.5 py-2 w-full px-4">
+      <div className="shrink-0 flex flex-col items-center justify-center gap-1.5 py-2 w-full px-4">
         <BasicQuestionHeader baseQuestion={baseQuestion} />
         <h2 className="2xl:text-4xl text-center">
           {bq.source && <span className="text-slate-400 font-normal">{bq.source} : </span>}
@@ -98,7 +98,7 @@ function BasicQuestionMainContent({ baseQuestion }: BasicQuestionMainContentProp
       <div className="flex-1 min-h-0 w-full flex items-center justify-center">
         <BasicQuestionAnswer baseQuestion={baseQuestion} gameQuestion={gameQuestion as GameBasicQuestion} />
       </div>
-      <div className="flex-shrink-0 w-full flex flex-col items-center justify-center gap-2 py-2 px-4">
+      <div className="shrink-0 w-full flex flex-col items-center justify-center gap-2 py-2 px-4">
         {(game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER) && (
           <BasicQuestionPlayerAnswerText gameQuestion={gameQuestion as GameBasicQuestion} />
         )}

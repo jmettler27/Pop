@@ -196,13 +196,13 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({
 
   return (
     <Card className="border-0 shadow-xl bg-white dark:bg-slate-900 rounded-2xl overflow-hidden">
-      <CardHeader className="flex flex-row items-center justify-between pb-2 pt-3 space-y-0 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-900 border-b border-slate-200 dark:border-slate-700">
+      <CardHeader className="flex flex-row items-center justify-between pb-2 pt-3 space-y-0 bg-linear-to-r from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-900 border-b border-slate-200 dark:border-slate-700">
         <div className="flex flex-row items-center gap-5 min-w-0">
           <Tooltip title={roundTypeToTitle(round.type as RoundType, intl.locale as Locale)}>
             <span className="text-xl shrink-0">{roundTypeToEmoji(round.type as RoundType)}</span>
           </Tooltip>
           <CardTitle className="text-base md:text-lg font-semibold flex items-center gap-2 min-w-0">
-            <i className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent pr-1">
+            <i className="bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent pr-1">
               {round.title}
             </i>
           </CardTitle>
@@ -213,7 +213,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({
             <Tooltip title={intl.formatMessage(messages.defaultThinkingTime)}>
               <span
                 onClick={handleThinkingTimeBadgeClick}
-                className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 shadow-sm ${status === GameStatus.GAME_EDIT ? 'cursor-pointer hover:ring-2 hover:ring-blue-400' : ''}`}
+                className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 shadow-xs ${status === GameStatus.GAME_EDIT ? 'cursor-pointer hover:ring-2 hover:ring-blue-400' : ''}`}
               >
                 <TimerIcon sx={{ fontSize: 14 }} />
                 {roundWithTimes.thinkingTime}s
@@ -224,7 +224,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({
             <Tooltip title={intl.formatMessage(messages.defaultChallengeTime)}>
               <span
                 onClick={handleChallengeTimeBadgeClick}
-                className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 shadow-sm ${status === GameStatus.GAME_EDIT ? 'cursor-pointer hover:ring-2 hover:ring-green-400' : ''}`}
+                className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 shadow-xs ${status === GameStatus.GAME_EDIT ? 'cursor-pointer hover:ring-2 hover:ring-green-400' : ''}`}
               >
                 <TimerIcon sx={{ fontSize: 14 }} />
                 {roundWithTimes.challengeTime}s ⚡
@@ -348,7 +348,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({
         {roundWithTimes.thinkingTime != null && (
           <span
             onClick={handleThinkingTimeBadgeClick}
-            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 shadow-sm ${status === GameStatus.GAME_EDIT ? 'cursor-pointer hover:ring-2 hover:ring-blue-400' : ''}`}
+            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 shadow-xs ${status === GameStatus.GAME_EDIT ? 'cursor-pointer hover:ring-2 hover:ring-blue-400' : ''}`}
           >
             <TimerIcon sx={{ fontSize: 14 }} />
             {roundWithTimes.thinkingTime}s
@@ -357,7 +357,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({
         {roundWithTimes.challengeTime != null && (
           <span
             onClick={handleChallengeTimeBadgeClick}
-            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 shadow-sm ${status === GameStatus.GAME_EDIT ? 'cursor-pointer hover:ring-2 hover:ring-green-400' : ''}`}
+            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 shadow-xs ${status === GameStatus.GAME_EDIT ? 'cursor-pointer hover:ring-2 hover:ring-green-400' : ''}`}
           >
             <TimerIcon sx={{ fontSize: 14 }} />
             {roundWithTimes.challengeTime}s ⚡
@@ -365,7 +365,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({
         )}
       </div>
       {!isCollapsed && (
-        <CardContent className="p-6 bg-gradient-to-br from-slate-50/50 to-transparent dark:from-slate-900/50">
+        <CardContent className="p-6 bg-linear-to-br from-slate-50/50 to-transparent dark:from-slate-900/50">
           <EditGameRoundQuestionCards
             round={round}
             status={status}
@@ -419,11 +419,11 @@ function SortableQuestionCard({ roundId, questionId, questionOrder, status }: So
           <div
             {...attributes}
             {...listeners}
-            className="cursor-grab active:cursor-grabbing flex-shrink-0 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg p-1 transition-colors"
+            className="cursor-grab active:cursor-grabbing shrink-0 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg p-1 transition-colors"
           >
             <DragIndicatorIcon className="text-slate-400 dark:text-slate-500" />
           </div>
-          <CardTitle className="text-base md:text-lg dark:text-white flex-grow font-medium">
+          <CardTitle className="text-base md:text-lg dark:text-white grow font-medium">
             <span className="mr-2 font-bold text-blue-600 dark:text-blue-400">#{questionOrder + 1}</span>
             <QuestionCardTitle baseQuestion={baseQuestion} showType={true} />
           </CardTitle>
@@ -479,7 +479,7 @@ function RoundTopicDistribution({ round }: RoundTopicDistributionProps) {
   return (
     <div className="flex flex-wrap items-center gap-2 text-sm" suppressHydrationWarning>
       {/* Total questions badge */}
-      <span className="inline-flex items-center px-3 py-1.5 rounded-full font-semibold bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md">
+      <span className="inline-flex items-center px-3 py-1.5 rounded-full font-semibold bg-linear-to-r from-blue-500 to-blue-600 text-white shadow-md">
         <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
@@ -499,7 +499,7 @@ function RoundTopicDistribution({ round }: RoundTopicDistributionProps) {
             {Object.entries(topics).map(([topic, count]) => (
               <span
                 key={topic}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md hover:shadow-lg transition-shadow"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-medium bg-linear-to-r from-purple-500 to-pink-500 text-white shadow-md hover:shadow-lg transition-shadow"
               >
                 <span className="text-lg">{topicToEmoji(topic as Topic)}</span>
                 <span className="text-xs font-bold">{count}</span>
