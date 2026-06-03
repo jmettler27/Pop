@@ -14,14 +14,14 @@ export default function MCQMiddlePane({ baseQuestion }: { baseQuestion: MCQQuest
 
   return (
     <div className="flex flex-col h-full items-center">
-      <div className="flex-shrink-0 flex flex-col items-center justify-center py-2">
+      <div className="shrink-0 flex flex-col items-center justify-center py-2">
         <MCQHeader baseQuestion={baseQuestion} />
       </div>
       <div className="flex-1 min-h-0 w-full flex items-center justify-center">
         <MCQMainContent baseQuestion={baseQuestion} />
       </div>
       {game!.status === GameStatus.QUESTION_END && (
-        <div className="flex-shrink-0 w-full flex items-center justify-center py-2 px-4">
+        <div className="shrink-0 w-full flex items-center justify-center py-2 px-4">
           <MCQFooter baseQuestion={baseQuestion} />
         </div>
       )}

@@ -218,11 +218,11 @@ function BetResultRow({ team, player, bet, isWinner, baseQuestion, gameQuestion 
             : 'border-slate-800 bg-slate-900/30 opacity-40'
       )}
     >
-      <div className="w-6 flex-shrink-0 flex items-center justify-center">
+      <div className="w-6 shrink-0 flex items-center justify-center">
         {isWinner && <EmojiEventsIcon sx={{ color: '#4ade80', fontSize: 20 }} />}
       </div>
 
-      <div className="w-10 h-10 2xl:w-12 2xl:h-12 rounded-full overflow-hidden flex-shrink-0 bg-slate-700 border border-slate-600 flex items-center justify-center text-sm font-bold text-slate-300 select-none">
+      <div className="w-10 h-10 2xl:w-12 2xl:h-12 rounded-full overflow-hidden shrink-0 bg-slate-700 border border-slate-600 flex items-center justify-center text-sm font-bold text-slate-300 select-none">
         {player?.image ? (
           <img src={player.image} alt={player.name} className="w-full h-full object-cover" />
         ) : (
@@ -239,7 +239,7 @@ function BetResultRow({ team, player, bet, isWinner, baseQuestion, gameQuestion 
         {player && <span className="text-xs 2xl:text-sm text-slate-400 truncate">{player.name}</span>}
       </div>
 
-      <div className="flex flex-col items-end flex-shrink-0">
+      <div className="flex flex-col items-end shrink-0">
         <div
           className={clsx(
             'text-right font-semibold text-base 2xl:text-xl tabular-nums',
@@ -270,7 +270,7 @@ export function EstimationEndView({ gameQuestion, baseQuestion }: EstimationEndV
 
   return (
     <div className="flex flex-col items-center gap-4 w-full max-w-xl 2xl:max-w-2xl max-h-full overflow-y-auto py-4 px-4">
-      <div className="flex flex-row items-center gap-3 px-5 py-2.5 rounded-2xl border border-green-500/40 bg-green-500/10 flex-shrink-0 w-full justify-center">
+      <div className="flex flex-row items-center gap-3 px-5 py-2.5 rounded-2xl border border-green-500/40 bg-green-500/10 shrink-0 w-full justify-center">
         <span className="text-sm uppercase tracking-widest text-slate-400 font-semibold">
           {intl.formatMessage(messages.correctAnswer)}
         </span>
@@ -279,7 +279,7 @@ export function EstimationEndView({ gameQuestion, baseQuestion }: EstimationEndV
         </span>
       </div>
       {baseQuestion.explanation && (
-        <div className="flex items-start gap-2 px-3 py-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-200 text-sm 2xl:text-base w-full flex-shrink-0">
+        <div className="flex items-start gap-2 px-3 py-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-200 text-sm 2xl:text-base w-full shrink-0">
           <InfoOutlinedIcon sx={{ fontSize: 16, color: 'rgb(147 197 253)', flexShrink: 0, mt: '2px' }} />
           <span className="leading-snug">{baseQuestion.explanation}</span>
         </div>
