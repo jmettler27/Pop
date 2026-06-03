@@ -426,17 +426,9 @@ function EnterQuotePart({ quotePart, index, onDelete, validationSchema }: EnterQ
   const minEndIdx = startIdx === -1 ? minStartIdx + 1 : startIdx;
   const maxEndIdx = quote.length - 1;
 
-  console.log(`startIdx: ${startIdx}, endIdx: ${endIdx}, lastEndIdx: ${lastEndIdx}`);
-  console.log('minStartIdx:', minStartIdx);
-  console.log('maxStartIdx:', maxStartIdx);
-  console.log('minEndIdx:', minEndIdx);
-
   const disableInput = () => {
     return index !== 0;
   };
-  console.log(
-    `index: ${index}, start: ${startIdx}, end: ${endIdx}, lastEnd: ${lastEndIdx}, disable: ${disableInput()}`
-  );
 
   return (
     <div className="flex flex-col">

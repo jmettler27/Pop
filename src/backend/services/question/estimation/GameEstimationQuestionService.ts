@@ -1,6 +1,7 @@
 import { increment, runTransaction, Timestamp, Transaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import GameEstimationQuestionRepository from '@/backend/repositories/question/GameEstimationQuestionRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
 import {
@@ -19,6 +20,7 @@ import { PlayerStatus } from '@/models/users/player';
 export default class GameEstimationQuestionService extends GameQuestionService {
   constructor(gameId: string, roundId: string) {
     super(gameId, roundId, QuestionType.ESTIMATION);
+    this.log = logger.child({ module: 'GameEstimationQuestionService', game: gameId, round: roundId });
   }
 
   async resetQuestionTransaction(transaction: Transaction, questionId: string) {
@@ -29,21 +31,13 @@ export default class GameEstimationQuestionService extends GameQuestionService {
     await (this.gameQuestionRepo as GameEstimationQuestionRepository).resetQuestionTransaction(transaction, questionId);
     await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
 
-    console.log(
-      'Estimation question successfully reset',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId
-    );
+    this.log.info({ question: questionId }, 'Estimation question reset');
   }
 
   async handleCountdownEndTransaction(transaction: Transaction, questionId: string) {
     await this.endQuestionTransaction(transaction, questionId);
 
-    console.log('Estimation question countdown end successfully handled', questionId);
+    this.log.info({ question: questionId }, 'Estimation question countdown end handled');
   }
 
   async endQuestionTransaction(transaction: Transaction, questionId: string) {
@@ -69,6 +63,7 @@ export default class GameEstimationQuestionService extends GameQuestionService {
 
     const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction);
     if (!roundScores) {
+      this.log.warn({ question: questionId, round: this.roundId }, 'Round scores not found');
       throw new Error('Round scores not found');
     }
 
@@ -78,6 +73,10 @@ export default class GameEstimationQuestionService extends GameQuestionService {
     if (bets.length === 0) {
       // We end the question before any bet is submitted
       const teams = await this.teamRepo.getAllTeams();
+      if (!teams || teams.length <= 0) {
+        this.log.warn({ question: questionId }, 'Teams not found');
+        throw new Error('Teams not found');
+      }
 
       const newRoundScores: Scores = {};
       const newRoundProgress: ScoresProgress = {};
@@ -108,15 +107,7 @@ export default class GameEstimationQuestionService extends GameQuestionService {
 
     await super.endQuestionTransaction(transaction, questionId);
 
-    console.log(
-      'Estimation question successfully ended',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId
-    );
+    this.log.info({ question: questionId }, 'Estimation question ended');
   }
 
   async calculateRewardsAndProgressTransaction(
@@ -211,6 +202,11 @@ export default class GameEstimationQuestionService extends GameQuestionService {
 
     // Step 5: update player statuses
     const players = await this.playerRepo.getAllPlayers();
+    if (!players || players.length <= 0) {
+      this.log.warn({ question: questionId }, 'Players not found');
+      throw new Error('Players not found');
+    }
+
     for (const tid of Object.keys(currRoundScores)) {
       const playerIds = players.filter((p) => p.teamId === tid).map((p) => p.id!);
       if (playerIds.length > 0) {
@@ -247,7 +243,7 @@ export default class GameEstimationQuestionService extends GameQuestionService {
         await this.submitBetTransaction(transaction, questionId, playerId, teamId, bet);
       });
     } catch (error) {
-      console.error('Failed to submit the bet:', error);
+      this.log.error({ question: questionId, err: error }, 'Failed to submit the bet');
       throw error;
     }
   }
@@ -268,12 +264,9 @@ export default class GameEstimationQuestionService extends GameQuestionService {
     }
 
     const numTeams = await this.teamRepo.getNumTeams();
-    if (!numTeams) {
-      throw new Error('No teams found');
-    }
-
     const teamAlreadySubmitted = gameQuestion.bets && gameQuestion.bets.some((b: EstimationBet) => b.teamId === teamId);
     if (teamAlreadySubmitted) {
+      this.log.warn({ question: questionId, team: teamId }, 'Team has already submitted a bet');
       throw new Error('Your team has already submitted a bet!');
     }
 
@@ -295,16 +288,19 @@ export default class GameEstimationQuestionService extends GameQuestionService {
         questionId
       )) as EstimationQuestion;
       if (!baseQuestion) {
+        this.log.warn({ question: questionId }, 'Base question not found');
         throw new Error('Question not found');
       }
 
       const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as EstimationRound;
       if (!round) {
+        this.log.warn({ question: questionId, round: this.roundId }, 'Round not found');
         throw new Error('Round not found');
       }
 
       const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction);
       if (!roundScores) {
+        this.log.warn({ question: questionId, round: this.roundId }, 'Round scores not found');
         throw new Error('Round scores not found');
       }
 
@@ -330,6 +326,6 @@ export default class GameEstimationQuestionService extends GameQuestionService {
       });
     }
 
-    console.log('Estimation bet submitted successfully', 'questionId', questionId, 'teamId', teamId);
+    this.log.info({ question: questionId, team: teamId }, 'Estimation bet submitted');
   }
 }

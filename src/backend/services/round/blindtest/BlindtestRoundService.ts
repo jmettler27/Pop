@@ -1,5 +1,6 @@
 import { Transaction } from 'firebase/firestore';
 
+import { logger } from '@/backend/logger';
 import GameBlindtestQuestionRepository from '@/backend/repositories/question/GameBlindtestQuestionRepository';
 import BuzzerRoundService from '@/backend/services/round/BuzzerRoundService';
 import { QuestionType } from '@/models/questions/question-type';
@@ -9,6 +10,7 @@ import { PlayerStatus } from '@/models/users/player';
 export default class BlindtestRoundService extends BuzzerRoundService {
   constructor(gameId: string) {
     super(gameId, RoundType.BLINDTEST);
+    this.log = logger.child({ module: 'BlindtestRoundService', game: gameId });
   }
 
   async moveToNextQuestionTransaction(transaction: Transaction, roundId: string, questionOrder: number) {
@@ -17,20 +19,20 @@ export default class BlindtestRoundService extends BuzzerRoundService {
     /* Game: fetch next question and reset every player's state */
     const playerIds = await this.playerRepo.getAllPlayerIds();
     if (playerIds.length === 0) {
-      console.log('No players found in game, cannot move to next question');
+      this.log.warn({ round: roundId }, 'No players found in game, cannot move to next question');
       throw new Error('No players found in game, cannot move to next question');
     }
 
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     if (!round) {
-      console.log('Round not found, cannot move to next question');
+      this.log.warn({ round: roundId }, 'Round not found, cannot move to next question');
       throw new Error('Round not found, cannot move to next question');
     }
 
     const questionId = round.questions[questionOrder];
     const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     if (!gameQuestion) {
-      console.log('Question not found, cannot move to next question');
+      this.log.warn({ round: roundId, question: questionId }, 'Question not found, cannot move to next question');
       throw new Error('Question not found, cannot move to next question');
     }
 

@@ -6,6 +6,7 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/frontend/i18n/defineMessages';
+import { Organizer } from '@/models/users/organizer';
 
 const messages = defineMessages('frontend.game.middlePane.GameStartMiddlePane', {
   intro: 'This humorous and interactive program is brought to you by',
@@ -19,14 +20,10 @@ export default function GameStartMiddlePane() {
   if (!game) return null;
   if (!gameRepositories) return null;
   const { organizerRepo } = gameRepositories;
-  const {
-    organizers,
-    loading: organizersLoading,
-    error: organizersError,
-  } = organizerRepo.useAllOrganizerIdentitiesOnce();
+  const { organizers, loading, error } = organizerRepo.useAllOrganizersOnce();
 
-  if (organizersLoading) return <LoadingScreen inline />;
-  if (organizersError) return <ErrorScreen inline />;
+  if (loading) return <LoadingScreen inline />;
+  if (error) return <ErrorScreen inline />;
 
   return (
     <div className="flex flex-col h-full items-center justify-center">
@@ -39,7 +36,7 @@ export default function GameStartMiddlePane() {
         <span className="text-xs sm:text-sm 2xl:text-base 2xl:text-xl">{intl.formatMessage(messages.intro)}</span>
 
         <Stack direction="row" spacing={3} className="h-1/3">
-          {organizers.map((o: { id: unknown; name: unknown }) => (
+          {organizers.map((o: Organizer) => (
             <OrganizerItem key={o.id as string} organizer={o} />
           ))}
         </Stack>
@@ -49,14 +46,14 @@ export default function GameStartMiddlePane() {
 }
 
 interface OrganizerItemProps {
-  organizer: { id: unknown; name: unknown };
+  organizer: Organizer;
 }
 
 function OrganizerItem({ organizer }: OrganizerItemProps) {
   return (
     <div className="flex flex-col items-center justify-center space-y-2">
       <span className="text-lg sm:text-xl lg:text-2xl 2xl:text-3xl font-bold">{organizer.name as string}</span>
-      <Avatar alt={organizer.name as string} src={undefined} sx={{ width: 'auto', height: '50%' }} />
+      <Avatar alt={organizer.name as string} src={organizer.image!} sx={{ width: 'auto', height: '50%' }} />
     </div>
   );
 }

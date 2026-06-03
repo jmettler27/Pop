@@ -33,8 +33,6 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = React.use(params);
   const gameId = resolvedParams.id;
 
-  console.log('Game ID: ', gameId);
-
   // Protected route
   if (!session || !session.user) {
     redirect('/api/auth/signin');
@@ -58,11 +56,10 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
     return <></>;
   }
 
-  console.log('Game: ', game);
-  console.log('Organizers: ', organizers);
   const organizerIds = organizers.map((o) => o.id);
-
-  if (!organizerIds.includes(user.id)) redirect('/');
+  if (!organizerIds.includes(user.id)) {
+    redirect('/');
+  }
 
   return (
     <div className="flex flex-col flex-1 min-h-0">
@@ -188,8 +185,6 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 
 function EditGameRounds({ game }: { game: GameRounds }) {
   const intl = useIntl();
-  console.log('RENDERING EditGameRounds');
-  console.log('Game: ', game);
 
   const { rounds: roundIds, status } = game;
   const [allCollapsed, setAllCollapsed] = React.useState(false);

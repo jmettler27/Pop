@@ -1286,7 +1286,7 @@ async function seedRoundScores(gameId, roundId, teamIds) {
     rankingDiffs: null,
     roundCompletionRates: {},
     roundSortedTeams: [],
-    scores: Object.fromEntries(teamIds.map((id) => [id, 0])),
+    scores: Object.fromEntries(teamIds.map((id: string) => [id, 0])),
     scoresProgress: {},
     teamsScoresSequences: {},
   });

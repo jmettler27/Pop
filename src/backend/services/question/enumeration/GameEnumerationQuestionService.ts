@@ -1,6 +1,7 @@
 import { runTransaction, Transaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
 import {
@@ -19,14 +20,25 @@ import { Player, PlayerStatus } from '@/models/users/player';
 export default class GameEnumerationQuestionService extends GameQuestionService {
   constructor(gameId: string, roundId: string) {
     super(gameId, roundId, QuestionType.ENUMERATION);
+
+    this.log = logger.child({ module: 'GameEnumerationQuestionService', game: gameId, round: roundId });
   }
 
   async resetQuestionTransaction(transaction: Transaction, questionId: string) {
     const playerIds = await this.playerRepo.getAllPlayerIds();
+    if (!playerIds || playerIds.length <= 0) {
+      this.log.warn({ question: questionId }, 'Player IDs not found');
+      throw new Error('Player IDs not found');
+    }
+
     const gameQuestion = await (this.gameQuestionRepo as GameEnumerationQuestionRepository).getQuestionTransaction(
       transaction,
       questionId
     );
+    if (!gameQuestion) {
+      this.log.warn({ question: questionId }, 'Game question not found');
+      throw new Error('Game question not found');
+    }
 
     await (this.gameQuestionRepo as GameEnumerationQuestionRepository).resetQuestionTransaction(
       transaction,
@@ -35,15 +47,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
     await this.timerRepo.resetTimerTransaction(transaction, gameQuestion!.thinkingTime);
     await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
 
-    console.log(
-      'Enumeration question successfully reset',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId
-    );
+    this.log.info({ question: questionId }, 'Enumeration question reset');
   }
 
   async handleCountdownEndTransaction(transaction: Transaction, questionId: string) {
@@ -53,24 +57,26 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
     )) as GameEnumerationQuestion;
     const status = gameQuestion.status;
     if (status === EnumerationQuestionStatus.THINKING) {
+      this.log.debug({ question: questionId }, 'Enumeration question thinking time ended, moving to challenge phase');
       await this.endThinkingTransaction(transaction, questionId);
     } else if (status === EnumerationQuestionStatus.CHALLENGE) {
+      this.log.debug({ question: questionId }, 'Enumeration question challenge time ended, moving to end of question');
       await this.endQuestionTransaction(transaction, questionId);
     }
-    console.log('Enumeration question countdown end successfully handled', questionId);
+    this.log.info({ question: questionId }, 'Enumeration question countdown end handled');
   }
 
   async endQuestionTransaction(transaction: Transaction, questionId: string) {
     const round = await this.roundRepo.getRoundTransaction(transaction, this.roundId);
     if (!round) {
-      console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Round not found');
       throw new Error('Round not found');
     }
     const enumRound = round as EnumerationRound;
 
     const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction);
     if (!roundScores) {
-      console.error('Round scores not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Round scores not found');
       throw new Error('Round scores not found');
     }
 
@@ -79,7 +85,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
       questionId
     );
     if (!questionPlayers) {
-      console.error('Question players not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Question players not found');
       throw new Error('Question players not found');
     }
 
@@ -89,6 +95,10 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
     if (!challenger) {
       // We end the question before any bet is submitted
       const teams = await this.teamRepo.getAllTeams();
+      if (!teams || teams.length <= 0) {
+        this.log.warn({ question: questionId }, 'Teams not found');
+        throw new Error('Teams not found');
+      }
 
       const newRoundScores: Scores = {};
       const newRoundProgress: ScoresProgress = {};
@@ -110,13 +120,13 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
       const { teamId, playerId, numCorrect, bet } = challenger;
       const challengers = await this.playerRepo.getPlayersByTeamId(teamId);
       if (!challengers || challengers.length <= 0) {
-        console.error('Challengers not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+        this.log.warn({ question: questionId }, 'Challengers not found');
         throw new Error('Challengers not found');
       }
 
       const spectators = await this.playerRepo.getAllOtherPlayers(teamId);
       if (!spectators || spectators.length <= 0) {
-        console.error('Spectators not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+        this.log.warn({ question: questionId }, 'Spectators not found');
         throw new Error('Spectators not found');
       }
 
@@ -124,15 +134,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
         // The challenger did not succeed in its challenge
         const spectatorTeams = await this.teamRepo.getOtherTeams(teamId);
         if (!spectatorTeams || spectatorTeams.length <= 0) {
-          console.error(
-            'Spectator teams not found',
-            'game',
-            this.gameId,
-            'round',
-            this.roundId,
-            'question',
-            questionId
-          );
+          this.log.warn({ question: questionId }, 'Spectator teams not found');
           throw new Error('Spectator teams not found');
         }
 
@@ -192,15 +194,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
 
     await super.endQuestionTransaction(transaction, questionId);
 
-    console.log(
-      'Enumeration question successfully ended',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId
-    );
+    this.log.info({ question: questionId }, 'Enumeration question ended');
   }
 
   /* =============================================================================================================== */
@@ -222,12 +216,14 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
     try {
       await runTransaction(firestore, async (transaction) => {
         await this.soundRepo.addSoundTransaction(transaction, 'pop');
-        await (
-          this.gameQuestionRepo as GameEnumerationQuestionRepository as GameEnumerationQuestionRepository
-        ).addBetTransaction(transaction, questionId, bet);
+        await (this.gameQuestionRepo as GameEnumerationQuestionRepository).addBetTransaction(
+          transaction,
+          questionId,
+          bet
+        );
       });
     } catch (error) {
-      console.error('Failed to add the bet:', error);
+      this.log.error({ question: questionId, err: error }, 'Failed to add the bet');
       throw error;
     }
   }
@@ -240,7 +236,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
     try {
       await runTransaction(firestore, (transaction) => this.endThinkingTransaction(transaction, questionId));
     } catch (error) {
-      console.error('Failed to end the enum thinking:', error);
+      this.log.error({ question: questionId, err: error }, 'Failed to end the enum thinking');
       throw error;
     }
   }
@@ -253,8 +249,13 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
 
     /* No player made a bet */
     if (questionPlayers.bets.length === 0) {
+      this.log.debug({ question: questionId }, 'No bets submitted for the enumeration question, ending question');
       await this.endQuestionTransaction(transaction, questionId);
     } else {
+      this.log.debug(
+        { question: questionId, numBets: questionPlayers.bets.length },
+        'Bets submitted for the enumeration question, moving to challenge phase'
+      );
       const baseQuestion = (await this.baseQuestionRepo.getQuestionTransaction(
         transaction,
         questionId
@@ -306,11 +307,10 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
           questionId,
           itemIdx
         );
-
-        console.log('Item validated successfully', questionId, itemIdx);
+        this.log.info({ question: questionId, itemIdx }, 'Item validated');
       });
     } catch (error) {
-      console.error('Failed to validate the item:', error);
+      this.log.error({ question: questionId, err: error }, 'Failed to validate the item');
       throw error;
     }
   }
@@ -331,10 +331,10 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
           questionId
         );
 
-        console.log('Valid items incremented successfully', questionId, organizerId);
+        this.log.info({ question: questionId, organizer: organizerId }, 'Valid items incremented');
       });
     } catch (error) {
-      console.error('Failed to increment the valid items:', error);
+      this.log.error({ question: questionId, err: error }, 'Failed to increment the valid items');
       throw error;
     }
   }

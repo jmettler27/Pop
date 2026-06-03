@@ -1,6 +1,8 @@
 import { increment, runTransaction, Transaction } from 'firebase/firestore';
+import type { Logger } from 'pino';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
@@ -16,6 +18,8 @@ import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import { GameStatus } from '@/models/games/game-status';
 import { QuestionType } from '@/models/questions/question-type';
 import { GameScores, RoundScores, ScoresProgress } from '@/models/scores';
+
+export const SYSTEM_PLAYER_ID = 'system';
 
 export default class GameQuestionService {
   protected gameId: string;
@@ -33,6 +37,7 @@ export default class GameQuestionService {
   protected roundId: string;
   protected roundRepo: RoundRepository;
   protected roundScoreRepo: RoundScoreRepository;
+  protected log: Logger;
 
   constructor(gameId: string, roundId: string, questionType: QuestionType) {
     if (!gameId) {
@@ -46,6 +51,8 @@ export default class GameQuestionService {
     }
 
     this.gameId = gameId;
+    this.log = logger.child({ module: 'GameQuestionService', game: this.gameId, round: roundId });
+
     this.gameRepo = new GameRepository();
     this.gameScoreRepo = new GameScoreRepository(gameId);
     this.playerRepo = new PlayerRepository(gameId);
@@ -70,17 +77,7 @@ export default class GameQuestionService {
     try {
       await runTransaction(firestore, (transaction) => this.resetQuestionTransaction(transaction, questionId));
     } catch (error) {
-      console.error(
-        'Failed to reset the question',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'err',
-        error
-      );
+      this.log.error({ question: questionId, err: error }, 'Failed to reset the question');
       throw error;
     }
   }
@@ -99,17 +96,7 @@ export default class GameQuestionService {
     try {
       await runTransaction(firestore, (transaction) => this.endQuestionTransaction(transaction, questionId));
     } catch (error) {
-      console.error(
-        'Failed to end the question',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'err',
-        error
-      );
+      this.log.error({ question: questionId, err: error }, 'Failed to end the question');
       throw error;
     }
   }
@@ -119,17 +106,7 @@ export default class GameQuestionService {
     await this.gameQuestionRepo.endQuestionTransaction(transaction, questionId);
     await this.timerRepo.prepareTimerForReadyTransaction(transaction);
 
-    console.log(
-      'Buzzer question successfully ended',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId,
-      'type',
-      this.questionType
-    );
+    this.log.info({ question: questionId, type: this.questionType }, 'Question ended');
   }
 
   /* ==================================================================================================== */
@@ -142,17 +119,7 @@ export default class GameQuestionService {
     try {
       await runTransaction(firestore, (transaction) => this.handleCountdownEndTransaction(transaction, questionId));
     } catch (error) {
-      console.error(
-        'Failed to handle question countdown',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'err',
-        error
-      );
+      this.log.error({ question: questionId, err: error }, 'Failed to handle question countdown');
       throw error;
     }
   }
@@ -168,9 +135,15 @@ export default class GameQuestionService {
     teamId: string | null = null
   ) {
     const gameScoresData = await this.gameScoreRepo.getScoresTransaction(transaction);
+    if (!gameScoresData) {
+      this.log.warn({ round: this.roundId }, 'Game scores not found');
+      throw new Error('Game scores must be initialized before increasing team score');
+    }
+
     const roundScoresData = await this.roundScoreRepo.getScoresTransaction(transaction);
-    if (!gameScoresData || !roundScoresData) {
-      throw new Error('Game scores and round scores must be initialized before increasing team score');
+    if (!roundScoresData) {
+      this.log.warn({ round: this.roundId }, 'Round scores not found');
+      throw new Error('Round scores must be initialized before increasing team score');
     }
 
     const gameScores = gameScoresData as GameScores;

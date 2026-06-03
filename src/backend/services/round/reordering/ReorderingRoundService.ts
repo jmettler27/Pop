@@ -1,5 +1,6 @@
 import { serverTimestamp, Transaction } from 'firebase/firestore';
 
+import { logger } from '@/backend/logger';
 import GameReorderingQuestionRepository from '@/backend/repositories/question/GameReorderingQuestionRepository';
 import RoundService from '@/backend/services/round/RoundService';
 import { GameStatus } from '@/models/games/game-status';
@@ -15,24 +16,25 @@ import { PlayerStatus } from '@/models/users/player';
 export default class ReorderingRoundService extends RoundService {
   constructor(gameId: string) {
     super(gameId, RoundType.REORDERING);
+    this.log = logger.child({ module: 'ReorderingRoundService', game: gameId });
   }
 
   async handleRoundSelectedTransaction(transaction: Transaction, roundId: string, userId: string) {
     const playerIds = await this.playerRepo.getAllPlayerIds();
     if (!playerIds) {
-      console.error('Player IDs not found', 'game', this.gameId, 'round', roundId);
+      this.log.warn({ round: roundId }, 'Player IDs not found');
       throw new Error('Player IDs not found');
     }
 
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     if (!round) {
-      console.error('Round not found', 'game', this.gameId, 'round', roundId);
+      this.log.warn({ round: roundId }, 'Round not found');
       throw new Error('Round not found');
     }
 
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
     if (!game) {
-      console.error('Game not found', 'game', this.gameId, 'round', roundId);
+      this.log.warn({ round: roundId }, 'Game not found');
       throw new Error('Game not found');
     }
     const roundScorePolicy = game.roundScorePolicy;
@@ -43,7 +45,7 @@ export default class ReorderingRoundService extends RoundService {
     if (currentRound) {
       const prevRound = await this.roundRepo.getRoundTransaction(transaction, currentRound);
       if (!prevRound) {
-        console.error('Previous round not found', 'game', this.gameId, 'round', roundId);
+        this.log.warn({ round: roundId }, 'Previous round not found');
         throw new Error('Previous round not found');
       }
       prevOrder = prevRound.order!;
@@ -84,7 +86,7 @@ export default class ReorderingRoundService extends RoundService {
 
     await this.timerRepo.resetTimerTransaction(transaction, Timer.READY_COUNTDOWN_SECONDS);
 
-    console.log('Round successfully started', 'game', this.gameId, 'round', roundId);
+    this.log.info({ round: roundId }, 'Round successfully started');
   }
 
   async moveToNextQuestionTransaction(transaction: Transaction, roundId: string, questionOrder: number) {
@@ -93,20 +95,20 @@ export default class ReorderingRoundService extends RoundService {
     /* Game: fetch next question and reset every player's state */
     const playerIds = await this.playerRepo.getAllPlayerIds();
     if (!playerIds) {
-      console.error('Player IDs not found', 'game', this.gameId, 'round', roundId);
+      this.log.warn({ round: roundId }, 'Player IDs not found');
       throw new Error('Player IDs not found');
     }
 
     const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
     if (!round) {
-      console.error('Round not found', 'game', this.gameId, 'round', roundId);
+      this.log.warn({ round: roundId }, 'Round not found');
       throw new Error('Round not found');
     }
 
     const questionId = round.questions[questionOrder];
     const gameQuestion = await gameQuestionRepo.getQuestionTransaction(transaction, questionId);
     if (!gameQuestion) {
-      console.error('Game question not found', 'game', this.gameId, 'round', roundId, 'question', questionId);
+      this.log.warn({ round: roundId, question: questionId }, 'Game question not found');
       throw new Error('Game question not found');
     }
 
@@ -130,7 +132,7 @@ export default class ReorderingRoundService extends RoundService {
     const reorderingRound = round as ReorderingRound;
 
     const questions = await Promise.all(
-      reorderingRound.questions.map((id) => this.baseQuestionRepo.getQuestionTransaction(transaction, id))
+      reorderingRound.questions.map((id: string) => this.baseQuestionRepo.getQuestionTransaction(transaction, id))
     );
     // The total number of items to reorder in the round
     const totalNumElements = (questions as ReorderingQuestion[]).reduce(

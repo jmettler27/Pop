@@ -187,7 +187,6 @@ export default class FirebaseRepository extends IRepository {
     data: Record<string, unknown>,
     idOrPath: string | string[] | null = null
   ): Promise<Record<string, unknown>> {
-    console.log('createTransaction', data, idOrPath);
     const docRef = idOrPath ? this.getDocumentRef(idOrPath) : doc(this.collectionRef);
     await transaction.set(docRef, data);
     return { id: docRef.id, ...data };

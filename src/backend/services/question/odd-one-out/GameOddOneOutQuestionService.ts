@@ -1,9 +1,10 @@
 import { runTransaction, Timestamp, Transaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
-import GameQuestionService from '@/backend/services/question/GameQuestionService';
-import { getNextCyclicIndex, getRandomIndex, moveToHead } from '@/backend/utils/arrays';
+import GameQuestionService, { SYSTEM_PLAYER_ID } from '@/backend/services/question/GameQuestionService';
+import { getNextCyclicIndex, getRandomElement, moveToHead } from '@/backend/utils/arrays';
 import { GameOddOneOutQuestion, OddOneOutQuestion, SelectedItem } from '@/models/questions/odd-one-out';
 import { QuestionType } from '@/models/questions/question-type';
 import { OddOneOutRound } from '@/models/rounds/odd-one-out';
@@ -15,7 +16,7 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
 
   constructor(gameId: string, roundId: string) {
     super(gameId, roundId, QuestionType.ODD_ONE_OUT);
-
+    this.log = logger.child({ module: 'GameOddOneOutQuestionService', game: gameId, round: roundId });
     this.chooserRepo = new ChooserRepository(gameId);
   }
 
@@ -29,41 +30,47 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
     await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
     // await super.resetQuestionTransaction(transaction, questionId);
 
-    console.log('OOO question successfully reset', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+    this.log.info({ question: questionId }, 'OOO question reset');
   }
 
   async endQuestionTransaction(transaction: Transaction, questionId: string) {
     await super.endQuestionTransaction(transaction, questionId);
     // await this.gameQuestionRepo.clearBuzzedPlayersTransaction(transaction, questionId);
-    console.log('OOO question successfully ended', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+    this.log.info({ question: questionId }, 'OOO question ended');
   }
 
   async handleCountdownEndTransaction(transaction: Transaction, questionId: string) {
+    const baseQuestion = (await this.baseQuestionRepo.getQuestionTransaction(
+      transaction,
+      questionId
+    )) as OddOneOutQuestion;
+    if (!baseQuestion) {
+      this.log.warn({ question: questionId }, 'Base question not found');
+      throw new Error('Base question not found');
+    }
+
     const gameQuestion = (await this.gameQuestionRepo.getQuestionTransaction(
       transaction,
       questionId
     )) as GameOddOneOutQuestion;
-
-    const selectedIdxsSet = new Set(gameQuestion.selectedItems.map((item: SelectedItem) => item.idx));
-    const remainingItems = [];
-    for (let i = 0; i < OddOneOutQuestion.MAX_NUM_ITEMS; i++) {
-      if (!selectedIdxsSet.has(i)) {
-        remainingItems.push(i);
-      }
+    if (!gameQuestion) {
+      this.log.warn({ question: questionId }, 'Game question not found');
+      throw new Error('Game question not found');
     }
 
-    const randomIdx = getRandomIndex(remainingItems);
-    await this.selectProposalTransaction(transaction, questionId, 'system', randomIdx);
+    const selectedIdxsSet = new Set(gameQuestion.selectedItems.map((item: SelectedItem) => item.idx));
+    const remainingIndices = [];
+    for (let i = 0; i < baseQuestion.items!.length; i++) {
+      if (!selectedIdxsSet.has(i)) {
+        remainingIndices.push(i);
+      }
+    }
+    this.log.debug({ question: questionId, remainingIndices }, 'Handling OOO countdown end');
 
-    console.log(
-      'OOO question countdown end successfully handled',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId
-    );
+    const randomIdx = getRandomElement(remainingIndices);
+    await this.selectProposalTransaction(transaction, questionId, SYSTEM_PLAYER_ID, randomIdx);
+
+    this.log.info({ question: questionId, selectedIdx: randomIdx }, 'OOO question countdown end handled');
   }
 
   /* =============================================================================================================== */
@@ -100,13 +107,13 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
   ): Promise<void> {
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
     if (!game) {
-      console.error('Game not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Game not found');
       throw new Error('Game not found');
     }
 
     const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as OddOneOutRound;
     if (!round) {
-      console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Round not found');
       throw new Error('Round not found');
     }
 
@@ -115,7 +122,7 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
       questionId
     )) as OddOneOutQuestion;
     if (!baseQuestion) {
-      console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Base question not found');
       throw new Error('Base question not found');
     }
 
@@ -124,22 +131,34 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
       questionId
     )) as GameOddOneOutQuestion;
     if (!gameQuestion) {
-      console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Game question not found');
       throw new Error('Game question not found');
     }
 
     const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     if (!chooser) {
-      console.error('Chooser not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Chooser not found');
       throw new Error('Chooser not found');
     }
     const chooserOrder = chooser.chooserOrder;
     const chooserIdx = chooser.chooserIdx;
     const teamId = chooserOrder[chooserIdx];
 
+    if (playerId != SYSTEM_PLAYER_ID) {
+      const player = await this.playerRepo.getPlayerTransaction(transaction, playerId);
+      if (!player) {
+        this.log.warn({ question: questionId, player: playerId }, 'Player not found');
+        throw new Error('Player not found');
+      }
+      if (player.teamId !== teamId) {
+        this.log.warn({ question: questionId, player: playerId, team: teamId }, 'Player is not in the chooser team');
+        throw new Error('Player is not in the chooser team');
+      }
+    }
+
     const teamPlayers = await this.playerRepo.getPlayersByTeamId(teamId);
     if (!teamPlayers) {
-      console.error('Team players not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Team players not found');
       throw new Error('Team players not found');
     }
 
@@ -176,6 +195,11 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
         await this.chooserRepo.updateChooserIndexTransaction(transaction, newChooserIdx);
         const newChooserTeamId = chooserOrder[newChooserIdx];
         const newChooserTeamPlayers = await this.playerRepo.getPlayersByTeamId(newChooserTeamId);
+        if (!newChooserTeamPlayers) {
+          this.log.warn({ question: questionId, team: newChooserTeamId }, 'New chooser team players not found');
+          throw new Error('New chooser team players not found');
+        }
+
         await this.playerRepo.updateAllPlayersStatusTransaction(
           transaction,
           PlayerStatus.FOCUS,
@@ -206,18 +230,6 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
     });
     await this.timerRepo.updateAuthorized(false);
 
-    console.log(
-      'OOO proposal successfully selected',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId,
-      'player',
-      playerId,
-      'option',
-      idx
-    );
+    this.log.info({ question: questionId, player: playerId, option: idx }, 'OOO proposal selected');
   }
 }

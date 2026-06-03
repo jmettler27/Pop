@@ -1,6 +1,8 @@
 import { runTransaction, serverTimestamp } from 'firebase/firestore';
+import type { Logger } from 'pino';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
@@ -23,6 +25,7 @@ export default class EditGameService {
   private roundRepo: RoundRepository;
   private gameScoreRepo: GameScoreRepository;
   private baseQuestionRepo: BaseQuestionRepository;
+  private log: Logger;
 
   constructor(gameId: string) {
     this.gameId = gameId;
@@ -30,6 +33,7 @@ export default class EditGameService {
       throw new Error('Game ID is required');
     }
 
+    this.log = logger.child({ module: 'EditGameService', game: this.gameId });
     this.gameRepo = new GameRepository();
     this.roundRepo = new RoundRepository(gameId);
     this.gameScoreRepo = new GameScoreRepository(gameId);
@@ -55,7 +59,7 @@ export default class EditGameService {
       await runTransaction(firestore, async (transaction) => {
         const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
         if (!game) {
-          console.error();
+          this.log.error('Game not found');
           throw new Error();
         }
 
@@ -72,10 +76,10 @@ export default class EditGameService {
 
         await this.gameRepo.addRoundTransaction(transaction, this.gameId, round.id!);
 
-        console.log(`Game ${this.gameId}: Round created successfully.`);
+        this.log.info({ roundId: round.id }, 'Round created successfully');
       });
     } catch (error) {
-      console.error('Failed to create the round:', error);
+      this.log.error({ err: error }, 'Failed to create the round');
       throw error;
     }
   }
@@ -113,10 +117,10 @@ export default class EditGameService {
 
         await this.roundRepo.addQuestionTransaction(transaction, roundId, questionId);
 
-        console.log(`Game ${this.gameId}: Question added to round ${roundId} successfully.`);
+        this.log.info({ roundId, questionId }, 'Question added to round successfully');
       });
     } catch (error) {
-      console.error('Failed to add the question:', error);
+      this.log.error({ err: error }, 'Failed to add the question');
       throw error;
     }
   }
@@ -137,11 +141,11 @@ export default class EditGameService {
         await this.gameRepo.removeRoundTransaction(transaction, this.gameId, roundId);
       });
     } catch (error) {
-      console.error('Failed to remove the round:', error);
+      this.log.error({ err: error }, 'Failed to remove the round');
       throw error;
     }
 
-    console.log('Round removed successfully', 'gameId: ', this.gameId, 'roundId: ', roundId);
+    this.log.info({ roundId }, 'Round removed successfully');
   }
 
   /**
@@ -166,19 +170,11 @@ export default class EditGameService {
         await this.roundRepo.removeQuestionTransaction(transaction, roundId, questionId);
       });
     } catch (error) {
-      console.error('Failed to remove the round:', error);
+      this.log.error({ err: error }, 'Failed to remove the question from round');
       throw error;
     }
 
-    console.log(
-      'Question removed successfully',
-      'gameId: ',
-      this.gameId,
-      'roundId: ',
-      roundId,
-      'questionId: ',
-      questionId
-    );
+    this.log.info({ roundId, questionId }, 'Question removed from round successfully');
   }
 
   /**
@@ -197,15 +193,7 @@ export default class EditGameService {
 
     await this.roundRepo.updateRound(roundId, roundData);
 
-    console.log(
-      'Round updated successfully',
-      'gameId: ',
-      this.gameId,
-      'roundId: ',
-      roundId,
-      'newOrder: ',
-      roundData.questions
-    );
+    this.log.info({ roundId, questions: roundData.questions }, 'Round updated successfully');
   }
 
   async updateRoundThinkingTime(roundId: string, thinkingTime: number) {
@@ -237,15 +225,7 @@ export default class EditGameService {
       await this.roundRepo.updateRoundTransaction(transaction, roundId, { thinkingTime });
     });
 
-    console.log(
-      'Round thinking time updated',
-      'gameId:',
-      this.gameId,
-      'roundId:',
-      roundId,
-      'thinkingTime:',
-      thinkingTime
-    );
+    this.log.info({ roundId, thinkingTime }, 'Round thinking time updated');
   }
 
   async updateQuestionThinkingTime(
@@ -266,17 +246,7 @@ export default class EditGameService {
       );
     const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(questionType, this.gameId, roundId);
     await gameQuestionRepo.update(questionId, { thinkingTime });
-    console.log(
-      'Game question thinking time updated',
-      'gameId:',
-      this.gameId,
-      'roundId:',
-      roundId,
-      'questionId:',
-      questionId,
-      'thinkingTime:',
-      thinkingTime
-    );
+    this.log.info({ roundId, questionId, thinkingTime }, 'Game question thinking time updated');
   }
 
   async updateRoundChallengeTime(roundId: string, challengeTime: number) {
@@ -308,15 +278,7 @@ export default class EditGameService {
       await this.roundRepo.updateRoundTransaction(transaction, roundId, { challengeTime });
     });
 
-    console.log(
-      'Round challenge time updated',
-      'gameId:',
-      this.gameId,
-      'roundId:',
-      roundId,
-      'challengeTime:',
-      challengeTime
-    );
+    this.log.info({ roundId, challengeTime }, 'Round challenge time updated');
   }
 
   async updateQuestionChallengeTime(
@@ -337,17 +299,7 @@ export default class EditGameService {
       );
     const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(questionType, this.gameId, roundId);
     await gameQuestionRepo.update(questionId, { challengeTime });
-    console.log(
-      'Game question challenge time updated',
-      'gameId:',
-      this.gameId,
-      'roundId:',
-      roundId,
-      'questionId:',
-      questionId,
-      'challengeTime:',
-      challengeTime
-    );
+    this.log.info({ roundId, questionId, challengeTime }, 'Game question challenge time updated');
   }
 
   async launchGame() {
@@ -356,9 +308,9 @@ export default class EditGameService {
         launchedAt: serverTimestamp(),
         status: GameStatus.GAME_START,
       });
-      console.log('Game launched successfully', 'gameId: ', this.gameId);
+      this.log.info('Game launched successfully');
     } catch (error) {
-      console.error('Failed to launch the game:', error);
+      this.log.error({ err: error }, 'Failed to launch the game');
       throw error;
     }
   }

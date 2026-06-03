@@ -86,7 +86,7 @@ const useGameData = (gameId: string) => {
   const { gameRepo, organizerRepo, playerRepo } = useGameRepositories(gameId)!;
 
   const { game, loading: gameLoading, error: gameError } = gameRepo.useGameOnce(gameId);
-  const { organizers, loading: orgLoading, error: orgError } = organizerRepo.useAllOrganizerIdentitiesOnce();
+  const { organizers, loading: orgLoading, error: orgError } = organizerRepo.useAllOrganizersOnce();
   const { players, loading: playerLoading, error: playerError } = playerRepo.useAllPlayerIdentitiesOnce();
 
   return {

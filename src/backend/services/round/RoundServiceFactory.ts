@@ -16,7 +16,6 @@ import { RoundType } from '@/models/rounds/round-type';
 
 export default class RoundServiceFactory {
   static createService(roundType: RoundType, gameId: string) {
-    console.log('createService', roundType, gameId);
     switch (roundType) {
       case RoundType.BASIC:
         return new BasicRoundService(gameId);

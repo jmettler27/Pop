@@ -101,7 +101,6 @@ function RoundAccordion({ gameId, round, teams, hasEnded, isCurrent }: RoundAcco
   const roundSortedTeams = hasEnded
     ? ((roundScores as unknown as { roundSortedTeams: RoundSortedTeam[] }).roundSortedTeams ?? null)
     : null;
-  console.log(round.title, hasEnded, roundSortedTeams);
 
   const borderColor = () => {
     if (hasEnded && roundSortedTeams != null && roundSortedTeams.length > 0) {

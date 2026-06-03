@@ -37,7 +37,7 @@ export default function GamePage() {
   const playerRepo = repositories.playerRepo;
 
   const { game, loading: gameLoading, error: gameError } = gameRepo.useGame(gameId);
-  const { organizers, loading: orgLoading, error: orgError } = organizerRepo.useAllOrganizerIdentitiesOnce();
+  const { organizers, loading: orgLoading, error: orgError } = organizerRepo.useAllOrganizersOnce();
   const { players, loading: playerLoading, error: playerError } = playerRepo.useAllPlayerIdentitiesOnce();
 
   if (gameError || orgError || playerError) {

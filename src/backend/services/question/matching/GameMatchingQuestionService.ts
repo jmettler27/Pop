@@ -1,10 +1,11 @@
 import { runTransaction, Transaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
-import GameQuestionService from '@/backend/services/question/GameQuestionService';
+import GameQuestionService, { SYSTEM_PLAYER_ID } from '@/backend/services/question/GameQuestionService';
 import { aggregateTiedTeams, findNextAvailableChooser, shuffle } from '@/backend/utils/arrays';
 import { sortAscendingRoundScores, sortScores } from '@/backend/utils/scores';
 import {
@@ -25,7 +26,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
 
   constructor(gameId: string, roundId: string) {
     super(gameId, roundId, QuestionType.MATCHING);
-
+    this.log = logger.child({ module: 'GameMatchingQuestionService', game: gameId, round: roundId });
     this.chooserRepo = new ChooserRepository(gameId);
   }
 
@@ -35,7 +36,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
       questionId
     )) as GameMatchingQuestion;
     if (!gameQuestion) {
-      console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Game question not found');
       throw new Error('Game question not found');
     }
 
@@ -47,28 +48,12 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     await (this.gameQuestionRepo as GameMatchingQuestionRepository).resetQuestionTransaction(transaction, questionId);
     await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
 
-    console.log(
-      'Matching question successfully reset',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId
-    );
+    this.log.info({ question: questionId }, 'Matching question reset');
   }
 
   async endQuestionTransaction(transaction: Transaction, questionId: string) {
     await super.endQuestionTransaction(transaction, questionId);
-    console.log(
-      'Matching question successfully ended',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId
-    );
+    this.log.info({ question: questionId }, 'Matching question ended');
   }
 
   async handleCountdownEndTransaction(transaction: Transaction, questionId: string) {
@@ -76,13 +61,27 @@ export default class GameMatchingQuestionService extends GameQuestionService {
       transaction,
       questionId
     )) as MatchingQuestion;
+    if (!baseQuestion) {
+      this.log.warn({ question: questionId }, 'Base question not found');
+      throw new Error('Base question not found');
+    }
+
     const correctMatches = await (this.gameQuestionRepo as GameMatchingQuestionRepository).getCorrectMatchesTransaction(
       transaction,
       questionId
     );
+    if (!correctMatches) {
+      this.log.warn({ question: questionId }, 'Correct matches not found');
+      throw new Error('Correct matches not found');
+    }
+
     const incorrectMatches = await (
       this.gameQuestionRepo as GameMatchingQuestionRepository
     ).getIncorrectMatchesTransaction(transaction, questionId);
+    if (!incorrectMatches) {
+      this.log.warn({ question: questionId }, 'Incorrect matches not found');
+      throw new Error('Incorrect matches not found');
+    }
 
     const correctMatchIndices = correctMatches.map((m: CorrectMatch) => m.matchIdx);
     const incorrectMatch = incorrectMatches.map((m: IncorrectMatch) => m.match);
@@ -93,25 +92,17 @@ export default class GameMatchingQuestionService extends GameQuestionService {
       correctMatchIndices
     );
 
-    await this.submitMatchTransaction(transaction, questionId, 'system', null, match);
-    console.log(
-      'Matching question countdown end successfully handled',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId
-    );
+    await this.submitMatchTransaction(transaction, questionId, SYSTEM_PLAYER_ID, null, match);
+    this.log.info({ question: questionId }, 'Matching question countdown end handled');
   }
 
   /* =============================================================================================================== */
 
-  async submitMatch(questionId: string, userId: string, edges: MatchingEdgeData[], match: ColumnIndices) {
+  async submitMatch(questionId: string, playerId: string, edges: MatchingEdgeData[], match: ColumnIndices | null) {
     if (!questionId) {
       throw new Error('No question ID has been provided!');
     }
-    if (!userId) {
+    if (!playerId) {
       throw new Error('No user ID has been provided!');
     }
     if ((!edges || edges.length === 0) && (!match || match.length === 0)) {
@@ -120,20 +111,10 @@ export default class GameMatchingQuestionService extends GameQuestionService {
 
     try {
       await runTransaction(firestore, (transaction) =>
-        this.submitMatchTransaction(transaction, questionId, userId, edges, match)
+        this.submitMatchTransaction(transaction, questionId, playerId, edges, match)
       );
     } catch (error) {
-      console.error(
-        'Failed to submit the match',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'err',
-        error
-      );
+      this.log.error({ question: questionId, err: error }, 'Failed to submit the match');
       throw error;
     }
   }
@@ -141,17 +122,31 @@ export default class GameMatchingQuestionService extends GameQuestionService {
   async submitMatchTransaction(
     transaction: Transaction,
     questionId: string,
-    userId: string,
+    playerId: string,
     edges: MatchingEdgeData[] | null,
-    match: ColumnIndices
+    match: ColumnIndices | null
   ) {
     const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     if (!chooser) {
-      console.error('Chooser not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Chooser not found');
       throw new Error('Chooser not found');
     }
 
     const teamId = chooser.chooserOrder[chooser.chooserIdx];
+    if (playerId != SYSTEM_PLAYER_ID) {
+      const player = await this.playerRepo.getPlayerTransaction(transaction, playerId);
+      if (!player) {
+        this.log.warn({ question: questionId, user: playerId }, 'Player not found');
+        throw new Error('Player not found');
+      }
+      if (player.teamId !== teamId) {
+        this.log.warn(
+          { question: questionId, user: playerId, playerTeam: player.teamId, chooserTeam: teamId },
+          'Player is not in the chooser team'
+        );
+        throw new Error('Player is not in the chooser team');
+      }
+    }
 
     // edges is an array of numCols objects of the form {from: origRow0_col0, to: origRow1_col1}
     const rows =
@@ -165,26 +160,12 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     const isCorrect = rows.every((row) => row === rows[0]);
 
     if (isCorrect) {
-      await this.handleCorrectMatchTransaction(transaction, questionId, userId, teamId, rows);
+      await this.handleCorrectMatchTransaction(transaction, questionId, playerId, teamId, rows);
     } else {
-      await this.handleIncorrectMatchTransaction(transaction, questionId, userId, teamId, rows);
+      await this.handleIncorrectMatchTransaction(transaction, questionId, playerId, teamId, rows);
     }
     // await this.timerRepo.resetTimerTransaction(transaction)
-    console.log(
-      'Match successfully submitted',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId,
-      'user',
-      userId,
-      'team',
-      teamId,
-      'rows',
-      rows
-    );
+    this.log.info({ question: questionId, user: playerId, team: teamId, rows }, 'Match submitted');
   }
 
   async handleCorrectMatchTransaction(
@@ -199,7 +180,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
       questionId
     );
     if (!correctMatches) {
-      console.error('Correct matches not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Correct matches not found');
       throw new Error('Correct matches not found');
     }
 
@@ -208,7 +189,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
       questionId
     )) as MatchingQuestion;
     if (!baseQuestion) {
-      console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Base question not found');
       throw new Error('Base question not found');
     }
 
@@ -218,7 +199,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
       // Case 1.2: It is the last correct matching
       const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction);
       if (!roundScores) {
-        console.error('Round scores not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+        this.log.warn({ question: questionId }, 'Round scores not found');
         throw new Error('Round scores not found');
       }
 
@@ -253,14 +234,14 @@ export default class GameMatchingQuestionService extends GameQuestionService {
         questionId
       )) as GameMatchingQuestion;
       if (!gameQuestion) {
-        console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+        this.log.warn({ question: questionId }, 'Game question not found');
         throw new Error('Game question not found');
       }
       const canceled = gameQuestion.canceled;
 
       const chooser = await this.chooserRepo.getChooserTransaction(transaction);
       if (!chooser) {
-        console.error('Chooser not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+        this.log.warn({ question: questionId }, 'Chooser not found');
         throw new Error('Chooser not found');
       }
       const chooserIdx = chooser.chooserIdx;
@@ -284,21 +265,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
       await this.timerRepo.startTimerTransaction(transaction, gameQuestion.thinkingTime * (baseQuestion.numCols! - 1));
     }
 
-    console.log(
-      'Correct match successfully handled',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId,
-      'user',
-      userId,
-      'team',
-      teamId,
-      'rows',
-      rows
-    );
+    this.log.info({ question: questionId, user: userId, team: teamId, rows }, 'Correct match handled');
   }
 
   // Case 2: The matching is incorrect
@@ -313,12 +280,12 @@ export default class GameMatchingQuestionService extends GameQuestionService {
 
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
     if (!game) {
-      console.error('Game not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Game not found');
       throw new Error('Game not found');
     }
     const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     if (!chooser) {
-      console.error('Chooser not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Chooser not found');
       throw new Error('Chooser not found');
     }
     const chooserOrder = chooser.chooserOrder;
@@ -326,7 +293,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
 
     const round = await roundRepo.getRoundTransaction(transaction, this.roundId);
     if (!round) {
-      console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Round not found');
       throw new Error('Round not found');
     }
     const matchingRound = round as MatchingRound;
@@ -336,7 +303,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
       questionId
     )) as GameMatchingQuestion;
     if (!gameQuestion) {
-      console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Game question not found');
       throw new Error('Game question not found');
     }
 
@@ -345,13 +312,13 @@ export default class GameMatchingQuestionService extends GameQuestionService {
       questionId
     )) as MatchingQuestion;
     if (!baseQuestion) {
-      console.error('Base question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Base question not found');
       throw new Error('Base question not found');
     }
 
     const roundScores = await this.roundScoreRepo.getScoresTransaction(transaction);
     if (!roundScores) {
-      console.error('Round scores not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+      this.log.warn({ question: questionId }, 'Round scores not found');
       throw new Error('Round scores not found');
     }
 
@@ -435,20 +402,6 @@ export default class GameMatchingQuestionService extends GameQuestionService {
       await this.endQuestionTransaction(transaction, questionId);
     }
 
-    console.log(
-      'Incorrect match successfully handled',
-      'game',
-      this.gameId,
-      'round',
-      this.roundId,
-      'question',
-      questionId,
-      'user',
-      userId,
-      'team',
-      teamId,
-      'rows',
-      rows
-    );
+    this.log.info({ question: questionId, user: userId, team: teamId, rows }, 'Incorrect match handled');
   }
 }

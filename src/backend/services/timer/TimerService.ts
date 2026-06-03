@@ -1,6 +1,8 @@
 import { runTransaction } from 'firebase/firestore';
+import type { Logger } from 'pino';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import SoundRepository from '@/backend/repositories/sound/SoundRepository';
@@ -14,6 +16,7 @@ export default class TimerService {
   private gameRepo: GameRepository;
   private soundRepo: SoundRepository;
   private timerRepo: TimerRepository;
+  private log: Logger;
 
   constructor(gameId: string) {
     if (!gameId) {
@@ -21,6 +24,7 @@ export default class TimerService {
     }
 
     this.gameId = gameId;
+    this.log = logger.child({ module: 'TimerService', game: this.gameId });
     this.gameRepo = new GameRepository();
     this.soundRepo = new SoundRepository(gameId);
     this.timerRepo = new TimerRepository(gameId);
@@ -31,10 +35,10 @@ export default class TimerService {
       await runTransaction(firestore, async (transaction) => {
         await this.timerRepo.endTimerTransaction(transaction);
 
-        console.log('Timer ended');
+        this.log.info('Timer ended');
       });
     } catch (error) {
-      console.error('Error ending timer:', error);
+      this.log.error({ err: error }, 'Error ending timer');
       throw error;
     }
   }
@@ -45,10 +49,10 @@ export default class TimerService {
         await this.soundRepo.addSoundTransaction(transaction, 'message_incoming');
         await this.timerRepo.startTimerTransaction(transaction, duration);
 
-        console.log('Timer started');
+        this.log.info({ duration }, 'Timer started');
       });
     } catch (error) {
-      console.error('Error starting timer:', error);
+      this.log.error({ err: error }, 'Error starting timer');
       throw error;
     }
   }
@@ -58,10 +62,10 @@ export default class TimerService {
       await runTransaction(firestore, async (transaction) => {
         await this.timerRepo.stopTimerTransaction(transaction);
 
-        console.log('Timer stopped');
+        this.log.info('Timer stopped');
       });
     } catch (error) {
-      console.error('Error stopping timer:', error);
+      this.log.error({ err: error }, 'Error stopping timer');
       throw error;
     }
   }
@@ -70,7 +74,11 @@ export default class TimerService {
     try {
       await runTransaction(firestore, async (transaction) => {
         const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
-        if (!game) throw new Error('Game not found');
+        if (!game) {
+          this.log.warn('Game not found');
+          throw new Error('Game not found');
+        }
+
         let duration = 30; // Default duration to reset to
         if (
           game.status === GameStatus.ROUND_START ||
@@ -88,15 +96,19 @@ export default class TimerService {
             transaction,
             game.currentQuestion as string
           );
-          console.log('GAME QUESTION', 'gameQuestion', gameQuestion);
+          if (!gameQuestion) {
+            this.log.warn({ question: game.currentQuestion }, 'Game question not found');
+            throw new Error('Game question not found');
+          }
+
           duration = (gameQuestion as GameQuestion).thinkingTime!;
         }
         await this.timerRepo.resetTimerTransaction(transaction, duration);
 
-        console.log('Timer reset');
+        this.log.info({ duration }, 'Timer reset');
       });
     } catch (error) {
-      console.error('Error resetting timer:', error);
+      this.log.error({ err: error }, 'Error resetting timer');
       throw error;
     }
   }

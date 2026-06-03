@@ -1,6 +1,8 @@
 import { runTransaction, serverTimestamp } from 'firebase/firestore';
+import type { Logger } from 'pino';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import SoundRepository from '@/backend/repositories/sound/SoundRepository';
 import TimerRepository from '@/backend/repositories/timer/TimerRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
@@ -14,6 +16,7 @@ export default class PlayerService {
   private timerRepo: TimerRepository;
   private soundRepo: SoundRepository;
   private readyRepo: ReadyRepository;
+  private log: Logger;
 
   constructor(gameId: string) {
     if (!gameId) {
@@ -21,6 +24,7 @@ export default class PlayerService {
     }
 
     this.gameId = gameId;
+    this.log = logger.child({ module: 'PlayerService', game: this.gameId });
     this.playerRepo = new PlayerRepository(this.gameId);
     this.timerRepo = new TimerRepository(this.gameId);
     this.soundRepo = new SoundRepository(this.gameId);
@@ -62,7 +66,7 @@ export default class PlayerService {
         }
       });
     } catch (error) {
-      console.error('Failed to setting the player ready', error);
+      this.log.error({ err: error }, 'Failed to set player ready');
       throw error;
     }
   }
@@ -74,7 +78,7 @@ export default class PlayerService {
         if (authorized === null) {
           const timer = await this.timerRepo.getTimerTransaction(transaction);
           if (!timer) {
-            console.error('Timer not found', 'game', this.gameId);
+            this.log.warn('Timer not found');
             throw new Error('Timer not found');
           }
 
@@ -83,10 +87,10 @@ export default class PlayerService {
         await this.timerRepo.updateTransaction(transaction, { authorized: newVal });
         if (newVal === true) await this.soundRepo.addSoundTransaction(transaction, 'minecraft_button_plate');
 
-        console.log('Players authorization successfully toggled', 'game', this.gameId, 'authorized', newVal);
+        this.log.info({ authorized: newVal }, 'Players authorization toggled');
       });
     } catch (error) {
-      console.error('Failed to toggle players authorization', 'game', this.gameId);
+      this.log.error({ err: error }, 'Failed to toggle players authorization');
       throw error;
     }
   }

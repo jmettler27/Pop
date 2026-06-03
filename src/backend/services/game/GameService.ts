@@ -1,6 +1,8 @@
 import { runTransaction, serverTimestamp } from 'firebase/firestore';
+import type { Logger } from 'pino';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
@@ -30,6 +32,7 @@ export default class GameService {
   playerRepo: PlayerRepository;
   organizerRepo: OrganizerRepository;
   roundRepo: RoundRepository;
+  private log: Logger;
 
   constructor(gameId: string) {
     if (!gameId) {
@@ -37,6 +40,7 @@ export default class GameService {
     }
 
     this.gameId = gameId;
+    this.log = logger.child({ module: 'GameService', game: this.gameId });
 
     this.gameRepo = new GameRepository();
     this.soundRepo = new SoundRepository(gameId);
@@ -105,10 +109,10 @@ export default class GameService {
 
         await this.timerRepo.resetTimerTransaction(transaction);
 
-        console.log('Game successfully started.', 'game', this.gameId);
+        this.log.info('Game successfully started');
       });
     } catch (error) {
-      console.error('Failed to start the game:', error);
+      this.log.error({ err: error }, 'Failed to start the game');
       throw error;
     }
   }
@@ -166,14 +170,14 @@ export default class GameService {
     await this.playerRepo.updateAllPlayersStatus(PlayerStatus.IDLE, playerIds);
     await this.soundRepo.clearSounds();
 
-    console.log('Game successfully reset', 'game', this.gameId);
+    this.log.info('Game successfully reset');
   }
 
   async resetAllRounds() {
     const rounds = await this.roundRepo.getAllRounds();
 
     for (const round of rounds) {
-      console.log('RESETTING ROUND', 'ID', round.id, 'TYPE', round.type);
+      this.log.debug({ roundId: round.id, roundType: round.type }, 'Resetting round');
       const roundService = RoundServiceFactory.createService(round.type!, this.gameId);
       await roundService.resetRound(round.id as string);
     }
@@ -190,10 +194,10 @@ export default class GameService {
         await this.soundRepo.addSoundTransaction(transaction, 'ui_confirmation_alert_b2');
         await this.gameRepo.updateGameStatusTransaction(transaction, this.gameId, GameStatus.GAME_HOME);
 
-        console.log('Round end to game home successfully completed.', 'game', this.gameId);
+        this.log.info('Round end to game home completed');
       });
     } catch (error) {
-      console.error('Error round end to game home:', error);
+      this.log.error({ err: error }, 'Error round end to game home');
       throw error;
     }
   }
@@ -206,10 +210,10 @@ export default class GameService {
       await runTransaction(firestore, async (transaction) => {
         await this.gameRepo.updateGameStatusTransaction(transaction, this.gameId, GameStatus.GAME_EDIT);
 
-        console.log('Editing successfully resumed.', 'game', this.gameId);
+        this.log.info('Editing resumed');
       });
     } catch (error) {
-      console.error('Error resuming editing:', error);
+      this.log.error({ err: error }, 'Error resuming editing');
       throw error;
     }
   }
@@ -225,10 +229,10 @@ export default class GameService {
           dateEnd: serverTimestamp(),
         });
 
-        console.log('Game successfully ended.', 'game', this.gameId);
+        this.log.info('Game ended');
       });
     } catch (error) {
-      console.error('Error ending game:', error);
+      this.log.error({ err: error }, 'Error ending game');
       throw error;
     }
   }

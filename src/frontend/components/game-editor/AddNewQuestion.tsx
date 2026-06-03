@@ -201,9 +201,6 @@ export function AddQuestionToMixedRoundButton({ roundId, disabled }: AddQuestion
     setDialog('existing-question');
   };
 
-  console.log('Question type', questionType);
-  console.log('Dialog', dialog);
-
   return (
     <>
       <Card className="border-dashed border-2 border-red-700">

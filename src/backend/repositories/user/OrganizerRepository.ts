@@ -56,11 +56,6 @@ export default class OrganizerRepository extends FirebaseRepository {
     return { organizers: data.map((o) => new Organizer(o as unknown as ParticipantData)), loading, error };
   }
 
-  useAllOrganizerIdentitiesOnce() {
-    const { data, loading, error } = super.useCollectionOnce();
-    return { organizers: data.map((o) => ({ id: o.id as string, name: o.name as string })), loading, error };
-  }
-
   useIsOrganizer(organizerId: string) {
     const { data, loading, error } = super.useDocumentOnce(organizerId);
     return { isOrganizer: data !== null, loading, error };

@@ -1,6 +1,7 @@
 import { runTransaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
+import { logger } from '@/backend/logger';
 import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/GameProgressiveCluesQuestionRepository';
 import GameBuzzerQuestionService from '@/backend/services/question/GameBuzzerQuestionService';
 import { CanceledPlayer } from '@/models/questions/buzzer';
@@ -12,6 +13,7 @@ import { PlayerStatus } from '@/models/users/player';
 export default class GameProgressiveCluesQuestionService extends GameBuzzerQuestionService {
   constructor(gameId: string, roundId: string) {
     super(gameId, roundId, QuestionType.PROGRESSIVE_CLUES);
+    this.log = logger.child({ module: 'GameProgressiveCluesQuestionService', game: gameId, round: roundId });
   }
 
   /* ====================================================================================================== */
@@ -27,15 +29,7 @@ export default class GameProgressiveCluesQuestionService extends GameBuzzerQuest
           this.gameQuestionRepo as GameProgressiveCluesQuestionRepository
         ).getPlayersTransaction(transaction, questionId);
         if (!questionPlayers) {
-          console.error(
-            'Question players not found',
-            'game',
-            this.gameId,
-            'round',
-            this.roundId,
-            'question',
-            questionId
-          );
+          this.log.warn({ question: questionId }, 'Question players not found');
           throw new Error('Question players not found');
         }
 
@@ -46,18 +40,19 @@ export default class GameProgressiveCluesQuestionService extends GameBuzzerQuest
           questionId
         )) as GameProgressiveCluesQuestion;
         if (!gameQuestion) {
-          console.error('Game question not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          this.log.warn({ question: questionId }, 'Game question not found');
           throw new Error('Game question not found');
         }
 
         const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as ProgressiveCluesRound;
         if (!round) {
-          console.error('Round not found', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+          this.log.warn({ question: questionId }, 'Round not found');
           throw new Error('Round not found');
         }
 
         // If there is a buzzed player, update his status to idle
         if (buzzed && buzzed.length > 0) {
+          this.log.debug({ question: questionId, buzzed }, 'Resetting buzzed players to idle');
           await this.playerRepo.updatePlayerStatusTransaction(transaction, buzzed[0], PlayerStatus.IDLE);
           await (this.gameQuestionRepo as GameProgressiveCluesQuestionRepository).clearBuzzedPlayersTransaction(
             transaction,
@@ -70,6 +65,7 @@ export default class GameProgressiveCluesQuestionService extends GameBuzzerQuest
         );
 
         // Decancel players who need it
+        this.log.debug({ question: questionId, canceled }, 'Decanceling players who need it');
         if (canceled?.length > 0) {
           const targetClueIdx = gameQuestion.currentClueIdx! + 1 - round.delay;
           canceled
@@ -80,20 +76,11 @@ export default class GameProgressiveCluesQuestionService extends GameBuzzerQuest
         }
         // await this.timerRepo.resetTimerTransaction(transaction)
         await this.soundRepo.addSoundTransaction(transaction, 'cartoon_mystery_musical_tone_002');
-        console.log('Clue revealed successfully', 'game', this.gameId, 'round', this.roundId, 'question', questionId);
+
+        this.log.info({ question: questionId }, 'Clue revealed');
       });
     } catch (error) {
-      console.error(
-        'Failed to reveal clue',
-        'game',
-        this.gameId,
-        'round',
-        this.roundId,
-        'question',
-        questionId,
-        'err',
-        error
-      );
+      this.log.error({ question: questionId, err: error }, 'Failed to reveal clue');
       throw error;
     }
   }

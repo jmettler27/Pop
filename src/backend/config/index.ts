@@ -18,6 +18,5 @@ export const config = {
   },
   logging: {
     level: process.env.LOG_LEVEL ?? 'info',
-    format: process.env.LOG_FORMAT ?? 'json',
   },
 };

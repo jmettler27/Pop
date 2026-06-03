@@ -1,9 +1,12 @@
 import { arrayRemove, arrayUnion, serverTimestamp, type Transaction } from 'firebase/firestore';
 
+import { logger } from '@/backend/logger';
 import FirebaseRepository, { type QueryOptions } from '@/backend/repositories/FirebaseRepository';
 import { CreateRoundData, RoundData } from '@/models/rounds/round';
 import { type RoundType } from '@/models/rounds/round-type';
 import RoundFactory, { type AnyRound } from '@/models/rounds/RoundFactory';
+
+const log = logger.child({ module: 'RoundRepository' });
 
 export default class RoundRepository extends FirebaseRepository {
   constructor(gameId: string) {
@@ -44,7 +47,7 @@ export default class RoundRepository extends FirebaseRepository {
       const result = await super.createTransaction(transaction, { ...data, type: roundType });
       return RoundFactory.createRound(roundType, result as RoundData);
     } catch (error) {
-      console.error('Failed to create the round:', error);
+      log.error({ err: error }, 'Failed to create the round');
       throw error;
     }
   }

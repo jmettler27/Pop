@@ -434,7 +434,7 @@ function SortableQuestionCard({ roundId, questionId, questionOrder, status }: So
 }
 
 const fetchTopics = async (questionIds: string[]) => {
-  const promises = questionIds.map((id) => getDoc(doc(QUESTIONS_COLLECTION_REF, id)));
+  const promises = questionIds.map((id: string) => getDoc(doc(QUESTIONS_COLLECTION_REF, id)));
   const documents = await Promise.all(promises);
   return documents.map((doc) => (doc.data() as { topic?: string })?.topic ?? '');
 };
