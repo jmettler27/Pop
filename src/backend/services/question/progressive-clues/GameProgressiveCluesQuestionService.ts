@@ -74,7 +74,7 @@ export default class GameProgressiveCluesQuestionService extends GameBuzzerQuest
               this.playerRepo.updatePlayerStatusTransaction(transaction, c.playerId, PlayerStatus.IDLE);
             });
         }
-        // await this.timerRepo.resetTimerTransaction(transaction)
+        await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
         await this.soundRepo.addSoundTransaction(transaction, 'cartoon_mystery_musical_tone_002');
 
         this.log.info({ question: questionId }, 'Clue revealed');

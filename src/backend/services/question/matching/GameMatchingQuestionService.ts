@@ -164,7 +164,6 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     } else {
       await this.handleIncorrectMatchTransaction(transaction, questionId, playerId, teamId, rows);
     }
-    // await this.timerRepo.resetTimerTransaction(transaction)
     this.log.info({ question: questionId, user: playerId, team: teamId, rows }, 'Match submitted');
   }
 
