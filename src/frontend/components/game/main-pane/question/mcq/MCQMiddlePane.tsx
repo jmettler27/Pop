@@ -2,6 +2,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 import MCQMainContent from '@/frontend/components/game/main-pane/question/mcq/MCQMainContent';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
+import { Emoji } from '@/frontend/components/ui/Emoji';
 import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import useGame from '@/frontend/hooks/useGame';
 import { GameStatus } from '@/models/games/game-status';
@@ -34,7 +35,7 @@ function MCQHeader({ baseQuestion }: { baseQuestion: MCQQuestion }) {
     <div className="flex flex-row items-center justify-center space-x-1">
       <QuestionTypeIcon questionType={baseQuestion.type} fontSize={40} />
       <h1 className="2xl:text-5xl">
-        {topicToEmoji(baseQuestion.topic as Topic)}{' '}
+        <Emoji emoji={topicToEmoji(baseQuestion.topic as Topic)} />{' '}
         <strong>
           {questionTypeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
         </strong>

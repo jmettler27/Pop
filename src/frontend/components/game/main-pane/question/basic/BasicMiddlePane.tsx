@@ -6,6 +6,7 @@ import GameBasicQuestionRepository from '@/backend/repositories/question/GameBas
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { Emoji } from '@/frontend/components/ui/Emoji';
 import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
@@ -59,7 +60,7 @@ function BasicQuestionHeader({ baseQuestion }: BasicQuestionHeaderProps) {
     <div className="flex flex-row items-center justify-center space-x-1">
       <QuestionTypeIcon questionType={baseQuestion.type} fontSize={50} />
       <h1 className="2xl:text-4xl">
-        {baseQuestion.topic ? topicToEmoji(baseQuestion.topic) : ''}{' '}
+        {baseQuestion.topic ? <Emoji emoji={topicToEmoji(baseQuestion.topic)} /> : null}{' '}
         <strong>
           {questionTypeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
         </strong>

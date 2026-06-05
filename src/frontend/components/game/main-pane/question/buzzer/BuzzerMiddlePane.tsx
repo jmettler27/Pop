@@ -6,6 +6,7 @@ import EmojiMainContent from '@/frontend/components/game/main-pane/question/emoj
 import ImageMainContent from '@/frontend/components/game/main-pane/question/image/ImageMainContent';
 import ProgressiveCluesMainContent from '@/frontend/components/game/main-pane/question/progressive-clues/ProgressiveCluesMainContent';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
+import { Emoji } from '@/frontend/components/ui/Emoji';
 import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
@@ -50,7 +51,7 @@ function BuzzerQuestionHeader({ baseQuestion }: BuzzerMiddlePaneProps) {
       <div className="flex flex-row items-center justify-center space-x-1">
         <QuestionTypeIcon questionType={bq.type as QuestionType} fontSize={40} />
         <h1 className="2xl:text-5xl">
-          {bq.topic ? topicToEmoji(bq.topic as Topic) : ''}{' '}
+          {bq.topic ? <Emoji emoji={topicToEmoji(bq.topic as Topic)} /> : null}{' '}
           <strong>
             {questionTypeToTitle(bq.type as QuestionType)} <CurrentRoundQuestionOrder />
           </strong>

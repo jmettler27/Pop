@@ -9,6 +9,7 @@ import { useIntl } from 'react-intl';
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import { QuestionCardContent } from '@/frontend/components/common/QuestionCard';
+import { Emoji } from '@/frontend/components/ui/Emoji';
 import { Locale } from '@/frontend/helpers/locales';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
@@ -317,7 +318,7 @@ function BasicRoundQuestionAccordion({
       game={game}
       summary={
         <span className="text-lg">
-          {topicToEmoji(q.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(q.topic as Topic)} />{' '}
           <strong>
             {questionTypeToTitle(QuestionType.BASIC, locale as Locale)} {order + 1}
           </strong>
@@ -374,7 +375,7 @@ function BlindtestRoundQuestionAccordion({
       summary={
         <span className="text-lg">
           {BlindtestQuestion.typeToEmoji(q.subtype ?? '')}
-          {topicToEmoji(q.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(q.topic as Topic)} />{' '}
           <strong>
             {questionTypeToTitle(QuestionType.BLINDTEST, locale as Locale)} {order + 1}
           </strong>
@@ -430,7 +431,7 @@ function EmojiRoundQuestionAccordion({
       game={game}
       summary={
         <span className="text-lg">
-          {topicToEmoji(q.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(q.topic as Topic)} />{' '}
           <strong>
             {questionTypeToTitle(QuestionType.EMOJI, locale as Locale)} {order + 1}
           </strong>{' '}
@@ -487,7 +488,7 @@ function EnumerationRoundQuestionAccordion({
       game={game}
       summary={
         <span className="text-lg">
-          {topicToEmoji(q.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(q.topic as Topic)} />{' '}
           <strong>
             {questionTypeToTitle(QuestionType.ENUMERATION, locale as Locale)} {order + 1}
           </strong>
@@ -540,7 +541,7 @@ function EstimationRoundQuestionAccordion({
       game={game}
       summary={
         <span className="text-lg">
-          {topicToEmoji(q.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(q.topic as Topic)} />{' '}
           <strong>
             {questionTypeToTitle(QuestionType.ESTIMATION, locale as Locale)} {order + 1}
           </strong>
@@ -596,7 +597,7 @@ function ImageRoundQuestionAccordion({
       game={game}
       summary={
         <span className="text-lg">
-          {topicToEmoji(q.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(q.topic as Topic)} />{' '}
           <strong>
             {questionTypeToTitle(QuestionType.IMAGE, locale as Locale)} {order + 1}
           </strong>{' '}
@@ -649,7 +650,7 @@ function LabellingRoundQuestionAccordion({
       game={game}
       summary={
         <span className="text-lg">
-          {topicToEmoji(q.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(q.topic as Topic)} />{' '}
           <strong>
             {questionTypeToTitle(QuestionType.LABELLING, locale as Locale)} {order + 1}
           </strong>{' '}
@@ -702,7 +703,7 @@ function MatchingRoundQuestionAccordion({
       game={game}
       summary={
         <span className="text-lg">
-          {topicToEmoji(q.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(q.topic as Topic)} />{' '}
           <strong>
             {questionTypeToTitle(QuestionType.MATCHING, locale as Locale)} {order + 1}
           </strong>{' '}
@@ -757,7 +758,7 @@ function MCQRoundQuestionAccordion({
       game={game}
       summary={
         <span className="text-lg">
-          {topicToEmoji(q.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(q.topic as Topic)} />{' '}
           <strong>
             {questionTypeToTitle(QuestionType.MCQ, locale as Locale)} {order + 1}
           </strong>
@@ -813,7 +814,7 @@ function NaguiRoundQuestionAccordion({
       game={game}
       summary={
         <span className="text-lg">
-          {topicToEmoji(q.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(q.topic as Topic)} />{' '}
           <strong>
             {questionTypeToTitle(QuestionType.NAGUI, locale as Locale)} {order + 1}
           </strong>
@@ -870,7 +871,7 @@ function OddOneOutRoundQuestionAccordion({
       game={game}
       summary={
         <span className="text-lg">
-          {topicToEmoji(q.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(q.topic as Topic)} />{' '}
           <strong>
             {questionTypeToTitle(QuestionType.ODD_ONE_OUT, locale as Locale)} {order + 1}
           </strong>
@@ -930,7 +931,7 @@ function ProgressiveCluesRoundQuestionAccordion({
       game={game}
       summary={
         <span className="text-lg">
-          {topicToEmoji(q.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(q.topic as Topic)} />{' '}
           <strong>
             {questionTypeToTitle(QuestionType.PROGRESSIVE_CLUES, locale as Locale)} {order + 1}
           </strong>{' '}
@@ -986,7 +987,7 @@ function QuoteRoundQuestionAccordion({
       game={game}
       summary={
         <span className="text-lg">
-          {topicToEmoji(q.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(q.topic as Topic)} />{' '}
           <strong>
             {questionTypeToTitle(QuestionType.QUOTE, locale as Locale)} {order + 1}
           </strong>
@@ -1038,7 +1039,7 @@ function ReorderingRoundQuestionAccordion({
       game={game}
       summary={
         <span className="text-lg">
-          {topicToEmoji(q.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(q.topic as Topic)} />{' '}
           <strong>
             {questionTypeToTitle(QuestionType.REORDERING, locale as Locale)} {order + 1}
           </strong>

@@ -8,6 +8,7 @@ import { useIntl } from 'react-intl';
 import UserRepository from '@/backend/repositories/user/UserRepository';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/frontend/components/card';
 import { formatAnswerValue } from '@/frontend/components/game/main-pane/question/estimation/EstimationCommon';
+import { Emoji } from '@/frontend/components/ui/Emoji';
 import type { Locale } from '@/frontend/helpers/locales';
 import { LOCALE_TO_EMOJI } from '@/frontend/helpers/locales';
 import { QUESTION_ELEMENT_TO_EMOJI, QUESTION_ELEMENT_TO_TITLE } from '@/frontend/helpers/question';
@@ -60,14 +61,14 @@ export function QuestionCardTitle({ baseQuestion, showType = false }: QuestionCa
         <span>
           {showType && emoji}
           {BlindtestQuestion.typeToEmoji((baseQuestion as InstanceType<typeof BlindtestQuestion>).subtype ?? '')}
-          {topicToEmoji(baseQuestion.topic as Topic)} {(baseQuestion as { title: string }).title}
+          <Emoji emoji={topicToEmoji(baseQuestion.topic as Topic)} /> {(baseQuestion as { title: string }).title}
         </span>
       );
     case QuestionType.MATCHING:
       return (
         <span>
           {showType && emoji}
-          {topicToEmoji(baseQuestion.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(baseQuestion.topic as Topic)} />{' '}
           <strong>({(baseQuestion as { numCols: number }).numCols} col)</strong>{' '}
           {(baseQuestion as { title: string }).title}
         </span>
@@ -78,7 +79,7 @@ export function QuestionCardTitle({ baseQuestion, showType = false }: QuestionCa
       return (
         <span>
           {showType && emoji}
-          {prependTopicWithEmoji(baseQuestion.topic as Topic, intl.locale as Locale)}
+          <Emoji emoji={prependTopicWithEmoji(baseQuestion.topic as Topic, intl.locale as Locale)} />
         </span>
       );
     case QuestionType.ENUMERATION:
@@ -89,7 +90,7 @@ export function QuestionCardTitle({ baseQuestion, showType = false }: QuestionCa
       return (
         <span>
           {showType && emoji}
-          {topicToEmoji(baseQuestion.topic as Topic)} {(baseQuestion as { title: string }).title}
+          <Emoji emoji={topicToEmoji(baseQuestion.topic as Topic)} /> {(baseQuestion as { title: string }).title}
         </span>
       );
     case QuestionType.ESTIMATION:
@@ -99,7 +100,7 @@ export function QuestionCardTitle({ baseQuestion, showType = false }: QuestionCa
       return (
         <span>
           {showType && emoji}
-          {topicToEmoji(baseQuestion.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(baseQuestion.topic as Topic)} />{' '}
           {(baseQuestion as { source?: string }).source && <i>{(baseQuestion as { source: string }).source}:</i>}{' '}
           {(baseQuestion as { title: string }).title}
         </span>
@@ -124,7 +125,7 @@ function QuestionCardFooter({ baseQuestion }: QuestionCardFooterProps) {
 
   return (
     <p className="text-xs sm:text-sm 2xl:text-base dark:text-white">
-      {LOCALE_TO_EMOJI[(baseQuestion as { lang: keyof typeof LOCALE_TO_EMOJI }).lang]}{' '}
+      <Emoji emoji={LOCALE_TO_EMOJI[(baseQuestion as { lang: keyof typeof LOCALE_TO_EMOJI }).lang]} />{' '}
       {QUESTION_ELEMENT_TO_TITLE[intl.locale]['createdBy']} <strong>{user.name}</strong> (
       {timestampToDate((baseQuestion as { createdAt: FirestoreTimestamp | null | undefined }).createdAt, intl.locale)})
     </p>

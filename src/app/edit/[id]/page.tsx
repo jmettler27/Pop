@@ -14,6 +14,7 @@ import { AddNewRoundButton } from '@/frontend/components/game-editor/AddNewRound
 import { EditGameRoundCard } from '@/frontend/components/game-editor/EditRoundInGame';
 import { LaunchGameButton } from '@/frontend/components/game-editor/LaunchGameButton';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { Emoji } from '@/frontend/components/ui/Emoji';
 import { Locale, localeToEmoji } from '@/frontend/helpers/locales';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -70,7 +71,8 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
             {/* <Link className='flex items-center gap-2 font-semibold' href='#'> */}
             {/* <Package2Icon className='h-6 w-6' /> */}
             <span className="text-lg md:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {gameTypeToEmoji(game.type)} {localeToEmoji(game.lang as Locale)} {game.title}
+              <Emoji emoji={gameTypeToEmoji(game.type)} /> <Emoji emoji={localeToEmoji(game.lang as Locale)} />{' '}
+              {game.title}
             </span>
             {/* </Link> */}
             {/* <Button className='ml-auto h-8 w-8' size='icon' variant='outline'>

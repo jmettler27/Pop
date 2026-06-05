@@ -8,6 +8,7 @@ import { clsx } from 'clsx';
 import { useIntl } from 'react-intl';
 
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
+import { Emoji } from '@/frontend/components/ui/Emoji';
 import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import { formatDuration, timestampElapsedSeconds, type FirestoreTimestamp } from '@/frontend/helpers/time';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -59,7 +60,7 @@ export function EstimationQuestionHeader({ baseQuestion }: { baseQuestion: Estim
       <div className="flex flex-row items-center justify-center space-x-1">
         <QuestionTypeIcon questionType={baseQuestion.type} fontSize={50} />
         <h1 className="2xl:text-5xl">
-          {topicToEmoji(baseQuestion.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(baseQuestion.topic as Topic)} />{' '}
           <strong>
             {questionTypeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
           </strong>

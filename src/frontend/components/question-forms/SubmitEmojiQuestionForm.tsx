@@ -209,7 +209,7 @@ function EmojiPicker() {
 
   return (
     <DynamicEmojiPicker
-      emojiStyle={EmojiStyle.NATIVE}
+      emojiStyle={EmojiStyle.TWITTER}
       emojiData={emojiData}
       width="15%"
       height={400}

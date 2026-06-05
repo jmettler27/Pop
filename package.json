@@ -51,6 +51,7 @@
     "sass": "^1.77.6",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
+    "twemoji": "^14.0.2",
     "yup": "^1.4.0"
   },
   "devDependencies": {
@@ -58,6 +59,7 @@
     "@types/node": "^25.8.0",
     "@types/react": "^19.2.16",
     "@types/react-dom": "^19.2.3",
+    "@types/twemoji": "^13.1.1",
     "autoprefixer": "^10.4.19",
     "concurrently": "^10.0.0",
     "cross-env": "^10.1.0",

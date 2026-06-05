@@ -17,6 +17,7 @@ import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/card';
 import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from '@/frontend/components/home/GameAvatars';
+import { Emoji } from '@/frontend/components/ui/Emoji';
 import { Locale, localeToEmoji } from '@/frontend/helpers/locales';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -175,7 +176,7 @@ const GameCard = ({ game }: GameCardProps) => {
                 <CardTitle className="text-sm sm:text-base font-semibold text-white truncate leading-tight">
                   {game.title}
                 </CardTitle>
-                <span className="text-base flex-shrink-0">{localeToEmoji(game.lang as Locale)}</span>
+                <Emoji emoji={localeToEmoji(game.lang as Locale)} className="text-base flex-shrink-0" />
               </div>
             </Tooltip>
           </div>

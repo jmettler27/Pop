@@ -8,6 +8,7 @@ import ErrorScreen from '@/frontend/components/ErrorScreen';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import NoteButton from '@/frontend/components/game/NoteButton';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { Emoji } from '@/frontend/components/ui/Emoji';
 import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
@@ -49,7 +50,7 @@ function EnumerationQuestionHeader({ baseQuestion }: { baseQuestion: Enumeration
       <div className="flex flex-row items-center justify-center space-x-1">
         <QuestionTypeIcon questionType={baseQuestion.type} fontSize={40} />
         <h1 className="2xl:text-5xl">
-          {topicToEmoji(baseQuestion.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(baseQuestion.topic as Topic)} />{' '}
           <strong>
             {questionTypeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
           </strong>

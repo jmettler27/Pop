@@ -6,6 +6,7 @@ import { isObjectEmpty } from '@/backend/utils/objects';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { Emoji } from '@/frontend/components/ui/Emoji';
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
 import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
@@ -35,7 +36,7 @@ function QuoteQuestionHeader({ baseQuestion }: { baseQuestion: QuoteQuestion }) 
     <div className="flex flex-row items-center justify-center ">
       <QuestionTypeIcon questionType={baseQuestion.type} fontSize={50} />
       <h1 className="2xl:text-5xl">
-        {topicToEmoji(baseQuestion.topic as Topic)}{' '}
+        <Emoji emoji={topicToEmoji(baseQuestion.topic as Topic)} />{' '}
         <strong>
           {questionTypeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
         </strong>

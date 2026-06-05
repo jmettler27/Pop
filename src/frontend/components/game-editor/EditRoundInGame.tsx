@@ -60,6 +60,7 @@ import {
   AddQuestionToRoundButton,
 } from '@/frontend/components/game-editor/AddNewQuestion';
 import { EditQuestionCard } from '@/frontend/components/game-editor/EditQuestionInRound';
+import { Emoji } from '@/frontend/components/ui/Emoji';
 import { type Locale } from '@/frontend/helpers/locales';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -501,7 +502,7 @@ function RoundTopicDistribution({ round }: RoundTopicDistributionProps) {
                 key={topic}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md hover:shadow-lg transition-shadow"
               >
-                <span className="text-lg">{topicToEmoji(topic as Topic)}</span>
+                <Emoji emoji={topicToEmoji(topic as Topic)} className="text-lg" />
                 <span className="text-xs font-bold">{count}</span>
               </span>
             ))}

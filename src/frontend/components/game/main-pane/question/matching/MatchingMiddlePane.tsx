@@ -5,6 +5,7 @@ import EndedMatchingQuestionGrid from '@/frontend/components/game/main-pane/ques
 import { generateShuffledNodePositions } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import NoteButton from '@/frontend/components/game/NoteButton';
+import { Emoji } from '@/frontend/components/ui/Emoji';
 import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
 import useGame from '@/frontend/hooks/useGame';
 import { GameStatus } from '@/models/games/game-status';
@@ -31,7 +32,7 @@ function MatchingQuestionHeader({ baseQuestion }: { baseQuestion: MatchingQuesti
       <div className="flex flex-row items-center justify-center space-x-1">
         <QuestionTypeIcon questionType={baseQuestion.type} fontSize={50} />
         <h1 className="2xl:text-5xl">
-          {topicToEmoji(baseQuestion.topic as Topic)}{' '}
+          <Emoji emoji={topicToEmoji(baseQuestion.topic as Topic)} />{' '}
           <strong>
             {questionTypeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
           </strong>

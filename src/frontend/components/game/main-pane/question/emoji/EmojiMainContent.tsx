@@ -1,6 +1,7 @@
 import { Box } from '@mui/material';
 
 import NextImage from '@/frontend/components/common/NextImage';
+import { Emoji } from '@/frontend/components/ui/Emoji';
 import useGame from '@/frontend/hooks/useGame';
 import { GameStatus } from '@/models/games/game-status';
 import { EmojiQuestion } from '@/models/questions/emoji';
@@ -22,7 +23,7 @@ export default function EmojiMainContent({ baseQuestion }: EmojiMainContentProps
 }
 
 function ActiveEmojiMainContent({ baseQuestion }: EmojiMainContentProps) {
-  return <span className="text-9xl">{baseQuestion.clue}</span>;
+  return <Emoji emoji={baseQuestion.clue ?? ''} className="text-9xl" />;
 }
 
 function EndedEmojiMainContent({ baseQuestion }: EmojiMainContentProps) {
@@ -32,7 +33,7 @@ function EndedEmojiMainContent({ baseQuestion }: EmojiMainContentProps) {
   if (!image) {
     return (
       <Box className="flex flex-col h-3/4 max-w-1/2 items-center justify-center space-y-2">
-        <span className="text-9xl">{clue}</span>
+        <Emoji emoji={clue ?? ''} className="text-9xl" />
         <span className="text-4xl text-green-500">
           <strong>{title}</strong>
         </span>
@@ -46,7 +47,7 @@ function EndedEmojiMainContent({ baseQuestion }: EmojiMainContentProps) {
         <NextImage url={image} alt={title ?? ''} />
       </Box>
       <Box className="flex flex-col h-3/4 max-w-1/2 items-start justify-center space-y-2">
-        <span className="text-7xl">{clue}</span>
+        <Emoji emoji={clue ?? ''} className="text-7xl" />
         <span className="text-4xl text-green-500">
           <strong>{title}</strong>
         </span>
