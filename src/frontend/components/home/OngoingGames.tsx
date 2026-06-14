@@ -125,8 +125,8 @@ const GameCard = ({ game }: GameCardProps) => {
   const playerIds = players.map((p) => p.id);
   const isFull = playerIds.length >= (game.maxPlayers ?? 0);
 
-  const isPlayer = playerIds.some((id: string) => id === user?.id);
-  const isOrganizer = organizerIds.some((id: string) => id === user?.id);
+  const isPlayer = playerIds.some((id) => id === user?.id);
+  const isOrganizer = organizerIds.some((id) => id === user?.id);
 
   let myRole: string;
 
