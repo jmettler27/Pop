@@ -76,7 +76,7 @@ export default class JoinGameService {
         await this.playerRepo.createPlayerTransaction(
           transaction,
           {
-            image: user.image,
+            image: user.image ?? null,
             name: data.playerName,
             status: PlayerStatus.IDLE,
             teamId: data.teamId,

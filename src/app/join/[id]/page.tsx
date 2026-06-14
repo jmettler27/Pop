@@ -26,7 +26,6 @@ import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import Game from '@/models/games/game';
 import Team from '@/models/team';
-import User from '@/models/users/user';
 
 const messages = defineMessages('app.join', {
   joinGameHeader: 'Join a game',
@@ -63,6 +62,8 @@ type StepProps = {
   onSubmit: () => void;
   validationSchema: AnyObjectSchema;
 };
+
+type GeneralInfoStepProps = StepProps & { isGuest: boolean };
 
 function JoinGameHeader() {
   const { id } = useParams();
@@ -103,24 +104,18 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = React.use(params);
   const gameId = resolvedParams.id;
   const intl = useIntl();
+  const router = useRouter();
 
-  const [handleJoinGame, isJoining] = useAsyncAction(async (values: JoinFormValues, user: User) => {
+  const [handleJoinGame, isJoining] = useAsyncAction(async (values: JoinFormValues) => {
+    if (!session?.user?.id) return;
     try {
-      await joinGame(gameId, user.id!, values);
+      await joinGame(gameId, session.user.id, values);
       router.push(`/${gameId}`);
     } catch (error) {
       console.error('Failed to join the game:', error);
       router.push('/');
     }
   });
-
-  // Protected route
-  if (!session?.user) {
-    redirect('/api/auth/signin');
-  }
-
-  const user = session.user as User;
-  const router = useRouter();
 
   const { game, organizers, players, loading, error } = useGameData(gameId);
 
@@ -132,11 +127,17 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   }
   if (!game) return null;
 
-  if (organizers.some((o) => o.id === user.id)) {
-    redirect(`/${gameId}`);
+  // Redirect unauthenticated users to sign-in, with this page as the callback so
+  // guest sign-in returns them here (instead of the default redirect to "/")
+  if (!session?.user) {
+    redirect(`/api/auth/signin?callbackUrl=${encodeURIComponent(`/join/${gameId}`)}`);
   }
 
-  if (players.some((p) => p.id === user.id)) {
+  // Redirect users who are already participating
+  if (organizers.some((o) => o.id === session.user.id)) {
+    redirect(`/${gameId}`);
+  }
+  if (players.some((p) => p.id === session.user.id)) {
     redirect(`/${gameId}`);
   }
 
@@ -144,25 +145,30 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
     redirect('/');
   }
 
+  const isGuest = session.user.isGuest ?? false;
+  // Clamp the guest name to the allowed max length so form validation passes
+  const guestName = isGuest && session.user.name ? session.user.name.slice(0, Game.PARTICIPANT_NAME_MAX_LENGTH) : '';
+
   return (
     <div className="flex flex-col flex-1 p-8">
       <JoinGameHeader />
       <Wizard
         initialValues={{
-          playerName: '',
+          playerName: guestName,
           playInTeams: null,
           joinTeam: null,
           teamId: '',
           teamName: '',
           teamColor: '#000000',
         }}
-        onSubmit={async (values) => await handleJoinGame(values as JoinFormValues, user)}
+        onSubmit={async (values) => await handleJoinGame(values as JoinFormValues)}
         isSubmitting={isJoining}
         submitButtonLabel={intl.formatMessage(messages.submitFormButtonLabel)}
       >
         {/* Step 1: General info */}
         <GeneralInfoStep
           onSubmit={() => {}}
+          isGuest={isGuest}
           validationSchema={Yup.object({
             playerName: Yup.string()
               .min(Game.PARTICIPANT_NAME_MIN_LENGTH, `Must be ${Game.PARTICIPANT_NAME_MIN_LENGTH} characters or more!`)
@@ -182,7 +188,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
           })}
         />
 
-        {/* Step 2 (optional): create a new team */}
+        {/* Step 2 (optional): create a new team or pick a color */}
         <CreateTeamStep
           onSubmit={() => {}}
           validationSchema={Yup.object({
@@ -213,7 +219,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   );
 }
 
-function GeneralInfoStep({ onSubmit, validationSchema }: StepProps) {
+function GeneralInfoStep({ onSubmit, validationSchema, isGuest }: GeneralInfoStepProps) {
   const formik = useFormikContext<JoinFormValues>();
   const values = formik.values;
   const errors = formik.errors;
@@ -230,14 +236,16 @@ function GeneralInfoStep({ onSubmit, validationSchema }: StepProps) {
 
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
-      <MyTextInput
-        label={intl.formatMessage(messages.playerNameInputLabel)}
-        name="playerName"
-        type="text"
-        placeholder={intl.formatMessage(messages.playerNameInputPlaceholder)}
-        validationSchema={validationSchema}
-        maxLength={Game.PARTICIPANT_NAME_MAX_LENGTH}
-      />
+      {!isGuest && (
+        <MyTextInput
+          label={intl.formatMessage(messages.playerNameInputLabel)}
+          name="playerName"
+          type="text"
+          placeholder={intl.formatMessage(messages.playerNameInputPlaceholder)}
+          validationSchema={validationSchema}
+          maxLength={Game.PARTICIPANT_NAME_MAX_LENGTH}
+        />
+      )}
 
       <br />
       <br />

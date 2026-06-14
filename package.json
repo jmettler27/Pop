@@ -48,6 +48,7 @@
     "react-dom": "^19.2.7",
     "react-firebase-hooks": "^5.1.1",
     "react-intl": "^10.0.0",
+    "react-qr-code": "^2.2.0",
     "sass": "^1.77.6",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
