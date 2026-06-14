@@ -99,7 +99,7 @@ providers.push(
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   providers,
-  session: { strategy: useEmulators ? 'jwt' : 'database' },
+  session: { strategy: 'jwt' },
   ...(useEmulators || !firestoreAdapter ? {} : { adapter: firestoreAdapter }),
   callbacks: {
     async jwt({ token, user }) {
