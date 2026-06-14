@@ -130,7 +130,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   // Redirect unauthenticated users to sign-in, with this page as the callback so
   // guest sign-in returns them here (instead of the default redirect to "/")
   if (!session?.user) {
-    redirect(`/api/auth/signin?callbackUrl=${encodeURIComponent(`/join/${gameId}`)}`);
+    redirect(`/auth/signin?callbackUrl=${encodeURIComponent(`/join/${gameId}`)}`);
   }
 
   // Redirect users who are already participating
