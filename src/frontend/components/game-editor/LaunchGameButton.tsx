@@ -2,7 +2,16 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControlLabel,
+  Switch,
+} from '@mui/material';
 import { useIntl } from 'react-intl';
 
 import { launchGame } from '@/backend/services/edit-game/actions';
@@ -15,6 +24,7 @@ const messages = defineMessages('frontend.gameEditor.LaunchGameButton', {
   dialogTitle: 'Are you sure you want to launch this game!',
   dialogWarning: 'The game will be publicly accessible for all users.',
   dialogConfirm: 'Letzgo',
+  tvModeLabel: 'Open in TV / spectator mode on this device',
 });
 
 export function LaunchGameButton() {
@@ -25,10 +35,11 @@ export function LaunchGameButton() {
   const router = useRouter();
 
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [tvMode, setTvMode] = useState(false);
 
   const [handleLaunchGame, isLaunching] = useAsyncAction(async () => {
     await launchGame(gameId);
-    router.push(`/${gameId}`);
+    router.push(tvMode ? `/${gameId}?spectator=1` : `/${gameId}`);
   });
 
   const onCancel = () => {
@@ -60,6 +71,11 @@ export function LaunchGameButton() {
 
         <DialogContent>
           <DialogContentText>{intl.formatMessage(messages.dialogWarning)}</DialogContentText>
+          <FormControlLabel
+            control={<Switch checked={tvMode} onChange={(e) => setTvMode(e.target.checked)} />}
+            label={intl.formatMessage(messages.tvModeLabel)}
+            sx={{ mt: 2 }}
+          />
         </DialogContent>
 
         <DialogActions>

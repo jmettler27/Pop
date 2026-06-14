@@ -1162,7 +1162,7 @@ async function seedGame(gameId) {
     dateStart: now,
     lang: 'fr',
     launchedAt: null,
-    maxPlayers: 4,
+    maxPlayers: 5,
     roundScorePolicy: 'completion_rate',
     rounds: [
       ROUND_BASIC_ID,
@@ -1286,7 +1286,7 @@ async function seedRoundScores(gameId, roundId, teamIds) {
     rankingDiffs: null,
     roundCompletionRates: {},
     roundSortedTeams: [],
-    scores: Object.fromEntries(teamIds.map((id: string) => [id, 0])),
+    scores: Object.fromEntries(teamIds.map(id => [id, 0])),
     scoresProgress: {},
     teamsScoresSequences: {},
   });

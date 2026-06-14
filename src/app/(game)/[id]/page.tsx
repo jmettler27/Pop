@@ -1,6 +1,6 @@
 'use client';
 
-import { redirect, useParams } from 'next/navigation';
+import { redirect, useParams, useSearchParams } from 'next/navigation';
 
 import { useSession } from 'next-auth/react';
 
@@ -20,6 +20,8 @@ import User from '@/models/users/user';
 
 export default function GamePage() {
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const forceSpectator = searchParams.get('spectator') === '1';
 
   if (!session?.user) {
     redirect('/api/auth/signin');
@@ -52,12 +54,14 @@ export default function GamePage() {
     return <GameUnderConstructionScreen />;
   }
 
-  // Determine user's role and team
-  const role = organizers?.some((o) => o.id === session.user.id)
-    ? ParticipantRole.ORGANIZER
-    : players?.find((p) => p.id === session.user.id)
-      ? ParticipantRole.PLAYER
-      : ParticipantRole.SPECTATOR;
+  // Determine user's role and team. forceSpectator bypasses the organizer check so
+  // the organizer can view the game in audience/TV mode from this device.
+  const role =
+    !forceSpectator && organizers?.some((o) => o.id === session.user.id)
+      ? ParticipantRole.ORGANIZER
+      : players?.find((p) => p.id === session.user.id)
+        ? ParticipantRole.PLAYER
+        : ParticipantRole.SPECTATOR;
 
   const teamId =
     role === ParticipantRole.PLAYER ? (players.find((p) => p.id === session.user.id)?.teamId ?? null) : null;
