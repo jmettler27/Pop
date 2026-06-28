@@ -6,7 +6,7 @@ import GameBasicQuestionRepository from '@/backend/repositories/question/GameBas
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
+import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -57,8 +57,8 @@ interface BasicQuestionHeaderProps {
 function BasicQuestionHeader({ baseQuestion }: BasicQuestionHeaderProps) {
   return (
     <div className="flex flex-row items-center justify-center space-x-1">
-      <QuestionTypeIcon questionType={baseQuestion.type} fontSize={50} />
-      <h1 className="2xl:text-4xl">
+      <QuestionTypeIcon questionType={baseQuestion.type} fontSize={{ xs: 28, md: 50 }} />
+      <h1 className="text-xs md:text-xl 2xl:text-4xl">
         {baseQuestion.topic ? topicToEmoji(baseQuestion.topic) : ''}{' '}
         <strong>
           {questionTypeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />

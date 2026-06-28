@@ -7,7 +7,7 @@ import ErrorScreen from '@/frontend/components/ErrorScreen';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
-import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
+import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
@@ -33,8 +33,8 @@ export default function QuoteMiddlePane({ baseQuestion }: { baseQuestion: QuoteQ
 function QuoteQuestionHeader({ baseQuestion }: { baseQuestion: QuoteQuestion }) {
   return (
     <div className="flex flex-row items-center justify-center ">
-      <QuestionTypeIcon questionType={baseQuestion.type} fontSize={50} />
-      <h1 className="2xl:text-5xl">
+      <QuestionTypeIcon questionType={baseQuestion.type} fontSize={{ xs: 28, md: 50 }} />
+      <h1 className="text-xs md:text-xl 2xl:text-5xl">
         {topicToEmoji(baseQuestion.topic as Topic)}{' '}
         <strong>
           {questionTypeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />

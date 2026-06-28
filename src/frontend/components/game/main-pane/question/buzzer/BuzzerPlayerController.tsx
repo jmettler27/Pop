@@ -29,9 +29,10 @@ interface QuestionPlayers {
 
 interface BuzzerPlayerControllerProps {
   questionPlayers: Record<string, unknown>;
+  compact?: boolean;
 }
 
-export default function BuzzerPlayerController({ questionPlayers }: BuzzerPlayerControllerProps) {
+export default function BuzzerPlayerController({ questionPlayers, compact = false }: BuzzerPlayerControllerProps) {
   const game = useGame();
   const user = useUser();
   const gameRepositories = useGameRepositories();
@@ -78,7 +79,7 @@ export default function BuzzerPlayerController({ questionPlayers }: BuzzerPlayer
   const remaining = remainingWaitingClues(round, hasExceededMaxTries, gq.currentClueIdx ?? 0, myCanceledItems);
 
   return (
-    <div className="flex flex-col h-full items-center justify-around">
+    <div className={clsx('flex flex-col items-center', compact ? 'gap-8' : 'h-full justify-around')}>
       <BuzzerMessage
         playerStatus={player.status}
         hasExceededMaxTries={hasExceededMaxTries}
@@ -88,12 +89,17 @@ export default function BuzzerPlayerController({ questionPlayers }: BuzzerPlayer
         hasBuzzed={hasBuzzed}
         remaining={remaining}
       />
-      <div className="flex flex-row w-full justify-center">
+      <div className={clsx('flex w-full justify-center', compact ? 'flex-col items-center gap-3' : 'flex-row')}>
         <BuzzerButton
           isDisabled={hasBuzzed || hasExceededMaxTries || remaining > 0}
           questionType={gq.type as QuestionType}
+          compact={compact}
         />
-        <BuzzerResetButton isDisabled={!hasBuzzed || hasExceededMaxTries} questionType={gq.type as QuestionType} />
+        <BuzzerResetButton
+          isDisabled={!hasBuzzed || hasExceededMaxTries}
+          questionType={gq.type as QuestionType}
+          compact={compact}
+        />
       </div>
     </div>
   );
@@ -126,7 +132,7 @@ function BuzzerMessage({
   const r = round as unknown as { maxTries?: number; delay?: number; type?: string };
   if (hasExceededMaxTries)
     return (
-      <span className="2xl:text-3xl text-red-500">
+      <span className="text-2xl 2xl:text-3xl text-red-500">
         🤐 {intl.formatMessage(globalMessages.maxTriesExceeded)} ({r.maxTries})
       </span>
     );
@@ -135,7 +141,7 @@ function BuzzerMessage({
     const message = intl.formatMessage(globalMessages.wrongAnswer);
     if (r.type === 'progressive_clues' && r.delay && r.delay > 0) {
       return (
-        <span className="2xl:text-3xl">
+        <span className="text-2xl 2xl:text-3xl">
           {message} {intl.formatMessage(globalMessages.buzzAgain)}{' '}
           <span className="font-bold text-blue-500">
             {remaining > 1 ? numRemainingClues(remaining, intl) : intl.formatMessage(globalMessages.nextClue)}.
@@ -143,20 +149,20 @@ function BuzzerMessage({
         </span>
       );
     }
-    return <span className="2xl:text-3xl text-red-500">{message}</span>;
+    return <span className="text-2xl 2xl:text-3xl text-red-500">{message}</span>;
   }
   if (isFirst) {
     const message = `${intl.formatMessage(globalMessages.firstBuzzer)} 🧐`;
     if (myCanceledItems.length === (r.maxTries ?? 0) - 1)
       return (
-        <span className="2xl:text-3xl">
+        <span className="text-2xl 2xl:text-3xl">
           {message}. <span className="text-red-500">{intl.formatMessage(globalMessages.lastAttempt)}</span>
         </span>
       );
-    return <span className="2xl:text-3xl">{message}</span>;
+    return <span className="text-2xl 2xl:text-3xl">{message}</span>;
   }
-  if (hasBuzzed) return <span className="2xl:text-3xl">{intl.formatMessage(globalMessages.waitForTurn)}</span>;
-  return <span className="2xl:text-3xl">{intl.formatMessage(globalMessages.anyIdea)} 🤔</span>;
+  if (hasBuzzed) return <span className="text-2xl 2xl:text-3xl">{intl.formatMessage(globalMessages.waitForTurn)}</span>;
+  return <span className="text-2xl 2xl:text-3xl">{intl.formatMessage(globalMessages.anyIdea)} 🤔</span>;
 }
 
 function remainingWaitingClues(
@@ -179,9 +185,10 @@ function remainingWaitingClues(
 interface BuzzerButtonProps {
   isDisabled: boolean;
   questionType: QuestionType;
+  compact?: boolean;
 }
 
-function BuzzerButton({ isDisabled, questionType }: BuzzerButtonProps) {
+function BuzzerButton({ isDisabled, questionType, compact = false }: BuzzerButtonProps) {
   const game = useGame();
   const user = useUser();
   const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
@@ -204,9 +211,10 @@ function BuzzerButton({ isDisabled, questionType }: BuzzerButtonProps) {
       onClick={handleBuzz}
       disabled={isDisabled || isBuzzing}
       style={{ backgroundColor: isDisabled ? 'gray' : 'red' }}
-      endIcon={<PanToolIcon />}
+      endIcon={<PanToolIcon fontSize={compact ? 'large' : 'medium'} />}
+      sx={compact ? { py: 2, px: 4 } : {}}
     >
-      <span className={clsx('2xl:text-3xl', !isDisabled && 'text-slate-100')}>BUZZ</span>
+      <span className={clsx(compact ? 'text-2xl' : '2xl:text-3xl', !isDisabled && 'text-slate-100')}>BUZZ</span>
     </Button>
   );
 }
@@ -214,9 +222,10 @@ function BuzzerButton({ isDisabled, questionType }: BuzzerButtonProps) {
 interface BuzzerResetButtonProps {
   isDisabled: boolean;
   questionType: QuestionType;
+  compact?: boolean;
 }
 
-function BuzzerResetButton({ isDisabled, questionType }: BuzzerResetButtonProps) {
+function BuzzerResetButton({ isDisabled, questionType, compact = false }: BuzzerResetButtonProps) {
   const game = useGame();
   const user = useUser();
   const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
@@ -235,12 +244,13 @@ function BuzzerResetButton({ isDisabled, questionType }: BuzzerResetButtonProps)
     <Tooltip title="Annuler" placement="right">
       <span>
         <IconButton
+          size={compact ? 'large' : 'medium'}
           color="primary"
           aria-label="reset buzzer"
           onClick={handleResetBuzz}
           disabled={isDisabled || isResetting}
         >
-          <ReplayIcon />
+          <ReplayIcon fontSize={compact ? 'large' : 'medium'} />
         </IconButton>
       </span>
     </Tooltip>

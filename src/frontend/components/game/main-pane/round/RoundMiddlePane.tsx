@@ -8,7 +8,7 @@ import ErrorScreen from '@/frontend/components/ErrorScreen';
 import RoundEndBody from '@/frontend/components/game/main-pane/round/RoundEndBody';
 import RoundStartBody from '@/frontend/components/game/main-pane/round/RoundStartBody';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import { RoundTypeIcon } from '@/frontend/helpers/question_types';
+import { RoundTypeIcon } from '@/frontend/helpers/question-types';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -64,7 +64,7 @@ function RoundHeader({ round }: { round: AnyRound }) {
   const intl = useIntl();
   return (
     <div className="flex flex-row items-center justify-center space-x-1">
-      <RoundTypeIcon roundType={round.type!} fontSize={50} />
+      <RoundTypeIcon roundType={round.type!} fontSize={{ xs: 28, md: 50 }} />
       <h1 className="2xl:text-5xl">
         <span className="font-bold">
           {intl.formatMessage(globalMessages.round)} {(round.order ?? 0) + 1}

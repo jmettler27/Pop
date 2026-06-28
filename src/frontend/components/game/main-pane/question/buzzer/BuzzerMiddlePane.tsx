@@ -6,7 +6,7 @@ import EmojiMainContent from '@/frontend/components/game/main-pane/question/emoj
 import ImageMainContent from '@/frontend/components/game/main-pane/question/image/ImageMainContent';
 import ProgressiveCluesMainContent from '@/frontend/components/game/main-pane/question/progressive-clues/ProgressiveCluesMainContent';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
-import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
+import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import { GameStatus } from '@/models/games/game-status';
@@ -49,7 +49,7 @@ function BuzzerQuestionHeader({ baseQuestion }: BuzzerMiddlePaneProps) {
     <div className="flex flex-col items-center justify-around">
       <div className="flex flex-row items-center justify-center space-x-1">
         <QuestionTypeIcon questionType={bq.type as QuestionType} fontSize={40} />
-        <h1 className="2xl:text-5xl">
+        <h1 className="text-xs md:text-xl 2xl:text-5xl">
           {bq.topic ? topicToEmoji(bq.topic as Topic) : ''}{' '}
           <strong>
             {questionTypeToTitle(bq.type as QuestionType)} <CurrentRoundQuestionOrder />
@@ -69,8 +69,7 @@ interface BuzzerMainContentProps {
 }
 
 function BuzzerMainContent({ baseQuestion, showComplete }: BuzzerMainContentProps) {
-  const bq = baseQuestion as { type?: QuestionType };
-  switch (bq.type) {
+  switch (baseQuestion.type) {
     case QuestionType.PROGRESSIVE_CLUES:
       return (
         <ProgressiveCluesMainContent

@@ -4,7 +4,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 import NaguiMainContent from '@/frontend/components/game/main-pane/question/nagui/NaguiMainContent';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
-import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
+import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
 import useGame from '@/frontend/hooks/useGame';
 import { GameStatus } from '@/models/games/game-status';
 import { NaguiQuestion } from '@/models/questions/nagui';

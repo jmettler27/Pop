@@ -9,7 +9,7 @@ import { useIntl } from 'react-intl';
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { rankingToEmoji } from '@/frontend/helpers/emojis';
-import { RoundTypeIcon } from '@/frontend/helpers/question_types';
+import { RoundTypeIcon } from '@/frontend/helpers/question-types';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameRounds } from '@/models/games/game';

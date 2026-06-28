@@ -5,7 +5,7 @@ import EndedMatchingQuestionGrid from '@/frontend/components/game/main-pane/ques
 import { generateShuffledNodePositions } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import NoteButton from '@/frontend/components/game/NoteButton';
-import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
+import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
 import useGame from '@/frontend/hooks/useGame';
 import { GameStatus } from '@/models/games/game-status';
 import { MatchingAnswer, MatchingQuestion } from '@/models/questions/matching';
@@ -29,8 +29,8 @@ function MatchingQuestionHeader({ baseQuestion }: { baseQuestion: MatchingQuesti
   return (
     <div className="flex flex-col items-center justify-center space-y-2">
       <div className="flex flex-row items-center justify-center space-x-1">
-        <QuestionTypeIcon questionType={baseQuestion.type} fontSize={50} />
-        <h1 className="2xl:text-5xl">
+        <QuestionTypeIcon questionType={baseQuestion.type} fontSize={{ xs: 28, md: 50 }} />
+        <h1 className="text-xs md:text-xl 2xl:text-5xl">
           {topicToEmoji(baseQuestion.topic as Topic)}{' '}
           <strong>
             {questionTypeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
@@ -38,7 +38,7 @@ function MatchingQuestionHeader({ baseQuestion }: { baseQuestion: MatchingQuesti
         </h1>
       </div>
       <div className="flex flex-row items-center justify-center space-x-1">
-        <h2 className="2xl:text-4xl">{baseQuestion.title}</h2>
+        <h2 className="text-xs md:text-lg 2xl:text-4xl">{baseQuestion.title}</h2>
         {baseQuestion.note && <NoteButton note={baseQuestion.note} />}
       </div>
     </div>

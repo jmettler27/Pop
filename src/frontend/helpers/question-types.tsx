@@ -19,7 +19,7 @@ import { RoundType } from '@/models/rounds/round-type';
 
 interface QuestionTypeIconProps {
   questionType: QuestionType;
-  fontSize?: string | number;
+  fontSize?: string | number | Record<string, string | number>;
 }
 
 interface RoundTypeIconProps {

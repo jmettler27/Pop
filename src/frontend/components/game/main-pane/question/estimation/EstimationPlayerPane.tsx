@@ -19,6 +19,7 @@ import {
 } from '@/frontend/components/game/main-pane/question/estimation/EstimationCommon';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
+import useIsMobile from '@/frontend/hooks/useIsMobile';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -54,12 +55,15 @@ interface EstimationPlayerPaneProps {
 
 export default function EstimationPlayerPane({ baseQuestion, gameQuestion }: EstimationPlayerPaneProps) {
   const game = useGame();
+  const isMobile = useIsMobile();
 
   return (
     <div className="flex flex-col h-full items-center">
-      <div className="flex-shrink-0 w-full flex flex-col items-center justify-center py-3">
-        <EstimationQuestionHeader baseQuestion={baseQuestion} />
-      </div>
+      {!isMobile && (
+        <div className="flex-shrink-0 w-full flex flex-col items-center justify-center py-3">
+          <EstimationQuestionHeader baseQuestion={baseQuestion} />
+        </div>
+      )}
       <div className="flex-1 min-h-0 w-full flex flex-col items-center justify-center">
         {game!.status === GameStatus.QUESTION_ACTIVE && (
           <EstimationPlayerActiveView baseQuestion={baseQuestion} gameQuestion={gameQuestion} />
@@ -86,7 +90,7 @@ function BetTypeCard({ icon, title, description, selected, onClick, disabled }: 
     <div
       onClick={disabled ? undefined : onClick}
       className={clsx(
-        'w-44 h-44 2xl:w-64 2xl:h-64 rounded-3xl flex flex-col items-center justify-center gap-3 2xl:gap-5 select-none',
+        'w-36 h-36 md:w-44 md:h-44 2xl:w-64 2xl:h-64 rounded-3xl flex flex-col items-center justify-center gap-2 md:gap-3 2xl:gap-5 select-none',
         'border-2 transition-all duration-200',
         'shadow-lg',
         disabled ? 'opacity-40 cursor-default' : 'cursor-pointer hover:scale-105 hover:shadow-xl',
@@ -95,13 +99,18 @@ function BetTypeCard({ icon, title, description, selected, onClick, disabled }: 
           : 'border-slate-700 bg-slate-800/60 hover:border-slate-500'
       )}
     >
-      <div className={clsx('text-4xl 2xl:text-6xl', selected ? 'text-blue-400' : 'text-slate-400')}>{icon}</div>
+      <div className={clsx('text-3xl md:text-4xl 2xl:text-6xl', selected ? 'text-blue-400' : 'text-slate-400')}>
+        {icon}
+      </div>
       <span
-        className={clsx('font-bold text-lg 2xl:text-2xl text-center', selected ? 'text-blue-200' : 'text-slate-200')}
+        className={clsx(
+          'font-bold text-sm md:text-lg 2xl:text-2xl text-center',
+          selected ? 'text-blue-200' : 'text-slate-200'
+        )}
       >
         {title}
       </span>
-      <span className="text-sm 2xl:text-base text-center text-slate-400 px-3 leading-tight min-h-[2.5rem] 2xl:min-h-[3rem] flex items-start justify-center">
+      <span className="text-xs md:text-sm 2xl:text-base text-center text-slate-400 px-2 leading-tight min-h-[2rem] md:min-h-[2.5rem] 2xl:min-h-[3rem] flex items-start justify-center">
         {description}
       </span>
     </div>
@@ -240,7 +249,7 @@ function EstimationPlayerActiveView({ baseQuestion, gameQuestion }: EstimationPl
     <div className="flex flex-col items-center gap-6 2xl:gap-10 w-full max-w-lg 2xl:max-w-3xl p-4">
       <span className="text-lg 2xl:text-2xl text-slate-300">{intl.formatMessage(messages.betTypePrompt)}</span>
 
-      <div className="flex flex-row gap-6 2xl:gap-10 justify-center">
+      <div className="flex flex-row gap-3 md:gap-6 2xl:gap-10 justify-center">
         <BetTypeCard
           icon={<AdjustIcon fontSize="inherit" />}
           title={intl.formatMessage(messages.exactType)}
