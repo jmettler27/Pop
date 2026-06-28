@@ -5,10 +5,12 @@ import { memo } from 'react';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import BottomPane from '@/frontend/components/game/main-pane/BottomPane';
 import MiddlePane from '@/frontend/components/game/main-pane/MiddlePane';
+import MobilePlayerLayout from '@/frontend/components/game/MobilePlayerLayout';
 import Sidebar from '@/frontend/components/game/sidebar/Sidebar';
 import TopPane from '@/frontend/components/game/top-pane/TopPane';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useIsMobile from '@/frontend/hooks/useIsMobile';
 
 // Container components to control re-rendering
 const TopPaneContainer = memo(function TopPaneContainer({}) {
@@ -39,6 +41,11 @@ const SidebarContainer = memo(function SidebarContainer({}) {
 });
 
 const GameLayout = memo(function GameLayout({}) {
+  const isMobile = useIsMobile();
+
+  if (isMobile === null) return null;
+  if (isMobile) return <MobilePlayerLayout />;
+
   return (
     <div className="h-screen flex flex-row divide-x divide-dashed bg-slate-900'">
       {/* Main content area */}

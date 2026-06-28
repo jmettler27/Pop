@@ -31,24 +31,24 @@ export default function NaguiPlayerController({ chooserTeamId, gameQuestion }: N
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-3">
-      {gameQuestion.option !== null && (
-        <span className="2xl:text-4xl font-bold">
-          <NaguiPlayerOptionHelperText gameQuestion={gameQuestion} />
-        </span>
-      )}
       {gameQuestion.option === null && (
         <>
-          <span className="2xl:text-4xl font-bold">
+          <span className="text-xl 2xl:text-4xl font-bold">
             <GameChooserHelperText chooserTeamId={chooserTeamId} />
           </span>
           {isChooser && <NaguiChooserController />}
         </>
       )}
+      {gameQuestion.option !== null && (
+        <span className="text-xl 2xl:text-4xl font-bold">
+          <NaguiPlayerOptionHelperText gameQuestion={gameQuestion} />
+        </span>
+      )}
     </div>
   );
 }
 
-function NaguiChooserController() {
+export function NaguiChooserController() {
   const game = useGame();
   const user = useUser();
 

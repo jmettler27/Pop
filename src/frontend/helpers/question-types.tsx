@@ -19,12 +19,12 @@ import { RoundType } from '@/models/rounds/round-type';
 
 interface QuestionTypeIconProps {
   questionType: QuestionType;
-  fontSize?: string | number;
+  fontSize?: string | number | Record<string, string | number>;
 }
 
 interface RoundTypeIconProps {
   roundType: RoundType;
-  fontSize?: string | number;
+  fontSize?: string | number | Record<string, string | number>;
 }
 
 export function QuestionTypeIcon({ questionType, fontSize = 'small' }: QuestionTypeIconProps) {

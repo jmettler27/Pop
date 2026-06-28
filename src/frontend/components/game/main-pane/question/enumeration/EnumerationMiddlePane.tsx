@@ -8,7 +8,7 @@ import ErrorScreen from '@/frontend/components/ErrorScreen';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import NoteButton from '@/frontend/components/game/NoteButton';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import { QuestionTypeIcon } from '@/frontend/helpers/question_types';
+import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -48,7 +48,7 @@ function EnumerationQuestionHeader({ baseQuestion }: { baseQuestion: Enumeration
     <div className="flex flex-col items-center justify-center space-y-2">
       <div className="flex flex-row items-center justify-center space-x-1">
         <QuestionTypeIcon questionType={baseQuestion.type} fontSize={40} />
-        <h1 className="2xl:text-5xl">
+        <h1 className="text-xs md:text-xl 2xl:text-5xl">
           {topicToEmoji(baseQuestion.topic as Topic)}{' '}
           <strong>
             {questionTypeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
@@ -56,7 +56,7 @@ function EnumerationQuestionHeader({ baseQuestion }: { baseQuestion: Enumeration
         </h1>
       </div>
       <div className="flex flex-row items-center justify-center space-x-1">
-        <h2 className="2xl:text-4xl">{baseQuestion.title}</h2>
+        <h2 className="text-xs md:text-lg 2xl:text-4xl">{baseQuestion.title}</h2>
         {baseQuestion.note && <NoteButton note={baseQuestion.note} />}
       </div>
     </div>
@@ -69,7 +69,7 @@ function EnumerationQuestionObjective({ baseQuestion }: { baseQuestion: Enumerat
     ? intl.formatMessage(messages.exactly)
     : intl.formatMessage(messages.atLeast);
   return (
-    <span className="2xl:text-3xl text-yellow-300">
+    <span className="text-xs md:text-lg 2xl:text-3xl text-yellow-300">
       {intl.formatMessage(messages.thereAre)} {qualifier} <strong>{baseQuestion.answer?.length}</strong>{' '}
       {intl.formatMessage(messages.answers)}
     </span>

@@ -11,13 +11,9 @@ import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/qu
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
+import { Chooser } from '@/models/chooser';
 import { GameNaguiQuestion } from '@/models/questions/nagui';
 import { ParticipantRole } from '@/models/users/participant';
-
-interface Chooser {
-  chooserOrder: string[];
-  chooserIdx: number;
-}
 
 export default function NaguiBottomPane() {
   const gameRepositories = useGameRepositories();

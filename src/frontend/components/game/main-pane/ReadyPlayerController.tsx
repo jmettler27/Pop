@@ -130,7 +130,7 @@ function ReadyPlayerHeader({ isLastQuestion }: ReadyPlayerHeaderProps) {
   }
 
   if ((ready as { numReady?: number }).numReady === (ready as { numPlayers?: number }).numPlayers) {
-    return <span className="2xl:text-4xl">Letzgo! 🚀</span>;
+    return <span className="text-center text-xl 2xl:text-3xl">Letzgo! 🚀</span>;
   }
 
   const b = (chunks: ReactNode[]) => <strong>{keyChunks(chunks)}</strong>;
@@ -145,12 +145,12 @@ function ReadyPlayerHeader({ isLastQuestion }: ReadyPlayerHeaderProps) {
             ? messages.hotForQuestionEndLast
             : messages.hotForQuestionEnd;
     if (msg) {
-      return <span className="2xl:text-4xl">{fmt(intl.formatMessage, msg, { b })}</span>;
+      return <span className="text-center text-xl 2xl:text-3xl">{fmt(intl.formatMessage, msg, { b })}</span>;
     }
   }
 
   return (
-    <span className="2xl:text-4xl">
+    <span className="text-center text-xl 2xl:text-3xl">
       {intl.formatMessage(messages.waitingForPlayers)} ({(ready as { numReady?: number }).numReady}/
       {(ready as { numPlayers?: number }).numPlayers})
     </span>

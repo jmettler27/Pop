@@ -12,6 +12,7 @@ import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
+import { Chooser } from '@/models/chooser';
 import { GameMatchingQuestion } from '@/models/questions/matching';
 import { QuestionType } from '@/models/questions/question-type';
 import { MatchingRound } from '@/models/rounds/matching';
@@ -23,11 +24,6 @@ const messages = defineMessages('frontend.game.bottom.MatchingBottomPane', {
   mistake: 'mistake',
   mistakes: 'mistakes',
 });
-
-interface Chooser {
-  chooserOrder: string[];
-  chooserIdx: number;
-}
 
 export default function MatchingBottomPane() {
   const gameRepositories = useGameRepositories();

@@ -8,6 +8,7 @@ import {
   DragEndEvent,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
@@ -44,6 +45,7 @@ import {
 } from '@/frontend/components/game/main-pane/question/reordering/ReorderingCommon';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
+import useIsMobile from '@/frontend/hooks/useIsMobile';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -58,15 +60,23 @@ interface ReorderingPlayerPaneProps {
 
 export default function ReorderingPlayerPane({ baseQuestion, gameQuestion, randomMapping }: ReorderingPlayerPaneProps) {
   const game = useGame();
+  const isMobile = useIsMobile();
 
   if (!game) return null;
 
   return (
     <div className="flex flex-col h-full items-center">
-      <div className="h-[15%] w-full flex flex-col items-center justify-center">
-        <ReorderingQuestionHeader baseQuestion={baseQuestion} />
-      </div>
-      <div className="h-[85%] w-full flex flex-col items-center justify-center overflow-hidden">
+      {!isMobile && (
+        <div className="h-[15%] w-full flex flex-col items-center justify-center">
+          <ReorderingQuestionHeader baseQuestion={baseQuestion} />
+        </div>
+      )}
+      <div
+        className={clsx(
+          'w-full flex flex-col items-center justify-center overflow-hidden',
+          isMobile ? 'h-full' : 'h-[85%]'
+        )}
+      >
         {game.status === GameStatus.QUESTION_ACTIVE && (
           <ReorderingPlayerActiveView
             baseQuestion={baseQuestion}
@@ -93,11 +103,13 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
   const game = useGame();
   const user = useUser();
   const myTeam = useTeam();
+  const isMobile = useIsMobile();
   const [orderedIndices, setOrderedIndices] = useState<number[]>(randomMapping);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
@@ -127,7 +139,6 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
   };
 
   const orderings = gameQuestion.orderings ?? [];
-  // Check if this team has already submitted
   const teamOrdering = myTeam ? orderings.find((o) => o.teamId === myTeam) : undefined;
   const teamSubmitted = !!teamOrdering;
   const teamSubmission = teamOrdering?.ordering;
@@ -141,7 +152,12 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
   if (teamSubmitted && teamSubmission) {
     return (
       <div className="h-full w-full flex flex-col items-center justify-center p-4 space-y-4">
-        <List className="rounded-lg w-1/2 max-h-[60vh] overflow-y-auto mb-3 bg-white dark:bg-slate-900">
+        <List
+          className={clsx(
+            'rounded-lg max-h-[60vh] overflow-y-auto mb-3 bg-white dark:bg-slate-900',
+            isMobile ? 'w-[90vw]' : 'w-1/2'
+          )}
+        >
           {teamSubmission.map((idx: number, displayOrder: number) => (
             <ListItemButton key={idx} divider={displayOrder !== teamSubmission.length - 1} disabled>
               <Typography variant="h6" className="flex items-center">
@@ -163,7 +179,7 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
   }
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center py-4">
+    <div className={clsx('h-full w-full flex flex-col items-center py-4', isMobile ? 'gap-3' : 'justify-center')}>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -171,7 +187,12 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
         modifiers={[restrictToVerticalAxis, restrictToFirstScrollableAncestor]}
       >
         <SortableContext items={orderedIndices} strategy={verticalListSortingStrategy}>
-          <List className="rounded-2xl w-[55vw] max-h-[60vh] overflow-y-auto mb-3 bg-slate-900/70 p-2 shadow-lg ring-1 ring-slate-700/70">
+          <List
+            className={clsx(
+              'rounded-2xl w-[92vw] md:w-[55vw] overflow-y-auto mb-3 bg-slate-900/70 p-2 shadow-lg ring-1 ring-slate-700/70',
+              isMobile ? 'max-h-[75dvh]' : 'max-h-[60vh]'
+            )}
+          >
             {orderedIndices.map((idx: number, displayOrder: number) => (
               <ReorderingItemDraggable
                 key={idx}
@@ -233,7 +254,7 @@ interface ReorderingItemDraggableProps {
   disabled: boolean;
 }
 
-function ReorderingItemDraggable({ itemIdx, displayOrder, item, isLast, disabled }: ReorderingItemDraggableProps) {
+function ReorderingItemDraggable({ itemIdx, displayOrder, item, disabled }: ReorderingItemDraggableProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: itemIdx,
     disabled,
@@ -243,11 +264,12 @@ function ReorderingItemDraggable({ itemIdx, displayOrder, item, isLast, disabled
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    touchAction: 'none' as const,
   };
 
   return (
     <div className="flex items-center mb-2">
-      <div className="w-10 pr-2 text-right font-bold text-lg text-slate-400 dark:text-slate-500">
+      <div className="w-7 md:w-10 pr-2 text-right font-bold text-sm md:text-xl text-slate-400 dark:text-slate-500">
         {displayOrder + 1}.
       </div>
       <div
@@ -270,7 +292,7 @@ function ReorderingItemDraggable({ itemIdx, displayOrder, item, isLast, disabled
             border: '1px solid',
             borderColor: '#1f2937',
             boxShadow: '0 6px 16px rgba(2, 6, 23, 0.35)',
-            py: 1.25,
+            py: { xs: 0.75, md: 1.25 },
             '&.Mui-disabled': {
               opacity: 1.0,
             },
@@ -281,8 +303,11 @@ function ReorderingItemDraggable({ itemIdx, displayOrder, item, isLast, disabled
           }}
         >
           <div className="flex items-center w-full">
-            <DragIndicatorIcon className="text-slate-500 mr-3" fontSize="small" />
-            <Typography variant="h6" className="flex items-center text-slate-100">
+            <DragIndicatorIcon className="text-slate-500 mr-2" fontSize="small" />
+            <Typography
+              className="flex items-center text-slate-100"
+              sx={{ fontSize: { xs: '0.9rem', md: '1.25rem' }, lineHeight: 1.3 }}
+            >
               {item?.title}
             </Typography>
           </div>

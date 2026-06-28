@@ -10,6 +10,7 @@ import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import defineMessages from '@/frontend/i18n/defineMessages';
+import { Chooser } from '@/models/chooser';
 import { QuestionType } from '@/models/questions/question-type';
 import { ParticipantRole } from '@/models/users/participant';
 
@@ -17,11 +18,6 @@ const messages = defineMessages('frontend.game.bottom.OddOneOutBottomPane', {
   youCanGo: 'You can go',
   waitForAuth: 'Wait for your authorization',
 });
-
-interface Chooser {
-  chooserOrder: string[];
-  chooserIdx: number;
-}
 
 export default function OddOneOutBottomPane() {
   const gameRepositories = useGameRepositories();
