@@ -37,7 +37,7 @@
     "emoji-picker-react": "^4.19.1",
     "emoji-regex": "^10.3.0",
     "firebase": "^12.13.0",
-    "firebase-admin": "^13.9.0",
+    "firebase-admin": "^14.0.0",
     "formik": "^2.4.9",
     "next": "^16.2.7",
     "next-auth": "^4.24.13",
