@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -43,24 +43,28 @@ export default function SubmitMatchDialog({
   const [dialogOpen, setDialogOpen] = useState(false);
 
   // Closes the dialog when no longer chooser (i.e. other player in team has submitted)
-  useEffect(() => {
-    if (dialogOpen && myRole === ParticipantRole.PLAYER && !isChooser) {
+  const shouldAutoClose = dialogOpen && myRole === ParticipantRole.PLAYER && !isChooser;
+  const [prevShouldAutoClose, setPrevShouldAutoClose] = useState(shouldAutoClose);
+  if (shouldAutoClose !== prevShouldAutoClose) {
+    setPrevShouldAutoClose(shouldAutoClose);
+    if (shouldAutoClose) {
       setEdges([]);
       setNewEdgeSource(null);
       setDialogOpen(false);
     }
-  }, [isChooser, myRole, dialogOpen, setEdges, setNewEdgeSource]);
+  }
 
-  useEffect(() => {
-    if (
-      matchIsComplete(
-        edges.map((e) => ({ sourceId: e.from, targetId: e.to })),
-        numCols
-      )
-    ) {
+  const isMatchComplete = matchIsComplete(
+    edges.map((e) => ({ sourceId: e.from, targetId: e.to })),
+    numCols
+  );
+  const [prevIsMatchComplete, setPrevIsMatchComplete] = useState(isMatchComplete);
+  if (isMatchComplete !== prevIsMatchComplete) {
+    setPrevIsMatchComplete(isMatchComplete);
+    if (isMatchComplete) {
       setDialogOpen(true);
     }
-  }, [edges, numCols]);
+  }
 
   const handleMatchCancel = () => {
     setEdges([]);

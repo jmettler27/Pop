@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 
 import { Box, CircularProgress, Tab, Tabs } from '@mui/material';
@@ -36,13 +36,13 @@ function ProgressTabPanelMainContent({ game }: { game: Record<string, unknown> }
   const [value, setValue] = useState(0);
   const intl = useIntl();
 
-  useEffect(() => {
-    if (!game.currentRound || game.status === 'game_home') {
-      setValue(0);
-      return;
-    }
-    setValue(1);
-  }, [game.status, game.currentRound]);
+  const [prevGameStatus, setPrevGameStatus] = useState(game.status);
+  const [prevGameCurrentRound, setPrevGameCurrentRound] = useState(game.currentRound);
+  if (game.status !== prevGameStatus || game.currentRound !== prevGameCurrentRound) {
+    setPrevGameStatus(game.status);
+    setPrevGameCurrentRound(game.currentRound);
+    setValue(!game.currentRound || game.status === 'game_home' ? 0 : 1);
+  }
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);

@@ -432,7 +432,10 @@ function SearchQuestionDataGridImpl({
   const { baseQuestions, baseQuestionsLoading, baseQuestionsError } = questionRepo.useQuestionsOnce(true);
 
   // Stabilize callback reference to prevent unnecessary child re-renders
-  const memoizedOnSelectionChange = useCallback(onQuestionSelectionModelChange, [onQuestionSelectionModelChange]);
+  const memoizedOnSelectionChange = useCallback(
+    (model: GridRowSelectionModel) => onQuestionSelectionModelChange(model),
+    [onQuestionSelectionModelChange]
+  );
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: 20,
