@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
@@ -94,15 +94,18 @@ export function OddOneOutProposalList({
   });
 
   const [expandedIdx, setExpandedIdx] = useState<number | false>(false);
+  const [prevSelectedItems, setPrevSelectedItems] = useState(selectedItems);
+  const [prevStatus, setPrevStatus] = useState(game?.status);
 
-  useEffect(() => {
-    if (!game) return;
+  if (game && (selectedItems !== prevSelectedItems || game.status !== prevStatus)) {
+    setPrevSelectedItems(selectedItems);
+    setPrevStatus(game.status);
     if (game.status === GameStatus.QUESTION_END) {
       setExpandedIdx(baseQuestion.answerIdx ?? false);
     } else if (selectedItems.length > 0) {
       setExpandedIdx(selectedItems[selectedItems.length - 1]!.idx);
     }
-  }, [selectedItems, game?.status, baseQuestion.answerIdx, game]);
+  }
 
   const proposalIsExpanded = (origIdx: number) => origIdx === expandedIdx;
   const handleAccordionChange = (origIdx: number) => {

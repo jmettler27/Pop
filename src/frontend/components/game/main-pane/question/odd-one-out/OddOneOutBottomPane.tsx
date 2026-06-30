@@ -60,8 +60,16 @@ function OddOneOutController({ chooser }: { chooser: Chooser }) {
   );
 }
 
-function OddOneOutChooserController() {
+export function OddOneOutChooserStatusText({ authorized }: { authorized: boolean }) {
   const intl = useIntl();
+  return authorized ? (
+    <span className="text-xl 2xl:text-3xl text-green-500 font-bold">👍 {intl.formatMessage(messages.youCanGo)}</span>
+  ) : (
+    <span className="text-xl 2xl:text-3xl text-yellow-500">🤨 {intl.formatMessage(messages.waitForAuth)}</span>
+  );
+}
+
+function OddOneOutChooserController() {
   const gameRepositories = useGameRepositories();
   if (!gameRepositories) return null;
   const { timerRepo } = gameRepositories;
@@ -71,11 +79,7 @@ function OddOneOutChooserController() {
     return <></>;
   }
 
-  return timer.authorized ? (
-    <span className="text-3xl text-green-500 font-bold">👍 {intl.formatMessage(messages.youCanGo)}</span>
-  ) : (
-    <span className="text-3xl text-yellow-500">🤨 {intl.formatMessage(messages.waitForAuth)}</span>
-  );
+  return <OddOneOutChooserStatusText authorized={timer.authorized} />;
 }
 
 function OddOneOutOrganizerController() {
