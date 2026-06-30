@@ -308,12 +308,6 @@ function EnterGuessSteps({ onSubmit, validationSchema }: StepProps) {
     ? replaceSubstrings(values.quote, '_', values.quoteParts)
     : values.quote;
 
-  const ToGuessArrayErrors = () =>
-    typeof errors.toGuess === 'string' && <StyledErrorMessage>{errors.toGuess}</StyledErrorMessage>;
-
-  const QuotePartsArrayErrors = () =>
-    typeof errors.quoteParts === 'string' && <StyledErrorMessage>{errors.quoteParts}</StyledErrorMessage>;
-
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
       <div className="flex flex-col w-full space-y-2">
@@ -355,7 +349,7 @@ function EnterGuessSteps({ onSubmit, validationSchema }: StepProps) {
           {QuotePartElement.elementToEmoji()} {intl.formatMessage(messages.parts)}
         </label>
       </div>
-      <ToGuessArrayErrors />
+      {typeof errors.toGuess === 'string' && <StyledErrorMessage>{errors.toGuess}</StyledErrorMessage>}
 
       {/* Only display this if quote is checked */}
       {values.toGuess.includes('quote') && (
@@ -393,7 +387,7 @@ function EnterGuessSteps({ onSubmit, validationSchema }: StepProps) {
             )}
           </FieldArray>
 
-          <QuotePartsArrayErrors />
+          {typeof errors.quoteParts === 'string' && <StyledErrorMessage>{errors.quoteParts}</StyledErrorMessage>}
         </Box>
       )}
     </WizardStep>

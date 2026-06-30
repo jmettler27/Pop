@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import AddIcon from '@mui/icons-material/Add';
@@ -17,7 +17,7 @@ import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopi
 import { MyTextInput, StyledErrorMessage } from '@/frontend/components/common/StyledFormComponents';
 import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
 import { UploadImage } from '@/frontend/components/common/UploadFile';
-import { getFileFromRef, imageFileSchema } from '@/frontend/helpers/forms/files';
+import { imageFileSchema } from '@/frontend/helpers/forms/files';
 import { numCharsIndicator, requiredStringInArrayFieldIndicator, stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
 import { topicSchema } from '@/frontend/helpers/forms/topics';
@@ -59,11 +59,11 @@ export default function SubmitLabellingQuestionForm({ userId, ...props }: Questi
   const q = props.questionToEdit as Record<string, unknown> | undefined;
 
   const fileRef = useRef<HTMLInputElement>(null);
+  const [image, setImage] = useState<File | null>(null);
 
   const [submitLabelQuestion, isSubmitting] = useAsyncAction(
-    async (values: Record<string, string>, ref: React.RefObject<HTMLInputElement | null>) => {
+    async (values: Record<string, string>, image: File | null) => {
       try {
-        const image = getFileFromRef(ref);
         if (!image && !q) {
           throw new Error('No image file');
         }
@@ -103,7 +103,7 @@ export default function SubmitLabellingQuestionForm({ userId, ...props }: Questi
     topic: topicSchema(),
     title: stringSchema(LabellingQuestion.TITLE_MAX_LENGTH),
     note: stringSchema(LabellingQuestion.NOTE_MAX_LENGTH, false),
-    files: imageFileSchema(fileRef, !q),
+    files: imageFileSchema(image, !q),
     labels: labelsSchema(),
   });
 
@@ -129,7 +129,7 @@ export default function SubmitLabellingQuestionForm({ userId, ...props }: Questi
             }
       }
       onSubmit={async (values) => {
-        await submitLabelQuestion(values as unknown as Record<string, string>, fileRef);
+        await submitLabelQuestion(values as unknown as Record<string, string>, image);
         if (props.inSubmitPage) {
           router.push('/submit/');
         } else if (props.inGameEditor) {
@@ -167,6 +167,8 @@ export default function SubmitLabellingQuestionForm({ userId, ...props }: Questi
           name="files"
           validationSchema={validationSchema}
           existingUrl={q?.image as string | undefined}
+          image={image}
+          onFileChange={setImage}
         />
 
         <EnterLabels validationSchema={validationSchema} />
@@ -187,9 +189,6 @@ function EnterLabels({ validationSchema }: EnterLabelsProps) {
 
   const values = formik.values;
   const errors = formik.errors;
-
-  const ItemArrayErrors = () =>
-    typeof errors.labels === 'string' && <StyledErrorMessage>{errors.labels}</StyledErrorMessage>;
 
   const ItemError = ({ index }: { index: number }) => {
     const [, meta] = useField('labels.' + index);
@@ -241,7 +240,7 @@ function EnterLabels({ validationSchema }: EnterLabelsProps) {
         )}
       </FieldArray>
 
-      <ItemArrayErrors />
+      {typeof errors.labels === 'string' && <StyledErrorMessage>{errors.labels}</StyledErrorMessage>}
     </>
   );
 }

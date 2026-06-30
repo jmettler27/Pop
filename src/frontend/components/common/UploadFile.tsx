@@ -42,19 +42,28 @@ interface UploadFileProps {
   fileRef?: RefObject<HTMLInputElement | null>;
   name: string;
   id?: string;
+  onFileChange?: (file: File | null) => void;
   [key: string]: unknown;
 }
 
 // https://mui.com/material-ui/react-button/#file-upload
-const UploadFile = ({ fileRef, ...props }: UploadFileProps) => {
+const UploadFile = ({ fileRef, onFileChange, ...props }: UploadFileProps) => {
   const [field, meta] = useField(props as { name: string });
 
   return (
     <>
       <Button component="label" variant="contained" startIcon={<CloudUploadIcon />}>
         Upload
-        {/* <input ref={fileRef} multiple={false} type="file" {...field} value={field.value || ''} /> */}
-        <VisuallyHiddenInput type="file" ref={fileRef} {...field} value={(field.value as string) || ''} />
+        <VisuallyHiddenInput
+          type="file"
+          ref={fileRef}
+          {...field}
+          value={(field.value as string) || ''}
+          onChange={(e) => {
+            field.onChange(e);
+            onFileChange?.(e.target.files?.[0] ?? null);
+          }}
+        />
       </Button>
       {meta.touched && meta.error && <div className="text-red-600">❌ {meta.error}</div>}
     </>
@@ -66,15 +75,21 @@ interface UploadImageProps {
   fileRef: RefObject<HTMLInputElement | null>;
   name: string;
   existingUrl?: string | null;
+  image: File | null;
+  onFileChange: (file: File | null) => void;
 }
 
-export function UploadImage({ validationSchema, fileRef, name, existingUrl = null }: UploadImageProps) {
+export function UploadImage({
+  validationSchema,
+  fileRef,
+  name,
+  existingUrl = null,
+  image,
+  onFileChange,
+}: UploadImageProps) {
   const intl = useIntl();
   const formik = useFormikContext();
   const [, meta] = useField(name);
-
-  const imageFiles = fileRef?.current?.files;
-  const image = imageFiles ? imageFiles[0] : null;
 
   return (
     <Box component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: '400px' }}>
@@ -105,6 +120,7 @@ export function UploadImage({ validationSchema, fileRef, name, existingUrl = nul
             startIcon={<CancelIcon />}
             onClick={() => {
               formik.setFieldValue(name, '');
+              onFileChange(null);
             }}
           >
             {intl.formatMessage(globalMessages.cancel)}
@@ -121,7 +137,7 @@ export function UploadImage({ validationSchema, fileRef, name, existingUrl = nul
           />
         )
       )}
-      <UploadFile name={name} fileRef={fileRef} />
+      <UploadFile name={name} fileRef={fileRef} onFileChange={onFileChange} />
     </Box>
   );
 }
@@ -131,15 +147,21 @@ interface UploadAudioProps {
   fileRef: RefObject<HTMLInputElement | null>;
   name?: string;
   existingUrl?: string | null;
+  audio: File | null;
+  onFileChange: (file: File | null) => void;
 }
 
-export function UploadAudio({ validationSchema, fileRef, name = 'files', existingUrl = null }: UploadAudioProps) {
+export function UploadAudio({
+  validationSchema,
+  fileRef,
+  name = 'files',
+  existingUrl = null,
+  audio,
+  onFileChange,
+}: UploadAudioProps) {
   const intl = useIntl();
   const formik = useFormikContext();
   const [, meta] = useField(name);
-
-  const audioFiles = fileRef?.current?.files;
-  const audio = audioFiles ? audioFiles[0] : null;
 
   return (
     <Box component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: '400px' }}>
@@ -164,6 +186,7 @@ export function UploadAudio({ validationSchema, fileRef, name = 'files', existin
             startIcon={<CancelIcon />}
             onClick={() => {
               formik.setFieldValue(name, '');
+              onFileChange(null);
             }}
           >
             {intl.formatMessage(globalMessages.cancel)}
@@ -172,7 +195,7 @@ export function UploadAudio({ validationSchema, fileRef, name = 'files', existin
       ) : (
         existingUrl && <audio src={existingUrl} controls />
       )}
-      <UploadFile name={name} fileRef={fileRef} />
+      <UploadFile name={name} fileRef={fileRef} onFileChange={onFileChange} />
     </Box>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import AddIcon from '@mui/icons-material/Add';
@@ -17,7 +17,7 @@ import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
 import { MyTextInput, StyledErrorMessage } from '@/frontend/components/common/StyledFormComponents';
 import { UploadImage } from '@/frontend/components/common/UploadFile';
-import { getFileFromRef, imageFileSchema } from '@/frontend/helpers/forms/files';
+import { imageFileSchema } from '@/frontend/helpers/forms/files';
 import { numCharsIndicator, requiredStringInArrayFieldIndicator, stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
 import { topicSchema } from '@/frontend/helpers/forms/topics';
@@ -108,15 +108,14 @@ export default function SubmitProgressiveCluesQuestionForm({ userId, ...props }:
   const q = props.questionToEdit as Record<string, unknown> | undefined;
 
   const fileRef = useRef<HTMLInputElement>(null);
+  const [image, setImage] = useState<File | null>(null);
 
   const [submitProgressiveCluesQuestion, isSubmitting] = useAsyncAction(
-    async (values: PCFormValues, ref: React.RefObject<HTMLInputElement | null>) => {
+    async (values: PCFormValues, image: File | null) => {
       try {
         const { files: _files, topic, lang, ...others } = values as typeof values & { topic: Topic; lang: Locale };
         const { title, clues, answer_title } = others;
 
-        // Get the file from the ref if it exists
-        const image = getFileFromRef(ref);
         const data = {
           details: { title, clues, answer: { title: answer_title } },
           type: QUESTION_TYPE,
@@ -169,7 +168,7 @@ export default function SubmitProgressiveCluesQuestionForm({ userId, ...props }:
             }
       }
       onSubmit={async (values) => {
-        await submitProgressiveCluesQuestion(values as PCFormValues, fileRef);
+        await submitProgressiveCluesQuestion(values as PCFormValues, image);
         if (props.inSubmitPage) {
           router.push('/submit');
         } else if (props.inGameEditor) {
@@ -201,10 +200,12 @@ export default function SubmitProgressiveCluesQuestionForm({ userId, ...props }:
       <SelectImageStep
         onSubmit={() => {}}
         validationSchema={Yup.object({
-          files: imageFileSchema(fileRef, false),
+          files: imageFileSchema(image, false),
         })}
         fileRef={fileRef}
         existingUrl={qAnswer?.image}
+        image={image}
+        onFileChange={setImage}
       />
     </Wizard>
   );
@@ -252,9 +253,6 @@ function EnterCluesStep({ onSubmit, validationSchema }: StepProps) {
   const values = formik.values;
   const errors = formik.errors;
 
-  // https://formik.org/docs/api/fieldarray#fieldarray-validation-gotchas
-  const ClueArrayErrors = () =>
-    typeof errors.clues === 'string' && <StyledErrorMessage>{errors.clues}</StyledErrorMessage>;
   const ClueError = ({ index }: { index: number }) => {
     const [, meta] = useField('clues.' + index);
     return (
@@ -308,7 +306,7 @@ function EnterCluesStep({ onSubmit, validationSchema }: StepProps) {
         )}
       </FieldArray>
 
-      <ClueArrayErrors />
+      {typeof errors.clues === 'string' && <StyledErrorMessage>{errors.clues}</StyledErrorMessage>}
     </WizardStep>
   );
 }
@@ -318,12 +316,28 @@ interface SelectImageStepProps {
   validationSchema: ObjectSchema<Record<string, unknown>>;
   fileRef: React.RefObject<HTMLInputElement | null>;
   existingUrl?: string;
+  image: File | null;
+  onFileChange: (file: File | null) => void;
 }
 
-function SelectImageStep({ onSubmit, validationSchema, fileRef, existingUrl }: SelectImageStepProps) {
+function SelectImageStep({
+  onSubmit,
+  validationSchema,
+  fileRef,
+  existingUrl,
+  image,
+  onFileChange,
+}: SelectImageStepProps) {
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
-      <UploadImage fileRef={fileRef} name="files" validationSchema={validationSchema} existingUrl={existingUrl} />
+      <UploadImage
+        fileRef={fileRef}
+        name="files"
+        validationSchema={validationSchema}
+        existingUrl={existingUrl}
+        image={image}
+        onFileChange={onFileChange}
+      />
     </WizardStep>
   );
 }

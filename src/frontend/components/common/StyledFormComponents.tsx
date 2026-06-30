@@ -67,6 +67,11 @@ export function MyTextInput({
   );
 }
 
+export function FieldError({ name }: { name: string }) {
+  const [, meta] = useField(name);
+  return meta.touched && meta.error ? <StyledErrorMessage>{meta.error}</StyledErrorMessage> : null;
+}
+
 interface MyCheckboxProps {
   children?: React.ReactNode;
   name: string;

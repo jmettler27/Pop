@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 
@@ -15,7 +15,7 @@ import { MyTextInput } from '@/frontend/components/common/StyledFormComponents';
 import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
 import { UploadImage } from '@/frontend/components/common/UploadFile';
 import { emojiCount, onlyEmojis } from '@/frontend/helpers/emojis';
-import { getFileFromRef, imageFileSchema } from '@/frontend/helpers/forms/files';
+import { imageFileSchema } from '@/frontend/helpers/forms/files';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
 import { topicSchema } from '@/frontend/helpers/forms/topics';
@@ -65,12 +65,11 @@ export default function SubmitEmojiQuestionForm({ userId, ...props }: QuestionFo
   const q = props.questionToEdit as Record<string, unknown> | undefined;
 
   const fileRef = useRef<HTMLInputElement>(null);
+  const [image, setImage] = useState<File | null>(null);
 
   const [submitEmojiQuestion, isSubmitting] = useAsyncAction(
-    async (values: Record<string, string>, ref: React.RefObject<HTMLInputElement | null>) => {
+    async (values: Record<string, string>, image: File | null) => {
       try {
-        const image = getFileFromRef(ref);
-
         const { topic, lang, title, clue, answer_title } = values as typeof values & { topic: Topic; lang: Locale };
         const data = {
           details: { title, clue, answer: { title: answer_title } },
@@ -105,7 +104,7 @@ export default function SubmitEmojiQuestionForm({ userId, ...props }: QuestionFo
     title: stringSchema(EmojiQuestion.TITLE_MAX_LENGTH),
     answer_title: stringSchema(EmojiQuestion.ANSWER_TITLE_MAX_LENGTH),
     clue: emojiClueSchema(),
-    files: imageFileSchema(fileRef, false),
+    files: imageFileSchema(image, false),
   });
 
   const qAnswer = q?.answer as Record<string, string> | undefined;
@@ -132,7 +131,7 @@ export default function SubmitEmojiQuestionForm({ userId, ...props }: QuestionFo
             }
       }
       onSubmit={async (values) => {
-        await submitEmojiQuestion(values, fileRef);
+        await submitEmojiQuestion(values, image);
         if (props.inSubmitPage) router.push('/submit');
         else if (props.inGameEditor) {
           props.onDialogClose?.();
@@ -178,7 +177,14 @@ export default function SubmitEmojiQuestionForm({ userId, ...props }: QuestionFo
         <EmojiPicker />
 
         {/* Image */}
-        <UploadImage fileRef={fileRef} name="files" validationSchema={validationSchema} existingUrl={qAnswer?.image} />
+        <UploadImage
+          fileRef={fileRef}
+          name="files"
+          validationSchema={validationSchema}
+          existingUrl={qAnswer?.image}
+          image={image}
+          onFileChange={setImage}
+        />
 
         <SubmitFormButton isSubmitting={isSubmitting} label={intl.formatMessage(questionMessages.submit)} />
       </Form>
@@ -196,14 +202,20 @@ function EmojiPicker() {
   const intl = useIntl();
   const formik = useFormikContext<{ clue: string }>();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [emojiData, setEmojiData] = React.useState<any>(undefined);
+  const [emojiData, setEmojiData] = React.useState<any>(() => (EMOJI_LOCALE_DATA[intl.locale] ? undefined : null));
+
+  const [prevLocale, setPrevLocale] = React.useState(intl.locale);
+  if (intl.locale !== prevLocale) {
+    setPrevLocale(intl.locale);
+    if (!EMOJI_LOCALE_DATA[intl.locale]) {
+      setEmojiData(null);
+    }
+  }
 
   React.useEffect(() => {
     const loader = EMOJI_LOCALE_DATA[intl.locale];
     if (loader) {
       loader().then((mod) => setEmojiData(mod.default));
-    } else {
-      setEmojiData(null);
     }
   }, [intl.locale]);
 

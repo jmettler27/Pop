@@ -215,9 +215,6 @@ function EnterChoicesStep({ onSubmit, validationSchema }: StepProps) {
   const values = formik.values;
   const errors = formik.errors;
 
-  const ChoiceArrayErrors = () =>
-    typeof errors.choices === 'string' && <StyledErrorMessage>{errors.choices}</StyledErrorMessage>;
-
   const ChoiceError = ({ index }: { index: number }) => {
     const [, meta] = useField(`choices.${index}`);
     return (
@@ -253,7 +250,7 @@ function EnterChoicesStep({ onSubmit, validationSchema }: StepProps) {
           </div>
         )}
       </FieldArray>
-      <ChoiceArrayErrors />
+      {typeof errors.choices === 'string' && <StyledErrorMessage>{errors.choices}</StyledErrorMessage>}
 
       <MySelect
         label={intl.formatMessage(globalMessages.correctProposalQuestion)}

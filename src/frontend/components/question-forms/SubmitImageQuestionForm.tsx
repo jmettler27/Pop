@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { Form, Formik } from 'formik';
@@ -12,7 +12,7 @@ import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopi
 import { MyTextInput } from '@/frontend/components/common/StyledFormComponents';
 import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
 import { UploadImage } from '@/frontend/components/common/UploadFile';
-import { getFileFromRef, imageFileSchema } from '@/frontend/helpers/forms/files';
+import { imageFileSchema } from '@/frontend/helpers/forms/files';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
 import { topicSchema } from '@/frontend/helpers/forms/topics';
@@ -47,11 +47,11 @@ export default function SubmitImageQuestionForm({ userId, ...props }: QuestionFo
   const q = props.questionToEdit as Record<string, unknown> | undefined;
 
   const fileRef = useRef<HTMLInputElement>(null);
+  const [image, setImage] = useState<File | null>(null);
 
   const [submitImageQuestion, isSubmitting] = useAsyncAction(
-    async (values: Record<string, string>, ref: React.RefObject<HTMLInputElement | null>) => {
+    async (values: Record<string, string>, image: File | null) => {
       try {
-        const image = getFileFromRef(ref);
         if (!image && !q) {
           throw new Error('No image file');
         }
@@ -97,7 +97,7 @@ export default function SubmitImageQuestionForm({ userId, ...props }: QuestionFo
     title: stringSchema(ImageQuestion.TITLE_MAX_LENGTH),
     answer_description: stringSchema(ImageQuestion.ANSWER_DESCRIPTION_MAX_LENGTH, false),
     answer_source: stringSchema(ImageQuestion.ANSWER_SOURCE_MAX_LENGTH),
-    files: imageFileSchema(fileRef, !q),
+    files: imageFileSchema(image, !q),
   });
 
   const qAnswer = q?.answer as Record<string, string> | undefined;
@@ -124,7 +124,7 @@ export default function SubmitImageQuestionForm({ userId, ...props }: QuestionFo
             }
       }
       onSubmit={async (values) => {
-        await submitImageQuestion(values, fileRef);
+        await submitImageQuestion(values, image);
         if (props.inSubmitPage) {
           router.push('/submit/');
         } else if (props.inGameEditor) {
@@ -171,6 +171,8 @@ export default function SubmitImageQuestionForm({ userId, ...props }: QuestionFo
           name="files"
           validationSchema={validationSchema}
           existingUrl={q?.image as string | undefined}
+          image={image}
+          onFileChange={setImage}
         />
 
         <SubmitFormButton isSubmitting={isSubmitting} label={intl.formatMessage(questionMessages.submit)} />
