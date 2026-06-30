@@ -37,7 +37,7 @@ export default function RoundMiddlePane() {
     return <></>;
   }
 
-  const SelectedRoundBody = () => {
+  const selectedRoundBody = () => {
     switch (game.status) {
       case GameStatus.ROUND_START:
         return <RoundStartBody round={round} />;
@@ -53,9 +53,7 @@ export default function RoundMiddlePane() {
       <div className="flex h-[10%] w-full items-center justify-center mt-3">
         <RoundHeader round={round} />
       </div>
-      <div className="flex h-[90%] w-full items-center justify-center">
-        <SelectedRoundBody />
-      </div>
+      <div className="flex h-[90%] w-full items-center justify-center">{selectedRoundBody()}</div>
     </div>
   );
 }

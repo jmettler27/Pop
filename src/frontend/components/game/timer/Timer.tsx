@@ -64,6 +64,18 @@ export default function Timer({ timer, serverTimeOffset, onTimerEnd = () => {} }
 
   const [displayMs, setDisplayMs] = useState(computeDisplayMs);
 
+  // RESET/STOP/END don't run an interval, so keep displayMs in sync with the computed value directly during render.
+  const isIdle =
+    timer.status === TimerStatus.RESET || timer.status === TimerStatus.STOP || timer.status === TimerStatus.END;
+  const idleDisplayMs = isIdle ? computeDisplayMs() : null;
+  const [prevIdleDisplayMs, setPrevIdleDisplayMs] = useState(idleDisplayMs);
+  if (idleDisplayMs !== prevIdleDisplayMs) {
+    setPrevIdleDisplayMs(idleDisplayMs);
+    if (idleDisplayMs !== null) {
+      setDisplayMs(idleDisplayMs);
+    }
+  }
+
   const clearTimer = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -77,19 +89,14 @@ export default function Timer({ timer, serverTimeOffset, onTimerEnd = () => {} }
     endFiredRef.current = false;
 
     if (timer.status === TimerStatus.RESET || timer.status === TimerStatus.STOP) {
-      setDisplayMs(computeDisplayMs());
       return;
     }
 
     if (timer.status === TimerStatus.END) {
-      setDisplayMs(timer.forward ? timer.duration * 1000 : 0);
       return;
     }
 
     if (timer.status === TimerStatus.START && timer.timestamp) {
-      // Set initial display value immediately
-      setDisplayMs(computeDisplayMs());
-
       intervalRef.current = setInterval(() => {
         const startMs = toMs(timer.timestamp);
         const elapsedMs = Date.now() - startMs + serverTimeOffset;

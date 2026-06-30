@@ -54,10 +54,8 @@ function ActiveBlindtestMainContent({ baseQuestion }: ActiveBlindtestMainContent
 
     if (game!.status === GameStatus.QUESTION_END) {
       audioRef.current.pause();
-      setIsPlaying(false);
     } else {
       audioRef.current.play();
-      setIsPlaying(true);
     }
   }, [game, volume]);
 
@@ -79,11 +77,9 @@ function ActiveBlindtestMainContent({ baseQuestion }: ActiveBlindtestMainContent
       } else {
         audioRef.current.play();
       }
-      setIsPlaying(!isPlaying);
     } else {
       audioRef.current.currentTime = 0;
       audioRef.current.play();
-      setIsPlaying(true);
     }
   };
 
@@ -128,6 +124,8 @@ function ActiveBlindtestMainContent({ baseQuestion }: ActiveBlindtestMainContent
             src={bq.audio}
             onLoadedMetadata={handleLoadedMetadata}
             onTimeUpdate={handleTimeUpdate}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
           />
 
           <Box sx={{ ml: 1.5, minWidth: 0 }}>

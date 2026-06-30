@@ -1,4 +1,4 @@
-import { memo, ReactNode, useEffect, useState } from 'react';
+import { memo, ReactNode, useState } from 'react';
 import { useParams } from 'next/navigation';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -48,14 +48,17 @@ interface RoundQuestionsProgressProps {
 
 export default function RoundQuestionsProgress({ game, round }: RoundQuestionsProgressProps) {
   const [expandedId, setExpandedId] = useState<string | null>(game.currentQuestion ?? null);
-
-  useEffect(() => {
+  const [prevGameCurrentQuestion, setPrevGameCurrentQuestion] = useState(game.currentQuestion);
+  const [prevGameStatus, setPrevGameStatus] = useState(game.status);
+  if (game.currentQuestion !== prevGameCurrentQuestion || game.status !== prevGameStatus) {
+    setPrevGameCurrentQuestion(game.currentQuestion);
+    setPrevGameStatus(game.status);
     if (game.status === GameStatus.ROUND_START || game.status === GameStatus.ROUND_END) {
       setExpandedId(null);
     } else {
       setExpandedId(game.currentQuestion ?? null);
     }
-  }, [game.currentQuestion, game.status]);
+  }
 
   const gameRepositories = useGameRepositories();
   if (!gameRepositories) return null;

@@ -145,7 +145,7 @@ const GameCard = ({ game }: GameCardProps) => {
       return isFull ? intl.formatMessage(messages.watchGame) : intl.formatMessage(messages.joinGame);
   };
 
-  const ButtonIcon = () => {
+  const buttonIcon = () => {
     if (myRole === ParticipantRole.PLAYER || myRole === ParticipantRole.ORGANIZER) return <PlayArrowIcon />;
     if (myRole === ParticipantRole.SPECTATOR) return isFull ? <VisibilityIcon /> : <LoginIcon />;
   };
@@ -217,7 +217,7 @@ const GameCard = ({ game }: GameCardProps) => {
           <JoinGameButton
             variant="outlined"
             color={buttonColor()}
-            endIcon={<ButtonIcon />}
+            endIcon={buttonIcon()}
             onClick={handleJoinClick}
             fullWidth
           >
