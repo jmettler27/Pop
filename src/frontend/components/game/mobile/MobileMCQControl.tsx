@@ -3,7 +3,6 @@
 import { useMemo } from 'react';
 
 import { CircularProgress, List, ListItemButton, ListItemText } from '@mui/material';
-import { useIntl } from 'react-intl';
 
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
@@ -15,18 +14,16 @@ import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
-import globalMessages from '@/frontend/i18n/globalMessages';
 import { Chooser } from '@/models/chooser';
 import { MCQQuestion } from '@/models/questions/mcq';
 import { QuestionType } from '@/models/questions/question-type';
 
 export default function MobileMCQControl() {
   const myTeam = useTeam();
-
   const game = useGame();
-  if (!game) return null;
-
   const gameRepositories = useGameRepositories();
+
+  if (!game) return null;
   if (!gameRepositories) return null;
 
   const gameQuestionRepo = new GameMCQQuestionRepository(game.id as string, game.currentRound as string);
@@ -55,18 +52,15 @@ export default function MobileMCQControl() {
   return (
     <div className="flex flex-col h-full">
       {isChooser ? (
-        <MobileMCQChooserController
-          chooserTeamId={chooserTeamId}
-          baseQuestion={baseQuestion as unknown as MCQQuestion}
-        />
+        <MobileMCQChooserControl chooserTeamId={chooserTeamId} baseQuestion={baseQuestion as unknown as MCQQuestion} />
       ) : (
-        <MobileMCQNonChooserController chooserTeamId={chooserTeamId} />
+        <MobileMCQNonChooserControl chooserTeamId={chooserTeamId} />
       )}
     </div>
   );
 }
 
-function MobileMCQNonChooserController({ chooserTeamId }: { chooserTeamId: string }) {
+function MobileMCQNonChooserControl({ chooserTeamId }: { chooserTeamId: string }) {
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-3">
       <span className="text-xl 2xl:text-4xl font-bold">
@@ -76,7 +70,7 @@ function MobileMCQNonChooserController({ chooserTeamId }: { chooserTeamId: strin
   );
 }
 
-function MobileMCQChooserController({
+function MobileMCQChooserControl({
   chooserTeamId,
   baseQuestion,
 }: {
