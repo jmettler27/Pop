@@ -11,6 +11,7 @@ import { selectChoice } from '@/backend/services/question/nagui/actions';
 import { shuffleIndices } from '@/backend/utils/arrays';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import { NaguiChooserController } from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerController';
+import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -18,24 +19,15 @@ import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { Chooser } from '@/models/chooser';
-import {
-  DuoNaguiOption,
-  GameNaguiQuestion,
-  HideNaguiOption,
-  NaguiQuestion,
-  SquareNaguiOption,
-} from '@/models/questions/nagui';
+import { DuoNaguiOption, GameNaguiQuestion, HideNaguiOption, NaguiQuestion } from '@/models/questions/nagui';
 import { QuestionType } from '@/models/questions/question-type';
-
-import NaguiPlayerOptionHelperText from './NaguiPlayerOptionHelperText';
 
 export default function MobileNaguiControl() {
   const myTeam = useTeam();
-
   const game = useGame();
-  if (!game) return null;
-
   const gameRepositories = useGameRepositories();
+
+  if (!game) return null;
   if (!gameRepositories) return null;
 
   const gameQuestionRepo = new GameNaguiQuestionRepository(game.id as string, game.currentRound as string);
@@ -64,13 +56,13 @@ export default function MobileNaguiControl() {
   return (
     <div className="flex flex-col h-full">
       {isChooser ? (
-        <MobileNaguiChooserController
+        <MobileNaguiChooserControl
           chooserTeamId={chooserTeamId}
           gameQuestion={gameQuestion as unknown as GameNaguiQuestion}
           baseQuestion={baseQuestion as unknown as NaguiQuestion}
         />
       ) : (
-        <MobileNaguiNonChooserController
+        <MobileNaguiNonChooserControl
           chooserTeamId={chooserTeamId}
           gameQuestion={gameQuestion as unknown as GameNaguiQuestion}
         />
@@ -79,7 +71,7 @@ export default function MobileNaguiControl() {
   );
 }
 
-function MobileNaguiNonChooserController({
+function MobileNaguiNonChooserControl({
   chooserTeamId,
   gameQuestion,
 }: {
@@ -102,7 +94,7 @@ function MobileNaguiNonChooserController({
   );
 }
 
-function MobileNaguiChooserController({
+function MobileNaguiChooserControl({
   chooserTeamId,
   gameQuestion,
   baseQuestion,

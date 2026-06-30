@@ -42,18 +42,16 @@ const nodeTextFontSize = (text: string, numCols: number): number => {
 // array of numCols*numRows objects { id, col, row, origRow, pos }
 export const generateShuffledNodePositions = (numCols: number, numRows: number): NodeData[][] =>
   GameMatchingQuestion.shuffleMatching(numCols, numRows).map((shuffledColumn, col) =>
-    shuffledColumn.map(
-      (row, origRow): NodeData => ({
-        id: `${origRow}_${col}`,
-        col,
-        origRow,
-        row,
-        pos: [
-          (initPosX(numCols) ?? 0) + (columnSpacing(numCols) ?? 50) * col,
-          (initPosY(numRows) ?? 30) + (rowSpacing(numRows) ?? 10) * row,
-        ],
-      })
-    )
+    shuffledColumn.map((row, origRow): NodeData => ({
+      id: `${origRow}_${col}`,
+      col,
+      origRow,
+      row,
+      pos: [
+        (initPosX(numCols) ?? 0) + (columnSpacing(numCols) ?? 50) * col,
+        (initPosY(numRows) ?? 30) + (rowSpacing(numRows) ?? 10) * row,
+      ],
+    }))
   );
 
 export const initPosX = (numCols: number): number => {

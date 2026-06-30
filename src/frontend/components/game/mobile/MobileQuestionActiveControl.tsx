@@ -1,24 +1,21 @@
 'use client';
 
-import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import GameChooserTeamAnnouncement from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
-import EnumerationController from '@/frontend/components/game/main-pane/question/enumeration/EnumerationController';
 import QuestionMiddlePane from '@/frontend/components/game/main-pane/question/QuestionMiddlePane';
 import MobileBuzzerControl from '@/frontend/components/game/mobile/MobileBuzzerControl';
+import MobileEnumerationControl from '@/frontend/components/game/mobile/MobileEnumerationControl';
+import MobileMatchingControl from '@/frontend/components/game/mobile/MobileMatchingControl';
+import MobileMCQControl from '@/frontend/components/game/mobile/MobileMCQControl';
+import MobileNaguiControl from '@/frontend/components/game/mobile/MobileNaguiControl';
 import RotateDevicePrompt from '@/frontend/components/game/mobile/RotateDevicePrompt';
 import useGame from '@/frontend/hooks/useGame';
 import useOrientation, { Orientation } from '@/frontend/hooks/useOrientation';
-import { EnumerationQuestion } from '@/models/questions/enumeration';
 import { QuestionType } from '@/models/questions/question-type';
-
-import MobileMCQControl from '../main-pane/question/mcq/MobileMCQControl';
-import MobileNaguiControl from '../main-pane/question/nagui/MobileNaguiControl';
 
 const LANDSCAPE_REQUIRED_TYPES = new Set<QuestionType>([QuestionType.MATCHING]);
 
 const MIDDLE_PANE_TYPES = new Set<QuestionType>([
   QuestionType.ESTIMATION,
-  QuestionType.MATCHING,
   QuestionType.ODD_ONE_OUT,
   QuestionType.REORDERING,
 ]);
@@ -60,6 +57,10 @@ export default function MobileQuestionActiveControl() {
     return <MobileEnumerationControl />;
   }
 
+  if (questionType === QuestionType.MATCHING) {
+    return <MobileMatchingControl />;
+  }
+
   if (questionType === QuestionType.MCQ) {
     return <MobileMCQControl />;
   }
@@ -73,24 +74,6 @@ export default function MobileQuestionActiveControl() {
       <span className="text-2xl font-bold text-white">
         <GameChooserTeamAnnouncement />
       </span>
-    </div>
-  );
-}
-
-function MobileEnumerationControl() {
-  const game = useGame();
-  if (!game) return null;
-
-  const baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(QuestionType.ENUMERATION);
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = baseQuestionRepo.useQuestionOnce(
-    game.currentQuestion as string
-  );
-
-  if (baseQuestionError || baseQuestionLoading || !baseQuestion) return null;
-
-  return (
-    <div className="h-full overflow-auto py-4">
-      <EnumerationController baseQuestion={baseQuestion as EnumerationQuestion} />
     </div>
   );
 }
