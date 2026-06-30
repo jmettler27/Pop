@@ -16,6 +16,7 @@ import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepCompon
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
 import {
+  FieldError,
   MyNumberInput,
   MyRadioGroup,
   MyTextInput,
@@ -325,22 +326,10 @@ function EnterAnswerItemsStep({ onSubmit, validationSchema }: StepProps) {
 
   const exampleAnswers = intl.locale === 'fr' ? ENUM_ANSWER_EXAMPLE['fr'] : ENUM_ANSWER_EXAMPLE['en'];
 
-  const ItemArrayErrors = () =>
-    typeof errors.answer === 'string' && <StyledErrorMessage>{errors.answer}</StyledErrorMessage>;
-
   const ItemError = ({ index }: { index: number }) => {
     const [, meta] = useField('answer.' + index);
     return (
       typeof errors.answer === 'object' &&
-      meta.touched &&
-      meta.error && <StyledErrorMessage>{meta.error}</StyledErrorMessage>
-    );
-  };
-
-  const MaxIsKnownError = () => {
-    const [, meta] = useField('maxIsKnown');
-    return (
-      typeof errors.maxIsKnown === 'string' &&
       meta.touched &&
       meta.error && <StyledErrorMessage>{meta.error}</StyledErrorMessage>
     );
@@ -395,8 +384,8 @@ function EnterAnswerItemsStep({ onSubmit, validationSchema }: StepProps) {
         )}
       </FieldArray>
 
-      <ItemArrayErrors />
-      <MaxIsKnownError />
+      {typeof errors.answer === 'string' && <StyledErrorMessage>{errors.answer}</StyledErrorMessage>}
+      <FieldError name="maxIsKnown" />
     </WizardStep>
   );
 }

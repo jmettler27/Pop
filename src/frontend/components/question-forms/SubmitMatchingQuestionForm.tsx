@@ -252,9 +252,6 @@ function EnterMatchesStep({ onSubmit }: { onSubmit: () => void }) {
   const values = formik.values;
   const errors = formik.errors;
 
-  const MatchArrayErrors = () =>
-    typeof errors.matches === 'string' && <StyledErrorMessage>{errors.matches}</StyledErrorMessage>;
-
   const MatchItemError = ({ col, row }: { col: number; row: number }) => {
     const matchErrors = errors.matches as (string[] | undefined)[] | undefined;
     return (
@@ -318,7 +315,7 @@ function EnterMatchesStep({ onSubmit }: { onSubmit: () => void }) {
         )}
       </FieldArray>
 
-      <MatchArrayErrors />
+      {typeof errors.matches === 'string' && <StyledErrorMessage>{errors.matches}</StyledErrorMessage>}
     </WizardStep>
   );
 }

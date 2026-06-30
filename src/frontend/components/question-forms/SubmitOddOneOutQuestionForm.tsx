@@ -254,9 +254,6 @@ function EnterItemsStep({ onSubmit, validationSchema }: StepProps) {
   const values = formik.values;
   const errors = formik.errors;
 
-  const ItemArrayErrors = () =>
-    typeof errors.items === 'string' && <StyledErrorMessage>{errors.items}</StyledErrorMessage>;
-
   const TitleError = ({ index }: { index: number }) => {
     const itemErrors = errors.items as (Yup.ValidationError | undefined)[] | undefined;
     return (
@@ -334,7 +331,7 @@ function EnterItemsStep({ onSubmit, validationSchema }: StepProps) {
         )}
       </FieldArray>
 
-      <ItemArrayErrors />
+      {typeof errors.items === 'string' && <StyledErrorMessage>{errors.items}</StyledErrorMessage>}
 
       {!errors.items && formik.touched.items && (
         <MySelect

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { Form, Formik } from 'formik';
@@ -13,7 +13,7 @@ import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopi
 import { MySelect, MyTextInput } from '@/frontend/components/common/StyledFormComponents';
 import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
 import { UploadAudio, UploadImage } from '@/frontend/components/common/UploadFile';
-import { audioFileSchema, getFileFromRef, imageFileSchema } from '@/frontend/helpers/forms/files';
+import { audioFileSchema, imageFileSchema } from '@/frontend/helpers/forms/files';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
 import { topicSchema } from '@/frontend/helpers/forms/topics';
@@ -59,17 +59,11 @@ export default function SubmitBlindtestQuestionForm({ userId, ...props }: Questi
   const q = props.questionToEdit as Record<string, unknown> | undefined;
 
   const [submitBlindtestQuestion, isSubmitting] = useAsyncAction(
-    async (
-      values: Record<string, string>,
-      imageFileRef: React.RefObject<HTMLInputElement | null>,
-      audioFileRef: React.RefObject<HTMLInputElement | null>
-    ) => {
+    async (values: Record<string, string>, image: File | null, audio: File | null) => {
       try {
-        const audio = getFileFromRef(audioFileRef);
         if (!audio && !q) {
           throw new Error('No audio file');
         }
-        const image = getFileFromRef(imageFileRef);
 
         const {
           audioFiles: _af,
@@ -116,6 +110,8 @@ export default function SubmitBlindtestQuestionForm({ userId, ...props }: Questi
 
   const imageFileRef = useRef<HTMLInputElement>(null);
   const audioFileRef = useRef<HTMLInputElement>(null);
+  const [image, setImage] = useState<File | null>(null);
+  const [audio, setAudio] = useState<File | null>(null);
 
   const validationSchema = Yup.object({
     lang: localeSchema(),
@@ -125,8 +121,8 @@ export default function SubmitBlindtestQuestionForm({ userId, ...props }: Questi
     answer_title: stringSchema(BlindtestQuestion.ANSWER_TITLE_MAX_LENGTH),
     answer_source: stringSchema(BlindtestQuestion.ANSWER_SOURCE_MAX_LENGTH),
     answer_author: stringSchema(BlindtestQuestion.ANSWER_AUTHOR_MAX_LENGTH, false),
-    imageFiles: imageFileSchema(imageFileRef, false),
-    audioFiles: audioFileSchema(audioFileRef, !q),
+    imageFiles: imageFileSchema(image, false),
+    audioFiles: audioFileSchema(audio, !q),
   });
 
   return (
@@ -159,7 +155,7 @@ export default function SubmitBlindtestQuestionForm({ userId, ...props }: Questi
       validationSchema={validationSchema}
       enableReinitialize
       onSubmit={async (values) => {
-        await submitBlindtestQuestion(values, imageFileRef, audioFileRef);
+        await submitBlindtestQuestion(values, image, audio);
         if (props.inSubmitPage) router.push('/submit');
         else if (props.inGameEditor) {
           props.onDialogClose?.();
@@ -221,6 +217,8 @@ export default function SubmitBlindtestQuestionForm({ userId, ...props }: Questi
           name="audioFiles"
           validationSchema={validationSchema}
           existingUrl={q?.audio as string | undefined}
+          audio={audio}
+          onFileChange={setAudio}
         />
 
         <UploadImage
@@ -228,6 +226,8 @@ export default function SubmitBlindtestQuestionForm({ userId, ...props }: Questi
           name="imageFiles"
           validationSchema={validationSchema}
           existingUrl={(q?.answer as Record<string, string> | undefined)?.image}
+          image={image}
+          onFileChange={setImage}
         />
 
         <SubmitFormButton isSubmitting={isSubmitting} label={intl.formatMessage(questionMessages.submit)} />
