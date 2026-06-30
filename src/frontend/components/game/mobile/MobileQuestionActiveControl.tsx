@@ -7,6 +7,7 @@ import MobileEnumerationControl from '@/frontend/components/game/mobile/MobileEn
 import MobileMatchingControl from '@/frontend/components/game/mobile/MobileMatchingControl';
 import MobileMCQControl from '@/frontend/components/game/mobile/MobileMCQControl';
 import MobileNaguiControl from '@/frontend/components/game/mobile/MobileNaguiControl';
+import MobileOddOneOutControl from '@/frontend/components/game/mobile/MobileOddOneOutControl';
 import RotateDevicePrompt from '@/frontend/components/game/mobile/RotateDevicePrompt';
 import useGame from '@/frontend/hooks/useGame';
 import useOrientation, { Orientation } from '@/frontend/hooks/useOrientation';
@@ -14,11 +15,7 @@ import { QuestionType } from '@/models/questions/question-type';
 
 const LANDSCAPE_REQUIRED_TYPES = new Set<QuestionType>([QuestionType.MATCHING]);
 
-const MIDDLE_PANE_TYPES = new Set<QuestionType>([
-  QuestionType.ESTIMATION,
-  QuestionType.ODD_ONE_OUT,
-  QuestionType.REORDERING,
-]);
+const MIDDLE_PANE_TYPES = new Set<QuestionType>([QuestionType.ESTIMATION, QuestionType.REORDERING]);
 
 const BUZZER_TYPES = new Set<QuestionType>([
   QuestionType.BASIC,
@@ -68,6 +65,11 @@ export default function MobileQuestionActiveControl() {
   if (questionType === QuestionType.NAGUI) {
     return <MobileNaguiControl />;
   }
+
+  if (questionType === QuestionType.ODD_ONE_OUT) {
+    return <MobileOddOneOutControl />;
+  }
+
   // BASIC: no digital buzzer — show who is playing this question
   return (
     <div className="flex items-center justify-center h-full p-6 text-center">
