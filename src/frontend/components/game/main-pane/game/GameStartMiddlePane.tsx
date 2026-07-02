@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-
 import { Avatar } from '@mui/material';
 import { useIntl } from 'react-intl';
 import QRCode from 'react-qr-code';
@@ -10,6 +8,7 @@ import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useHasMounted from '@/frontend/hooks/useHasMounted';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { GameRounds } from '@/models/games/game';
 import Team from '@/models/team';
@@ -112,11 +111,8 @@ export default function GameStartMiddlePane() {
 }
 
 function JoinQRCode({ gameId, scanToJoinLabel }: { gameId: string; scanToJoinLabel: string }) {
-  const [joinUrl, setJoinUrl] = useState('');
-
-  useEffect(() => {
-    setJoinUrl(`${window.location.origin}/join/${gameId}`);
-  }, [gameId]);
+  const hasMounted = useHasMounted();
+  const joinUrl = hasMounted ? `${window.location.origin}/join/${gameId}` : '';
 
   if (!joinUrl) return null;
 

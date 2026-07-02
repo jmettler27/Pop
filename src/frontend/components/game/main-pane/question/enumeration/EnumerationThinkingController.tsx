@@ -69,6 +69,10 @@ function AddBetForm({ baseQuestion, status }: { baseQuestion: EnumerationQuestio
   const user = useUser();
   const myTeam = useTeam();
 
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [myBet, setMyBet] = useState(0);
+  const [hasValidated, setHasValidated] = useState(false);
+
   const [handleBetValidate, isSubmitting] = useAsyncAction(async () => {
     if (!game || !user) return;
     const bet: EnumerationBet = {
@@ -81,10 +85,6 @@ function AddBetForm({ baseQuestion, status }: { baseQuestion: EnumerationQuestio
     setHasValidated(true);
     setDialogOpen(false);
   });
-
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [myBet, setMyBet] = useState(0);
-  const [hasValidated, setHasValidated] = useState(false);
 
   const gameQuestionRepo = new GameEnumerationQuestionRepository(
     game!.id as string,

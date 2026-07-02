@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
 export enum Orientation {
   PORTRAIT = 'portrait',
@@ -8,16 +8,15 @@ export enum Orientation {
 }
 
 export default function useOrientation(): Orientation | null {
-  const [orientation, setOrientation] = useState<Orientation | null>(null);
-
-  useEffect(() => {
+  const subscribe = (onChange: () => void) => {
     const mql = window.matchMedia('(orientation: portrait)');
-    setOrientation(mql.matches ? Orientation.PORTRAIT : Orientation.LANDSCAPE);
-    const handler = (e: MediaQueryListEvent) =>
-      setOrientation(e.matches ? Orientation.PORTRAIT : Orientation.LANDSCAPE);
-    mql.addEventListener('change', handler);
-    return () => mql.removeEventListener('change', handler);
-  }, []);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  };
 
-  return orientation;
+  const getSnapshot = () =>
+    window.matchMedia('(orientation: portrait)').matches ? Orientation.PORTRAIT : Orientation.LANDSCAPE;
+  const getServerSnapshot = () => null;
+
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }

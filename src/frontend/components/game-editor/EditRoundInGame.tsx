@@ -62,6 +62,7 @@ import {
 import { EditQuestionCard } from '@/frontend/components/game-editor/EditQuestionInRound';
 import { type Locale } from '@/frontend/helpers/locales';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useHasMounted from '@/frontend/hooks/useHasMounted';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameStatus } from '@/models/games/game-status';
@@ -123,7 +124,12 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({
 
   const [isReorderMode, setIsReorderMode] = useState(false);
   const [reorderedQuestions, setReorderedQuestions] = useState<string[]>([]);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(forceCollapse);
+  const [prevForceCollapse, setPrevForceCollapse] = useState(forceCollapse);
+  if (forceCollapse !== prevForceCollapse) {
+    setPrevForceCollapse(forceCollapse);
+    setIsCollapsed(forceCollapse);
+  }
 
   const [thinkingTimeAnchor, setThinkingTimeAnchor] = useState<HTMLElement | null>(null);
   const [thinkingTimeEditValue, setThinkingTimeEditValue] = useState('');
@@ -150,11 +156,6 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({
     setChallengeTimeEditValue(String((round as unknown as RoundWithTimes)?.challengeTime ?? ''));
     setChallengeTimeAnchor(event.currentTarget);
   };
-
-  // Sync with forceCollapse prop
-  useEffect(() => {
-    setIsCollapsed(forceCollapse);
-  }, [forceCollapse]);
 
   if (error || loading || !round) {
     return <></>;
@@ -447,10 +448,9 @@ function RoundTopicDistribution({ round }: RoundTopicDistributionProps) {
   const { questions: ids } = round;
 
   const [topics, setTopics] = useState<Record<string, number>>({});
-  const [isMounted, setIsMounted] = useState(false);
+  const isMounted = useHasMounted();
 
   useEffect(() => {
-    setIsMounted(true);
     fetchTopics(ids).then(
       (fetchedTopics) => {
         const topicDistribution = fetchedTopics.reduce<Record<string, number>>((acc, topic) => {
