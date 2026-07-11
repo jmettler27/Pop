@@ -4,7 +4,7 @@ import React from 'react';
 import { redirect, useParams, useRouter } from 'next/navigation';
 
 import { CircularProgress } from '@mui/material';
-import { Field, useField, useFormikContext } from 'formik';
+import { Field, useFormikContext } from 'formik';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
@@ -13,12 +13,7 @@ import type { AnyObjectSchema } from 'yup';
 import { joinGame } from '@/backend/services/join-game/actions';
 import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';
 import MyColorPicker from '@/frontend/components/common/MyColorPicker';
-import {
-  MyRadioGroup,
-  MySelect,
-  MyTextInput,
-  StyledErrorMessage,
-} from '@/frontend/components/common/StyledFormComponents';
+import { FieldError, MyRadioGroup, MySelect, MyTextInput } from '@/frontend/components/common/StyledFormComponents';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
@@ -222,17 +217,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 function GeneralInfoStep({ onSubmit, validationSchema, isGuest }: GeneralInfoStepProps) {
   const formik = useFormikContext<JoinFormValues>();
   const values = formik.values;
-  const errors = formik.errors;
   const intl = useIntl();
-
-  const PlayInTeamsError = () => {
-    const [_, meta] = useField('playInTeams');
-    return (
-      typeof errors.playInTeams === 'string' &&
-      meta.touched &&
-      meta.error && <StyledErrorMessage>{meta.error}</StyledErrorMessage>
-    );
-  };
 
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
@@ -277,7 +262,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, isGuest }: GeneralInfoSte
           {intl.formatMessage(messages.alone)}
         </label>
       </div>
-      <PlayInTeamsError />
+      <FieldError name="playInTeams" />
 
       {values.playInTeams && <JoinOrCreateTeam validationSchema={validationSchema} />}
     </WizardStep>
