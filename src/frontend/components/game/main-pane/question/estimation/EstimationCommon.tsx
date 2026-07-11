@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
@@ -222,9 +224,9 @@ function BetResultRow({ team, player, bet, isWinner, baseQuestion, gameQuestion 
         {isWinner && <EmojiEventsIcon sx={{ color: '#4ade80', fontSize: 20 }} />}
       </div>
 
-      <div className="w-10 h-10 2xl:w-12 2xl:h-12 rounded-full overflow-hidden flex-shrink-0 bg-slate-700 border border-slate-600 flex items-center justify-center text-sm font-bold text-slate-300 select-none">
+      <div className="relative w-10 h-10 2xl:w-12 2xl:h-12 rounded-full overflow-hidden flex-shrink-0 bg-slate-700 border border-slate-600 flex items-center justify-center text-sm font-bold text-slate-300 select-none">
         {player?.image ? (
-          <img src={player.image} alt={player.name} className="w-full h-full object-cover" />
+          <Image src={player.image} alt={player.name ?? ''} fill className="object-cover" />
         ) : (
           <span>{player?.name?.[0]?.toUpperCase() ?? '?'}</span>
         )}

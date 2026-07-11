@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Image from 'next/image';
 
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -241,9 +242,9 @@ function ReorderingTeamResultRow({ team, player, ordering, baseQuestion }: Reord
     >
       <AccordionSummary expandIcon={ordering ? <ExpandMoreIcon /> : null}>
         <div className="flex items-center gap-3 w-full pr-2">
-          <div className="w-10 h-10 2xl:w-12 2xl:h-12 rounded-full overflow-hidden flex-shrink-0 bg-slate-700 border border-slate-600 flex items-center justify-center text-sm font-bold text-slate-300 select-none">
+          <div className="relative w-10 h-10 2xl:w-12 2xl:h-12 rounded-full overflow-hidden flex-shrink-0 bg-slate-700 border border-slate-600 flex items-center justify-center text-sm font-bold text-slate-300 select-none">
             {player?.image ? (
-              <img src={player.image} alt={player.name} className="w-full h-full object-cover" />
+              <Image src={player.image} alt={player.name ?? ''} fill className="object-cover" />
             ) : (
               <span>{player?.name?.[0]?.toUpperCase() ?? '?'}</span>
             )}

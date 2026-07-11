@@ -8,6 +8,7 @@ import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import UserRepository from '@/backend/repositories/user/UserRepository';
+import { generateAvatarUrl } from '@/backend/utils/avatar';
 import { PlayerStatus } from '@/models/users/player';
 
 export default class JoinGameService {
@@ -76,7 +77,7 @@ export default class JoinGameService {
         await this.playerRepo.createPlayerTransaction(
           transaction,
           {
-            image: user.image ?? null,
+            image: user.image ?? generateAvatarUrl(userId),
             name: data.playerName,
             status: PlayerStatus.IDLE,
             teamId: data.teamId,

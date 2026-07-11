@@ -8,6 +8,8 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import DiscordProvider from 'next-auth/providers/discord';
 import GoogleProvider from 'next-auth/providers/google';
 
+import { generateAvatarUrl } from '@/backend/utils/avatar';
+
 const useEmulators = process.env.NEXT_PUBLIC_USE_EMULATORS === 'true';
 if (useEmulators) {
   process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
@@ -50,7 +52,7 @@ if (useEmulators) {
           id,
           name: id.charAt(0).toUpperCase() + id.slice(1),
           email: `${id}@demo.local`,
-          image: `https://api.dicebear.com/7.x/avataaars/svg?seed=${id}`,
+          image: generateAvatarUrl(id),
         };
       },
     })
@@ -81,15 +83,16 @@ providers.push(
     async authorize(credentials) {
       if (!credentials?.name || !adminDB) return null;
       const guestId = `guest_${randomUUID()}`;
+      const image = generateAvatarUrl(guestId);
       await adminDB.collection('users').doc(guestId).set({
         name: credentials.name,
-        image: null,
+        image,
         isGuest: true,
       });
       return {
         id: guestId,
         name: credentials.name,
-        image: null,
+        image,
         isGuest: true,
       };
     },
