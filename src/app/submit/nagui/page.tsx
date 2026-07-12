@@ -1,7 +1,5 @@
 'use client';
 
-import { redirect } from 'next/navigation';
-
 import { useSession } from 'next-auth/react';
 
 import QuestionFormHeader from '@/frontend/components/common/QuestionFormHeader';
@@ -13,10 +11,8 @@ const QUESTION_TYPE = QuestionType.NAGUI;
 export default function Page() {
   const { data: session } = useSession();
 
-  // Protected route
-  if (!session || !session.user) {
-    redirect('/api/auth/signin');
-  }
+  // Auth and guest guarding are enforced by middleware; session is guaranteed here.
+  if (!session?.user) return null;
 
   return (
     <>

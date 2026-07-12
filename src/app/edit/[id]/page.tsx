@@ -33,11 +33,8 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = React.use(params);
   const gameId = resolvedParams.id;
 
-  // Protected route
-  if (!session || !session.user) {
-    redirect('/api/auth/signin');
-  }
-
+  // Auth and guest guarding are enforced by middleware; session is guaranteed here.
+  if (!session?.user) return null;
   const user = session.user;
 
   const gameRepo = new GameRepository();

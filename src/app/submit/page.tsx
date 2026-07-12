@@ -1,10 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/frontend/components/card';
@@ -22,12 +20,8 @@ const messages = defineMessages('app.submit', {
 });
 
 export default function Page() {
-  const { data: session } = useSession();
   const intl = useIntl();
 
-  if (!session || !session.user) {
-    redirect('/api/auth/signin');
-  }
   return (
     <div className="max-w-7xl mx-auto">
       <div className="text-center py-4 md:py-6 px-4">

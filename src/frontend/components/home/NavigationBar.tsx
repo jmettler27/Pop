@@ -38,16 +38,10 @@ const messages = defineMessages('frontend.home.HomeBar', {
   selectLanguage: 'Select Language',
 });
 
-const pageIcons = [
-  <ViewListIcon key="games" sx={{ fontSize: '1.1rem' }} />,
-  <AddCircleOutlineIcon key="create" sx={{ fontSize: '1.1rem' }} />,
-  <QuestionAnswerIcon key="submit" sx={{ fontSize: '1.1rem' }} />,
-  <InfoIcon key="about" sx={{ fontSize: '1.1rem' }} />,
-];
-
 export function NavigationBar() {
   const { data: session } = useSession();
   const user = session?.user;
+  const isGuest = Boolean(user?.isGuest);
   const { locale, setLocale } = useLocale();
   const intl = useIntl();
   const router = useRouter();
@@ -60,12 +54,22 @@ export function NavigationBar() {
   const handleCloseUserMenu = () => setAnchorElUser(null);
   const handleCloseLangMenu = () => setAnchorElLang(null);
 
-  const pages = [
-    intl.formatMessage(messages.games),
-    intl.formatMessage(globalMessages.createNewGame),
-    intl.formatMessage(globalMessages.submitQuestion),
-    intl.formatMessage(messages.about),
+  const allPages = [
+    { label: intl.formatMessage(messages.games), icon: <ViewListIcon sx={{ fontSize: '1.1rem' }} />, href: '/' },
+    {
+      label: intl.formatMessage(globalMessages.createNewGame),
+      icon: <AddCircleOutlineIcon sx={{ fontSize: '1.1rem' }} />,
+      href: '/edit',
+    },
+    {
+      label: intl.formatMessage(globalMessages.submitQuestion),
+      icon: <QuestionAnswerIcon sx={{ fontSize: '1.1rem' }} />,
+      href: '/submit',
+    },
+    { label: intl.formatMessage(messages.about), icon: <InfoIcon sx={{ fontSize: '1.1rem' }} />, href: '/about' },
   ];
+
+  const pages = isGuest ? allPages.slice(0, 1) : allPages;
 
   const settingsList = [
     { label: intl.formatMessage(messages.settingsProfile), action: () => {} },
@@ -74,12 +78,7 @@ export function NavigationBar() {
     { label: intl.formatMessage(messages.settingsLogout), action: () => signOut() },
   ];
 
-  const handleSelectPage = (idx: number) => {
-    if (idx === 0) router.push('/');
-    if (idx === 1) router.push('/edit');
-    if (idx === 2) router.push('/submit');
-    if (idx === 3) router.push('/about');
-  };
+  const handleSelectPage = (href: string) => router.push(href);
 
   const handleSelectLanguage = (langCode: Locale) => {
     setLocale(langCode);
@@ -141,11 +140,11 @@ export function NavigationBar() {
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, gap: 0.5 }}>
-            {pages.map((page, idx) => (
+            {pages.map((page) => (
               <Button
-                key={page}
-                onClick={() => handleSelectPage(idx)}
-                startIcon={pageIcons[idx]}
+                key={page.href}
+                onClick={() => handleSelectPage(page.href)}
+                startIcon={page.icon}
                 sx={{
                   color: 'white',
                   display: 'flex',
@@ -161,7 +160,7 @@ export function NavigationBar() {
                   },
                 }}
               >
-                {page}
+                {page.label}
               </Button>
             ))}
           </Box>
@@ -194,35 +193,37 @@ export function NavigationBar() {
           </Box>
 
           {/* User menu */}
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt={user?.name ?? ''} src={user?.image ?? ''} sx={{ width: 36, height: 36 }} />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-              keepMounted
-              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settingsList.map((setting) => (
-                <MenuItem
-                  key={setting.label}
-                  onClick={() => {
-                    setting.action();
-                    handleCloseUserMenu();
-                  }}
-                >
-                  <Typography textAlign="center">{setting.label}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
+          {!isGuest && (
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt={user?.name ?? ''} src={user?.image ?? ''} sx={{ width: 36, height: 36 }} />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                keepMounted
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {settingsList.map((setting) => (
+                  <MenuItem
+                    key={setting.label}
+                    onClick={() => {
+                      setting.action();
+                      handleCloseUserMenu();
+                    }}
+                  >
+                    <Typography textAlign="center">{setting.label}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+          )}
         </Toolbar>
       </Container>
     </AppBar>

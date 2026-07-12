@@ -1,7 +1,6 @@
 'use client';
 
 import type React from 'react';
-import { redirect } from 'next/navigation';
 
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -14,7 +13,6 @@ import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
 import type { Locale } from '@/frontend/helpers/locales';
@@ -67,13 +65,8 @@ function SectionTitle({ icon, children }: { icon: React.ReactNode; children: Rea
 }
 
 export default function AboutPage() {
-  const { data: session } = useSession();
   const intl = useIntl();
   const locale = intl.locale as Locale;
-
-  if (!session || !session.user) {
-    redirect('/api/auth/signin');
-  }
 
   return (
     <Container maxWidth="md" sx={{ py: { xs: 3, md: 5 } }}>

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import { Form, Formik } from 'formik';
 import { type Session } from 'next-auth';
@@ -65,11 +65,8 @@ export default function Page() {
     router.push('/edit/' + gameId);
   });
 
-  // Protected route
-  if (!session || !session.user) {
-    redirect('/api/auth/signin');
-  }
-
+  // Auth and guest guarding are enforced by middleware; session is guaranteed here.
+  if (!session?.user) return null;
   const user = session.user;
 
   const validationSchema = Yup.object({
