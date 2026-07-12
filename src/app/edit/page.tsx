@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { redirect, useRouter } from 'next/navigation';
 
 import { Form, Formik } from 'formik';
@@ -68,6 +67,9 @@ export default function Page() {
   // Protected route
   if (!session || !session.user) {
     redirect('/api/auth/signin');
+  }
+  if (session.user.isGuest) {
+    redirect('/');
   }
 
   const user = session.user;

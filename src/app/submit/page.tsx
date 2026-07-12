@@ -28,6 +28,10 @@ export default function Page() {
   if (!session || !session.user) {
     redirect('/api/auth/signin');
   }
+  if (session.user.isGuest) {
+    redirect('/');
+  }
+
   return (
     <div className="max-w-7xl mx-auto">
       <div className="text-center py-4 md:py-6 px-4">

@@ -37,6 +37,9 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   if (!session || !session.user) {
     redirect('/api/auth/signin');
   }
+  if (session.user.isGuest) {
+    redirect('/');
+  }
 
   const user = session.user;
 

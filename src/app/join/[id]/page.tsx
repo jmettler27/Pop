@@ -96,6 +96,7 @@ const useGameData = (gameId: string) => {
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const { data: session } = useSession();
+
   const resolvedParams = React.use(params);
   const gameId = resolvedParams.id;
   const intl = useIntl();

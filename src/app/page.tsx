@@ -16,21 +16,23 @@ export default function Home() {
     redirect('/api/auth/signin');
   }
 
+  const isGuest = Boolean(session?.user.isGuest);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <NavigationBar />
-      <UserHome />
+      <UserHome isGuest={isGuest} />
     </div>
   );
 }
 
-function UserHome({}) {
+function UserHome({ isGuest }: { isGuest: boolean }) {
   return (
     <div className="flex flex-col items-center w-full px-4 sm:px-6 lg:px-8 py-6 md:py-10">
       <div className="w-full max-w-7xl space-y-6 md:space-y-8 lg:space-y-10">
         <OngoingGames />
-        <GamesUnderConstruction />
-        <EndedGames />
+        {!isGuest && <GamesUnderConstruction />}
+        {!isGuest && <EndedGames />}
       </div>
     </div>
   );

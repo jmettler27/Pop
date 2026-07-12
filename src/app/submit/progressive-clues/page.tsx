@@ -17,6 +17,9 @@ export default function Page() {
   if (!session || !session.user) {
     redirect('/api/auth/signin');
   }
+  if (session.user.isGuest) {
+    redirect('/');
+  }
 
   return (
     <>
