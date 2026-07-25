@@ -1,11 +1,8 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Button, IconButton } from '@mui/material';
-import Box from '@mui/system/Box';
 import { FieldArray, useFormikContext } from 'formik';
+import { Plus, Trash2 } from 'lucide-react';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 import type { ObjectSchema } from 'yup';
@@ -16,6 +13,8 @@ import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepCompon
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
 import { MySelect, MyTextInput, StyledErrorMessage } from '@/frontend/components/common/StyledFormComponents';
+import { Button } from '@/frontend/components/ui/button';
+import { SelectItem } from '@/frontend/components/ui/select';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
 import { topicSchema } from '@/frontend/helpers/forms/topics';
@@ -280,26 +279,31 @@ function EnterItemsStep({ onSubmit, validationSchema }: StepProps) {
 
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
-      <p>
+      <p className="mb-4">
         {intl.formatMessage(globalMessages.numProposalsAllowed)}: {OddOneOutQuestion.MIN_NUM_ITEMS}-
         {OddOneOutQuestion.MAX_NUM_ITEMS}.
       </p>
 
-      <p>{intl.formatMessage(messages.enterItems)}</p>
+      <p className="mb-4">{intl.formatMessage(messages.enterItems)}</p>
 
       <FieldArray name="items">
         {({ remove, push }) => (
           <>
             {values.items.length > 0 &&
               values.items.map((item, idx) => (
-                <Box key={idx} component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: '500px' }}>
+                <section key={idx} className="my-4 p-4 border-2 border-dashed border-gray-500 w-[500px]">
                   <span className="text-lg">
                     {intl.formatMessage(questionMessages.item)} #{idx + 1}
                   </span>
 
-                  <IconButton color="error" onClick={() => remove(idx)}>
-                    <DeleteIcon />
-                  </IconButton>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-destructive hover:bg-destructive/10"
+                    onClick={() => remove(idx)}
+                  >
+                    <Trash2 />
+                  </Button>
 
                   <MyTextInput
                     label={`${intl.formatMessage(globalMessages.proposal)} #${idx + 1}`}
@@ -322,9 +326,10 @@ function EnterItemsStep({ onSubmit, validationSchema }: StepProps) {
                     fieldType="object_in_array"
                   />
                   <ExplanationError index={idx} />
-                </Box>
+                </section>
               ))}
-            <Button variant="outlined" startIcon={<AddIcon />} onClick={() => push({ title: '', explanation: '' })}>
+            <Button variant="outline" onClick={() => push({ title: '', explanation: '' })}>
+              <Plus className="mr-2 size-4" />
               {intl.formatMessage(questionMessages.addItem)}
             </Button>
           </>
@@ -338,15 +343,13 @@ function EnterItemsStep({ onSubmit, validationSchema }: StepProps) {
           label={intl.formatMessage(messages.answerIdxLabel)}
           name="answerIdx"
           validationSchema={validationSchema}
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-            formik.setFieldValue('answerIdx', parseInt(e.target.value, 10))
-          }
+          onChange={(value: string) => formik.setFieldValue('answerIdx', parseInt(value, 10))}
         >
-          <option value="">{intl.formatMessage(questionMessages.selectProposal)}</option>
+          <SelectItem value="">{intl.formatMessage(questionMessages.selectProposal)}</SelectItem>
           {values.items.map((item, index) => (
-            <option key={index} value={index}>
+            <SelectItem key={index} value={String(index)}>
               {item.title}
-            </option>
+            </SelectItem>
           ))}
         </MySelect>
       )}

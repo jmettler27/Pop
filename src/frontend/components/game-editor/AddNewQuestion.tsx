@@ -1,32 +1,13 @@
 import { useCallback, useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import CancelIcon from '@mui/icons-material/Cancel';
-import {
-  Button,
-  Collapse,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  List,
-  ListItemButton,
-  ListItemText,
-  ListSubheader,
-  Menu,
-  MenuItem,
-} from '@mui/material';
-import type { GridRowSelectionModel } from '@mui/x-data-grid';
+import { ChevronDown, ChevronUp, CirclePlus, XCircle } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
 // New question
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
-import { Card, CardContent } from '@/frontend/components/card';
 import { QuestionCard } from '@/frontend/components/common/QuestionCard';
 import { SearchQuestionDataGrid } from '@/frontend/components/common/QuestionDataGrid';
 import SubmitBasicQuestionForm from '@/frontend/components/question-forms/SubmitBasicQuestionForm';
@@ -43,6 +24,11 @@ import SubmitOddOneOutQuestionForm from '@/frontend/components/question-forms/Su
 import SubmitProgressiveCluesQuestionForm from '@/frontend/components/question-forms/SubmitProgressiveCluesQuestionForm';
 import SubmitQuoteQuestionForm from '@/frontend/components/question-forms/SubmitQuoteQuestionForm';
 import SubmitReorderingQuestionForm from '@/frontend/components/question-forms/SubmitReorderingQuestionForm';
+import { Button } from '@/frontend/components/ui/button';
+import { Card, CardContent } from '@/frontend/components/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/frontend/components/ui/collapsible';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/frontend/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/frontend/components/ui/popover';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -78,14 +64,16 @@ interface AddQuestionToRoundDialogProps {
 function AddQuestionToRoundDialog({ roundId, questionType, dialog, onDialogClose }: AddQuestionToRoundDialogProps) {
   const intl = useIntl();
   return (
-    <Dialog open={dialog !== null} onClose={onDialogClose} maxWidth="xl">
-      <DialogTitle>
-        {dialog === 'new-question' &&
-          `${intl.formatMessage(globalMessages.createNewQuestion)} (${questionType ? questionTypeToEmoji(questionType) : ''})`}
-        {dialog === 'existing-question' &&
-          `${intl.formatMessage(messages.searchExisting)} (${questionType ? questionTypeToEmoji(questionType) : ''})`}
-      </DialogTitle>
-      <DialogContent>
+    <Dialog open={dialog !== null} onOpenChange={(open) => !open && onDialogClose()}>
+      <DialogContent showCloseButton={false} className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>
+            {dialog === 'new-question' &&
+              `${intl.formatMessage(globalMessages.createNewQuestion)} (${questionType ? questionTypeToEmoji(questionType) : ''})`}
+            {dialog === 'existing-question' &&
+              `${intl.formatMessage(messages.searchExisting)} (${questionType ? questionTypeToEmoji(questionType) : ''})`}
+          </DialogTitle>
+        </DialogHeader>
         {dialog === 'new-question' && questionType && (
           <SubmitQuestionDialog roundId={roundId} questionType={questionType} onDialogClose={onDialogClose} />
         )}
@@ -104,10 +92,9 @@ interface AddQuestionToRoundButtonProps {
 
 export function AddQuestionToRoundButton({ round, disabled }: AddQuestionToRoundButtonProps) {
   const intl = useIntl();
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const menuOpen = Boolean(anchorEl);
+  const [menuOpen, setMenuOpen] = useState(false);
   const handleMenuClose = () => {
-    setAnchorEl(null);
+    setMenuOpen(false);
   };
 
   const [dialog, setDialog] = useState<DialogMode>(null);
@@ -117,42 +104,35 @@ export function AddQuestionToRoundButton({ round, disabled }: AddQuestionToRound
     // Snackbar message
   };
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
   return (
     <>
       <Card className="border-dashed border-2 border-red-700">
         <CardContent className="flex flex-col h-full w-full items-center justify-center">
-          <IconButton
-            id="add-new-question-button"
-            aria-controls={menuOpen ? 'basic-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={menuOpen ? 'true' : undefined}
-            color="primary"
-            onClick={handleClick}
-            disabled={disabled}
-            size="large"
-          >
-            <AddCircleOutlineIcon sx={{ fontSize: '35px' }} />
-          </IconButton>
-          <Menu
-            id="add-question-to-round-menu"
-            anchorEl={anchorEl}
-            open={menuOpen}
-            onClose={handleMenuClose}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button',
-            }}
-          >
-            <MenuItem onClick={() => setDialog('new-question')}>
-              {prependCreateNewQuestionWithEmoji(intl.formatMessage(globalMessages.createNewQuestion))}
-            </MenuItem>
-            <MenuItem onClick={() => setDialog('existing-question')}>
-              {prependSearchExistingQuestionWithEmoji(intl.formatMessage(messages.searchExisting))}
-            </MenuItem>
-          </Menu>
+          <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+            <PopoverTrigger
+              render={<Button id="add-new-question-button" variant="ghost" size="icon-lg" disabled={disabled} />}
+            >
+              <CirclePlus className="size-9" />
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <div className="flex flex-col">
+                <button
+                  type="button"
+                  onClick={() => setDialog('new-question')}
+                  className="w-full text-left px-4 py-2 hover:bg-muted"
+                >
+                  {prependCreateNewQuestionWithEmoji(intl.formatMessage(globalMessages.createNewQuestion))}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDialog('existing-question')}
+                  className="w-full text-left px-4 py-2 hover:bg-muted"
+                >
+                  {prependSearchExistingQuestionWithEmoji(intl.formatMessage(messages.searchExisting))}
+                </button>
+              </div>
+            </PopoverContent>
+          </Popover>
         </CardContent>
       </Card>
       <AddQuestionToRoundDialog
@@ -171,10 +151,9 @@ interface AddQuestionToMixedRoundButtonProps {
 }
 
 export function AddQuestionToMixedRoundButton({ roundId, disabled }: AddQuestionToMixedRoundButtonProps) {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const menuOpen = Boolean(anchorEl);
+  const [menuOpen, setMenuOpen] = useState(false);
   const handleMenuClose = () => {
-    setAnchorEl(null);
+    setMenuOpen(false);
   };
 
   const [questionType, setQuestionType] = useState<QuestionType | null>(null);
@@ -185,10 +164,6 @@ export function AddQuestionToMixedRoundButton({ roundId, disabled }: AddQuestion
     setQuestionType(null);
     handleMenuClose();
     // Snackbar message
-  };
-
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
   };
 
   const handleSelectNewQuestionType = (qt: QuestionType) => {
@@ -205,45 +180,30 @@ export function AddQuestionToMixedRoundButton({ roundId, disabled }: AddQuestion
     <>
       <Card className="border-dashed border-2 border-red-700">
         <CardContent className="flex flex-col h-full w-full items-center justify-center">
-          <IconButton
-            id="mixed-round-add-new-question-button"
-            aria-controls={menuOpen ? 'basic-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={menuOpen ? 'true' : undefined}
-            color="primary"
-            onClick={handleClick}
-            disabled={disabled}
-            size="large"
-          >
-            <AddCircleOutlineIcon sx={{ fontSize: '35px' }} />
-          </IconButton>
-          <Menu
-            id="add-question-to-round-menu"
-            anchorEl={anchorEl}
-            open={menuOpen}
-            onClose={handleMenuClose}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button',
-            }}
-          >
-            <List
-              sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
-              component="nav"
-              aria-labelledby="nested-list-subheader"
-              subheader={
-                <ListSubheader component="div" id="nested-list-subheader">
-                  {/* {REVEAL_LIST_HEADER[lang]} */}
-                </ListSubheader>
+          <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+            <PopoverTrigger
+              render={
+                <Button id="mixed-round-add-new-question-button" variant="ghost" size="icon-lg" disabled={disabled} />
               }
             >
-              <SelectQuestionTypeButton key={0} type="new-question" handleListItemClick={handleSelectNewQuestionType} />
-              <SelectQuestionTypeButton
-                key={1}
-                type="existing-question"
-                handleListItemClick={handleSelectExistingQuestionType}
-              />
-            </List>
-          </Menu>
+              <CirclePlus className="size-9" />
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <ul className="w-full max-w-[360px] bg-background" aria-labelledby="nested-list-subheader">
+                <li id="nested-list-subheader">{/* {REVEAL_LIST_HEADER[lang]} */}</li>
+                <SelectQuestionTypeButton
+                  key={0}
+                  type="new-question"
+                  handleListItemClick={handleSelectNewQuestionType}
+                />
+                <SelectQuestionTypeButton
+                  key={1}
+                  type="existing-question"
+                  handleListItemClick={handleSelectExistingQuestionType}
+                />
+              </ul>
+            </PopoverContent>
+          </Popover>
         </CardContent>
       </Card>
       <AddQuestionToRoundDialog
@@ -275,21 +235,33 @@ function SelectQuestionTypeButton({ type, handleListItemClick }: SelectQuestionT
   };
 
   return (
-    <>
-      <ListItemButton onClick={() => setOpen(!open)}>
-        <ListItemText primary={itemText()} />
-        {open ? <ExpandLess /> : <ExpandMore />}
-      </ListItemButton>
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-          {Object.values(QuestionType).map((questionType, idx) => (
-            <ListItemButton key={idx} sx={{ pl: 4 }} onClick={() => handleListItemClick(questionType)}>
-              <ListItemText primary={prependQuestionTypeWithEmoji(questionType)} />
-            </ListItemButton>
-          ))}
-        </List>
-      </Collapse>
-    </>
+    <li>
+      <Collapsible open={open} onOpenChange={setOpen}>
+        <CollapsibleTrigger
+          render={
+            <button type="button" className="w-full flex items-center justify-between px-4 py-2 hover:bg-muted" />
+          }
+        >
+          {itemText()}
+          {open ? <ChevronUp /> : <ChevronDown />}
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <ul>
+            {Object.values(QuestionType).map((questionType, idx) => (
+              <li key={idx}>
+                <button
+                  type="button"
+                  onClick={() => handleListItemClick(questionType)}
+                  className="w-full text-left pl-8 pr-4 py-2 hover:bg-muted"
+                >
+                  {prependQuestionTypeWithEmoji(questionType)}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </CollapsibleContent>
+      </Collapsible>
+    </li>
   );
 }
 
@@ -464,8 +436,8 @@ function SearchQuestionDialog({ roundId, questionType, onDialogClose }: SearchQu
 
   // Memoize callback to work with memoized SearchQuestionDataGrid
   // Prevents unnecessary re-fetching when dialog state changes
-  const onNewQuestionSelectionModelChange = useCallback((newRowSelectionModel: GridRowSelectionModel) => {
-    setSelectedQuestionModel(newRowSelectionModel as string[]);
+  const onNewQuestionSelectionModelChange = useCallback((newRowSelectionModel: string[]) => {
+    setSelectedQuestionModel(newRowSelectionModel);
     if (newRowSelectionModel.length > 0) {
       setValidationDialogOpen(true);
     }
@@ -477,7 +449,8 @@ function SearchQuestionDialog({ roundId, questionType, onDialogClose }: SearchQu
         questionSelectionModel={questionSelectionModel}
         onQuestionSelectionModelChange={onNewQuestionSelectionModelChange}
       />
-      <Button variant="contained" color="error" startIcon={<CancelIcon />} onClick={onDialogClose}>
+      <Button variant="destructive" onClick={onDialogClose}>
+        <XCircle className="mr-2 size-4" />
         Cancel
       </Button>
       <AddExistingQuestionToRoundDialog
@@ -535,18 +508,32 @@ function AddExistingQuestionToRoundDialog({
   });
 
   return (
-    <Dialog open={validationDialogOpen} onClose={onValidationDialogClose} maxWidth="xl">
-      <DialogTitle>{intl.formatMessage(messages.addToRoundDialogTitle)}</DialogTitle>
-      {selectedQuestionId && <AddExistingQuestionToRoundDialogContent selectedQuestionId={selectedQuestionId} />}
-      <DialogActions>
-        <Button variant="contained" color="primary" onClick={handleValidate} disabled={isValidating}>
-          {intl.formatMessage(messages.addToRound)}
-        </Button>
+    <Dialog
+      open={validationDialogOpen}
+      onOpenChange={(open, eventDetails) => {
+        if (eventDetails.reason === 'escape-key') return;
+        if (!open) onValidationDialogClose();
+      }}
+    >
+      <DialogContent showCloseButton={false} className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{intl.formatMessage(messages.addToRoundDialogTitle)}</DialogTitle>
+        </DialogHeader>
+        {selectedQuestionId && <AddExistingQuestionToRoundDialogContent selectedQuestionId={selectedQuestionId} />}
+        <DialogFooter>
+          <Button onClick={handleValidate} disabled={isValidating}>
+            {intl.formatMessage(messages.addToRound)}
+          </Button>
 
-        <Button variant="outlined" color="error" onClick={onValidationCancel}>
-          {intl.formatMessage(globalMessages.cancel)}
-        </Button>
-      </DialogActions>
+          <Button
+            variant="outline"
+            className="border-destructive text-destructive hover:bg-destructive/10"
+            onClick={onValidationCancel}
+          >
+            {intl.formatMessage(globalMessages.cancel)}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   );
 }
@@ -563,5 +550,5 @@ function AddExistingQuestionToRoundDialogContent({ selectedQuestionId }: AddExis
     return <></>;
   }
 
-  return <DialogContent>{selectedQuestionId && <QuestionCard baseQuestion={baseQuestion} />}</DialogContent>;
+  return selectedQuestionId ? <QuestionCard baseQuestion={baseQuestion} /> : null;
 }

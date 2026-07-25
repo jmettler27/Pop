@@ -1,14 +1,13 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import VolumeDownRounded from '@mui/icons-material/VolumeDownRounded';
-import VolumeOffIcon from '@mui/icons-material/VolumeOff';
-import VolumeUpRounded from '@mui/icons-material/VolumeUpRounded';
-import { Box, IconButton, Slider, Stack } from '@mui/material';
 import { collection, onSnapshot, query } from 'firebase/firestore';
+import { Volume1, Volume2, VolumeX } from 'lucide-react';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import sounds from '@/data/sounds';
+import { Button } from '@/frontend/components/ui/button';
+import { Slider } from '@/frontend/components/ui/slider';
 
 const initVolume = 0.4;
 
@@ -68,41 +67,38 @@ const SoundboardAudioPlayer = memo(function SoundboardAudioPlayer() {
     return () => unsubscribe();
   }, [gameId]);
 
-  const handleVolumeChange = (_event: Event, value: number | number[]) => {
-    setVolume(typeof value === 'number' ? value : value[0]);
+  const handleVolumeChange = (value: number | readonly number[]) => {
+    setVolume(Array.isArray(value) ? value[0]! : (value as number));
     playPending();
   };
 
   return (
-    <Box className="w-full overflow-hidden">
-      <Stack spacing={2} direction="row" sx={{ mb: 1, px: 1 }} alignItems="center">
-        <IconButton
-          size="small"
+    <div className="w-full overflow-hidden">
+      <div className="flex flex-row items-center gap-4 mb-2 px-2">
+        <Button
+          variant="ghost"
+          size="icon-sm"
           aria-label="play/pause"
+          className="text-primary"
           onClick={() => {
             setVolume((v) => (v === 0 ? initVolume : 0));
             playPending();
           }}
-          sx={{
-            '& .MuiSvgIcon-root': {
-              color: 'primary.main',
-            },
-          }}
         >
-          {volume === 0 ? <VolumeOffIcon /> : volume < 0.5 ? <VolumeDownRounded /> : <VolumeUpRounded />}
-        </IconButton>
+          {volume === 0 ? <VolumeX /> : volume < 0.5 ? <Volume1 /> : <Volume2 />}
+        </Button>
 
         <Slider
           aria-label="Volume"
           orientation="horizontal"
-          value={volume}
+          value={[volume]}
           min={0}
           max={1}
           step={0.01}
-          onChange={handleVolumeChange}
+          onValueChange={handleVolumeChange}
         />
-      </Stack>
-    </Box>
+      </div>
+    </div>
   );
 });
 

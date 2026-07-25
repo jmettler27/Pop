@@ -89,7 +89,7 @@ export default function Page() {
 
   return (
     <div className="flex flex-col flex-1 p-8">
-      <h1>{intl.formatMessage(globalMessages.createNewGame)}</h1>
+      <h1 className="text-2xl font-bold md:text-3xl">{intl.formatMessage(globalMessages.createNewGame)}</h1>
       <Formik
         initialValues={{
           // type: GAME_DEFAULT_TYPE,

@@ -1,11 +1,8 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Button, IconButton } from '@mui/material';
-import Box from '@mui/system/Box';
 import { FieldArray, useFormikContext } from 'formik';
+import { Plus, Trash2 } from 'lucide-react';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 import type { ObjectSchema } from 'yup';
@@ -16,6 +13,7 @@ import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepCompon
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
 import { MyTextInput, StyledErrorMessage } from '@/frontend/components/common/StyledFormComponents';
+import { Button } from '@/frontend/components/ui/button';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
 import { topicSchema } from '@/frontend/helpers/forms/topics';
@@ -248,7 +246,7 @@ function EnterItemsStep({ onSubmit, validationSchema }: StepProps) {
 
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
-      <p>
+      <p className="mb-4">
         {intl.formatMessage(globalMessages.numProposalsAllowed)}: {ReorderingQuestion.MIN_NUM_ITEMS}-
         {ReorderingQuestion.MAX_NUM_ITEMS}.
       </p>
@@ -258,14 +256,19 @@ function EnterItemsStep({ onSubmit, validationSchema }: StepProps) {
           <>
             {values.items.length > 0 &&
               values.items.map((_item, idx) => (
-                <Box key={idx} component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: '500px' }}>
+                <section key={idx} className="my-4 p-4 border-2 border-dashed border-gray-500 w-[500px]">
                   <span className="text-lg">
                     {intl.formatMessage(questionMessages.item)} #{idx + 1}
                   </span>
 
-                  <IconButton color="error" onClick={() => remove(idx)}>
-                    <DeleteIcon />
-                  </IconButton>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-destructive hover:bg-destructive/10"
+                    onClick={() => remove(idx)}
+                  >
+                    <Trash2 />
+                  </Button>
 
                   <MyTextInput
                     label={`${intl.formatMessage(globalMessages.proposal)} #${idx + 1}`}
@@ -288,9 +291,10 @@ function EnterItemsStep({ onSubmit, validationSchema }: StepProps) {
                     fieldType="object_in_array"
                   />
                   <ExplanationError index={idx} />
-                </Box>
+                </section>
               ))}
-            <Button variant="outlined" startIcon={<AddIcon />} onClick={() => push({ title: '', explanation: '' })}>
+            <Button variant="outline" onClick={() => push({ title: '', explanation: '' })}>
+              <Plus className="mr-2 size-4" />
               {intl.formatMessage(questionMessages.addItem)}
             </Button>
           </>

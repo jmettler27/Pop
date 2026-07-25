@@ -8,6 +8,7 @@ import EndedGames from '@/frontend/components/home/EndedGames';
 import GamesUnderConstruction from '@/frontend/components/home/GamesUnderConstruction';
 import NavigationBar from '@/frontend/components/home/NavigationBar';
 import OngoingGames from '@/frontend/components/home/OngoingGames';
+import { DEFAULT_BACKGROUND } from '@/frontend/helpers/background';
 
 export default function Home() {
   const { data: session } = useSession();
@@ -19,7 +20,7 @@ export default function Home() {
   const isGuest = Boolean(session?.user.isGuest);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen" style={{ backgroundImage: DEFAULT_BACKGROUND }}>
       <NavigationBar />
       <UserHome isGuest={isGuest} />
     </div>

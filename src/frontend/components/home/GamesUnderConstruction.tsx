@@ -1,17 +1,18 @@
-import React from 'react';
+import NextLink from 'next/link';
 
-import EditIcon from '@mui/icons-material/Edit';
-import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-import { Box, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
+import { Pencil, UserCog } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
-import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/card';
 import { GameOrganizersAvatarGroup } from '@/frontend/components/home/GameAvatars';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { Button } from '@/frontend/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/ui/card';
+import { Skeleton } from '@/frontend/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import { Locale, localeToEmoji } from '@/frontend/helpers/locales';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -42,20 +43,20 @@ export default function GamesUnderConstruction() {
   const sortedGames = games.sort((a, b) => (b.dateEnd as number) - (a.dateEnd as number));
 
   return (
-    <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-slate-700 shadow-2xl hover:shadow-yellow-500/20 transition-all duration-300">
+    <Card className="bg-linear-to-br from-slate-800 to-slate-900 border-2 border-slate-700 shadow-2xl hover:shadow-yellow-500/20 transition-all duration-300">
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 border-b border-slate-700">
-        <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+        <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold bg-linear-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
           🛠️ {intl.formatMessage(messages.title)}
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="pt-6">
+      <CardContent className="pt-4">
         {sortedGames.length === 0 ? (
           <div className="text-center py-12 text-slate-400 text-sm sm:text-base">
             {intl.formatMessage(messages.empty)}
           </div>
         ) : (
-          <div className="grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-3 sm:gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {sortedGames.map((g) => (
               <GameUnderConstructionCard key={g.id} game={g} />
             ))}
@@ -84,7 +85,7 @@ export function GameUnderConstructionCard({ game }: GameUnderConstructionCardPro
     return <></>;
   }
   if (organizersLoading || playersLoading) {
-    return <Skeleton variant="rounded" width={210} height={60} />;
+    return <Skeleton className="w-[210px] h-[60px]" />;
   }
   if (!organizers || !players) {
     return <></>;
@@ -95,40 +96,40 @@ export function GameUnderConstructionCard({ game }: GameUnderConstructionCardPro
   if (!isOrganizer && !isPlayer) return null;
 
   return (
-    <Card className="bg-slate-800/50 border border-yellow-600/20 shadow-lg hover:shadow-yellow-500/40 hover:border-yellow-400/60 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+    <Card
+      size="sm"
+      className="bg-slate-800/50 border border-yellow-600/20 shadow-lg hover:shadow-yellow-500/40 hover:border-yellow-400/60 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+    >
       {/* Compact Header */}
-      <CardHeader className="pb-3 pt-4 px-4 bg-gradient-to-br from-yellow-900/20 to-transparent">
+      <CardHeader className="pb-2 pt-3 px-3 bg-linear-to-br from-yellow-900/20 to-transparent">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <Tooltip title={game.title} placement="top">
-              <div className="flex items-center gap-2">
-                <span className="text-lg flex-shrink-0">{gameTypeToEmoji(game.type)}</span>
+            <Tooltip>
+              <TooltipTrigger render={<div className="flex items-center gap-2" />}>
+                <span className="text-lg shrink-0">{gameTypeToEmoji(game.type)}</span>
                 <CardTitle className="text-sm sm:text-base font-semibold text-white truncate leading-tight">
                   {game.title}
                 </CardTitle>
-                <span className="text-base flex-shrink-0">
-                  {localeToEmoji((game as unknown as { lang: Locale }).lang)}
-                </span>
-              </div>
+                <span className="text-base shrink-0">{localeToEmoji((game as unknown as { lang: Locale }).lang)}</span>
+              </TooltipTrigger>
+              <TooltipContent>{game.title}</TooltipContent>
             </Tooltip>
           </div>
           {isOrganizer && <EditGameButton gameId={game.id ?? ''} />}
         </div>
       </CardHeader>
 
-      <CardContent className="px-4 pb-4 pt-2">
+      <CardContent className="px-3 pb-3 pt-1">
         {/* Organizers */}
-        <Box className="flex flex-col gap-1 items-start">
+        <div className="flex flex-col gap-1 items-start">
           <div className="flex items-center gap-1">
-            <SupervisorAccountIcon sx={{ fontSize: '0.875rem', color: 'rgb(251, 191, 36)' }} />
-            <Typography variant="caption" className="text-xs font-medium text-yellow-300">
-              {intl.formatMessage(globalMessages.organizers)}
-            </Typography>
+            <UserCog className="size-3.5 text-amber-400" />
+            <span className="text-xs font-medium text-yellow-300">{intl.formatMessage(globalMessages.organizers)}</span>
           </div>
           <div className="flex justify-start w-full">
             <GameOrganizersAvatarGroup gameId={game.id ?? ''} max={3} size="small" />
           </div>
-        </Box>
+        </div>
       </CardContent>
     </Card>
   );
@@ -141,22 +142,21 @@ interface EditGameButtonProps {
 function EditGameButton({ gameId }: EditGameButtonProps) {
   const intl = useIntl();
   return (
-    <Tooltip title={intl.formatMessage(messages.editGame)}>
-      <IconButton
-        href={'/edit/' + gameId}
-        size="small"
-        sx={{
-          color: 'rgba(252, 211, 77, 0.9)',
-          transition: 'all 0.2s',
-          '&:hover': {
-            color: 'rgba(252, 211, 77, 1)',
-            transform: 'rotate(15deg) scale(1.1)',
-            backgroundColor: 'rgba(234, 179, 8, 0.1)',
-          },
-        }}
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            nativeButton={false}
+            render={<NextLink href={'/edit/' + gameId} />}
+            className="text-[rgba(252,211,77,0.9)] transition-all duration-200 hover:text-[rgba(252,211,77,1)] hover:rotate-[15deg] hover:scale-110 hover:bg-[rgba(234,179,8,0.1)]"
+          />
+        }
       >
-        <EditIcon fontSize="small" />
-      </IconButton>
+        <Pencil className="size-5" />
+      </TooltipTrigger>
+      <TooltipContent>{intl.formatMessage(messages.editGame)}</TooltipContent>
     </Tooltip>
   );
 }

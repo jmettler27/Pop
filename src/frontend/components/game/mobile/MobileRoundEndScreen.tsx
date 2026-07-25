@@ -2,9 +2,7 @@
 
 import { useParams } from 'next/navigation';
 
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import RemoveIcon from '@mui/icons-material/Remove';
+import { ChevronDown, ChevronUp, Minus } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
@@ -78,7 +76,7 @@ function RankDiffBadge({ rankDiff, rankingUnchangedLabel }: { rankDiff: number; 
   if (rankDiff === 0) {
     return (
       <div className="flex items-center gap-1 text-slate-400">
-        <RemoveIcon />
+        <Minus />
         <i>{rankingUnchangedLabel}</i>
       </div>
     );
@@ -86,14 +84,14 @@ function RankDiffBadge({ rankDiff, rankingUnchangedLabel }: { rankDiff: number; 
   if (rankDiff > 0) {
     return (
       <div className="flex items-center gap-1 text-green-400 text-lg font-semibold">
-        <KeyboardArrowUpIcon />
+        <ChevronUp />
         <span>+{rankDiff}</span>
       </div>
     );
   }
   return (
     <div className="flex items-center gap-1 text-red-400 text-lg font-semibold">
-      <KeyboardArrowDownIcon />
+      <ChevronDown />
       <span>{rankDiff}</span>
     </div>
   );

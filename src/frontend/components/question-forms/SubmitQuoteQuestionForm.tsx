@@ -1,11 +1,8 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Button, IconButton } from '@mui/material';
-import Box from '@mui/system/Box';
-import { Field, FieldArray, useField, useFormikContext } from 'formik';
+import { FieldArray, useField, useFormikContext } from 'formik';
+import { Plus, Trash2 } from 'lucide-react';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 import type { ObjectSchema } from 'yup';
@@ -16,6 +13,8 @@ import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepCompon
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
 import { MyTextInput, StyledErrorMessage } from '@/frontend/components/common/StyledFormComponents';
+import { Button } from '@/frontend/components/ui/button';
+import { Checkbox } from '@/frontend/components/ui/checkbox';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { topicSchema } from '@/frontend/helpers/forms/topics';
 import { DEFAULT_LOCALE, Locale, localeSchema } from '@/frontend/helpers/locales';
@@ -329,31 +328,28 @@ function EnterGuessSteps({ onSubmit, validationSchema }: StepProps) {
       <div id="checkbox-group" className="2xl:text-xl">
         {intl.formatMessage(messages.aspectsToGuess)}
       </div>
-      <div role="group" aria-labelledby="checkbox-group">
+      <div role="group" aria-labelledby="checkbox-group" className="flex flex-col gap-2">
         {values.source && (
-          <label>
-            <Field type="checkbox" name="toGuess" value="source" />
+          <ToGuessCheckbox value="source">
             {QuoteSourceElement.elementToEmoji()} {intl.formatMessage(messages.quoteSource)} (&quot;{values.source}
             &quot;)
-          </label>
+          </ToGuessCheckbox>
         )}
         {values.author && (
-          <label>
-            <Field type="checkbox" name="toGuess" value="author" />
+          <ToGuessCheckbox value="author">
             {QuoteAuthorElement.elementToEmoji()} {intl.formatMessage(messages.quoteAuthor)} (&quot;{values.author}
             &quot;)
-          </label>
+          </ToGuessCheckbox>
         )}
-        <label>
-          <Field type="checkbox" name="toGuess" value="quote" />
+        <ToGuessCheckbox value="quote">
           {QuotePartElement.elementToEmoji()} {intl.formatMessage(messages.parts)}
-        </label>
+        </ToGuessCheckbox>
       </div>
       {typeof errors.toGuess === 'string' && <StyledErrorMessage>{errors.toGuess}</StyledErrorMessage>}
 
       {/* Only display this if quote is checked */}
       {values.toGuess.includes('quote') && (
-        <Box component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', maxWidth: '900px' }}>
+        <section className="my-4 p-4 border-2 border-dashed border-gray-500 max-w-[900px]">
           <span className="2xl:text-xl">{intl.formatMessage(messages.enterParts)}</span>
           <br />
           <span className="2xl:text-xl">{intl.formatMessage(messages.partsNoOverlap)}</span>
@@ -374,13 +370,13 @@ function EnterGuessSteps({ onSubmit, validationSchema }: StepProps) {
                   ))}
                 <Button
                   disabled={errors.quoteParts !== undefined && typeof errors.quoteParts !== 'string'}
-                  variant="outlined"
-                  startIcon={<AddIcon />}
+                  variant="outline"
                   onClick={() => {
                     const lastEndIdx = quoteParts.length > 0 ? quoteParts[0].endIdx : -1;
                     push({ startIdx: lastEndIdx + 1, endIdx: lastEndIdx + 1 });
                   }}
                 >
+                  <Plus className="mr-2 size-4" />
                   {intl.formatMessage(messages.addPart)}
                 </Button>
               </>
@@ -388,9 +384,28 @@ function EnterGuessSteps({ onSubmit, validationSchema }: StepProps) {
           </FieldArray>
 
           {typeof errors.quoteParts === 'string' && <StyledErrorMessage>{errors.quoteParts}</StyledErrorMessage>}
-        </Box>
+        </section>
       )}
     </WizardStep>
+  );
+}
+
+// Toggles `value` in the array-valued "toGuess" Formik field.
+function ToGuessCheckbox({ value, children }: { value: string; children: React.ReactNode }) {
+  const formik = useFormikContext<QuoteFormValues>();
+  const checked = formik.values.toGuess.includes(value);
+
+  return (
+    <label className="flex items-center gap-2 font-medium">
+      <Checkbox
+        checked={checked}
+        onCheckedChange={(next) => {
+          const toGuess = next ? [...formik.values.toGuess, value] : formik.values.toGuess.filter((v) => v !== value);
+          formik.setFieldValue('toGuess', toGuess);
+        }}
+      />
+      {children}
+    </label>
   );
 }
 
@@ -460,9 +475,9 @@ function EnterQuotePart({ quotePart, index, onDelete, validationSchema }: EnterQ
           maxLength={0}
         />
 
-        <IconButton color="error" onClick={onDelete}>
-          <DeleteIcon />
-        </IconButton>
+        <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={onDelete}>
+          <Trash2 />
+        </Button>
       </div>
     </div>
   );

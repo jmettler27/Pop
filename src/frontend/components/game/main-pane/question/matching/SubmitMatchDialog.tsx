@@ -1,12 +1,19 @@
 import { useState } from 'react';
 
-import CancelIcon from '@mui/icons-material/Cancel';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { submitMatch } from '@/backend/services/question/matching/actions';
 import { matchIsComplete } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
+import { Button } from '@/frontend/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/frontend/components/ui/dialog';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -94,28 +101,35 @@ export default function SubmitMatchDialog({
   };
 
   return (
-    <Dialog disableEscapeKeyDown open={dialogOpen} onClose={onDialogClose}>
-      <DialogTitle>{intl.formatMessage(globalMessages.dialogTitle)}</DialogTitle>
+    <Dialog
+      open={dialogOpen}
+      onOpenChange={(open, eventDetails) => {
+        if (eventDetails.reason === 'escape-key') return;
+        if (!open) onDialogClose();
+      }}
+    >
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>{intl.formatMessage(globalMessages.dialogTitle)}</DialogTitle>
+          <DialogDescription>{GameMatchingQuestion.edgesToString(edges, answer)}</DialogDescription>
+        </DialogHeader>
 
-      <DialogContent>
-        <DialogContentText>{GameMatchingQuestion.edgesToString(edges, answer)}</DialogContentText>
+        <DialogFooter>
+          <Button onClick={handleMatchValidate} disabled={isSubmitting}>
+            <CheckCircle2 className="mr-2 size-4" />
+            {intl.formatMessage(globalMessages.submit)}
+          </Button>
+
+          <Button
+            variant="outline"
+            className="border-destructive text-destructive hover:bg-destructive/10"
+            onClick={handleMatchCancel}
+          >
+            <XCircle className="mr-2 size-4" />
+            {intl.formatMessage(globalMessages.cancel)}
+          </Button>
+        </DialogFooter>
       </DialogContent>
-
-      <DialogActions>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<CheckCircleIcon />}
-          onClick={handleMatchValidate}
-          disabled={isSubmitting}
-        >
-          {intl.formatMessage(globalMessages.submit)}
-        </Button>
-
-        <Button variant="outlined" color="error" startIcon={<CancelIcon />} onClick={handleMatchCancel}>
-          {intl.formatMessage(globalMessages.cancel)}
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 }

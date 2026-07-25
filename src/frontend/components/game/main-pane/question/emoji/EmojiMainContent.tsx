@@ -1,5 +1,3 @@
-import { Box } from '@mui/material';
-
 import NextImage from '@/frontend/components/common/NextImage';
 import useGame from '@/frontend/hooks/useGame';
 import { GameStatus } from '@/models/games/game-status';
@@ -31,26 +29,26 @@ function EndedEmojiMainContent({ baseQuestion }: EmojiMainContentProps) {
 
   if (!image) {
     return (
-      <Box className="flex flex-col h-3/4 max-w-1/2 items-center justify-center space-y-2">
+      <div className="flex flex-col h-3/4 max-w-1/2 items-center justify-center space-y-2">
         <span className="text-9xl">{clue}</span>
         <span className="text-4xl text-green-500">
           <strong>{title}</strong>
         </span>
-      </Box>
+      </div>
     );
   }
 
   return (
-    <Box className="flex flex-row h-full w-[90%] items-center justify-center space-x-8">
-      <Box className="flex flex-col h-3/4 max-w-1/2 items-end justify-end">
+    <div className="flex flex-row h-full w-[90%] items-center justify-center space-x-8">
+      <div className="flex flex-col h-3/4 max-w-1/2 items-end justify-end">
         <NextImage url={image} alt={title ?? ''} />
-      </Box>
-      <Box className="flex flex-col h-3/4 max-w-1/2 items-start justify-center space-y-2">
+      </div>
+      <div className="flex flex-col h-3/4 max-w-1/2 items-start justify-center space-y-2">
         <span className="text-7xl">{clue}</span>
         <span className="text-4xl text-green-500">
           <strong>{title}</strong>
         </span>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

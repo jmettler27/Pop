@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 
-import { CircularProgress, List, ListItemButton, ListItemText } from '@mui/material';
+import { clsx } from 'clsx';
 import { useIntl } from 'react-intl';
 
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
@@ -12,6 +12,7 @@ import { shuffleIndices } from '@/backend/utils/arrays';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import { NaguiChooserController } from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerController';
 import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -46,7 +47,7 @@ export default function MobileNaguiControl() {
   );
 
   if (questionError || chooserError || baseQuestionError) return null;
-  if (questionLoading || chooserLoading || baseQuestionLoading) return <CircularProgress />;
+  if (questionLoading || chooserLoading || baseQuestionLoading) return <Spinner />;
   if (!gameQuestion || !chooser || !baseQuestion) return null;
 
   const chooserData = chooser as unknown as Chooser;
@@ -164,25 +165,24 @@ function MobileNaguiChoiceSelector({
   const duoIdx = baseQuestion.duoIdx;
 
   return (
-    <List className="rounded-lg w-4/5 overflow-y-auto space-y-3">
+    <ul className="rounded-lg w-4/5 overflow-y-auto space-y-3">
       {randomization.map(
         (origIdx, idx) =>
           (gameQuestion.option !== DuoNaguiOption.TYPE || origIdx === answerIdx || origIdx === duoIdx) && (
-            <ListItemButton
-              key={idx}
-              divider={idx !== choices.length - 1}
-              disabled={isSubmitting}
-              sx={{ '&.Mui-disabled': { opacity: 1 } }}
-              className="border-4 border-solid rounded-lg border-blue-500 hover:text-blue-400"
-              onClick={() => handleSelectChoice(origIdx)}
-            >
-              <ListItemText
-                primary={`${NaguiQuestion.CHOICES[idx]}. ${choices[origIdx]}`}
-                primaryTypographyProps={{ className: 'text-lg' }}
-              />
-            </ListItemButton>
+            <li key={idx} className={clsx(idx !== choices.length - 1 && 'border-b border-border')}>
+              <button
+                type="button"
+                disabled={isSubmitting}
+                className="w-full text-left px-4 py-2 border-4 border-solid rounded-lg border-blue-500 hover:text-blue-400 disabled:opacity-100"
+                onClick={() => handleSelectChoice(origIdx)}
+              >
+                <span className="text-lg">
+                  {NaguiQuestion.CHOICES[idx]}. {choices[origIdx]}
+                </span>
+              </button>
+            </li>
           )
       )}
-    </List>
+    </ul>
   );
 }

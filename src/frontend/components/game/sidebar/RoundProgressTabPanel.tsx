@@ -2,10 +2,10 @@
 
 import { memo } from 'react';
 
-import { CircularProgress } from '@mui/material';
 import { useIntl } from 'react-intl';
 
 import RoundQuestionsProgress from '@/frontend/components/game/sidebar/RoundQuestionsProgress';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import { RoundTypeIcon } from '@/frontend/helpers/question-types';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -27,7 +27,7 @@ export default function RoundProgressTabPanel({ game }: RoundProgressTabPanelPro
     return <></>;
   }
   if (roundLoading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!round) {
     return <></>;
@@ -59,7 +59,7 @@ const RoundProgressHeader = memo(function RoundProgressHeader({
   const intl = useIntl();
   return (
     <div className="flex flex-row items-center w-full justify-center space-x-1 mt-1">
-      <RoundTypeIcon roundType={roundType} fontSize={20} />
+      <RoundTypeIcon roundType={roundType} className="size-5" />
       <span className="2xl:text-xl">
         <strong>
           {intl.formatMessage(globalMessages.round)} {roundOrder + 1}

@@ -1,9 +1,52 @@
-import { Avatar, AvatarGroup, Skeleton, Tooltip } from '@mui/material';
-
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
+import { Avatar, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage } from '@/frontend/components/ui/avatar';
+import { Skeleton } from '@/frontend/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 
 type AvatarSize = 'small' | 'medium' | 'large';
+
+const SIZE_CLASSES: Record<AvatarSize, string> = {
+  small: 'size-[28px] sm:size-[30px] md:size-8 text-xs sm:text-sm md:text-base',
+  medium: 'size-8 sm:size-9 md:size-10 text-xs sm:text-sm md:text-base',
+  large: 'size-10 sm:size-11 md:size-12 text-xs sm:text-sm md:text-base',
+};
+
+interface AvatarGroupPerson {
+  id: string | undefined;
+  name: string;
+  image?: string | null;
+}
+
+function PeopleAvatarGroup({ people, max, size }: { people: AvatarGroupPerson[]; max: number; size: AvatarSize }) {
+  const sizeClasses = SIZE_CLASSES[size];
+  const hasOverflow = people.length > max;
+  const visible = hasOverflow ? people.slice(0, max - 1) : people;
+  const overflowCount = hasOverflow ? people.length - (max - 1) : 0;
+
+  return (
+    <AvatarGroup className="*:data-[slot=avatar]:ring-0">
+      {visible.map((person) => (
+        <Tooltip key={person.id}>
+          <TooltipTrigger
+            render={
+              <Avatar
+                className={`${sizeClasses} border-2 border-[#1e293b] transition-all duration-200 hover:scale-[1.15] hover:z-10 hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)]`}
+              />
+            }
+          >
+            <AvatarImage src={person.image ?? undefined} alt={person.name} />
+            <AvatarFallback>{person.name?.[0]?.toUpperCase()}</AvatarFallback>
+          </TooltipTrigger>
+          <TooltipContent>{person.name}</TooltipContent>
+        </Tooltip>
+      ))}
+      {overflowCount > 0 && (
+        <AvatarGroupCount className={`${sizeClasses} border-2 border-[#1e293b]`}>+{overflowCount}</AvatarGroupCount>
+      )}
+    </AvatarGroup>
+  );
+}
 
 interface GameOrganizersAvatarGroupProps {
   gameId: string;
@@ -19,45 +62,13 @@ export function GameOrganizersAvatarGroup({ gameId, max = 4, size = 'medium' }: 
     return <></>;
   }
   if (loading) {
-    return <Skeleton variant="rounded" width={210} height={60} />;
+    return <Skeleton className="w-[210px] h-[60px]" />;
   }
   if (!organizers) {
     return <></>;
   }
 
-  const sizeMap: Record<AvatarSize, { xs: number; sm: number; md: number }> = {
-    small: { xs: 28, sm: 30, md: 32 },
-    medium: { xs: 32, sm: 36, md: 40 },
-    large: { xs: 40, sm: 44, md: 48 },
-  };
-
-  const avatarSizes = sizeMap[size] || sizeMap.medium;
-
-  return (
-    <AvatarGroup
-      max={max}
-      sx={{
-        '& .MuiAvatar-root': {
-          width: avatarSizes,
-          height: avatarSizes,
-          fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' },
-          border: '2px solid #1e293b',
-          transition: 'all 0.2s',
-          '&:hover': {
-            transform: 'scale(1.15)',
-            zIndex: 10,
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
-          },
-        },
-      }}
-    >
-      {organizers.map((organizer) => (
-        <Tooltip key={organizer.id} title={organizer.name} placement="top" arrow>
-          <Avatar src={organizer.image ?? undefined} alt={organizer.name} />
-        </Tooltip>
-      ))}
-    </AvatarGroup>
-  );
+  return <PeopleAvatarGroup people={organizers} max={max} size={size} />;
 }
 
 interface GamePlayersAvatarGroupProps {
@@ -74,43 +85,11 @@ export function GamePlayersAvatarGroup({ gameId, max = 4, size = 'medium' }: Gam
     return <></>;
   }
   if (loading) {
-    return <Skeleton variant="rounded" width={210} height={60} />;
+    return <Skeleton className="w-[210px] h-[60px]" />;
   }
   if (!players) {
     return <></>;
   }
 
-  const sizeMap: Record<AvatarSize, { xs: number; sm: number; md: number }> = {
-    small: { xs: 28, sm: 30, md: 32 },
-    medium: { xs: 32, sm: 36, md: 40 },
-    large: { xs: 40, sm: 44, md: 48 },
-  };
-
-  const avatarSizes = sizeMap[size] || sizeMap.medium;
-
-  return (
-    <AvatarGroup
-      max={max}
-      sx={{
-        '& .MuiAvatar-root': {
-          width: avatarSizes,
-          height: avatarSizes,
-          fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' },
-          border: '2px solid #1e293b',
-          transition: 'all 0.2s',
-          '&:hover': {
-            transform: 'scale(1.15)',
-            zIndex: 10,
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
-          },
-        },
-      }}
-    >
-      {players.map((player) => (
-        <Tooltip key={player.id} title={player.name} placement="top" arrow>
-          <Avatar src={player.image ?? undefined} alt={player.name} />
-        </Tooltip>
-      ))}
-    </AvatarGroup>
-  );
+  return <PeopleAvatarGroup people={players} max={max} size={size} />;
 }

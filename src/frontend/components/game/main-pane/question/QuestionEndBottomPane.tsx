@@ -1,10 +1,9 @@
-import FastForwardIcon from '@mui/icons-material/FastForward';
-import ScoreboardIcon from '@mui/icons-material/Scoreboard';
-import { Button } from '@mui/material';
+import { FastForward, Trophy } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { handleQuestionEnd } from '@/backend/services/round/actions';
 import ReadyPlayerController from '@/frontend/components/game/main-pane/ReadyPlayerController';
+import { Button } from '@/frontend/components/ui/button';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -81,15 +80,8 @@ function QuestionEndOrganizerButton({ round, isLastQuestion }: QuestionEndOrgani
   });
 
   return (
-    <Button
-      className="rounded-full"
-      color="secondary"
-      size="large"
-      variant="contained"
-      onClick={handleContinueClick}
-      disabled={isEnding}
-      startIcon={isLastQuestion ? <ScoreboardIcon /> : <FastForwardIcon />}
-    >
+    <Button className="rounded-full" variant="secondary" size="lg" onClick={handleContinueClick} disabled={isEnding}>
+      {isLastQuestion ? <Trophy className="mr-2 size-4" /> : <FastForward className="mr-2 size-4" />}
       {isLastQuestion ? intl.formatMessage(messages.endRound) : intl.formatMessage(messages.nextQuestion)}
     </Button>
   );

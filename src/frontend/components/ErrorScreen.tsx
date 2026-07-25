@@ -1,13 +1,13 @@
 'use client';
 
 import { useMemo } from 'react';
-import Link from 'next/link';
+import NextLink from 'next/link';
 
-import HomeIcon from '@mui/icons-material/Home';
-import { Button } from '@mui/material';
+import { Home } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { getRandomElement } from '@/backend/utils/arrays';
+import { Button } from '@/frontend/components/ui/button';
 import globalMessages from '@/frontend/i18n/globalMessages';
 
 const ERROR_TIP_KEYS = [
@@ -63,21 +63,11 @@ export default function ErrorScreen({ inline = false }: ErrorScreenProps) {
 
       {!inline && (
         <Button
-          component={Link}
-          href="/"
-          variant="contained"
-          startIcon={<HomeIcon />}
-          className="mt-2"
-          sx={{
-            backgroundColor: 'rgb(239 68 68)',
-            '&:hover': { backgroundColor: 'rgb(220 38 38)' },
-            textTransform: 'none',
-            fontWeight: 500,
-            borderRadius: '0.5rem',
-            px: 3,
-            py: 1,
-          }}
+          nativeButton={false}
+          render={<NextLink href="/" />}
+          className="mt-2 bg-red-500 hover:bg-red-600 normal-case font-medium rounded-lg px-6 py-2"
         >
+          <Home className="mr-2 size-4" />
           {intl.formatMessage(globalMessages.home)}
         </Button>
       )}

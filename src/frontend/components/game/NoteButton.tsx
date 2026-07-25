@@ -1,13 +1,15 @@
-import WarningIcon from '@mui/icons-material/Warning';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
+import { TriangleAlert } from 'lucide-react';
+
+import { Button } from '@/frontend/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 
 export default function NoteButton({ note }: { note: string }) {
   return (
-    <Tooltip title={note}>
-      <IconButton>
-        <WarningIcon color="success" />
-      </IconButton>
+    <Tooltip>
+      <TooltipTrigger render={<Button variant="ghost" size="icon" />}>
+        <TriangleAlert className="text-green-500" />
+      </TooltipTrigger>
+      <TooltipContent>{note}</TooltipContent>
     </Tooltip>
   );
 }

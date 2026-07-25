@@ -33,7 +33,7 @@ export default function QuoteMiddlePane({ baseQuestion }: { baseQuestion: QuoteQ
 function QuoteQuestionHeader({ baseQuestion }: { baseQuestion: QuoteQuestion }) {
   return (
     <div className="flex flex-row items-center justify-center ">
-      <QuestionTypeIcon questionType={baseQuestion.type} fontSize={{ xs: 28, md: 50 }} />
+      <QuestionTypeIcon questionType={baseQuestion.type} className="size-7 md:size-[50px]" />
       <h1 className="text-xs md:text-xl 2xl:text-5xl">
         {topicToEmoji(baseQuestion.topic as Topic)}{' '}
         <strong>

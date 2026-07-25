@@ -1,6 +1,5 @@
 'use client';
 
-import { List, ListItem, ListItemText } from '@mui/material';
 import { useIntl } from 'react-intl';
 
 import GameEstimationQuestionRepository from '@/backend/repositories/question/GameEstimationQuestionRepository';
@@ -80,13 +79,13 @@ function EstimationSubmittedTeams({ gameQuestion }: { gameQuestion: GameEstimati
     <div className="flex flex-col h-full w-full justify-start p-2">
       <h2 className="font-bold text-xl">{intl.formatMessage(globalMessages.submittedTeams)}</h2>
       {gameQuestion.bets && gameQuestion.bets.length > 0 ? (
-        <List className="overflow-auto">
+        <ul className="overflow-auto">
           {gameQuestion.bets.map((submission) => (
-            <ListItem key={submission.teamId} dense>
-              <ListItemText primary={getTeamName(submission.teamId)} />
-            </ListItem>
+            <li key={submission.teamId} className="px-2 py-0.5">
+              {getTeamName(submission.teamId)}
+            </li>
           ))}
-        </List>
+        </ul>
       ) : (
         <p className="2xl:text-xl italic opacity-50">{intl.formatMessage(globalMessages.nobody)}</p>
       )}

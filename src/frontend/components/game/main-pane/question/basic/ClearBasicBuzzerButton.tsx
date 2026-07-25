@@ -1,8 +1,8 @@
-import ClearAllIcon from '@mui/icons-material/ClearAll';
-import { Button } from '@mui/material';
+import { RotateCcw } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { clearBuzzer } from '@/backend/services/question/basic/actions';
+import { Button } from '@/frontend/components/ui/button';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -18,7 +18,13 @@ export default function ClearBuzzerButton() {
   });
 
   return (
-    <Button variant="outlined" color="warning" startIcon={<ClearAllIcon />} onClick={handleClick} disabled={isClearing}>
+    <Button
+      variant="outline"
+      className="border-amber-500 text-amber-500 hover:bg-amber-500/10"
+      onClick={handleClick}
+      disabled={isClearing}
+    >
+      <RotateCcw className="mr-2 size-4" />
       {intl.formatMessage(globalMessages.clearBuzzer)}
     </Button>
   );

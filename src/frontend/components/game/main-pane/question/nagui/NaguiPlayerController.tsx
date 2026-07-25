@@ -1,13 +1,11 @@
 'use client';
 
-import Looks4Icon from '@mui/icons-material/Looks4';
-import LooksTwoIcon from '@mui/icons-material/LooksTwo';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { Button, ButtonGroup } from '@mui/material';
+import { Columns2, EyeOff, Grid2x2 } from 'lucide-react';
 
 import { selectOption } from '@/backend/services/question/nagui/actions';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
+import { Button } from '@/frontend/components/ui/button';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useTeam from '@/frontend/hooks/useTeam';
@@ -15,9 +13,9 @@ import useUser from '@/frontend/hooks/useUser';
 import { DuoNaguiOption, GameNaguiQuestion, HideNaguiOption, SquareNaguiOption } from '@/models/questions/nagui';
 
 const NAGUI_OPTION_TO_ICON: Record<string, React.ReactElement> = {
-  hide: <VisibilityOffIcon />,
-  square: <Looks4Icon />,
-  duo: <LooksTwoIcon />,
+  hide: <EyeOff className="mr-2 size-4" />,
+  square: <Grid2x2 className="mr-2 size-4" />,
+  duo: <Columns2 className="mr-2 size-4" />,
 };
 
 interface NaguiPlayerControllerProps {
@@ -64,31 +62,27 @@ export function NaguiChooserController() {
   });
 
   return (
-    <ButtonGroup disableElevation variant="contained" size="large">
+    <div className="flex gap-1">
       <Button
-        color="success"
-        startIcon={NAGUI_OPTION_TO_ICON[HideNaguiOption.TYPE]}
+        className="bg-green-600 text-white hover:bg-green-600/80"
         onClick={() => handleSelectOption(0)}
         disabled={isSelecting}
       >
+        {NAGUI_OPTION_TO_ICON[HideNaguiOption.TYPE]}
         {HideNaguiOption.typeToTitle()}
       </Button>
       <Button
-        color="warning"
-        startIcon={NAGUI_OPTION_TO_ICON[SquareNaguiOption.TYPE]}
+        className="bg-amber-500 text-white hover:bg-amber-500/80"
         onClick={() => handleSelectOption(1)}
         disabled={isSelecting}
       >
+        {NAGUI_OPTION_TO_ICON[SquareNaguiOption.TYPE]}
         {SquareNaguiOption.typeToTitle()}
       </Button>
-      <Button
-        color="error"
-        startIcon={NAGUI_OPTION_TO_ICON[DuoNaguiOption.TYPE]}
-        onClick={() => handleSelectOption(2)}
-        disabled={isSelecting}
-      >
+      <Button variant="destructive" onClick={() => handleSelectOption(2)} disabled={isSelecting}>
+        {NAGUI_OPTION_TO_ICON[DuoNaguiOption.TYPE]}
         {DuoNaguiOption.typeToTitle()}
       </Button>
-    </ButtonGroup>
+    </div>
   );
 }

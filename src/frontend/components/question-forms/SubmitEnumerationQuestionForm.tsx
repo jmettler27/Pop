@@ -1,11 +1,7 @@
-import React from 'react';
 import { useRouter } from 'next/navigation';
 
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Button, IconButton } from '@mui/material';
-import Box from '@mui/system/Box';
 import { Field, FieldArray, useField, useFormikContext } from 'formik';
+import { Plus, Trash2 } from 'lucide-react';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 import type { ObjectSchema } from 'yup';
@@ -22,6 +18,7 @@ import {
   MyTextInput,
   StyledErrorMessage,
 } from '@/frontend/components/common/StyledFormComponents';
+import { Button } from '@/frontend/components/ui/button';
 import { numCharsIndicator, requiredStringInArrayFieldIndicator, stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
 import { topicSchema } from '@/frontend/helpers/forms/topics';
@@ -337,7 +334,7 @@ function EnterAnswerItemsStep({ onSubmit, validationSchema }: StepProps) {
 
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
-      <p>
+      <p className="mb-4">
         {intl.formatMessage(messages.numAnswersAllowed)}: {EnumerationQuestion.MIN_NUM_ANSWERS}-
         {EnumerationQuestion.MAX_NUM_ANSWERS}.
       </p>
@@ -355,11 +352,7 @@ function EnterAnswerItemsStep({ onSubmit, validationSchema }: StepProps) {
           <div>
             {values.answer.length > 0 &&
               values.answer.map((item, index) => (
-                <Box
-                  key={index}
-                  component="section"
-                  sx={{ my: 2, pb: 2, px: 2, border: '2px dashed grey', width: '500px' }}
-                >
+                <section key={index} className="my-4 pb-4 px-4 border-2 border-dashed border-gray-500 w-[500px]">
                   <label htmlFor={'answer.' + index}>
                     {requiredStringInArrayFieldIndicator(validationSchema, 'answer', intl)}
                     {intl.formatMessage(questionMessages.item)} #{index + 1}{' '}
@@ -370,14 +363,20 @@ function EnterAnswerItemsStep({ onSubmit, validationSchema }: StepProps) {
                     type="text"
                     placeholder={exampleAnswers[index % exampleAnswers.length]}
                   />
-                  <IconButton color="error" onClick={() => remove(index)}>
-                    <DeleteIcon />
-                  </IconButton>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-destructive hover:bg-destructive/10"
+                    onClick={() => remove(index)}
+                  >
+                    <Trash2 />
+                  </Button>
 
                   <ItemError index={index} />
-                </Box>
+                </section>
               ))}
-            <Button variant="outlined" startIcon={<AddIcon />} onClick={() => push('')}>
+            <Button variant="outline" onClick={() => push('')}>
+              <Plus className="mr-2 size-4" />
               {intl.formatMessage(questionMessages.addItem)}
             </Button>
           </div>

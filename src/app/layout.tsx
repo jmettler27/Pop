@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Inter } from 'next/font/google';
+import { Geist, Inter } from 'next/font/google';
 
 import '@/app/globals.css';
 
@@ -8,8 +8,10 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import LocaleProvider from '@/app/LocaleProvider';
 import SessionProvider from '@/app/SessionProvider';
-// https://github.com/mui/material-ui/issues/34898#issuecomment-1568462651
-import ThemeWrapper from '@/app/ThemeWrapper';
+import { TooltipProvider } from '@/frontend/components/ui/tooltip';
+import { cn } from '@/frontend/lib/utils';
+
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 const inter = Inter({ subsets: ['latin'] }); //, display: 'swap' })
 
@@ -23,14 +25,15 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
   return (
     // lang is managed client-side by LocaleProvider (updates document.documentElement.lang)
-    <html lang="fr">
-      <ThemeWrapper>
-        <body className={`${inter.className} bg-slate-800 text-slate-100`}>
-          <SessionProvider session={session}>
-            <LocaleProvider>{children}</LocaleProvider>
-          </SessionProvider>
-        </body>
-      </ThemeWrapper>
+    // class="dark" is permanent — the app only supports dark mode (see @custom-variant dark in globals.css)
+    <html lang="fr" className={cn('dark', 'font-sans', geist.variable)}>
+      <body className={`${inter.className} bg-slate-800 text-slate-100`}>
+        <SessionProvider session={session}>
+          <LocaleProvider>
+            <TooltipProvider>{children}</TooltipProvider>
+          </LocaleProvider>
+        </SessionProvider>
+      </body>
     </html>
   );
 }

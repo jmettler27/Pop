@@ -1,12 +1,11 @@
 'use client';
 
-import Link from 'next/link';
+import NextLink from 'next/link';
 
-import ConstructionIcon from '@mui/icons-material/Construction';
-import HomeIcon from '@mui/icons-material/Home';
-import { Button } from '@mui/material';
+import { Construction, Home } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
+import { Button } from '@/frontend/components/ui/button';
 import globalMessages from '@/frontend/i18n/globalMessages';
 
 export default function GameUnderConstructionScreen() {
@@ -14,7 +13,7 @@ export default function GameUnderConstructionScreen() {
 
   return (
     <div className="flex flex-col min-h-screen w-full justify-center items-center gap-8 bg-slate-900">
-      <ConstructionIcon sx={{ fontSize: 64, color: 'rgb(251 191 36)' }} />
+      <Construction className="size-16 text-amber-400" />
 
       <h1 className="text-3xl md:text-4xl font-bold text-white text-center px-8">
         {intl.formatMessage(globalMessages.gameUnderConstructionTitle)}
@@ -25,22 +24,11 @@ export default function GameUnderConstructionScreen() {
       </p>
 
       <Button
-        component={Link}
-        href="/"
-        variant="contained"
-        startIcon={<HomeIcon />}
-        className="mt-2"
-        sx={{
-          backgroundColor: 'rgb(251 191 36)',
-          color: 'rgb(15 23 42)',
-          '&:hover': { backgroundColor: 'rgb(245 158 11)' },
-          textTransform: 'none',
-          fontWeight: 600,
-          borderRadius: '0.5rem',
-          px: 3,
-          py: 1,
-        }}
+        nativeButton={false}
+        render={<NextLink href="/" />}
+        className="mt-2 bg-amber-400 text-slate-900 hover:bg-amber-500 normal-case font-semibold rounded-lg px-6 py-2"
       >
+        <Home className="mr-2 size-4" />
         {intl.formatMessage(globalMessages.home)}
       </Button>
     </div>

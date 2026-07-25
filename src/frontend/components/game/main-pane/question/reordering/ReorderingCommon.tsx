@@ -3,24 +3,14 @@
 import { useMemo, useState } from 'react';
 import Image from 'next/image';
 
-import CancelIcon from '@mui/icons-material/Cancel';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import SwapVertIcon from '@mui/icons-material/SwapVert';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  CircularProgress,
-  ListItemIcon,
-  Typography,
-} from '@mui/material';
 import { clsx } from 'clsx';
+import { ArrowUpDown, CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import NoteButton from '@/frontend/components/game/NoteButton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/frontend/components/ui/accordion';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -47,7 +37,7 @@ export function ReorderingQuestionHeader({ baseQuestion }: { baseQuestion: Reord
   return (
     <div className="flex flex-col items-center justify-center space-y-2">
       <div className="flex flex-row items-center justify-center space-x-1">
-        <QuestionTypeIcon questionType={baseQuestion.type} fontSize={{ xs: 28, md: 50 }} />
+        <QuestionTypeIcon questionType={baseQuestion.type} className="size-7 md:size-[50px]" />
         <h1 className="text-xs md:text-xl 2xl:text-5xl">
           {topicToEmoji(baseQuestion.topic as Topic)}{' '}
           <strong>
@@ -86,49 +76,40 @@ export function ReorderingItemAccordion({
 
   return (
     <Accordion
-      className="flex-grow"
-      expanded={expanded}
-      onChange={onAccordionChange}
-      disabled={false}
-      disableGutters
-      sx={{
-        ...(teamSubmitted && {
-          borderLeft: '4px solid',
-          borderLeftColor: isCorrect ? 'success.main' : 'error.main',
-          bgcolor: isCorrect ? 'rgba(46, 125, 50, 0.08)' : 'rgba(211, 47, 47, 0.08)',
-        }),
-      }}
+      value={expanded ? ['item'] : []}
+      onValueChange={() => onAccordionChange()}
+      className={clsx(
+        'grow',
+        teamSubmitted &&
+          (isCorrect ? 'border-l-4 border-l-green-600 bg-green-600/10' : 'border-l-4 border-l-red-600 bg-red-600/10')
+      )}
     >
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <ListItemIcon className="flex items-center">
-          {teamSubmitted &&
-            (isCorrect ? (
-              <CheckCircleIcon sx={{ color: 'success.main', mr: 1 }} />
-            ) : (
-              <CancelIcon sx={{ color: 'error.main', mr: 1 }} />
-            ))}
-          <Typography variant="h6" className="font-bold">
-            {displayOrder + 1}.
-          </Typography>
-        </ListItemIcon>
-        <div className="flex flex-col flex-grow">
-          <Typography sx={{ marginRight: '10px' }} variant="h6">
-            {item.title}
-          </Typography>
-          {teamSubmitted && !isCorrect && teamPlacedAt !== undefined && (
-            <div className="flex items-center text-sm text-red-500 dark:text-red-400 mt-1">
-              <SwapVertIcon fontSize="small" className="mr-1" />
-              <span>{intl.formatMessage(messages.placed, { position: teamPlacedAt + 1 })}</span>
-            </div>
-          )}
-        </div>
-      </AccordionSummary>
+      <AccordionItem value="item">
+        <AccordionTrigger className="px-3">
+          <span className="flex items-center min-w-14">
+            {teamSubmitted &&
+              (isCorrect ? (
+                <CheckCircle2 className="text-green-500 mr-2" />
+              ) : (
+                <XCircle className="text-destructive mr-2" />
+              ))}
+            <h6 className="text-xl font-bold">{displayOrder + 1}.</h6>
+          </span>
+          <div className="flex flex-col grow">
+            <h6 className="text-xl mr-2.5">{item.title}</h6>
+            {teamSubmitted && !isCorrect && teamPlacedAt !== undefined && (
+              <div className="flex items-center text-sm text-red-500 dark:text-red-400 mt-1">
+                <ArrowUpDown className="size-4 mr-1" />
+                <span>{intl.formatMessage(messages.placed, { position: teamPlacedAt + 1 })}</span>
+              </div>
+            )}
+          </div>
+        </AccordionTrigger>
 
-      <AccordionDetails>
-        <Typography sx={{ color: 'text.secondary' }} variant="h6">
-          {item.explanation}
-        </Typography>
-      </AccordionDetails>
+        <AccordionContent className="px-3">
+          <h6 className="text-xl text-muted-foreground">{item.explanation}</h6>
+        </AccordionContent>
+      </AccordionItem>
     </Accordion>
   );
 }
@@ -149,7 +130,7 @@ export function ReorderingResultsTable({ gameQuestion, baseQuestion }: Reorderin
   if (teamsLoading || playersLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <CircularProgress />
+        <Spinner />
       </div>
     );
   }
@@ -220,11 +201,10 @@ function ReorderingTeamResultRow({ team, player, ordering, baseQuestion }: Reord
 
   return (
     <Accordion
-      disableGutters
+      defaultValue={[]}
       disabled={!ordering}
-      sx={{
-        borderRadius: '16px !important',
-        border: '2px solid',
+      className="rounded-2xl border-2 border-solid transition-all duration-300"
+      style={{
         borderColor: !ordering
           ? 'rgba(30,41,59,1)'
           : isPerfect
@@ -232,59 +212,57 @@ function ReorderingTeamResultRow({ team, player, ordering, baseQuestion }: Reord
             : isGood
               ? 'rgb(234,179,8)'
               : 'rgb(71,85,105)',
-        bgcolor: !ordering ? 'rgba(15,23,42,0.3)' : isPerfect ? 'rgba(34,197,94,0.1)' : 'rgba(30,41,59,0.6)',
+        backgroundColor: !ordering ? 'rgba(15,23,42,0.3)' : isPerfect ? 'rgba(34,197,94,0.1)' : 'rgba(30,41,59,0.6)',
         opacity: !ordering ? 0.4 : 1,
-        transition: 'all 300ms',
-        '&:before': { display: 'none' },
-        '&.Mui-disabled': { opacity: !ordering ? 0.4 : 1 },
-        '& .MuiAccordionDetails-root .MuiAccordion-root': { boxShadow: 'none' },
       }}
     >
-      <AccordionSummary expandIcon={ordering ? <ExpandMoreIcon /> : null}>
-        <div className="flex items-center gap-3 w-full pr-2">
-          <div className="relative w-10 h-10 2xl:w-12 2xl:h-12 rounded-full overflow-hidden flex-shrink-0 bg-slate-700 border border-slate-600 flex items-center justify-center text-sm font-bold text-slate-300 select-none">
-            {player?.image ? (
-              <Image src={player.image} alt={player.name ?? ''} fill className="object-cover" />
+      <AccordionItem value="item">
+        <AccordionTrigger className={clsx('px-3', !ordering && '[&_[data-slot=accordion-trigger-icon]]:hidden')}>
+          <div className="flex items-center gap-3 w-full pr-2">
+            <div className="relative w-10 h-10 2xl:w-12 2xl:h-12 rounded-full overflow-hidden shrink-0 bg-slate-700 border border-slate-600 flex items-center justify-center text-sm font-bold text-slate-300 select-none">
+              {player?.image ? (
+                <Image src={player.image} alt={player.name ?? ''} fill className="object-cover" />
+              ) : (
+                <span>{player?.name?.[0]?.toUpperCase() ?? '?'}</span>
+              )}
+            </div>
+            <div className="flex flex-col min-w-0 flex-1">
+              <span className="font-bold text-base 2xl:text-lg truncate text-slate-100">{team.name}</span>
+              {player && <span className="text-xs 2xl:text-sm text-slate-400 truncate">{player.name}</span>}
+            </div>
+            {ordering ? (
+              <span
+                className={clsx(
+                  'text-xl 2xl:text-2xl font-bold tabular-nums shrink-0',
+                  isPerfect ? 'text-green-400' : isGood ? 'text-yellow-400' : 'text-red-400'
+                )}
+              >
+                {score}/{maxScore}
+              </span>
             ) : (
-              <span>{player?.name?.[0]?.toUpperCase() ?? '?'}</span>
+              <span className="text-sm italic text-slate-500 shrink-0">
+                {intl.formatMessage(messages.noSubmission)}
+              </span>
             )}
           </div>
-          <div className="flex flex-col min-w-0 flex-1">
-            <span className="font-bold text-base 2xl:text-lg truncate text-slate-100">{team.name}</span>
-            {player && <span className="text-xs 2xl:text-sm text-slate-400 truncate">{player.name}</span>}
+        </AccordionTrigger>
+        <AccordionContent className="p-0">
+          <div className="rounded-b-2xl overflow-hidden bg-white dark:bg-slate-900">
+            {items.map((_, idx) => (
+              <ReorderingItemAccordion
+                key={idx}
+                item={items[idx]!}
+                displayOrder={idx}
+                expanded={expandedItemIdx === idx}
+                onAccordionChange={() => setExpandedItemIdx(expandedItemIdx === idx ? false : idx)}
+                teamSubmitted
+                teamPlacedAt={teamPlacementMap[idx]}
+                isCorrect={teamPlacementMap[idx] === idx}
+              />
+            ))}
           </div>
-          {ordering ? (
-            <span
-              className={clsx(
-                'text-xl 2xl:text-2xl font-bold tabular-nums flex-shrink-0',
-                isPerfect ? 'text-green-400' : isGood ? 'text-yellow-400' : 'text-red-400'
-              )}
-            >
-              {score}/{maxScore}
-            </span>
-          ) : (
-            <span className="text-sm italic text-slate-500 flex-shrink-0">
-              {intl.formatMessage(messages.noSubmission)}
-            </span>
-          )}
-        </div>
-      </AccordionSummary>
-      <AccordionDetails sx={{ p: 0 }}>
-        <Box className="rounded-b-2xl overflow-hidden bg-white dark:bg-slate-900">
-          {items.map((_, idx) => (
-            <ReorderingItemAccordion
-              key={idx}
-              item={items[idx]!}
-              displayOrder={idx}
-              expanded={expandedItemIdx === idx}
-              onAccordionChange={() => setExpandedItemIdx(expandedItemIdx === idx ? false : idx)}
-              teamSubmitted
-              teamPlacedAt={teamPlacementMap[idx]}
-              isCorrect={teamPlacementMap[idx] === idx}
-            />
-          ))}
-        </Box>
-      </AccordionDetails>
+        </AccordionContent>
+      </AccordionItem>
     </Accordion>
   );
 }

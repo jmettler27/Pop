@@ -2,13 +2,7 @@
 
 import * as React from 'react';
 
-import Checkbox from '@mui/material/Checkbox';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-
+import { Checkbox } from '@/frontend/components/ui/checkbox';
 import { QuoteQuestion } from '@/models/questions/quote';
 
 export default function CancelQuoteElementList({ toGuess }: { toGuess: string[] }) {
@@ -28,27 +22,25 @@ export default function CancelQuoteElementList({ toGuess }: { toGuess: string[] 
   };
 
   return (
-    <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+    <ul className="w-full max-w-[360px] bg-background">
       {toGuess.map((quoteElem: string) => {
         const labelId = `checkbox-list-label-${quoteElem}`;
 
         return (
-          <ListItem key={quoteElem} disablePadding>
-            <ListItemButton role={undefined} onClick={handleToggle(quoteElem)} dense>
-              <ListItemIcon>
-                <Checkbox
-                  edge="start"
-                  checked={checked.indexOf(quoteElem) !== -1}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{ 'aria-labelledby': labelId }}
-                />
-              </ListItemIcon>
-              <ListItemText id={labelId} primary={QuoteQuestion.prependElementWithEmoji(quoteElem)} />
-            </ListItemButton>
-          </ListItem>
+          <li key={quoteElem}>
+            <button
+              type="button"
+              onClick={handleToggle(quoteElem)}
+              className="w-full flex items-center gap-1 py-1 text-left hover:bg-muted rounded-md"
+            >
+              <span className="flex items-center justify-center">
+                <Checkbox checked={checked.indexOf(quoteElem) !== -1} tabIndex={-1} aria-labelledby={labelId} />
+              </span>
+              <span id={labelId}>{QuoteQuestion.prependElementWithEmoji(quoteElem)}</span>
+            </button>
+          </li>
         );
       })}
-    </List>
+    </ul>
   );
 }

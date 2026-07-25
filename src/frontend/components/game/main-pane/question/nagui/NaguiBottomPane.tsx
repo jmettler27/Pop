@@ -1,13 +1,12 @@
 'use client';
 
-import { CircularProgress } from '@mui/material';
-
 import GameNaguiQuestionRepository from '@/backend/repositories/question/GameNaguiQuestionRepository';
 import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import NaguiOrganizerController from '@/frontend/components/game/main-pane/question/nagui/NaguiOrganizerController';
 import NaguiPlayerController from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerController';
 import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
@@ -25,7 +24,7 @@ export default function NaguiBottomPane() {
     return <></>;
   }
   if (loading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!chooser) {
     return <></>;
@@ -62,7 +61,7 @@ function NaguiController({ chooser }: { chooser: Chooser }) {
     return <></>;
   }
   if (loading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!gameQuestion) {
     return <></>;

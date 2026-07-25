@@ -1,12 +1,10 @@
 import { Fragment } from 'react';
 
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import RemoveIcon from '@mui/icons-material/Remove';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { ChevronDown, ChevronUp, Minus } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { scoreboardMessages } from '@/frontend/components/scores/scoreboardUtils';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/frontend/components/ui/table';
 
 import '@/frontend/components/scores/RankDifferenceIcon.css';
 
@@ -37,26 +35,26 @@ export default function GameScoreboard({ roundScores, teams }: GameScoreboardPro
   const rankingDiffs = roundScores.rankingDiffs;
 
   return (
-    <TableContainer component={Paper} className="w-2/3">
-      <Table size="small" aria-label="round scores table">
+    <div className="w-2/3 rounded-lg border border-border overflow-hidden">
+      <Table aria-label="round scores table">
         {/* Table head */}
-        <TableHead>
+        <TableHeader>
           <TableRow>
-            <TableCell className="2xl:text-2xl font-bold text-center">
+            <TableHead className="2xl:text-2xl font-bold text-center">
               {intl.formatMessage(scoreboardMessages.ranking)}
-            </TableCell>
-            <TableCell className="2xl:text-2xl font-bold">{intl.formatMessage(scoreboardMessages.team)}</TableCell>
-            <TableCell className="2xl:text-2xl font-bold text-center">
+            </TableHead>
+            <TableHead className="2xl:text-2xl font-bold">{intl.formatMessage(scoreboardMessages.team)}</TableHead>
+            <TableHead className="2xl:text-2xl font-bold text-center">
               {intl.formatMessage(scoreboardMessages.score)}
-            </TableCell>
+            </TableHead>
           </TableRow>
-        </TableHead>
+        </TableHeader>
 
         {/* Table body */}
         <TableBody>
           {gameSortedTeams.map((item, idx) => (
             <Fragment key={idx}>
-              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              <TableRow className="last:*:border-0">
                 <TableCell className="2xl:text-3xl text-center" scope="row" rowSpan={item.teams.length + 1}>
                   {idx + 1}
                 </TableCell>
@@ -67,7 +65,10 @@ export default function GameScoreboard({ roundScores, teams }: GameScoreboardPro
                 if (!teamData) return null;
                 return (
                   <TableRow key={teamId}>
-                    <TableCell className="text-xs sm:text-sm 2xl:text-base 2xl:text-xl" sx={{ color: teamData.color }}>
+                    <TableCell
+                      className="text-xs sm:text-sm 2xl:text-base 2xl:text-xl"
+                      style={{ color: teamData.color }}
+                    >
                       {rankingDiffs && rankingDiffs[teamId] != null && (
                         <RankDifferenceIcon rankDiff={rankingDiffs[teamId]} />
                       )}{' '}
@@ -82,7 +83,7 @@ export default function GameScoreboard({ roundScores, teams }: GameScoreboardPro
           ))}
         </TableBody>
       </Table>
-    </TableContainer>
+    </div>
   );
 }
 
@@ -95,12 +96,12 @@ function RankDifferenceIcon({ rankDiff }: RankDifferenceIconProps) {
   let textContent = null;
 
   if (rankDiff === 0) {
-    icon = <RemoveIcon color="primary" />;
+    icon = <Minus className="text-primary" />;
   } else if (rankDiff > 0) {
-    icon = <KeyboardArrowUpIcon color="success" fontSize="large" />;
+    icon = <ChevronUp className="size-[35px] text-green-500" />;
     textContent = rankDiff.toString();
   } else {
-    icon = <KeyboardArrowDownIcon color="error" fontSize="large" />;
+    icon = <ChevronDown className="size-[35px] text-destructive" />;
     textContent = rankDiff.toString();
   }
 

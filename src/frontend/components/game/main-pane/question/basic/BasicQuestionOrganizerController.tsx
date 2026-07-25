@@ -1,12 +1,11 @@
-import CancelIcon from '@mui/icons-material/Cancel';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { Button, ButtonGroup } from '@mui/material';
+import { CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { handleAnswer } from '@/backend/services/question/basic/actions';
 import ClearBasicBuzzerButton from '@/frontend/components/game/main-pane/question/basic/ClearBasicBuzzerButton';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
+import { Button } from '@/frontend/components/ui/button';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -59,14 +58,21 @@ function BasicQuestionOrganizerAnswerController({ gameQuestion }: BasicQuestionO
 
   return (
     <>
-      <ButtonGroup disableElevation variant="contained" size="large" color="primary">
-        <Button color="success" startIcon={<CheckCircleIcon />} onClick={validateBasicAnswer} disabled={isValidating}>
+      <div className="flex gap-1">
+        <Button
+          size="lg"
+          className="bg-green-600 text-white hover:bg-green-600/80"
+          onClick={validateBasicAnswer}
+          disabled={isValidating}
+        >
+          <CheckCircle2 className="mr-2 size-4" />
           {intl.formatMessage(globalMessages.validate)}
         </Button>
-        <Button color="error" startIcon={<CancelIcon />} onClick={invalidateBasicAnswer} disabled={isInvalidating}>
+        <Button variant="destructive" size="lg" onClick={invalidateBasicAnswer} disabled={isInvalidating}>
+          <XCircle className="mr-2 size-4" />
           {intl.formatMessage(globalMessages.invalidate)}
         </Button>
-      </ButtonGroup>
+      </div>
     </>
   );
 }

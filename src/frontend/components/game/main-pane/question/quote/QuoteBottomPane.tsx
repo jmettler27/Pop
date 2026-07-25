@@ -1,12 +1,11 @@
 'use client';
 
-import { CircularProgress } from '@mui/material';
-
 import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 import BuzzerPlayerController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayerController';
 import BuzzerPlayers from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayers';
 import BuzzerSpectatorController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerSpectatorController';
 import QuoteOrganizerController from '@/frontend/components/game/main-pane/question/quote/QuoteOrganizerController';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import { QuoteQuestion } from '@/models/questions/quote';
@@ -23,7 +22,7 @@ export default function QuoteBottomPane({ baseQuestion }: { baseQuestion: QuoteQ
     return <></>;
   }
   if (loading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!questionPlayers) {
     return <></>;

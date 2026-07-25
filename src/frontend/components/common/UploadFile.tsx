@@ -1,15 +1,12 @@
 import type { RefObject } from 'react';
 import Image from 'next/image';
 
-import CancelIcon from '@mui/icons-material/Cancel';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import Button from '@mui/material/Button';
-import { styled } from '@mui/material/styles';
-import Box from '@mui/system/Box';
 import { useField, useFormikContext } from 'formik';
+import { Upload, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 import type { ObjectSchema } from 'yup';
 
+import { Button } from '@/frontend/components/ui/button';
 import {
   AUDIO_VALID_TYPES,
   IMAGE_VALID_TYPES,
@@ -26,18 +23,6 @@ const messages = defineMessages('frontend.forms.UploadFile', {
   acceptedFormats: 'Accepted formats',
 });
 
-const VisuallyHiddenInput = styled('input')({
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  height: 1,
-  overflow: 'hidden',
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  whiteSpace: 'nowrap',
-  width: 1,
-});
-
 interface UploadFileProps {
   fileRef?: RefObject<HTMLInputElement | null>;
   name: string;
@@ -52,10 +37,12 @@ const UploadFile = ({ fileRef, onFileChange, ...props }: UploadFileProps) => {
 
   return (
     <>
-      <Button component="label" variant="contained" startIcon={<CloudUploadIcon />}>
+      <Button nativeButton={false} render={<label />}>
+        <Upload className="mr-2 size-4" />
         Upload
-        <VisuallyHiddenInput
+        <input
           type="file"
+          className="sr-only"
           ref={fileRef}
           {...field}
           value={(field.value as string) || ''}
@@ -92,7 +79,7 @@ export function UploadImage({
   const [, meta] = useField(name);
 
   return (
-    <Box component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: '400px' }}>
+    <section className="my-4 p-4 border-2 border-dashed border-gray-500 w-[400px]">
       <span className="text-lg">
         {validationSchema ? requiredFileFieldIndicator(validationSchema as YupObjectSchema, name, intl) : ''}
         {intl.formatMessage(messages.selectImage)}
@@ -115,14 +102,14 @@ export function UploadImage({
             <span className="italic">{image.name}</span> {!meta.error && '✅'}
           </p>
           <Button
-            color="error"
-            variant="outlined"
-            startIcon={<CancelIcon />}
+            variant="outline"
+            className="border-destructive text-destructive hover:bg-destructive/10"
             onClick={() => {
               formik.setFieldValue(name, '');
               onFileChange(null);
             }}
           >
+            <XCircle className="mr-2 size-4" />
             {intl.formatMessage(globalMessages.cancel)}
           </Button>
         </>
@@ -138,7 +125,7 @@ export function UploadImage({
         )
       )}
       <UploadFile name={name} fileRef={fileRef} onFileChange={onFileChange} />
-    </Box>
+    </section>
   );
 }
 
@@ -164,7 +151,7 @@ export function UploadAudio({
   const [, meta] = useField(name);
 
   return (
-    <Box component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: '400px' }}>
+    <section className="my-4 p-4 border-2 border-dashed border-gray-500 w-[400px]">
       <span className="text-lg">
         {validationSchema ? requiredFileFieldIndicator(validationSchema as YupObjectSchema, name, intl) : ''}
         {intl.formatMessage(messages.selectAudio)}{' '}
@@ -181,14 +168,14 @@ export function UploadAudio({
           </p>
           <audio src={URL.createObjectURL(audio)} controls />
           <Button
-            color="error"
-            variant="outlined"
-            startIcon={<CancelIcon />}
+            variant="outline"
+            className="border-destructive text-destructive hover:bg-destructive/10"
             onClick={() => {
               formik.setFieldValue(name, '');
               onFileChange(null);
             }}
           >
+            <XCircle className="mr-2 size-4" />
             {intl.formatMessage(globalMessages.cancel)}
           </Button>
         </>
@@ -196,6 +183,6 @@ export function UploadAudio({
         existingUrl && <audio src={existingUrl} controls />
       )}
       <UploadFile name={name} fileRef={fileRef} onFileChange={onFileChange} />
-    </Box>
+    </section>
   );
 }

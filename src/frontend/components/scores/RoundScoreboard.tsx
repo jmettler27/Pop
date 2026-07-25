@@ -1,10 +1,10 @@
 import { Fragment } from 'react';
 
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
 import { scoreboardMessages } from '@/frontend/components/scores/scoreboardUtils';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/frontend/components/ui/table';
 import { rankingToEmoji } from '@/frontend/helpers/emojis';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -64,36 +64,36 @@ export default function RoundScoreboard({ roundScores, teams }: RoundScoreboardP
   const gameRounds = game instanceof GameRounds ? game : null;
 
   return (
-    <TableContainer component={Paper} className="w-2/3">
-      <Table size="small" aria-label="round scores table">
+    <div className="w-2/3 rounded-lg border border-border overflow-hidden">
+      <Table aria-label="round scores table">
         {/* Table head */}
-        <TableHead>
+        <TableHeader>
           <TableRow>
-            <TableCell className="2xl:text-2xl font-bold text-center">
+            <TableHead className="2xl:text-2xl font-bold text-center">
               {intl.formatMessage(scoreboardMessages.ranking)}
-            </TableCell>
-            <TableCell className="2xl:text-2xl font-bold">{intl.formatMessage(scoreboardMessages.team)}</TableCell>
-            <TableCell className="2xl:text-2xl font-bold text-center">
+            </TableHead>
+            <TableHead className="2xl:text-2xl font-bold">{intl.formatMessage(scoreboardMessages.team)}</TableHead>
+            <TableHead className="2xl:text-2xl font-bold text-center">
               {intl.formatMessage(scoreboardMessages.score)}
-            </TableCell>
+            </TableHead>
             {gameRounds?.roundScorePolicy === ScorePolicyType.RANKING && (
-              <TableCell className="2xl:text-2xl font-bold text-center">
+              <TableHead className="2xl:text-2xl font-bold text-center">
                 {intl.formatMessage(scoreboardMessages.reward)}
-              </TableCell>
+              </TableHead>
             )}
             {gameRounds?.roundScorePolicy === ScorePolicyType.COMPLETION_RATE && isCompletionRound && (
-              <TableCell className="2xl:text-2xl font-bold text-center">
+              <TableHead className="2xl:text-2xl font-bold text-center">
                 {intl.formatMessage(scoreboardMessages.completion)}
-              </TableCell>
+              </TableHead>
             )}
           </TableRow>
-        </TableHead>
+        </TableHeader>
 
         {/* Table body */}
         <TableBody>
           {roundSortedTeams.map((item, idx) => (
             <Fragment key={idx}>
-              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              <TableRow className="last:*:border-0">
                 <TableCell className="2xl:text-3xl text-center" scope="row" rowSpan={item.teams.length + 1}>
                   {rankingToEmoji(idx)}
                 </TableCell>
@@ -106,7 +106,7 @@ export default function RoundScoreboard({ roundScores, teams }: RoundScoreboardP
                 const hasLostPoints = item.reward < 0;
                 return (
                   <TableRow key={teamId}>
-                    <TableCell className="text-xs sm:text-sm 2xl:text-base" sx={{ color: teamData.color }}>
+                    <TableCell className="text-xs sm:text-sm 2xl:text-base" style={{ color: teamData.color }}>
                       {teamData.name}
                     </TableCell>
 
@@ -130,6 +130,6 @@ export default function RoundScoreboard({ roundScores, teams }: RoundScoreboardP
           ))}
         </TableBody>
       </Table>
-    </TableContainer>
+    </div>
   );
 }

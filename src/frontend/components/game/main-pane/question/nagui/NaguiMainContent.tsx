@@ -3,19 +3,15 @@
 import { useMemo } from 'react';
 import Image from 'next/image';
 
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import { Avatar, Badge, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { clsx } from 'clsx';
+import { Check, TriangleAlert, X } from 'lucide-react';
 
-import naguiCorrect from '@/assets/images/nagui-correct.png';
-import naguiWrong from '@/assets/images/nagui-wrong.png';
 import GameNaguiQuestionRepository from '@/backend/repositories/question/GameNaguiQuestionRepository';
 import { selectChoice } from '@/backend/services/question/nagui/actions';
 import { shuffleIndices } from '@/backend/utils/arrays';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { Avatar, AvatarFallback, AvatarImage } from '@/frontend/components/ui/avatar';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -40,14 +36,14 @@ export default function NaguiMainContent({ baseQuestion }: { baseQuestion: Nagui
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center">
-      <div className="flex-shrink-0 w-full flex flex-col items-center justify-center gap-1.5 py-1 px-4">
+      <div className="shrink-0 w-full flex flex-col items-center justify-center gap-1.5 py-1 px-4">
         <h2 className="2xl:text-4xl font-bold text-center">
           {source && <span className="text-slate-400 font-normal">{source} : </span>}
           {title}
         </h2>
         {note && (
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs 2xl:text-sm max-w-lg">
-            <WarningAmberIcon sx={{ fontSize: 13, flexShrink: 0 }} />
+            <TriangleAlert className="size-[13px] shrink-0" />
             <span className="italic">{note}</span>
           </div>
         )}
@@ -61,10 +57,26 @@ export default function NaguiMainContent({ baseQuestion }: { baseQuestion: Nagui
 
 function NaguiAnswerImage({ correct }: { correct: boolean | null | undefined }) {
   if (correct === true) {
-    return <Image src={naguiCorrect} alt="Correct answer" style={{ width: '100%', height: 'auto' }} />;
+    return (
+      <Image
+        src="/images/nagui-correct.png"
+        alt="Correct answer"
+        width={500}
+        height={375}
+        style={{ width: '100%', height: 'auto' }}
+      />
+    );
   }
   if (correct === false) {
-    return <Image src={naguiWrong} alt="Wrong answer" style={{ width: '80%', height: 'auto' }} />;
+    return (
+      <Image
+        src="/images/nagui-wrong.png"
+        alt="Wrong answer"
+        width={500}
+        height={374}
+        style={{ width: '80%', height: 'auto' }}
+      />
+    );
   }
   return <></>;
 }
@@ -169,32 +181,27 @@ function ActiveNaguiChoices({
   }
 
   return (
-    <List className="rounded-lg max-h-full w-1/2 overflow-y-auto mb-3 space-y-3">
+    <ul className="rounded-lg max-h-full w-1/2 overflow-y-auto mb-3 space-y-3">
       {randomization.map(
         (origIdx, idx) =>
           (gameQuestion.option !== DuoNaguiOption.TYPE || origIdx === answerIdx || origIdx === duoIdx) && (
-            <ListItemButton
-              key={idx}
-              divider={idx !== choices.length - 1}
-              disabled={
-                isSubmitting || choiceIsDisabled(origIdx, myRole, isChooser, gameQuestion.option, duoIdx, answerIdx)
-              }
-              sx={{
-                '&.Mui-disabled': { opacity: 1 },
-              }}
-              className="border-4 border-solid rounded-lg border-blue-500 hover:text-blue-400"
-              onClick={() => handleSelectChoice(origIdx)}
-            >
-              <ListItemText
-                primary={`${NaguiQuestion.CHOICES[idx]}. ${choices[origIdx]}`}
-                primaryTypographyProps={{
-                  className: '2xl:text-2xl',
-                }}
-              />
-            </ListItemButton>
+            <li key={idx} className={clsx(idx !== choices.length - 1 && 'border-b border-border')}>
+              <button
+                type="button"
+                disabled={
+                  isSubmitting || choiceIsDisabled(origIdx, myRole, isChooser, gameQuestion.option, duoIdx, answerIdx)
+                }
+                className="w-full text-left px-4 py-2 border-4 border-solid rounded-lg border-blue-500 hover:text-blue-400 disabled:opacity-100"
+                onClick={() => handleSelectChoice(origIdx)}
+              >
+                <span className="2xl:text-2xl">
+                  {NaguiQuestion.CHOICES[idx]}. {choices[origIdx]}
+                </span>
+              </button>
+            </li>
           )
       )}
-    </List>
+    </ul>
   );
 }
 
@@ -225,7 +232,7 @@ function EndedNaguiChoices({
   const getBorderColor = (idx: number) => {
     if (isCorrectAnswer(idx)) return 'border-green-500';
     if (isIncorrectChoice(idx)) return 'border-red-600';
-    if (isNeutralChoice(idx)) return 'border-white border-opacity-35';
+    if (isNeutralChoice(idx)) return 'border-white/35';
   };
 
   const getTextColor = (idx: number) => {
@@ -237,51 +244,49 @@ function EndedNaguiChoices({
   const getListItemIcon = (idx: number) => {
     if (correct && idx === answerIdx) {
       return (
-        <ListItemIcon>
-          <Badge
-            overlap="circular"
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            badgeContent={<PlayerAvatar playerId={playerId} />}
-          >
-            <CheckIcon fontSize="medium" color="success" />
-          </Badge>
-        </ListItemIcon>
+        <span className="flex items-center justify-center min-w-14">
+          <span className="relative inline-flex">
+            <Check className="size-6 text-green-500" />
+            <span className="absolute -bottom-1 -right-1">
+              <PlayerAvatar playerId={playerId} />
+            </span>
+          </span>
+        </span>
       );
     }
 
     if (option !== HideNaguiOption.TYPE && correct === false && idx === choiceIdx) {
       return (
-        <ListItemIcon>
-          <Badge
-            overlap="circular"
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            badgeContent={<PlayerAvatar playerId={playerId} />}
-          >
-            <CloseIcon fontSize="medium" color="error" />
-          </Badge>
-        </ListItemIcon>
+        <span className="flex items-center justify-center min-w-14">
+          <span className="relative inline-flex">
+            <X className="size-6 text-destructive" />
+            <span className="absolute -bottom-1 -right-1">
+              <PlayerAvatar playerId={playerId} />
+            </span>
+          </span>
+        </span>
       );
     }
   };
 
   return (
-    <List className="rounded-lg max-h-full w-1/2 overflow-y-auto mb-3 space-y-3">
+    <ul className="rounded-lg max-h-full w-1/2 overflow-y-auto mb-3 space-y-3">
       {randomization.map((origIdx, idx) => (
-        <ListItemButton
-          key={idx}
-          divider={idx !== choices.length - 1}
-          disabled={true}
-          sx={{ '&.Mui-disabled': { opacity: 1 } }}
-          className={clsx('border-4 border-solid rounded-lg', getBorderColor(origIdx))}
-        >
-          <ListItemText
-            primary={`${NaguiQuestion.CHOICES[idx]}. ${choices[origIdx]}`}
-            primaryTypographyProps={{ className: clsx('2xl:text-2xl', getTextColor(origIdx)) }}
-          />
-          {getListItemIcon(origIdx)}
-        </ListItemButton>
+        <li key={idx} className={clsx(idx !== choices.length - 1 && 'border-b border-border')}>
+          <div
+            className={clsx(
+              'flex items-center justify-between px-4 py-2 border-4 border-solid rounded-lg',
+              getBorderColor(origIdx)
+            )}
+          >
+            <span className={clsx('2xl:text-2xl', getTextColor(origIdx))}>
+              {NaguiQuestion.CHOICES[idx]}. {choices[origIdx]}
+            </span>
+            {getListItemIcon(origIdx)}
+          </div>
+        </li>
       ))}
-    </List>
+    </ul>
   );
 }
 
@@ -294,5 +299,10 @@ function PlayerAvatar({ playerId }: { playerId: string | null }) {
   if (error || loading || !player) return null;
 
   const playerData = player as unknown as { name: string; image: string };
-  return <Avatar alt={playerData.name} src={playerData.image} sx={{ width: 30, height: 30 }} />;
+  return (
+    <Avatar className="size-[30px]">
+      <AvatarImage alt={playerData.name} src={playerData.image} />
+      <AvatarFallback className="text-xs">{playerData.name?.[0]?.toUpperCase()}</AvatarFallback>
+    </Avatar>
+  );
 }

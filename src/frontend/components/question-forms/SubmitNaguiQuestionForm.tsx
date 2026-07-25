@@ -1,7 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
-import Box from '@mui/system/Box';
 import { Field, FieldArray, useField, useFormikContext } from 'formik';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
@@ -13,6 +12,7 @@ import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepCompon
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
 import { MySelect, MyTextInput, StyledErrorMessage } from '@/frontend/components/common/StyledFormComponents';
+import { SelectItem } from '@/frontend/components/ui/select';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
 import { topicSchema } from '@/frontend/helpers/forms/topics';
@@ -232,7 +232,7 @@ function EnterChoicesStep({ onSubmit, validationSchema }: StepProps) {
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
       <FieldArray name="choices">
         {() => (
-          <Box component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: '500px' }}>
+          <section className="my-4 p-4 border-2 border-dashed border-gray-500 w-[500px]">
             {values.choices.map((_item, index) => (
               <div key={index}>
                 <label htmlFor={`choices.${index}`}>
@@ -242,7 +242,7 @@ function EnterChoicesStep({ onSubmit, validationSchema }: StepProps) {
                 <ChoiceError index={index} />
               </div>
             ))}
-          </Box>
+          </section>
         )}
       </FieldArray>
       {typeof errors.choices === 'string' && <StyledErrorMessage>{errors.choices}</StyledErrorMessage>}
@@ -251,15 +251,13 @@ function EnterChoicesStep({ onSubmit, validationSchema }: StepProps) {
         label={intl.formatMessage(globalMessages.correctProposalQuestion)}
         name="answerIdx"
         validationSchema={validationSchema}
-        onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-          formik.setFieldValue('answerIdx', parseInt(e.target.value, 10))
-        }
+        onChange={(value: string) => formik.setFieldValue('answerIdx', parseInt(value, 10))}
       >
-        <option value="">{intl.formatMessage(questionMessages.selectProposal)}</option>
+        <SelectItem value="">{intl.formatMessage(questionMessages.selectProposal)}</SelectItem>
         {values.choices.map((choice, index) => (
-          <option key={index} value={index}>
+          <SelectItem key={index} value={String(index)}>
             {NaguiQuestion.CHOICES[index]}. {choice}
-          </option>
+          </SelectItem>
         ))}
       </MySelect>
 
@@ -277,17 +275,15 @@ function EnterChoicesStep({ onSubmit, validationSchema }: StepProps) {
           label={intl.formatMessage(messages.duoIdxLabel)}
           name="duoIdx"
           validationSchema={validationSchema}
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-            formik.setFieldValue('duoIdx', parseInt(e.target.value, 10))
-          }
+          onChange={(value: string) => formik.setFieldValue('duoIdx', parseInt(value, 10))}
         >
-          <option value="">{intl.formatMessage(questionMessages.selectProposal)}</option>
+          <SelectItem value="">{intl.formatMessage(questionMessages.selectProposal)}</SelectItem>
           {values.choices.map(
             (choice, index) =>
               index !== values.answerIdx && (
-                <option key={index} value={index}>
+                <SelectItem key={index} value={String(index)}>
                   {NaguiQuestion.CHOICES[index]}. {choice}
-                </option>
+                </SelectItem>
               )
           )}
         </MySelect>

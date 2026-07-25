@@ -2,6 +2,7 @@ import { useIntl } from 'react-intl';
 import type { ObjectSchema } from 'yup';
 
 import { MySelect } from '@/frontend/components/common/StyledFormComponents';
+import { SelectItem } from '@/frontend/components/ui/select';
 import type { Locale } from '@/frontend/helpers/locales';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { prependScorePolicyTypeWithEmoji, ScorePolicyType } from '@/models/score-policy';
@@ -23,11 +24,11 @@ export default function SelectRoundScorePolicy({
   const intl = useIntl();
   return (
     <MySelect label={intl.formatMessage(messages.label)} name={name} validationSchema={validationSchema}>
-      <option value="">{intl.formatMessage(messages.header)}</option>
+      <SelectItem value="">{intl.formatMessage(messages.header)}</SelectItem>
       {Object.values(ScorePolicyType).map((policy) => (
-        <option key={policy} value={policy}>
+        <SelectItem key={policy} value={policy}>
           {prependScorePolicyTypeWithEmoji(policy, intl.locale as Locale)}
-        </option>
+        </SelectItem>
       ))}
     </MySelect>
   );

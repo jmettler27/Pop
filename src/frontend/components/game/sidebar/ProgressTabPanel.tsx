@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import { Box, CircularProgress, Tab, Tabs } from '@mui/material';
 import { doc } from 'firebase/firestore';
 import { useDocument } from 'react-firebase-hooks/firestore';
 import { useIntl } from 'react-intl';
@@ -9,6 +8,8 @@ import { useIntl } from 'react-intl';
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import GlobalProgressTabPanel from '@/frontend/components/game/sidebar/GlobalProgressTabPanel';
 import RoundProgressTabPanel from '@/frontend/components/game/sidebar/RoundProgressTabPanel';
+import { Spinner } from '@/frontend/components/ui/spinner';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/frontend/components/ui/tabs';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameStatus } from '@/models/games/game-status';
 
@@ -22,7 +23,7 @@ export default function ProgressTabPanel() {
     return <></>;
   }
   if (gameDocLoading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!gameDoc) {
     return <></>;
@@ -33,7 +34,7 @@ export default function ProgressTabPanel() {
 }
 
 function ProgressTabPanelMainContent({ game }: { game: Record<string, unknown> }) {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState<'game' | 'round'>('game');
   const intl = useIntl();
 
   const [prevGameStatus, setPrevGameStatus] = useState(game.status);
@@ -41,80 +42,41 @@ function ProgressTabPanelMainContent({ game }: { game: Record<string, unknown> }
   if (game.status !== prevGameStatus || game.currentRound !== prevGameCurrentRound) {
     setPrevGameStatus(game.status);
     setPrevGameCurrentRound(game.currentRound);
-    setValue(!game.currentRound || game.status === 'game_home' ? 0 : 1);
+    setValue(!game.currentRound || game.status === 'game_home' ? 'game' : 'round');
   }
 
-  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
-
   return (
-    <Box className="w-full">
-      {/* Sidebar tabs */}
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="sidebar tabs"
-          //
-          indicatorColor="secondary"
-          textColor="inherit"
-          variant="fullWidth"
-        >
-          <Tab label={intl.formatMessage(globalMessages.game)} aria-label="game progress" {...a11yProps(0)} />
-          {/* {(game.type === 'rounds' && game.currentRound) && ( */}
-          <Tab label={intl.formatMessage(globalMessages.round)} aria-label="round progress" {...a11yProps(1)} />
-          {/* )} */}
-        </Tabs>
-      </Box>
+    <div className="w-full">
+      <Tabs value={value} onValueChange={(newValue) => setValue(newValue as 'game' | 'round')}>
+        {/* Sidebar tabs */}
+        <div className="border-b border-border">
+          <TabsList className="w-full" aria-label="sidebar tabs">
+            <TabsTrigger value="game" aria-label="game progress">
+              {intl.formatMessage(globalMessages.game)}
+            </TabsTrigger>
+            <TabsTrigger value="round" aria-label="round progress">
+              {intl.formatMessage(globalMessages.round)}
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-      {game.status !== GameStatus.GAME_START && (
-        <CustomTabPanel value={value} index={0}>
-          <GlobalProgressTabPanel game={game as unknown as Parameters<typeof GlobalProgressTabPanel>[0]['game']} />
-        </CustomTabPanel>
-      )}
-
-      {game.type === 'rounds' &&
-        !!game.currentRound &&
-        (game.status === GameStatus.ROUND_START ||
-          game.status === GameStatus.ROUND_END ||
-          game.status === GameStatus.QUESTION_ACTIVE ||
-          game.status === GameStatus.QUESTION_END) && (
-          <CustomTabPanel value={value} index={1}>
-            <RoundProgressTabPanel game={game as unknown as Parameters<typeof RoundProgressTabPanel>[0]['game']} />
-          </CustomTabPanel>
+        {game.status !== GameStatus.GAME_START && (
+          <TabsContent value="game">
+            <GlobalProgressTabPanel game={game as unknown as Parameters<typeof GlobalProgressTabPanel>[0]['game']} />
+          </TabsContent>
         )}
-    </Box>
-  );
-}
 
-interface CustomTabPanelProps {
-  children: React.ReactNode;
-  value: number;
-  index: number;
-}
-
-function CustomTabPanel({ children, value, index }: CustomTabPanelProps) {
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-    >
-      {value === index && (
-        <Box>
-          {/* sx={{ p: 3 }} */}
-          {children}
-        </Box>
-      )}
+        {game.type === 'rounds' &&
+          !!game.currentRound &&
+          (game.status === GameStatus.ROUND_START ||
+            game.status === GameStatus.ROUND_END ||
+            game.status === GameStatus.QUESTION_ACTIVE ||
+            game.status === GameStatus.QUESTION_END) && (
+            <TabsContent value="round">
+              <RoundProgressTabPanel game={game as unknown as Parameters<typeof RoundProgressTabPanel>[0]['game']} />
+            </TabsContent>
+          )}
+      </Tabs>
     </div>
   );
-}
-
-function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
 }

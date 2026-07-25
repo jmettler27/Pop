@@ -1,70 +1,72 @@
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import BedroomBabyIcon from '@mui/icons-material/BedroomBaby';
-import ChecklistIcon from '@mui/icons-material/Checklist';
-import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
-import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
-import HeadphonesIcon from '@mui/icons-material/Headphones';
-import ImageIcon from '@mui/icons-material/Image';
-import LabelIcon from '@mui/icons-material/Label';
-import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
-import RepeatIcon from '@mui/icons-material/Repeat';
-import ShuffleIcon from '@mui/icons-material/Shuffle';
-import SpeakerNotesIcon from '@mui/icons-material/SpeakerNotes';
-import StraightenIcon from '@mui/icons-material/Straighten';
+import {
+  Baby,
+  DollarSign,
+  Headphones,
+  Heart,
+  HelpCircle,
+  Image as ImageIcon,
+  Lightbulb,
+  ListChecks,
+  MessageSquareText,
+  Quote,
+  Repeat,
+  Ruler,
+  Shuffle,
+  Smile,
+  Tag,
+} from 'lucide-react';
 
 import { QuestionType } from '@/models/questions/question-type';
 import { RoundType } from '@/models/rounds/round-type';
 
 interface QuestionTypeIconProps {
   questionType: QuestionType;
-  fontSize?: string | number | Record<string, string | number>;
+  className?: string;
 }
 
 interface RoundTypeIconProps {
   roundType: RoundType;
-  fontSize?: string | number | Record<string, string | number>;
+  className?: string;
 }
 
-export function QuestionTypeIcon({ questionType, fontSize = 'small' }: QuestionTypeIconProps) {
+export function QuestionTypeIcon({ questionType, className = 'size-5' }: QuestionTypeIconProps) {
   switch (questionType) {
     case QuestionType.BASIC:
-      return <QuestionMarkIcon sx={{ fontSize }} />;
+      return <HelpCircle className={className} />;
     case QuestionType.BLINDTEST:
-      return <HeadphonesIcon sx={{ fontSize }} />;
+      return <Headphones className={className} />;
     case QuestionType.EMOJI:
-      return <EmojiEmotionsIcon sx={{ fontSize }} />;
+      return <Smile className={className} />;
     case QuestionType.ENUMERATION:
-      return <SpeakerNotesIcon sx={{ fontSize }} />;
+      return <MessageSquareText className={className} />;
     case QuestionType.ESTIMATION:
-      return <StraightenIcon sx={{ fontSize }} />;
+      return <Ruler className={className} />;
     case QuestionType.IMAGE:
-      return <ImageIcon sx={{ fontSize }} />;
+      return <ImageIcon className={className} />;
     case QuestionType.LABELLING:
-      return <LabelIcon sx={{ fontSize }} />;
+      return <Tag className={className} />;
     case QuestionType.MATCHING:
-      return <FavoriteIcon sx={{ fontSize }} />;
+      return <Heart className={className} />;
     case QuestionType.MCQ:
-      return <AttachMoneyIcon sx={{ fontSize }} />;
+      return <DollarSign className={className} />;
     case QuestionType.NAGUI:
-      return <BedroomBabyIcon sx={{ fontSize }} />;
+      return <Baby className={className} />;
     case QuestionType.ODD_ONE_OUT:
-      return <ChecklistIcon sx={{ fontSize }} />;
+      return <ListChecks className={className} />;
     case QuestionType.PROGRESSIVE_CLUES:
-      return <EmojiObjectsIcon sx={{ fontSize }} />;
+      return <Lightbulb className={className} />;
     case QuestionType.QUOTE:
-      return <FormatQuoteIcon sx={{ fontSize }} />;
+      return <Quote className={className} />;
     case QuestionType.REORDERING:
-      return <ShuffleIcon sx={{ fontSize }} />;
+      return <Shuffle className={className} />;
   }
 }
 
-export function RoundTypeIcon({ roundType, fontSize = 'small' }: RoundTypeIconProps) {
+export function RoundTypeIcon({ roundType, className = 'size-5' }: RoundTypeIconProps) {
   switch (roundType) {
     case RoundType.MIXED:
-      return <RepeatIcon sx={{ fontSize }} />;
+      return <Repeat className={className} />;
     default:
-      return <QuestionTypeIcon questionType={roundType as unknown as QuestionType} fontSize={fontSize} />;
+      return <QuestionTypeIcon questionType={roundType as unknown as QuestionType} className={className} />;
   }
 }

@@ -1,11 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { IconButton } from '@mui/material';
-import Button from '@mui/material/Button';
 import { Field, FieldArray, useField, useFormikContext } from 'formik';
+import { Plus, Trash2 } from 'lucide-react';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 import type { ObjectSchema } from 'yup';
@@ -17,6 +14,7 @@ import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
 import { MyTextInput, StyledErrorMessage } from '@/frontend/components/common/StyledFormComponents';
 import { UploadImage } from '@/frontend/components/common/UploadFile';
+import { Button } from '@/frontend/components/ui/button';
 import { imageFileSchema } from '@/frontend/helpers/forms/files';
 import { numCharsIndicator, requiredStringInArrayFieldIndicator, stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
@@ -264,7 +262,7 @@ function EnterCluesStep({ onSubmit, validationSchema }: StepProps) {
 
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
-      <p>
+      <p className="mb-4">
         {intl.formatMessage(messages.numCluesAllowed)}: {ProgressiveCluesQuestion.MIN_NUM_CLUES}-
         {ProgressiveCluesQuestion.MAX_NUM_CLUES}
       </p>
@@ -292,14 +290,20 @@ function EnterCluesStep({ onSubmit, validationSchema }: StepProps) {
                     type="text"
                   />
 
-                  <IconButton color="error" onClick={() => remove(index)}>
-                    <DeleteIcon />
-                  </IconButton>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-destructive hover:bg-destructive/10"
+                    onClick={() => remove(index)}
+                  >
+                    <Trash2 />
+                  </Button>
 
                   <ClueError index={index} />
                 </div>
               ))}
-            <Button variant="outlined" startIcon={<AddIcon />} onClick={() => push('')}>
+            <Button variant="outline" onClick={() => push('')}>
+              <Plus className="mr-2 size-4" />
               {intl.formatMessage(messages.addClue)}
             </Button>
           </div>

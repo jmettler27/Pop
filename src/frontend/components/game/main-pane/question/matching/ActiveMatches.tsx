@@ -4,8 +4,6 @@ import '@/frontend/components/game/main-pane/question/matching/styles.scss';
 
 import { useState } from 'react';
 
-import { CircularProgress } from '@mui/material';
-
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import { isObjectEmpty } from '@/backend/utils/objects';
 import {
@@ -17,6 +15,7 @@ import {
   type NodeData,
 } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
 import SubmitMatchDialog from '@/frontend/components/game/main-pane/question/matching/SubmitMatchDialog';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
@@ -147,7 +146,7 @@ function ActiveMatchingQuestionNodes({
   } = gameQuestionRepo.useCorrectMatches(game.currentQuestion as string);
 
   if (isChooserError || isCanceledError || correctMatchesError) return <></>;
-  if (isChooserLoading || isCanceledLoading || correctMatchesLoading) return <CircularProgress />;
+  if (isChooserLoading || isCanceledLoading || correctMatchesLoading) return <Spinner />;
   if (!correctMatches) return <></>;
 
   const foundMatches = (correctMatches as FoundMatch[]) ?? [];

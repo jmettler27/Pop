@@ -2,14 +2,12 @@
 
 import Image from 'next/image';
 
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import { CircularProgress } from '@mui/material';
 import { clsx } from 'clsx';
+import { Info, TriangleAlert, Trophy } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
 import { formatDuration, timestampElapsedSeconds, type FirestoreTimestamp } from '@/frontend/helpers/time';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -59,7 +57,7 @@ export function EstimationQuestionHeader({ baseQuestion }: { baseQuestion: Estim
   return (
     <div className="flex flex-col items-center justify-center gap-1.5 w-full px-4">
       <div className="flex flex-row items-center justify-center space-x-1">
-        <QuestionTypeIcon questionType={baseQuestion.type} fontSize={{ xs: 28, md: 50 }} />
+        <QuestionTypeIcon questionType={baseQuestion.type} className="size-7 md:size-[50px]" />
         <h1 className="text-xs md:text-xl 2xl:text-5xl">
           {topicToEmoji(baseQuestion.topic as Topic)}{' '}
           <strong>
@@ -73,7 +71,7 @@ export function EstimationQuestionHeader({ baseQuestion }: { baseQuestion: Estim
       </h2>
       {baseQuestion.note && (
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs 2xl:text-sm max-w-lg mt-0.5">
-          <WarningAmberIcon sx={{ fontSize: 13, flexShrink: 0 }} />
+          <TriangleAlert className="size-[13px] shrink-0" />
           <span className="italic">{baseQuestion.note}</span>
         </div>
       )}
@@ -136,7 +134,7 @@ export function EstimationResultsTable({ gameQuestion, baseQuestion }: Estimatio
   if (teamsLoading || playersLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <CircularProgress />
+        <Spinner />
       </div>
     );
   }
@@ -220,11 +218,11 @@ function BetResultRow({ team, player, bet, isWinner, baseQuestion, gameQuestion 
             : 'border-slate-800 bg-slate-900/30 opacity-40'
       )}
     >
-      <div className="w-6 flex-shrink-0 flex items-center justify-center">
-        {isWinner && <EmojiEventsIcon sx={{ color: '#4ade80', fontSize: 20 }} />}
+      <div className="w-6 shrink-0 flex items-center justify-center">
+        {isWinner && <Trophy className="text-green-400 size-5" />}
       </div>
 
-      <div className="relative w-10 h-10 2xl:w-12 2xl:h-12 rounded-full overflow-hidden flex-shrink-0 bg-slate-700 border border-slate-600 flex items-center justify-center text-sm font-bold text-slate-300 select-none">
+      <div className="relative w-10 h-10 2xl:w-12 2xl:h-12 rounded-full overflow-hidden shrink-0 bg-slate-700 border border-slate-600 flex items-center justify-center text-sm font-bold text-slate-300 select-none">
         {player?.image ? (
           <Image src={player.image} alt={player.name ?? ''} fill className="object-cover" />
         ) : (
@@ -241,7 +239,7 @@ function BetResultRow({ team, player, bet, isWinner, baseQuestion, gameQuestion 
         {player && <span className="text-xs 2xl:text-sm text-slate-400 truncate">{player.name}</span>}
       </div>
 
-      <div className="flex flex-col items-end flex-shrink-0">
+      <div className="flex flex-col items-end shrink-0">
         <div
           className={clsx(
             'text-right font-semibold text-base 2xl:text-xl tabular-nums',
@@ -272,7 +270,7 @@ export function EstimationEndView({ gameQuestion, baseQuestion }: EstimationEndV
 
   return (
     <div className="flex flex-col items-center gap-4 w-full max-w-xl 2xl:max-w-2xl max-h-full overflow-y-auto py-4 px-4">
-      <div className="flex flex-row items-center gap-3 px-5 py-2.5 rounded-2xl border border-green-500/40 bg-green-500/10 flex-shrink-0 w-full justify-center">
+      <div className="flex flex-row items-center gap-3 px-5 py-2.5 rounded-2xl border border-green-500/40 bg-green-500/10 shrink-0 w-full justify-center">
         <span className="text-sm uppercase tracking-widest text-slate-400 font-semibold">
           {intl.formatMessage(messages.correctAnswer)}
         </span>
@@ -281,8 +279,8 @@ export function EstimationEndView({ gameQuestion, baseQuestion }: EstimationEndV
         </span>
       </div>
       {baseQuestion.explanation && (
-        <div className="flex items-start gap-2 px-3 py-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-200 text-sm 2xl:text-base w-full flex-shrink-0">
-          <InfoOutlinedIcon sx={{ fontSize: 16, color: 'rgb(147 197 253)', flexShrink: 0, mt: '2px' }} />
+        <div className="flex items-start gap-2 px-3 py-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-200 text-sm 2xl:text-base w-full shrink-0">
+          <Info className="size-4 text-blue-300 shrink-0 mt-0.5" />
           <span className="leading-snug">{baseQuestion.explanation}</span>
         </div>
       )}

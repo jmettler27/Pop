@@ -1,5 +1,3 @@
-import React from 'react';
-
 import Sketch from '@uiw/react-color-sketch';
 import { useField } from 'formik';
 import { useIntl } from 'react-intl';

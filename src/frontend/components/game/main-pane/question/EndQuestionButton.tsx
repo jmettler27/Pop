@@ -1,8 +1,8 @@
-import SkipNextIcon from '@mui/icons-material/SkipNext';
-import { Button } from '@mui/material';
+import { SkipForward } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { endQuestion } from '@/backend/services/question/actions';
+import { Button } from '@/frontend/components/ui/button';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -28,12 +28,12 @@ export default function EndQuestionButton({ questionType }: EndQuestionButtonPro
 
   return (
     <Button
-      variant="outlined"
-      color="warning"
-      startIcon={<SkipNextIcon />}
+      variant="outline"
+      className="border-amber-500 text-amber-500 hover:bg-amber-500/10"
       onClick={handleEndQuestion}
       disabled={isEnding}
     >
+      <SkipForward className="mr-2 size-4" />
       {intl.formatMessage(messages.endQuestion)}
     </Button>
   );

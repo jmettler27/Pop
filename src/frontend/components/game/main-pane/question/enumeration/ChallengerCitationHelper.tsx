@@ -1,10 +1,9 @@
-import Box from '@mui/material/Box';
-import LinearProgress from '@mui/material/LinearProgress';
-import Typography from '@mui/material/Typography';
+import { Progress as ProgressPrimitive } from '@base-ui/react/progress';
 import clsx from 'clsx';
 
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 import ValidateChallengerCitationButton from '@/frontend/components/game/main-pane/question/enumeration/ValidateChallengerCitationButton';
+import { ProgressIndicator, ProgressTrack } from '@/frontend/components/ui/progress';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
@@ -91,25 +90,20 @@ function ChallengerProgress({ challenger }: { challenger: Challenger }) {
   const roundedDownToNearestTen = Math.floor(cappedPercentage / 10) * 10;
 
   return (
-    <Box className="flex flex-row w-full items-center justify-center space-x-4">
-      <Typography variant="h5">{progressToSmiley[roundedDownToNearestTen]}</Typography>
+    <div className="flex flex-row w-full items-center justify-center space-x-4">
+      <h5 className="text-2xl">{progressToSmiley[roundedDownToNearestTen]}</h5>
 
-      <LinearProgress
-        className="w-1/2 h-3"
-        sx={{
-          '& .MuiLinearProgress-bar': {
-            backgroundColor: progressToBarColor[roundedDownToNearestTen],
-          },
-        }}
-        variant="determinate"
-        value={cappedPercentage}
-      />
+      <ProgressPrimitive.Root value={cappedPercentage} className="w-1/2">
+        <ProgressTrack className="h-3">
+          <ProgressIndicator style={{ backgroundColor: progressToBarColor[roundedDownToNearestTen] }} />
+        </ProgressTrack>
+      </ProgressPrimitive.Root>
 
-      <Typography variant="h5" className={clsx(challenger.numCorrect >= challenger.bet && 'text-green-500')}>
+      <h5 className={clsx('text-2xl', challenger.numCorrect >= challenger.bet && 'text-green-500')}>
         {challenger.numCorrect}/<strong>{challenger.bet}</strong>
-      </Typography>
+      </h5>
 
       {myRole === ParticipantRole.ORGANIZER && <ValidateChallengerCitationButton />}
-    </Box>
+    </div>
   );
 }

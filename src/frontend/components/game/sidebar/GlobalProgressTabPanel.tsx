@@ -1,13 +1,14 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, type CSSProperties } from 'react';
 
-import { Accordion, AccordionDetails, AccordionSummary, CircularProgress, Typography } from '@mui/material';
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/frontend/components/ui/accordion';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import { rankingToEmoji } from '@/frontend/helpers/emojis';
 import { RoundTypeIcon } from '@/frontend/helpers/question-types';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -92,7 +93,7 @@ function RoundAccordion({ gameId, round, teams, hasEnded, isCurrent }: RoundAcco
     return <></>;
   }
   if (loading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!roundScores) {
     return <></>;
@@ -117,47 +118,47 @@ function RoundAccordion({ gameId, round, teams, hasEnded, isCurrent }: RoundAcco
   return (
     <Accordion
       key={round.id}
-      expanded={true}
-      className="rounded-lg"
-      elevation={0}
-      sx={{
-        borderWidth: '0.5px',
-        borderStyle: 'solid',
-        borderColor: borderColor(),
-        backgroundColor: 'inherit',
-        color: 'inherit',
-      }}
-      disableGutters
+      value={['item']}
+      className="rounded-lg border-[0.5px] border-solid bg-inherit text-inherit"
+      style={{ borderColor: borderColor(), '--accordion-icon-color': borderColor() } as CSSProperties}
     >
-      <AccordionSummary aria-controls="panel1a-content" id="panel1a-header">
-        <div className="flex flex-row items-center w-full justify-center space-x-1">
-          <RoundTypeIcon roundType={round.type!} fontSize={20} />
-          <Typography className={clsx(isCurrent && !hasEnded && 'text-orange-300')}>
-            <span className="2xl:text-xl">
-              <strong>
-                {intl.formatMessage(globalMessages.round)} {(round.order ?? 0) + 1}
-              </strong>{' '}
-              - <i>{round.title}</i>
-            </span>
-          </Typography>
-        </div>
-      </AccordionSummary>
+      <AccordionItem value="item">
+        <AccordionTrigger
+          id="panel1a-header"
+          aria-controls="panel1a-content"
+          className="px-3 cursor-default hover:no-underline [&_[data-slot=accordion-trigger-icon]]:hidden"
+        >
+          <div className="flex flex-row items-center w-full justify-center space-x-1">
+            <RoundTypeIcon roundType={round.type!} className="size-5" />
+            <p className={clsx(isCurrent && !hasEnded && 'text-orange-300')}>
+              <span className="2xl:text-xl">
+                <strong>
+                  {intl.formatMessage(globalMessages.round)} {(round.order ?? 0) + 1}
+                </strong>{' '}
+                - <i>{round.title}</i>
+              </span>
+            </p>
+          </div>
+        </AccordionTrigger>
 
-      {hasEnded && roundSortedTeams && (
-        <AccordionDetails>
-          <ol className="list-inside">
-            {roundSortedTeams.map((item: RoundSortedTeam, idx: number) => {
-              const teamNames = teams.filter((team) => item.teams.includes(team.id as string)).map((team) => team.name);
-              const teamNamesString = teamNames.join(', ');
-              return (
-                <li key={idx} className={clsx(idx === 0 && 'font-bold', 'text-lg')}>
-                  {rankingToEmoji(idx)} {teamNamesString} ({item.score} pt{item.score > 1 && 's'})
-                </li>
-              );
-            })}
-          </ol>
-        </AccordionDetails>
-      )}
+        {hasEnded && roundSortedTeams && (
+          <AccordionContent className="px-3">
+            <ol className="list-inside">
+              {roundSortedTeams.map((item: RoundSortedTeam, idx: number) => {
+                const teamNames = teams
+                  .filter((team) => item.teams.includes(team.id as string))
+                  .map((team) => team.name);
+                const teamNamesString = teamNames.join(', ');
+                return (
+                  <li key={idx} className={clsx(idx === 0 && 'font-bold', 'text-lg')}>
+                    {rankingToEmoji(idx)} {teamNamesString} ({item.score} pt{item.score > 1 && 's'})
+                  </li>
+                );
+              })}
+            </ol>
+          </AccordionContent>
+        )}
+      </AccordionItem>
     </Accordion>
   );
 }

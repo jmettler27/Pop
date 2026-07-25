@@ -1,11 +1,13 @@
 'use client';
 
-import { Avatar } from '@mui/material';
+import { useSearchParams } from 'next/navigation';
+
 import { useIntl } from 'react-intl';
 import QRCode from 'react-qr-code';
 
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { Avatar, AvatarFallback, AvatarImage } from '@/frontend/components/ui/avatar';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useHasMounted from '@/frontend/hooks/useHasMounted';
@@ -24,6 +26,8 @@ export default function GameStartMiddlePane() {
   const game = useGame();
   const intl = useIntl();
   const gameRepositories = useGameRepositories();
+  const searchParams = useSearchParams();
+  const forceSpectator = searchParams.get('spectator') === '1';
 
   if (!game) return null;
   if (!gameRepositories) return null;
@@ -67,9 +71,11 @@ export default function GameStartMiddlePane() {
       </div>
 
       {/* Row 3: QR code */}
-      <div className="flex flex-1 justify-center items-center">
-        <JoinQRCode gameId={game.id!} scanToJoinLabel={intl.formatMessage(messages.scanToJoin)} />
-      </div>
+      {forceSpectator && (
+        <div className="flex flex-1 justify-center items-center">
+          <JoinQRCode gameId={game.id!} scanToJoinLabel={intl.formatMessage(messages.scanToJoin)} />
+        </div>
+      )}
     </div>
   );
 }
@@ -93,7 +99,10 @@ function JoinQRCode({ gameId, scanToJoinLabel }: { gameId: string; scanToJoinLab
 function OrganizerItem({ organizer }: { organizer: Organizer }) {
   return (
     <div className="flex flex-col items-center gap-2">
-      <Avatar alt={organizer.name as string} src={organizer.image!} sx={{ width: 100, height: 100 }} />
+      <Avatar className="size-25">
+        <AvatarImage alt={organizer.name as string} src={organizer.image!} />
+        <AvatarFallback>{(organizer.name as string)?.[0]?.toUpperCase()}</AvatarFallback>
+      </Avatar>
       <span className="text-base font-medium text-white/80 text-center">{organizer.name as string}</span>
     </div>
   );

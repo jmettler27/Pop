@@ -3,10 +3,13 @@
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-import { Button, Divider, TextField } from '@mui/material';
 import { signIn } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
+import { Button } from '@/frontend/components/ui/button';
+import { Input } from '@/frontend/components/ui/input';
+import { Separator } from '@/frontend/components/ui/separator';
+import { DEFAULT_BACKGROUND } from '@/frontend/helpers/background';
 import defineMessages from '@/frontend/i18n/defineMessages';
 
 const messages = defineMessages('app.auth.signin', {
@@ -55,13 +58,7 @@ function DiscordIcon() {
   );
 }
 
-const darkFieldSx = {
-  '& .MuiOutlinedInput-root': {
-    '& fieldset': { borderColor: '#475569' },
-    '&:hover fieldset': { borderColor: '#64748b' },
-    '&.Mui-focused fieldset': { borderColor: '#818cf8' },
-  },
-};
+const darkFieldClassName = 'border-[#475569] text-[#f1f5f9] hover:border-[#64748b] focus-visible:border-[#818cf8]';
 
 export default function SignInPage() {
   const intl = useIntl();
@@ -77,8 +74,8 @@ export default function SignInPage() {
   const [guestName, setGuestName] = useState('');
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      <div className="flex flex-col gap-4 w-full max-w-sm rounded-2xl bg-gray-800/70 backdrop-blur p-8 shadow-2xl">
+    <div className="flex min-h-screen items-center justify-center" style={{ backgroundImage: DEFAULT_BACKGROUND }}>
+      <div className="flex flex-col gap-4 w-full max-w-sm rounded-2xl bg-gray-800/70 backdrop-blur-sm p-8 shadow-2xl">
         <div className="flex flex-col items-center mb-2">
           <span className="text-3xl font-extrabold text-white tracking-tight">Pop!</span>
           <span className="text-sm text-slate-400 mt-1">{intl.formatMessage(messages.subtitle)}</span>
@@ -86,19 +83,15 @@ export default function SignInPage() {
 
         {useEmulators ? (
           <>
-            <TextField
+            <Input
               placeholder={intl.formatMessage(messages.devAccountPlaceholder)}
               value={devName}
               onChange={(e) => setDevName(e.target.value)}
-              variant="outlined"
-              size="small"
-              inputProps={{ style: { color: '#f1f5f9' } }}
-              sx={darkFieldSx}
+              className={darkFieldClassName}
             />
             <Button
-              variant="contained"
               onClick={() => signIn('credentials', { name: devName || 'alice', callbackUrl })}
-              sx={{ textTransform: 'none', fontWeight: 600 }}
+              className="normal-case font-semibold"
             >
               {intl.formatMessage(messages.devSignIn)}
             </Button>
@@ -106,33 +99,21 @@ export default function SignInPage() {
         ) : (
           <>
             <Button
-              variant="contained"
-              startIcon={<GoogleIcon />}
               onClick={() => signIn('google', { callbackUrl })}
-              sx={{
-                backgroundColor: '#fff',
-                color: '#3c4043',
-                textTransform: 'none',
-                fontWeight: 600,
-                fontSize: '0.9rem',
-                '&:hover': { backgroundColor: '#f1f3f4' },
-                boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
-              }}
+              className="bg-white text-[#3c4043] normal-case font-semibold text-[0.9rem] hover:bg-[#f1f3f4] shadow-[0_1px_3px_rgba(0,0,0,0.3)]"
             >
+              <span className="mr-2 flex">
+                <GoogleIcon />
+              </span>
               {intl.formatMessage(messages.signInWithGoogle)}
             </Button>
             <Button
-              variant="contained"
-              startIcon={<DiscordIcon />}
               onClick={() => signIn('discord', { callbackUrl })}
-              sx={{
-                backgroundColor: '#5865F2',
-                textTransform: 'none',
-                fontWeight: 600,
-                fontSize: '0.9rem',
-                '&:hover': { backgroundColor: '#4752C4' },
-              }}
+              className="bg-[#5865F2] normal-case font-semibold text-[0.9rem] hover:bg-[#4752C4]"
             >
+              <span className="mr-2 flex">
+                <DiscordIcon />
+              </span>
               {intl.formatMessage(messages.signInWithDiscord)}
             </Button>
           </>
@@ -140,30 +121,22 @@ export default function SignInPage() {
 
         {showGuestOption && (
           <>
-            <Divider sx={{ borderColor: '#475569', color: '#94a3b8', fontSize: '0.75rem', my: 1 }}>
-              {intl.formatMessage(messages.orPlayAsGuest)}
-            </Divider>
-            <TextField
+            <div className="flex items-center gap-2 my-1">
+              <Separator className="flex-1 bg-[#475569]" />
+              <span className="text-[0.75rem] text-[#94a3b8]">{intl.formatMessage(messages.orPlayAsGuest)}</span>
+              <Separator className="flex-1 bg-[#475569]" />
+            </div>
+            <Input
               placeholder={intl.formatMessage(messages.guestNamePlaceholder)}
               value={guestName}
               onChange={(e) => setGuestName(e.target.value)}
-              variant="outlined"
-              size="small"
-              inputProps={{ style: { color: '#f1f5f9' } }}
-              sx={darkFieldSx}
+              className={darkFieldClassName}
             />
             <Button
-              variant="outlined"
+              variant="outline"
               disabled={!guestName.trim()}
               onClick={() => signIn('guest', { name: guestName.trim(), callbackUrl })}
-              sx={{
-                borderColor: '#475569',
-                color: '#f1f5f9',
-                textTransform: 'none',
-                fontWeight: 600,
-                '&:hover': { borderColor: '#64748b', backgroundColor: 'rgba(255,255,255,0.05)' },
-                '&.Mui-disabled': { borderColor: '#334155', color: '#475569' },
-              }}
+              className="border-[#475569] text-[#f1f5f9] normal-case font-semibold hover:border-[#64748b] hover:bg-white/5 disabled:border-[#334155] disabled:text-[#475569]"
             >
               {intl.formatMessage(messages.playAsGuest)}
             </Button>

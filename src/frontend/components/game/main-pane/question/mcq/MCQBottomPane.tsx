@@ -1,10 +1,9 @@
-import { CircularProgress } from '@mui/material';
-
 import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
 import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
@@ -28,7 +27,7 @@ export default function MCQBottomPane({ baseQuestion: _baseQuestion }: MCQBottom
     return <></>;
   }
   if (loading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!chooser) {
     return <></>;
@@ -66,7 +65,7 @@ function MCQController({ chooser }: MCQControllerProps) {
     return <></>;
   }
   if (loading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!gameQuestion) {
     return <></>;

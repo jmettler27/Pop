@@ -1,11 +1,8 @@
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Button, IconButton } from '@mui/material';
-import Box from '@mui/system/Box';
 import { Field, FieldArray, Form, Formik, useField, useFormikContext } from 'formik';
+import { Plus, Trash2 } from 'lucide-react';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 import type { ObjectSchema } from 'yup';
@@ -17,6 +14,7 @@ import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopi
 import { MyTextInput, StyledErrorMessage } from '@/frontend/components/common/StyledFormComponents';
 import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
 import { UploadImage } from '@/frontend/components/common/UploadFile';
+import { Button } from '@/frontend/components/ui/button';
 import { imageFileSchema } from '@/frontend/helpers/forms/files';
 import { numCharsIndicator, requiredStringInArrayFieldIndicator, stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
@@ -201,7 +199,7 @@ function EnterLabels({ validationSchema }: EnterLabelsProps) {
 
   return (
     <>
-      <p>
+      <p className="mb-4">
         {intl.formatMessage(messages.numLabelsAllowed)}: {LabellingQuestion.MIN_NUM_LABELS}-
         {LabellingQuestion.MAX_NUM_LABELS}.
       </p>
@@ -211,11 +209,7 @@ function EnterLabels({ validationSchema }: EnterLabelsProps) {
           <div>
             {values.labels.length > 0 &&
               values.labels.map((item, index) => (
-                <Box
-                  key={index}
-                  component="section"
-                  sx={{ my: 2, pb: 2, px: 2, border: '2px dashed grey', width: '500px' }}
-                >
+                <section key={index} className="my-4 pb-4 px-4 border-2 border-dashed border-gray-500 w-[500px]">
                   <label htmlFor={'labels.' + index}>
                     {requiredStringInArrayFieldIndicator(validationSchema, 'labels', intl)}
                     {intl.formatMessage(questionMessages.item)} #{index + 1}{' '}
@@ -226,14 +220,20 @@ function EnterLabels({ validationSchema }: EnterLabelsProps) {
                     type="text"
                     placeholder={LABEL_EXAMPLE[index % LABEL_EXAMPLE.length]}
                   />
-                  <IconButton color="error" onClick={() => remove(index)}>
-                    <DeleteIcon />
-                  </IconButton>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-destructive hover:bg-destructive/10"
+                    onClick={() => remove(index)}
+                  >
+                    <Trash2 />
+                  </Button>
 
                   <ItemError index={index} />
-                </Box>
+                </section>
               ))}
-            <Button variant="outlined" startIcon={<AddIcon />} onClick={() => push('')}>
+            <Button variant="outline" onClick={() => push('')}>
+              <Plus className="mr-2 size-4" />
               {intl.formatMessage(questionMessages.addItem)}
             </Button>
           </div>

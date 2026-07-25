@@ -1,13 +1,14 @@
 import React from 'react';
 import Image from 'next/image';
 
-import { Divider, Tooltip } from '@mui/material';
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
 import UserRepository from '@/backend/repositories/user/UserRepository';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/frontend/components/card';
 import { formatAnswerValue } from '@/frontend/components/game/main-pane/question/estimation/EstimationCommon';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/frontend/components/ui/card';
+import { Separator } from '@/frontend/components/ui/separator';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import type { Locale } from '@/frontend/helpers/locales';
 import { LOCALE_TO_EMOJI } from '@/frontend/helpers/locales';
 import { QUESTION_ELEMENT_TO_EMOJI, QUESTION_ELEMENT_TO_TITLE } from '@/frontend/helpers/question';
@@ -37,7 +38,7 @@ export function QuestionCard({ baseQuestion, showType = false }: QuestionCardPro
         <QuestionCardContent baseQuestion={baseQuestion} />
       </CardContent>
 
-      <Divider className="my-2 bg-slate-600" />
+      <Separator className="my-2 bg-slate-600" />
       <CardFooter>
         <QuestionCardFooter baseQuestion={baseQuestion} />
       </CardFooter>
@@ -518,8 +519,11 @@ const OOOCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuestion })
             key={idx}
             className={clsx(idx === answerIdx ? 'text-red-500' : 'dark:text-white', 'hover:font-bold cursor-pointer')}
           >
-            <Tooltip key={idx} title={item.explanation} placement="right-start" arrow>
-              <span>{item.title}</span>
+            <Tooltip key={idx}>
+              <TooltipTrigger render={<span />}>{item.title}</TooltipTrigger>
+              <TooltipContent side="right" align="start">
+                {item.explanation}
+              </TooltipContent>
             </Tooltip>
           </li>
         ))}
@@ -669,8 +673,11 @@ const ReorderingCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQues
       <ol className="list-decimal py-1 pl-5">
         {items.map((item, idx) => (
           <li key={idx} className="hover:font-bold cursor-pointer">
-            <Tooltip key={idx} title={item.explanation} placement="right-start" arrow>
-              <span>{item.title}</span>
+            <Tooltip key={idx}>
+              <TooltipTrigger render={<span />}>{item.title}</TooltipTrigger>
+              <TooltipContent side="right" align="start">
+                {item.explanation}
+              </TooltipContent>
             </Tooltip>
           </li>
         ))}

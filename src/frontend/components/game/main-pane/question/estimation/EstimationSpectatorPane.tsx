@@ -1,6 +1,5 @@
 'use client';
 
-import { CircularProgress } from '@mui/material';
 import { useObject } from 'react-firebase-hooks/database';
 
 import { SERVER_TIME_OFFSET_REF } from '@/backend/firebase/database';
@@ -9,6 +8,7 @@ import {
   EstimationQuestionHeader,
 } from '@/frontend/components/game/main-pane/question/estimation/EstimationCommon';
 import Timer from '@/frontend/components/game/timer/Timer';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import { GameStatus } from '@/models/games/game-status';
@@ -24,7 +24,7 @@ export default function EstimationSpectatorPane({ baseQuestion, gameQuestion }: 
 
   return (
     <div className="flex flex-col h-full items-center">
-      <div className="flex-shrink-0 w-full flex flex-col items-center justify-center py-3">
+      <div className="shrink-0 w-full flex flex-col items-center justify-center py-3">
         <EstimationQuestionHeader baseQuestion={baseQuestion} />
       </div>
       <div className="flex-1 min-h-0 w-full flex flex-col items-center justify-center">
@@ -45,7 +45,7 @@ function EstimationSpectatorActiveView() {
   const { timer, timerLoading, timerError } = timerRepo.useTimer();
 
   if (offsetError || timerError || offsetLoading || timerLoading || !offsetSnapshot || !timer) {
-    return offsetLoading || timerLoading ? <CircularProgress /> : <></>;
+    return offsetLoading || timerLoading ? <Spinner /> : <></>;
   }
 
   return (

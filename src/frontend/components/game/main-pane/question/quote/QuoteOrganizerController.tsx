@@ -3,9 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 
-import CancelIcon from '@mui/icons-material/Cancel';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { Button, ButtonGroup } from '@mui/material';
+import { CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
@@ -20,6 +18,7 @@ import EndQuestionButton from '@/frontend/components/game/main-pane/question/End
 import ClearQuoteBuzzerButton from '@/frontend/components/game/main-pane/question/quote/ClearQuoteBuzzerButton';
 import RevealQuoteElementButton from '@/frontend/components/game/main-pane/question/quote/RevealQuoteElement';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
+import { Button } from '@/frontend/components/ui/button';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -87,11 +86,11 @@ function QuoteOrganizerAnswerController({ buzzed, baseQuestion }: { buzzed: stri
 
   return (
     <>
-      <ButtonGroup disableElevation variant="contained" size="large" color="primary">
+      <div className="flex gap-1">
         <ValidateAllQuoteElementsButton buzzed={buzzed} gameQuestion={gameQuestionData} />
         <CancelQuoteElementButton buzzed={buzzed} />
         <RevealQuoteElementButton buzzed={buzzed} baseQuestion={baseQuestion} gameQuestion={gameQuestionData} />
-      </ButtonGroup>
+      </div>
     </>
   );
 }
@@ -121,11 +120,12 @@ function ValidateAllQuoteElementsButton({
 
   return (
     <Button
-      color="success"
-      startIcon={<CheckCircleIcon />}
+      size="lg"
+      className="bg-green-600 text-white hover:bg-green-600/80"
       onClick={handleValidateAll}
       disabled={atLeastOneRevealed || buzzedIsEmpty || isValidating}
     >
+      <CheckCircle2 className="mr-2 size-4" />
       {intl.formatMessage(globalMessages.validateAll)}
     </Button>
   );
@@ -144,12 +144,8 @@ function CancelQuoteElementButton({ buzzed }: { buzzed: string[] }) {
 
   return (
     <>
-      <Button
-        color="error"
-        startIcon={<CancelIcon />}
-        onClick={handleCancelQuote}
-        disabled={buzzedIsEmpty || isCanceling}
-      >
+      <Button variant="destructive" size="lg" onClick={handleCancelQuote} disabled={buzzedIsEmpty || isCanceling}>
+        <XCircle className="mr-2 size-4" />
         {intl.formatMessage(globalMessages.cancel)}
       </Button>
     </>

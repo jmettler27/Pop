@@ -1,10 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import CancelIcon from '@mui/icons-material/Cancel';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { Button, ButtonGroup } from '@mui/material';
+import { ArrowDown, CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/GameProgressiveCluesQuestionRepository';
@@ -14,6 +11,7 @@ import BuzzerHeadPlayer from '@/frontend/components/game/main-pane/question/buzz
 import ClearBuzzerButton from '@/frontend/components/game/main-pane/question/buzzer/ClearBuzzerButton';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
+import { Button } from '@/frontend/components/ui/button';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -105,14 +103,21 @@ function BuzzerOrganizerAnswerController({
 
   return (
     <>
-      <ButtonGroup disableElevation variant="contained" size="large" color="primary" disabled={buzzedIsEmpty}>
-        <Button color="success" startIcon={<CheckCircleIcon />} onClick={handleValidate} disabled={isValidating}>
+      <div className="flex gap-1">
+        <Button
+          size="lg"
+          className="bg-green-600 text-white hover:bg-green-600/80"
+          onClick={handleValidate}
+          disabled={isValidating || buzzedIsEmpty}
+        >
+          <CheckCircle2 className="mr-2 size-4" />
           {intl.formatMessage(globalMessages.validate)}
         </Button>
-        <Button color="error" startIcon={<CancelIcon />} onClick={handleInvalidate} disabled={isInvalidating}>
+        <Button variant="destructive" size="lg" onClick={handleInvalidate} disabled={isInvalidating || buzzedIsEmpty}>
+          <XCircle className="mr-2 size-4" />
           {intl.formatMessage(globalMessages.invalidate)}
         </Button>
-      </ButtonGroup>
+      </div>
     </>
   );
 }
@@ -159,12 +164,12 @@ function NextClueButton({ baseQuestion }: BuzzerOrganizerQuestionControllerProps
 
   return (
     <Button
-      variant="contained"
-      size="large"
+      variant="outline"
+      className="border-amber-500 text-amber-500 hover:bg-amber-500/10"
       onClick={handleClick}
       disabled={isLastClue || isLoadingNextClue}
-      startIcon={<ArrowDownwardIcon />}
     >
+      <ArrowDown className="mr-2 size-4" />
       {intl.formatMessage(messages.nextClue)}
     </Button>
   );

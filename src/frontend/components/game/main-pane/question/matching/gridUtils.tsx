@@ -123,7 +123,8 @@ export const MatchingNode = ({
           'MatchingGrid-node',
           isActive && 'MatchingGrid-node-active',
           isMatched && 'MatchingGrid-node-correct',
-          isAnswer && 'MatchingGrid-node-answer'
+          isAnswer && 'MatchingGrid-node-answer',
+          !isMatched && !isAnswer && 'cursor-pointer hover:opacity-50 hover:duration-200'
         )}
         onClick={onClick}
         cx={pos[0]}
@@ -140,7 +141,9 @@ export const MatchingNode = ({
           isActive && 'MatchingGrid-text-active',
           isMatched && 'MatchingGrid-text-correct',
           isAnswer && 'MatchingGrid-text-answer',
-          !isMatched && !isAnswer && 'pointer-events-auto cursor-pointer hover:opacity-50 hover:duration-200'
+          !isMatched &&
+            !isAnswer &&
+            'pointer-events-auto cursor-pointer hover:opacity-50 hover:duration-200 MatchingGrid-text-hoverable'
         )}
         onClick={onClick}
       >

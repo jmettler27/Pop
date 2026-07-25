@@ -1,20 +1,15 @@
 import React, { useState } from 'react';
 
-import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
-import TranslateIcon from '@mui/icons-material/Translate';
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import Typography from '@mui/material/Typography';
+import { Languages, ListOrdered } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { useLocale } from '@/app/LocaleProvider';
 import ProgressTabPanel from '@/frontend/components/game/sidebar/ProgressTabPanel';
 import SoundboardAudioPlayer from '@/frontend/components/game/soundboard/SoundboardAudioPlayer';
 import OrganizerSpeedDial from '@/frontend/components/game/speed-dial/OrganizerSpeedDial';
-import { LOCALE_TO_TITLE, LOCALES } from '@/frontend/helpers/locales';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/frontend/components/ui/tabs';
+import { ToggleGroup, ToggleGroupItem } from '@/frontend/components/ui/toggle-group';
+import { LOCALE_TO_TITLE, LOCALES, type Locale } from '@/frontend/helpers/locales';
 import useRole from '@/frontend/hooks/useRole';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -29,106 +24,49 @@ export default function Sidebar() {
   const intl = useIntl();
   const { locale, setLocale } = useLocale();
 
-  const [value, setValue] = useState(0);
-
-  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
+  const [value] = useState('progress');
 
   return (
-    <Box className="w-full h-full overflow-y-auto">
+    <div className="w-full h-full overflow-y-auto">
       {/* Audio player and volume slider */}
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+      <div className="border-b border-border">
         <SoundboardAudioPlayer />
-      </Box>
+      </div>
 
       {/* Language selector */}
-      <Box
-        sx={{
-          borderBottom: 1,
-          borderColor: 'divider',
-          px: 1.5,
-          py: 1,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-        }}
-      >
-        <TranslateIcon sx={{ fontSize: '0.9rem', color: 'text.secondary', flexShrink: 0 }} />
-        <Typography variant="caption" sx={{ color: 'text.secondary', flexShrink: 0 }}>
-          {intl.formatMessage(globalMessages.language)}
-        </Typography>
-        <ToggleButtonGroup
-          value={locale}
-          exclusive
-          onChange={(_, val) => val && setLocale(val)}
-          size="small"
-          sx={{ ml: 'auto' }}
+      <div className="border-b border-border px-3 py-2 flex items-center gap-2">
+        <Languages className="size-[0.9rem] text-muted-foreground shrink-0" />
+        <span className="text-xs text-muted-foreground shrink-0">{intl.formatMessage(globalMessages.language)}</span>
+        <ToggleGroup
+          value={[locale]}
+          onValueChange={(values) => values[0] && setLocale(values[0] as Locale)}
+          size="sm"
+          className="ml-auto"
         >
           {LOCALES.map((code) => (
-            <ToggleButton key={code} value={code} sx={{ px: 1.5, py: 0.25, fontSize: '0.7rem' }}>
+            <ToggleGroupItem key={code} value={code} className="px-2.5 py-0.5 text-[0.7rem]">
               {LOCALE_TO_TITLE[code]}
-            </ToggleButton>
+            </ToggleGroupItem>
           ))}
-        </ToggleButtonGroup>
-      </Box>
+        </ToggleGroup>
+      </div>
 
       {/* Sidebar tabs */}
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="sidebar tabs"
-          indicatorColor="primary"
-          textColor="inherit"
-          variant="fullWidth"
-        >
-          <Tab
-            icon={<FormatListNumberedIcon />}
-            label={intl.formatMessage(messages.progress)}
-            aria-label="game progress"
-            {...a11yProps(0)}
-          />
-        </Tabs>
-      </Box>
-      <CustomTabPanel value={value} index={0}>
-        <ProgressTabPanel />
-      </CustomTabPanel>
+      <Tabs value={value}>
+        <div className="border-b border-border">
+          <TabsList className="w-full" aria-label="sidebar tabs">
+            <TabsTrigger value="progress" aria-label="game progress">
+              <ListOrdered className="size-4" />
+              {intl.formatMessage(messages.progress)}
+            </TabsTrigger>
+          </TabsList>
+        </div>
+        <TabsContent value="progress">
+          <ProgressTabPanel />
+        </TabsContent>
+      </Tabs>
 
       {myRole === ParticipantRole.ORGANIZER && <OrganizerSpeedDial />}
-    </Box>
-  );
-}
-
-interface CustomTabPanelProps {
-  children: React.ReactNode;
-  value: number;
-  index: number;
-  [key: string]: unknown;
-}
-
-function CustomTabPanel({ children, value, index, ...other }: CustomTabPanelProps) {
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box>
-          {/* sx={{ p: 3 }} */}
-          {children}
-        </Box>
-      )}
     </div>
   );
-}
-
-function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
 }
