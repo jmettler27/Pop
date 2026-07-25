@@ -1,9 +1,9 @@
 import * as Yup from 'yup';
 
-export const MAX_IMAGE_SIZE_MB = 5;
+export const MAX_IMAGE_SIZE_MB = 4;
 export const IMAGE_VALID_TYPES = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'avif'];
 
-export const MAX_AUDIO_SIZE_MB = 10;
+export const MAX_AUDIO_SIZE_MB = 4;
 export const AUDIO_VALID_TYPES = ['mp3', 'mpeg'];
 
 const fileIsNotTooBig = (file: File, maxSizeMB: number): boolean => {

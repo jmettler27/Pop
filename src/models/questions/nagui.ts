@@ -153,7 +153,7 @@ export class GameNaguiQuestion extends GameQuestion {
   static THINKING_TIME = 30;
 
   thinkingTime: number;
-  correct: boolean | null | undefined;
+  correct: boolean | null;
   option: string | null;
   playerId: string | null;
   reward: number | null;
@@ -163,7 +163,7 @@ export class GameNaguiQuestion extends GameQuestion {
   constructor(data: GameNaguiQuestionData) {
     super(data);
     this.thinkingTime = data.thinkingTime ?? GameNaguiQuestion.THINKING_TIME;
-    this.correct = data.correct;
+    this.correct = data.correct ?? null;
     this.option = data.option ?? null;
     this.playerId = data.playerId ?? null;
     this.reward = data.reward ?? null;

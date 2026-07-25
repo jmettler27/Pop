@@ -95,7 +95,7 @@ export class GameMCQQuestion extends GameQuestion {
   static REWARD = 1;
 
   thinkingTime: number;
-  correct: boolean | null | undefined;
+  correct: boolean | null;
   choiceIdx: number | null;
   playerId: string | null;
   reward: number | null;
@@ -104,7 +104,7 @@ export class GameMCQQuestion extends GameQuestion {
   constructor(data: GameMCQQuestionData) {
     super(data);
     this.thinkingTime = data.thinkingTime ?? GameMCQQuestion.THINKING_TIME;
-    this.correct = data.correct;
+    this.correct = data.correct ?? null;
     this.choiceIdx = data.choiceIdx ?? null;
     this.playerId = data.playerId ?? null;
     this.reward = data.reward ?? null;
