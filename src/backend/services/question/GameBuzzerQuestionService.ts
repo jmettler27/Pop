@@ -265,11 +265,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     const points = (round as BuzzerRound).rewardsPerQuestion;
 
     await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, points);
-
-    // Update the winner player status
     await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.CORRECT);
-
-    // Update the question winner team
     await (this.gameQuestionRepo as GameBuzzerQuestionRepository).updateQuestionWinnerTransaction(
       transaction,
       questionId,
@@ -277,7 +273,6 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
       teamId
     );
     await this.soundRepo.addSoundTransaction(transaction, 'anime_wow');
-
     await this.endQuestionTransaction(transaction, questionId);
 
     this.log.info({ question: questionId, type: this.questionType, player: playerId }, 'Answer validated');
