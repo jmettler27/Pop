@@ -223,7 +223,7 @@ function EmojiPicker() {
     <DynamicEmojiPicker
       emojiStyle={EmojiStyle.NATIVE}
       emojiData={emojiData}
-      width="15%"
+      width={400}
       height={400}
       onEmojiClick={(emojiData) => {
         formik.setFieldValue('clue', formik.values.clue + emojiData.emoji);
