@@ -1,4 +1,3 @@
-import { Box } from '@mui/material';
 import { clsx } from 'clsx';
 
 import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/GameProgressiveCluesQuestionRepository';
@@ -96,13 +95,13 @@ function EndedProgressiveCluesMainContent({ baseQuestion }: EndedProgressiveClue
   }
 
   return (
-    <Box className="flex flex-row h-full w-[90%] items-center justify-center space-x-8">
-      <Box className="flex flex-col h-3/4 w-1/2 items-end justify-end">
+    <div className="flex flex-row h-full w-[90%] items-center justify-center space-x-8">
+      <div className="flex flex-col h-3/4 w-1/2 items-end justify-end">
         <NextImage url={image} alt={title ?? ''} />
-      </Box>
-      <Box className="flex flex-col h-full w-1/2 items-start justify-center">
+      </div>
+      <div className="flex flex-col h-full w-1/2 items-start justify-center">
         <ProgressiveClues baseQuestion={baseQuestion} showComplete={true} />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

@@ -15,7 +15,7 @@ export const LOCALE_TO_TITLE: Record<Locale, string> = {
   fr: 'Français',
 };
 
-function localeToTitle(locale: Locale): string {
+export function localeToTitle(locale: Locale): string {
   return LOCALE_TO_TITLE[locale];
 }
 

@@ -29,6 +29,10 @@
     fill: yellow;
   }
 
+  &-hoverable:hover {
+    fill: yellow;
+  }
+
   &-correct {
     fill: lightgreen;
     opacity: 0.25;

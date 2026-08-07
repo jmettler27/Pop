@@ -1,8 +1,8 @@
 'use client';
 
-import { CircularProgress } from '@mui/material';
 import { useIntl } from 'react-intl';
 
+import { Spinner } from '@/frontend/components/ui/spinner';
 import type { Locale } from '@/frontend/helpers/locales';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
@@ -28,7 +28,7 @@ export default function NaguiPlayerOptionHelperText({ gameQuestion }: { gameQues
     return <></>;
   }
   if (playerLoading || teamLoading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!player || !team) {
     return <></>;

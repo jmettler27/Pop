@@ -1,4 +1,3 @@
-import { CircularProgress } from '@mui/material';
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
@@ -6,6 +5,7 @@ import GameMatchingQuestionRepository from '@/backend/repositories/question/Game
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
@@ -84,7 +84,7 @@ function MatchingPlayerQuestionController() {
   } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
 
   if (roundError || gameQuestionError) return <></>;
-  if (roundLoading || gameQuestionLoading) return <CircularProgress />;
+  if (roundLoading || gameQuestionLoading) return <Spinner />;
   if (!round || !gameQuestion) return <></>;
 
   const matchingRound = round as unknown as MatchingRound;
@@ -143,7 +143,7 @@ function MatchingRunningOrder({ chooser }: { chooser: Chooser }) {
   const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeams();
 
   if (gameQuestionError || teamsError) return <></>;
-  if (gameQuestionLoading || teamsLoading) return <CircularProgress />;
+  if (gameQuestionLoading || teamsLoading) return <Spinner />;
   if (!gameQuestion || !teams) return <></>;
 
   const matchingQuestion = gameQuestion as unknown as GameMatchingQuestion;

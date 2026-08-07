@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 
-import { List } from '@mui/material';
-
 import {
   ReorderingEndView,
   ReorderingItemAccordion,
@@ -37,7 +35,7 @@ export default function ReorderingOrganizerPane({ baseQuestion, gameQuestion }: 
       <div className="h-[85%] w-full flex flex-col items-center justify-center">
         {game.status !== GameStatus.QUESTION_END && (
           <div className="flex flex-col items-center w-1/2 max-h-[90%]">
-            <List className="rounded-lg w-full overflow-y-auto mb-3 bg-white dark:bg-slate-900">
+            <div className="rounded-lg w-full overflow-y-auto mb-3 bg-white dark:bg-slate-900">
               {displayOrder.map((idx: number, position: number) => (
                 <ReorderingItemAccordion
                   key={idx}
@@ -49,7 +47,7 @@ export default function ReorderingOrganizerPane({ baseQuestion, gameQuestion }: 
                   isCorrect={undefined}
                 />
               ))}
-            </List>
+            </div>
           </div>
         )}
         {game.status === GameStatus.QUESTION_END && (

@@ -1,5 +1,3 @@
-import { CircularProgress } from '@mui/material';
-
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import { isObjectEmpty } from '@/backend/utils/objects';
 import {
@@ -7,6 +5,7 @@ import {
   MatchingEdge,
   type NodeData,
 } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useGame from '@/frontend/hooks/useGame';
 
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
@@ -27,7 +26,7 @@ export default function CorrectMatches({ nodePositions, colIndices }: CorrectMat
     return <></>;
   }
   if (loading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!correctMatches || isObjectEmpty(correctMatches as Record<string, unknown>)) {
     return <></>;

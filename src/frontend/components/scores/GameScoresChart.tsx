@@ -1,6 +1,5 @@
 import { useParams } from 'next/navigation';
 
-import { CircularProgress } from '@mui/material';
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -14,6 +13,7 @@ import {
 import { Line } from 'react-chartjs-2';
 import { useIntl } from 'react-intl';
 
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { AnyRound } from '@/models/rounds/RoundFactory';
@@ -83,7 +83,7 @@ export default function GameScoresChart({ currentRoundOrder, teams }: GameScores
     return <></>;
   }
   if (roundsLoading || gameScoresLoading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!rounds || !gameScores) {
     return <></>;

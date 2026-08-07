@@ -1,9 +1,9 @@
 import { memo } from 'react';
 
-import { Avatar, Stack } from '@mui/material';
 import clsx from 'clsx';
 
 import TeamScore from '@/frontend/components/game/top-pane/TeamScore';
+import { Avatar, AvatarFallback, AvatarImage } from '@/frontend/components/ui/avatar';
 import Team from '@/models/team';
 import { Player, PlayerStatus } from '@/models/users/player';
 
@@ -58,11 +58,11 @@ const TeamName = memo(function TeamName({ team }: { team: Team }) {
 
 const TeamPlayersInfo = memo(function TeamPlayersInfo({ players }: { players: Player[] }) {
   return (
-    <Stack className="flex flex-row h-full" direction="row" spacing={3}>
+    <div className="flex flex-row h-full gap-6">
       {players.map((player) => (
         <PlayerItem key={player.id} player={player} />
       ))}
-    </Stack>
+    </div>
   );
 });
 
@@ -91,13 +91,10 @@ const PlayerName = memo(function PlayerName({ player }: { player: Player }) {
 const PlayerAvatar = memo(function PlayerAvatar({ player }: { player: Player }) {
   const status = player.status ?? '';
   return (
-    <Avatar
-      variant="square"
-      alt={player.name}
-      src={player.image ?? undefined}
-      className={clsx('ring-4', playerRingColor(status))}
-      sx={{ height: '90%', width: 'auto' }}
-    />
+    <Avatar className={clsx('h-[90%] w-auto after:border-0', playerAvatarBorderColor(status))}>
+      <AvatarImage alt={player.name} src={player.image ?? undefined} />
+      <AvatarFallback>{player.name?.[0]?.toUpperCase()}</AvatarFallback>
+    </Avatar>
   );
 });
 
@@ -134,19 +131,19 @@ const playerNameGlowColor = (playerStatus: string) => {
   }
 };
 
-const playerRingColor = (playerStatus: string) => {
+const playerAvatarBorderColor = (playerStatus: string) => {
   switch (playerStatus) {
     case PlayerStatus.FOCUS:
-      return 'ring-focus';
+      return 'ring-3 ring-focus';
     case PlayerStatus.CORRECT:
-      return 'ring-correct';
+      return 'ring-3 ring-correct';
     case PlayerStatus.WRONG:
-      return 'ring-wrong';
+      return 'ring-3 ring-wrong';
     case PlayerStatus.READY:
-      return 'ring-ready';
+      return 'ring-3 ring-ready';
     case PlayerStatus.IDLE:
     default:
-      return 'ring-inherit';
+      return '';
   }
 };
 

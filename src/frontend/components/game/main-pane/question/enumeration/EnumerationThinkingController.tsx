@@ -2,25 +2,23 @@
 
 import { useState } from 'react';
 
-import {
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  type SelectChangeEvent,
-} from '@mui/material';
 import { useIntl } from 'react-intl';
 
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 import { addBet } from '@/backend/services/question/enumeration/actions';
 import { range } from '@/backend/utils/arrays';
+import { Button } from '@/frontend/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/frontend/components/ui/dialog';
+import { Label } from '@/frontend/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/frontend/components/ui/select';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
@@ -100,7 +98,7 @@ function AddBetForm({ baseQuestion, status }: { baseQuestion: EnumerationQuestio
     return <></>;
   }
   if (playersLoading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!questionPlayers) {
     return <></>;
@@ -110,9 +108,9 @@ function AddBetForm({ baseQuestion, status }: { baseQuestion: EnumerationQuestio
   const hasBet = bets.some((bet) => bet.playerId === user?.id);
   const selectorDisabled = status !== TimerStatus.START || hasValidated || hasBet;
 
-  const handleSelectorChange = (event: SelectChangeEvent<number>) => {
+  const handleSelectorChange = (value: number) => {
     setDialogOpen(true);
-    setMyBet(Number(event.target.value));
+    setMyBet(value);
   };
 
   const handleBetCancel = () => {
@@ -128,48 +126,56 @@ function AddBetForm({ baseQuestion, status }: { baseQuestion: EnumerationQuestio
 
   return (
     <div className="flex flex-row items-center justify-center">
-      <FormControl sx={{ m: 1, minWidth: 150 }} disabled={selectorDisabled}>
-        <InputLabel id="enum-bet-selector-input-label" sx={{ color: 'inherit' }}>
+      <div className="group m-2 flex flex-col gap-1.5" data-disabled={selectorDisabled}>
+        <Label htmlFor="enum-bet-selector-select" className="text-white">
           {intl.formatMessage(messages.betInputLabel)}
-        </InputLabel>
-
+        </Label>
         <Select
-          id="enum-bet-selector-select"
-          labelId="enum-bet-selector-select-label"
           value={myBet}
-          label={intl.formatMessage(messages.betInputLabel)}
-          onChange={handleSelectorChange}
-          autoWidth
-          sx={{
-            color: 'white',
-            '& .MuiOutlinedInput-notchedOutline': { borderColor: 'inherit' },
-            '& .Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'red' },
-            '& .MuiSelect-icon': { color: 'inherit' },
-          }}
+          onValueChange={(value) => handleSelectorChange(value as number)}
+          disabled={selectorDisabled}
         >
-          {choices.map((choice, i) => (
-            <MenuItem key={i} value={choice}>
-              {choice}
-            </MenuItem>
-          ))}
+          <SelectTrigger id="enum-bet-selector-select" className="min-w-[150px] text-white">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {choices.map((choice, i) => (
+              <SelectItem key={i} value={choice}>
+                {choice}
+              </SelectItem>
+            ))}
+          </SelectContent>
         </Select>
-      </FormControl>
+      </div>
 
-      <Dialog disableEscapeKeyDown open={dialogOpen} onClose={handleDialogClose}>
-        <DialogTitle>
-          {intl.formatMessage(globalMessages.dialogTitle)} ({myBet})
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>{intl.formatMessage(globalMessages.dialogWarning)}</DialogContentText>
+      <Dialog
+        open={dialogOpen}
+        onOpenChange={(open, eventDetails) => {
+          if (eventDetails.reason === 'escape-key') return;
+          if (!open) handleDialogClose();
+        }}
+      >
+        <DialogContent showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>
+              {intl.formatMessage(globalMessages.dialogTitle)} ({myBet})
+            </DialogTitle>
+            <DialogDescription>{intl.formatMessage(globalMessages.dialogWarning)}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={handleBetValidate} disabled={isSubmitting}>
+              {intl.formatMessage(globalMessages.submit)}
+            </Button>
+            <Button
+              variant="outline"
+              className="border-destructive text-destructive hover:bg-destructive/10"
+              onClick={handleBetCancel}
+              autoFocus
+            >
+              {intl.formatMessage(globalMessages.cancel)}
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button variant="contained" color="primary" onClick={handleBetValidate} disabled={isSubmitting}>
-            {intl.formatMessage(globalMessages.submit)}
-          </Button>
-          <Button variant="outlined" color="error" sx={{ color: 'error' }} onClick={handleBetCancel} autoFocus>
-            {intl.formatMessage(globalMessages.cancel)}
-          </Button>
-        </DialogActions>
       </Dialog>
     </div>
   );

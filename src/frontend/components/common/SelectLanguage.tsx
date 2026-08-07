@@ -2,7 +2,8 @@ import { useIntl } from 'react-intl';
 import type { ObjectSchema } from 'yup';
 
 import { MySelect } from '@/frontend/components/common/StyledFormComponents';
-import { LOCALES, prependLocaleWithEmoji } from '@/frontend/helpers/locales';
+import { SelectItem } from '@/frontend/components/ui/select';
+import { LOCALES, localeToTitle } from '@/frontend/helpers/locales';
 import defineMessages from '@/frontend/i18n/defineMessages';
 
 const messages = defineMessages('frontend.forms.SelectLanguage', {
@@ -19,11 +20,11 @@ export default function SelectLanguage({ validationSchema, name = 'lang' }: Sele
   const intl = useIntl();
   return (
     <MySelect label={intl.formatMessage(messages.label)} name={name} validationSchema={validationSchema}>
-      <option value="">{intl.formatMessage(messages.header)}</option>
+      <SelectItem value="">{intl.formatMessage(messages.header)}</SelectItem>
       {LOCALES.map((locale) => (
-        <option key={locale} value={locale}>
-          {prependLocaleWithEmoji(locale)}
-        </option>
+        <SelectItem key={locale} value={locale}>
+          {localeToTitle(locale)}
+        </SelectItem>
       ))}
     </MySelect>
   );

@@ -48,7 +48,7 @@ function BuzzerQuestionHeader({ baseQuestion }: BuzzerMiddlePaneProps) {
   return (
     <div className="flex flex-col items-center justify-around">
       <div className="flex flex-row items-center justify-center space-x-1">
-        <QuestionTypeIcon questionType={bq.type as QuestionType} fontSize={40} />
+        <QuestionTypeIcon questionType={bq.type as QuestionType} className="size-10" />
         <h1 className="text-xs md:text-xl 2xl:text-5xl">
           {bq.topic ? topicToEmoji(bq.topic as Topic) : ''}{' '}
           <strong>

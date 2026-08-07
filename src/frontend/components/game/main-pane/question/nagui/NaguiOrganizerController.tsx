@@ -1,8 +1,6 @@
 'use client';
 
-import CancelIcon from '@mui/icons-material/Cancel';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { Button, ButtonGroup } from '@mui/material';
+import { CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { handleHideAnswer } from '@/backend/services/question/nagui/actions';
@@ -10,6 +8,7 @@ import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameCh
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
+import { Button } from '@/frontend/components/ui/button';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -56,14 +55,20 @@ function NaguiOrganizerHideAnswerController({ gameQuestion }: { gameQuestion: Ga
 
   return (
     <>
-      <ButtonGroup disableElevation variant="contained" size="large" color="primary">
-        <Button color="success" startIcon={<CheckCircleIcon />} onClick={() => handleClick(true)} disabled={isHandling}>
+      <div className="flex gap-1">
+        <Button
+          className="bg-green-600 text-white hover:bg-green-600/80"
+          onClick={() => handleClick(true)}
+          disabled={isHandling}
+        >
+          <CheckCircle2 className="mr-2 size-4" />
           {intl.formatMessage(globalMessages.validate)}
         </Button>
-        <Button color="error" startIcon={<CancelIcon />} onClick={() => handleClick(false)} disabled={isHandling}>
+        <Button variant="destructive" onClick={() => handleClick(false)} disabled={isHandling}>
+          <XCircle className="mr-2 size-4" />
           {intl.formatMessage(globalMessages.invalidate)}
         </Button>
-      </ButtonGroup>
+      </div>
     </>
   );
 }

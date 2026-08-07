@@ -2,12 +2,8 @@
 
 import { useState } from 'react';
 
-import AdjustIcon from '@mui/icons-material/Adjust';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import LinearScaleIcon from '@mui/icons-material/LinearScale';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
-import type { Theme } from '@mui/material/styles';
 import { clsx } from 'clsx';
+import { CheckCircle2, SlidersHorizontal, Target } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { submitBet } from '@/backend/services/question/estimation/actions';
@@ -17,6 +13,17 @@ import {
   formatAnswerValue,
   messages,
 } from '@/frontend/components/game/main-pane/question/estimation/EstimationCommon';
+import { Button } from '@/frontend/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/frontend/components/ui/dialog';
+import { Input } from '@/frontend/components/ui/input';
+import { Label } from '@/frontend/components/ui/label';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useIsMobile from '@/frontend/hooks/useIsMobile';
@@ -31,22 +38,12 @@ import {
   RangeEstimationBet,
 } from '@/models/questions/estimation';
 
-const darkInputSx = (theme: Theme) => ({
-  minWidth: 200,
-  [theme.breakpoints.up('xl')]: { minWidth: 300 },
-  '& .MuiOutlinedInput-root': {
-    color: 'rgb(226, 232, 240)',
-    backgroundColor: 'rgba(15, 23, 42, 0.6)',
-    '& fieldset': { borderColor: 'rgba(100, 116, 139, 0.5)' },
-    '&:hover fieldset': { borderColor: 'rgba(148, 163, 184, 0.7)' },
-    '&.Mui-focused fieldset': { borderColor: 'rgb(96, 165, 250)' },
-  },
-  '& .MuiInputLabel-root': {
-    color: 'rgba(148, 163, 184, 0.8)',
-    '&.Mui-focused': { color: 'rgb(96, 165, 250)' },
-  },
-  '& .MuiFormHelperText-root': { color: 'rgba(148, 163, 184, 0.7)' },
-});
+const darkInputClassName = clsx(
+  'min-w-[200px] xl:min-w-[300px]',
+  'border-slate-500/50 bg-slate-900/60 text-slate-200',
+  'hover:border-slate-400/70 focus-visible:border-blue-400'
+);
+const darkLabelClassName = 'text-slate-400/80 group-focus-within:text-blue-400';
 
 interface EstimationPlayerPaneProps {
   baseQuestion: EstimationQuestion;
@@ -60,7 +57,7 @@ export default function EstimationPlayerPane({ baseQuestion, gameQuestion }: Est
   return (
     <div className="flex flex-col h-full items-center">
       {!isMobile && (
-        <div className="flex-shrink-0 w-full flex flex-col items-center justify-center py-3">
+        <div className="shrink-0 w-full flex flex-col items-center justify-center py-3">
           <EstimationQuestionHeader baseQuestion={baseQuestion} />
         </div>
       )}
@@ -118,43 +115,59 @@ function BetTypeCard({ icon, title, description, selected, onClick, disabled }: 
 }
 
 interface NumberOrDateInputProps {
+  id: string;
   answerType: string;
   value: string;
   onChange: (v: string) => void;
   label: string;
 }
 
-function NumberOrDateInput({ answerType, value, onChange, label }: NumberOrDateInputProps) {
+function NumberOrDateInput({ id, answerType, value, onChange, label }: NumberOrDateInputProps) {
   const intl = useIntl();
 
   if (answerType === EstimationQuestion.AnswerType.DATE) {
     return (
-      <TextField
-        label={label}
-        type="date"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        InputLabelProps={{ shrink: true }}
-        inputProps={{ min: EstimationQuestion.DATE_MIN, max: EstimationQuestion.DATE_MAX, lang: intl.locale }}
-        sx={darkInputSx}
-      />
+      <div className="group flex flex-col gap-1.5">
+        <Label htmlFor={id} className={darkLabelClassName}>
+          {label}
+        </Label>
+        <Input
+          id={id}
+          type="date"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          min={EstimationQuestion.DATE_MIN}
+          max={EstimationQuestion.DATE_MAX}
+          lang={intl.locale}
+          className={darkInputClassName}
+        />
+      </div>
     );
   }
 
   const { min, max, step } = getNumericBounds(answerType);
   return (
-    <TextField
-      label={label}
-      type="number"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      inputProps={{ min, max, step }}
-      helperText={intl.formatMessage(messages.bounds, {
-        min: min.toLocaleString(),
-        max: max.toLocaleString(),
-      })}
-      sx={darkInputSx}
-    />
+    <div className="group flex flex-col gap-1.5">
+      <Label htmlFor={id} className={darkLabelClassName}>
+        {label}
+      </Label>
+      <Input
+        id={id}
+        type="number"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        min={min}
+        max={max}
+        step={step}
+        className={darkInputClassName}
+      />
+      <p className="text-xs text-slate-400/70">
+        {intl.formatMessage(messages.bounds, {
+          min: min.toLocaleString(),
+          max: max.toLocaleString(),
+        })}
+      </p>
+    </div>
   );
 }
 
@@ -236,7 +249,7 @@ function EstimationPlayerActiveView({ baseQuestion, gameQuestion }: EstimationPl
 
     return (
       <div className="flex flex-col items-center justify-center gap-4">
-        <CheckCircleIcon sx={{ fontSize: 56, color: 'success.main' }} />
+        <CheckCircle2 className="size-14 text-green-500" />
         <span className="text-xl 2xl:text-3xl font-semibold text-green-500">
           {submittedByMe ? intl.formatMessage(messages.youSubmitted) : intl.formatMessage(messages.teammateSubmitted)}
         </span>
@@ -251,7 +264,7 @@ function EstimationPlayerActiveView({ baseQuestion, gameQuestion }: EstimationPl
 
       <div className="flex flex-row gap-3 md:gap-6 2xl:gap-10 justify-center">
         <BetTypeCard
-          icon={<AdjustIcon fontSize="inherit" />}
+          icon={<Target className="size-[1em]" />}
           title={intl.formatMessage(messages.exactType)}
           description={intl.formatMessage(messages.exactTypeDesc)}
           selected={betType === EstimationQuestion.BetType.EXACT}
@@ -263,7 +276,7 @@ function EstimationPlayerActiveView({ baseQuestion, gameQuestion }: EstimationPl
           }}
         />
         <BetTypeCard
-          icon={<LinearScaleIcon fontSize="inherit" />}
+          icon={<SlidersHorizontal className="size-[1em]" />}
           title={intl.formatMessage(messages.rangeType)}
           description={intl.formatMessage(messages.rangeTypeDesc)}
           selected={betType === EstimationQuestion.BetType.RANGE}
@@ -278,6 +291,7 @@ function EstimationPlayerActiveView({ baseQuestion, gameQuestion }: EstimationPl
       {betType === EstimationQuestion.BetType.EXACT && (
         <div className="flex justify-center">
           <NumberOrDateInput
+            id="exact-value-input"
             answerType={baseQuestion.answerType}
             value={exactValue}
             onChange={setExactValue}
@@ -289,12 +303,14 @@ function EstimationPlayerActiveView({ baseQuestion, gameQuestion }: EstimationPl
       {betType === EstimationQuestion.BetType.RANGE && (
         <div className="flex flex-row gap-4 2xl:gap-8 items-start justify-center flex-wrap">
           <NumberOrDateInput
+            id="range-from-input"
             answerType={baseQuestion.answerType}
             value={rangeFrom}
             onChange={setRangeFrom}
             label={intl.formatMessage(messages.rangeFrom)}
           />
           <NumberOrDateInput
+            id="range-to-input"
             answerType={baseQuestion.answerType}
             value={rangeTo}
             onChange={setRangeTo}
@@ -305,10 +321,11 @@ function EstimationPlayerActiveView({ baseQuestion, gameQuestion }: EstimationPl
 
       {betType && (
         <Button
-          variant="contained"
-          color="success"
-          size="large"
-          className="rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 2xl:text-xl 2xl:py-3 2xl:px-8"
+          size="lg"
+          className={clsx(
+            'bg-green-600 text-white hover:bg-green-600/80',
+            'rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 2xl:text-xl 2xl:py-3 2xl:px-8'
+          )}
           onClick={() => setDialogOpen(true)}
           disabled={!canSubmit || isSubmitting}
         >
@@ -316,10 +333,12 @@ function EstimationPlayerActiveView({ baseQuestion, gameQuestion }: EstimationPl
         </Button>
       )}
 
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>{intl.formatMessage(messages.confirmDialogTitle)}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>{intl.formatMessage(messages.confirmDialogMessage)}</DialogContentText>
+      <Dialog open={dialogOpen} onOpenChange={(open) => !open && setDialogOpen(false)}>
+        <DialogContent showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>{intl.formatMessage(messages.confirmDialogTitle)}</DialogTitle>
+            <DialogDescription>{intl.formatMessage(messages.confirmDialogMessage)}</DialogDescription>
+          </DialogHeader>
           <p className="mt-4 text-lg font-semibold">
             {betType === EstimationQuestion.BetType.EXACT
               ? intl.formatMessage(messages.yourBetExact, {
@@ -330,15 +349,24 @@ function EstimationPlayerActiveView({ baseQuestion, gameQuestion }: EstimationPl
                   upper: formatAnswerValue(baseQuestion.answerType, rangeTo, intl.locale),
                 })}
           </p>
+          <DialogFooter>
+            <Button
+              className="bg-green-600 text-white hover:bg-green-600/80"
+              onClick={handleSubmitBet}
+              disabled={isSubmitting}
+            >
+              {intl.formatMessage(globalMessages.submit)}
+            </Button>
+            <Button
+              variant="outline"
+              className="border-destructive text-destructive hover:bg-destructive/10"
+              onClick={() => setDialogOpen(false)}
+              disabled={isSubmitting}
+            >
+              {intl.formatMessage(globalMessages.cancel)}
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button variant="contained" color="success" onClick={handleSubmitBet} disabled={isSubmitting}>
-            {intl.formatMessage(globalMessages.submit)}
-          </Button>
-          <Button variant="outlined" color="error" onClick={() => setDialogOpen(false)} disabled={isSubmitting}>
-            {intl.formatMessage(globalMessages.cancel)}
-          </Button>
-        </DialogActions>
       </Dialog>
     </div>
   );

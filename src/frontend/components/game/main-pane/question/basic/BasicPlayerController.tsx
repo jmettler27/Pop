@@ -1,11 +1,11 @@
-import PanToolIcon from '@mui/icons-material/PanTool';
-import ReplayIcon from '@mui/icons-material/Replay';
-import { Button, IconButton, Tooltip } from '@mui/material';
 import clsx from 'clsx';
+import { Hand, RotateCcw } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
 import { addPlayerToBuzzer, removePlayerFromBuzzer } from '@/backend/services/question/basic/actions';
+import { Button } from '@/frontend/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -167,15 +167,13 @@ function BuzzerButton({ isDisabled }: BuzzerButtonProps) {
 
   return (
     <Button
-      size="large"
-      variant="contained"
-      color="primary"
+      size="lg"
       onClick={handleBuzz}
       disabled={isDisabled || isBuzzing}
       style={{ backgroundColor: isDisabled ? 'gray' : 'red' }}
-      endIcon={<PanToolIcon />}
     >
       <span className={clsx('2xl:text-3xl', !isDisabled && 'text-slate-100')}>BUZZ</span>
+      <Hand className="ml-2 size-4" />
     </Button>
   );
 }
@@ -199,17 +197,19 @@ function BuzzerResetButton({ isDisabled }: BuzzerResetButtonProps) {
   });
 
   return (
-    <Tooltip title="Annuler" placement="right">
-      <span>
-        <IconButton
-          color="primary"
+    <Tooltip>
+      <TooltipTrigger render={<span />}>
+        <Button
+          variant="ghost"
+          size="icon"
           aria-label="reset buzzer"
           onClick={handleResetBuzz}
           disabled={isDisabled || isResetting}
         >
-          <ReplayIcon />
-        </IconButton>
-      </span>
+          <RotateCcw />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="right">Annuler</TooltipContent>
     </Tooltip>
   );
 }

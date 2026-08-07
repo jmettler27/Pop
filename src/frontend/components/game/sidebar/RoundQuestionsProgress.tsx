@@ -1,14 +1,15 @@
-import { memo, ReactNode, useState } from 'react';
+import { memo, ReactNode, useState, type CSSProperties } from 'react';
 import { useParams } from 'next/navigation';
 
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Accordion, AccordionDetails, AccordionSummary, CircularProgress, Divider, Typography } from '@mui/material';
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import { QuestionCardContent } from '@/frontend/components/common/QuestionCard';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/frontend/components/ui/accordion';
+import { Separator } from '@/frontend/components/ui/separator';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import { Locale } from '@/frontend/helpers/locales';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
@@ -68,7 +69,7 @@ export default function RoundQuestionsProgress({ game, round }: RoundQuestionsPr
   const { players, loading: playersLoading, error: playersError } = playerRepo.useAllPlayersOnce();
 
   if (teamsError || playersError) return <></>;
-  if (teamsLoading || playersLoading) return <CircularProgress />;
+  if (teamsLoading || playersLoading) return <Spinner />;
   if (!teams || !players) return <></>;
 
   const isExpanded = (questionId: string) => expandedId === questionId;
@@ -222,50 +223,51 @@ function AccordionShell({
 
   return (
     <Accordion
-      expanded={expanded}
-      onChange={onAccordionChange}
+      value={expanded ? ['item'] : []}
+      onValueChange={() => onAccordionChange()}
       disabled={disabled}
-      className={clsx('rounded-lg', isCurrent && game.status === GameStatus.QUESTION_ACTIVE && 'glow-border-white')}
-      elevation={0}
-      sx={{
-        borderWidth: isCurrent ? '2px' : '1px',
-        borderStyle: 'solid',
-        borderColor,
-        backgroundColor: 'inherit',
-        color: 'inherit',
-      }}
-      disableGutters
+      className={clsx(
+        'rounded-lg bg-inherit text-inherit border-solid',
+        isCurrent ? 'border-2' : 'border',
+        isCurrent && game.status === GameStatus.QUESTION_ACTIVE && 'glow-border-white'
+      )}
+      style={{ borderColor, '--accordion-icon-color': borderColor } as CSSProperties}
     >
-      <AccordionSummary
-        expandIcon={showComplete && <ExpandMoreIcon />}
-        sx={{ '& .MuiSvgIcon-root': { color: borderColor } }}
-      >
-        <Typography sx={{ color: borderColor }}>{summary}</Typography>
-      </AccordionSummary>
-      {showComplete && <AccordionDetails>{details}</AccordionDetails>}
+      <AccordionItem value="item">
+        <AccordionTrigger
+          className={clsx(
+            'px-3 hover:no-underline',
+            '[&_[data-slot=accordion-trigger-icon]]:text-(--accordion-icon-color)',
+            !showComplete && '[&_[data-slot=accordion-trigger-icon]]:hidden'
+          )}
+        >
+          <p style={{ color: borderColor }}>{summary}</p>
+        </AccordionTrigger>
+        {showComplete && <AccordionContent className="px-3">{details}</AccordionContent>}
+      </AccordionItem>
     </Accordion>
   );
 }
 
 function TitleWithSource({ source, title }: { source?: string; title?: string }) {
   return (
-    <Typography>
+    <p>
       <i>
         <strong>{source}</strong>
       </i>{' '}
       - &quot;{title}&quot;
-    </Typography>
+    </p>
   );
 }
 
 function QuotedTitle({ title }: { title?: string }) {
-  return <Typography>&quot;{title}&quot;</Typography>;
+  return <p>&quot;{title}&quot;</p>;
 }
 
 function WinnerDisplay({ winnerPlayer, winnerTeam }: { winnerPlayer: Player | null; winnerTeam: Team | null }) {
   const intl = useIntl();
   return (
-    <Typography>
+    <p>
       🏅{' '}
       {winnerTeam && winnerPlayer ? (
         <span style={{ color: winnerTeam.color }}>
@@ -274,7 +276,7 @@ function WinnerDisplay({ winnerPlayer, winnerTeam }: { winnerPlayer: Player | nu
       ) : (
         <span className="italic opacity-50">{intl.formatMessage(globalMessages.nobody)}</span>
       )}
-    </Typography>
+    </p>
   );
 }
 
@@ -300,7 +302,7 @@ function BasicRoundQuestionAccordion({
   const { showComplete, disabled } = useAccordionState(game, isCurrent, hasEnded, hasNotStarted);
 
   if (error) return <></>;
-  if (loading) return <CircularProgress />;
+  if (loading) return <Spinner />;
   if (!gameQuestion || !baseQuestion) return <></>;
 
   const gq = gameQuestion as GameBasicQuestion;
@@ -330,7 +332,7 @@ function BasicRoundQuestionAccordion({
         <>
           <TitleWithSource source={q.source} title={q.title} />
           <QuestionCardContent baseQuestion={q} />
-          <Divider className="my-2 bg-slate-600" />
+          <Separator className="my-2 bg-slate-600" />
           <WinnerDisplay winnerPlayer={winnerPlayer} winnerTeam={winnerTeam} />
         </>
       }
@@ -356,7 +358,7 @@ function BlindtestRoundQuestionAccordion({
   const { showComplete, disabled } = useAccordionState(game, isCurrent, hasEnded, hasNotStarted);
 
   if (error) return <></>;
-  if (loading) return <CircularProgress />;
+  if (loading) return <Spinner />;
   if (!gameQuestion || !baseQuestion) return <></>;
 
   const gq = gameQuestion as GameBlindtestQuestion;
@@ -387,7 +389,7 @@ function BlindtestRoundQuestionAccordion({
         <>
           <QuotedTitle title={q.title} />
           <QuestionCardContent baseQuestion={q} />
-          <Divider className="my-2 bg-slate-600" />
+          <Separator className="my-2 bg-slate-600" />
           <WinnerDisplay winnerPlayer={winnerPlayer} winnerTeam={winnerTeam} />
         </>
       }
@@ -413,7 +415,7 @@ function EmojiRoundQuestionAccordion({
   const { showComplete, disabled } = useAccordionState(game, isCurrent, hasEnded, hasNotStarted);
 
   if (error) return <></>;
-  if (loading) return <CircularProgress />;
+  if (loading) return <Spinner />;
   if (!gameQuestion || !baseQuestion) return <></>;
 
   const gq = gameQuestion as GameEmojiQuestion;
@@ -443,7 +445,7 @@ function EmojiRoundQuestionAccordion({
       details={
         <>
           <QuestionCardContent baseQuestion={q} />
-          <Divider className="my-2 bg-slate-600" />
+          <Separator className="my-2 bg-slate-600" />
           <WinnerDisplay winnerPlayer={winnerPlayer} winnerTeam={winnerTeam} />
         </>
       }
@@ -473,7 +475,7 @@ function EnumerationRoundQuestionAccordion({
   const { showComplete, disabled } = useAccordionState(game, isCurrent, hasEnded, hasNotStarted);
 
   if (error) return <></>;
-  if (loading) return <CircularProgress />;
+  if (loading) return <Spinner />;
   if (!gameQuestion || !baseQuestion) return <></>;
 
   const q = baseQuestion as EnumerationQuestion;
@@ -500,7 +502,7 @@ function EnumerationRoundQuestionAccordion({
         <>
           <QuotedTitle title={q.title} />
           <QuestionCardContent baseQuestion={q} />
-          <Divider className="my-2 bg-slate-600" />
+          <Separator className="my-2 bg-slate-600" />
           <WinnerDisplay winnerPlayer={null} winnerTeam={null} />
         </>
       }
@@ -526,7 +528,7 @@ function EstimationRoundQuestionAccordion({
   const { showComplete, disabled } = useAccordionState(game, isCurrent, hasEnded, hasNotStarted);
 
   if (error) return <></>;
-  if (loading) return <CircularProgress />;
+  if (loading) return <Spinner />;
   if (!gameQuestion || !baseQuestion) return <></>;
 
   const q = baseQuestion as EstimationQuestion;
@@ -553,7 +555,7 @@ function EstimationRoundQuestionAccordion({
         <>
           <QuotedTitle title={q.title} />
           <QuestionCardContent baseQuestion={q} />
-          <Divider className="my-2 bg-slate-600" />
+          <Separator className="my-2 bg-slate-600" />
           <WinnerDisplay winnerPlayer={null} winnerTeam={null} />
         </>
       }
@@ -579,7 +581,7 @@ function ImageRoundQuestionAccordion({
   const { showComplete, disabled } = useAccordionState(game, isCurrent, hasEnded, hasNotStarted);
 
   if (error) return <></>;
-  if (loading) return <CircularProgress />;
+  if (loading) return <Spinner />;
   if (!gameQuestion || !baseQuestion) return <></>;
 
   const gq = gameQuestion as GameImageQuestion;
@@ -609,7 +611,7 @@ function ImageRoundQuestionAccordion({
       details={
         <>
           <QuestionCardContent baseQuestion={q} />
-          <Divider className="my-2 bg-slate-600" />
+          <Separator className="my-2 bg-slate-600" />
           <WinnerDisplay winnerPlayer={winnerPlayer} winnerTeam={winnerTeam} />
         </>
       }
@@ -635,7 +637,7 @@ function LabellingRoundQuestionAccordion({
   const { showComplete, disabled } = useAccordionState(game, isCurrent, hasEnded, hasNotStarted);
 
   if (error) return <></>;
-  if (loading) return <CircularProgress />;
+  if (loading) return <Spinner />;
   if (!gameQuestion || !baseQuestion) return <></>;
 
   const q = baseQuestion as LabellingQuestion;
@@ -662,7 +664,7 @@ function LabellingRoundQuestionAccordion({
       details={
         <>
           <QuestionCardContent baseQuestion={q} />
-          <Divider className="my-2 bg-slate-600" />
+          <Separator className="my-2 bg-slate-600" />
           <WinnerDisplay winnerPlayer={null} winnerTeam={null} />
         </>
       }
@@ -688,7 +690,7 @@ function MatchingRoundQuestionAccordion({
   const { showComplete, disabled } = useAccordionState(game, isCurrent, hasEnded, hasNotStarted);
 
   if (error) return <></>;
-  if (loading) return <CircularProgress />;
+  if (loading) return <Spinner />;
   if (!gameQuestion || !baseQuestion) return <></>;
 
   const q = baseQuestion as MatchingQuestion;
@@ -740,7 +742,7 @@ function MCQRoundQuestionAccordion({
   const { showComplete, disabled } = useAccordionState(game, isCurrent, hasEnded, hasNotStarted);
 
   if (error) return <></>;
-  if (loading) return <CircularProgress />;
+  if (loading) return <Spinner />;
   if (!gameQuestion || !baseQuestion) return <></>;
 
   const gq = gameQuestion as GameMCQQuestion;
@@ -770,7 +772,7 @@ function MCQRoundQuestionAccordion({
         <>
           <TitleWithSource source={q.source} title={q.title} />
           <QuestionCardContent baseQuestion={q} />
-          <Divider className="my-2 bg-slate-600" />
+          <Separator className="my-2 bg-slate-600" />
           <WinnerDisplay winnerPlayer={winnerPlayer} winnerTeam={winnerTeam} />
         </>
       }
@@ -796,7 +798,7 @@ function NaguiRoundQuestionAccordion({
   const { showComplete, disabled } = useAccordionState(game, isCurrent, hasEnded, hasNotStarted);
 
   if (error) return <></>;
-  if (loading) return <CircularProgress />;
+  if (loading) return <Spinner />;
   if (!gameQuestion || !baseQuestion) return <></>;
 
   const gq = gameQuestion as GameNaguiQuestion;
@@ -826,7 +828,7 @@ function NaguiRoundQuestionAccordion({
         <>
           <TitleWithSource source={q.source} title={q.title} />
           <QuestionCardContent baseQuestion={q} />
-          <Divider className="my-2 bg-slate-600" />
+          <Separator className="my-2 bg-slate-600" />
           <WinnerDisplay winnerPlayer={winnerPlayer} winnerTeam={winnerTeam} />
         </>
       }
@@ -856,7 +858,7 @@ function OddOneOutRoundQuestionAccordion({
   const { showComplete, disabled } = useAccordionState(game, isCurrent, hasEnded, hasNotStarted);
 
   if (error) return <></>;
-  if (loading) return <CircularProgress />;
+  if (loading) return <Spinner />;
   if (!gameQuestion || !baseQuestion) return <></>;
 
   const q = baseQuestion as OddOneOutQuestion;
@@ -883,7 +885,7 @@ function OddOneOutRoundQuestionAccordion({
         <>
           <QuotedTitle title={q.title} />
           <QuestionCardContent baseQuestion={q} />
-          <Divider className="my-2 bg-slate-600" />
+          <Separator className="my-2 bg-slate-600" />
           <WinnerDisplay winnerPlayer={null} winnerTeam={null} />
         </>
       }
@@ -913,7 +915,7 @@ function ProgressiveCluesRoundQuestionAccordion({
   const { showComplete, disabled } = useAccordionState(game, isCurrent, hasEnded, hasNotStarted);
 
   if (error) return <></>;
-  if (loading) return <CircularProgress />;
+  if (loading) return <Spinner />;
   if (!gameQuestion || !baseQuestion) return <></>;
 
   const gq = gameQuestion as GameProgressiveCluesQuestion;
@@ -943,7 +945,7 @@ function ProgressiveCluesRoundQuestionAccordion({
       details={
         <>
           <QuestionCardContent baseQuestion={q} />
-          <Divider className="my-2 bg-slate-600" />
+          <Separator className="my-2 bg-slate-600" />
           <WinnerDisplay winnerPlayer={winnerPlayer} winnerTeam={winnerTeam} />
         </>
       }
@@ -969,7 +971,7 @@ function QuoteRoundQuestionAccordion({
   const { showComplete, disabled } = useAccordionState(game, isCurrent, hasEnded, hasNotStarted);
 
   if (error) return <></>;
-  if (loading) return <CircularProgress />;
+  if (loading) return <Spinner />;
   if (!gameQuestion || !baseQuestion) return <></>;
 
   const gq = gameQuestion as GameQuoteQuestion;
@@ -998,7 +1000,7 @@ function QuoteRoundQuestionAccordion({
       details={
         <>
           <QuestionCardContent baseQuestion={q} />
-          <Divider className="my-2 bg-slate-600" />
+          <Separator className="my-2 bg-slate-600" />
           <WinnerDisplay winnerPlayer={winnerPlayer} winnerTeam={winnerTeam} />
         </>
       }
@@ -1024,7 +1026,7 @@ function ReorderingRoundQuestionAccordion({
   const { showComplete, disabled } = useAccordionState(game, isCurrent, hasEnded, hasNotStarted);
 
   if (error) return <></>;
-  if (loading) return <CircularProgress />;
+  if (loading) return <Spinner />;
   if (!gameQuestion || !baseQuestion) return <></>;
 
   const q = baseQuestion as ReorderingQuestion;
@@ -1051,7 +1053,7 @@ function ReorderingRoundQuestionAccordion({
         <>
           <QuotedTitle title={q.title} />
           <QuestionCardContent baseQuestion={q} />
-          <Divider className="my-2 bg-slate-600" />
+          <Separator className="my-2 bg-slate-600" />
           <WinnerDisplay winnerPlayer={null} winnerTeam={null} />
         </>
       }

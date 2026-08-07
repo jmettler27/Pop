@@ -1,9 +1,8 @@
 'use client';
 
-import { CircularProgress } from '@mui/material';
-
 import RoundEndBottomPane from '@/frontend/components/game/main-pane/round/RoundEndBottomPane';
 import RoundStartBottomPane from '@/frontend/components/game/main-pane/round/RoundStartBottomPane';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import { GameStatus } from '@/models/games/game-status';
@@ -28,7 +27,7 @@ export default function RoundBottomPane() {
     return <></>;
   }
   if (roundLoading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!round) {
     return <></>;

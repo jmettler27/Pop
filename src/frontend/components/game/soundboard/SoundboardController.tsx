@@ -1,63 +1,33 @@
 import { memo } from 'react';
 import { useParams } from 'next/navigation';
 
-import { FormControl, InputLabel, MenuItem, Select, type SelectChangeEvent } from '@mui/material';
-
 import { addSound } from '@/backend/services/sound/sounds';
 import sounds from '@/data/sounds';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/frontend/components/ui/select';
+
+const soundboardTextSize = 'text-sm sm:text-base md:text-[1.0625rem] xl:text-lg';
 
 const SoundboardController = memo(function SoundboardController({}) {
   const { id } = useParams();
   const gameId = id as string;
 
-  const handleSelectSound = async (e: SelectChangeEvent<string>) => {
-    addSound(gameId as string, e.target.value);
+  const handleSelectSound = (value: string | null) => {
+    if (value) addSound(gameId as string, value);
   };
 
   return (
-    <>
-      <FormControl sx={{ m: 1, minWidth: 150 }}>
-        <InputLabel
-          id="soundboard-input-label"
-          sx={{ color: 'inherit', fontSize: { xs: '0.875rem', sm: '1rem', md: '1.0625rem', xl: '1.125rem' } }}
-        >
-          Soundboard
-        </InputLabel>
-
-        <Select
-          id="sound-select"
-          labelId="sound-select-label"
-          value={''}
-          // label="My sound"
-          onChange={handleSelectSound}
-          autoWidth
-          sx={{
-            color: 'inherit',
-            fontSize: { xs: '0.875rem', sm: '1rem', md: '1.0625rem', xl: '1.125rem' },
-            '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'inherit',
-            },
-            // MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root.Mui-focused
-            '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'red',
-            },
-            '& .MuiSelect-icon': {
-              color: 'inherit',
-            },
-          }}
-        >
-          {Object.values(sounds).map((sound, idx) => (
-            <MenuItem
-              key={idx}
-              value={sound.name}
-              sx={{ fontSize: { xs: '0.875rem', sm: '1rem', md: '1.0625rem', xl: '1.125rem' } }}
-            >
-              {sound.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </>
+    <Select value="" onValueChange={handleSelectSound}>
+      <SelectTrigger className={`m-2 min-w-[150px] ${soundboardTextSize}`}>
+        <SelectValue placeholder="Soundboard" />
+      </SelectTrigger>
+      <SelectContent>
+        {Object.values(sounds).map((sound, idx) => (
+          <SelectItem key={idx} value={sound.name} className={soundboardTextSize}>
+            {sound.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 });
 

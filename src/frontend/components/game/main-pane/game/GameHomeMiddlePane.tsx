@@ -1,13 +1,13 @@
 import type { ReactNode } from 'react';
 import { useParams } from 'next/navigation';
 
-import { Avatar, ListItemAvatar, ListItemButton, ListItemText } from '@mui/material';
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
 import { handleRoundSelected } from '@/backend/services/round/actions';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { Avatar, AvatarFallback } from '@/frontend/components/ui/avatar';
 import { type Locale } from '@/frontend/helpers/locales';
 import { RoundTypeIcon } from '@/frontend/helpers/question-types';
 import { formatDuration, timestampElapsedSeconds, timestampToHour } from '@/frontend/helpers/time';
@@ -180,39 +180,34 @@ function GameHomeRoundItem({ round, isDisabled, onSelectRound }: GameHomeRoundIt
           : 'rounded-xl overflow-hidden border border-slate-600 bg-slate-800'
       }
     >
-      <ListItemButton
+      <button
+        type="button"
         disabled={isDisabled}
         onClick={onSelectRound}
-        sx={{
-          py: { xs: 1.25, md: 1.5 },
-          bgcolor: 'transparent',
-          '&.Mui-disabled': { opacity: 1 },
-          '&:hover': { bgcolor: 'rgba(148, 163, 184, 0.07)' },
-        }}
+        className="w-full flex items-center gap-4 px-4 py-2.5 md:py-3 bg-transparent hover:bg-[rgba(148,163,184,0.07)] disabled:opacity-100"
       >
-        <ListItemAvatar>
-          <Avatar
-            sx={{
-              bgcolor: isEnded ? 'rgba(71, 85, 105, 0.6)' : 'primary.main',
-              width: { xs: 34, md: 40 },
-              height: { xs: 34, md: 40 },
-            }}
-          >
-            <RoundTypeIcon roundType={round.type!} fontSize={isEnded ? 16 : 20} />
+        <span className="flex items-center justify-center shrink-0">
+          <Avatar className="size-[34px] md:size-10">
+            <AvatarFallback
+              className="text-white"
+              style={{ backgroundColor: isEnded ? 'rgba(71, 85, 105, 0.6)' : '#1976d2' }}
+            >
+              <RoundTypeIcon roundType={round.type!} className={isEnded ? 'size-4' : 'size-5'} />
+            </AvatarFallback>
           </Avatar>
-        </ListItemAvatar>
+        </span>
 
-        <ListItemText
-          primary={round.title}
-          primaryTypographyProps={{
-            className: `text-base md:text-lg 2xl:text-xl font-medium ${isEnded ? 'line-through text-slate-500' : 'text-slate-100'}`,
-          }}
-          secondary={secondaryText()}
-          secondaryTypographyProps={{
-            className: `text-xs md:text-sm mt-0.5 ${isEnded ? 'text-slate-600' : 'text-slate-400'}`,
-          }}
-        />
-      </ListItemButton>
+        <span className="flex flex-col items-start text-left">
+          <span
+            className={`text-base md:text-lg 2xl:text-xl font-medium ${isEnded ? 'line-through text-slate-500' : 'text-slate-100'}`}
+          >
+            {round.title}
+          </span>
+          <span className={`text-xs md:text-sm mt-0.5 ${isEnded ? 'text-slate-600' : 'text-slate-400'}`}>
+            {secondaryText()}
+          </span>
+        </span>
+      </button>
     </div>
   );
 }

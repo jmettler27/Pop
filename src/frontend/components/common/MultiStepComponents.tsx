@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import Button from '@mui/material/Button';
 import { Form, Formik } from 'formik';
 import type { FormikHelpers, FormikValues } from 'formik';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useIntl } from 'react-intl';
 import type { ObjectSchema } from 'yup';
 
 import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
+import { Button } from '@/frontend/components/ui/button';
 import defineMessages from '@/frontend/i18n/defineMessages';
 
 const messages = defineMessages('frontend.forms.MultiStepComponents', {
@@ -114,11 +113,10 @@ function PreviousStepButton({ onClick }: PreviousStepButtonProps) {
   return (
     <Button
       // size='large'
-      color="inherit"
       onClick={onClick}
-      variant="outlined"
-      startIcon={<ArrowBackIcon />}
+      variant="outline"
     >
+      <ArrowLeft className="mr-2 size-4" />
       {intl.formatMessage(messages.previousStep)}
     </Button>
   );
@@ -133,13 +131,12 @@ function NextStepButton({ disabled }: NextStepButtonProps) {
   return (
     <Button
       // size='large'
-      color="inherit"
       disabled={disabled}
       type="submit"
-      variant="outlined"
-      endIcon={<ArrowForwardIcon />}
+      variant="outline"
     >
       {intl.formatMessage(messages.nextStep)}
+      <ArrowRight className="ml-2 size-4" />
     </Button>
   );
 }

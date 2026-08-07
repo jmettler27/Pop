@@ -1,8 +1,9 @@
 import React from 'react';
 
-import SendIcon from '@mui/icons-material/Send';
-import Button from '@mui/material/Button';
 import { useFormikContext } from 'formik';
+import { Send } from 'lucide-react';
+
+import { Button } from '@/frontend/components/ui/button';
 
 interface SubmitFormButtonProps {
   isSubmitting: boolean;
@@ -10,22 +11,17 @@ interface SubmitFormButtonProps {
 }
 
 export default function SubmitFormButton({ isSubmitting, label }: SubmitFormButtonProps) {
-  {
-    /* https://mui.com/material-ui/react-button/#loading-button */
-  }
-
   const formik = useFormikContext();
 
   return (
     <Button
       // size='large'
-      color="success"
-      variant="contained"
-      endIcon={<SendIcon />}
+      className="bg-green-600 text-white hover:bg-green-600/80"
       disabled={isSubmitting || formik.isSubmitting}
       type="submit"
     >
       {label}
+      <Send className="ml-2 size-4" />
     </Button>
   );
 }

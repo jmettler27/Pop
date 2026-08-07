@@ -1,8 +1,8 @@
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import { Button } from '@mui/material';
+import { RotateCcw } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { resetQuestion } from '@/backend/services/question/actions';
+import { Button } from '@/frontend/components/ui/button';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -40,12 +40,12 @@ export default function ResetQuestionButton({ questionType }: ResetQuestionButto
 
   return (
     <Button
-      variant="outlined"
-      color="warning"
-      startIcon={<RestartAltIcon />}
+      variant="outline"
+      className="border-amber-500 text-amber-500 hover:bg-amber-500/10"
       onClick={handleResetQuestion}
       disabled={isResetting}
     >
+      <RotateCcw className="mr-2 size-4" />
       {intl.formatMessage(messages.resetQuestion)}
     </Button>
   );

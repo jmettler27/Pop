@@ -1,9 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 
-import CancelIcon from '@mui/icons-material/Cancel';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { Button, ButtonGroup, CircularProgress } from '@mui/material';
+import { CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
@@ -18,6 +16,8 @@ import ClearBuzzerButton from '@/frontend/components/game/main-pane/question/buz
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import RevealLabelButton from '@/frontend/components/game/main-pane/question/labelling/RevealLabelButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
+import { Button } from '@/frontend/components/ui/button';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -88,7 +88,7 @@ function LabelOrganizerAnswerController({
     return <></>;
   }
   if (loading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!gameQuestion) {
     return <></>;
@@ -96,7 +96,7 @@ function LabelOrganizerAnswerController({
 
   return (
     <>
-      <ButtonGroup disableElevation variant="contained" size="large" color="primary">
+      <div className="flex gap-1">
         <ValidateAllLabelsButton buzzed={buzzed} gameQuestion={gameQuestion as GameLabellingQuestion} />
         <CancelLabelButton buzzed={buzzed} />
         <RevealLabelButton
@@ -104,7 +104,7 @@ function LabelOrganizerAnswerController({
           baseQuestion={baseQuestion}
           gameQuestion={gameQuestion as GameLabellingQuestion}
         />
-      </ButtonGroup>
+      </div>
     </>
   );
 }
@@ -123,11 +123,11 @@ function ValidateAllLabelsButton({ buzzed, gameQuestion }: { buzzed: string[]; g
 
   return (
     <Button
-      color="success"
-      startIcon={<CheckCircleIcon />}
+      className="bg-green-600 text-white hover:bg-green-600/80"
       onClick={handleValidateAll}
       disabled={atLeastOneRevealed || buzzedIsEmpty || isValidating}
     >
+      <CheckCircle2 className="mr-2 size-4" />
       {intl.formatMessage(globalMessages.validateAll)}
     </Button>
   );
@@ -146,12 +146,8 @@ function CancelLabelButton({ buzzed }: { buzzed: string[] }) {
 
   return (
     <>
-      <Button
-        color="error"
-        startIcon={<CancelIcon />}
-        onClick={handleCancelLabel}
-        disabled={buzzedIsEmpty || isCanceling}
-      >
+      <Button variant="destructive" onClick={handleCancelLabel} disabled={buzzedIsEmpty || isCanceling}>
+        <XCircle className="mr-2 size-4" />
         {intl.formatMessage(globalMessages.cancel)}
       </Button>
     </>

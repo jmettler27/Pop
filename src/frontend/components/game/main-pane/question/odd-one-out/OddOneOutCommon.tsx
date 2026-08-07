@@ -2,25 +2,14 @@
 
 import { useMemo, useState } from 'react';
 
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Avatar,
-  Badge,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-} from '@mui/material';
+import { clsx } from 'clsx';
+import { Check, X } from 'lucide-react';
 
 import { selectProposal } from '@/backend/services/question/odd-one-out/actions';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import NoteButton from '@/frontend/components/game/NoteButton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/frontend/components/ui/accordion';
+import { Avatar, AvatarFallback, AvatarImage } from '@/frontend/components/ui/avatar';
 import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
@@ -42,7 +31,7 @@ export function OddOneOutQuestionHeader({ baseQuestion }: { baseQuestion: OddOne
   return (
     <div className="flex flex-col items-center justify-center space-y-2">
       <div className="flex flex-row items-center justify-center space-x-1">
-        <QuestionTypeIcon questionType={baseQuestion.type} fontSize={{ xs: 28, md: 50 }} />
+        <QuestionTypeIcon questionType={baseQuestion.type} className="size-7 md:size-[50px]" />
         <h1 className="text-xs md:text-xl 2xl:text-5xl">
           {topicToEmoji(baseQuestion.topic as Topic)}{' '}
           <strong>
@@ -116,10 +105,7 @@ export function OddOneOutProposalList({
   const items = baseQuestion.items ?? [];
 
   return (
-    <List
-      className={listClassName ?? 'rounded-lg max-h-[95%] w-1/3 overflow-y-auto mb-3'}
-      sx={{ bgcolor: 'background.paper' }}
-    >
+    <div className={clsx(listClassName ?? 'rounded-lg max-h-[95%] w-1/3 overflow-y-auto mb-3', 'bg-background')}>
       {randomization.map((origIdx, idx) => (
         <ProposalItem
           key={idx}
@@ -135,7 +121,7 @@ export function OddOneOutProposalList({
           isSubmitting={isSubmitting}
         />
       ))}
-    </List>
+    </div>
   );
 }
 
@@ -176,43 +162,40 @@ function ProposalItem({
     (myRole === ParticipantRole.PLAYER && isChooser && authorized && !showExplanation);
 
   return showExplanation ? (
-    <Accordion className="flex-grow" expanded={expanded} onChange={onAccordionChange} disabled={false} disableGutters>
-      <AccordionSummary expandIcon={showComplete && <ExpandMoreIcon />}>
-        <ListItemIcon>
-          <Badge
-            overlap="circular"
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            badgeContent={isClicked && <SelectedProposalPlayerAvatar playerId={selectedItem!.playerId} />}
-          >
-            {isOdd ? <CloseIcon fontSize="medium" color="error" /> : <CheckIcon fontSize="medium" color="success" />}
-          </Badge>
-        </ListItemIcon>
-        <Typography
-          sx={{ color: isOdd ? 'red' : 'green', marginRight: '10px', fontSize: { xs: '0.875rem', md: '1.25rem' } }}
-        >
-          {item.title}
-        </Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        <Typography sx={{ color: 'text.secondary', fontSize: { xs: '0.875rem', md: '1.25rem' } }}>
-          {item.explanation}
-        </Typography>
-      </AccordionDetails>
+    <Accordion value={expanded ? ['item'] : []} onValueChange={() => onAccordionChange()} className="grow">
+      <AccordionItem value="item">
+        <AccordionTrigger className={clsx('px-3', !showComplete && '[&_[data-slot=accordion-trigger-icon]]:hidden')}>
+          <span className="flex items-center justify-center min-w-14">
+            <span className="relative inline-flex">
+              {isOdd ? <X className="size-6 text-destructive" /> : <Check className="size-6 text-green-500" />}
+              {isClicked && (
+                <span className="absolute -bottom-1 -right-1">
+                  <SelectedProposalPlayerAvatar playerId={selectedItem!.playerId} />
+                </span>
+              )}
+            </span>
+          </span>
+          <p className={`mr-2.5 text-[0.875rem] md:text-[1.25rem] ${isOdd ? 'text-red-600' : 'text-green-600'}`}>
+            {item.title}
+          </p>
+        </AccordionTrigger>
+        <AccordionContent className="px-3">
+          <p className="text-muted-foreground text-[0.875rem] md:text-[1.25rem]">{item.explanation}</p>
+        </AccordionContent>
+      </AccordionItem>
     </Accordion>
   ) : (
-    <ListItemButton
-      className="max-w-full"
-      divider={!isLast}
+    <button
+      type="button"
       onClick={onProposalClick}
       disabled={isSubmitting || !isItemInteractive}
-      sx={{ '&.Mui-disabled': { opacity: 1.0 } }}
+      className={clsx(
+        'max-w-full w-full text-left px-4 py-2 hover:bg-muted disabled:opacity-100 disabled:pointer-events-none',
+        !isLast && 'border-b border-border'
+      )}
     >
-      <ListItemText
-        sx={{ color: 'text.primary' }}
-        primary={item.title}
-        primaryTypographyProps={{ sx: { fontSize: { xs: '0.875rem', md: '1rem', xl: '1.25rem' } } }}
-      />
-    </ListItemButton>
+      <span className="text-foreground text-[0.875rem] md:text-base xl:text-[1.25rem]">{item.title}</span>
+    </button>
   );
 }
 
@@ -225,5 +208,10 @@ function SelectedProposalPlayerAvatar({ playerId }: { playerId: string }) {
   if (error || loading || !player) return null;
 
   const playerData = player as unknown as { name: string; image: string };
-  return <Avatar alt={playerData.name} src={playerData.image} sx={{ width: 25, height: 25 }} />;
+  return (
+    <Avatar className="size-[25px]">
+      <AvatarImage alt={playerData.name} src={playerData.image} />
+      <AvatarFallback className="text-xs">{playerData.name?.[0]?.toUpperCase()}</AvatarFallback>
+    </Avatar>
+  );
 }

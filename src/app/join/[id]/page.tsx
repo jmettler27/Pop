@@ -1,9 +1,7 @@
 'use client';
 
-import React from 'react';
 import { redirect, useParams, useRouter } from 'next/navigation';
 
-import { CircularProgress } from '@mui/material';
 import { Field, useFormikContext } from 'formik';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
@@ -13,9 +11,17 @@ import type { AnyObjectSchema } from 'yup';
 import { joinGame } from '@/backend/services/join-game/actions';
 import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';
 import MyColorPicker from '@/frontend/components/common/MyColorPicker';
-import { FieldError, MyRadioGroup, MySelect, MyTextInput } from '@/frontend/components/common/StyledFormComponents';
+import {
+  FieldError,
+  MyRadioGroup,
+  MySelect,
+  MyTextInput,
+  radioInputClassName,
+} from '@/frontend/components/common/StyledFormComponents';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { SelectItem } from '@/frontend/components/ui/select';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -72,7 +78,7 @@ function JoinGameHeader() {
   }
 
   return (
-    <h1>
+    <h1 className="text-2xl font-bold md:text-3xl">
       {intl.formatMessage(messages.joinGameHeader)}: <i>{game.title}</i>
     </h1>
   );
@@ -94,11 +100,11 @@ const useGameData = (gameId: string) => {
   };
 };
 
-export default function Page({ params }: { params: Promise<{ id: string }> }) {
+export default function Page() {
   const { data: session } = useSession();
 
-  const resolvedParams = React.use(params);
-  const gameId = resolvedParams.id;
+  const { id } = useParams();
+  const gameId = id as string;
   const intl = useIntl();
   const router = useRouter();
 
@@ -243,22 +249,24 @@ function GeneralInfoStep({ onSubmit, validationSchema, isGuest }: GeneralInfoSte
           </strong>
         )}
       </span>
-      <div role="group" aria-labelledby="play-in-teams-radio-group" className="flex flex-row space-x-2">
-        <label>
+      <div role="group" aria-labelledby="play-in-teams-radio-group" className="flex flex-row space-x-4">
+        <label className="flex items-center gap-2 font-medium">
           <Field
             type="radio"
             name="joinTeamPicked"
             value="In teams"
             onClick={() => formik.setFieldValue('playInTeams', true)}
+            className={radioInputClassName}
           />
           {intl.formatMessage(messages.inTeams)}
         </label>
-        <label>
+        <label className="flex items-center gap-2 font-medium">
           <Field
             type="radio"
             name="joinTeamPicked"
             value="Alone"
             onClick={() => formik.setFieldValue('playInTeams', false)}
+            className={radioInputClassName}
           />
           {intl.formatMessage(messages.alone)}
         </label>
@@ -284,7 +292,7 @@ function JoinOrCreateTeam({ validationSchema }: { validationSchema: AnyObjectSch
     return <></>;
   }
   if (loading) {
-    return <CircularProgress color="inherit" />;
+    return <Spinner />;
   }
 
   return (
@@ -304,8 +312,7 @@ function JoinOrCreateTeam({ validationSchema }: { validationSchema: AnyObjectSch
           label={intl.formatMessage(messages.selectTeamLabel)}
           name="teamId"
           validationSchema={validationSchema}
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-            const teamId = e.target.value;
+          onChange={(teamId: string) => {
             formik.setFieldValue('teamId', teamId);
             if (teamId) {
               const team = teams.find((t) => t.id === teamId);
@@ -316,7 +323,7 @@ function JoinOrCreateTeam({ validationSchema }: { validationSchema: AnyObjectSch
             }
           }}
         >
-          <option value="">{intl.formatMessage(messages.selectTeamFirstOption)}</option>
+          <SelectItem value="">{intl.formatMessage(messages.selectTeamFirstOption)}</SelectItem>
           {teams.map((team) => (
             <SelectTeamOption key={team.id} team={team} />
           ))}
@@ -336,14 +343,14 @@ function SelectTeamOption({ team }: { team: Team }) {
     return <></>;
   }
   if (loading) {
-    return <option value={team.id}>&quot;{team.name}&quot; (loading players...)</option>;
+    return <SelectItem value={team.id!}>&quot;{team.name}&quot; (loading players...)</SelectItem>;
   }
 
   const playerNames = players.map((p) => p.name).join(', ');
   return (
-    <option value={team.id}>
+    <SelectItem value={team.id!}>
       &quot;{team.name}&quot; ({playerNames})
-    </option>
+    </SelectItem>
   );
 }
 

@@ -1,7 +1,5 @@
 'use client';
 
-import { List, ListItemButton, Typography } from '@mui/material';
-
 import {
   ReorderingEndView,
   ReorderingQuestionHeader,
@@ -51,35 +49,18 @@ function ReorderingSpectatorActiveView({
   const items = baseQuestion.items ?? [];
   return (
     <div className="w-full flex flex-col items-center justify-center p-4">
-      <List className="rounded-2xl w-[55%] overflow-y-auto mb-3 bg-slate-900/70 p-2 shadow-lg ring-1 ring-slate-700/70">
+      <div className="rounded-2xl w-[55%] overflow-y-auto mb-3 bg-slate-900/70 p-2 shadow-lg ring-1 ring-slate-700/70">
         {randomMapping.map((idx: number, displayOrder: number) => (
           <div key={idx} className="flex items-center mb-2">
             <div className="w-10 pr-2 text-right font-bold text-lg text-slate-400 dark:text-slate-500">
               {displayOrder + 1}.
             </div>
-            <ListItemButton
-              divider={false}
-              disabled
-              className="rounded-xl flex-1"
-              sx={{
-                bgcolor: '#0f172a',
-                borderRadius: 3,
-                border: '1px solid',
-                borderColor: '#1f2937',
-                boxShadow: '0 6px 16px rgba(2, 6, 23, 0.35)',
-                py: 1.25,
-                '&.Mui-disabled': {
-                  opacity: 0.75,
-                },
-              }}
-            >
-              <Typography variant="h6" className="flex items-center text-slate-100">
-                {items[idx]?.title}
-              </Typography>
-            </ListItemButton>
+            <div className="rounded-xl flex-1 bg-slate-900 border border-gray-800 shadow-[0_6px_16px_rgba(2,6,23,0.35)] py-2.5 opacity-75">
+              <h6 className="text-xl flex items-center text-slate-100">{items[idx]?.title}</h6>
+            </div>
           </div>
         ))}
-      </List>
+      </div>
     </div>
   );
 }

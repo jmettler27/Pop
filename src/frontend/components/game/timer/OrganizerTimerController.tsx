@@ -1,11 +1,9 @@
-import PauseIcon from '@mui/icons-material/Pause';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import SkipNextIcon from '@mui/icons-material/SkipNext';
-import { ButtonGroup, IconButton, Tooltip } from '@mui/material';
+import { Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 
 import { resetTimer, startTimer, stopTimer } from '@/backend/services/timer/actions';
 import Timer, { type TimerData } from '@/frontend/components/game/timer/Timer';
+import { Button } from '@/frontend/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import { TimerStatus } from '@/models/timer';
@@ -51,7 +49,7 @@ export default function OrganizerTimerController({
         ⌛ <Timer timer={timer} serverTimeOffset={serverTimeOffset} onTimerEnd={onTimerEnd} />
       </span>
 
-      <ButtonGroup variant="contained">
+      <div className="flex gap-1">
         {timer.status === TimerStatus.RESET || timer.status === TimerStatus.STOP || timer.status === TimerStatus.END ? (
           <StartTimerButton onClick={handleStartTimer} disabled={isStarting} />
         ) : (
@@ -59,55 +57,71 @@ export default function OrganizerTimerController({
         )}
         <ResetTimerButton onClick={handleResetTimer} disabled={isResetting} />
         <EndTimerButton onClick={handleTimerEnd} disabled={isEnding} />
-      </ButtonGroup>
+      </div>
     </div>
   );
 }
 
 function StartTimerButton({ onClick, disabled }: TimerButtonProps) {
   return (
-    <Tooltip title="Start timer" placement="top">
-      <span>
-        <IconButton size="large" color="inherit" onClick={onClick} disabled={disabled}>
-          <PlayArrowIcon />
-        </IconButton>
-      </span>
+    <Tooltip>
+      <TooltipTrigger render={<span />}>
+        <Button variant="ghost" size="icon-lg" onClick={onClick} disabled={disabled}>
+          <Play />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>Start timer</TooltipContent>
     </Tooltip>
   );
 }
 
 function StopTimerButton({ onClick, disabled }: TimerButtonProps) {
   return (
-    <Tooltip title="Stop timer" placement="top">
-      <span>
-        <IconButton size="large" color="inherit" onClick={onClick} disabled={disabled}>
-          <PauseIcon />
-        </IconButton>
-      </span>
+    <Tooltip>
+      <TooltipTrigger render={<span />}>
+        <Button variant="ghost" size="icon-lg" onClick={onClick} disabled={disabled}>
+          <Pause />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>Stop timer</TooltipContent>
     </Tooltip>
   );
 }
 
 function ResetTimerButton({ onClick, disabled }: TimerButtonProps) {
   return (
-    <Tooltip title="Reset timer" placement="top">
-      <span>
-        <IconButton size="large" color="warning" onClick={onClick} disabled={disabled}>
-          <RestartAltIcon />
-        </IconButton>
-      </span>
+    <Tooltip>
+      <TooltipTrigger render={<span />}>
+        <Button
+          variant="ghost"
+          size="icon-lg"
+          className="text-amber-500 hover:bg-amber-500/10"
+          onClick={onClick}
+          disabled={disabled}
+        >
+          <RotateCcw />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>Reset timer</TooltipContent>
     </Tooltip>
   );
 }
 
 function EndTimerButton({ onClick, disabled }: TimerButtonProps) {
   return (
-    <Tooltip title="End timer" placement="top">
-      <span>
-        <IconButton size="large" color="warning" onClick={onClick} disabled={disabled}>
-          <SkipNextIcon />
-        </IconButton>
-      </span>
+    <Tooltip>
+      <TooltipTrigger render={<span />}>
+        <Button
+          variant="ghost"
+          size="icon-lg"
+          className="text-amber-500 hover:bg-amber-500/10"
+          onClick={onClick}
+          disabled={disabled}
+        >
+          <SkipForward />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>End timer</TooltipContent>
     </Tooltip>
   );
 }

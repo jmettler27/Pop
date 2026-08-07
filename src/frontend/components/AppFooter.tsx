@@ -2,8 +2,7 @@
 
 import Link from 'next/link';
 
-import HomeIcon from '@mui/icons-material/Home';
-import LanguageIcon from '@mui/icons-material/Language';
+import { Home, Languages } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { useLocale } from '@/app/LocaleProvider';
@@ -21,18 +20,18 @@ export default function AppFooter() {
   const intl = useIntl();
 
   return (
-    <footer className="w-full border-t border-gray-700 bg-gray-900/80 backdrop-blur-sm mt-auto">
+    <footer className="w-full border-t border-gray-700 bg-gray-900/80 backdrop-blur-xs mt-auto">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
         <Link
           href="/"
           className="inline-flex items-center gap-1.5 text-gray-400 hover:text-white text-xs transition-colors duration-200"
         >
-          <HomeIcon sx={{ fontSize: '1.1rem' }} />
+          <Home className="size-[1.1rem]" />
           <span className="hidden sm:inline">{intl.formatMessage(messages.returnHome)}</span>
         </Link>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
-            <LanguageIcon sx={{ fontSize: '1.1rem' }} className="text-gray-400" />
+            <Languages className="size-[1.1rem] text-gray-400" />
             <span className="text-gray-400 text-xs hidden sm:inline">
               {intl.formatMessage(globalMessages.language)}
             </span>
@@ -48,8 +47,8 @@ export default function AppFooter() {
                 className={[
                   'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all duration-200 cursor-pointer',
                   locale === loc
-                    ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/30'
-                    : 'text-gray-800 hover:bg-gray-200 hover:text-gray-900',
+                    ? 'bg-blue-600 text-gray-400 shadow-xs shadow-blue-500/30'
+                    : 'text-gray-400 hover:bg-gray-200 hover:text-gray-900',
                 ].join(' ')}
               >
                 <span className="hidden sm:inline">{LOCALE_TO_TITLE[loc]}</span>

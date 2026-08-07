@@ -3,6 +3,7 @@
 import { memo } from 'react';
 
 import ErrorScreen from '@/frontend/components/ErrorScreen';
+import BackgroundContainer from '@/frontend/components/game/BackgroundContainer';
 import BottomPane from '@/frontend/components/game/main-pane/BottomPane';
 import MiddlePane from '@/frontend/components/game/main-pane/MiddlePane';
 import MobilePlayerLayout from '@/frontend/components/game/MobilePlayerLayout';
@@ -47,25 +48,28 @@ const GameLayout = memo(function GameLayout({}) {
   if (isMobile) return <MobilePlayerLayout />;
 
   return (
-    <div className="h-screen flex flex-row divide-x divide-dashed bg-slate-900'">
-      {/* Main content area */}
-      <div className="'h-full w-5/6 flex flex-col divide-y divide-solid">
-        {/* Fixed height for top pane */}
-        <div className="h-[16.67%] border-b">
-          <TopPaneContainer />
+    <div className="h-screen relative">
+      <BackgroundContainer />
+      <div className="h-full flex flex-row divide-x divide-dashed">
+        {/* Main content area */}
+        <div className="h-full w-5/6 flex flex-col divide-y divide-solid">
+          {/* Fixed height for top pane */}
+          <div className="h-[16.67%] border-b">
+            <TopPaneContainer />
+          </div>
+          {/* Middle pane - main game content */}
+          <div className="h-[70%] overflow-auto">
+            <MiddlePaneContainer />
+          </div>
+          {/* Bottom pane - controls and timer */}
+          <div className="h-[13.33%] border-t">
+            <BottomPaneContainer />
+          </div>
         </div>
-        {/* Middle pane - main game content */}
-        <div className="h-[70%] overflow-auto bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-800 via-slate-800 to-slate-900">
-          <MiddlePaneContainer />
+        {/* Fixed width for sidebar */}
+        <div className="h-full w-1/6 flex flex-col">
+          <SidebarContainer />
         </div>
-        {/* Bottom pane - controls and timer */}
-        <div className="h-[13.33%] border-t">
-          <BottomPaneContainer />
-        </div>
-      </div>
-      {/* Fixed width for sidebar */}
-      <div className="h-full w-1/6 flex flex-col">
-        <SidebarContainer />
       </div>
     </div>
   );

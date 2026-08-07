@@ -1,8 +1,10 @@
-import PlusOneIcon from '@mui/icons-material/PlusOne';
-import { CircularProgress, IconButton, Tooltip } from '@mui/material';
+import { Plus } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { incrementValidItems } from '@/backend/services/question/enumeration/actions';
+import { Button } from '@/frontend/components/ui/button';
+import { Spinner } from '@/frontend/components/ui/spinner';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -35,7 +37,7 @@ export default function ValidateChallengerCitationButton() {
     return <></>;
   }
   if (timerLoading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!timer) {
     return <></>;
@@ -44,17 +46,21 @@ export default function ValidateChallengerCitationButton() {
   const isClickable = timer.status === TimerStatus.START;
 
   return (
-    <Tooltip
-      title={
-        isClickable ? intl.formatMessage(messages.validateCitation) : intl.formatMessage(messages.activateTimerFirst)
-      }
-      placement="right"
-    >
-      <span>
-        <IconButton color="success" size="medium" onClick={handleClick} disabled={!isClickable || isSubmitting}>
-          <PlusOneIcon />
-        </IconButton>
-      </span>
+    <Tooltip>
+      <TooltipTrigger render={<span />}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-green-500 hover:bg-green-500/10"
+          onClick={handleClick}
+          disabled={!isClickable || isSubmitting}
+        >
+          <Plus />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="right">
+        {isClickable ? intl.formatMessage(messages.validateCitation) : intl.formatMessage(messages.activateTimerFirst)}
+      </TooltipContent>
     </Tooltip>
   );
 }

@@ -1,12 +1,13 @@
 import { useMemo, type ReactNode } from 'react';
 import { useParams } from 'next/navigation';
 
-import HowToRegIcon from '@mui/icons-material/HowToReg';
-import { Button, CircularProgress } from '@mui/material';
+import { UserCheck } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { setPlayerReady } from '@/backend/services/player/actions';
 import { getRandomElement } from '@/backend/utils/arrays';
+import { Button } from '@/frontend/components/ui/button';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import fmt, { keyChunks } from '@/frontend/helpers/fmt';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
@@ -87,7 +88,7 @@ export default function ReadyPlayerController({ isLastQuestion }: ReadyPlayerCon
     return <></>;
   }
   if (timerLoading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!timer) {
     return <></>;
@@ -123,7 +124,7 @@ function ReadyPlayerHeader({ isLastQuestion }: ReadyPlayerHeaderProps) {
     return <></>;
   }
   if (readyLoading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!ready) {
     return <></>;
@@ -181,7 +182,7 @@ export function ReadyPlayerButton() {
     return <></>;
   }
   if (playerLoading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!player) {
     return <></>;
@@ -190,13 +191,12 @@ export function ReadyPlayerButton() {
   return (
     <Button
       className="rounded-full"
-      color="secondary"
-      size="large"
-      variant="contained"
+      variant="secondary"
+      size="lg"
       onClick={handleClickReady}
       disabled={player.status === PlayerStatus.READY || isSubmitting}
-      startIcon={<HowToRegIcon />}
     >
+      <UserCheck className="mr-2 size-4" />
       {readyButtonText}
     </Button>
   );

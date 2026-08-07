@@ -1,4 +1,3 @@
-import { Box, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
 
 import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from '@/frontend/components/home/GameAvatars';
@@ -11,23 +10,23 @@ interface GameCardContentProps {
 export function GameOrganizersCardContent({ gameId }: GameCardContentProps) {
   const intl = useIntl();
   return (
-    <Box className="flex flex-row items-center justify-between pb-2 px-1">
-      <Typography variant="subtitle1" className="text-xs sm:text-sm md:text-base font-semibold text-slate-300">
+    <div className="flex flex-row items-center justify-between pb-2 px-1">
+      <p className="text-xs sm:text-sm md:text-base font-semibold text-slate-300">
         {intl.formatMessage(globalMessages.organizers)}
-      </Typography>
+      </p>
       <GameOrganizersAvatarGroup gameId={gameId} />
-    </Box>
+    </div>
   );
 }
 
 export function GamePlayersCardContent({ gameId }: GameCardContentProps) {
   const intl = useIntl();
   return (
-    <Box className="flex flex-row items-center justify-between pb-2 px-1">
-      <Typography variant="subtitle1" className="text-xs sm:text-sm md:text-base font-semibold text-slate-300">
+    <div className="flex flex-row items-center justify-between pb-2 px-1">
+      <p className="text-xs sm:text-sm md:text-base font-semibold text-slate-300">
         {intl.formatMessage(globalMessages.players)}
-      </Typography>
+      </p>
       <GamePlayersAvatarGroup gameId={gameId} />
-    </Box>
+    </div>
   );
 }

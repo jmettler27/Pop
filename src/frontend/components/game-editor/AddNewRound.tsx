@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { Button, Dialog, DialogContent, DialogTitle } from '@mui/material';
 import { Form, Formik } from 'formik';
+import { CirclePlus } from 'lucide-react';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 
@@ -11,6 +10,8 @@ import { addRoundToGame } from '@/backend/services/edit-game/actions';
 import SelectRoundType from '@/frontend/components/common/SelectRoundType';
 import { MyTextInput } from '@/frontend/components/common/StyledFormComponents';
 import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
+import { Button } from '@/frontend/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/frontend/components/ui/dialog';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { roundTypeSchema } from '@/frontend/helpers/forms/game';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
@@ -38,18 +39,17 @@ export function AddNewRoundButton({ disabled }: AddNewRoundButtonProps) {
       <div className="flex flex-col h-full">
         <Button
           className="rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-          size="large"
-          variant="outlined"
-          color="primary"
+          size="lg"
+          variant="outline"
           style={{
             border: '2.5px dashed',
             fontSize: '1rem',
             background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05))',
           }}
-          startIcon={<AddCircleOutlineIcon />}
           disabled={disabled}
           onClick={() => setDialogOpen(true)}
         >
+          <CirclePlus className="mr-2 size-4" />
           {intl.formatMessage(messages.addRound)}
         </Button>
       </div>
@@ -66,9 +66,11 @@ interface CreateRoundFormDialogProps {
 function CreateRoundFormDialog({ open, onClose }: CreateRoundFormDialogProps) {
   const intl = useIntl();
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>{intl.formatMessage(messages.createNewRound)}</DialogTitle>
-      <DialogContent>
+    <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>{intl.formatMessage(messages.createNewRound)}</DialogTitle>
+        </DialogHeader>
         <CreateRoundForm onClose={onClose} />
       </DialogContent>
     </Dialog>

@@ -2,13 +2,14 @@
 
 import { useMemo } from 'react';
 
-import { CircularProgress, List, ListItemButton, ListItemText } from '@mui/material';
+import { clsx } from 'clsx';
 
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
 import { selectChoice } from '@/backend/services/question/mcq/actions';
 import { shuffleIndices } from '@/backend/utils/arrays';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -42,7 +43,7 @@ export default function MobileMCQControl() {
   );
 
   if (questionError || chooserError || baseQuestionError) return null;
-  if (questionLoading || chooserLoading || baseQuestionLoading) return <CircularProgress />;
+  if (questionLoading || chooserLoading || baseQuestionLoading) return <Spinner />;
   if (!gameQuestion || !chooser || !baseQuestion) return null;
 
   const chooserData = chooser as unknown as Chooser;
@@ -120,22 +121,21 @@ function MobileMCQChoiceSelector({
   const choices = baseQuestion.choices ?? [];
 
   return (
-    <List className="rounded-lg w-4/5 overflow-y-auto space-y-3">
+    <ul className="rounded-lg w-4/5 overflow-y-auto space-y-3">
       {randomization.map((origIdx, idx) => (
-        <ListItemButton
-          key={idx}
-          divider={idx !== choices.length - 1}
-          disabled={isSubmitting}
-          sx={{ '&.Mui-disabled': { opacity: 1 } }}
-          className="border-4 border-solid rounded-lg border-blue-500 hover:text-blue-400"
-          onClick={() => handleSelectChoice(origIdx)}
-        >
-          <ListItemText
-            primary={`${MCQQuestion.CHOICES[idx]}. ${choices[origIdx]}`}
-            primaryTypographyProps={{ className: 'text-lg' }}
-          />
-        </ListItemButton>
+        <li key={idx} className={clsx(idx !== choices.length - 1 && 'border-b border-border')}>
+          <button
+            type="button"
+            disabled={isSubmitting}
+            className="w-full text-left px-4 py-2 border-4 border-solid rounded-lg border-blue-500 hover:text-blue-400 disabled:opacity-100"
+            onClick={() => handleSelectChoice(origIdx)}
+          >
+            <span className="text-lg">
+              {MCQQuestion.CHOICES[idx]}. {choices[origIdx]}
+            </span>
+          </button>
+        </li>
       ))}
-    </List>
+    </ul>
   );
 }

@@ -21,20 +21,8 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  List,
-  ListItemButton,
-  Typography,
-} from '@mui/material';
 import { clsx } from 'clsx';
+import { CheckCircle2, GripVertical } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { submitOrdering } from '@/backend/services/question/reordering/actions';
@@ -43,6 +31,15 @@ import {
   ReorderingEndView,
   ReorderingQuestionHeader,
 } from '@/frontend/components/game/main-pane/question/reordering/ReorderingCommon';
+import { Button } from '@/frontend/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/frontend/components/ui/dialog';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useIsMobile from '@/frontend/hooks/useIsMobile';
@@ -152,24 +149,27 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
   if (teamSubmitted && teamSubmission) {
     return (
       <div className="h-full w-full flex flex-col items-center justify-center p-4 space-y-4">
-        <List
+        <div
           className={clsx(
             'rounded-lg max-h-[60vh] overflow-y-auto mb-3 bg-white dark:bg-slate-900',
             isMobile ? 'w-[90vw]' : 'w-1/2'
           )}
         >
           {teamSubmission.map((idx: number, displayOrder: number) => (
-            <ListItemButton key={idx} divider={displayOrder !== teamSubmission.length - 1} disabled>
-              <Typography variant="h6" className="flex items-center">
+            <div
+              key={idx}
+              className={clsx('px-4 py-2', displayOrder !== teamSubmission.length - 1 && 'border-b border-border')}
+            >
+              <h6 className="text-xl flex items-center">
                 <span className="mr-4 font-bold text-lg">{displayOrder + 1}.</span>
                 {items[idx]?.title}
-              </Typography>
-            </ListItemButton>
+              </h6>
+            </div>
           ))}
-        </List>
+        </div>
 
         <div className="flex flex-col items-center justify-center space-y-2">
-          <CheckCircleIcon sx={{ fontSize: 50, color: 'success.main' }} />
+          <CheckCircle2 className="size-[50px] text-green-500" />
         </div>
         <span className="text-xl font-semibold text-green-600">
           {submittedByMe ? intl.formatMessage(messages.youSubmitted) : intl.formatMessage(messages.teammateSubmitted)}
@@ -187,7 +187,7 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
         modifiers={[restrictToVerticalAxis, restrictToFirstScrollableAncestor]}
       >
         <SortableContext items={orderedIndices} strategy={verticalListSortingStrategy}>
-          <List
+          <div
             className={clsx(
               'rounded-2xl w-[92vw] md:w-[55vw] overflow-y-auto mb-3 bg-slate-900/70 p-2 shadow-lg ring-1 ring-slate-700/70',
               isMobile ? 'max-h-[75dvh]' : 'max-h-[60vh]'
@@ -203,26 +203,28 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
                 disabled={teamSubmitted}
               />
             ))}
-          </List>
+          </div>
         </SortableContext>
       </DndContext>
 
       <Button
-        variant="contained"
-        color="success"
-        size="large"
-        className="flex-shrink-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 mt-3"
+        size="lg"
+        className={clsx(
+          'bg-green-600 text-white hover:bg-green-600/80',
+          'shrink-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 mt-3'
+        )}
         onClick={handleOpenDialog}
         disabled={isSubmitting || teamSubmitted}
       >
         {intl.formatMessage(messages.submitOrdering)}
       </Button>
 
-      <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>{intl.formatMessage(messages.confirmDialogTitle)}</DialogTitle>
-
-        <DialogContent>
-          <DialogContentText>{intl.formatMessage(messages.confirmDialogMessage)}</DialogContentText>
+      <Dialog open={dialogOpen} onOpenChange={(open) => !open && handleCloseDialog()}>
+        <DialogContent showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>{intl.formatMessage(messages.confirmDialogTitle)}</DialogTitle>
+            <DialogDescription>{intl.formatMessage(messages.confirmDialogMessage)}</DialogDescription>
+          </DialogHeader>
           <ol className="mt-4 ml-4 list-decimal">
             {orderedIndices.map((idx: number, position: number) => (
               <li key={position} className="text-md">
@@ -230,17 +232,26 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
               </li>
             ))}
           </ol>
+
+          <DialogFooter>
+            <Button
+              className="bg-green-600 text-white hover:bg-green-600/80"
+              onClick={handleSubmitOrdering}
+              disabled={isSubmitting}
+            >
+              {intl.formatMessage(globalMessages.submit)}
+            </Button>
+
+            <Button
+              variant="outline"
+              className="border-destructive text-destructive hover:bg-destructive/10"
+              onClick={handleCloseDialog}
+              disabled={isSubmitting}
+            >
+              {intl.formatMessage(globalMessages.cancel)}
+            </Button>
+          </DialogFooter>
         </DialogContent>
-
-        <DialogActions>
-          <Button variant="contained" color="success" onClick={handleSubmitOrdering} disabled={isSubmitting}>
-            {intl.formatMessage(globalMessages.submit)}
-          </Button>
-
-          <Button variant="outlined" color="error" onClick={handleCloseDialog} disabled={isSubmitting}>
-            {intl.formatMessage(globalMessages.cancel)}
-          </Button>
-        </DialogActions>
       </Dialog>
     </div>
   );
@@ -282,36 +293,14 @@ function ReorderingItemDraggable({ itemIdx, displayOrder, item, disabled }: Reor
           'cursor-not-allowed opacity-75': disabled,
         })}
       >
-        <ListItemButton
-          divider={false}
-          disabled={disabled}
-          className="rounded-xl"
-          sx={{
-            bgcolor: '#0f172a',
-            borderRadius: 3,
-            border: '1px solid',
-            borderColor: '#1f2937',
-            boxShadow: '0 6px 16px rgba(2, 6, 23, 0.35)',
-            py: { xs: 0.75, md: 1.25 },
-            '&.Mui-disabled': {
-              opacity: 1.0,
-            },
-            '&:hover': {
-              boxShadow: '0 10px 22px rgba(2, 6, 23, 0.5)',
-              borderColor: '#334155',
-            },
-          }}
-        >
+        <div className="rounded-xl bg-[#0f172a] border border-[#1f2937] shadow-[0_6px_16px_rgba(2,6,23,0.35)] py-1.5 md:py-2.5 hover:shadow-[0_10px_22px_rgba(2,6,23,0.5)] hover:border-[#334155] transition-shadow">
           <div className="flex items-center w-full">
-            <DragIndicatorIcon className="text-slate-500 mr-2" fontSize="small" />
-            <Typography
-              className="flex items-center text-slate-100"
-              sx={{ fontSize: { xs: '0.9rem', md: '1.25rem' }, lineHeight: 1.3 }}
-            >
+            <GripVertical className="text-slate-500 mr-2 size-4" />
+            <p className="flex items-center text-slate-100 text-[0.9rem] md:text-[1.25rem] leading-[1.3]">
               {item?.title}
-            </Typography>
+            </p>
           </div>
-        </ListItemButton>
+        </div>
       </div>
     </div>
   );

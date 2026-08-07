@@ -2,6 +2,7 @@ import { useIntl } from 'react-intl';
 import type { ObjectSchema } from 'yup';
 
 import { MySelect } from '@/frontend/components/common/StyledFormComponents';
+import { SelectItem } from '@/frontend/components/ui/select';
 import type { Locale } from '@/frontend/helpers/locales';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { prependRoundTypeWithEmoji, RoundType } from '@/models/rounds/round-type';
@@ -20,11 +21,11 @@ export default function SelectRoundType({ validationSchema, name = 'type' }: Sel
   const intl = useIntl();
   return (
     <MySelect label={intl.formatMessage(messages.label)} name={name} validationSchema={validationSchema}>
-      <option value="">{intl.formatMessage(messages.header)}</option>
+      <SelectItem value="">{intl.formatMessage(messages.header)}</SelectItem>
       {Object.values(RoundType).map((roundType) => (
-        <option key={roundType} value={roundType}>
+        <SelectItem key={roundType} value={roundType}>
           {prependRoundTypeWithEmoji(roundType, intl.locale as Locale)}
-        </option>
+        </SelectItem>
       ))}
     </MySelect>
   );

@@ -1,20 +1,20 @@
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  FormControlLabel,
-  Switch,
-} from '@mui/material';
+import { Rocket } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { launchGame } from '@/backend/services/edit-game/actions';
+import { Button } from '@/frontend/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/frontend/components/ui/dialog';
+import { Switch } from '@/frontend/components/ui/switch';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -52,41 +52,50 @@ export function LaunchGameButton() {
   return (
     <div className="flex flex-col h-full">
       <Button
-        variant="contained"
-        color="warning"
-        size="large"
-        className="rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+        size="lg"
+        className="rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-amber-500 text-white hover:bg-amber-500/80"
         style={{
           background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
           fontWeight: 'bold',
         }}
-        startIcon={<RocketLaunchIcon />}
         onClick={() => setDialogOpen(true)}
       >
+        <Rocket className="mr-2 size-4" />
         {intl.formatMessage(messages.launchGame)}
       </Button>
 
-      <Dialog disableEscapeKeyDown open={dialogOpen} onClose={onDialogClose}>
-        <DialogTitle>{intl.formatMessage(messages.dialogTitle)}</DialogTitle>
+      <Dialog
+        open={dialogOpen}
+        onOpenChange={(open, eventDetails) => {
+          if (eventDetails.reason === 'escape-key') return;
+          if (!open) onDialogClose();
+        }}
+      >
+        <DialogContent showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>{intl.formatMessage(messages.dialogTitle)}</DialogTitle>
+            <DialogDescription>{intl.formatMessage(messages.dialogWarning)}</DialogDescription>
+          </DialogHeader>
 
-        <DialogContent>
-          <DialogContentText>{intl.formatMessage(messages.dialogWarning)}</DialogContentText>
-          <FormControlLabel
-            control={<Switch checked={tvMode} onChange={(e) => setTvMode(e.target.checked)} />}
-            label={intl.formatMessage(messages.tvModeLabel)}
-            sx={{ mt: 2 }}
-          />
+          <label className="inline-flex items-center gap-2 cursor-pointer mt-4">
+            <Switch checked={tvMode} onCheckedChange={setTvMode} />
+            <span className="text-sm">{intl.formatMessage(messages.tvModeLabel)}</span>
+          </label>
+
+          <DialogFooter>
+            <Button onClick={handleLaunchGame} disabled={isLaunching}>
+              {intl.formatMessage(messages.dialogConfirm)}
+            </Button>
+
+            <Button
+              variant="outline"
+              className="border-destructive text-destructive hover:bg-destructive/10"
+              onClick={onCancel}
+            >
+              {intl.formatMessage(globalMessages.cancel)}
+            </Button>
+          </DialogFooter>
         </DialogContent>
-
-        <DialogActions>
-          <Button variant="contained" color="primary" onClick={handleLaunchGame} disabled={isLaunching}>
-            {intl.formatMessage(messages.dialogConfirm)}
-          </Button>
-
-          <Button variant="outlined" color="error" onClick={onCancel}>
-            {intl.formatMessage(globalMessages.cancel)}
-          </Button>
-        </DialogActions>
       </Dialog>
     </div>
   );

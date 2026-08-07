@@ -13,6 +13,7 @@ import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopi
 import { MySelect, MyTextInput } from '@/frontend/components/common/StyledFormComponents';
 import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
 import { UploadAudio, UploadImage } from '@/frontend/components/common/UploadFile';
+import { SelectItem } from '@/frontend/components/ui/select';
 import { audioFileSchema, imageFileSchema } from '@/frontend/helpers/forms/files';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
@@ -168,11 +169,11 @@ export default function SubmitBlindtestQuestionForm({ userId, ...props }: Questi
         <SelectQuestionTopic name="topic" validationSchema={validationSchema} />
 
         <MySelect label={intl.formatMessage(messages.type)} name="subtype" validationSchema={validationSchema}>
-          <option value="">{intl.formatMessage(messages.selectType)}</option>
+          <SelectItem value="">{intl.formatMessage(messages.selectType)}</SelectItem>
           {BlindtestType.getAllTypes().map((type) => (
-            <option key={type} value={type}>
+            <SelectItem key={type} value={type}>
               {BlindtestType.getEmoji(type)} {BlindtestType.getTitle(type, intl.locale as Locale)}
-            </option>
+            </SelectItem>
           ))}
         </MySelect>
 

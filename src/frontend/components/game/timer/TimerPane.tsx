@@ -1,6 +1,5 @@
 import { useCallback, useRef } from 'react';
 
-import { CircularProgress } from '@mui/material';
 import { useObject } from 'react-firebase-hooks/database';
 import { useIntl } from 'react-intl';
 
@@ -11,6 +10,7 @@ import { handleQuestionEnd, startRound } from '@/backend/services/round/actions'
 import AuthorizePlayersSwitch from '@/frontend/components/game/main-pane/AuthorizePlayersSwitch';
 import OrganizerTimerController from '@/frontend/components/game/timer/OrganizerTimerController';
 import Timer, { type TimerData } from '@/frontend/components/game/timer/Timer';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
@@ -86,7 +86,7 @@ function OrganizerTimerPane() {
     return <></>;
   }
   if (offsetLoading || timerLoading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!offsetSnapshot || !timer) {
     return <></>;
@@ -118,7 +118,7 @@ function SpectatorTimerPane() {
     return <></>;
   }
   if (offsetLoading || timerLoading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!offsetSnapshot || !timer) {
     return <></>;

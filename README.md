@@ -23,36 +23,37 @@ For detailed gameplay rules, round type descriptions, scoring mechanics, and mor
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| **Framework** | [Next.js](https://nextjs.org/) |
-| **UI** | [React](https://reactjs.org/), [Material UI](https://material-ui.com/), [Tailwind CSS](https://tailwindcss.com/) |
-| **Auth** | [NextAuth.js](https://next-auth.js.org/) (Google, Discord) |
-| **Database** | [Firestore](https://firebase.google.com/docs/firestore) |
-| **Storage** | [Firebase Storage](https://firebase.google.com/docs/storage) |
-| **Forms** | [Formik](https://formik.org/), [Yup](https://github.com/jquense/yup) |
+| Layer         | Technology                                                                                                   |
+| ------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Framework** | [Next.js](https://nextjs.org/)                                                                               |
+| **UI**        | [React](https://reactjs.org/), [shadcn/ui](https://ui.shadcn.com/), [Tailwind CSS](https://tailwindcss.com/) |
+| **Auth**      | [NextAuth.js](https://next-auth.js.org/) (Google, Discord)                                                   |
+| **Database**  | [Firestore](https://firebase.google.com/docs/firestore)                                                      |
+| **Storage**   | [Firebase Storage](https://firebase.google.com/docs/storage)                                                 |
+| **Forms**     | [Formik](https://formik.org/), [Yup](https://github.com/jquense/yup)                                         |
 
 ## Getting Started
 
 ### Prerequisites
+
 - [Node.js](https://nodejs.org/) (v18+)
 - [JDK](https://www.oracle.com/java/technologies/downloads/) (v21+)
 
 ### Available Scripts
 
-| Command | Description |
-|---|---|
-| `npm run dev` | Start the development server (uses production Firebase) |
-| `npm run dev:emulators` | Start emulators + dev server together (local data) |
-| `npm run emulators` | Start Firebase Emulator Suite only |
-| `npm run seed` | Seed the running emulators with sample data |
-| `npm run build` | Build for production |
-| `npm run start` | Start the production server |
-| `npm run lint` | Run ESLint |
+| Command                 | Description                                             |
+| ----------------------- | ------------------------------------------------------- |
+| `npm run dev`           | Start the development server (uses production Firebase) |
+| `npm run dev:emulators` | Start emulators + dev server together (local data)      |
+| `npm run emulators`     | Start Firebase Emulator Suite only                      |
+| `npm run seed`          | Seed the running emulators with sample data             |
+| `npm run build`         | Build for production                                    |
+| `npm run start`         | Start the production server                             |
+| `npm run lint`          | Run ESLint                                              |
 
 ## Local Development with Emulators
 
-You can develop entirely offline using the **Firebase Emulator Suite**, which emulates Firestore, Realtime Database, and Storage locally. 
+You can develop entirely offline using the **Firebase Emulator Suite**, which emulates Firestore, Realtime Database, and Storage locally.
 
 ### Quick Start
 
@@ -79,34 +80,42 @@ npm run seed
 
 ### Emulator Ports
 
-| Service | Port |
-|---|---|
-| Firestore | 8080 |
+| Service           | Port |
+| ----------------- | ---- |
+| Firestore         | 8080 |
 | Realtime Database | 9000 |
-| Storage | 9199 |
-| Emulator UI | 4000 |
+| Storage           | 9199 |
+| Emulator UI       | 4000 |
 
 ## Project Structure
 
 ```
 src/
-├── app/                # Next.js App Router pages & layouts
-│   ├── (game)/         # Game pages
-│   ├── about/          # About page
-│   ├── api/            # API routes (NextAuth)
-│   ├── edit/           # Game editor
-│   ├── join/           # Join game flow
-│   └── submit/         # Question submission forms
-├── assets/             # App assets (images, audio)
-├── backend/            # Server-side logic
-│   ├── firebase/       # Firebase configuration
-│   ├── models/         # Data models
-│   ├── repositories/   # Data access layer
-│   └── services/       # Business logic
-├── frontend/           # Client-side components & utilities
-│   ├── components/     # React components
-│   ├── contexts/       # React contexts
-│   ├── helpers/        # Client utilities
-│   └── hooks/          # Custom React hooks
-└── i18n/               # Internationalization (EN/FR)
+├── app/                    # Next.js App Router pages & layouts
+│   ├── (game)/             # Game page
+│   ├── about/              # About page
+│   ├── api/                # API routes (NextAuth)
+│   ├── auth/               # Sign-in page
+│   ├── edit/               # Game editor
+│   ├── join/               # Join game flow
+│   └── submit/             # Question submission forms (one per question type)
+├── backend/                # Server-side logic
+│   ├── config/             # App configuration
+│   ├── errors/             # Custom error types
+│   ├── firebase/           # Firebase (Firestore, Realtime DB, Storage) configuration
+│   ├── repositories/       # Data access layer
+│   ├── services/           # Business logic
+│   ├── utils/              # Shared server-side utilities
+│   └── logger.ts           # Pino logger instance
+├── data/                   # Static app data (e.g. sound effects list)
+├── frontend/               # Client-side components & utilities
+│   ├── components/         # React components
+│   │   └── ui/             # shadcn/ui primitives
+│   ├── contexts/           # React contexts
+│   ├── helpers/            # Client utility functions
+│   ├── hooks/              # React hooks
+│   ├── i18n/               # Internationalization (English/French)
+│   └── lib/                # Shared client utilities (e.g. cn helper)
+├── models/                 # Shared domain models used by both frontend & backend
+└── types/                  # Ambient/global TypeScript declarations (e.g. NextAuth module augmentation)
 ```

@@ -1,12 +1,12 @@
 'use client';
 
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { Button } from '@mui/material';
+import { ArrowRight } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { startRound } from '@/backend/services/round/actions';
 import ReadyPlayerController from '@/frontend/components/game/main-pane/ReadyPlayerController';
 import TimerPane from '@/frontend/components/game/timer/TimerPane';
+import { Button } from '@/frontend/components/ui/button';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
@@ -55,15 +55,8 @@ function RoundStartOrganizerButton() {
   if (!game) return null;
 
   return (
-    <Button
-      className="rounded-full"
-      size="large"
-      variant="contained"
-      color="secondary"
-      onClick={handleContinueClick}
-      disabled={isHandling}
-      startIcon={<ArrowForwardIosIcon />}
-    >
+    <Button className="rounded-full" variant="secondary" size="lg" onClick={handleContinueClick} disabled={isHandling}>
+      <ArrowRight className="mr-2 size-4" />
       {intl.formatMessage(messages.launchFirstQuestion)}
     </Button>
   );

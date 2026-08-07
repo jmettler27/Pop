@@ -1,19 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 
-import FastForwardIcon from '@mui/icons-material/FastForward';
-import FastRewindIcon from '@mui/icons-material/FastRewind';
-import PauseRounded from '@mui/icons-material/PauseRounded';
-import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded';
-import VolumeDownRounded from '@mui/icons-material/VolumeDownRounded';
-import VolumeUpRounded from '@mui/icons-material/VolumeUpRounded';
-import { Box, IconButton, Slider, Stack, Typography } from '@mui/material';
-import { styled, useTheme } from '@mui/material/styles';
+import { FastForward, Music2, Pause, Play, Rewind, Volume2, VolumeX } from 'lucide-react';
 
 import NextImage from '@/frontend/components/common/NextImage';
+import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
+import { Button } from '@/frontend/components/ui/button';
+import { Slider } from '@/frontend/components/ui/slider';
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
 import useGame from '@/frontend/hooks/useGame';
+import { cn } from '@/frontend/lib/utils';
 import { GameStatus } from '@/models/games/game-status';
 import { BlindtestQuestion } from '@/models/questions/blindtest';
+import { questionTypeToTitle } from '@/models/questions/question-type';
 
 interface BlindtestMainContentProps {
   baseQuestion: BlindtestQuestion;
@@ -44,6 +42,7 @@ function ActiveBlindtestMainContent({ baseQuestion }: ActiveBlindtestMainContent
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState<number>(Number(localStorage.getItem('volume')) || DEFAULT_VOLUME);
+  const [isMuted, setIsMuted] = useState(false);
 
   const [isPlaying, setIsPlaying] = useState(true);
 
@@ -58,10 +57,6 @@ function ActiveBlindtestMainContent({ baseQuestion }: ActiveBlindtestMainContent
       audioRef.current.play();
     }
   }, [game, volume]);
-
-  const theme = useTheme();
-  const mainIconColor = theme.palette.mode === 'dark' ? '#fff' : '#000';
-  const lightIconColor = theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)';
 
   const formatTime = (time: number) => {
     const minute = Math.floor(time / 60);
@@ -83,19 +78,31 @@ function ActiveBlindtestMainContent({ baseQuestion }: ActiveBlindtestMainContent
     }
   };
 
-  const handleTimeChange = (_event: Event, value: number | number[]) => {
+  const handleTimeChange = (value: number | readonly number[]) => {
     if (!audioRef.current) return;
-    const v = Array.isArray(value) ? value[0] : value;
+    const v = Array.isArray(value) ? value[0]! : (value as number);
     audioRef.current.currentTime = v;
     setCurrentTime(v);
   };
 
-  const handleVolumeChange = (_event: Event, value: number | number[]) => {
+  const handleVolumeChange = (value: number | readonly number[]) => {
     if (!audioRef.current) return;
-    const v = Array.isArray(value) ? value[0] : value;
+    const v = Array.isArray(value) ? value[0]! : (value as number);
     audioRef.current.volume = v;
     localStorage.setItem('volume', String(v));
     setVolume(v);
+    setIsMuted(v === 0);
+  };
+
+  const toggleMute = () => {
+    if (!audioRef.current) return;
+    if (isMuted) {
+      audioRef.current.volume = volume || DEFAULT_VOLUME;
+      setIsMuted(false);
+    } else {
+      audioRef.current.volume = 0;
+      setIsMuted(true);
+    }
   };
 
   const handleLoadedMetadata = () => {
@@ -108,150 +115,111 @@ function ActiveBlindtestMainContent({ baseQuestion }: ActiveBlindtestMainContent
     setCurrentTime(audioRef.current.currentTime);
   };
 
-  const bq = baseQuestion as { audio?: string; title?: string };
+  const hasEnded = duration > 0 && currentTime >= duration;
 
   return (
-    <Box className="w-full overflow-hidden">
-      <Widget>
-        {/* Audio general info */}
-        <Box className="flex items-center">
-          <CoverImage>
-            <span className="2xl:text-5xl w-full h-full flex flex-col items-center justify-center">🎵</span>
-          </CoverImage>
-
-          <audio
-            ref={audioRef}
-            src={bq.audio}
-            onLoadedMetadata={handleLoadedMetadata}
-            onTimeUpdate={handleTimeUpdate}
-            onPlay={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
-          />
-
-          <Box sx={{ ml: 1.5, minWidth: 0 }}>
-            <Typography variant="h6" color="text.secondary" fontWeight={500}>
-              {bq.title} (OST)
-            </Typography>
-
-            <Typography variant="h5" noWrap>
-              ???
-            </Typography>
-          </Box>
-        </Box>
-
-        {/* Audio time slider */}
-        <Slider
-          aria-label="Time"
-          size="small"
-          value={currentTime}
-          min={0}
-          max={duration}
-          onChange={handleTimeChange}
-          valueLabelDisplay="auto"
-          valueLabelFormat={(value) => formatTime(value)}
-          sx={{
-            color: theme.palette.mode === 'dark' ? '#fff' : 'rgba(0,0,0,0.87)',
-            height: 4,
-            '& .MuiSlider-thumb': {
-              width: 8,
-              height: 8,
-              transition: '0.3s cubic-bezier(.47,1.64,.41,.8)',
-              '&:before': {
-                boxShadow: '0 2px 12px 0 rgba(0,0,0,0.4)',
-              },
-              '&:hover, &.Mui-focusVisible': {
-                boxShadow: `0px 0px 0px 8px ${
-                  theme.palette.mode === 'dark' ? 'rgb(255 255 255 / 16%)' : 'rgb(0 0 0 / 16%)'
-                }`,
-              },
-              '&.Mui-active': {
-                width: 20,
-                height: 20,
-              },
-            },
-            '& .MuiSlider-rail': {
-              opacity: 0.28,
-            },
-          }}
+    <div className="w-full overflow-hidden">
+      <div className="relative z-1 mx-auto w-[420px] max-w-full rounded-3xl border border-white/10 bg-white/[0.06] p-5 shadow-2xl backdrop-blur-2xl 2xl:w-[600px] 2xl:p-8">
+        <audio
+          ref={audioRef}
+          src={baseQuestion.audio}
+          onLoadedMetadata={handleLoadedMetadata}
+          onTimeUpdate={handleTimeUpdate}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
         />
 
-        <Box className="flex items-center justify-between" sx={{ mt: -2 }}>
-          <Typography>{formatTime(currentTime)}</Typography>
-          <Typography>-{formatTime(duration - currentTime)}</Typography>
-        </Box>
+        {/* Track info */}
+        <div className="flex items-center gap-4">
+          <div className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-fuchsia-500/40 to-indigo-500/40 shadow-inner 2xl:size-24">
+            <Music2 className={cn('size-7 text-white/90 2xl:size-11', isPlaying && !hasEnded && 'animate-pulse')} />
+          </div>
 
-        {/* Audio pause button */}
-        <Box className="flex flex-row items-center justify-center" sx={{ mt: -1 }}>
-          {/* Fast Rewind */}
-          <IconButton
+          <div className="min-w-0">
+            <p className="truncate text-xs font-medium tracking-widest text-white/50 uppercase 2xl:text-base">
+              {game?.title}
+            </p>
+            <p className="truncate text-xl font-semibold text-white 2xl:text-3xl">
+              {questionTypeToTitle(baseQuestion.type)} <CurrentRoundQuestionOrder />
+            </p>
+          </div>
+        </div>
+
+        {/* Time slider */}
+        <div className="mt-6 2xl:mt-10">
+          <Slider aria-label="Time" value={[currentTime]} min={0} max={duration} onValueChange={handleTimeChange} />
+          <div className="mt-1.5 flex items-center justify-between text-xs tabular-nums text-white/40 2xl:text-base">
+            <span>{formatTime(currentTime)}</span>
+            <span>-{formatTime(duration - currentTime)}</span>
+          </div>
+        </div>
+
+        {/* Transport controls */}
+        <div className="mt-4 flex items-center justify-center gap-4 2xl:mt-8 2xl:gap-6">
+          <Button
+            variant="ghost"
+            size="icon"
             aria-label="fast rewind"
+            className="size-10 rounded-full text-white/70 hover:bg-white/10 hover:text-white 2xl:size-14"
             onClick={() => {
               if (audioRef.current) audioRef.current.currentTime -= 10;
             }}
           >
-            <FastRewindIcon className="2xl:text-4xl" htmlColor={mainIconColor} />
-          </IconButton>
+            <Rewind className="size-5 2xl:size-7" />
+          </Button>
 
-          {/* Play/Pause */}
-          <IconButton
-            aria-label={currentTime < duration ? (isPlaying ? 'play' : 'pause') : 'replay'}
+          <Button
+            aria-label={hasEnded ? 'replay' : isPlaying ? 'pause' : 'play'}
             onClick={handlePlayPauseReplay}
+            className="size-14 rounded-full bg-white text-black shadow-lg transition-transform hover:scale-105 hover:bg-white/90 active:scale-95 2xl:size-20"
           >
-            {currentTime < duration ? (
-              isPlaying ? (
-                <PauseRounded className="2xl:text-5xl" htmlColor={mainIconColor} />
-              ) : (
-                <PlayArrowRounded sx={{ fontSize: '3rem' }} htmlColor={mainIconColor} />
-              )
+            {!hasEnded && isPlaying ? (
+              <Pause className="size-6 fill-current 2xl:size-9" />
             ) : (
-              <PlayArrowRounded sx={{ fontSize: '3rem' }} htmlColor={mainIconColor} />
+              <Play className="size-6 translate-x-0.5 fill-current 2xl:size-9" />
             )}
-          </IconButton>
+          </Button>
 
-          {/* Fast Forward */}
-          <IconButton
+          <Button
+            variant="ghost"
+            size="icon"
             aria-label="fast forward"
+            className="size-10 rounded-full text-white/70 hover:bg-white/10 hover:text-white 2xl:size-14"
             onClick={() => {
               if (audioRef.current) audioRef.current.currentTime += 10;
             }}
           >
-            <FastForwardIcon className="2xl:text-4xl" htmlColor={mainIconColor} />
-          </IconButton>
-        </Box>
+            <FastForward className="size-5 2xl:size-7" />
+          </Button>
+        </div>
 
-        {/* Audio volume controller */}
-        <Stack spacing={2} direction="row" sx={{ mb: 1, px: 1 }} alignItems="center">
-          <VolumeDownRounded htmlColor={lightIconColor} />
+        {/* Volume controller */}
+        <div className="mt-6 flex items-center gap-3 px-1 2xl:mt-10">
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={isMuted || volume === 0 ? 'unmute' : 'mute'}
+            className="size-7 shrink-0 text-white/50 hover:text-white 2xl:size-10"
+            onClick={toggleMute}
+          >
+            {isMuted || volume === 0 ? (
+              <VolumeX className="size-4 2xl:size-6" />
+            ) : (
+              <Volume2 className="size-4 2xl:size-6" />
+            )}
+          </Button>
           <Slider
             aria-label="Volume"
             orientation="horizontal"
-            value={volume}
+            value={[isMuted ? 0 : volume]}
             min={0}
             max={1}
             step={0.01}
-            onChange={handleVolumeChange}
-            sx={{
-              color: theme.palette.mode === 'dark' ? '#fff' : 'rgba(0,0,0,0.87)',
-              '& .MuiSlider-track': {
-                border: 'none',
-              },
-              '& .MuiSlider-thumb': {
-                width: 24,
-                height: 24,
-                backgroundColor: '#fff',
-                '&:before': {
-                  boxShadow: '0 4px 8px rgba(0,0,0,0.4)',
-                },
-                '&:hover, &.Mui-focusVisible, &.Mui-active': {
-                  boxShadow: 'none',
-                },
-              },
-            }}
+            onValueChange={handleVolumeChange}
           />
-          <VolumeUpRounded htmlColor={lightIconColor} />
-        </Stack>
-      </Widget>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -260,12 +228,11 @@ interface EndedBlindtestMainContentProps {
 }
 
 function EndedBlindtestMainContent({ baseQuestion }: EndedBlindtestMainContentProps) {
-  const bq = baseQuestion as { answer?: { image?: string; title?: string; author?: string; source?: string } };
-  const { image, title, author, source } = bq.answer ?? {};
+  const { image, title, author, source } = baseQuestion.answer ?? {};
 
   if (!image) {
     return (
-      <Box className="flex flex-col h-3/4 w-[90%] items-center justify-center space-y-2">
+      <div className="flex flex-col h-3/4 w-[90%] items-center justify-center space-y-2">
         <span className="2xl:text-4xl text-green-500">
           <strong>{title}</strong>
         </span>
@@ -279,15 +246,15 @@ function EndedBlindtestMainContent({ baseQuestion }: EndedBlindtestMainContentPr
             {QUESTION_ELEMENT_TO_EMOJI['source']} <i>{source}</i>
           </span>
         )}
-      </Box>
+      </div>
     );
   }
   return (
-    <Box className="flex flex-row h-full w-[90%] items-center justify-center space-x-8">
-      <Box className="flex flex-col h-3/4 max-w-1/2 items-end justify-end">
+    <div className="flex flex-row h-full w-[90%] items-center justify-center space-x-8">
+      <div className="flex flex-col h-3/4 max-w-1/2 items-end justify-end">
         <NextImage url={image} alt={source || ''} />
-      </Box>
-      <Box className="flex flex-col h-3/4 max-w-1/2 items-start justify-center space-y-2">
+      </div>
+      <div className="flex flex-col h-3/4 max-w-1/2 items-start justify-center space-y-2">
         <span className="2xl:text-4xl text-green-500">
           <strong>{title}</strong>
         </span>
@@ -301,33 +268,7 @@ function EndedBlindtestMainContent({ baseQuestion }: EndedBlindtestMainContentPr
             {QUESTION_ELEMENT_TO_EMOJI['source']} <i>{source}</i>
           </span>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }
-
-const Widget = styled('div')(({ theme }) => ({
-  padding: 16,
-  borderRadius: 16,
-  width: 500,
-  maxWidth: '100%',
-  margin: 'auto',
-  position: 'relative',
-  zIndex: 1,
-  backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.4)',
-  backdropFilter: 'blur(40px)',
-}));
-
-const CoverImage = styled('div')({
-  width: 100,
-  height: 100,
-  objectFit: 'cover',
-  overflow: 'hidden',
-  justifyItems: 'center',
-  flexShrink: 0,
-  borderRadius: 8,
-  backgroundColor: 'rgba(0,0,0,0.08)',
-  '& > img': {
-    width: '100%',
-  },
-});

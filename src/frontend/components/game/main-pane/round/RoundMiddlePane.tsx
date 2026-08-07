@@ -62,7 +62,7 @@ function RoundHeader({ round }: { round: AnyRound }) {
   const intl = useIntl();
   return (
     <div className="flex flex-row items-center justify-center space-x-1">
-      <RoundTypeIcon roundType={round.type!} fontSize={{ xs: 28, md: 50 }} />
+      <RoundTypeIcon roundType={round.type!} className="size-7 md:size-[50px]" />
       <h1 className="2xl:text-5xl">
         <span className="font-bold">
           {intl.formatMessage(globalMessages.round)} {(round.order ?? 0) + 1}

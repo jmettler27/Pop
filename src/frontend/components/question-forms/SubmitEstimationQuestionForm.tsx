@@ -12,6 +12,7 @@ import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
 import { MySelect, MyTextInput, StyledLabel } from '@/frontend/components/common/StyledFormComponents';
 import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
+import { SelectItem } from '@/frontend/components/ui/select';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
 import { topicSchema } from '@/frontend/helpers/forms/topics';
@@ -297,10 +298,10 @@ export default function SubmitEstimationQuestionForm({ userId, ...props }: Quest
             name="answerType"
             validationSchema={validationSchema}
           >
-            <option value={AnswerType.INTEGER}>{intl.formatMessage(messages.answerTypeInteger)}</option>
-            <option value={AnswerType.DECIMAL}>{intl.formatMessage(messages.answerTypeDecimal)}</option>
-            <option value={AnswerType.YEAR}>{intl.formatMessage(messages.answerTypeYear)}</option>
-            <option value={AnswerType.DATE}>{intl.formatMessage(messages.answerTypeDate)}</option>
+            <SelectItem value={AnswerType.INTEGER}>{intl.formatMessage(messages.answerTypeInteger)}</SelectItem>
+            <SelectItem value={AnswerType.DECIMAL}>{intl.formatMessage(messages.answerTypeDecimal)}</SelectItem>
+            <SelectItem value={AnswerType.YEAR}>{intl.formatMessage(messages.answerTypeYear)}</SelectItem>
+            <SelectItem value={AnswerType.DATE}>{intl.formatMessage(messages.answerTypeDate)}</SelectItem>
           </MySelect>
 
           <AnswerInput answerType={values.answerType} validationSchema={validationSchema} />

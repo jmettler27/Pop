@@ -1,15 +1,13 @@
 import React from 'react';
 
-import styled from '@emotion/styled';
 import { Field, useField, useFormikContext } from 'formik';
+import { useIntl } from 'react-intl';
 import type { ObjectSchema } from 'yup';
 
-import '@/app/submit/styles.css';
-import '@/app/submit/styles-custom.css';
-
-import { useIntl } from 'react-intl';
-
 import { NumberInput } from '@/frontend/components/common/NumberInput';
+import { Checkbox } from '@/frontend/components/ui/checkbox';
+import { Input } from '@/frontend/components/ui/input';
+import { Select, SelectContent, SelectTrigger, SelectValue } from '@/frontend/components/ui/select';
 import { numEmojisIndicator } from '@/frontend/helpers/forms/emojis';
 import {
   numCharsIndicator,
@@ -18,6 +16,7 @@ import {
   requiredIndicatorString,
   type YupObjectSchema,
 } from '@/frontend/helpers/forms/forms';
+import { cn } from '@/frontend/lib/utils';
 
 interface MyTextInputProps {
   label: string;
@@ -56,13 +55,13 @@ export function MyTextInput({
             ? numEmojisIndicator(field.value as string, maxLength)
             : numCharsIndicator(field.value as string, maxLength))}
       </StyledLabel>
-      <input
-        className="text-input text-xs sm:text-sm md:text-base"
+      <Input
+        className="max-w-[400px] text-xs sm:text-sm md:text-base"
         {...field}
         {...(props as React.InputHTMLAttributes<HTMLInputElement>)}
         value={(field.value as string) || ''}
       />
-      {meta.touched && meta.error && <div className="error text-xs sm:text-sm">{meta.error}</div>}
+      {meta.touched && meta.error && <FieldErrorText className="text-xs sm:text-sm">{meta.error}</FieldErrorText>}
     </>
   );
 }
@@ -80,49 +79,47 @@ interface MyCheckboxProps {
 }
 
 export function MyCheckbox({ children, ...props }: MyCheckboxProps) {
-  const [field, meta] = useField({ ...props, type: 'checkbox' } as { name: string; type: 'checkbox' });
+  const [field, meta, helpers] = useField({ ...props, type: 'checkbox' } as { name: string; type: 'checkbox' });
   return (
     <>
-      <label className="checkbox text-xs sm:text-sm md:text-base">
-        <input
-          {...field}
-          {...(props as React.InputHTMLAttributes<HTMLInputElement>)}
-          type="checkbox"
-          value={(field.value as string) || ''}
+      <label className="flex items-center gap-2 text-xs sm:text-sm md:text-base">
+        <Checkbox
+          {...(props as Record<string, unknown>)}
+          name={field.name}
+          checked={field.checked}
+          onBlur={field.onBlur}
+          onCheckedChange={(checked) => helpers.setValue(checked)}
         />
         {children}
       </label>
-      {meta.touched && meta.error && <div className="error text-xs sm:text-sm">{meta.error}</div>}
+      {meta.touched && meta.error && <FieldErrorText className="text-xs sm:text-sm">{meta.error}</FieldErrorText>}
     </>
   );
 }
 
-// Styled components ....
-const StyledSelect = styled.select`
-  color: var(--blue);
-  font-size: clamp(0.75rem, 1vw, 1rem);
-`;
+// Field-level error, shown inline right under a single input (small, no icon).
+function FieldErrorText({ className, children }: { className?: string; children: React.ReactNode }) {
+  return <div className={cn('mt-1 text-[clamp(0.75rem,1vw,0.875rem)] text-destructive', className)}>{children}</div>;
+}
 
-export const StyledErrorMessage = styled.div`
-  font-size: clamp(0.75rem, 1vw, 0.875rem);
-  color: var(--red-600);
-  width: 100%;
-  max-width: 400px;
-  margin-top: 0.25rem;
-  &:before {
-    content: '❌ ';
-    font-size: clamp(0.625rem, 0.8vw, 0.75rem);
-  }
-  @media (prefers-color-scheme: dark) {
-    color: var(--red-300);
-  }
-`;
+// Schema-level error, shown standalone under a control (bigger, with a leading icon).
+export function StyledErrorMessage({ className, children, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <div
+      className={cn(
+        "mt-1 w-full max-w-[400px] text-[clamp(0.75rem,1vw,0.875rem)] text-destructive before:content-['❌_']",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
 
-export const StyledLabel = styled.label`
-  margin-top: 1rem;
-  font-size: clamp(0.875rem, 1.2vw, 1rem);
-  display: block;
-`;
+export function StyledLabel({ className, ...props }: React.ComponentProps<'label'>) {
+  return <label className={cn('mt-4 block text-[clamp(0.875rem,1.2vw,1rem)] font-medium', className)} {...props} />;
+}
 
 interface MySelectProps {
   label: string;
@@ -130,28 +127,57 @@ interface MySelectProps {
   children?: React.ReactNode;
   name: string;
   id?: string;
+  // Overrides the default `formik.setFieldValue(name, value)` — used by callers
+  // that need to derive other field values from the selection (e.g. parsing an
+  // index, or looking up a related record).
+  onChange?: (value: string) => void;
   [key: string]: unknown;
 }
 
-export function MySelect({ label, validationSchema, children, ...props }: MySelectProps) {
-  // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
-  // which we can spread on <input> and alse replace ErrorMessage entirely.
+export function MySelect({ label, validationSchema, children, onChange, ...props }: MySelectProps) {
   const [field, meta] = useField(props as { name: string });
+  const formik = useFormikContext();
   const intl = useIntl();
+  const id = (props.id as string | undefined) || field.name;
+
+  // Base UI's <Select.Value> shows the raw value unless told what label goes
+  // with it — derive that mapping from the <SelectItem> children so callers
+  // don't have to pass a separate items list.
+  const items = React.Children.toArray(children)
+    .filter(React.isValidElement<{ value: string; children?: React.ReactNode }>)
+    .map((item) => ({ value: item.props.value, label: item.props.children }));
 
   return (
     <>
-      <StyledLabel htmlFor={(props.id as string | undefined) || field.name}>
+      <StyledLabel htmlFor={id}>
         {validationSchema ? requiredFieldIndicator(validationSchema as YupObjectSchema, field.name, intl) : ''}
         {label}
       </StyledLabel>
-      <StyledSelect
-        className="text-xs sm:text-sm 2xl:text-base dark:text-white"
-        {...field}
-        {...(props as React.SelectHTMLAttributes<HTMLSelectElement>)}
+      {/* A native <select>'s dropdown popup is OS chrome that ignores our CSS
+          (notably `color-scheme`, on Windows Chromium) — Base UI's Select
+          renders its own popup as a styled div, so it can actually be themed. */}
+      <Select
+        items={items}
+        name={field.name}
+        value={(field.value as string) ?? ''}
+        onValueChange={(value: string | null) => {
+          const nextValue = value ?? '';
+          if (onChange) {
+            onChange(nextValue);
+          } else {
+            formik.setFieldValue(field.name, nextValue);
+          }
+        }}
       >
-        {children}
-      </StyledSelect>
+        <SelectTrigger
+          id={id}
+          onBlur={field.onBlur}
+          className="w-full max-w-[400px] cursor-pointer text-xs sm:text-sm 2xl:text-base"
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>{children}</SelectContent>
+      </Select>
       {meta.touched && meta.error && <StyledErrorMessage>{meta.error}</StyledErrorMessage>}
     </>
   );
@@ -194,6 +220,11 @@ export function MyNumberInput({ label, name, min, max, ...props }: MyNumberInput
   );
 }
 
+// Custom radio look (native <input type="radio"> kept so Formik's uncontrolled
+// <Field type="radio"> click semantics keep working unmodified).
+export const radioInputClassName =
+  'relative size-4 shrink-0 appearance-none rounded-full border border-input bg-transparent outline-none transition-colors checked:border-primary checked:bg-primary focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 after:absolute after:inset-[3px] after:rounded-full after:bg-primary-foreground after:opacity-0 checked:after:opacity-100';
+
 interface MyRadioGroupProps {
   label: string;
   name: string;
@@ -203,7 +234,7 @@ interface MyRadioGroupProps {
   [key: string]: unknown;
 }
 
-export function MyRadioGroup({ label, name, trueText, falseText, validationSchema, ...props }: MyRadioGroupProps) {
+export function MyRadioGroup({ label, name, trueText, falseText }: MyRadioGroupProps) {
   const [field, meta, helpers] = useField(name);
 
   return (
@@ -211,13 +242,25 @@ export function MyRadioGroup({ label, name, trueText, falseText, validationSchem
       <span>
         {label} {(field.value as boolean | null) !== null && <strong>{field.value ? trueText : falseText}</strong>}
       </span>
-      <div role="group" aria-labelledby="radio-group" className="flex flex-row space-x-2">
-        <label>
-          <Field type="radio" name="picked" value={trueText} onClick={() => helpers.setValue(true)} />
+      <div role="group" aria-labelledby="radio-group" className="flex flex-row space-x-4">
+        <label className="flex items-center gap-2 font-medium">
+          <Field
+            type="radio"
+            name="picked"
+            value={trueText}
+            onClick={() => helpers.setValue(true)}
+            className={radioInputClassName}
+          />
           {trueText}
         </label>
-        <label>
-          <Field type="radio" name="picked" value={falseText} onClick={() => helpers.setValue(false)} />
+        <label className="flex items-center gap-2 font-medium">
+          <Field
+            type="radio"
+            name="picked"
+            value={falseText}
+            onClick={() => helpers.setValue(false)}
+            className={radioInputClassName}
+          />
           {falseText}
         </label>
       </div>

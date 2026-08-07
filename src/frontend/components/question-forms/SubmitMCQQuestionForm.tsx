@@ -1,11 +1,8 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { IconButton } from '@mui/material';
-import Button from '@mui/material/Button';
 import { Field, FieldArray, useField, useFormikContext } from 'formik';
+import { Plus, Trash2 } from 'lucide-react';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 import type { ObjectSchema } from 'yup';
@@ -16,6 +13,8 @@ import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepCompon
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
 import { MySelect, MyTextInput, StyledErrorMessage } from '@/frontend/components/common/StyledFormComponents';
+import { Button } from '@/frontend/components/ui/button';
+import { SelectItem } from '@/frontend/components/ui/select';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
 import { topicSchema } from '@/frontend/helpers/forms/topics';
@@ -237,14 +236,20 @@ function EnterChoicesStep({ onSubmit, validationSchema }: StepProps) {
                 <Field name={'choices.' + index} placeholder={MCQ_CHOICES_EXAMPLE[index]} type="text" />
                 <ChoiceError index={index} />
 
-                <IconButton color="error" onClick={() => remove(index)}>
-                  <DeleteIcon />
-                </IconButton>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-destructive hover:bg-destructive/10"
+                  onClick={() => remove(index)}
+                >
+                  <Trash2 />
+                </Button>
 
                 <ChoiceError index={index} />
               </div>
             ))}
-            <Button variant="outlined" startIcon={<AddIcon />} onClick={() => push('')}>
+            <Button variant="outline" onClick={() => push('')}>
+              <Plus className="mr-2 size-4" />
               {intl.formatMessage(messages.addChoice)}
             </Button>
           </div>
@@ -256,15 +261,13 @@ function EnterChoicesStep({ onSubmit, validationSchema }: StepProps) {
         label={intl.formatMessage(globalMessages.correctProposalQuestion)}
         name="answerIdx"
         validationSchema={validationSchema}
-        onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-          formik.setFieldValue('answerIdx', parseInt(e.target.value, 10))
-        }
+        onChange={(value: string) => formik.setFieldValue('answerIdx', parseInt(value, 10))}
       >
-        <option value="">{intl.formatMessage(questionMessages.selectProposal)}</option>
+        <SelectItem value="">{intl.formatMessage(questionMessages.selectProposal)}</SelectItem>
         {values.choices.map((choice, index) => (
-          <option key={index} value={index}>
+          <SelectItem key={index} value={String(index)}>
             {MCQQuestion.CHOICES[index]}. {choice}
-          </option>
+          </SelectItem>
         ))}
       </MySelect>
 

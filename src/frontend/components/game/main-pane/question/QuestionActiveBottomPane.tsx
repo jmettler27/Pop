@@ -1,7 +1,5 @@
 'use client';
 
-import { CircularProgress } from '@mui/material';
-
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import BasicQuestionBottomPane from '@/frontend/components/game/main-pane/question/basic/BasicQuestionBottomPane';
 import BuzzerBottomPane from '@/frontend/components/game/main-pane/question/buzzer/BuzzerBottomPane';
@@ -14,6 +12,7 @@ import NaguiBottomPane from '@/frontend/components/game/main-pane/question/nagui
 import OddOneOutBottomPane from '@/frontend/components/game/main-pane/question/odd-one-out/OddOneOutBottomPane';
 import QuoteBottomPane from '@/frontend/components/game/main-pane/question/quote/QuoteBottomPane';
 import ReorderingBottomPane from '@/frontend/components/game/main-pane/question/reordering/ReorderingBottomPane';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useGame from '@/frontend/hooks/useGame';
 import { QuestionType } from '@/models/questions/question-type';
 
@@ -28,7 +27,7 @@ export default function QuestionActiveBottomPane() {
 
   if (!game!.currentQuestionType || !game!.currentQuestion) return null;
   if (baseQuestionError) return null;
-  if (baseQuestionLoading) return <CircularProgress />;
+  if (baseQuestionLoading) return <Spinner />;
   if (!baseQuestion) return null;
 
   switch (baseQuestion.type) {

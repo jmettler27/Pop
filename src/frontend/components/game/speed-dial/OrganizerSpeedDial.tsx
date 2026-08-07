@@ -1,20 +1,14 @@
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
-import EditIcon from '@mui/icons-material/Edit';
-import HomeIcon from '@mui/icons-material/Home';
-import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import ShareIcon from '@mui/icons-material/Share';
-import Backdrop from '@mui/material/Backdrop';
-import SpeedDial from '@mui/material/SpeedDial';
-import SpeedDialAction from '@mui/material/SpeedDialAction';
-import SpeedDialIcon from '@mui/material/SpeedDialIcon';
-import { styled } from '@mui/material/styles';
+import { Edit, Home, ListMusic, Plus, RotateCcw, Share, X } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { resetGame, resumeEditing, returnToGameHome } from '@/backend/services/game/actions';
 import SoundboardController from '@/frontend/components/game/soundboard/SoundboardController';
+import { Button } from '@/frontend/components/ui/button';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/frontend/components/ui/sheet';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 
@@ -25,57 +19,40 @@ const messages = defineMessages('frontend.game.speedDial.OrganizerSpeedDial', {
   resumeEditing: 'Resume editing',
 });
 
-const StyledSpeedDial = styled(SpeedDial)(({ theme }) => ({
-  position: 'absolute',
-  bottom: 16,
-  right: 16,
-}));
-
 export default function OrganizerSpeedDial() {
   const { id } = useParams();
   const gameId = id as string;
   const intl = useIntl();
-
-  const direction = 'up';
   const router = useRouter();
 
+  const [open, setOpen] = React.useState(false);
+  const [soundboardOpen, setSoundboardOpen] = React.useState(false);
+
   const actions = [
-    { icon: <ShareIcon />, name: 'share', label: intl.formatMessage(messages.share) },
-    { icon: <LibraryMusicIcon />, name: 'soundboard', label: intl.formatMessage(messages.soundboard) },
-    { icon: <HomeIcon />, name: 'home', label: intl.formatMessage(globalMessages.home) },
-    { icon: <RestartAltIcon />, name: 'resetGame', label: intl.formatMessage(messages.resetGame) },
-    { icon: <EditIcon />, name: 'resumeEditing', label: intl.formatMessage(messages.resumeEditing) },
+    { icon: <Share />, name: 'share', label: intl.formatMessage(messages.share) },
+    { icon: <ListMusic />, name: 'soundboard', label: intl.formatMessage(messages.soundboard) },
+    { icon: <Home />, name: 'home', label: intl.formatMessage(globalMessages.home) },
+    { icon: <RotateCcw />, name: 'resetGame', label: intl.formatMessage(messages.resetGame) },
+    { icon: <Edit />, name: 'resumeEditing', label: intl.formatMessage(messages.resumeEditing) },
   ];
 
-  const [component, setComponent] = React.useState(<></>);
-  const [backdropOpen, setBackdropOpen] = React.useState(false);
-
-  const handleBackdropOpen = () => {
-    setBackdropOpen(true);
-  };
-
-  const handleBackdropClose = () => {
-    setBackdropOpen(false);
-  };
-
-  const handleClick = async (e: React.MouseEvent, name: string) => {
-    e.preventDefault();
+  const handleClick = (name: string) => {
+    setOpen(false);
     switch (name) {
       case 'share':
         // updateQuestions()
         break;
       case 'soundboard':
-        handleBackdropOpen();
-        setComponent(<SoundboardController />);
+        setSoundboardOpen(true);
         break;
       case 'home':
-        returnToGameHome(gameId as string);
+        returnToGameHome(gameId);
         break;
       case 'resetGame':
-        resetGame(gameId as string);
+        resetGame(gameId);
         break;
       case 'resumeEditing':
-        resumeEditing(gameId as string);
+        resumeEditing(gameId);
         router.push('/edit/' + gameId);
         break;
     }
@@ -83,26 +60,43 @@ export default function OrganizerSpeedDial() {
 
   return (
     <>
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={backdropOpen}
-        onClick={handleBackdropClose} // => After selecting a sound, the backdrop closes => avoids spamming the participants with sounds
-      >
-        {component}
-      </Backdrop>
+      <Sheet open={soundboardOpen} onOpenChange={setSoundboardOpen}>
+        <SheetContent side="right">
+          <SheetHeader>
+            <SheetTitle>{intl.formatMessage(messages.soundboard)}</SheetTitle>
+          </SheetHeader>
+          <SoundboardController />
+        </SheetContent>
+      </Sheet>
 
-      <StyledSpeedDial ariaLabel="SpeedDial of organizer" icon={<SpeedDialIcon />} direction={direction}>
-        {actions.map((action) => (
-          <SpeedDialAction
-            key={action.name}
-            icon={action.icon}
-            tooltipTitle={<span className="text-xs sm:text-sm 2xl:text-base">{action.label}</span>}
-            tooltipPlacement="left"
-            tooltipOpen
-            onClick={(e) => handleClick(e, action.name)}
-          />
-        ))}
-      </StyledSpeedDial>
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3">
+        {open &&
+          actions.map((action) => (
+            <Tooltip key={action.name}>
+              <TooltipTrigger render={<span />}>
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="rounded-full shadow-lg"
+                  aria-label={action.label}
+                  onClick={() => handleClick(action.name)}
+                >
+                  {action.icon}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="left">{action.label}</TooltipContent>
+            </Tooltip>
+          ))}
+
+        <Button
+          size="icon"
+          className="size-14 rounded-full shadow-lg"
+          aria-label="SpeedDial of organizer"
+          onClick={() => setOpen((prev) => !prev)}
+        >
+          {open ? <X className="size-6" /> : <Plus className="size-6" />}
+        </Button>
+      </div>
     </>
   );
 }

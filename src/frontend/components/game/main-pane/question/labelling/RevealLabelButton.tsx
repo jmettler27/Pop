@@ -1,17 +1,20 @@
 import { useState } from 'react';
 
-import CancelIcon from '@mui/icons-material/Cancel';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Menu } from '@mui/material';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import ListSubheader from '@mui/material/ListSubheader';
+import { CheckCircle2, Eye, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { revealLabel } from '@/backend/services/question/labelling/actions';
 import { isEmpty } from '@/backend/utils/arrays';
+import { Button } from '@/frontend/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/frontend/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/frontend/components/ui/popover';
 import { rankingToEmoji } from '@/frontend/helpers/emojis';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
@@ -38,20 +41,15 @@ export default function RevealLabelButton({ buzzed, baseQuestion, gameQuestion }
   const [labelIdx, setLabelIdx] = useState<number | null>(null);
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const menuOpen = Boolean(anchorEl);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleMenuClose = () => {
-    setAnchorEl(null);
+    setMenuOpen(false);
   };
 
   const onDialogClose = () => {
     setDialogOpen(false);
     handleMenuClose();
-  };
-
-  const handleRevealButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
   };
 
   const handleRevealLabel = (idx: number) => {
@@ -61,40 +59,30 @@ export default function RevealLabelButton({ buzzed, baseQuestion, gameQuestion }
 
   return (
     <>
-      <Button color="info" startIcon={<VisibilityIcon />} onClick={handleRevealButtonClick} disabled={!buzzedIsEmpty}>
-        {intl.formatMessage(globalMessages.reveal)}
-      </Button>
-
-      <Menu
-        id="reveal-quote-element-menu"
-        anchorEl={anchorEl}
-        open={menuOpen}
-        onClose={handleMenuClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
-      >
-        <List
-          sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
-          component="nav"
-          aria-labelledby="nested-list-subheader"
-          subheader={
-            <ListSubheader component="div" id="nested-list-subheader">
-              {intl.formatMessage(messages.revealListHeader)}
-            </ListSubheader>
-          }
+      <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+        <PopoverTrigger
+          render={<Button className="bg-blue-500 text-white hover:bg-blue-500/80" disabled={!buzzedIsEmpty} />}
         >
-          {(labels ?? []).map((label, idx) => (
-            <RevealLabelItemButton
-              key={idx}
-              gameQuestion={gameQuestion}
-              label={label}
-              labelIdx={idx}
-              onClick={() => handleRevealLabel(idx)}
-            />
-          ))}
-        </List>
-      </Menu>
+          <Eye className="mr-2 size-4" />
+          {intl.formatMessage(globalMessages.reveal)}
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <ul className="w-full max-w-[360px] bg-background" aria-labelledby="nested-list-subheader">
+            <li id="nested-list-subheader" className="px-4 py-2 text-sm font-medium text-muted-foreground">
+              {intl.formatMessage(messages.revealListHeader)}
+            </li>
+            {(labels ?? []).map((label, idx) => (
+              <RevealLabelItemButton
+                key={idx}
+                gameQuestion={gameQuestion}
+                label={label}
+                labelIdx={idx}
+                onClick={() => handleRevealLabel(idx)}
+              />
+            ))}
+          </ul>
+        </PopoverContent>
+      </Popover>
 
       <RevealLabelDialog
         baseQuestion={baseQuestion}
@@ -117,9 +105,16 @@ function RevealLabelItemButton({ gameQuestion, label, labelIdx, onClick }: Revea
   const itemText = `${rankingToEmoji(labelIdx)} ("${label}")`;
 
   return (
-    <ListItemButton onClick={onClick} disabled={gameQuestion.labelIsRevealed(labelIdx)}>
-      <ListItemText primary={itemText} />
-    </ListItemButton>
+    <li>
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={gameQuestion.labelIsRevealed(labelIdx)}
+        className="w-full text-left px-4 py-2 hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+      >
+        {itemText}
+      </button>
+    </li>
   );
 }
 
@@ -145,28 +140,37 @@ function RevealLabelDialog({ baseQuestion, labelIdx, dialogOpen, onDialogClose }
   const labelToReveal = baseQuestion.labels?.[labelIdx];
 
   return (
-    <Dialog disableEscapeKeyDown open={dialogOpen} onClose={onDialogClose}>
-      <DialogTitle>{intl.formatMessage(messages.revealListHeader)}</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          {intl.formatMessage(globalMessages.areYouSureReveal)} <strong>&quot;{labelToReveal}&quot;</strong>?
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<CheckCircleIcon />}
-          onClick={handleRevealLabel}
-          disabled={isRevealing}
-        >
-          {intl.formatMessage(globalMessages.yes)}
-        </Button>
+    <Dialog
+      open={dialogOpen}
+      onOpenChange={(open, eventDetails) => {
+        if (eventDetails.reason === 'escape-key') return;
+        if (!open) onDialogClose();
+      }}
+    >
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>{intl.formatMessage(messages.revealListHeader)}</DialogTitle>
+          <DialogDescription>
+            {intl.formatMessage(globalMessages.areYouSureReveal)} <strong>&quot;{labelToReveal}&quot;</strong>?
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button onClick={handleRevealLabel} disabled={isRevealing}>
+            <CheckCircle2 className="mr-2 size-4" />
+            {intl.formatMessage(globalMessages.yes)}
+          </Button>
 
-        <Button variant="outlined" color="error" startIcon={<CancelIcon />} onClick={onDialogClose} autoFocus>
-          {intl.formatMessage(globalMessages.no)}
-        </Button>
-      </DialogActions>
+          <Button
+            variant="outline"
+            className="border-destructive text-destructive hover:bg-destructive/10"
+            onClick={onDialogClose}
+            autoFocus
+          >
+            <XCircle className="mr-2 size-4" />
+            {intl.formatMessage(globalMessages.no)}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   );
 }

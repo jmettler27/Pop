@@ -155,21 +155,15 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
 
     try {
       await runTransaction(firestore, async (transaction) => {
-        await (this.gameQuestionRepo as GameBuzzerQuestionRepository).removePlayerFromBuzzerTransaction(
-          transaction,
-          questionId,
-          playerId
-        );
-        const gameQuestion = await (this.gameQuestionRepo as GameBuzzerQuestionRepository).getQuestionTransaction(
-          transaction,
-          questionId
-        );
+        const gqRepo = this.gameQuestionRepo as GameBuzzerQuestionRepository;
+        const gameQuestion = await gqRepo.getQuestionTransaction(transaction, questionId);
         if (!gameQuestion) {
-          this.log.warn({ question: questionId }, 'Game question not found when removing player from buzzer');
-          throw new Error('Game question not found when removing player from buzzer');
+          this.log.warn({ question: questionId }, 'Base question not found when removing player from buzzer');
+          throw new Error('Base question not found when removing player from buzzer');
         }
-
+        await gqRepo.removePlayerFromBuzzerTransaction(transaction, questionId, playerId);
         await this.playerRepo.updatePlayerStatusTransaction(transaction, playerId, PlayerStatus.IDLE);
+        await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime || 0);
         await this.soundRepo.addSoundTransaction(transaction, 'jpp_de_lair');
 
         this.log.info(

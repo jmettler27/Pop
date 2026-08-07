@@ -1,8 +1,7 @@
-import { CircularProgress } from '@mui/material';
-
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 import EnumerationChallengeController from '@/frontend/components/game/main-pane/question/enumeration/EnumerationChallengeController';
 import EnumerationThinkingController from '@/frontend/components/game/main-pane/question/enumeration/EnumerationThinkingController';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import { EnumerationQuestion, EnumerationQuestionStatus } from '@/models/questions/enumeration';
@@ -28,7 +27,7 @@ export default function EnumerationController({ baseQuestion }: { baseQuestion: 
     return <></>;
   }
   if (gameQuestionLoading || timerLoading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!gameQuestion || !timer) {
     return <></>;

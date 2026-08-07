@@ -1,7 +1,7 @@
-import HomeIcon from '@mui/icons-material/Home';
-import { Button } from '@mui/material';
+import { Home } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
+import { Button } from '@/frontend/components/ui/button';
 import defineMessages from '@/frontend/i18n/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.GoGameHomeButton', {
@@ -16,7 +16,8 @@ interface GoGameHomeButtonProps {
 export default function GoGameHomeButton({ onClick, disabled }: GoGameHomeButtonProps) {
   const intl = useIntl();
   return (
-    <Button size="large" startIcon={<HomeIcon />} variant="contained" onClick={onClick} disabled={disabled}>
+    <Button size="lg" onClick={onClick} disabled={disabled}>
+      <Home className="mr-2 size-4" />
       {intl.formatMessage(messages.goHome)}
     </Button>
   );

@@ -1,6 +1,5 @@
-import { CircularProgress } from '@mui/material';
-
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import type { GameRounds } from '@/models/games/game';
@@ -34,7 +33,7 @@ function TeamGameScore({ teamId }: { teamId: string }) {
     return <></>;
   }
   if (loading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!gameScores) {
     return <></>;
@@ -55,7 +54,7 @@ function TeamRoundScore({ teamId, roundId }: { teamId: string; roundId: string }
     return <></>;
   }
   if (loading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!roundScores) {
     return <></>;
@@ -108,7 +107,7 @@ function CompletionRatePolicyTeamRoundActiveScore({ teamId, game }: { teamId: st
     return <></>;
   }
   if (loading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!round) {
     return <></>;

@@ -3,20 +3,11 @@
 import type React from 'react';
 import { redirect } from 'next/navigation';
 
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import HistoryIcon from '@mui/icons-material/History';
-import QuizIcon from '@mui/icons-material/Quiz';
-import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
-import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
-import Container from '@mui/material/Container';
-import Link from '@mui/material/Link';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
+import { Gamepad2, HelpCircle, History, Trophy } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
+import { Badge } from '@/frontend/components/ui/badge';
 import type { Locale } from '@/frontend/helpers/locales';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { questionTypeToDescription } from '@/models/questions/question-type';
@@ -40,7 +31,7 @@ const ABOUT_ROUND_TYPES = [
 ];
 
 const messages = defineMessages('app.about', {
-  title: 'About Pop!',
+  title: 'Pop!',
   subtitle: 'Quizzes to play with your friends around pop culture!',
   whatIsPopTitle: 'What is Pop!?',
   whatIsPopDescription:
@@ -55,14 +46,20 @@ const messages = defineMessages('app.about', {
   openSourceDescription: 'Pop! is open source. Check out the code and the wiki for more details.',
 });
 
+function GithubIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+    </svg>
+  );
+}
+
 function SectionTitle({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+    <div className="flex items-center gap-3 mb-4">
       {icon}
-      <Typography variant="h5" fontWeight={700} color="white">
-        {children}
-      </Typography>
-    </Box>
+      <h5 className="text-2xl font-bold text-white">{children}</h5>
+    </div>
   );
 }
 
@@ -79,122 +76,78 @@ export default function AboutPage() {
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: { xs: 3, md: 5 } }}>
+    <div className="max-w-4xl mx-auto px-4 py-6 md:py-10">
       {/* Hero */}
-      <Box sx={{ textAlign: 'center', mb: 5 }}>
-        <SportsEsportsIcon sx={{ fontSize: 56, color: '#60a5fa', mb: 1 }} />
-        <Typography variant="h3" fontWeight={800} color="white" gutterBottom>
-          {intl.formatMessage(messages.title)}
-        </Typography>
-        <Typography variant="h6" color="grey.400" sx={{ maxWidth: 500, mx: 'auto' }}>
-          {intl.formatMessage(messages.subtitle)}
-        </Typography>
-      </Box>
+      <div className="text-center mb-10">
+        <Gamepad2 className="size-14 text-blue-400 mb-2 mx-auto" />
+        <h3 className="text-5xl font-extrabold text-white mb-2">{intl.formatMessage(messages.title)}</h3>
+        <h6 className="text-xl text-gray-400 mx-auto whitespace-nowrap">{intl.formatMessage(messages.subtitle)}</h6>
+      </div>
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <div className="flex flex-col gap-8">
         {/* What is Pop!? */}
-        <Paper elevation={0} sx={{ p: 3, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 3 }}>
-          <SectionTitle icon={<QuizIcon sx={{ color: '#60a5fa' }} />}>
+        <div className="p-6 rounded-xl bg-white/5">
+          <SectionTitle icon={<HelpCircle className="text-blue-400" />}>
             {intl.formatMessage(messages.whatIsPopTitle)}
           </SectionTitle>
-          <Typography color="grey.300" sx={{ mb: 1.5 }}>
-            {intl.formatMessage(messages.whatIsPopDescription)}
-          </Typography>
-          <Paper
-            elevation={0}
-            sx={{ p: 2, bgcolor: 'rgba(96,165,250,0.1)', borderRadius: 2, borderLeft: '3px solid #60a5fa' }}
-          >
-            <Typography variant="body2" color="grey.400" fontStyle="italic">
-              💡 {intl.formatMessage(messages.whatIsPopNote)}
-            </Typography>
-          </Paper>
-        </Paper>
+          <p className="text-gray-300 mb-3">{intl.formatMessage(messages.whatIsPopDescription)}</p>
+          <div className="p-4 rounded-lg bg-blue-400/10 border-l-[3px] border-blue-400">
+            <p className="text-sm text-gray-400 italic">💡 {intl.formatMessage(messages.whatIsPopNote)}</p>
+          </div>
+        </div>
 
         {/* Round Types */}
-        <Paper elevation={0} sx={{ p: 3, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 3 }}>
-          <SectionTitle icon={<EmojiEventsIcon sx={{ color: '#f59e0b' }} />}>
+        <div className="p-6 rounded-xl bg-white/5">
+          <SectionTitle icon={<Trophy className="text-amber-500" />}>
             {intl.formatMessage(messages.roundTypesTitle)}
           </SectionTitle>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          <div className="flex flex-wrap gap-2">
             {ABOUT_ROUND_TYPES.map((type) => (
-              <Chip
+              <Badge
                 key={type}
-                label={`${roundTypeToEmoji(type)} ${roundTypeToTitle(type, locale)}`}
                 title={questionTypeToDescription(type, locale)}
-                sx={{
-                  bgcolor: 'rgba(255,255,255,0.08)',
-                  color: 'grey.200',
-                  fontWeight: 600,
-                  fontSize: '0.85rem',
-                  '&:hover': { bgcolor: 'rgba(255,255,255,0.15)' },
-                }}
-              />
+                className="bg-white/8 text-gray-200 font-semibold text-[0.85rem] hover:bg-white/15"
+              >
+                {roundTypeToEmoji(type)} {roundTypeToTitle(type, locale)}
+              </Badge>
             ))}
-          </Box>
-        </Paper>
+          </div>
+        </div>
 
         {/* Origins */}
-        <Paper elevation={0} sx={{ p: 3, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 3 }}>
-          <SectionTitle icon={<HistoryIcon sx={{ color: '#a78bfa' }} />}>
+        <div className="p-6 rounded-xl bg-white/5">
+          <SectionTitle icon={<History className="text-violet-400" />}>
             {intl.formatMessage(messages.originsTitle)}
           </SectionTitle>
-          <Typography color="grey.300">{intl.formatMessage(messages.originsDescription)}</Typography>
-        </Paper>
+          <p className="text-gray-300">{intl.formatMessage(messages.originsDescription)}</p>
+        </div>
 
         {/* Open Source */}
-        <Paper elevation={0} sx={{ p: 3, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 3 }}>
-          <SectionTitle icon={<GitHubIcon sx={{ color: 'grey.300' }} />}>
+        <div className="p-6 rounded-xl bg-white/5">
+          <SectionTitle icon={<GithubIcon className="size-6 text-gray-300" />}>
             {intl.formatMessage(messages.openSourceTitle)}
           </SectionTitle>
-          <Typography color="grey.300" sx={{ mb: 2 }}>
-            {intl.formatMessage(messages.openSourceDescription)}
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            <Link
+          <p className="text-gray-300 mb-4">{intl.formatMessage(messages.openSourceDescription)}</p>
+          <div className="flex gap-4 flex-wrap">
+            <a
               href="https://github.com/jmettler27/Pop"
               target="_blank"
               rel="noopener noreferrer"
-              underline="none"
-              sx={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 1,
-                px: 2,
-                py: 1,
-                borderRadius: 2,
-                bgcolor: 'rgba(255,255,255,0.08)',
-                color: 'grey.200',
-                fontWeight: 600,
-                transition: 'all 0.2s',
-                '&:hover': { bgcolor: 'rgba(255,255,255,0.15)', transform: 'translateY(-1px)' },
-              }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/8 text-gray-200 font-semibold no-underline transition-all duration-200 hover:bg-white/15 hover:-translate-y-px"
             >
-              <GitHubIcon fontSize="small" /> GitHub
-            </Link>
-            <Link
+              <GithubIcon className="size-4" /> GitHub
+            </a>
+            <a
               href="https://github.com/jmettler27/Pop/wiki"
               target="_blank"
               rel="noopener noreferrer"
-              underline="none"
-              sx={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 1,
-                px: 2,
-                py: 1,
-                borderRadius: 2,
-                bgcolor: 'rgba(255,255,255,0.08)',
-                color: 'grey.200',
-                fontWeight: 600,
-                transition: 'all 0.2s',
-                '&:hover': { bgcolor: 'rgba(255,255,255,0.15)', transform: 'translateY(-1px)' },
-              }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/8 text-gray-200 font-semibold no-underline transition-all duration-200 hover:bg-white/15 hover:-translate-y-px"
             >
               📖 Wiki
-            </Link>
-          </Box>
-        </Paper>
-      </Box>
-    </Container>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

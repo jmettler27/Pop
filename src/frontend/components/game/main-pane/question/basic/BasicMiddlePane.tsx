@@ -1,5 +1,4 @@
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import { Info, TriangleAlert } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
@@ -30,7 +29,7 @@ export default function BasicMiddlePane({ baseQuestion }: BasicMiddlePaneProps) 
   const bq = baseQuestion as { title?: string; source?: string; note?: string };
   return (
     <div className="flex flex-col h-full items-center">
-      <div className="flex-shrink-0 flex flex-col items-center justify-center gap-1.5 py-2 w-full px-4">
+      <div className="shrink-0 flex flex-col items-center justify-center gap-1.5 py-2 w-full px-4">
         <BasicQuestionHeader baseQuestion={baseQuestion} />
         <h2 className="2xl:text-4xl text-center">
           {bq.source && <span className="text-slate-400 font-normal">{bq.source} : </span>}
@@ -38,7 +37,7 @@ export default function BasicMiddlePane({ baseQuestion }: BasicMiddlePaneProps) 
         </h2>
         {bq.note && (
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs 2xl:text-sm max-w-lg">
-            <WarningAmberIcon sx={{ fontSize: 13, flexShrink: 0 }} />
+            <TriangleAlert className="size-[13px] shrink-0" />
             <span className="italic">{bq.note}</span>
           </div>
         )}
@@ -57,7 +56,7 @@ interface BasicQuestionHeaderProps {
 function BasicQuestionHeader({ baseQuestion }: BasicQuestionHeaderProps) {
   return (
     <div className="flex flex-row items-center justify-center space-x-1">
-      <QuestionTypeIcon questionType={baseQuestion.type} fontSize={{ xs: 28, md: 50 }} />
+      <QuestionTypeIcon questionType={baseQuestion.type} className="size-7 md:size-[50px]" />
       <h1 className="text-xs md:text-xl 2xl:text-4xl">
         {baseQuestion.topic ? topicToEmoji(baseQuestion.topic) : ''}{' '}
         <strong>
@@ -98,13 +97,13 @@ function BasicQuestionMainContent({ baseQuestion }: BasicQuestionMainContentProp
       <div className="flex-1 min-h-0 w-full flex items-center justify-center">
         <BasicQuestionAnswer baseQuestion={baseQuestion} gameQuestion={gameQuestion as GameBasicQuestion} />
       </div>
-      <div className="flex-shrink-0 w-full flex flex-col items-center justify-center gap-2 py-2 px-4">
+      <div className="shrink-0 w-full flex flex-col items-center justify-center gap-2 py-2 px-4">
         {(game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER) && (
           <BasicQuestionPlayerAnswerText gameQuestion={gameQuestion as GameBasicQuestion} />
         )}
         {game.status === GameStatus.QUESTION_END && explanation && (
           <div className="flex items-start gap-2 px-3 py-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-200 text-sm 2xl:text-base w-full max-w-2xl">
-            <InfoOutlinedIcon sx={{ fontSize: 16, color: 'rgb(147 197 253)', flexShrink: 0, mt: '2px' }} />
+            <Info className="size-4 text-blue-300 shrink-0 mt-0.5" />
             <span className="leading-snug">{explanation}</span>
           </div>
         )}

@@ -1,11 +1,11 @@
-import PanToolIcon from '@mui/icons-material/PanTool';
-import ReplayIcon from '@mui/icons-material/Replay';
-import { Button, IconButton, Tooltip } from '@mui/material';
 import clsx from 'clsx';
+import { Hand, RotateCcw } from 'lucide-react';
 import { useIntl, type IntlShape } from 'react-intl';
 
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import { addPlayerToBuzzer, removePlayerFromBuzzer } from '@/backend/services/question/buzzer/actions';
+import { Button } from '@/frontend/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -89,7 +89,12 @@ export default function BuzzerPlayerController({ questionPlayers, compact = fals
         hasBuzzed={hasBuzzed}
         remaining={remaining}
       />
-      <div className={clsx('flex w-full justify-center', compact ? 'flex-col items-center gap-3' : 'flex-row')}>
+      <div
+        className={clsx(
+          'flex w-full justify-center',
+          compact ? 'flex-col items-center gap-3' : 'flex-row items-center gap-2'
+        )}
+      >
         <BuzzerButton
           isDisabled={hasBuzzed || hasExceededMaxTries || remaining > 0}
           questionType={gq.type as QuestionType}
@@ -205,16 +210,14 @@ function BuzzerButton({ isDisabled, questionType, compact = false }: BuzzerButto
 
   return (
     <Button
-      size="large"
-      variant="contained"
-      color="primary"
+      size="lg"
       onClick={handleBuzz}
       disabled={isDisabled || isBuzzing}
       style={{ backgroundColor: isDisabled ? 'gray' : 'red' }}
-      endIcon={<PanToolIcon fontSize={compact ? 'large' : 'medium'} />}
-      sx={compact ? { py: 2, px: 4 } : {}}
+      className={clsx(compact ? 'py-2 px-4' : 'py-8 px-6')}
     >
-      <span className={clsx(compact ? 'text-2xl' : '2xl:text-3xl', !isDisabled && 'text-slate-100')}>BUZZ</span>
+      <span className={clsx('text-3xl', !isDisabled && 'text-slate-100')}>BUZZ</span>
+      <Hand className={clsx('ml-2 text-white', compact ? 'size-6' : 'size-6 2xl:size-8')} />
     </Button>
   );
 }
@@ -241,18 +244,19 @@ function BuzzerResetButton({ isDisabled, questionType, compact = false }: Buzzer
   });
 
   return (
-    <Tooltip title="Annuler" placement="right">
-      <span>
-        <IconButton
-          size={compact ? 'large' : 'medium'}
-          color="primary"
+    <Tooltip>
+      <TooltipTrigger render={<span />}>
+        <Button
+          variant="ghost"
+          size={compact ? 'icon-lg' : 'icon'}
           aria-label="reset buzzer"
           onClick={handleResetBuzz}
           disabled={isDisabled || isResetting}
         >
-          <ReplayIcon fontSize={compact ? 'large' : 'medium'} />
-        </IconButton>
-      </span>
+          <RotateCcw className={compact ? 'size-7' : 'size-6'} />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="right">Annuler</TooltipContent>
     </Tooltip>
   );
 }

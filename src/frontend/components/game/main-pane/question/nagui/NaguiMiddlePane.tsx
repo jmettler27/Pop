@@ -1,6 +1,6 @@
 'use client';
 
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { Info } from 'lucide-react';
 
 import NaguiMainContent from '@/frontend/components/game/main-pane/question/nagui/NaguiMainContent';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
@@ -16,14 +16,14 @@ export default function NaguiMiddlePane({ baseQuestion }: { baseQuestion: NaguiQ
 
   return (
     <div className="flex flex-col h-full items-center">
-      <div className="flex-shrink-0 flex flex-col items-center justify-center py-2">
+      <div className="shrink-0 flex flex-col items-center justify-center py-2">
         <NaguiHeader baseQuestion={baseQuestion} />
       </div>
       <div className="flex-1 min-h-0 w-full flex items-center justify-center">
         <NaguiMainContent baseQuestion={baseQuestion} />
       </div>
       {game?.status === GameStatus.QUESTION_END && (
-        <div className="flex-shrink-0 w-full flex items-center justify-center py-2 px-4">
+        <div className="shrink-0 w-full flex items-center justify-center py-2 px-4">
           <NaguiFooter baseQuestion={baseQuestion} />
         </div>
       )}
@@ -34,7 +34,7 @@ export default function NaguiMiddlePane({ baseQuestion }: { baseQuestion: NaguiQ
 function NaguiHeader({ baseQuestion }: { baseQuestion: NaguiQuestion }) {
   return (
     <div className="flex flex-row items-center justify-center space-x-1">
-      <QuestionTypeIcon questionType={baseQuestion.type} fontSize={40} />
+      <QuestionTypeIcon questionType={baseQuestion.type} className="size-10" />
       <h1 className="2xl:text-5xl">
         {topicToEmoji(baseQuestion.topic as Topic)}{' '}
         <strong>
@@ -50,7 +50,7 @@ function NaguiFooter({ baseQuestion }: { baseQuestion: NaguiQuestion }): React.R
   if (!explanation) return null;
   return (
     <div className="flex items-start gap-2 px-3 py-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-200 text-sm 2xl:text-base w-full max-w-2xl">
-      <InfoOutlinedIcon sx={{ fontSize: 16, color: 'rgb(147 197 253)', flexShrink: 0, mt: '2px' }} />
+      <Info className="size-4 text-blue-300 shrink-0 mt-0.5" />
       <span className="leading-snug">{explanation}</span>
     </div>
   );

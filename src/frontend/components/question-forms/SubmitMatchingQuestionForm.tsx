@@ -1,11 +1,8 @@
 import React, { Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Button, IconButton } from '@mui/material';
-import Box from '@mui/system/Box';
 import { FieldArray, useFormikContext } from 'formik';
+import { Plus, Trash2 } from 'lucide-react';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 import type { ObjectSchema } from 'yup';
@@ -16,6 +13,7 @@ import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepCompon
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
 import { MyNumberInput, MyTextInput, StyledErrorMessage } from '@/frontend/components/common/StyledFormComponents';
+import { Button } from '@/frontend/components/ui/button';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
 import { topicSchema } from '@/frontend/helpers/forms/topics';
@@ -270,7 +268,7 @@ function EnterMatchesStep({ onSubmit }: { onSubmit: () => void }) {
 
   return (
     <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
-      <p>
+      <p className="mb-4">
         {intl.formatMessage(messages.numMatchesAllowed)}: {MatchingQuestion.MIN_NUM_ROWS}-
         {MatchingQuestion.MAX_NUM_ROWS}.{' '}
       </p>
@@ -280,12 +278,17 @@ function EnterMatchesStep({ onSubmit }: { onSubmit: () => void }) {
           <>
             {matches.length > 0 &&
               matches.map((_match, row) => (
-                <Box key={row} component="section" sx={{ my: 2, p: 2, border: '2px dashed grey', width: '500px' }}>
+                <section key={row} className="my-4 p-4 border-2 border-dashed border-gray-500 w-[500px]">
                   <span className="text-lg">Match #{row + 1}</span>
 
-                  <IconButton color="error" onClick={() => remove(row)}>
-                    <DeleteIcon />
-                  </IconButton>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-destructive hover:bg-destructive/10"
+                    onClick={() => remove(row)}
+                  >
+                    <Trash2 />
+                  </Button>
 
                   {Array(values.numCols)
                     .fill(0)
@@ -302,13 +305,10 @@ function EnterMatchesStep({ onSubmit }: { onSubmit: () => void }) {
                         <MatchItemError col={col} row={row} />
                       </Fragment>
                     ))}
-                </Box>
+                </section>
               ))}
-            <Button
-              variant="outlined"
-              startIcon={<AddIcon />}
-              onClick={() => push(Array.from({ length: values.numCols }, () => ''))}
-            >
+            <Button variant="outline" onClick={() => push(Array.from({ length: values.numCols }, () => ''))}>
+              <Plus className="mr-2 size-4" />
               {intl.formatMessage(messages.addMatch)}
             </Button>
           </>

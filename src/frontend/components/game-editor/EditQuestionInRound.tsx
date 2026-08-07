@@ -1,23 +1,7 @@
 import React, { memo, useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import TimerIcon from '@mui/icons-material/Timer';
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  IconButton,
-  Popover,
-  TextField,
-  Tooltip,
-} from '@mui/material';
+import { ChevronDown, ChevronUp, Pencil, Timer as TimerIcon, Trash2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
@@ -28,7 +12,6 @@ import {
   updateQuestionChallengeTime,
   updateQuestionThinkingTime,
 } from '@/backend/services/edit-game/actions';
-import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/card';
 import { QuestionCardContent, QuestionCardTitle } from '@/frontend/components/common/QuestionCard';
 import SubmitBasicQuestionForm from '@/frontend/components/question-forms/SubmitBasicQuestionForm';
 import SubmitBlindtestQuestionForm from '@/frontend/components/question-forms/SubmitBlindtestQuestionForm';
@@ -44,6 +27,20 @@ import SubmitOddOneOutQuestionForm from '@/frontend/components/question-forms/Su
 import SubmitProgressiveCluesQuestionForm from '@/frontend/components/question-forms/SubmitProgressiveCluesQuestionForm';
 import SubmitQuoteQuestionForm from '@/frontend/components/question-forms/SubmitQuoteQuestionForm';
 import SubmitReorderingQuestionForm from '@/frontend/components/question-forms/SubmitReorderingQuestionForm';
+import { Button } from '@/frontend/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/frontend/components/ui/dialog';
+import { Input } from '@/frontend/components/ui/input';
+import { Label } from '@/frontend/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/frontend/components/ui/popover';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -153,17 +150,17 @@ function EditQuestionCardInner({
   const isOverridden =
     questionThinkingTime != null && roundThinkingTime != null && questionThinkingTime !== roundThinkingTime;
 
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const [editValue, setEditValue] = useState('');
   const [handleSaveThinkingTime, isSaving] = useAsyncAction(async (value: number) => {
     await updateQuestionThinkingTime(gameId, baseQuestion.type, roundId, questionId, value);
-    setAnchorEl(null);
+    setPopoverOpen(false);
   });
 
-  const handleBadgeClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleBadgeClick = () => {
     if (status !== GameStatus.GAME_EDIT) return;
     setEditValue(String(questionThinkingTime ?? roundThinkingTime ?? ''));
-    setAnchorEl(event.currentTarget);
+    setPopoverOpen(true);
   };
 
   const handleResetToRound = () => {
@@ -177,17 +174,17 @@ function EditQuestionCardInner({
   const isChallengeOverridden =
     questionChallengeTime != null && roundChallengeTime != null && questionChallengeTime !== roundChallengeTime;
 
-  const [anchorElChallenge, setAnchorElChallenge] = useState<HTMLElement | null>(null);
+  const [challengePopoverOpen, setChallengePopoverOpen] = useState(false);
   const [editValueChallenge, setEditValueChallenge] = useState('');
   const [handleSaveChallengeTime, isSavingChallenge] = useAsyncAction(async (value: number) => {
     await updateQuestionChallengeTime(gameId, baseQuestion.type, roundId, questionId, value);
-    setAnchorElChallenge(null);
+    setChallengePopoverOpen(false);
   });
 
-  const handleChallengeBadgeClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleChallengeBadgeClick = () => {
     if (status !== GameStatus.GAME_EDIT) return;
     setEditValueChallenge(String(displayedChallengeTime ?? ''));
-    setAnchorElChallenge(event.currentTarget);
+    setChallengePopoverOpen(true);
   };
 
   const handleResetChallengeToRound = () => {
@@ -199,162 +196,193 @@ function EditQuestionCardInner({
   return (
     <Card className="border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800 rounded-xl overflow-hidden group hover:scale-[1.02]">
       <CardHeader
-        className={`flex flex-row items-center justify-between bg-gradient-to-r from-slate-50 to-blue-50/50 dark:from-slate-800 dark:to-slate-900 py-2 px-3 ${!isCollapsed ? 'border-b border-slate-200 dark:border-slate-700' : ''}`}
+        className={`flex flex-row items-center justify-between bg-linear-to-r from-slate-50 to-blue-50/50 dark:from-slate-800 dark:to-slate-900 py-2 px-3 ${!isCollapsed ? 'border-b border-slate-200 dark:border-slate-700' : ''}`}
       >
         {/* <span className='text-base md:text-lg dark:text-white'>#{questionOrder + 1}</span> */}
         <CardTitle className="text-sm md:text-base dark:text-white font-semibold">
           <QuestionCardTitle baseQuestion={baseQuestion} showType={true} />
         </CardTitle>
         <div className="flex gap-1 items-center">
-          {questionThinkingTime != null && (
-            <Tooltip
-              title={intl.formatMessage(
-                isOverridden ? messages.thinkingTimeOverridden : messages.thinkingTimeInherited
-              )}
-            >
-              <span
-                onClick={handleBadgeClick}
-                className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium ${status === GameStatus.GAME_EDIT ? 'cursor-pointer hover:ring-2 hover:ring-blue-400' : ''} ${
-                  isOverridden
-                    ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 ring-1 ring-orange-300 dark:ring-orange-700'
-                    : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'
-                }`}
-              >
-                <TimerIcon sx={{ fontSize: 12 }} />
-                {questionThinkingTime}s
-              </span>
-            </Tooltip>
-          )}
-          <Popover
-            open={Boolean(anchorEl)}
-            anchorEl={anchorEl}
-            onClose={() => setAnchorEl(null)}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-          >
-            <div className="p-4 flex flex-col gap-3 min-w-[240px]">
-              <TextField
-                label={intl.formatMessage(messages.editThinkingTime)}
-                type="number"
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                inputProps={{ min: Timer.MIN_THINKING_TIME_SECONDS, max: Timer.MAX_THINKING_TIME_SECONDS }}
-                autoFocus
-                fullWidth
-              />
-              <div className="flex gap-2 justify-end">
-                {isOverridden && roundThinkingTime != null && (
-                  <Button size="small" onClick={handleResetToRound} disabled={isSaving} color="warning">
-                    {intl.formatMessage(messages.resetToRound)}
-                  </Button>
-                )}
-                <Button
-                  size="small"
-                  variant="contained"
-                  onClick={() => {
-                    const num = Number(editValue);
-                    if (num >= Timer.MIN_THINKING_TIME_SECONDS && num <= Timer.MAX_THINKING_TIME_SECONDS)
-                      handleSaveThinkingTime(num);
-                  }}
-                  disabled={
-                    isSaving ||
-                    !editValue ||
-                    Number(editValue) < Timer.MIN_THINKING_TIME_SECONDS ||
-                    Number(editValue) > Timer.MAX_THINKING_TIME_SECONDS
+          <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+            {questionThinkingTime != null && (
+              <Tooltip>
+                <PopoverTrigger
+                  nativeButton={false}
+                  render={
+                    <TooltipTrigger
+                      render={
+                        <span
+                          onClick={handleBadgeClick}
+                          className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium ${status === GameStatus.GAME_EDIT ? 'cursor-pointer hover:ring-2 hover:ring-blue-400' : ''} ${
+                            isOverridden
+                              ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 ring-1 ring-orange-300 dark:ring-orange-700'
+                              : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'
+                          }`}
+                        />
+                      }
+                    />
                   }
                 >
-                  {intl.formatMessage(globalMessages.save)}
-                </Button>
-              </div>
-            </div>
-          </Popover>
-          {displayedChallengeTime != null && (
-            <Tooltip
-              title={intl.formatMessage(
-                isChallengeOverridden ? messages.challengeTimeOverridden : messages.challengeTimeInherited
-              )}
-            >
-              <span
-                onClick={handleChallengeBadgeClick}
-                className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium ${status === GameStatus.GAME_EDIT ? 'cursor-pointer hover:ring-2 hover:ring-green-400' : ''} ${
-                  isChallengeOverridden
-                    ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 ring-1 ring-orange-300 dark:ring-orange-700'
-                    : 'bg-teal-50 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400'
-                }`}
-              >
-                <TimerIcon sx={{ fontSize: 12 }} />
-                {displayedChallengeTime}s ⚡
-              </span>
-            </Tooltip>
-          )}
-          <Popover
-            open={Boolean(anchorElChallenge)}
-            anchorEl={anchorElChallenge}
-            onClose={() => setAnchorElChallenge(null)}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-          >
-            <div className="p-4 flex flex-col gap-3 min-w-[240px]">
-              <TextField
-                label={intl.formatMessage(messages.editChallengeTime)}
-                type="number"
-                value={editValueChallenge}
-                onChange={(e) => setEditValueChallenge(e.target.value)}
-                inputProps={{ min: Timer.MIN_CHALLENGE_TIME_SECONDS, max: Timer.MAX_CHALLENGE_TIME_SECONDS }}
-                autoFocus
-                fullWidth
-              />
-              <div className="flex gap-2 justify-end">
-                {isChallengeOverridden && roundChallengeTime != null && (
+                  <TimerIcon className="size-3" />
+                  {questionThinkingTime}s
+                </PopoverTrigger>
+                <TooltipContent>
+                  {intl.formatMessage(isOverridden ? messages.thinkingTimeOverridden : messages.thinkingTimeInherited)}
+                </TooltipContent>
+              </Tooltip>
+            )}
+            <PopoverContent align="center" side="bottom" className="w-auto p-4 min-w-[240px]">
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="thinking-time-input">{intl.formatMessage(messages.editThinkingTime)}</Label>
+                  <Input
+                    id="thinking-time-input"
+                    type="number"
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    min={Timer.MIN_THINKING_TIME_SECONDS}
+                    max={Timer.MAX_THINKING_TIME_SECONDS}
+                    autoFocus
+                  />
+                </div>
+                <div className="flex gap-2 justify-end">
+                  {isOverridden && roundThinkingTime != null && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={handleResetToRound}
+                      disabled={isSaving}
+                      className="text-amber-500 hover:bg-amber-500/10"
+                    >
+                      {intl.formatMessage(messages.resetToRound)}
+                    </Button>
+                  )}
                   <Button
-                    size="small"
-                    onClick={handleResetChallengeToRound}
-                    disabled={isSavingChallenge}
-                    color="warning"
+                    size="sm"
+                    onClick={() => {
+                      const num = Number(editValue);
+                      if (num >= Timer.MIN_THINKING_TIME_SECONDS && num <= Timer.MAX_THINKING_TIME_SECONDS)
+                        handleSaveThinkingTime(num);
+                    }}
+                    disabled={
+                      isSaving ||
+                      !editValue ||
+                      Number(editValue) < Timer.MIN_THINKING_TIME_SECONDS ||
+                      Number(editValue) > Timer.MAX_THINKING_TIME_SECONDS
+                    }
                   >
-                    {intl.formatMessage(messages.resetToRound)}
+                    {intl.formatMessage(globalMessages.save)}
                   </Button>
-                )}
-                <Button
-                  size="small"
-                  variant="contained"
-                  onClick={() => {
-                    const num = Number(editValueChallenge);
-                    if (num >= Timer.MIN_CHALLENGE_TIME_SECONDS && num <= Timer.MAX_CHALLENGE_TIME_SECONDS)
-                      handleSaveChallengeTime(num);
-                  }}
-                  disabled={
-                    isSavingChallenge ||
-                    !editValueChallenge ||
-                    Number(editValueChallenge) < Timer.MIN_CHALLENGE_TIME_SECONDS ||
-                    Number(editValueChallenge) > Timer.MAX_CHALLENGE_TIME_SECONDS
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+          <Popover open={challengePopoverOpen} onOpenChange={setChallengePopoverOpen}>
+            {displayedChallengeTime != null && (
+              <Tooltip>
+                <PopoverTrigger
+                  nativeButton={false}
+                  render={
+                    <TooltipTrigger
+                      render={
+                        <span
+                          onClick={handleChallengeBadgeClick}
+                          className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium ${status === GameStatus.GAME_EDIT ? 'cursor-pointer hover:ring-2 hover:ring-green-400' : ''} ${
+                            isChallengeOverridden
+                              ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 ring-1 ring-orange-300 dark:ring-orange-700'
+                              : 'bg-teal-50 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400'
+                          }`}
+                        />
+                      }
+                    />
                   }
                 >
-                  {intl.formatMessage(globalMessages.save)}
-                </Button>
+                  <TimerIcon className="size-3" />
+                  {displayedChallengeTime}s ⚡
+                </PopoverTrigger>
+                <TooltipContent>
+                  {intl.formatMessage(
+                    isChallengeOverridden ? messages.challengeTimeOverridden : messages.challengeTimeInherited
+                  )}
+                </TooltipContent>
+              </Tooltip>
+            )}
+            <PopoverContent align="center" side="bottom" className="w-auto p-4 min-w-[240px]">
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="challenge-time-input">{intl.formatMessage(messages.editChallengeTime)}</Label>
+                  <Input
+                    id="challenge-time-input"
+                    type="number"
+                    value={editValueChallenge}
+                    onChange={(e) => setEditValueChallenge(e.target.value)}
+                    min={Timer.MIN_CHALLENGE_TIME_SECONDS}
+                    max={Timer.MAX_CHALLENGE_TIME_SECONDS}
+                    autoFocus
+                  />
+                </div>
+                <div className="flex gap-2 justify-end">
+                  {isChallengeOverridden && roundChallengeTime != null && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={handleResetChallengeToRound}
+                      disabled={isSavingChallenge}
+                      className="text-amber-500 hover:bg-amber-500/10"
+                    >
+                      {intl.formatMessage(messages.resetToRound)}
+                    </Button>
+                  )}
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      const num = Number(editValueChallenge);
+                      if (num >= Timer.MIN_CHALLENGE_TIME_SECONDS && num <= Timer.MAX_CHALLENGE_TIME_SECONDS)
+                        handleSaveChallengeTime(num);
+                    }}
+                    disabled={
+                      isSavingChallenge ||
+                      !editValueChallenge ||
+                      Number(editValueChallenge) < Timer.MIN_CHALLENGE_TIME_SECONDS ||
+                      Number(editValueChallenge) > Timer.MAX_CHALLENGE_TIME_SECONDS
+                    }
+                  >
+                    {intl.formatMessage(globalMessages.save)}
+                  </Button>
+                </div>
               </div>
-            </div>
+            </PopoverContent>
           </Popover>
-          <Tooltip title={isCollapsed ? 'Expand' : 'Collapse'}>
-            <IconButton
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              size="small"
-              color="info"
-              className="hover:scale-110 transition-transform"
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => setIsCollapsed(!isCollapsed)}
+                  className="text-sky-500 hover:scale-110 transition-transform"
+                />
+              }
             >
-              {isCollapsed ? <ExpandMoreIcon fontSize="small" /> : <ExpandLessIcon fontSize="small" />}
-            </IconButton>
+              {isCollapsed ? <ChevronDown /> : <ChevronUp />}
+            </TooltipTrigger>
+            <TooltipContent>{isCollapsed ? 'Expand' : 'Collapse'}</TooltipContent>
           </Tooltip>
           {status === GameStatus.GAME_EDIT && canEdit && (
-            <Tooltip title={intl.formatMessage(messages.editQuestion)}>
-              <IconButton
-                color="primary"
-                onClick={() => setEditDialogOpen(true)}
-                size="small"
-                className="hover:scale-110 transition-transform"
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    className="text-primary hover:scale-110 transition-transform"
+                    onClick={() => setEditDialogOpen(true)}
+                  />
+                }
               >
-                <EditIcon fontSize="small" />
-              </IconButton>
+                <Pencil />
+              </TooltipTrigger>
+              <TooltipContent>{intl.formatMessage(messages.editQuestion)}</TooltipContent>
             </Tooltip>
           )}
           {status === GameStatus.GAME_EDIT && (
@@ -365,7 +393,7 @@ function EditQuestionCardInner({
       </CardHeader>
 
       {!isCollapsed && (
-        <CardContent className="flex flex-col justify-center items-center w-full p-4 bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-800 dark:to-slate-900/50">
+        <CardContent className="flex flex-col justify-center items-center w-full p-4 bg-linear-to-br from-white to-slate-50/50 dark:from-slate-800 dark:to-slate-900/50">
           <QuestionCardContent baseQuestion={baseQuestion} />
         </CardContent>
       )}
@@ -383,17 +411,17 @@ function EditQuestionCardInner({
 function QuestionCardSkeleton() {
   return (
     <Card className="border border-slate-200 dark:border-slate-700 shadow-lg bg-white dark:bg-slate-800 rounded-xl overflow-hidden">
-      <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-slate-50 to-blue-50/50 dark:from-slate-800 dark:to-slate-900 py-2 px-3 border-b border-slate-200 dark:border-slate-700">
-        <div className="h-4 w-2/3 rounded bg-slate-200 dark:bg-slate-700 animate-pulse" />
+      <CardHeader className="flex flex-row items-center justify-between bg-linear-to-r from-slate-50 to-blue-50/50 dark:from-slate-800 dark:to-slate-900 py-2 px-3 border-b border-slate-200 dark:border-slate-700">
+        <div className="h-4 w-2/3 rounded-sm bg-slate-200 dark:bg-slate-700 animate-pulse" />
         <div className="flex gap-1">
           <div className="h-7 w-7 rounded-full bg-slate-200 dark:bg-slate-700 animate-pulse" />
           <div className="h-7 w-7 rounded-full bg-slate-200 dark:bg-slate-700 animate-pulse" />
         </div>
       </CardHeader>
-      <CardContent className="flex flex-col gap-3 p-4 bg-gradient-to-br from-white to-slate-50/50 dark:from-slate-800 dark:to-slate-900/50">
+      <CardContent className="flex flex-col gap-3 p-4 bg-linear-to-br from-white to-slate-50/50 dark:from-slate-800 dark:to-slate-900/50">
         <div className="h-36 w-full rounded-lg bg-slate-200 dark:bg-slate-700 animate-pulse" />
-        <div className="h-4 w-5/6 rounded bg-slate-200 dark:bg-slate-700 animate-pulse" />
-        <div className="h-4 w-2/3 rounded bg-slate-200 dark:bg-slate-700 animate-pulse" />
+        <div className="h-4 w-5/6 rounded-sm bg-slate-200 dark:bg-slate-700 animate-pulse" />
+        <div className="h-4 w-2/3 rounded-sm bg-slate-200 dark:bg-slate-700 animate-pulse" />
       </CardContent>
     </Card>
   );
@@ -409,9 +437,11 @@ interface EditQuestionDialogProps {
 function EditQuestionDialog({ baseQuestion, userId, open, onClose }: EditQuestionDialogProps) {
   const intl = useIntl();
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
-      <DialogTitle>{intl.formatMessage(messages.editQuestionDialogTitle)}</DialogTitle>
-      <DialogContent>
+    <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent showCloseButton={false} className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{intl.formatMessage(messages.editQuestionDialogTitle)}</DialogTitle>
+        </DialogHeader>
         <EditQuestionFormByType baseQuestion={baseQuestion} userId={userId} onClose={onClose} />
       </DialogContent>
     </Dialog>
@@ -492,26 +522,43 @@ function RemoveQuestionFromRoundButton({ questionType, roundId, questionId }: Re
 
   return (
     <>
-      <IconButton color="error" onClick={() => setDialogOpen(true)} disabled={isRemoving}>
-        <DeleteIcon />
-      </IconButton>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="text-destructive"
+        onClick={() => setDialogOpen(true)}
+        disabled={isRemoving}
+      >
+        <Trash2 />
+      </Button>
 
-      <Dialog disableEscapeKeyDown open={dialogOpen} onClose={onDialogClose}>
-        <DialogTitle>{intl.formatMessage(messages.deleteDialogTitle)}</DialogTitle>
+      <Dialog
+        open={dialogOpen}
+        onOpenChange={(open, eventDetails) => {
+          if (eventDetails.reason === 'escape-key') return;
+          if (!open) onDialogClose();
+        }}
+      >
+        <DialogContent showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>{intl.formatMessage(messages.deleteDialogTitle)}</DialogTitle>
+            <DialogDescription>{intl.formatMessage(globalMessages.dialogWarning)}</DialogDescription>
+          </DialogHeader>
 
-        <DialogContent>
-          <DialogContentText>{intl.formatMessage(globalMessages.dialogWarning)}</DialogContentText>
+          <DialogFooter>
+            <Button onClick={handleRemoveQuestion} disabled={isRemoving}>
+              {intl.formatMessage(messages.deleteDialogConfirm)}
+            </Button>
+
+            <Button
+              variant="outline"
+              className="border-destructive text-destructive hover:bg-destructive/10"
+              onClick={onCancel}
+            >
+              {intl.formatMessage(globalMessages.cancel)}
+            </Button>
+          </DialogFooter>
         </DialogContent>
-
-        <DialogActions>
-          <Button variant="contained" color="primary" onClick={handleRemoveQuestion} disabled={isRemoving}>
-            {intl.formatMessage(messages.deleteDialogConfirm)}
-          </Button>
-
-          <Button variant="outlined" color="error" onClick={onCancel}>
-            {intl.formatMessage(globalMessages.cancel)}
-          </Button>
-        </DialogActions>
       </Dialog>
     </>
   );

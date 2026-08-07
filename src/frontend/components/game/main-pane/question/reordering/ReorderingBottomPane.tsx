@@ -1,6 +1,5 @@
 'use client';
 
-import { List, ListItem, ListItemText } from '@mui/material';
 import { useIntl } from 'react-intl';
 
 import GameReorderingQuestionRepository from '@/backend/repositories/question/GameReorderingQuestionRepository';
@@ -82,13 +81,13 @@ function ReorderingSubmittedTeams({ gameQuestion }: { gameQuestion: GameReorderi
     <div className="flex flex-col h-full w-full justify-start p-2">
       <h2 className="font-bold text-xl">{intl.formatMessage(globalMessages.submittedTeams)}</h2>
       {orderings.length > 0 ? (
-        <List className="overflow-auto">
+        <ul className="overflow-auto">
           {orderings.map((o, index) => (
-            <ListItem key={o.teamId} dense>
-              <ListItemText primary={`${index + 1}. ${getTeamName(o.teamId)}`} />
-            </ListItem>
+            <li key={o.teamId} className="px-2 py-0.5">
+              {index + 1}. {getTeamName(o.teamId)}
+            </li>
           ))}
-        </List>
+        </ul>
       ) : (
         <p className="2xl:text-xl italic opacity-50">{intl.formatMessage(globalMessages.nobody)}</p>
       )}

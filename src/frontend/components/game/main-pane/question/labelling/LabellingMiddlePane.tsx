@@ -1,7 +1,5 @@
 'use client';
 
-import { Box } from '@mui/material';
-
 import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
 import { revealLabel } from '@/backend/services/question/labelling/actions';
 import { isObjectEmpty } from '@/backend/utils/objects';
@@ -37,7 +35,7 @@ function LabellingQuestionHeader({ baseQuestion }: { baseQuestion: LabellingQues
   return (
     <div className="flex flex-col items-center justify-center space-y-2">
       <div className="flex flex-row items-center justify-center space-x-1">
-        <QuestionTypeIcon questionType={baseQuestion.type} fontSize={{ xs: 28, md: 50 }} />
+        <QuestionTypeIcon questionType={baseQuestion.type} className="size-7 md:size-[50px]" />
         <h1 className="text-xs md:text-xl 2xl:text-5xl">
           {topicToEmoji(baseQuestion.topic as Topic)}{' '}
           <strong>
@@ -77,11 +75,11 @@ function LabellingMainContent({ baseQuestion }: { baseQuestion: LabellingQuestio
   const labels = baseQuestion.labels ?? [];
 
   return (
-    <Box className="flex flex-row h-full w-[90%] items-center justify-center space-x-8">
-      <Box className="flex flex-col h-3/4 max-w-1/2 items-end justify-end">
+    <div className="flex flex-row h-full w-[90%] items-center justify-center space-x-8">
+      <div className="flex flex-col h-3/4 max-w-1/2 items-end justify-end">
         <NextImage url={image} alt={title ?? ''} />
-      </Box>
-      <Box className="flex flex-col h-[90%] max-w-1/2 items-start justify-start">
+      </div>
+      <div className="flex flex-col h-[90%] max-w-1/2 items-start justify-start">
         <ol className="list-decimal pl-20 overflow-y-auto space-y-1">
           {labels.map((label, idx) => (
             <li key={idx} className="2xl:text-3xl">
@@ -89,8 +87,8 @@ function LabellingMainContent({ baseQuestion }: { baseQuestion: LabellingQuestio
             </li>
           ))}
         </ol>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }
 

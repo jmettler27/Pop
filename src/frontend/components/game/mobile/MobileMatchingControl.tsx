@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
 
-import { CircularProgress } from '@mui/material';
-
 import BaseMatchingQuestionRepository from '@/backend/repositories/question/BaseMatchingQuestionRepository';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import ActiveMatchingQuestionGrid from '@/frontend/components/game/main-pane/question/matching/ActiveMatchingQuestionGrid';
 import { generateShuffledNodePositions } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
+import { Spinner } from '@/frontend/components/ui/spinner';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useTeam from '@/frontend/hooks/useTeam';
@@ -37,7 +36,7 @@ export default function MobileMatchingControl() {
 
   if (!game || !gameRepositories) return null;
   if (baseQuestionError || chooserError) return <ErrorScreen inline />;
-  if (baseQuestionLoading || chooserLoading) return <CircularProgress />;
+  if (baseQuestionLoading || chooserLoading) return <Spinner />;
   if (!baseQuestion || !chooser) return null;
   if (numCols == null || numRows == null) return null;
 

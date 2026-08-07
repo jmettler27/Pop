@@ -1,13 +1,27 @@
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Avatar, CircularProgress } from '@mui/material';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import type { GridColDef, GridPaginationModel, GridRowSelectionModel } from '@mui/x-data-grid';
+import type { Column, ColumnDef, PaginationState, RowSelectionState, SortingState } from '@tanstack/react-table';
+import {
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronsUpDown, ChevronUp } from 'lucide-react';
 import type { IntlShape } from 'react-intl';
 import { useIntl } from 'react-intl';
 
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 import UserRepository from '@/backend/repositories/user/UserRepository';
+import { Avatar, AvatarFallback, AvatarImage } from '@/frontend/components/ui/avatar';
+import { Button } from '@/frontend/components/ui/button';
+import { Checkbox } from '@/frontend/components/ui/checkbox';
+import { Input } from '@/frontend/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/frontend/components/ui/select';
+import { Spinner } from '@/frontend/components/ui/spinner';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/frontend/components/ui/table';
 import type { Locale } from '@/frontend/helpers/locales';
 import { localeToEmoji } from '@/frontend/helpers/locales';
 import { QUESTION_ELEMENT_TO_TITLE } from '@/frontend/helpers/question';
@@ -30,7 +44,20 @@ const messages = defineMessages('frontend.questions.QuestionDataGrid', {
   quoteToGuess: 'To guess',
   numLabels: 'Labels',
   choices: 'Choices',
+  search: 'Search…',
+  rowsPerPage: 'Rows per page',
+  pageOf: 'Page {page} of {total}',
 });
+
+// A column spec, structurally identical to the old MUI GridColDef shape (field/headerName/width)
+// so the 14 per-question-type builders below stay near-identical to their MUI-era form.
+interface ColSpec {
+  field: string;
+  headerName: string;
+  width: number;
+}
+
+type Row = Record<string, unknown>;
 
 // PROGRESSIVE CLUES
 const progressiveCluesQuestionRow = (question: AnyBaseQuestion) => {
@@ -40,7 +67,7 @@ const progressiveCluesQuestionRow = (question: AnyBaseQuestion) => {
     answer: q.answer.title,
   };
 };
-const progressiveCluesQuestionColumns = (intl: IntlShape): GridColDef[] => [
+const progressiveCluesQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'title', headerName: 'Question', width: 150 },
   {
     field: 'answer',
@@ -58,7 +85,7 @@ const basicQuestionRow = (question: AnyBaseQuestion) => {
     title: q.title,
   };
 };
-const basicQuestionColumns = (intl: IntlShape): GridColDef[] => [
+const basicQuestionColumns = (intl: IntlShape): ColSpec[] => [
   {
     field: 'source',
     headerName: QUESTION_ELEMENT_TO_TITLE[intl.locale]?.['source'] ?? QUESTION_ELEMENT_TO_TITLE['en']['source'],
@@ -83,7 +110,7 @@ const blindtestQuestionRow = (question: AnyBaseQuestion) => {
     answer_title: q.answer.title,
   };
 };
-const blindtestQuestionColumns = (intl: IntlShape): GridColDef[] => [
+const blindtestQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'subtype', headerName: 'Type', width: 100 },
   { field: 'title', headerName: 'Question', width: 150 },
   { field: 'answer_source', headerName: QuoteSourceElement.elementToTitle(), width: 200 },
@@ -100,7 +127,7 @@ const emojiQuestionRow = (question: AnyBaseQuestion) => {
     clue: q.clue,
   };
 };
-const emojiQuestionColumns = (intl: IntlShape): GridColDef[] => [
+const emojiQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'title', headerName: 'Question', width: 225 },
   { field: 'answer', headerName: intl.formatMessage(globalMessages.answer), width: 225 },
   { field: 'clue', headerName: intl.formatMessage(globalMessages.clue), width: 200 },
@@ -124,7 +151,7 @@ const enumerationQuestionRow = (question: AnyBaseQuestion) => {
     challengeTime: q.challengeTime,
   };
 };
-const enumerationQuestionColumns = (intl: IntlShape): GridColDef[] => [
+const enumerationQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'title', headerName: 'Question', width: 400 },
   { field: 'note', headerName: 'Note', width: 250 },
   { field: 'numAnswers', headerName: intl.formatMessage(messages.enumAnswers), width: 100 },
@@ -141,7 +168,7 @@ const estimationQuestionRow = (question: AnyBaseQuestion) => {
     title: q.title,
   };
 };
-const estimationQuestionColumns = (intl: IntlShape): GridColDef[] => [
+const estimationQuestionColumns = (intl: IntlShape): ColSpec[] => [
   {
     field: 'source',
     headerName: QUESTION_ELEMENT_TO_TITLE[intl.locale]?.['source'] ?? QUESTION_ELEMENT_TO_TITLE['en']['source'],
@@ -164,7 +191,7 @@ const imageQuestionRow = (question: AnyBaseQuestion) => {
     source: q.answer.source,
   };
 };
-const imageQuestionColumns = (intl: IntlShape): GridColDef[] => [
+const imageQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'title', headerName: 'Question', width: 250 },
   { field: 'description', headerName: 'Description', width: 250 },
   {
@@ -182,7 +209,7 @@ const labellingQuestionRow = (question: AnyBaseQuestion) => {
     title: q.title,
   };
 };
-const labellingQuestionColumns = (intl: IntlShape): GridColDef[] => [
+const labellingQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'numLabels', headerName: intl.formatMessage(messages.numLabels), width: 100 },
   { field: 'title', headerName: 'Question', width: 400 },
 ];
@@ -196,7 +223,7 @@ const matchingQuestionRow = (question: AnyBaseQuestion) => {
     numRows: q.numRows,
   };
 };
-const matchingQuestionColumns = (intl: IntlShape): GridColDef[] => [
+const matchingQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'title', headerName: 'Question', width: 500 },
   { field: 'numCols', headerName: intl.formatMessage(messages.matchingColumns), width: 100 },
   { field: 'numRows', headerName: 'Matches', width: 100 },
@@ -219,7 +246,7 @@ const mcqQuestionRow = (question: AnyBaseQuestion) => {
     title: q.title,
   };
 };
-const mcqQuestionColumns = (intl: IntlShape): GridColDef[] => [
+const mcqQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'numChoices', headerName: intl.formatMessage(messages.choices), width: 75 },
   {
     field: 'source',
@@ -250,7 +277,7 @@ const naguiQuestionRow = (question: AnyBaseQuestion) => {
     title: q.title,
   };
 };
-const naguiQuestionColumns = (intl: IntlShape): GridColDef[] => [
+const naguiQuestionColumns = (intl: IntlShape): ColSpec[] => [
   {
     field: 'source',
     headerName: QUESTION_ELEMENT_TO_TITLE[intl.locale]?.['source'] ?? QUESTION_ELEMENT_TO_TITLE['en']['source'],
@@ -272,7 +299,7 @@ const oddOneOutQuestionRow = (question: AnyBaseQuestion) => {
     oddOneOut: q.items[q.answerIdx].title,
   };
 };
-const oddOneOutQuestionColumns = (intl: IntlShape): GridColDef[] => [
+const oddOneOutQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'title', headerName: 'Question', width: 500 },
   { field: 'oddOneOut', headerName: intl.formatMessage(messages.oddOneOut), width: 250 },
 ];
@@ -297,7 +324,7 @@ const quoteQuestionRow = (question: AnyBaseQuestion) => {
     toGuess: toGuessWithEmojis,
   };
 };
-const quoteQuestionColumns = (intl: IntlShape): GridColDef[] => [
+const quoteQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'source', headerName: QuoteSourceElement.elementToTitle(), width: 200 },
   { field: 'author', headerName: QuoteAuthorElement.elementToTitle(), width: 200 },
   { field: 'quote', headerName: intl.formatMessage(globalMessages.quote), width: 500 },
@@ -311,10 +338,10 @@ const reorderingQuestionRow = (question: AnyBaseQuestion) => {
     title: q.title,
   };
 };
-const reorderingQuestionColumns: GridColDef[] = [{ field: 'title', headerName: 'Question', width: 500 }];
+const reorderingQuestionColumns: ColSpec[] = [{ field: 'title', headerName: 'Question', width: 500 }];
 
 type QuestionRowFn = (question: AnyBaseQuestion) => Record<string, unknown>;
-type QuestionColumnsFn = ((intl: IntlShape) => GridColDef[]) | GridColDef[];
+type QuestionColumnsFn = ((intl: IntlShape) => ColSpec[]) | ColSpec[];
 
 const questionTypeToRow: Record<string, QuestionRowFn> = {
   [QuestionType.BASIC]: basicQuestionRow,
@@ -376,30 +403,83 @@ const commonQuestionRow = (question: AnyBaseQuestion, users: User[]) => {
   };
 };
 
-const questionColumns = (questionType: QuestionType, intl: IntlShape): GridColDef[] => {
+// Clickable header used by every column: toggles TanStack sorting and shows the current direction.
+function SortableHeader({ label, column }: { label: string; column: Column<Row, unknown> }) {
+  const sorted = column.getIsSorted();
+  return (
+    <button
+      type="button"
+      className="flex items-center gap-1 hover:text-foreground/80"
+      onClick={column.getToggleSortingHandler()}
+    >
+      {label}
+      {sorted === 'asc' && <ChevronUp className="size-3.5" />}
+      {sorted === 'desc' && <ChevronDown className="size-3.5" />}
+      {!sorted && <ChevronsUpDown className="size-3.5 text-muted-foreground/50" />}
+    </button>
+  );
+}
+
+function sortableHeader(label: string) {
+  return function Header({ column }: { column: Column<Row, unknown> }) {
+    return <SortableHeader label={label} column={column} />;
+  };
+}
+
+const toColumnDefs = (specs: ColSpec[]): ColumnDef<Row>[] =>
+  specs.map((spec) => ({
+    accessorKey: spec.field,
+    header: sortableHeader(spec.headerName),
+    size: spec.width,
+  }));
+
+const selectColumn: ColumnDef<Row> = {
+  id: 'select',
+  size: 40,
+  header: ({ table }) => (
+    <Checkbox
+      checked={table.getIsAllPageRowsSelected()}
+      indeterminate={table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()}
+      onCheckedChange={(checked) => table.toggleAllPageRowsSelected(checked)}
+      aria-label="Select all"
+    />
+  ),
+  cell: ({ row }) => (
+    <Checkbox
+      checked={row.getIsSelected()}
+      onCheckedChange={(checked) => row.toggleSelected(checked)}
+      aria-label="Select row"
+    />
+  ),
+};
+
+const questionColumns = (questionType: QuestionType, intl: IntlShape): ColumnDef<Row>[] => {
   const typeSpecificCols = questionTypeToColumns[questionType];
   const cols = typeof typeSpecificCols === 'function' ? typeSpecificCols(intl) : typeSpecificCols;
   const dict = QUESTION_ELEMENT_TO_TITLE[intl.locale] ?? QUESTION_ELEMENT_TO_TITLE['en'];
   return [
-    { field: 'id', headerName: 'ID', width: 100 },
-    { field: 'lang', headerName: 'Lang', width: 50 },
-    { field: 'topic', headerName: dict['topic'], width: 75 },
-    ...cols,
-    { field: 'createdAt', headerName: dict['createdAt'], width: 130 },
+    { accessorKey: 'id', header: sortableHeader('ID'), size: 100 },
+    { accessorKey: 'lang', header: sortableHeader('Lang'), size: 50 },
+    { accessorKey: 'topic', header: sortableHeader(dict['topic']), size: 75 },
+    ...toColumnDefs(cols),
+    { accessorKey: 'createdAt', header: sortableHeader(dict['createdAt']), size: 130 },
     {
-      field: 'createdBy',
-      headerName: dict['createdBy'],
-      width: 130,
-      renderCell: (params) => (
-        <div className="flex flex-row w-full space-x-2 items-center">
-          <Avatar
-            src={(params.row as { createdBy: { image?: string } }).createdBy.image}
-            variant="rounded"
-            sx={{ width: 30, height: 30 }}
-          />
-          <span>{(params.row as { createdBy: { name: string } }).createdBy.name}</span>
-        </div>
-      ),
+      id: 'createdBy',
+      accessorFn: (row) => (row.createdBy as { name: string }).name,
+      header: sortableHeader(dict['createdBy']),
+      size: 130,
+      cell: ({ row }) => {
+        const createdBy = row.original.createdBy as { name: string; image?: string };
+        return (
+          <div className="flex flex-row items-center space-x-2">
+            <Avatar className="size-[30px]">
+              <AvatarImage src={createdBy.image} alt={createdBy.name} />
+              <AvatarFallback>{createdBy.name?.[0]?.toUpperCase()}</AvatarFallback>
+            </Avatar>
+            <span>{createdBy.name}</span>
+          </div>
+        );
+      },
     },
   ];
 };
@@ -412,8 +492,8 @@ const questionRow = (question: AnyBaseQuestion, users: User[]) => {
 
 interface SearchQuestionDataGridProps {
   questionType: QuestionType;
-  questionSelectionModel?: GridRowSelectionModel;
-  onQuestionSelectionModelChange?: (model: GridRowSelectionModel) => void;
+  questionSelectionModel?: string[];
+  onQuestionSelectionModelChange?: (model: string[]) => void;
 }
 
 function SearchQuestionDataGridImpl({
@@ -421,6 +501,8 @@ function SearchQuestionDataGridImpl({
   questionSelectionModel = [],
   onQuestionSelectionModelChange = () => {},
 }: SearchQuestionDataGridProps) {
+  'use no memo';
+
   const intl = useIntl();
 
   // Create repository instances with memoization to prevent unnecessary recreations
@@ -433,65 +515,132 @@ function SearchQuestionDataGridImpl({
 
   // Stabilize callback reference to prevent unnecessary child re-renders
   const memoizedOnSelectionChange = useCallback(
-    (model: GridRowSelectionModel) => onQuestionSelectionModelChange(model),
+    (model: string[]) => onQuestionSelectionModelChange(model),
     [onQuestionSelectionModelChange]
   );
 
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    pageSize: 20,
-    page: 0,
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 20 });
+  const [searchInput, setSearchInput] = useState('');
+  const [globalFilter, setGlobalFilter] = useState('');
+
+  useEffect(() => {
+    const handle = setTimeout(() => setGlobalFilter(searchInput), 500);
+    return () => clearTimeout(handle);
+  }, [searchInput]);
+
+  const rowSelection: RowSelectionState = useMemo(
+    () => Object.fromEntries(questionSelectionModel.map((id) => [id, true])),
+    [questionSelectionModel]
+  );
+
+  const rows = useMemo(
+    () => (users && baseQuestions ? baseQuestions.map((question) => questionRow(question, users)) : []),
+    [baseQuestions, users]
+  );
+  const columns = useMemo<ColumnDef<Row>[]>(
+    () => [selectColumn, ...questionColumns(questionType, intl)],
+    [questionType, intl]
+  );
+
+  // useReactTable() returns methods React Compiler can't prove stable; 'use no memo' above opts
+  // out of compilation but the lint rule still fires independently of that directive.
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const table = useReactTable({
+    data: rows,
+    columns,
+    state: { sorting, pagination, rowSelection, globalFilter },
+    getRowId: (row) => row.id as string,
+    onSortingChange: setSorting,
+    onPaginationChange: setPagination,
+    onGlobalFilterChange: setGlobalFilter,
+    onRowSelectionChange: (updater) => {
+      const next = typeof updater === 'function' ? updater(rowSelection) : updater;
+      memoizedOnSelectionChange(Object.keys(next).filter((id) => next[id]));
+    },
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   if (usersError || baseQuestionsError) {
     return <></>;
   }
   if (usersLoading || baseQuestionsLoading) {
-    return <CircularProgress />;
+    return <Spinner />;
   }
   if (!users || !baseQuestions) {
     return <></>;
   }
 
-  const rows = baseQuestions.map((question) => questionRow(question, users));
-  const columns = questionColumns(questionType, intl);
-
   return (
-    <div style={{ height: '100%', width: '100%' }}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        onRowSelectionModelChange={memoizedOnSelectionChange}
-        rowSelectionModel={questionSelectionModel}
-        pageSizeOptions={[10, 20, 50, 100]}
-        paginationModel={paginationModel}
-        onPaginationModelChange={setPaginationModel}
-        checkboxSelection
-        density="compact"
-        slots={{
-          toolbar: GridToolbar,
-        }}
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true,
-            quickFilterProps: { debounceMs: 500 },
-          },
-        }}
-        sx={{
-          '& .MuiDataGrid-root': {
-            border: 'none',
-          },
-          '& .MuiDataGrid-cell': {
-            borderBottom: '1px solid #e0e0e0',
-          },
-          '& .MuiDataGrid-columnHeader': {
-            backgroundColor: '#f5f5f5',
-            fontWeight: 'bold',
-          },
-          '& .MuiDataGrid-footerContainer': {
-            backgroundColor: '#f5f5f5',
-          },
-        }}
+    <div className="flex flex-col gap-2">
+      <Input
+        placeholder={intl.formatMessage(messages.search)}
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+        className="max-w-sm"
       />
+
+      <Table style={{ tableLayout: 'fixed', width: table.getTotalSize() }}>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id} style={{ width: header.getSize() }}>
+                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows.map((row) => (
+            <TableRow key={row.id} data-state={row.getIsSelected() ? 'selected' : undefined}>
+              {row.getVisibleCells().map((cell) => (
+                <TableCell key={cell.id} style={{ width: cell.column.getSize() }}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      <div className="flex items-center justify-between gap-4 pt-2">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <span>{intl.formatMessage(messages.rowsPerPage)}</span>
+          <Select value={pagination.pageSize} onValueChange={(value) => table.setPageSize(value as number)}>
+            <SelectTrigger size="sm" className="w-[70px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[10, 20, 50, 100].map((size) => (
+                <SelectItem key={size} value={size}>
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">
+            {intl.formatMessage(messages.pageOf, { page: pagination.pageIndex + 1, total: table.getPageCount() || 1 })}
+          </span>
+          <Button
+            variant="outline"
+            size="icon-sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <ChevronLeft />
+          </Button>
+          <Button variant="outline" size="icon-sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+            <ChevronRight />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
