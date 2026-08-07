@@ -2,12 +2,19 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { Column, ColumnDef, PaginationState, RowSelectionState, SortingState } from '@tanstack/react-table';
 import {
+  columnFilteringFeature,
+  columnSizingFeature,
+  columnVisibilityFeature,
+  createFilteredRowModel,
+  createPaginatedRowModel,
+  createSortedRowModel,
   flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
+  globalFilteringFeature,
+  rowPaginationFeature,
+  rowSelectionFeature,
+  rowSortingFeature,
+  tableFeatures,
+  useTable,
 } from '@tanstack/react-table';
 import { ChevronDown, ChevronLeft, ChevronRight, ChevronsUpDown, ChevronUp } from 'lucide-react';
 import type { IntlShape } from 'react-intl';
@@ -58,6 +65,21 @@ interface ColSpec {
 }
 
 type Row = Record<string, unknown>;
+
+const tableFeaturesConfig = tableFeatures({
+  columnFilteringFeature,
+  columnSizingFeature,
+  columnVisibilityFeature,
+  globalFilteringFeature,
+  rowPaginationFeature,
+  rowSelectionFeature,
+  rowSortingFeature,
+  filteredRowModel: createFilteredRowModel(),
+  paginatedRowModel: createPaginatedRowModel(),
+  sortedRowModel: createSortedRowModel(),
+});
+
+type Features = typeof tableFeaturesConfig;
 
 // PROGRESSIVE CLUES
 const progressiveCluesQuestionRow = (question: AnyBaseQuestion) => {
@@ -404,7 +426,7 @@ const commonQuestionRow = (question: AnyBaseQuestion, users: User[]) => {
 };
 
 // Clickable header used by every column: toggles TanStack sorting and shows the current direction.
-function SortableHeader({ label, column }: { label: string; column: Column<Row, unknown> }) {
+function SortableHeader({ label, column }: { label: string; column: Column<Features, Row, unknown> }) {
   const sorted = column.getIsSorted();
   return (
     <button
@@ -421,19 +443,19 @@ function SortableHeader({ label, column }: { label: string; column: Column<Row, 
 }
 
 function sortableHeader(label: string) {
-  return function Header({ column }: { column: Column<Row, unknown> }) {
+  return function Header({ column }: { column: Column<Features, Row, unknown> }) {
     return <SortableHeader label={label} column={column} />;
   };
 }
 
-const toColumnDefs = (specs: ColSpec[]): ColumnDef<Row>[] =>
+const toColumnDefs = (specs: ColSpec[]): ColumnDef<Features, Row>[] =>
   specs.map((spec) => ({
     accessorKey: spec.field,
     header: sortableHeader(spec.headerName),
     size: spec.width,
   }));
 
-const selectColumn: ColumnDef<Row> = {
+const selectColumn: ColumnDef<Features, Row> = {
   id: 'select',
   size: 40,
   header: ({ table }) => (
@@ -453,7 +475,7 @@ const selectColumn: ColumnDef<Row> = {
   ),
 };
 
-const questionColumns = (questionType: QuestionType, intl: IntlShape): ColumnDef<Row>[] => {
+const questionColumns = (questionType: QuestionType, intl: IntlShape): ColumnDef<Features, Row>[] => {
   const typeSpecificCols = questionTypeToColumns[questionType];
   const cols = typeof typeSpecificCols === 'function' ? typeSpecificCols(intl) : typeSpecificCols;
   const dict = QUESTION_ELEMENT_TO_TITLE[intl.locale] ?? QUESTION_ELEMENT_TO_TITLE['en'];
@@ -538,15 +560,13 @@ function SearchQuestionDataGridImpl({
     () => (users && baseQuestions ? baseQuestions.map((question) => questionRow(question, users)) : []),
     [baseQuestions, users]
   );
-  const columns = useMemo<ColumnDef<Row>[]>(
+  const columns = useMemo<ColumnDef<Features, Row>[]>(
     () => [selectColumn, ...questionColumns(questionType, intl)],
     [questionType, intl]
   );
 
-  // useReactTable() returns methods React Compiler can't prove stable; 'use no memo' above opts
-  // out of compilation but the lint rule still fires independently of that directive.
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const table = useReactTable({
+  const table = useTable({
+    features: tableFeaturesConfig,
     data: rows,
     columns,
     state: { sorting, pagination, rowSelection, globalFilter },
@@ -558,10 +578,6 @@ function SearchQuestionDataGridImpl({
       const next = typeof updater === 'function' ? updater(rowSelection) : updater;
       memoizedOnSelectionChange(Object.keys(next).filter((id) => next[id]));
     },
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
   });
 
   if (usersError || baseQuestionsError) {
