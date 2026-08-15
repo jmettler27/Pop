@@ -1,17 +1,30 @@
 import type { IntlShape } from 'react-intl';
 
-import { localeToEmoji, type Locale } from '@/frontend/helpers/locales';
+import { localeToEmoji } from '@/frontend/helpers/locales';
 import { timestampToDate1, type FirestoreTimestamp } from '@/frontend/helpers/time';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
+import { BasicQuestion } from '@/models/questions/basic';
 import { BlindtestQuestion } from '@/models/questions/blindtest';
+import { EmojiQuestion } from '@/models/questions/emoji';
+import { EnumerationQuestion } from '@/models/questions/enumeration';
+import { EstimationQuestion } from '@/models/questions/estimation';
+import { ImageQuestion } from '@/models/questions/image';
+import { LabellingQuestion } from '@/models/questions/labelling';
+import { MatchingQuestion } from '@/models/questions/matching';
+import { MCQQuestion } from '@/models/questions/mcq';
+import { NaguiQuestion } from '@/models/questions/nagui';
+import { OddOneOutQuestion } from '@/models/questions/odd-one-out';
+import { ProgressiveCluesQuestion } from '@/models/questions/progressive-clues';
+import { BaseQuestion } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
 import type { AnyBaseQuestion } from '@/models/questions/QuestionFactory';
 import { QuoteAuthorElement, QuotePartElement, QuoteQuestion, QuoteSourceElement } from '@/models/questions/quote';
-import { topicToEmoji, type Topic } from '@/models/topic';
+import { ReorderingQuestion } from '@/models/questions/reordering';
+import { topicToEmoji } from '@/models/topic';
 import User from '@/models/users/user';
 
-export const messages = defineMessages('frontend.questions.QuestionDataGrid', {
+export const messages = defineMessages('frontend.questions.QuestionSearchTable', {
   id: 'ID',
   title: 'Title',
   source: 'Source',
@@ -45,27 +58,21 @@ export interface ColSpec {
 export type Row = Record<string, unknown>;
 
 // PROGRESSIVE CLUES
-const progressiveCluesQuestionRow = (question: AnyBaseQuestion) => {
-  const q = question as { title: string; answer: { title: string }; clues: string[] };
-  return {
-    title: q.title,
-    answer: q.answer.title,
-  };
-};
+const progressiveCluesQuestionRow = (question: ProgressiveCluesQuestion) => ({
+  title: question.title,
+  answer: question.answer.title,
+});
 const progressiveCluesQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'title', headerName: intl.formatMessage(globalMessages.question), width: 150 },
   { field: 'answer', headerName: intl.formatMessage(globalMessages.answer), width: 250 },
 ];
 
 // BASIC
-const basicQuestionRow = (question: AnyBaseQuestion) => {
-  const q = question as { answer: string; explanation?: string; source?: string; title: string };
-  return {
-    answer: q.answer,
-    source: q.source,
-    title: q.title,
-  };
-};
+const basicQuestionRow = (question: BasicQuestion) => ({
+  answer: question.answer,
+  source: question.source,
+  title: question.title,
+});
 const basicQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'source', headerName: intl.formatMessage(messages.source), width: 200 },
   { field: 'title', headerName: intl.formatMessage(globalMessages.question), width: 500 },
@@ -73,16 +80,13 @@ const basicQuestionColumns = (intl: IntlShape): ColSpec[] => [
 ];
 
 // BLINDTEST
-const blindtestQuestionRow = (question: AnyBaseQuestion) => {
-  const q = question as { subtype: string; title: string; answer: { source?: string; author?: string; title: string } };
-  return {
-    subtype: BlindtestQuestion.typeToEmoji(q.subtype),
-    title: q.title,
-    answer_source: q.answer.source,
-    answer_author: q.answer.author,
-    answer_title: q.answer.title,
-  };
-};
+const blindtestQuestionRow = (question: BlindtestQuestion) => ({
+  subtype: BlindtestQuestion.typeToEmoji(question.subtype ?? ''),
+  title: question.title,
+  answer_source: question.answer.source,
+  answer_author: question.answer.author,
+  answer_title: question.answer.title,
+});
 const blindtestQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'subtype', headerName: intl.formatMessage(messages.type), width: 100 },
   { field: 'title', headerName: intl.formatMessage(globalMessages.question), width: 150 },
@@ -92,14 +96,11 @@ const blindtestQuestionColumns = (intl: IntlShape): ColSpec[] => [
 ];
 
 // EMOJI
-const emojiQuestionRow = (question: AnyBaseQuestion) => {
-  const q = question as { title: string; answer: { title: string }; clue: string };
-  return {
-    title: q.title,
-    answer: q.answer.title,
-    clue: q.clue,
-  };
-};
+const emojiQuestionRow = (question: EmojiQuestion) => ({
+  title: question.title,
+  answer: question.answer.title,
+  clue: question.clue,
+});
 const emojiQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'title', headerName: intl.formatMessage(globalMessages.question), width: 225 },
   { field: 'answer', headerName: intl.formatMessage(globalMessages.answer), width: 225 },
@@ -107,19 +108,13 @@ const emojiQuestionColumns = (intl: IntlShape): ColSpec[] => [
 ];
 
 // ENUMERATION
-const enumerationQuestionRow = (question: AnyBaseQuestion) => {
-  const q = question as {
-    title: string;
-    answer: string[];
-    maxIsKnown: boolean;
-    thinkingTime?: number;
-    challengeTime?: number;
-  };
+const enumerationQuestionRow = (question: EnumerationQuestion) => {
+  const answer = question.answer ?? [];
   return {
-    title: q.title,
-    numAnswers: q.maxIsKnown ? q.answer.length : '>= ' + q.answer.length,
-    thinkingTime: q.thinkingTime,
-    challengeTime: q.challengeTime,
+    title: question.title,
+    numAnswers: question.maxIsKnown ? answer.length : '>= ' + answer.length,
+    thinkingTime: question.thinkingTime,
+    challengeTime: question.challengeTime,
   };
 };
 const enumerationQuestionColumns = (intl: IntlShape): ColSpec[] => [
@@ -130,14 +125,11 @@ const enumerationQuestionColumns = (intl: IntlShape): ColSpec[] => [
 ];
 
 // ESTIMATION
-const estimationQuestionRow = (question: AnyBaseQuestion) => {
-  const q = question as { answer: unknown; source?: string; title: string };
-  return {
-    answer: q.answer,
-    source: q.source,
-    title: q.title,
-  };
-};
+const estimationQuestionRow = (question: EstimationQuestion) => ({
+  answer: question.answer,
+  source: question.source,
+  title: question.title,
+});
 const estimationQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'source', headerName: intl.formatMessage(messages.source), width: 200 },
   { field: 'title', headerName: intl.formatMessage(globalMessages.question), width: 500 },
@@ -145,14 +137,11 @@ const estimationQuestionColumns = (intl: IntlShape): ColSpec[] => [
 ];
 
 // IMAGE
-const imageQuestionRow = (question: AnyBaseQuestion) => {
-  const q = question as { title: string; answer: { description?: string; source: string } };
-  return {
-    title: q.title,
-    description: q.answer.description,
-    source: q.answer.source,
-  };
-};
+const imageQuestionRow = (question: ImageQuestion) => ({
+  title: question.title,
+  description: question.answer.description,
+  source: question.answer.source,
+});
 const imageQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'title', headerName: intl.formatMessage(globalMessages.question), width: 500 },
   { field: 'description', headerName: intl.formatMessage(messages.description), width: 500 },
@@ -160,27 +149,21 @@ const imageQuestionColumns = (intl: IntlShape): ColSpec[] => [
 ];
 
 // LABELLING
-const labellingQuestionRow = (question: AnyBaseQuestion) => {
-  const q = question as { title: string; labels: string[] };
-  return {
-    numLabels: q.labels.length,
-    title: q.title,
-  };
-};
+const labellingQuestionRow = (question: LabellingQuestion) => ({
+  numLabels: (question.labels ?? []).length,
+  title: question.title,
+});
 const labellingQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'numLabels', headerName: intl.formatMessage(messages.numLabels), width: 150 },
   { field: 'title', headerName: intl.formatMessage(globalMessages.question), width: 500 },
 ];
 
 // MATCHING
-const matchingQuestionRow = (question: AnyBaseQuestion) => {
-  const q = question as { title: string; numCols: number; numRows: number };
-  return {
-    title: q.title,
-    numCols: q.numCols,
-    numRows: q.numRows,
-  };
-};
+const matchingQuestionRow = (question: MatchingQuestion) => ({
+  title: question.title,
+  numCols: question.numCols,
+  numRows: question.numRows,
+});
 const matchingQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'title', headerName: intl.formatMessage(globalMessages.question), width: 500 },
   { field: 'numCols', headerName: intl.formatMessage(messages.matchingColumns), width: 150 },
@@ -188,20 +171,13 @@ const matchingQuestionColumns = (intl: IntlShape): ColSpec[] => [
 ];
 
 // MCQ
-const mcqQuestionRow = (question: AnyBaseQuestion) => {
-  const q = question as {
-    answerIdx: number;
-    choices: string[];
-    explanation?: string;
-    note?: string;
-    source?: string;
-    title: string;
-  };
+const mcqQuestionRow = (question: MCQQuestion) => {
+  const choices = question.choices ?? [];
   return {
-    numChoices: q.choices.length,
-    answer: q.choices[q.answerIdx],
-    source: q.source,
-    title: q.title,
+    numChoices: choices.length,
+    answer: question.answerIdx !== undefined ? choices[question.answerIdx] : undefined,
+    source: question.source,
+    title: question.title,
   };
 };
 const mcqQuestionColumns = (intl: IntlShape): ColSpec[] => [
@@ -212,18 +188,12 @@ const mcqQuestionColumns = (intl: IntlShape): ColSpec[] => [
 ];
 
 // NAGUI
-const naguiQuestionRow = (question: AnyBaseQuestion) => {
-  const q = question as {
-    answerIdx: number;
-    choices: string[];
-    explanation?: string;
-    source?: string;
-    title: string;
-  };
+const naguiQuestionRow = (question: NaguiQuestion) => {
+  const choices = question.choices ?? [];
   return {
-    answer: q.choices[q.answerIdx],
-    source: q.source,
-    title: q.title,
+    answer: question.answerIdx !== undefined ? choices[question.answerIdx] : undefined,
+    source: question.source,
+    title: question.title,
   };
 };
 const naguiQuestionColumns = (intl: IntlShape): ColSpec[] => [
@@ -233,22 +203,18 @@ const naguiQuestionColumns = (intl: IntlShape): ColSpec[] => [
 ];
 
 // ODD ONE OUT
-const oddOneOutQuestionRow = (question: AnyBaseQuestion) => {
-  const q = question as { answerIdx: number; items: Array<{ title: string }>; title: string };
-  return {
-    title: q.title,
-    oddOneOut: q.items[q.answerIdx].title,
-  };
-};
+const oddOneOutQuestionRow = (question: OddOneOutQuestion) => ({
+  title: question.title,
+  oddOneOut: question.answerIdx !== undefined ? question.items?.[question.answerIdx]?.title : undefined,
+});
 const oddOneOutQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'title', headerName: intl.formatMessage(globalMessages.question), width: 500 },
   { field: 'oddOneOut', headerName: intl.formatMessage(messages.oddOneOut), width: 250 },
 ];
 
 // QUOTE
-const quoteQuestionRow = (question: AnyBaseQuestion) => {
-  const q = question as { author?: string; quote: string; source?: string; toGuess: string[] };
-  const sortedToGuess = [...q.toGuess].sort((a, b) => {
+const quoteQuestionRow = (question: QuoteQuestion) => {
+  const sortedToGuess = [...(question.toGuess ?? [])].sort((a, b) => {
     return QuoteQuestion.ELEMENTS_SORT_ORDER.indexOf(a) - QuoteQuestion.ELEMENTS_SORT_ORDER.indexOf(b);
   });
   const quoteElementEmoji: Record<string, string> = {
@@ -259,9 +225,9 @@ const quoteQuestionRow = (question: AnyBaseQuestion) => {
   const toGuessWithEmojis = sortedToGuess.map((item) => quoteElementEmoji[item] ?? item).join(', ');
 
   return {
-    author: q.author,
-    quote: `"${q.quote}"`,
-    source: q.source,
+    author: question.author,
+    quote: `"${question.quote ?? ''}"`,
+    source: question.source,
     toGuess: toGuessWithEmojis,
   };
 };
@@ -273,37 +239,16 @@ const quoteQuestionColumns = (intl: IntlShape): ColSpec[] => [
 ];
 
 // REORDERING
-const reorderingQuestionRow = (question: AnyBaseQuestion) => {
-  const q = question as { answerIdx?: number; items: unknown[]; title: string };
-  return {
-    title: q.title,
-  };
-};
+const reorderingQuestionRow = (question: ReorderingQuestion) => ({
+  title: question.title,
+});
 const reorderingQuestionColumns = (intl: IntlShape): ColSpec[] => [
   { field: 'title', headerName: intl.formatMessage(globalMessages.question), width: 500 },
 ];
 
-type QuestionRowFn = (question: AnyBaseQuestion) => Record<string, unknown>;
 type QuestionColumnsFn = (intl: IntlShape) => ColSpec[];
 
-const questionTypeToRow: Record<string, QuestionRowFn> = {
-  [QuestionType.BASIC]: basicQuestionRow,
-  [QuestionType.BLINDTEST]: blindtestQuestionRow,
-  [QuestionType.EMOJI]: emojiQuestionRow,
-  [QuestionType.IMAGE]: imageQuestionRow,
-  [QuestionType.ENUMERATION]: enumerationQuestionRow,
-  [QuestionType.ESTIMATION]: estimationQuestionRow,
-  [QuestionType.LABELLING]: labellingQuestionRow,
-  [QuestionType.MATCHING]: matchingQuestionRow,
-  [QuestionType.MCQ]: mcqQuestionRow,
-  [QuestionType.NAGUI]: naguiQuestionRow,
-  [QuestionType.ODD_ONE_OUT]: oddOneOutQuestionRow,
-  [QuestionType.PROGRESSIVE_CLUES]: progressiveCluesQuestionRow,
-  [QuestionType.QUOTE]: quoteQuestionRow,
-  [QuestionType.REORDERING]: reorderingQuestionRow,
-};
-
-export const questionTypeToColumns: Record<string, QuestionColumnsFn> = {
+export const questionTypeToColumns: Record<QuestionType, QuestionColumnsFn> = {
   [QuestionType.BASIC]: basicQuestionColumns,
   [QuestionType.BLINDTEST]: blindtestQuestionColumns,
   [QuestionType.EMOJI]: emojiQuestionColumns,
@@ -320,34 +265,43 @@ export const questionTypeToColumns: Record<string, QuestionColumnsFn> = {
   [QuestionType.REORDERING]: reorderingQuestionColumns,
 };
 
-const commonQuestionRow = (question: AnyBaseQuestion, users: User[]) => {
-  const q = question as {
-    id: string;
-    lang: string;
-    topic: string;
-    type: QuestionType;
-    createdAt: FirestoreTimestamp | null | undefined;
-    createdBy: string;
-  };
-  const { id, lang, topic, createdAt, createdBy } = q;
+// Each branch narrows `question` to its real model class via `instanceof`, so every xxxQuestionRow
+// above takes its own concrete class instead of re-declaring an ad-hoc, easily-stale inline shape.
+// AnyBaseQuestion also includes the abstract BuzzerQuestion itself (a preexisting QuestionFactory
+// quirk), so this can't narrow all the way to `never` and end in a compile-checked exhaustiveness
+// assertion — the trailing throw is the runtime safety net instead.
+function questionTypeRow(question: AnyBaseQuestion): Row {
+  if (question instanceof BasicQuestion) return basicQuestionRow(question);
+  if (question instanceof BlindtestQuestion) return blindtestQuestionRow(question);
+  if (question instanceof EmojiQuestion) return emojiQuestionRow(question);
+  if (question instanceof EnumerationQuestion) return enumerationQuestionRow(question);
+  if (question instanceof EstimationQuestion) return estimationQuestionRow(question);
+  if (question instanceof ImageQuestion) return imageQuestionRow(question);
+  if (question instanceof LabellingQuestion) return labellingQuestionRow(question);
+  if (question instanceof MatchingQuestion) return matchingQuestionRow(question);
+  if (question instanceof MCQQuestion) return mcqQuestionRow(question);
+  if (question instanceof NaguiQuestion) return naguiQuestionRow(question);
+  if (question instanceof OddOneOutQuestion) return oddOneOutQuestionRow(question);
+  if (question instanceof ProgressiveCluesQuestion) return progressiveCluesQuestionRow(question);
+  if (question instanceof QuoteQuestion) return quoteQuestionRow(question);
+  if (question instanceof ReorderingQuestion) return reorderingQuestionRow(question);
+  throw new Error(`Unhandled question type: ${question.type}`);
+}
 
-  const user = users.find((u) => u.id === createdBy);
+const commonQuestionRow = (question: BaseQuestion, users: User[]): Row => {
+  const user = users.find((u) => u.id === question.createdBy);
   const { name, image } = user!;
 
   return {
-    id,
-    lang: localeToEmoji(lang as Locale),
-    topic: topicToEmoji(topic as Topic),
-    createdAt: timestampToDate1(createdAt),
-    createdBy: {
-      name,
-      image,
-    },
+    id: question.id,
+    lang: question.lang ? localeToEmoji(question.lang) : undefined,
+    topic: question.topic ? topicToEmoji(question.topic) : undefined,
+    createdAt: timestampToDate1(question.createdAt as FirestoreTimestamp | null | undefined),
+    createdBy: { name, image },
   };
 };
 
-export const questionRow = (question: AnyBaseQuestion, users: User[]): Row => {
-  const commonInfo = commonQuestionRow(question, users);
-  const typeSpecificInfo = questionTypeToRow[question.type](question);
-  return { ...commonInfo, ...typeSpecificInfo };
-};
+export const questionRow = (question: AnyBaseQuestion, users: User[]): Row => ({
+  ...commonQuestionRow(question, users),
+  ...questionTypeRow(question),
+});
