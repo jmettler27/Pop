@@ -65,7 +65,7 @@ function AddQuestionToRoundDialog({ roundId, questionType, dialog, onDialogClose
   const intl = useIntl();
   return (
     <Dialog open={dialog !== null} onOpenChange={(open) => !open && onDialogClose()}>
-      <DialogContent showCloseButton={false} className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent showCloseButton={false} className="w-fit sm:max-w-[95vw] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {dialog === 'new-question' &&
@@ -431,34 +431,45 @@ interface SearchQuestionDialogProps {
 
 // Existing question
 function SearchQuestionDialog({ roundId, questionType, onDialogClose }: SearchQuestionDialogProps) {
+  const intl = useIntl();
   const [questionSelectionModel, setSelectedQuestionModel] = useState<string[]>([]);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
 
-  // Memoize callback to work with memoized SearchQuestionDataGrid
-  // Prevents unnecessary re-fetching when dialog state changes
+  // SearchQuestionDataGrid owns its row-selection state internally; bumping this key remounts it
+  // with a fresh (empty) selection whenever the validation dialog is cancelled/closed.
+  const [gridResetKey, setGridResetKey] = useState(0);
+
   const onNewQuestionSelectionModelChange = useCallback((newRowSelectionModel: string[]) => {
     setSelectedQuestionModel(newRowSelectionModel);
     if (newRowSelectionModel.length > 0) {
       setValidationDialogOpen(true);
     }
   }, []);
+
+  const resetSelectedQuestionModel = useCallback((model: string[]) => {
+    setSelectedQuestionModel(model);
+    if (model.length === 0) {
+      setGridResetKey((key) => key + 1);
+    }
+  }, []);
+
   return (
     <>
       <SearchQuestionDataGrid
+        key={gridResetKey}
         questionType={questionType}
-        questionSelectionModel={questionSelectionModel}
         onQuestionSelectionModelChange={onNewQuestionSelectionModelChange}
       />
       <Button variant="destructive" onClick={onDialogClose}>
         <XCircle className="mr-2 size-4" />
-        Cancel
+        {intl.formatMessage(globalMessages.cancel)}
       </Button>
       <AddExistingQuestionToRoundDialog
         roundId={roundId}
         validationDialogOpen={validationDialogOpen}
         setValidationDialogOpen={setValidationDialogOpen}
         questionSelectionModel={questionSelectionModel}
-        setSelectedQuestionModel={setSelectedQuestionModel}
+        setSelectedQuestionModel={resetSelectedQuestionModel}
         onDialogClose={onDialogClose}
       />
     </>
