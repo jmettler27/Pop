@@ -9,7 +9,7 @@ import { useIntl } from 'react-intl';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 import { QuestionCard } from '@/frontend/components/common/QuestionCard';
-import { SearchQuestionDataGrid } from '@/frontend/components/common/QuestionDataGrid';
+import { QuestionSearchTable } from '@/frontend/components/common/QuestionSearchTable';
 import SubmitBasicQuestionForm from '@/frontend/components/question-forms/SubmitBasicQuestionForm';
 import SubmitBlindtestQuestionForm from '@/frontend/components/question-forms/SubmitBlindtestQuestionForm';
 import SubmitEmojiQuestionForm from '@/frontend/components/question-forms/SubmitEmojiQuestionForm';
@@ -435,7 +435,7 @@ function SearchQuestionDialog({ roundId, questionType, onDialogClose }: SearchQu
   const [questionSelectionModel, setSelectedQuestionModel] = useState<string[]>([]);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
 
-  // SearchQuestionDataGrid owns its row-selection state internally; bumping this key remounts it
+  // QuestionSearchTable owns its row-selection state internally; bumping this key remounts it
   // with a fresh (empty) selection whenever the validation dialog is cancelled/closed.
   const [gridResetKey, setGridResetKey] = useState(0);
 
@@ -455,7 +455,7 @@ function SearchQuestionDialog({ roundId, questionType, onDialogClose }: SearchQu
 
   return (
     <>
-      <SearchQuestionDataGrid
+      <QuestionSearchTable
         key={gridResetKey}
         questionType={questionType}
         onQuestionSelectionModelChange={onNewQuestionSelectionModelChange}

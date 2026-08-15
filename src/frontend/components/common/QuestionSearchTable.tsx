@@ -31,7 +31,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { QuestionType } from '@/models/questions/question-type';
 
-import { messages, questionRow, questionTypeToColumns, type ColSpec, type Row } from './questionDataGridMappers';
+import { messages, questionRow, questionTypeToColumns, type ColSpec, type Row } from './questionSearchTableMappers';
 
 const tableFeaturesConfig = tableFeatures({
   columnFilteringFeature,
@@ -127,7 +127,7 @@ const questionColumns = (questionType: QuestionType, intl: IntlShape): ColumnDef
   ];
 };
 
-interface SearchQuestionDataGridProps {
+interface QuestionSearchTableProps {
   questionType: QuestionType;
   onQuestionSelectionModelChange?: (model: string[]) => void;
 }
@@ -137,10 +137,10 @@ interface SearchQuestionDataGridProps {
 // that state internally) since nothing outside this component reads or sets it directly; only the
 // selected row ids are surfaced upward, one-way, via onQuestionSelectionModelChange. To clear the
 // selection from outside, remount this component (e.g. via a changing `key`).
-export function SearchQuestionDataGrid({
+export function QuestionSearchTable({
   questionType,
   onQuestionSelectionModelChange = () => {},
-}: SearchQuestionDataGridProps) {
+}: QuestionSearchTableProps) {
   'use no memo';
 
   const intl = useIntl();
