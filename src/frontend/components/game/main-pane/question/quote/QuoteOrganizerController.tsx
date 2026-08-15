@@ -6,7 +6,6 @@ import { useParams } from 'next/navigation';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 import {
   cancelPlayer,
   handleBuzzerHeadChanged,
@@ -19,6 +18,7 @@ import ClearQuoteBuzzerButton from '@/frontend/components/game/main-pane/questio
 import RevealQuoteElementButton from '@/frontend/components/game/main-pane/question/quote/RevealQuoteElement';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import { Button } from '@/frontend/components/ui/button';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -73,10 +73,15 @@ export default function QuoteOrganizerController({
 
 function QuoteOrganizerAnswerController({ buzzed, baseQuestion }: { buzzed: string[]; baseQuestion: QuoteQuestion }) {
   const game = useGame();
-  if (!game) return null;
 
-  const gameQuestionRepo = new GameQuoteQuestionRepository(game.id as string, game.currentRound as string);
-  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  const { gameQuestion, loading, error } = useQuestion(
+    game?.id ?? null,
+    game?.currentRound ?? null,
+    QuestionType.QUOTE,
+    game?.currentQuestion as string
+  );
+
+  if (!game) return null;
 
   if (error || loading || !gameQuestion) {
     return <></>;

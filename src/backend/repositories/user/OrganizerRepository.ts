@@ -40,24 +40,4 @@ export default class OrganizerRepository extends FirebaseRepository {
     const data = await super.createTransaction(transaction, organizerData as unknown as Record<string, unknown>);
     return new Organizer(data as unknown as ParticipantData);
   }
-
-  useOrganizer(id: string) {
-    const { data, loading, error } = super.useDocument(id);
-    return { organizer: data ? new Organizer(data as unknown as ParticipantData) : null, loading, error };
-  }
-
-  useOrganizerOnce(id: string) {
-    const { data, loading, error } = super.useDocumentOnce(id);
-    return { organizer: data ? new Organizer(data as unknown as ParticipantData) : null, loading, error };
-  }
-
-  useAllOrganizersOnce() {
-    const { data, loading, error } = super.useCollectionOnce();
-    return { organizers: data.map((o) => new Organizer(o as unknown as ParticipantData)), loading, error };
-  }
-
-  useIsOrganizer(organizerId: string) {
-    const { data, loading, error } = super.useDocumentOnce(organizerId);
-    return { isOrganizer: data !== null, loading, error };
-  }
 }

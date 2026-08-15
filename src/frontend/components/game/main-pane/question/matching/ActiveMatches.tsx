@@ -4,7 +4,6 @@ import '@/frontend/components/game/main-pane/question/matching/styles.scss';
 
 import { useState } from 'react';
 
-import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import { isObjectEmpty } from '@/backend/utils/objects';
 import {
   getNode,
@@ -16,8 +15,9 @@ import {
 } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
 import SubmitMatchDialog from '@/frontend/components/game/main-pane/question/matching/SubmitMatchDialog';
 import { Spinner } from '@/frontend/components/ui/spinner';
+import { useCorrectMatches, useIsCanceled } from '@/frontend/hooks/firestore/question/useGameMatchingQuestionHooks';
+import { useIsChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import { MatchingAnswer, MatchingEdgeData } from '@/models/questions/matching';
@@ -125,25 +125,24 @@ function ActiveMatchingQuestionNodes({
   const game = useGame();
   const myTeam = useTeam();
   const myRole = useRole();
-  const gameRepositories = useGameRepositories();
+  const {
+    isChooser,
+    loading: isChooserLoading,
+    error: isChooserError,
+  } = useIsChooser(game?.id ?? null, myTeam as string);
 
-  if (!game) return null;
-  if (!gameRepositories) return null;
-  const { chooserRepo } = gameRepositories;
-
-  const { isChooser, loading: isChooserLoading, error: isChooserError } = chooserRepo.useIsChooser(myTeam as string);
-
-  const gameQuestionRepo = new GameMatchingQuestionRepository(game.id as string, game.currentRound as string);
   const {
     isCanceled,
     loading: isCanceledLoading,
     error: isCanceledError,
-  } = gameQuestionRepo.useIsCanceled(game.currentQuestion as string, myTeam as string);
+  } = useIsCanceled(game?.id ?? null, game?.currentRound ?? null, game?.currentQuestion as string, myTeam as string);
   const {
     correctMatches,
     loading: correctMatchesLoading,
     error: correctMatchesError,
-  } = gameQuestionRepo.useCorrectMatches(game.currentQuestion as string);
+  } = useCorrectMatches(game?.id ?? null, game?.currentRound ?? null, game?.currentQuestion as string);
+
+  if (!game) return null;
 
   if (isChooserError || isCanceledError || correctMatchesError) return <></>;
   if (isChooserLoading || isCanceledLoading || correctMatchesLoading) return <Spinner />;

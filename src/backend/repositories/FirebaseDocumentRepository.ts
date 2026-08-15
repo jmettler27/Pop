@@ -8,16 +8,9 @@ import {
   type DocumentReference,
   type Transaction,
 } from 'firebase/firestore';
-import { useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
 import { isArray } from '@/backend/utils/arrays';
-
-export interface DocumentResult {
-  data: Record<string, unknown> | null;
-  loading: boolean;
-  error: Error | undefined;
-}
 
 const getDocDataTransaction = async (
   transaction: Transaction,
@@ -28,7 +21,7 @@ const getDocDataTransaction = async (
 };
 
 export default class FirebaseDocumentRepository {
-  protected docRef: DocumentReference;
+  public readonly docRef: DocumentReference;
 
   constructor(documentPath: string | string[]) {
     if (isArray(documentPath)) {
@@ -84,17 +77,5 @@ export default class FirebaseDocumentRepository {
 
   async deleteTransaction(transaction: Transaction): Promise<void> {
     await transaction.delete(this.docRef);
-  }
-
-  useDocument(): DocumentResult {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [data, loading, error] = useDocumentData(this.docRef);
-    return { data: data ? { id: this.docRef.id, ...data } : null, loading, error };
-  }
-
-  useDocumentOnce(): DocumentResult {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [data, loading, error] = useDocumentDataOnce(this.docRef);
-    return { data: data ? { id: this.docRef.id, ...data } : null, loading, error };
   }
 }

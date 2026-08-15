@@ -4,7 +4,6 @@ import { useParams } from 'next/navigation';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
 import {
   cancelPlayer,
   handleBuzzerHeadChanged,
@@ -18,6 +17,7 @@ import RevealLabelButton from '@/frontend/components/game/main-pane/question/lab
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import { Button } from '@/frontend/components/ui/button';
 import { Spinner } from '@/frontend/components/ui/spinner';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -79,10 +79,15 @@ function LabelOrganizerAnswerController({
   baseQuestion: LabellingQuestion;
 }) {
   const game = useGame();
-  if (!game) return null;
 
-  const gameQuestionRepo = new GameLabellingQuestionRepository(game.id as string, game.currentRound as string);
-  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  const { gameQuestion, loading, error } = useQuestion(
+    game?.id ?? null,
+    game?.currentRound ?? null,
+    QuestionType.LABELLING,
+    game?.currentQuestion as string
+  );
+
+  if (!game) return null;
 
   if (error) {
     return <></>;

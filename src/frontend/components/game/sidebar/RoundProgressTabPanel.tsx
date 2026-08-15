@@ -7,7 +7,7 @@ import { useIntl } from 'react-intl';
 import RoundQuestionsProgress from '@/frontend/components/game/sidebar/RoundQuestionsProgress';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { RoundTypeIcon } from '@/frontend/helpers/question-types';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import { useRound } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameRounds } from '@/models/games/game';
 import { type RoundType } from '@/models/rounds/round-type';
@@ -17,11 +17,7 @@ interface RoundProgressTabPanelProps {
 }
 
 export default function RoundProgressTabPanel({ game }: RoundProgressTabPanelProps) {
-  const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-  const { roundRepo } = gameRepositories;
-
-  const { round, loading: roundLoading, error: roundError } = roundRepo.useRound(game.currentRound as string);
+  const { round, loading: roundLoading, error: roundError } = useRound(game.id as string, game.currentRound as string);
 
   if (roundError) {
     return <></>;

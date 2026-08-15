@@ -4,15 +4,15 @@ import { useMemo } from 'react';
 
 import { clsx } from 'clsx';
 
-import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
-import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
 import { selectChoice } from '@/backend/services/question/mcq/actions';
 import { shuffleIndices } from '@/backend/utils/arrays';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import { Spinner } from '@/frontend/components/ui/spinner';
+import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
 import { Chooser } from '@/models/chooser';
@@ -22,25 +22,17 @@ import { QuestionType } from '@/models/questions/question-type';
 export default function MobileMCQControl() {
   const myTeam = useTeam();
   const game = useGame();
-  const gameRepositories = useGameRepositories();
+  const { chooser, loading: chooserLoading, error: chooserError } = useChooser(game?.id ?? null);
 
-  if (!game) return null;
-  if (!gameRepositories) return null;
-
-  const gameQuestionRepo = new GameMCQQuestionRepository(game.id as string, game.currentRound as string);
   const {
     gameQuestion,
     loading: questionLoading,
     error: questionError,
-  } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  } = useQuestion(game?.id ?? null, game?.currentRound ?? null, QuestionType.MCQ, game?.currentQuestion as string);
 
-  const { chooserRepo } = gameRepositories;
-  const { chooser, loading: chooserLoading, error: chooserError } = chooserRepo.useChooser();
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(game?.currentQuestion as string);
 
-  const baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(QuestionType.MCQ);
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = baseQuestionRepo.useQuestionOnce(
-    game.currentQuestion as string
-  );
+  if (!game) return null;
 
   if (questionError || chooserError || baseQuestionError) return null;
   if (questionLoading || chooserLoading || baseQuestionLoading) return <Spinner />;

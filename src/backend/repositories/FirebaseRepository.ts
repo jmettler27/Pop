@@ -3,6 +3,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getCountFromServer,
   getDoc,
   getDocs,
   limit,
@@ -19,7 +20,6 @@ import {
   type Transaction,
   type WhereFilterOp,
 } from 'firebase/firestore';
-import { useCollection, useCollectionOnce, useDocumentData, useDocumentDataOnce } from 'react-firebase-hooks/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
 import { IRepository } from '@/backend/repositories/IRepository';
@@ -31,20 +31,8 @@ export interface QueryOptions {
   limit?: number;
 }
 
-export interface DocumentResult {
-  data: Record<string, unknown> | null;
-  loading: boolean;
-  error: Error | undefined;
-}
-
-export interface CollectionResult {
-  data: Array<Record<string, unknown>>;
-  loading: boolean;
-  error: Error | undefined;
-}
-
 export default class FirebaseRepository extends IRepository {
-  protected collectionRef: CollectionReference<DocumentData>;
+  public readonly collectionRef: CollectionReference<DocumentData>;
 
   constructor(collectionPath: string | string[]) {
     super();
@@ -60,7 +48,7 @@ export default class FirebaseRepository extends IRepository {
     }
   }
 
-  protected getDocumentRef(idOrPath: string | string[]): DocumentReference {
+  public getDocumentRef(idOrPath: string | string[]): DocumentReference {
     if (isArray(idOrPath)) {
       const path = idOrPath as string[];
       if (path.length === 0) throw new Error('Path must be a non-empty array of path segments');
@@ -200,38 +188,8 @@ export default class FirebaseRepository extends IRepository {
     await transaction.delete(this.getDocumentRef(idOrPath));
   }
 
-  useDocument(idOrPath: string | string[]): DocumentResult {
-    const docRef = this.getDocumentRef(idOrPath);
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [data, loading, error] = useDocumentData(docRef);
-    return { data: data ? { id: docRef.id, ...data } : null, loading, error };
-  }
-
-  useDocumentOnce(idOrPath: string | string[]): DocumentResult {
-    const docRef = this.getDocumentRef(idOrPath);
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [data, loading, error] = useDocumentDataOnce(docRef);
-    return { data: data ? { id: docRef.id, ...data } : null, loading, error };
-  }
-
-  useCollection(queryOptions: QueryOptions = {}): CollectionResult {
-    const q = this.buildQuery(queryOptions);
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [data, loading, error] = useCollection(q);
-    return { data: data?.docs.map((d) => ({ id: d.id, ...d.data() })) ?? [], loading, error };
-  }
-
-  useCollectionOnce(queryOptions: QueryOptions = {}): CollectionResult {
-    const q = this.buildQuery(queryOptions);
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [data, loading, error] = useCollectionOnce(q);
-    return { data: data?.docs.map((d) => ({ id: d.id, ...d.data() })) ?? [], loading, error };
-  }
-
-  useQuery(queryBuilder: (ref: CollectionReference<DocumentData>) => Query<DocumentData>): CollectionResult {
-    const q = queryBuilder(this.collectionRef);
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [data, loading, error] = useCollection(q);
-    return { data: data?.docs.map((d) => ({ id: d.id, ...d.data() })) ?? [], loading, error };
+  async getCount(queryBuilder: (ref: CollectionReference<DocumentData>) => Query<DocumentData>): Promise<number> {
+    const snapshot = await getCountFromServer(queryBuilder(this.collectionRef));
+    return snapshot.data().count;
   }
 }

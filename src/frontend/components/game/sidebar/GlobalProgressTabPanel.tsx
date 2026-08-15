@@ -5,13 +5,14 @@ import { memo, type CSSProperties } from 'react';
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
-import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/frontend/components/ui/accordion';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { rankingToEmoji } from '@/frontend/helpers/emojis';
 import { RoundTypeIcon } from '@/frontend/helpers/question-types';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import { useAllRoundsOnce } from '@/frontend/hooks/firestore/round/useRoundHooks';
+import { useScoresOnce } from '@/frontend/hooks/firestore/score/useRoundScoreHooks';
+import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameRounds } from '@/models/games/game';
 import { AnyRound } from '@/models/rounds/RoundFactory';
@@ -31,19 +32,15 @@ const GameRoundsProgressHeader = memo(function GameRoundsProgressHeader({ gameTi
 });
 
 const GameRoundsProgress = memo(function GameRoundsProgress({ gameId }: { gameId: string }) {
-  const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-  const { teamRepo, roundRepo } = gameRepositories;
-
+  const { teams, loading: teamsLoading, error: teamsError } = useAllTeamsOnce(gameId);
   const {
     rounds: startedRounds,
     loading: roundsLoading,
     error: roundsError,
-  } = roundRepo.useAllRoundsOnce({
+  } = useAllRoundsOnce(gameId, {
     where: { field: 'order', operator: '!=', value: null },
     orderBy: { field: 'order', direction: 'asc' },
   });
-  const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeamsOnce();
 
   if (roundsError || teamsError) {
     return <></>;
@@ -86,8 +83,7 @@ interface RoundAccordionProps {
 
 function RoundAccordion({ gameId, round, teams, hasEnded, isCurrent }: RoundAccordionProps) {
   const intl = useIntl();
-  const roundScoreRepo = new RoundScoreRepository(gameId, round.id as string);
-  const { roundScores, loading, error } = roundScoreRepo.useScoresOnce();
+  const { roundScores, loading, error } = useScoresOnce(gameId, round.id as string);
 
   if (error) {
     return <></>;

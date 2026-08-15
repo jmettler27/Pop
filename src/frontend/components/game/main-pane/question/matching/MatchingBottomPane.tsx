@@ -1,13 +1,15 @@
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
-import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import { Spinner } from '@/frontend/components/ui/spinner';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import { useRound } from '@/frontend/hooks/firestore/round/useRoundHooks';
+import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
+import { useAllTeams } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -26,10 +28,9 @@ const messages = defineMessages('frontend.game.bottom.MatchingBottomPane', {
 });
 
 export default function MatchingBottomPane() {
-  const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-  const { chooserRepo } = gameRepositories;
-  const { chooser, loading, error } = chooserRepo.useChooser();
+  const game = useGame();
+  const { chooser, loading, error } = useChooser(game?.id ?? null);
+  if (!game) return null;
 
   if (error || loading || !chooser) {
     return <></>;
@@ -68,20 +69,19 @@ function MatchingPlayerQuestionController() {
   const intl = useIntl();
   const game = useGame();
   const myTeam = useTeam();
-  const gameRepositories = useGameRepositories();
+  const {
+    round,
+    loading: roundLoading,
+    error: roundError,
+  } = useRound(game?.id ?? null, (game?.currentRound as string | undefined) ?? '');
 
-  if (!game) return null;
-  if (!gameRepositories) return null;
-  const { roundRepo } = gameRepositories;
-
-  const { round, loading: roundLoading, error: roundError } = roundRepo.useRound(game.currentRound as string);
-
-  const gameQuestionRepo = new GameMatchingQuestionRepository(game.id as string, game.currentRound as string);
   const {
     gameQuestion,
     loading: gameQuestionLoading,
     error: gameQuestionError,
-  } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  } = useQuestion(game?.id ?? null, game?.currentRound ?? null, QuestionType.MATCHING, game?.currentQuestion as string);
+
+  if (!game) return null;
 
   if (roundError || gameQuestionError) return <></>;
   if (roundLoading || gameQuestionLoading) return <Spinner />;
@@ -128,19 +128,15 @@ interface Team {
 function MatchingRunningOrder({ chooser }: { chooser: Chooser }) {
   const intl = useIntl();
   const game = useGame();
-  const gameRepositories = useGameRepositories();
+  const { teams, loading: teamsLoading, error: teamsError } = useAllTeams(game?.id ?? null);
 
-  if (!game) return null;
-  if (!gameRepositories) return null;
-  const { teamRepo } = gameRepositories;
-
-  const gameQuestionRepo = new GameMatchingQuestionRepository(game.id as string, game.currentRound as string);
   const {
     gameQuestion,
     loading: gameQuestionLoading,
     error: gameQuestionError,
-  } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
-  const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeams();
+  } = useQuestion(game?.id ?? null, game?.currentRound ?? null, QuestionType.MATCHING, game?.currentQuestion as string);
+
+  if (!game) return null;
 
   if (gameQuestionError || teamsError) return <></>;
   if (gameQuestionLoading || teamsLoading) return <Spinner />;

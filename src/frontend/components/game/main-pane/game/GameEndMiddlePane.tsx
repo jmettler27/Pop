@@ -1,12 +1,13 @@
 import { useIntl } from 'react-intl';
 
-import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import GameScoreboard from '@/frontend/components/scores/GameScoreboard';
 import GameScoresChart from '@/frontend/components/scores/GameScoresChart';
+import { useRoundOnce } from '@/frontend/hooks/firestore/round/useRoundHooks';
+import { useScoresOnce } from '@/frontend/hooks/firestore/score/useRoundScoreHooks';
+import { useAllTeams } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { GameRounds } from '@/models/games/game';
 
@@ -35,24 +36,22 @@ export default function GameEndMiddlePane() {
 
 function GameEndBody() {
   const game = useGame();
-  const gameRepositories = useGameRepositories();
-
-  if (!game) return null;
-  if (!gameRepositories) return null;
-  const { roundRepo, teamRepo, scoreRepo } = gameRepositories;
+  const { teams, loading: teamsLoading, error: teamsError } = useAllTeams(game?.id ?? null);
 
   const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
-  const roundScoreRepo = new RoundScoreRepository(game.id as string, currentRound as string);
-
   const {
     round: finalRound,
     loading: finalRoundLoading,
     error: finalRoundError,
-  } = roundRepo.useRoundOnce(currentRound as string);
+  } = useRoundOnce(game?.id ?? null, (currentRound as string | undefined) ?? '');
 
-  const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeams();
+  const {
+    roundScores,
+    loading: roundScoresLoading,
+    error: roundScoresError,
+  } = useScoresOnce(game?.id ?? null, (currentRound as string | undefined) ?? null);
 
-  const { roundScores, loading: roundScoresLoading, error: roundScoresError } = roundScoreRepo.useScoresOnce();
+  if (!game) return null;
 
   if (finalRoundError || teamsError || roundScoresError) {
     return <ErrorScreen inline />;
@@ -68,7 +67,7 @@ function GameEndBody() {
     <div className="flex flex-row h-full w-full items-center justify-center">
       <div className="flex flex-col h-11/12 w-1/2 items-center justify-center">
         <GameScoreboard
-          roundScores={roundScores as Parameters<typeof GameScoreboard>[0]['roundScores']}
+          roundScores={roundScores as unknown as Parameters<typeof GameScoreboard>[0]['roundScores']}
           teams={teams}
         />
       </div>

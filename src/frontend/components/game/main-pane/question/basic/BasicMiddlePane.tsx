@@ -1,11 +1,11 @@
 import { Info, TriangleAlert } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import GameBasicQuestionRepository from '@/backend/repositories/question/GameBasicQuestionRepository';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -13,7 +13,7 @@ import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameRounds } from '@/models/games/game';
 import { GameStatus } from '@/models/games/game-status';
 import { BasicQuestion, GameBasicQuestion } from '@/models/questions/basic';
-import { questionTypeToTitle } from '@/models/questions/question-type';
+import { QuestionType, questionTypeToTitle } from '@/models/questions/question-type';
 import { topicToEmoji } from '@/models/topic';
 import { ParticipantRole } from '@/models/users/participant';
 
@@ -74,11 +74,16 @@ interface BasicQuestionMainContentProps {
 function BasicQuestionMainContent({ baseQuestion }: BasicQuestionMainContentProps) {
   const game = useGame();
   const myRole = useRole();
-  if (!game) return null;
 
   const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
-  const gameQuestionRepo = new GameBasicQuestionRepository(game.id as string, currentRound as string);
-  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  const { gameQuestion, loading, error } = useQuestion(
+    game?.id ?? null,
+    (currentRound as string | undefined) ?? null,
+    QuestionType.BASIC,
+    game?.currentQuestion as string
+  );
+
+  if (!game) return null;
 
   if (error) {
     return <ErrorScreen inline />;

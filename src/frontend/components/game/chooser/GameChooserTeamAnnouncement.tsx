@@ -3,10 +3,12 @@ import { type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 
 import fmt, { keyChunks } from '@/frontend/helpers/fmt';
+import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
+import { useTeamPlayers } from '@/frontend/hooks/firestore/user/usePlayerHooks';
+import { useTeam } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
-import useTeam from '@/frontend/hooks/useTeam';
+import useTeamContext from '@/frontend/hooks/useTeam';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { GameStatus } from '@/models/games/game-status';
 import { ParticipantRole } from '@/models/users/participant';
@@ -21,10 +23,9 @@ const messages = defineMessages('frontend.game.GameChooserTeamAnnouncement', {
 });
 
 export default function GameChooserTeamAnnouncement() {
-  const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-  const { chooserRepo } = gameRepositories;
-  const { chooser, loading: chooserLoading, error: chooserError } = chooserRepo.useChooser();
+  const game = useGame();
+  const { chooser, loading: chooserLoading, error: chooserError } = useChooser(game?.id ?? null);
+  if (!game) return null;
 
   if (chooserError || chooserLoading || !chooser) return null;
 
@@ -51,17 +52,13 @@ interface GameChooserHelperTextProps {
 
 export function GameChooserHelperText({ chooserTeamId }: GameChooserHelperTextProps) {
   const game = useGame();
-  const myTeam = useTeam();
+  const myTeam = useTeamContext();
   const myRole = useRole();
   const intl = useIntl();
-  const gameRepositories = useGameRepositories();
+  const { team, loading: teamLoading, error: teamError } = useTeam(game?.id ?? null, chooserTeamId);
+  const { players, loading: playersLoading, error: playersError } = useTeamPlayers(game?.id ?? null, chooserTeamId);
 
   if (!game) return null;
-  if (!gameRepositories) return null;
-  const { teamRepo, playerRepo } = gameRepositories;
-
-  const { team, loading: teamLoading, error: teamError } = teamRepo.useTeam(chooserTeamId);
-  const { players, loading: playersLoading, error: playersError } = playerRepo.useTeamPlayers(chooserTeamId);
 
   if (teamError || playersError || teamLoading || playersLoading || !team || !players) {
     return null;

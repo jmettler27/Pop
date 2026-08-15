@@ -1,6 +1,5 @@
 'use client';
 
-import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import BasicMiddlePane from '@/frontend/components/game/main-pane/question/basic/BasicMiddlePane';
 import BuzzerMiddlePane from '@/frontend/components/game/main-pane/question/buzzer/BuzzerMiddlePane';
@@ -14,17 +13,14 @@ import OddOneOutMiddlePane from '@/frontend/components/game/main-pane/question/o
 import QuoteMiddlePane from '@/frontend/components/game/main-pane/question/quote/QuoteMiddlePane';
 import ReorderingMiddlePane from '@/frontend/components/game/main-pane/question/reordering/ReorderingMiddlePane';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
 import { QuestionType } from '@/models/questions/question-type';
 
 export default function QuestionMiddlePane() {
   const game = useGame();
 
-  const questionType = (game!.currentQuestionType ?? '') as QuestionType;
-  const baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(questionType);
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = baseQuestionRepo.useQuestionOnce(
-    game!.currentQuestion as string
-  );
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(game!.currentQuestion as string);
 
   if (!game) return null;
   if (baseQuestionError) return <ErrorScreen inline />;

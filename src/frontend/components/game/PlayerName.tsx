@@ -4,7 +4,8 @@ import { useParams } from 'next/navigation';
 import { doc, DocumentData, getDoc } from 'firebase/firestore';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import { usePlayerOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
+import { useTeamOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useRole from '@/frontend/hooks/useRole';
 import { ParticipantRole } from '@/models/users/participant';
 
@@ -19,12 +20,7 @@ export default function PlayerName({ playerId, teamColor = true }: PlayerNamePro
 
   const myRole = useRole();
 
-  const repos = useGameRepositories();
-  const {
-    player,
-    loading: playerLoading,
-    error: playerError,
-  } = repos?.playerRepo.usePlayerOnce(playerId) ?? { player: null, loading: true, error: undefined };
+  const { player, loading: playerLoading, error: playerError } = usePlayerOnce(gameId, playerId);
 
   const [team, setTeam] = useState<DocumentData | null>(null);
   const [teamLoading, setTeamLoading] = useState(true);
@@ -71,19 +67,12 @@ interface WinnerNameProps {
 }
 
 export function WinnerName({ playerId, teamId }: WinnerNameProps) {
+  const { id } = useParams();
+  const gameId = id as string;
   const myRole = useRole();
 
-  const repos = useGameRepositories();
-  const {
-    player,
-    loading: playerLoading,
-    error: playerError,
-  } = repos?.playerRepo.usePlayerOnce(playerId) ?? { player: null, loading: true, error: undefined };
-  const {
-    team,
-    loading: teamLoading,
-    error: teamError,
-  } = repos?.teamRepo.useTeamOnce(teamId) ?? { team: null, loading: true, error: undefined };
+  const { player, loading: playerLoading, error: playerError } = usePlayerOnce(gameId, playerId);
+  const { team, loading: teamLoading, error: teamError } = useTeamOnce(gameId, teamId);
 
   if (playerError || teamError) {
     return <></>;

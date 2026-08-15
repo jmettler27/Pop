@@ -4,9 +4,6 @@ import { Pencil, UserCog } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import GameRepository from '@/backend/repositories/game/GameRepository';
-import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
-import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import { GameOrganizersAvatarGroup } from '@/frontend/components/home/GameAvatars';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Button } from '@/frontend/components/ui/button';
@@ -14,6 +11,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/
 import { Skeleton } from '@/frontend/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import { Locale, localeToEmoji } from '@/frontend/helpers/locales';
+import { useGamesByStatus } from '@/frontend/hooks/firestore/game/useGameHooks';
+import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganizerHooks';
+import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { type GameRounds } from '@/models/games/game';
@@ -28,8 +28,7 @@ const messages = defineMessages('frontend.home.GamesUnderConstruction', {
 
 export default function GamesUnderConstruction() {
   const intl = useIntl();
-  const gameRepo = new GameRepository();
-  const { games, loading, error } = gameRepo.useGamesByStatus(GameStatus.GAME_EDIT);
+  const { games, loading, error } = useGamesByStatus(GameStatus.GAME_EDIT);
   if (error) {
     return <></>;
   }
@@ -76,10 +75,8 @@ export function GameUnderConstructionCard({ game }: GameUnderConstructionCardPro
   const { data: session } = useSession();
   const user = session?.user;
 
-  const organizerRepo = new OrganizerRepository(game.id ?? '');
-  const playerRepo = new PlayerRepository(game.id ?? '');
-  const { organizers, loading: organizersLoading, error: organizersError } = organizerRepo.useAllOrganizersOnce();
-  const { players, loading: playersLoading, error: playersError } = playerRepo.useAllPlayersOnce();
+  const { organizers, loading: organizersLoading, error: organizersError } = useAllOrganizersOnce(game.id ?? null);
+  const { players, loading: playersLoading, error: playersError } = useAllPlayersOnce(game.id ?? null);
 
   if (organizersError || playersError) {
     return <></>;

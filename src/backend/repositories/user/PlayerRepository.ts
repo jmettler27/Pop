@@ -1,4 +1,4 @@
-import { doc, query, where, writeBatch, type Transaction } from 'firebase/firestore';
+import { doc, writeBatch, type Transaction } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
@@ -119,54 +119,5 @@ export default class PlayerRepository extends FirebaseRepository {
     for (const player of players) batch.update(doc(this.collectionRef, player.id!), { status: teamStatus });
     for (const player of otherPlayers) batch.update(doc(this.collectionRef, player.id!), { status: otherTeamsStatus });
     await batch.commit();
-  }
-
-  usePlayer(playerId: string) {
-    const { data, loading, error } = super.useDocument(playerId);
-    return { player: data ? new Player(data as unknown as PlayerData) : null, loading, error };
-  }
-
-  usePlayerOnce(id: string) {
-    const { data, loading, error } = super.useDocumentOnce(id);
-    return { player: data ? new Player(data as unknown as PlayerData) : null, loading, error };
-  }
-
-  usePlayerIdentityOnce(id: string) {
-    const { data, loading, error } = super.useDocumentOnce(id);
-    return { player: data ? { id: data.id, name: data.name, teamId: data.teamId } : null, loading, error };
-  }
-
-  useAllPlayerIdentitiesOnce() {
-    const { data, loading, error } = super.useCollectionOnce();
-    return {
-      players: data.map((p) => ({ id: p.id as string, name: p.name as string, teamId: p.teamId as string })),
-      loading,
-      error,
-    };
-  }
-
-  usePlayerStates() {
-    const { data, loading, error } = super.useCollection();
-    return { playerStates: data.map((p) => ({ id: p.id, status: p.status })), loading, error };
-  }
-
-  useAllPlayers() {
-    const { data, loading, error } = super.useCollection();
-    return { players: data.map((p) => new Player(p as unknown as PlayerData)), loading, error };
-  }
-
-  useAllPlayersOnce() {
-    const { data, loading, error } = super.useCollectionOnce();
-    return { players: data.map((p) => new Player(p as unknown as PlayerData)), loading, error };
-  }
-
-  useTeamPlayers(teamId: string) {
-    const { data, loading, error } = super.useQuery((ref) => query(ref, where('teamId', '==', teamId)));
-    return { players: data.map((p) => new Player(p as unknown as PlayerData)), loading, error };
-  }
-
-  usePlayersByStatus(status: string) {
-    const { data, loading, error } = super.useQuery((ref) => query(ref, where('status', '==', status)));
-    return { players: data.map((p) => new Player(p as unknown as PlayerData)), loading, error };
   }
 }

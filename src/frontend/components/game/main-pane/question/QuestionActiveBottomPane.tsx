@@ -1,6 +1,5 @@
 'use client';
 
-import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import BasicQuestionBottomPane from '@/frontend/components/game/main-pane/question/basic/BasicQuestionBottomPane';
 import BuzzerBottomPane from '@/frontend/components/game/main-pane/question/buzzer/BuzzerBottomPane';
 import EnumerationBottomPane from '@/frontend/components/game/main-pane/question/enumeration/EnumerationBottomPane';
@@ -13,17 +12,14 @@ import OddOneOutBottomPane from '@/frontend/components/game/main-pane/question/o
 import QuoteBottomPane from '@/frontend/components/game/main-pane/question/quote/QuoteBottomPane';
 import ReorderingBottomPane from '@/frontend/components/game/main-pane/question/reordering/ReorderingBottomPane';
 import { Spinner } from '@/frontend/components/ui/spinner';
+import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
 import { QuestionType } from '@/models/questions/question-type';
 
 export default function QuestionActiveBottomPane() {
   const game = useGame();
 
-  const questionType = (game!.currentQuestionType ?? '') as QuestionType;
-  const baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(questionType);
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = baseQuestionRepo.useQuestionOnce(
-    game!.currentQuestion as string
-  );
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(game!.currentQuestion as string);
 
   if (!game!.currentQuestionType || !game!.currentQuestion) return null;
   if (baseQuestionError) return null;

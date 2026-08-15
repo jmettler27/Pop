@@ -1,11 +1,11 @@
 import { Progress as ProgressPrimitive } from '@base-ui/react/progress';
 import clsx from 'clsx';
 
-import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 import ValidateChallengerCitationButton from '@/frontend/components/game/main-pane/question/enumeration/ValidateChallengerCitationButton';
 import { ProgressIndicator, ProgressTrack } from '@/frontend/components/ui/progress';
+import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import { usePlayer } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import { ParticipantRole } from '@/models/users/participant';
 
@@ -18,20 +18,24 @@ interface Challenger {
 
 export default function ChallengerCitationHelper() {
   const game = useGame();
-  if (!game) return null;
 
-  const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id as string, game.currentRound as string);
   const {
     data: questionPlayers,
     loading: playersLoading,
     error: playersError,
-  } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion as string);
+  } = useQuestionPlayers(
+    game?.id ?? null,
+    (game?.currentRound as string | undefined) ?? null,
+    game?.currentQuestion as string
+  );
+
+  if (!game) return null;
 
   if (playersError || playersLoading || !questionPlayers) {
     return <></>;
   }
 
-  const { challenger } = questionPlayers as { challenger: Challenger };
+  const { challenger } = questionPlayers as unknown as { challenger: Challenger };
 
   return (
     <div className="flex flex-col w-full items-center justify-center">
@@ -42,10 +46,9 @@ export default function ChallengerCitationHelper() {
 }
 
 function ChallengerName({ challengerId }: { challengerId: string }) {
-  const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-  const { playerRepo } = gameRepositories;
-  const { player, loading: playerLoading, error: playerError } = playerRepo.usePlayer(challengerId);
+  const game = useGame();
+  const { player, loading: playerLoading, error: playerError } = usePlayer(game?.id ?? null, challengerId);
+  if (!game) return null;
 
   if (playerError || playerLoading || !player) {
     return <></>;

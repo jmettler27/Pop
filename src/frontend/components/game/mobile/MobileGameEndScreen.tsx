@@ -4,10 +4,10 @@ import { useParams } from 'next/navigation';
 
 import { useIntl } from 'react-intl';
 
-import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 import GameScoreboard from '@/frontend/components/scores/GameScoreboard';
+import { useScoresOnce } from '@/frontend/hooks/firestore/score/useRoundScoreHooks';
+import { useAllTeams } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { GameRounds } from '@/models/games/game';
 
@@ -21,16 +21,12 @@ export default function MobileGameEndScreen() {
   const { id } = useParams();
   const gameId = id as string;
   const game = useGame();
-  const gameRepositories = useGameRepositories();
+  const { teams, loading: teamsLoading, error: teamsError } = useAllTeams(gameId);
 
-  if (!game || !gameRepositories) return null;
-
-  const { teamRepo } = gameRepositories;
   const currentRoundId = game instanceof GameRounds ? (game.currentRound as string) : undefined;
+  const { roundScores, loading: scoresLoading, error: scoresError } = useScoresOnce(gameId, currentRoundId ?? '');
 
-  const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeams();
-  const roundScoreRepo = new RoundScoreRepository(gameId, currentRoundId as string);
-  const { roundScores, loading: scoresLoading, error: scoresError } = roundScoreRepo.useScoresOnce();
+  if (!game) return null;
 
   if (teamsError || scoresError) return null;
   if (teamsLoading || scoresLoading) return null;

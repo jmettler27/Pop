@@ -9,9 +9,11 @@ import { getRandomElement } from '@/backend/utils/arrays';
 import { Button } from '@/frontend/components/ui/button';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import fmt, { keyChunks } from '@/frontend/helpers/fmt';
+import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
+import { usePlayer } from '@/frontend/hooks/firestore/user/usePlayerHooks';
+import { useReady } from '@/frontend/hooks/firestore/user/useReadyHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -79,10 +81,7 @@ export default function ReadyPlayerController({ isLastQuestion }: ReadyPlayerCon
   const gameId = id as string;
   const myRole = useRole();
 
-  const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-  const { timerRepo } = gameRepositories;
-  const { timer, timerLoading, timerError } = timerRepo.useTimer();
+  const { timer, timerLoading, timerError } = useTimer(gameId);
 
   if (timerError) {
     return <></>;
@@ -115,10 +114,8 @@ function ReadyPlayerHeader({ isLastQuestion }: ReadyPlayerHeaderProps) {
   const game = useGame();
   const myRole = useRole();
 
-  const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-  const { readyRepo } = gameRepositories;
-  const { ready, readyLoading, readyError } = readyRepo.useReady();
+  const { ready, readyLoading, readyError } = useReady(game?.id ?? null);
+  if (!game) return null;
 
   if (readyError) {
     return <></>;
@@ -173,10 +170,7 @@ export function ReadyPlayerButton() {
     return intl.formatMessage(messages[key]);
   }, [intl]);
 
-  const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-  const { playerRepo } = gameRepositories;
-  const { player, loading: playerLoading, error: playerError } = playerRepo.usePlayer(user?.id as string);
+  const { player, loading: playerLoading, error: playerError } = usePlayer(gameId, user?.id as string);
 
   if (playerError) {
     return <></>;

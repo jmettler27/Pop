@@ -4,14 +4,15 @@ import { useParams } from 'next/navigation';
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
-import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
-import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import { QuestionCardContent } from '@/frontend/components/common/QuestionCard';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/frontend/components/ui/accordion';
 import { Separator } from '@/frontend/components/ui/separator';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { Locale } from '@/frontend/helpers/locales';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
+import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useRole from '@/frontend/hooks/useRole';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameRounds } from '@/models/games/game';
@@ -61,12 +62,8 @@ export default function RoundQuestionsProgress({ game, round }: RoundQuestionsPr
     }
   }
 
-  const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-  const { teamRepo, playerRepo } = gameRepositories;
-
-  const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeamsOnce();
-  const { players, loading: playersLoading, error: playersError } = playerRepo.useAllPlayersOnce();
+  const { teams, loading: teamsLoading, error: teamsError } = useAllTeamsOnce(game.id ?? null);
+  const { players, loading: playersLoading, error: playersError } = useAllPlayersOnce(game.id ?? null);
 
   if (teamsError || playersError) return <></>;
   if (teamsLoading || playersLoading) return <Spinner />;
@@ -124,10 +121,12 @@ interface TypedAccordionProps {
 
 function useRoundQuestion(questionType: QuestionType, roundId: string, questionId: string) {
   const { id: gameId } = useParams();
-  const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(questionType, gameId as string, roundId);
-  const baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(questionType);
-  const { gameQuestion, loading: gqLoading, error: gqError } = gameQuestionRepo.useQuestion(questionId);
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = baseQuestionRepo.useQuestionOnce(questionId);
+  const {
+    gameQuestion,
+    loading: gqLoading,
+    error: gqError,
+  } = useQuestion(gameId as string, roundId, questionType, questionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(questionId);
   return {
     gameQuestion,
     baseQuestion,

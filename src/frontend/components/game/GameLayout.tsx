@@ -10,18 +10,18 @@ import MobilePlayerLayout from '@/frontend/components/game/MobilePlayerLayout';
 import Sidebar from '@/frontend/components/game/sidebar/Sidebar';
 import TopPane from '@/frontend/components/game/top-pane/TopPane';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import { useScores } from '@/frontend/hooks/firestore/score/useGameScoreHooks';
+import { useAllPlayers } from '@/frontend/hooks/firestore/user/usePlayerHooks';
+import { useAllTeams } from '@/frontend/hooks/firestore/user/useTeamHooks';
+import useGame from '@/frontend/hooks/useGame';
 import useIsMobile from '@/frontend/hooks/useIsMobile';
 
 // Container components to control re-rendering
 const TopPaneContainer = memo(function TopPaneContainer({}) {
-  const repos = useGameRepositories();
-  if (!repos) return <ErrorScreen inline />;
-  const { teamRepo, scoreRepo, playerRepo } = repos;
-
-  const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeams();
-  const { loading: scoresLoading, error: scoresError } = scoreRepo.useScores();
-  const { players, loading: playersLoading, error: playersError } = playerRepo.useAllPlayers();
+  const game = useGame();
+  const { loading: scoresLoading, error: scoresError } = useScores(game?.id ?? null);
+  const { teams, loading: teamsLoading, error: teamsError } = useAllTeams(game?.id ?? null);
+  const { players, loading: playersLoading, error: playersError } = useAllPlayers(game?.id ?? null);
 
   if (teamsError || scoresError || playersError) return <ErrorScreen inline />;
   if (teamsLoading || scoresLoading || playersLoading) return <LoadingScreen inline />;

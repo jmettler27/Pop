@@ -72,9 +72,4 @@ export default class GameQuoteQuestionRepository extends GameBuzzerQuestionRepos
       buzzed: [],
     });
   }
-
-  useQuestionPlayers(questionId: string) {
-    const { data, loading, error } = this.useDocument([questionId, ...GameQuoteQuestionRepository.QUOTE_PLAYERS_PATH]);
-    return { data, loading, error };
-  }
 }

@@ -7,14 +7,14 @@ import { redirect, useParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import GameRepository from '@/backend/repositories/game/GameRepository';
-import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
-import { AddNewRoundButton } from '@/frontend/components/game-editor/AddNewRound';
+import { AddRoundToGameButton } from '@/frontend/components/game-editor/AddRoundToGame';
 import { EditGameRoundCard } from '@/frontend/components/game-editor/EditRoundInGame';
 import { LaunchGameButton } from '@/frontend/components/game-editor/LaunchGameButton';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Locale, localeToEmoji } from '@/frontend/helpers/locales';
+import { useGame } from '@/frontend/hooks/firestore/game/useGameHooks';
+import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganizerHooks';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameRounds } from '@/models/games/game';
@@ -43,11 +43,8 @@ export default function Page() {
 
   const user = session.user;
 
-  const gameRepo = new GameRepository();
-  const organizerRepo = new OrganizerRepository(gameId);
-
-  const { game, loading: gameLoading, error: gameError } = gameRepo.useGame(gameId);
-  const { organizers, loading: organizersLoading, error: organizersError } = organizerRepo.useAllOrganizersOnce();
+  const { game, loading: gameLoading, error: gameError } = useGame(gameId);
+  const { organizers, loading: organizersLoading, error: organizersError } = useAllOrganizersOnce(gameId);
 
   if (gameError || organizersError) {
     return <ErrorScreen />;
@@ -231,7 +228,7 @@ function EditGameRounds({ game }: { game: GameRounds }) {
         </div>
         {status === GameStatus.GAME_EDIT && (
           <div className="sticky bottom-0 flex justify-center items-center gap-4 bg-linear-to-t from-slate-50/60 to-slate-50/40 dark:from-slate-950/60 dark:to-slate-950/40 border-t border-slate-200 dark:border-slate-800 backdrop-blur-xs p-4 shadow-lg">
-            <AddNewRoundButton disabled={roundIds.length >= GameRounds.MAX_NUM_ROUNDS} />
+            <AddRoundToGameButton disabled={roundIds.length >= GameRounds.MAX_NUM_ROUNDS} />
             <LaunchGameButton />
           </div>
         )}

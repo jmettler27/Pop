@@ -69,27 +69,4 @@ export default class ChooserRepository extends FirebaseDocumentRepository {
   async createChooserTransaction(transaction: Transaction): Promise<Record<string, unknown>> {
     return this.createTransaction(transaction, {});
   }
-
-  useChooser() {
-    const { data, loading, error } = super.useDocument();
-    return { chooser: data, loading, error };
-  }
-
-  useCurrentChooser() {
-    const { chooser, loading, error } = this.useChooser();
-    if (loading || error || !chooser) {
-      return { currentChooserTeamId: null, loading, error };
-    }
-    const chooserOrder = chooser.chooserOrder as string[];
-    const chooserIdx = chooser.chooserIdx as number;
-    return { currentChooserTeamId: chooserOrder[chooserIdx], loading, error };
-  }
-
-  useIsChooser(teamId: string) {
-    const { currentChooserTeamId, loading, error } = this.useCurrentChooser();
-    if (loading || error) {
-      return { isChooser: false, loading, error };
-    }
-    return { isChooser: teamId === currentChooserTeamId, loading, error };
-  }
 }

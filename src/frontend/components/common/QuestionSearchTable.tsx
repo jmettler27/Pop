@@ -1,80 +1,48 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import type { Column, ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 import {
-  columnFilteringFeature,
   columnSizingFeature,
   columnVisibilityFeature,
-  createFilteredRowModel,
-  createPaginatedRowModel,
-  createSortedRowModel,
   flexRender,
-  globalFilteringFeature,
-  rowPaginationFeature,
   rowSelectionFeature,
-  rowSortingFeature,
   tableFeatures,
   useTable,
 } from '@tanstack/react-table';
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronsUpDown, ChevronUp } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useIntl, type IntlShape } from 'react-intl';
 
-import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
-import UserRepository from '@/backend/repositories/user/UserRepository';
+import {
+  messages,
+  questionRow,
+  questionTypeToColumns,
+  type ColSpec,
+  type Row,
+} from '@/frontend/components/common/questionSearchTableMappers';
 import { Avatar, AvatarFallback, AvatarImage } from '@/frontend/components/ui/avatar';
 import { Button } from '@/frontend/components/ui/button';
 import { Checkbox } from '@/frontend/components/ui/checkbox';
-import { Input } from '@/frontend/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/frontend/components/ui/select';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/frontend/components/ui/table';
+import { getQuestionsCount, useQuestionsPage } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
+import { useFirestoreCount } from '@/frontend/hooks/firestore/useFirestoreCount';
+import { useAllUsersOnce } from '@/frontend/hooks/firestore/user/useUserHooks';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { QuestionType } from '@/models/questions/question-type';
 
-import { messages, questionRow, questionTypeToColumns, type ColSpec, type Row } from './questionSearchTableMappers';
-
 const tableFeaturesConfig = tableFeatures({
-  columnFilteringFeature,
   columnSizingFeature,
   columnVisibilityFeature,
-  globalFilteringFeature,
-  rowPaginationFeature,
   rowSelectionFeature,
-  rowSortingFeature,
-  filteredRowModel: createFilteredRowModel(),
-  paginatedRowModel: createPaginatedRowModel(),
-  sortedRowModel: createSortedRowModel(),
 });
 
 type Features = typeof tableFeaturesConfig;
 
-// Clickable header used by every column: toggles TanStack sorting and shows the current direction.
-function SortableHeader({ label, column }: { label: string; column: Column<Features, Row, unknown> }) {
-  const sorted = column.getIsSorted();
-  return (
-    <button
-      type="button"
-      className="flex items-center gap-1 hover:text-foreground/80"
-      onClick={column.getToggleSortingHandler()}
-    >
-      {label}
-      {sorted === 'asc' && <ChevronUp className="size-3.5" />}
-      {sorted === 'desc' && <ChevronDown className="size-3.5" />}
-      {!sorted && <ChevronsUpDown className="size-3.5 text-muted-foreground/50" />}
-    </button>
-  );
-}
-
-function sortableHeader(label: string) {
-  return function Header({ column }: { column: Column<Features, Row, unknown> }) {
-    return <SortableHeader label={label} column={column} />;
-  };
-}
-
 const toColumnDefs = (specs: ColSpec[]): ColumnDef<Features, Row>[] =>
   specs.map((spec) => ({
     accessorKey: spec.field,
-    header: sortableHeader(spec.headerName),
+    header: spec.headerName,
     size: spec.width,
   }));
 
@@ -101,15 +69,14 @@ const selectColumn: ColumnDef<Features, Row> = {
 const questionColumns = (questionType: QuestionType, intl: IntlShape): ColumnDef<Features, Row>[] => {
   const cols = questionTypeToColumns[questionType](intl);
   return [
-    { accessorKey: 'id', header: sortableHeader(intl.formatMessage(messages.id)), size: 150 },
-    { accessorKey: 'lang', header: sortableHeader(intl.formatMessage(globalMessages.language)), size: 100 },
-    { accessorKey: 'topic', header: sortableHeader(intl.formatMessage(messages.topic)), size: 75 },
+    { accessorKey: 'lang', header: intl.formatMessage(globalMessages.language), size: 100 },
+    { accessorKey: 'topic', header: intl.formatMessage(messages.topic), size: 75 },
     ...toColumnDefs(cols),
-    { accessorKey: 'createdAt', header: sortableHeader(intl.formatMessage(messages.createdAt)), size: 130 },
+    { accessorKey: 'createdAt', header: intl.formatMessage(messages.createdAt), size: 130 },
     {
       id: 'createdBy',
       accessorFn: (row) => (row.createdBy as { name: string }).name,
-      header: sortableHeader(intl.formatMessage(messages.createdBy)),
+      header: intl.formatMessage(messages.createdBy),
       size: 130,
       cell: ({ row }) => {
         const createdBy = row.original.createdBy as { name: string; image?: string };
@@ -132,11 +99,14 @@ interface QuestionSearchTableProps {
   onQuestionSelectionModelChange?: (model: string[]) => void;
 }
 
-// Renders a searchable, sortable, paginated table of existing questions with row-selection
-// checkboxes. Sorting, pagination, and row selection are left fully uncontrolled (TanStack owns
-// that state internally) since nothing outside this component reads or sets it directly; only the
-// selected row ids are surfaced upward, one-way, via onQuestionSelectionModelChange. To clear the
-// selection from outside, remount this component (e.g. via a changing `key`).
+// Renders a paginated table of existing questions, fetched one Firestore page at a time (newest first)
+// via useQuestionsPage (a useInfiniteQuery wrapper), with row-selection checkboxes. `pageIndex` is the
+// only pagination state kept here — it indexes into useInfiniteQuery's own page cache (`data.pages`)
+// instead of a hand-maintained cursor stack, so navigating back to an already-fetched page is instant.
+// Row selection is left fully uncontrolled (TanStack owns that state internally) and is keyed by row id,
+// so it survives navigating between pages — only the selected row ids are surfaced upward, one-way, via
+// onQuestionSelectionModelChange. To clear the selection from outside, remount this component (e.g. via
+// a changing `key`).
 export function QuestionSearchTable({
   questionType,
   onQuestionSelectionModelChange = () => {},
@@ -145,25 +115,44 @@ export function QuestionSearchTable({
 
   const intl = useIntl();
 
-  // Create repository instances with memoization to prevent unnecessary recreations
-  const userRepo = useMemo(() => new UserRepository(), []);
-  const { users, loading: usersLoading, error: usersError } = userRepo.useAllUsersOnce();
+  const { users, loading: usersLoading, error: usersError } = useAllUsersOnce();
 
-  // Memoize repository instance based on questionType to prevent re-fetching when other props change
-  const questionRepo = useMemo(() => new BaseQuestionRepository(questionType), [questionType]);
-  const { baseQuestions, baseQuestionsLoading, baseQuestionsError } = questionRepo.useQuestionsOnce(true);
+  const [pageSize, setPageSize] = useState(10);
+  const [pageIndex, setPageIndex] = useState(0);
 
-  const [searchInput, setSearchInput] = useState('');
-  const [globalFilter, setGlobalFilter] = useState('');
+  const {
+    data: questionPages,
+    fetchNextPage,
+    isLoading: questionsLoading,
+    error: questionsError,
+  } = useQuestionsPage(questionType, true, pageSize);
+  const { data: questionsCount } = useFirestoreCount(
+    () => getQuestionsCount(questionType, true),
+    ['questions', 'count', questionType, true]
+  );
+  const pageCount = questionsCount !== undefined ? Math.max(1, Math.ceil(questionsCount / pageSize)) : undefined;
 
-  useEffect(() => {
-    const handle = setTimeout(() => setGlobalFilter(searchInput), 500);
-    return () => clearTimeout(handle);
-  }, [searchInput]);
+  const pages = questionPages?.pages ?? [];
+  const currentPage = pages[pageIndex];
+  const questions = currentPage?.items;
+  const hasMore = currentPage?.hasMore ?? false;
+
+  const goToPreviousPage = () => setPageIndex((i) => Math.max(0, i - 1));
+  const goToNextPage = () => {
+    if (pageIndex + 1 < pages.length) {
+      setPageIndex((i) => i + 1); // already fetched — instant, no network call
+    } else if (hasMore) {
+      fetchNextPage().then(() => setPageIndex((i) => i + 1));
+    }
+  };
+  const changePageSize = (size: number) => {
+    setPageSize(size); // baked into useQuestionsPage's cache key — starts a fresh page set automatically
+    setPageIndex(0);
+  };
 
   const rows = useMemo(
-    () => (users && baseQuestions ? baseQuestions.map((question) => questionRow(question, users)) : []),
-    [baseQuestions, users]
+    () => (users && questions ? questions.map((question) => questionRow(question, intl.locale, users)) : []),
+    [questions, intl.locale, users]
   );
   const columns = useMemo<ColumnDef<Features, Row>[]>(
     () => [selectColumn, ...questionColumns(questionType, intl)],
@@ -174,9 +163,7 @@ export function QuestionSearchTable({
     features: tableFeaturesConfig,
     data: rows,
     columns,
-    state: { globalFilter },
     getRowId: (row) => row.id as string,
-    onGlobalFilterChange: setGlobalFilter,
   });
 
   const rowSelection = table.state.rowSelection;
@@ -184,25 +171,18 @@ export function QuestionSearchTable({
     onQuestionSelectionModelChange(Object.keys(rowSelection).filter((id) => rowSelection[id]));
   }, [rowSelection, onQuestionSelectionModelChange]);
 
-  if (usersError || baseQuestionsError) {
+  if (usersError || questionsError) {
     return <></>;
   }
-  if (usersLoading || baseQuestionsLoading) {
+  if (usersLoading || questionsLoading) {
     return <Spinner />;
   }
-  if (!users || !baseQuestions) {
+  if (!users || !questions) {
     return <></>;
   }
 
   return (
     <div className="flex flex-col gap-2">
-      <Input
-        placeholder={intl.formatMessage(messages.search)}
-        value={searchInput}
-        onChange={(e) => setSearchInput(e.target.value)}
-        className="max-w-sm"
-      />
-
       <Table style={{ tableLayout: 'fixed', width: table.getTotalSize() }}>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -231,7 +211,7 @@ export function QuestionSearchTable({
       <div className="flex items-center justify-between gap-4 pt-2">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span>{intl.formatMessage(messages.rowsPerPage)}</span>
-          <Select value={table.state.pagination.pageSize} onValueChange={(value) => table.setPageSize(value as number)}>
+          <Select value={pageSize} onValueChange={(value) => changePageSize(value as number)}>
             <SelectTrigger size="sm" className="w-[70px]">
               <SelectValue />
             </SelectTrigger>
@@ -247,19 +227,14 @@ export function QuestionSearchTable({
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">
             {intl.formatMessage(messages.pageOf, {
-              page: table.state.pagination.pageIndex + 1,
-              total: table.getPageCount() || 1,
+              page: pageIndex + 1,
+              total: pageCount ?? '…',
             })}
           </span>
-          <Button
-            variant="outline"
-            size="icon-sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
+          <Button variant="outline" size="icon-sm" onClick={goToPreviousPage} disabled={pageIndex === 0}>
             <ChevronLeft />
           </Button>
-          <Button variant="outline" size="icon-sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+          <Button variant="outline" size="icon-sm" onClick={goToNextPage} disabled={!hasMore}>
             <ChevronRight />
           </Button>
         </div>

@@ -10,9 +10,10 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Avatar, AvatarFallback } from '@/frontend/components/ui/avatar';
 import { type Locale } from '@/frontend/helpers/locales';
 import { RoundTypeIcon } from '@/frontend/helpers/question-types';
-import { formatDuration, timestampElapsedSeconds, timestampToHour } from '@/frontend/helpers/time';
+import { formatDuration, timestampElapsedSeconds, timestampToShortTime } from '@/frontend/helpers/time';
+import { useAllRounds } from '@/frontend/hooks/firestore/round/useRoundHooks';
+import { useIsChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useIsMobile from '@/frontend/hooks/useIsMobile';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
@@ -58,12 +59,12 @@ function GameHomeRounds() {
     await handleRoundSelected(roundType, gameId as string, roundId, user?.id as string);
   });
 
-  const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-
-  const { roundRepo, chooserRepo } = gameRepositories;
-  const { rounds, loading: roundsLoading, error: roundsError } = roundRepo.useAllRounds();
-  const { isChooser, loading: isChooserLoading, error: isChooserError } = chooserRepo.useIsChooser(myTeam as string);
+  const {
+    isChooser,
+    loading: isChooserLoading,
+    error: isChooserError,
+  } = useIsChooser(gameId as string, myTeam as string);
+  const { rounds, loading: roundsLoading, error: roundsError } = useAllRounds(gameId as string);
 
   if (roundsError || isChooserError) return <ErrorScreen inline />;
   if (roundsLoading || isChooserLoading) return <LoadingScreen inline />;
@@ -157,7 +158,7 @@ function GameHomeRoundItem({ round, isDisabled, onSelectRound }: GameHomeRoundIt
 
   const secondaryText = (): string => {
     if (!round.dateStart) return '';
-    const startTime = timestampToHour(round.dateStart as TS, intl.locale as Locale);
+    const startTime = timestampToShortTime(round.dateStart as TS, intl.locale as Locale);
     if (!round.dateEnd) {
       const elapsed = formatDuration(timestampElapsedSeconds(round.dateStart as TS), intl.locale as Locale);
       return intl.formatMessage(messages.roundStarted, { time: startTime, elapsed });
@@ -167,7 +168,7 @@ function GameHomeRoundItem({ round, isDisabled, onSelectRound }: GameHomeRoundIt
       intl.locale as Locale
     );
     return intl.formatMessage(messages.roundEnded, {
-      time: timestampToHour(round.dateEnd as TS, intl.locale as Locale),
+      time: timestampToShortTime(round.dateEnd as TS, intl.locale as Locale),
       duration,
     });
   };

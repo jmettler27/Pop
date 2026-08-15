@@ -2,16 +2,17 @@
 
 import { useMemo } from 'react';
 
-import GameOddOneOutQuestionRepository from '@/backend/repositories/question/GameOddOneOutQuestionRepository';
 import { shuffleIndices } from '@/backend/utils/arrays';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import OddOneOutOrganizerPane from '@/frontend/components/game/main-pane/question/odd-one-out/OddOneOutOrganizerPane';
 import OddOneOutPlayerPane from '@/frontend/components/game/main-pane/question/odd-one-out/OddOneOutPlayerPane';
 import OddOneOutSpectatorPane from '@/frontend/components/game/main-pane/question/odd-one-out/OddOneOutSpectatorPane';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import { GameOddOneOutQuestion, OddOneOutQuestion } from '@/models/questions/odd-one-out';
+import { QuestionType } from '@/models/questions/question-type';
 import { ParticipantRole } from '@/models/users/participant';
 
 export default function OddOneOutMiddlePane({ baseQuestion }: { baseQuestion: OddOneOutQuestion }) {
@@ -19,10 +20,14 @@ export default function OddOneOutMiddlePane({ baseQuestion }: { baseQuestion: Od
   const myRole = useRole();
   const randomMapping = useMemo(() => shuffleIndices((baseQuestion.items ?? []).length), [baseQuestion.items]);
 
-  if (!game) return null;
+  const { gameQuestion, loading, error } = useQuestion(
+    game?.id ?? null,
+    game?.currentRound ?? null,
+    QuestionType.ODD_ONE_OUT,
+    game?.currentQuestion as string
+  );
 
-  const gameQuestionRepo = new GameOddOneOutQuestionRepository(game.id as string, game.currentRound as string);
-  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  if (!game) return null;
 
   if (error) return <ErrorScreen inline />;
   if (loading) return <LoadingScreen inline />;

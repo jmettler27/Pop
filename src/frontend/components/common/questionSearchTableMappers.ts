@@ -1,7 +1,7 @@
 import type { IntlShape } from 'react-intl';
 
 import { localeToEmoji } from '@/frontend/helpers/locales';
-import { timestampToDate1, type FirestoreTimestamp } from '@/frontend/helpers/time';
+import { timestampToNumericDate, type FirestoreTimestamp } from '@/frontend/helpers/time';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { BasicQuestion } from '@/models/questions/basic';
@@ -42,7 +42,6 @@ export const messages = defineMessages('frontend.questions.QuestionSearchTable',
   quoteToGuess: 'To guess',
   numLabels: 'Nb. labels',
   choices: 'Nb. choices',
-  search: 'Search…',
   rowsPerPage: 'Rows per page',
   pageOf: 'Page {page} of {total}',
 });
@@ -270,7 +269,7 @@ export const questionTypeToColumns: Record<QuestionType, QuestionColumnsFn> = {
 // AnyBaseQuestion also includes the abstract BuzzerQuestion itself (a preexisting QuestionFactory
 // quirk), so this can't narrow all the way to `never` and end in a compile-checked exhaustiveness
 // assertion — the trailing throw is the runtime safety net instead.
-function questionTypeRow(question: AnyBaseQuestion): Row {
+function questionFields(question: AnyBaseQuestion): Row {
   if (question instanceof BasicQuestion) return basicQuestionRow(question);
   if (question instanceof BlindtestQuestion) return blindtestQuestionRow(question);
   if (question instanceof EmojiQuestion) return emojiQuestionRow(question);
@@ -288,20 +287,19 @@ function questionTypeRow(question: AnyBaseQuestion): Row {
   throw new Error(`Unhandled question type: ${question.type}`);
 }
 
-const commonQuestionRow = (question: BaseQuestion, users: User[]): Row => {
+const commonQuestionFields = (question: BaseQuestion, locale: string, users: User[]): Row => {
   const user = users.find((u) => u.id === question.createdBy);
   const { name, image } = user!;
 
   return {
-    id: question.id,
     lang: question.lang ? localeToEmoji(question.lang) : undefined,
     topic: question.topic ? topicToEmoji(question.topic) : undefined,
-    createdAt: timestampToDate1(question.createdAt as FirestoreTimestamp | null | undefined),
+    createdAt: timestampToNumericDate(question.createdAt as FirestoreTimestamp | null | undefined, locale),
     createdBy: { name, image },
   };
 };
 
-export const questionRow = (question: AnyBaseQuestion, users: User[]): Row => ({
-  ...commonQuestionRow(question, users),
-  ...questionTypeRow(question),
+export const questionRow = (question: AnyBaseQuestion, locale: string, users: User[]): Row => ({
+  ...commonQuestionFields(question, locale, users),
+  ...questionFields(question),
 });

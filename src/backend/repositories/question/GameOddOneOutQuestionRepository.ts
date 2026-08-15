@@ -14,12 +14,4 @@ export default class GameOddOneOutQuestionRepository extends GameQuestionReposit
   async resetQuestionTransaction(transaction: Transaction, questionId: string): Promise<void> {
     await this.updateQuestionTransaction(transaction, questionId, { winner: null, selectedItems: [] });
   }
-
-  useQuestionPlayers(questionId: string) {
-    const { data, loading, error } = this.useDocument([
-      questionId,
-      ...GameOddOneOutQuestionRepository.ODD_ONE_OUT_PLAYERS_PATH,
-    ]);
-    return { data, loading, error };
-  }
 }

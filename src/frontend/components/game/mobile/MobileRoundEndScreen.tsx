@@ -5,10 +5,11 @@ import { useParams } from 'next/navigation';
 import { ChevronDown, ChevronUp, Minus } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 import { rankingToEmoji } from '@/frontend/helpers/emojis';
+import { useScoresOnce } from '@/frontend/hooks/firestore/score/useRoundScoreHooks';
+import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
+import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useTeam from '@/frontend/hooks/useTeam';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { RankingDifferences } from '@/models/scores';
@@ -24,19 +25,15 @@ export default function MobileRoundEndScreen() {
   const { id } = useParams();
   const gameId = id as string;
   const game = useGame();
-  const gameRepositories = useGameRepositories();
   const myTeamId = useTeam();
 
-  if (!game || !gameRepositories || !myTeamId) return null;
+  const { teams, loading: teamsLoading, error: teamsError } = useAllTeamsOnce(gameId);
+  const { timer, timerLoading, timerError } = useTimer(game?.id ?? null);
 
-  const { teamRepo, timerRepo } = gameRepositories;
-  const currentRoundId = game.currentRound as string;
+  const currentRoundId = (game?.currentRound as string | undefined) ?? '';
+  const { roundScores, loading: scoresLoading, error: scoresError } = useScoresOnce(gameId, currentRoundId);
 
-  const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeamsOnce();
-  const { timer, timerLoading, timerError } = timerRepo.useTimer();
-
-  const roundScoreRepo = new RoundScoreRepository(gameId, currentRoundId);
-  const { roundScores, loading: scoresLoading, error: scoresError } = roundScoreRepo.useScoresOnce();
+  if (!game || !myTeamId) return null;
 
   if (teamsError || timerError || scoresError) return null;
   if (teamsLoading || timerLoading || scoresLoading) return null;

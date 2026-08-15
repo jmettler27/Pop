@@ -1,8 +1,8 @@
-import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
-import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import { Avatar, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage } from '@/frontend/components/ui/avatar';
 import { Skeleton } from '@/frontend/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
+import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganizerHooks';
+import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 
 type AvatarSize = 'small' | 'medium' | 'large';
 
@@ -55,8 +55,7 @@ interface GameOrganizersAvatarGroupProps {
 }
 
 export function GameOrganizersAvatarGroup({ gameId, max = 4, size = 'medium' }: GameOrganizersAvatarGroupProps) {
-  const organizerRepo = new OrganizerRepository(gameId);
-  const { organizers, loading, error } = organizerRepo.useAllOrganizersOnce();
+  const { organizers, loading, error } = useAllOrganizersOnce(gameId);
 
   if (error) {
     return <></>;
@@ -78,8 +77,7 @@ interface GamePlayersAvatarGroupProps {
 }
 
 export function GamePlayersAvatarGroup({ gameId, max = 4, size = 'medium' }: GamePlayersAvatarGroupProps) {
-  const playerRepo = new PlayerRepository(gameId);
-  const { players, loading, error } = playerRepo.useAllPlayersOnce();
+  const { players, loading, error } = useAllPlayersOnce(gameId);
 
   if (error) {
     return <></>;

@@ -6,7 +6,9 @@ import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrde
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
+import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
+import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -20,10 +22,9 @@ const messages = defineMessages('frontend.game.bottom.OddOneOutBottomPane', {
 });
 
 export default function OddOneOutBottomPane() {
-  const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-  const { chooserRepo } = gameRepositories;
-  const { chooser, loading, error } = chooserRepo.useChooser();
+  const game = useGame();
+  const { chooser, loading, error } = useChooser(game?.id ?? null);
+  if (!game) return null;
 
   if (error || loading || !chooser) {
     return <></>;
@@ -70,10 +71,9 @@ export function OddOneOutChooserStatusText({ authorized }: { authorized: boolean
 }
 
 function OddOneOutChooserController() {
-  const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-  const { timerRepo } = gameRepositories;
-  const { timer, timerLoading, timerError } = timerRepo.useTimer();
+  const game = useGame();
+  const { timer, timerLoading, timerError } = useTimer(game?.id ?? null);
+  if (!game) return null;
 
   if (timerError || timerLoading || !timer) {
     return <></>;

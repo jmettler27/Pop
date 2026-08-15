@@ -11,9 +11,9 @@ import NoteButton from '@/frontend/components/game/NoteButton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/frontend/components/ui/accordion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/frontend/components/ui/avatar';
 import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
+import { usePlayerOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useUser from '@/frontend/hooks/useUser';
 import { GameStatus } from '@/models/games/game-status';
@@ -200,10 +200,9 @@ function ProposalItem({
 }
 
 function SelectedProposalPlayerAvatar({ playerId }: { playerId: string }) {
-  const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-  const { playerRepo } = gameRepositories;
-  const { player, loading, error } = playerRepo.usePlayerOnce(playerId);
+  const game = useGame();
+  const { player, loading, error } = usePlayerOnce(game?.id ?? null, playerId);
+  if (!game) return null;
 
   if (error || loading || !player) return null;
 

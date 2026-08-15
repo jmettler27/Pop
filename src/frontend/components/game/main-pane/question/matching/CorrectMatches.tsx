@@ -1,4 +1,3 @@
-import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import { isObjectEmpty } from '@/backend/utils/objects';
 import {
   getNodeId,
@@ -6,6 +5,7 @@ import {
   type NodeData,
 } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
 import { Spinner } from '@/frontend/components/ui/spinner';
+import { useCorrectMatches } from '@/frontend/hooks/firestore/question/useGameMatchingQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
 
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
@@ -17,10 +17,14 @@ interface CorrectMatchesProps {
 
 export default function CorrectMatches({ nodePositions, colIndices }: CorrectMatchesProps) {
   const game = useGame();
-  if (!game) return null;
 
-  const gameQuestionRepo = new GameMatchingQuestionRepository(game.id as string, game.currentRound as string);
-  const { correctMatches, loading, error } = gameQuestionRepo.useCorrectMatches(game.currentQuestion as string);
+  const { correctMatches, loading, error } = useCorrectMatches(
+    game?.id ?? null,
+    game?.currentRound ?? null,
+    game?.currentQuestion as string
+  );
+
+  if (!game) return null;
 
   if (error) {
     return <></>;

@@ -3,6 +3,7 @@ import { runTransaction, Transaction } from 'firebase/firestore';
 import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
+import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
 import { GameNaguiQuestion, NAGUI_OPTION_TO_SOUND, NaguiQuestion } from '@/models/questions/nagui';
 import { QuestionType } from '@/models/questions/question-type';
@@ -11,11 +12,13 @@ import { PlayerStatus } from '@/models/users/player';
 
 export default class GameNaguiQuestionService extends GameQuestionService {
   readonly chooserRepo: ChooserRepository;
+  readonly readyRepo: ReadyRepository;
 
   constructor(gameId: string, roundId: string) {
     super(gameId, roundId, QuestionType.NAGUI);
     this.log = logger.child({ module: 'GameNaguiQuestionService', game: gameId, round: roundId });
     this.chooserRepo = new ChooserRepository(gameId);
+    this.readyRepo = new ReadyRepository(gameId);
   }
 
   async resetQuestionTransaction(transaction: Transaction, questionId: string) {
@@ -139,6 +142,13 @@ export default class GameNaguiQuestionService extends GameQuestionService {
           this.log.warn({ question: questionId }, 'Game question not found');
           throw new Error('Game question not found');
         }
+
+        const players = await this.playerRepo.getPlayersByTeamId(teamId);
+        if (!players || players.length === 0) {
+          this.log.warn({ question: questionId, team: teamId }, 'No players found for team');
+          throw new Error('No players found for team');
+        }
+
         await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.READY);
 
         const answerIdx = baseQuestion.answerIdx;
@@ -147,6 +157,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
         const reward = correct ? round.rewardsPerQuestion[gameQuestion.option!] : 0;
 
         await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward);
+        await this.readyRepo.updateNumReadyTransaction(transaction, players.length);
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
           playerId,
           choiceIdx,
@@ -200,11 +211,17 @@ export default class GameNaguiQuestionService extends GameQuestionService {
           throw new Error('Game question not found');
         }
 
+        const players = await this.playerRepo.getPlayersByTeamId(teamId);
+        if (!players || players.length === 0) {
+          this.log.warn({ question: questionId, team: teamId }, 'No players found for team');
+          throw new Error('No players found for team');
+        }
+
         const reward = correct ? round.rewardsPerQuestion[gameQuestion.option!] : 0;
 
         await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.READY);
-
         await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward);
+        await this.readyRepo.updateNumReadyTransaction(transaction, players.length);
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { playerId, reward, correct });
         await this.soundRepo.addSoundTransaction(transaction, correct ? 'anime_wow' : 'hysterical5');
         await this.endQuestionTransaction(transaction, questionId);

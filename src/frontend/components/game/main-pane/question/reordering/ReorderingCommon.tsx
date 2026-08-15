@@ -12,7 +12,9 @@ import NoteButton from '@/frontend/components/game/NoteButton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/frontend/components/ui/accordion';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
+import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
+import useGame from '@/frontend/hooks/useGame';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { questionTypeToTitle } from '@/models/questions/question-type';
 import { GameReorderingQuestion, Ordering, ReorderingItem, ReorderingQuestion } from '@/models/questions/reordering';
@@ -121,11 +123,10 @@ interface ReorderingResultsTableProps {
 
 export function ReorderingResultsTable({ gameQuestion, baseQuestion }: ReorderingResultsTableProps) {
   const intl = useIntl();
-  const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-  const { teamRepo, playerRepo } = gameRepositories;
-  const { teams, loading: teamsLoading } = teamRepo.useAllTeamsOnce();
-  const { players, loading: playersLoading } = playerRepo.useAllPlayersOnce();
+  const game = useGame();
+  const { teams, loading: teamsLoading } = useAllTeamsOnce(game?.id ?? null);
+  const { players, loading: playersLoading } = useAllPlayersOnce(game?.id ?? null);
+  if (!game) return null;
 
   if (teamsLoading || playersLoading) {
     return (

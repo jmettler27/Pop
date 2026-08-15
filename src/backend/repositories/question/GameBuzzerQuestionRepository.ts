@@ -112,12 +112,4 @@ export default class GameBuzzerQuestionRepository extends GameQuestionRepository
   async clearBuzzerTransaction(transaction: Transaction, questionId: string): Promise<void> {
     await this.updatePlayersTransaction(transaction, questionId, { buzzed: [] });
   }
-
-  useQuestionPlayers(questionId: string) {
-    const { data, loading, error } = this.useDocument([
-      questionId,
-      ...GameBuzzerQuestionRepository.BUZZER_PLAYERS_PATH,
-    ]);
-    return { data, loading, error };
-  }
 }

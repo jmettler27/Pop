@@ -1,17 +1,17 @@
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import { useAllTeams } from '@/frontend/hooks/firestore/user/useTeamHooks';
+import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { Chooser } from '@/models/chooser';
 import Team from '@/models/team';
 
 export default function GameChooserOrder({ chooser }: { chooser: Chooser }) {
   const intl = useIntl();
-  const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-  const { teamRepo } = gameRepositories;
-  const { teams, loading, error } = teamRepo.useAllTeams();
+  const game = useGame();
+  const { teams, loading, error } = useAllTeams(game?.id ?? null);
+  if (!game) return null;
 
   if (error || loading || !teams) {
     return <></>;

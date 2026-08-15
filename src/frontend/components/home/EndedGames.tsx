@@ -4,9 +4,6 @@ import { Clock, LayoutDashboard, UserCog, Users } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import GameRepository from '@/backend/repositories/game/GameRepository';
-import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
-import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from '@/frontend/components/home/GameAvatars';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Button } from '@/frontend/components/ui/button';
@@ -14,7 +11,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/
 import { Skeleton } from '@/frontend/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import { Locale, localeToEmoji } from '@/frontend/helpers/locales';
-import { timestampToDate, type FirestoreTimestamp } from '@/frontend/helpers/time';
+import { timestampToLongDateTime, type FirestoreTimestamp } from '@/frontend/helpers/time';
+import { useGamesByStatus } from '@/frontend/hooks/firestore/game/useGameHooks';
+import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganizerHooks';
+import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { type GameRounds } from '@/models/games/game';
@@ -29,8 +29,7 @@ const messages = defineMessages('frontend.home.EndedGames', {
 
 export default function EndedGames() {
   const intl = useIntl();
-  const gameRepo = new GameRepository();
-  const { games, loading, error } = gameRepo.useGamesByStatus(GameStatus.GAME_END);
+  const { games, loading, error } = useGamesByStatus(GameStatus.GAME_END);
 
   if (error) {
     return <></>;
@@ -79,10 +78,8 @@ export function EndedGameCard({ game }: EndedGameCardProps) {
   const { data: session } = useSession();
   const user = session?.user;
 
-  const organizerRepo = new OrganizerRepository(game.id ?? '');
-  const playerRepo = new PlayerRepository(game.id ?? '');
-  const { organizers, loading: organizersLoading, error: organizersError } = organizerRepo.useAllOrganizersOnce();
-  const { players, loading: playersLoading, error: playersError } = playerRepo.useAllPlayersOnce();
+  const { organizers, loading: organizersLoading, error: organizersError } = useAllOrganizersOnce(game.id ?? null);
+  const { players, loading: playersLoading, error: playersError } = useAllPlayersOnce(game.id ?? null);
 
   if (organizersError || playersError) {
     return <></>;
@@ -168,7 +165,7 @@ export function EndedGameCard({ game }: EndedGameCardProps) {
         <div className="flex items-center gap-1.5 pt-1.5 border-t border-slate-700/50">
           <Clock className="size-3.5 text-slate-400" />
           <span className="text-xs text-slate-400">
-            {timestampToDate(game.dateEnd as FirestoreTimestamp | null | undefined, intl.locale)}
+            {timestampToLongDateTime(game.dateEnd as FirestoreTimestamp | null | undefined, intl.locale)}
           </span>
         </div>
       </CardContent>

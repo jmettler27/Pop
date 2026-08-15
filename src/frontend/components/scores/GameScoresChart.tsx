@@ -14,7 +14,8 @@ import { Line } from 'react-chartjs-2';
 import { useIntl } from 'react-intl';
 
 import { Spinner } from '@/frontend/components/ui/spinner';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import { useAllRoundsOnce } from '@/frontend/hooks/firestore/round/useRoundHooks';
+import { useScoresOnce } from '@/frontend/hooks/firestore/score/useGameScoreHooks';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { AnyRound } from '@/models/rounds/RoundFactory';
 import { GameScores } from '@/models/scores';
@@ -57,14 +58,11 @@ export default function GameScoresChart({ currentRoundOrder, teams }: GameScores
   const gameId = id as string;
 
   // Return the rounds played up to the current round
-  const repos = useGameRepositories();
-  if (!repos) return <></>;
-  const { roundRepo, scoreRepo } = repos;
   const {
     rounds,
     loading: roundsLoading,
     error: roundsError,
-  } = roundRepo.useAllRoundsOnce({
+  } = useAllRoundsOnce(gameId, {
     where: {
       field: 'order',
       operator: '!=',
@@ -77,7 +75,7 @@ export default function GameScoresChart({ currentRoundOrder, teams }: GameScores
     limit: currentRoundOrder + 1,
   });
 
-  const { gameScores, loading: gameScoresLoading, error: gameScoresError } = scoreRepo.useScoresOnce();
+  const { gameScores, loading: gameScoresLoading, error: gameScoresError } = useScoresOnce(gameId);
 
   if (roundsError || gameScoresError) {
     return <></>;

@@ -5,8 +5,6 @@ import { ChevronDown, ChevronUp, Pencil, Timer as TimerIcon, Trash2 } from 'luci
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
-import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import {
   removeQuestionFromRound,
   updateQuestionChallengeTime,
@@ -41,6 +39,8 @@ import { Input } from '@/frontend/components/ui/input';
 import { Label } from '@/frontend/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/frontend/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
+import { useQuestion as useBaseQuestion } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
+import { useQuestion as useGameQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -84,8 +84,7 @@ export const EditQuestionCard = memo(function EditQuestionCard({
   const gameId = id as string;
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const baseQuestionRepo = new BaseQuestionRepository(QuestionType.BASIC);
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = baseQuestionRepo.useQuestion(questionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useBaseQuestion(questionId);
 
   if (baseQuestionError) {
     return <></>;
@@ -142,8 +141,7 @@ function EditQuestionCardInner({
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
-  const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(baseQuestion.type, gameId, roundId);
-  const { gameQuestion } = gameQuestionRepo.useQuestion(questionId);
+  const { gameQuestion } = useGameQuestion(gameId, roundId, baseQuestion.type, questionId);
 
   const gameQuestionAny = gameQuestion as { thinkingTime?: number; challengeTime?: number } | null;
   const questionThinkingTime = gameQuestionAny?.thinkingTime;

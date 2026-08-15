@@ -71,6 +71,11 @@ export default class PlayerService {
     }
   }
 
+  async resetAllPlayersStatus(): Promise<void> {
+    const playerIds = await this.playerRepo.getAllPlayerIds();
+    await this.playerRepo.updateAllPlayersStatus(PlayerStatus.IDLE, playerIds);
+  }
+
   async togglePlayerAuthorization(authorized: boolean | null = null) {
     try {
       await runTransaction(firestore, async (transaction) => {

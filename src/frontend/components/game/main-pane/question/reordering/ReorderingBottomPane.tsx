@@ -2,11 +2,11 @@
 
 import { useIntl } from 'react-intl';
 
-import GameReorderingQuestionRepository from '@/backend/repositories/question/GameReorderingQuestionRepository';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { QuestionType } from '@/models/questions/question-type';
@@ -15,10 +15,15 @@ import { ParticipantRole } from '@/models/users/participant';
 
 export default function ReorderingBottomPane({ baseQuestion }: { baseQuestion: ReorderingQuestion }) {
   const game = useGame();
-  if (!game) return null;
 
-  const gameQuestionRepo = new GameReorderingQuestionRepository(game.id as string, game.currentRound as string);
-  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  const { gameQuestion, loading, error } = useQuestion(
+    game?.id ?? null,
+    game?.currentRound ?? null,
+    QuestionType.REORDERING,
+    game?.currentQuestion as string
+  );
+
+  if (!game) return null;
 
   if (error || loading || !gameQuestion) {
     return <></>;
@@ -60,10 +65,9 @@ function ReorderingOrganizerController() {
 
 function ReorderingSubmittedTeams({ gameQuestion }: { gameQuestion: GameReorderingQuestion }) {
   const intl = useIntl();
-  const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-  const { teamRepo } = gameRepositories;
-  const { teams, loading, error } = teamRepo.useAllTeamsOnce();
+  const game = useGame();
+  const { teams, loading, error } = useAllTeamsOnce(game?.id ?? null);
+  if (!game) return null;
 
   if (error || loading || !teams) {
     return <></>;

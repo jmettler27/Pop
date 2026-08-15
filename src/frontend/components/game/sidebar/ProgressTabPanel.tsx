@@ -1,39 +1,23 @@
 import { useState } from 'react';
-import { useParams } from 'next/navigation';
 
-import { doc } from 'firebase/firestore';
-import { useDocument } from 'react-firebase-hooks/firestore';
 import { useIntl } from 'react-intl';
 
-import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import GlobalProgressTabPanel from '@/frontend/components/game/sidebar/GlobalProgressTabPanel';
 import RoundProgressTabPanel from '@/frontend/components/game/sidebar/RoundProgressTabPanel';
-import { Spinner } from '@/frontend/components/ui/spinner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/frontend/components/ui/tabs';
+import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/frontend/i18n/globalMessages';
+import { GameRounds } from '@/models/games/game';
 import { GameStatus } from '@/models/games/game-status';
 
 export default function ProgressTabPanel() {
-  const { id } = useParams();
-  const gameId = id as string;
-
-  const gameRef = doc(GAMES_COLLECTION_REF, gameId as string);
-  const [gameDoc, gameDocLoading, gameDocError] = useDocument(gameRef);
-  if (gameDocError) {
-    return <></>;
-  }
-  if (gameDocLoading) {
-    return <Spinner />;
-  }
-  if (!gameDoc) {
-    return <></>;
-  }
-  const game = { id: gameDoc.id, ...gameDoc.data() } as Record<string, unknown>;
+  const game = useGame();
+  if (!game) return null;
 
   return <ProgressTabPanelMainContent game={game} />;
 }
 
-function ProgressTabPanelMainContent({ game }: { game: Record<string, unknown> }) {
+function ProgressTabPanelMainContent({ game }: { game: GameRounds }) {
   const [value, setValue] = useState<'game' | 'round'>('game');
   const intl = useIntl();
 
@@ -42,7 +26,7 @@ function ProgressTabPanelMainContent({ game }: { game: Record<string, unknown> }
   if (game.status !== prevGameStatus || game.currentRound !== prevGameCurrentRound) {
     setPrevGameStatus(game.status);
     setPrevGameCurrentRound(game.currentRound);
-    setValue(!game.currentRound || game.status === 'game_home' ? 'game' : 'round');
+    setValue(!game.currentRound || game.status === GameStatus.GAME_HOME ? 'game' : 'round');
   }
 
   return (
@@ -62,18 +46,17 @@ function ProgressTabPanelMainContent({ game }: { game: Record<string, unknown> }
 
         {game.status !== GameStatus.GAME_START && (
           <TabsContent value="game">
-            <GlobalProgressTabPanel game={game as unknown as Parameters<typeof GlobalProgressTabPanel>[0]['game']} />
+            <GlobalProgressTabPanel game={game} />
           </TabsContent>
         )}
 
-        {game.type === 'rounds' &&
-          !!game.currentRound &&
+        {!!game.currentRound &&
           (game.status === GameStatus.ROUND_START ||
             game.status === GameStatus.ROUND_END ||
             game.status === GameStatus.QUESTION_ACTIVE ||
             game.status === GameStatus.QUESTION_END) && (
             <TabsContent value="round">
-              <RoundProgressTabPanel game={game as unknown as Parameters<typeof RoundProgressTabPanel>[0]['game']} />
+              <RoundProgressTabPanel game={game} />
             </TabsContent>
           )}
       </Tabs>

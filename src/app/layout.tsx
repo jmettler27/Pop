@@ -7,6 +7,7 @@ import { getServerSession } from 'next-auth';
 
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import LocaleProvider from '@/app/LocaleProvider';
+import QueryProvider from '@/app/QueryProvider';
 import SessionProvider from '@/app/SessionProvider';
 import { TooltipProvider } from '@/frontend/components/ui/tooltip';
 import { cn } from '@/frontend/lib/utils';
@@ -28,11 +29,13 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     // class="dark" is permanent — the app only supports dark mode (see @custom-variant dark in globals.css)
     <html lang="fr" className={cn('dark', 'font-sans', geist.variable)}>
       <body className={`${inter.className} bg-slate-800 text-slate-100`}>
-        <SessionProvider session={session}>
-          <LocaleProvider>
-            <TooltipProvider>{children}</TooltipProvider>
-          </LocaleProvider>
-        </SessionProvider>
+        <QueryProvider>
+          <SessionProvider session={session}>
+            <LocaleProvider>
+              <TooltipProvider>{children}</TooltipProvider>
+            </LocaleProvider>
+          </SessionProvider>
+        </QueryProvider>
       </body>
     </html>
   );

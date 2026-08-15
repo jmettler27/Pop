@@ -6,15 +6,15 @@ import Image from 'next/image';
 import { clsx } from 'clsx';
 import { Check, TriangleAlert, X } from 'lucide-react';
 
-import GameNaguiQuestionRepository from '@/backend/repositories/question/GameNaguiQuestionRepository';
 import { selectChoice } from '@/backend/services/question/nagui/actions';
 import { shuffleIndices } from '@/backend/utils/arrays';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Avatar, AvatarFallback, AvatarImage } from '@/frontend/components/ui/avatar';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import { usePlayerOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
@@ -26,6 +26,7 @@ import {
   NaguiQuestion,
   SquareNaguiOption,
 } from '@/models/questions/nagui';
+import { QuestionType } from '@/models/questions/question-type';
 import { ParticipantRole } from '@/models/users/participant';
 
 export default function NaguiMainContent({ baseQuestion }: { baseQuestion: NaguiQuestion }) {
@@ -89,10 +90,15 @@ function NaguiMainContentQuestion({
   randomization: number[];
 }) {
   const game = useGame();
-  if (!game) return null;
 
-  const gameQuestionRepo = new GameNaguiQuestionRepository(game.id as string, game.currentRound as string);
-  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  const { gameQuestion, loading, error } = useQuestion(
+    game?.id ?? null,
+    game?.currentRound ?? null,
+    QuestionType.NAGUI,
+    game?.currentQuestion as string
+  );
+
+  if (!game) return null;
 
   if (error) {
     return <ErrorScreen inline />;
@@ -291,10 +297,9 @@ function EndedNaguiChoices({
 }
 
 function PlayerAvatar({ playerId }: { playerId: string | null }) {
-  const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-  const { playerRepo } = gameRepositories;
-  const { player, loading, error } = playerRepo.usePlayerOnce(playerId ?? '');
+  const game = useGame();
+  const { player, loading, error } = usePlayerOnce(game?.id ?? null, playerId ?? '');
+  if (!game) return null;
 
   if (error || loading || !player) return null;
 

@@ -1,11 +1,11 @@
-import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
 import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import { Spinner } from '@/frontend/components/ui/spinner';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import { Chooser } from '@/models/chooser';
 import { GameRounds } from '@/models/games/game';
@@ -18,10 +18,9 @@ interface MCQBottomPaneProps {
 }
 
 export default function MCQBottomPane({ baseQuestion: _baseQuestion }: MCQBottomPaneProps) {
-  const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-  const { chooserRepo } = gameRepositories;
-  const { chooser, loading, error } = chooserRepo.useChooser();
+  const game = useGame();
+  const { chooser, loading, error } = useChooser(game?.id ?? null);
+  if (!game) return null;
 
   if (error) {
     return <></>;
@@ -54,12 +53,17 @@ interface MCQControllerProps {
 function MCQController({ chooser }: MCQControllerProps) {
   const game = useGame() as GameRounds;
   const myRole = useRole();
-  if (!game) return null;
 
   const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx] ?? '';
 
-  const gameQuestionRepo = new GameMCQQuestionRepository(game.id as string, game.currentRound as string);
-  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  const { gameQuestion, loading, error } = useQuestion(
+    game?.id ?? null,
+    game?.currentRound ?? null,
+    QuestionType.MCQ,
+    game?.currentQuestion as string
+  );
+
+  if (!game) return null;
 
   if (error) {
     return <></>;

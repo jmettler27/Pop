@@ -1,23 +1,29 @@
 'use client';
 
-import GameEstimationQuestionRepository from '@/backend/repositories/question/GameEstimationQuestionRepository';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import EstimationOrganizerPane from '@/frontend/components/game/main-pane/question/estimation/EstimationOrganizerPane';
 import EstimationPlayerPane from '@/frontend/components/game/main-pane/question/estimation/EstimationPlayerPane';
 import EstimationSpectatorPane from '@/frontend/components/game/main-pane/question/estimation/EstimationSpectatorPane';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import { EstimationQuestion, GameEstimationQuestion } from '@/models/questions/estimation';
+import { QuestionType } from '@/models/questions/question-type';
 import { ParticipantRole } from '@/models/users/participant';
 
 export default function EstimationMiddlePane({ baseQuestion }: { baseQuestion: EstimationQuestion }) {
   const game = useGame();
   const myRole = useRole();
-  if (!game) return null;
 
-  const gameQuestionRepo = new GameEstimationQuestionRepository(game.id as string, game.currentRound as string);
-  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  const { gameQuestion, loading, error } = useQuestion(
+    game?.id ?? null,
+    game?.currentRound ?? null,
+    QuestionType.ESTIMATION,
+    game?.currentQuestion as string
+  );
+
+  if (!game) return null;
 
   if (error) {
     return <ErrorScreen inline />;
