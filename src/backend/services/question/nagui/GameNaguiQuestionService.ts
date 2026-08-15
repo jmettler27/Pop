@@ -3,6 +3,7 @@ import { runTransaction, Transaction } from 'firebase/firestore';
 import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
+import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
 import { GameNaguiQuestion, NAGUI_OPTION_TO_SOUND, NaguiQuestion } from '@/models/questions/nagui';
 import { QuestionType } from '@/models/questions/question-type';
@@ -11,11 +12,13 @@ import { PlayerStatus } from '@/models/users/player';
 
 export default class GameNaguiQuestionService extends GameQuestionService {
   readonly chooserRepo: ChooserRepository;
+  readonly readyRepo: ReadyRepository;
 
   constructor(gameId: string, roundId: string) {
     super(gameId, roundId, QuestionType.NAGUI);
     this.log = logger.child({ module: 'GameNaguiQuestionService', game: gameId, round: roundId });
     this.chooserRepo = new ChooserRepository(gameId);
+    this.readyRepo = new ReadyRepository(gameId);
   }
 
   async resetQuestionTransaction(transaction: Transaction, questionId: string) {
@@ -140,6 +143,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
           throw new Error('Game question not found');
         }
         await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.READY);
+        await this.readyRepo.updateNumReadyTransaction(transaction, 1);
 
         const answerIdx = baseQuestion.answerIdx;
         const correct = choiceIdx === answerIdx;
@@ -203,7 +207,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
         const reward = correct ? round.rewardsPerQuestion[gameQuestion.option!] : 0;
 
         await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.READY);
-
+        await this.readyRepo.updateNumReadyTransaction(transaction, 1);
         await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward);
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { playerId, reward, correct });
         await this.soundRepo.addSoundTransaction(transaction, correct ? 'anime_wow' : 'hysterical5');
