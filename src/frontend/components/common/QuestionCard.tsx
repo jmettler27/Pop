@@ -11,14 +11,19 @@ import { Separator } from '@/frontend/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import type { Locale } from '@/frontend/helpers/locales';
 import { LOCALE_TO_EMOJI } from '@/frontend/helpers/locales';
-import { QUESTION_ELEMENT_TO_EMOJI, QUESTION_ELEMENT_TO_TITLE } from '@/frontend/helpers/question';
+import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
 import { timestampToDate, type FirestoreTimestamp } from '@/frontend/helpers/time';
+import defineMessages from '@/frontend/i18n/defineMessages';
 import { BlindtestQuestion } from '@/models/questions/blindtest';
 import { MCQQuestion } from '@/models/questions/mcq';
 import { NaguiQuestion } from '@/models/questions/nagui';
 import { QuestionType, questionTypeToEmoji } from '@/models/questions/question-type';
 import type { AnyBaseQuestion } from '@/models/questions/QuestionFactory';
 import { prependTopicWithEmoji, topicToEmoji, type Topic } from '@/models/topic';
+
+const messages = defineMessages('frontend.components.QuestionCard', {
+  createdBy: 'Created by',
+});
 
 interface QuestionCardProps {
   baseQuestion: AnyBaseQuestion;
@@ -126,7 +131,7 @@ function QuestionCardFooter({ baseQuestion }: QuestionCardFooterProps) {
   return (
     <p className="text-xs sm:text-sm 2xl:text-base dark:text-white">
       {LOCALE_TO_EMOJI[(baseQuestion as { lang: keyof typeof LOCALE_TO_EMOJI }).lang]}{' '}
-      {QUESTION_ELEMENT_TO_TITLE[intl.locale]['createdBy']} <strong>{user.name}</strong> (
+      {intl.formatMessage(messages.createdBy)} <strong>{user.name}</strong> (
       {timestampToDate((baseQuestion as { createdAt: FirestoreTimestamp | null | undefined }).createdAt, intl.locale)})
     </p>
   );
