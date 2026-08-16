@@ -22,6 +22,10 @@ import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { SelectItem } from '@/frontend/components/ui/select';
 import { Spinner } from '@/frontend/components/ui/spinner';
+import { useGameOnce } from '@/frontend/hooks/firestore/game/useGameHooks';
+import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganizerHooks';
+import { useAllPlayerIdentitiesOnce, useTeamPlayers } from '@/frontend/hooks/firestore/user/usePlayerHooks';
+import { useJoinableTeams } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -70,7 +74,7 @@ function JoinGameHeader() {
   const { id } = useParams();
   const gameId = id as string;
   const { gameRepo } = useGameRepositories(gameId)!;
-  const { game, loading, error } = gameRepo.useGameOnce(gameId);
+  const { game, loading, error } = useGameOnce(gameRepo, gameId);
   const intl = useIntl();
 
   if (error || loading || !game) {
@@ -87,9 +91,9 @@ function JoinGameHeader() {
 const useGameData = (gameId: string) => {
   const { gameRepo, organizerRepo, playerRepo } = useGameRepositories(gameId)!;
 
-  const { game, loading: gameLoading, error: gameError } = gameRepo.useGameOnce(gameId);
-  const { organizers, loading: orgLoading, error: orgError } = organizerRepo.useAllOrganizersOnce();
-  const { players, loading: playerLoading, error: playerError } = playerRepo.useAllPlayerIdentitiesOnce();
+  const { game, loading: gameLoading, error: gameError } = useGameOnce(gameRepo, gameId);
+  const { organizers, loading: orgLoading, error: orgError } = useAllOrganizersOnce(organizerRepo);
+  const { players, loading: playerLoading, error: playerError } = useAllPlayerIdentitiesOnce(playerRepo);
 
   return {
     game,
@@ -286,7 +290,7 @@ function JoinOrCreateTeam({ validationSchema }: { validationSchema: AnyObjectSch
   const intl = useIntl();
 
   const { teamRepo } = useGameRepositories(gameId)!;
-  const { teams, loading, error } = teamRepo.useJoinableTeams();
+  const { teams, loading, error } = useJoinableTeams(teamRepo);
 
   if (error) {
     return <></>;
@@ -337,7 +341,7 @@ function SelectTeamOption({ team }: { team: Team }) {
   const { id } = useParams();
   const gameId = id as string;
   const { playerRepo } = useGameRepositories(gameId)!;
-  const { players, loading, error } = playerRepo.useTeamPlayers(team.id!);
+  const { players, loading, error } = useTeamPlayers(playerRepo, team.id!);
 
   if (error) {
     return <></>;

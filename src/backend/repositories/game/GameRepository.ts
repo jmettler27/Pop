@@ -93,31 +93,4 @@ export default class GameRepository extends FirebaseRepository {
       status: GameStatus.QUESTION_ACTIVE,
     });
   }
-
-  useGame(id: string) {
-    const { data, loading, error } = super.useDocument(id);
-    return { game: data ? GameFactory.createGame(data.type as GameType, data) : null, loading, error };
-  }
-
-  useGameOnce(id: string) {
-    const { data, loading, error } = super.useDocumentOnce(id);
-    return { game: data ? GameFactory.createGame(data.type as GameType, data) : null, loading, error };
-  }
-
-  useAllGames() {
-    const { data, loading, error } = super.useCollection();
-    return { games: data.map((g) => GameFactory.createGame(g.type as GameType, g)), loading, error };
-  }
-
-  useGamesByStatus(status: string) {
-    const { data, loading, error } = super.useCollection({ where: { field: 'status', operator: '==', value: status } });
-    return { games: data.map((g) => GameFactory.createGame(g.type as GameType, g)), loading, error };
-  }
-
-  useGamesByCreator(creatorId: string) {
-    const { data, loading, error } = super.useCollection({
-      where: { field: 'createdBy', operator: '==', value: creatorId },
-    });
-    return { games: data.map((g) => GameFactory.createGame(g.type as GameType, g)), loading, error };
-  }
 }

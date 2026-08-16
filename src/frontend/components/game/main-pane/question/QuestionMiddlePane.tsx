@@ -14,6 +14,7 @@ import OddOneOutMiddlePane from '@/frontend/components/game/main-pane/question/o
 import QuoteMiddlePane from '@/frontend/components/game/main-pane/question/quote/QuoteMiddlePane';
 import ReorderingMiddlePane from '@/frontend/components/game/main-pane/question/reordering/ReorderingMiddlePane';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
 import { QuestionType } from '@/models/questions/question-type';
 
@@ -22,7 +23,8 @@ export default function QuestionMiddlePane() {
 
   const questionType = (game!.currentQuestionType ?? '') as QuestionType;
   const baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(questionType);
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = baseQuestionRepo.useQuestionOnce(
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(
+    baseQuestionRepo,
     game!.currentQuestion as string
   );
 

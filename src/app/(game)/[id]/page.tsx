@@ -13,6 +13,9 @@ import { GameRepositoriesProvider } from '@/frontend/contexts/GameRepositoriesCo
 import { RoleProvider } from '@/frontend/contexts/RoleContext';
 import { TeamProvider } from '@/frontend/contexts/TeamContext';
 import { UserProvider } from '@/frontend/contexts/UserContext';
+import { useGame } from '@/frontend/hooks/firestore/game/useGameHooks';
+import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganizerHooks';
+import { useAllPlayerIdentitiesOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import { GameStatus } from '@/models/games/game-status';
 import { ParticipantRole } from '@/models/users/participant';
@@ -30,17 +33,20 @@ export default function GamePage() {
   const params = useParams();
   const gameId = params.id as string;
   const repositories = useGameRepositories(gameId);
+  const { game, loading: gameLoading, error: gameError } = useGame(repositories?.gameRepo ?? null, gameId);
+  const {
+    organizers,
+    loading: orgLoading,
+    error: orgError,
+  } = useAllOrganizersOnce(repositories?.organizerRepo ?? null);
+  const {
+    players,
+    loading: playerLoading,
+    error: playerError,
+  } = useAllPlayerIdentitiesOnce(repositories?.playerRepo ?? null);
   if (!repositories) {
     return <ErrorScreen />;
   }
-
-  const gameRepo = repositories.gameRepo;
-  const organizerRepo = repositories.organizerRepo;
-  const playerRepo = repositories.playerRepo;
-
-  const { game, loading: gameLoading, error: gameError } = gameRepo.useGame(gameId);
-  const { organizers, loading: orgLoading, error: orgError } = organizerRepo.useAllOrganizersOnce();
-  const { players, loading: playerLoading, error: playerError } = playerRepo.useAllPlayerIdentitiesOnce();
 
   if (gameError || orgError || playerError) {
     return <ErrorScreen />;

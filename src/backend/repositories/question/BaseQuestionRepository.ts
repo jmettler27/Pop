@@ -1,5 +1,4 @@
 import { query, Transaction, where } from 'firebase/firestore';
-import { useCollectionOnce } from 'react-firebase-hooks/firestore';
 
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 import { BaseQuestionData, UpdateBaseQuestionData, type CreateBaseQuestionData } from '@/models/questions/question';
@@ -7,7 +6,7 @@ import { type QuestionType } from '@/models/questions/question-type';
 import QuestionFactory, { type AnyBaseQuestion } from '@/models/questions/QuestionFactory';
 
 export default class BaseQuestionRepository extends FirebaseRepository {
-  protected questionType: QuestionType;
+  public readonly questionType: QuestionType;
 
   constructor(questionType: QuestionType) {
     super('questions');
@@ -43,36 +42,12 @@ export default class BaseQuestionRepository extends FirebaseRepository {
     return QuestionFactory.createBaseQuestion(this.questionType, result as BaseQuestionData);
   }
 
-  useQuestionOnce(questionId: string) {
-    const { data, loading, error } = super.useDocumentOnce(questionId);
-    return {
-      baseQuestion: data ? QuestionFactory.createBaseQuestion(data.type as QuestionType, data) : null,
-      baseQuestionLoading: loading,
-      baseQuestionError: error,
-    };
-  }
-
-  useQuestionsOnce(approved: boolean = true) {
-    const q = query(this.collectionRef, where('type', '==', this.questionType), where('approved', '==', approved));
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [data, loading, error] = useCollectionOnce(q);
-    return {
-      baseQuestions:
-        data?.docs.map((d) => {
-          const docData: Record<string, unknown> = { id: d.id, ...d.data() };
-          return QuestionFactory.createBaseQuestion(docData.type as QuestionType, docData);
-        }) ?? null,
-      baseQuestionsLoading: loading,
-      baseQuestionsError: error,
-    };
-  }
-
-  useQuestion(questionId: string) {
-    const { data, loading, error } = super.useDocument(questionId);
-    return {
-      baseQuestion: data ? QuestionFactory.createBaseQuestion(data.type as QuestionType, data) : null,
-      baseQuestionLoading: loading,
-      baseQuestionError: error,
-    };
+  // Total count of questions of this type, for the "Page X of Y" indicator — a Firestore count()
+  // aggregation, billed as a single read regardless of how many questions match. Plain async method
+  // (not a hook), see FirebaseRepository.getCount; pair with useFirestoreCount from a client component.
+  getQuestionsCount(approved: boolean): Promise<number> {
+    return super.getCount((ref) =>
+      query(ref, where('type', '==', this.questionType), where('approved', '==', approved))
+    );
   }
 }

@@ -12,6 +12,8 @@ import NoteButton from '@/frontend/components/game/NoteButton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/frontend/components/ui/accordion';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
+import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
+import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { questionTypeToTitle } from '@/models/questions/question-type';
@@ -122,10 +124,9 @@ interface ReorderingResultsTableProps {
 export function ReorderingResultsTable({ gameQuestion, baseQuestion }: ReorderingResultsTableProps) {
   const intl = useIntl();
   const gameRepositories = useGameRepositories();
+  const { teams, loading: teamsLoading } = useAllTeamsOnce(gameRepositories?.teamRepo ?? null);
+  const { players, loading: playersLoading } = useAllPlayersOnce(gameRepositories?.playerRepo ?? null);
   if (!gameRepositories) return null;
-  const { teamRepo, playerRepo } = gameRepositories;
-  const { teams, loading: teamsLoading } = teamRepo.useAllTeamsOnce();
-  const { players, loading: playersLoading } = playerRepo.useAllPlayersOnce();
 
   if (teamsLoading || playersLoading) {
     return (

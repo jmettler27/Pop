@@ -16,6 +16,8 @@ import {
 } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
 import SubmitMatchDialog from '@/frontend/components/game/main-pane/question/matching/SubmitMatchDialog';
 import { Spinner } from '@/frontend/components/ui/spinner';
+import { useCorrectMatches, useIsCanceled } from '@/frontend/hooks/firestore/question/useGameMatchingQuestionHooks';
+import { useIsChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
@@ -126,24 +128,26 @@ function ActiveMatchingQuestionNodes({
   const myTeam = useTeam();
   const myRole = useRole();
   const gameRepositories = useGameRepositories();
+  const {
+    isChooser,
+    loading: isChooserLoading,
+    error: isChooserError,
+  } = useIsChooser(gameRepositories?.chooserRepo ?? null, myTeam as string);
 
-  if (!game) return null;
-  if (!gameRepositories) return null;
-  const { chooserRepo } = gameRepositories;
-
-  const { isChooser, loading: isChooserLoading, error: isChooserError } = chooserRepo.useIsChooser(myTeam as string);
-
-  const gameQuestionRepo = new GameMatchingQuestionRepository(game.id as string, game.currentRound as string);
+  const gameQuestionRepo = new GameMatchingQuestionRepository(game?.id as string, game?.currentRound as string);
   const {
     isCanceled,
     loading: isCanceledLoading,
     error: isCanceledError,
-  } = gameQuestionRepo.useIsCanceled(game.currentQuestion as string, myTeam as string);
+  } = useIsCanceled(gameQuestionRepo, game?.currentQuestion as string, myTeam as string);
   const {
     correctMatches,
     loading: correctMatchesLoading,
     error: correctMatchesError,
-  } = gameQuestionRepo.useCorrectMatches(game.currentQuestion as string);
+  } = useCorrectMatches(gameQuestionRepo, game?.currentQuestion as string);
+
+  if (!game) return null;
+  if (!gameRepositories) return null;
 
   if (isChooserError || isCanceledError || correctMatchesError) return <></>;
   if (isChooserLoading || isCanceledLoading || correctMatchesLoading) return <Spinner />;

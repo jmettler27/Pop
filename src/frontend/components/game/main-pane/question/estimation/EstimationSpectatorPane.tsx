@@ -1,7 +1,5 @@
 'use client';
 
-import { useObject } from 'react-firebase-hooks/database';
-
 import { SERVER_TIME_OFFSET_REF } from '@/backend/firebase/database';
 import {
   EstimationEndView,
@@ -9,6 +7,8 @@ import {
 } from '@/frontend/components/game/main-pane/question/estimation/EstimationCommon';
 import Timer from '@/frontend/components/game/timer/Timer';
 import { Spinner } from '@/frontend/components/ui/spinner';
+import { useRealtimeDatabaseValue } from '@/frontend/hooks/database/useRealtimeDatabaseValue';
+import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import { GameStatus } from '@/models/games/game-status';
@@ -39,18 +39,29 @@ export default function EstimationSpectatorPane({ baseQuestion, gameQuestion }: 
 
 function EstimationSpectatorActiveView() {
   const gameRepositories = useGameRepositories();
-  const [offsetSnapshot, offsetLoading, offsetError] = useObject(SERVER_TIME_OFFSET_REF);
+  const {
+    data: serverTimeOffset,
+    isLoading: offsetLoading,
+    error: offsetError,
+  } = useRealtimeDatabaseValue<number>(SERVER_TIME_OFFSET_REF);
+  const { timer, timerLoading, timerError } = useTimer(gameRepositories?.timerRepo ?? null);
   if (!gameRepositories) return null;
-  const { timerRepo } = gameRepositories;
-  const { timer, timerLoading, timerError } = timerRepo.useTimer();
 
-  if (offsetError || timerError || offsetLoading || timerLoading || !offsetSnapshot || !timer) {
+  if (
+    offsetError ||
+    timerError ||
+    offsetLoading ||
+    timerLoading ||
+    serverTimeOffset === null ||
+    serverTimeOffset === undefined ||
+    !timer
+  ) {
     return offsetLoading || timerLoading ? <Spinner /> : <></>;
   }
 
   return (
     <span className="text-6xl sm:text-7xl lg:text-8xl font-bold tabular-nums">
-      ⌛ <Timer timer={timer as never} serverTimeOffset={offsetSnapshot.val()} />
+      ⌛ <Timer timer={timer as never} serverTimeOffset={serverTimeOffset} />
     </span>
   );
 }

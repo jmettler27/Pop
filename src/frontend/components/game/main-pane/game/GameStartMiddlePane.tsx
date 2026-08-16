@@ -8,6 +8,7 @@ import QRCode from 'react-qr-code';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Avatar, AvatarFallback, AvatarImage } from '@/frontend/components/ui/avatar';
+import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganizerHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useHasMounted from '@/frontend/hooks/useHasMounted';
@@ -29,11 +30,14 @@ export default function GameStartMiddlePane() {
   const searchParams = useSearchParams();
   const forceSpectator = searchParams.get('spectator') === '1';
 
+  const {
+    organizers,
+    loading: orgLoading,
+    error: orgError,
+  } = useAllOrganizersOnce(gameRepositories?.organizerRepo ?? null);
+
   if (!game) return null;
   if (!gameRepositories) return null;
-
-  const { organizerRepo } = gameRepositories;
-  const { organizers, loading: orgLoading, error: orgError } = organizerRepo.useAllOrganizersOnce();
 
   if (orgLoading) return <LoadingScreen inline />;
   if (orgError) return <ErrorScreen inline />;

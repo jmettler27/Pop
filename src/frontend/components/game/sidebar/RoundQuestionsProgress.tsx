@@ -11,6 +11,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Separator } from '@/frontend/components/ui/separator';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { Locale } from '@/frontend/helpers/locales';
+import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
+import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -62,11 +66,13 @@ export default function RoundQuestionsProgress({ game, round }: RoundQuestionsPr
   }
 
   const gameRepositories = useGameRepositories();
+  const { teams, loading: teamsLoading, error: teamsError } = useAllTeamsOnce(gameRepositories?.teamRepo ?? null);
+  const {
+    players,
+    loading: playersLoading,
+    error: playersError,
+  } = useAllPlayersOnce(gameRepositories?.playerRepo ?? null);
   if (!gameRepositories) return null;
-  const { teamRepo, playerRepo } = gameRepositories;
-
-  const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeamsOnce();
-  const { players, loading: playersLoading, error: playersError } = playerRepo.useAllPlayersOnce();
 
   if (teamsError || playersError) return <></>;
   if (teamsLoading || playersLoading) return <Spinner />;
@@ -126,8 +132,8 @@ function useRoundQuestion(questionType: QuestionType, roundId: string, questionI
   const { id: gameId } = useParams();
   const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(questionType, gameId as string, roundId);
   const baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(questionType);
-  const { gameQuestion, loading: gqLoading, error: gqError } = gameQuestionRepo.useQuestion(questionId);
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = baseQuestionRepo.useQuestionOnce(questionId);
+  const { gameQuestion, loading: gqLoading, error: gqError } = useQuestion(gameQuestionRepo, questionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(baseQuestionRepo, questionId);
   return {
     gameQuestion,
     baseQuestion,

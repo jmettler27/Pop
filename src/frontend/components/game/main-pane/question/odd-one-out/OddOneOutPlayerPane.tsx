@@ -6,6 +6,8 @@ import {
   OddOneOutQuestionHeader,
 } from '@/frontend/components/game/main-pane/question/odd-one-out/OddOneOutCommon';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
+import { useIsChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useTeam from '@/frontend/hooks/useTeam';
@@ -21,12 +23,14 @@ export default function OddOneOutPlayerPane({ baseQuestion, gameQuestion, random
   const game = useGame();
   const myTeam = useTeam();
   const gameRepositories = useGameRepositories();
+  const {
+    isChooser,
+    loading: chooserLoading,
+    error: chooserError,
+  } = useIsChooser(gameRepositories?.chooserRepo ?? null, myTeam as string);
+  const { timer, timerLoading, timerError } = useTimer(gameRepositories?.timerRepo ?? null);
 
   if (!gameRepositories) return null;
-  const { chooserRepo, timerRepo } = gameRepositories;
-
-  const { isChooser, loading: chooserLoading, error: chooserError } = chooserRepo.useIsChooser(myTeam as string);
-  const { timer, timerLoading, timerError } = timerRepo.useTimer();
 
   if (chooserError || timerError) return <ErrorScreen inline />;
   if (chooserLoading || timerLoading) return <LoadingScreen inline />;

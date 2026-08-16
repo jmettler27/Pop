@@ -6,6 +6,7 @@ import { useIntl } from 'react-intl';
 import { scoreboardMessages } from '@/frontend/components/scores/scoreboardUtils';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/frontend/components/ui/table';
 import { rankingToEmoji } from '@/frontend/helpers/emojis';
+import { useRoundOnce } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import { GameRounds } from '@/models/games/game';
@@ -36,10 +37,9 @@ export default function RoundScoreboard({ roundScores, teams }: RoundScoreboardP
   const game = useGame();
 
   const repos = useGameRepositories();
-  if (!repos) return <></>;
-  const { roundRepo } = repos;
   const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
-  const { round, loading, error } = roundRepo.useRoundOnce(currentRound ?? '');
+  const { round, loading, error } = useRoundOnce(repos?.roundRepo ?? null, currentRound ?? '');
+  if (!repos) return <></>;
   if (error || loading || !round || !currentRound) {
     return <></>;
   }

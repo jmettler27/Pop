@@ -9,6 +9,7 @@ import ReorderingOrganizerPane from '@/frontend/components/game/main-pane/questi
 import ReorderingPlayerPane from '@/frontend/components/game/main-pane/question/reordering/ReorderingPlayerPane';
 import ReorderingSpectatorPane from '@/frontend/components/game/main-pane/question/reordering/ReorderingSpectatorPane';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import { GameReorderingQuestion, ReorderingQuestion } from '@/models/questions/reordering';
@@ -19,10 +20,11 @@ export default function ReorderingMiddlePane({ baseQuestion }: { baseQuestion: R
   const myRole = useRole();
   // Initialize random order (consistent for the session)
   const randomMapping = useMemo(() => shuffleIndices(baseQuestion.items?.length ?? 0), [baseQuestion.items?.length]);
-  if (!game) return null;
 
-  const gameQuestionRepo = new GameReorderingQuestionRepository(game.id as string, game.currentRound as string);
-  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  const gameQuestionRepo = new GameReorderingQuestionRepository(game?.id as string, game?.currentRound as string);
+  const { gameQuestion, loading, error } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+
+  if (!game) return null;
 
   if (error) {
     return <ErrorScreen inline />;

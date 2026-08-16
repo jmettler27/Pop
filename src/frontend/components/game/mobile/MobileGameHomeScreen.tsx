@@ -2,16 +2,15 @@
 
 import GameChooserTeamAnnouncement from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import GameHomeMiddlePane from '@/frontend/components/game/main-pane/game/GameHomeMiddlePane';
+import { useIsChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useTeam from '@/frontend/hooks/useTeam';
 
 export default function MobileGameHomeScreen() {
   const myTeam = useTeam();
   const gameRepositories = useGameRepositories();
+  const { isChooser, loading, error } = useIsChooser(gameRepositories?.chooserRepo ?? null, myTeam as string);
   if (!gameRepositories) return null;
-
-  const { chooserRepo } = gameRepositories;
-  const { isChooser, loading, error } = chooserRepo.useIsChooser(myTeam as string);
 
   if (error || loading || isChooser === null) return null;
 

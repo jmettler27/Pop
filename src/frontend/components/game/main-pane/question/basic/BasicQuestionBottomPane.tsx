@@ -2,6 +2,8 @@ import GameBasicQuestionRepository from '@/backend/repositories/question/GameBas
 import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import BasicQuestionOrganizerController from '@/frontend/components/game/main-pane/question/basic/BasicQuestionOrganizerController';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
@@ -12,9 +14,8 @@ import { ParticipantRole } from '@/models/users/participant';
 
 export default function BasicQuestionBottomPane() {
   const gameRepositories = useGameRepositories();
+  const { chooser, loading: chooserLoading, error: chooserError } = useChooser(gameRepositories?.chooserRepo ?? null);
   if (!gameRepositories) return <></>;
-  const { chooserRepo } = gameRepositories;
-  const { chooser, loading: chooserLoading, error: chooserError } = chooserRepo.useChooser();
   if (chooserError || chooserLoading || !chooser) {
     return <></>;
   }
@@ -34,15 +35,16 @@ export default function BasicQuestionBottomPane() {
 function BasicQuestionController() {
   const game = useGame();
   const myRole = useRole();
-  if (!game) return <></>;
 
   const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
-  const gameQuestionRepo = new GameBasicQuestionRepository(game.id as string, currentRound as string);
+  const gameQuestionRepo = new GameBasicQuestionRepository(game?.id as string, currentRound as string);
   const {
     gameQuestion,
     loading: gameQuestionLoading,
     error: gameQuestionError,
-  } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+
+  if (!game) return <></>;
 
   if (gameQuestionError || gameQuestionLoading || !gameQuestion) {
     return <></>;

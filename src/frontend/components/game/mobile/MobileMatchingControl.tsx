@@ -6,6 +6,8 @@ import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameCh
 import ActiveMatchingQuestionGrid from '@/frontend/components/game/main-pane/question/matching/ActiveMatchingQuestionGrid';
 import { generateShuffledNodePositions } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
 import { Spinner } from '@/frontend/components/ui/spinner';
+import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
+import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useTeam from '@/frontend/hooks/useTeam';
@@ -18,12 +20,12 @@ export default function MobileMatchingControl() {
   const gameRepositories = useGameRepositories();
 
   const baseQuestionRepo = new BaseMatchingQuestionRepository();
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = baseQuestionRepo.useQuestionOnce(
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(
+    baseQuestionRepo,
     game!.currentQuestion as string
   );
 
-  const { chooserRepo } = gameRepositories ?? {};
-  const { chooser, loading: chooserLoading, error: chooserError } = chooserRepo?.useChooser() ?? {};
+  const { chooser, loading: chooserLoading, error: chooserError } = useChooser(gameRepositories?.chooserRepo ?? null);
 
   const bq = baseQuestion as MatchingQuestion | undefined;
   const numCols = bq?.numCols;

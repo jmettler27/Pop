@@ -5,6 +5,7 @@ import {
   MatchingEdge,
   type NodeData,
 } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
+import { usePartiallyCorrectMatches } from '@/frontend/hooks/firestore/question/useGameMatchingQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
 
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
@@ -15,12 +16,14 @@ interface PartiallyCorrectMatchesProps {
 
 export default function PartiallyCorrectMatches({ nodePositions }: PartiallyCorrectMatchesProps) {
   const game = useGame();
-  if (!game) return null;
 
-  const gameQuestionRepo = new GameMatchingQuestionRepository(game.id as string, game.currentRound as string);
-  const { partiallyCorrectMatches, loading, error } = gameQuestionRepo.usePartiallyCorrectMatches(
-    game.currentQuestion as string
+  const gameQuestionRepo = new GameMatchingQuestionRepository(game?.id as string, game?.currentRound as string);
+  const { partiallyCorrectMatches, loading, error } = usePartiallyCorrectMatches(
+    gameQuestionRepo,
+    game?.currentQuestion as string
   );
+
+  if (!game) return null;
 
   if (error || loading) {
     return <></>;

@@ -19,6 +19,7 @@ import {
 import { Label } from '@/frontend/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/frontend/components/ui/select';
 import { Spinner } from '@/frontend/components/ui/spinner';
+import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameEnumerationQuestionHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
@@ -92,7 +93,7 @@ function AddBetForm({ baseQuestion, status }: { baseQuestion: EnumerationQuestio
     data: questionPlayers,
     loading: playersLoading,
     error: playersError,
-  } = gameQuestionRepo.useQuestionPlayers((game as GameRounds | null)?.currentQuestion as string);
+  } = useQuestionPlayers(gameQuestionRepo, (game as GameRounds | null)?.currentQuestion as string);
 
   if (playersError) {
     return <></>;

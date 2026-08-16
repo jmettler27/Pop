@@ -9,6 +9,9 @@ import { getRandomElement } from '@/backend/utils/arrays';
 import { Button } from '@/frontend/components/ui/button';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import fmt, { keyChunks } from '@/frontend/helpers/fmt';
+import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
+import { usePlayer } from '@/frontend/hooks/firestore/user/usePlayerHooks';
+import { useReady } from '@/frontend/hooks/firestore/user/useReadyHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -80,9 +83,8 @@ export default function ReadyPlayerController({ isLastQuestion }: ReadyPlayerCon
   const myRole = useRole();
 
   const gameRepositories = useGameRepositories();
+  const { timer, timerLoading, timerError } = useTimer(gameRepositories?.timerRepo ?? null);
   if (!gameRepositories) return null;
-  const { timerRepo } = gameRepositories;
-  const { timer, timerLoading, timerError } = timerRepo.useTimer();
 
   if (timerError) {
     return <></>;
@@ -116,9 +118,8 @@ function ReadyPlayerHeader({ isLastQuestion }: ReadyPlayerHeaderProps) {
   const myRole = useRole();
 
   const gameRepositories = useGameRepositories();
+  const { ready, readyLoading, readyError } = useReady(gameRepositories?.readyRepo ?? null);
   if (!gameRepositories) return null;
-  const { readyRepo } = gameRepositories;
-  const { ready, readyLoading, readyError } = readyRepo.useReady();
 
   if (readyError) {
     return <></>;
@@ -174,9 +175,12 @@ export function ReadyPlayerButton() {
   }, [intl]);
 
   const gameRepositories = useGameRepositories();
+  const {
+    player,
+    loading: playerLoading,
+    error: playerError,
+  } = usePlayer(gameRepositories?.playerRepo ?? null, user?.id as string);
   if (!gameRepositories) return null;
-  const { playerRepo } = gameRepositories;
-  const { player, loading: playerLoading, error: playerError } = playerRepo.usePlayer(user?.id as string);
 
   if (playerError) {
     return <></>;

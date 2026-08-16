@@ -4,6 +4,8 @@ import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameCh
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import { Spinner } from '@/frontend/components/ui/spinner';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
@@ -19,9 +21,8 @@ interface MCQBottomPaneProps {
 
 export default function MCQBottomPane({ baseQuestion: _baseQuestion }: MCQBottomPaneProps) {
   const gameRepositories = useGameRepositories();
+  const { chooser, loading, error } = useChooser(gameRepositories?.chooserRepo ?? null);
   if (!gameRepositories) return null;
-  const { chooserRepo } = gameRepositories;
-  const { chooser, loading, error } = chooserRepo.useChooser();
 
   if (error) {
     return <></>;
@@ -54,12 +55,13 @@ interface MCQControllerProps {
 function MCQController({ chooser }: MCQControllerProps) {
   const game = useGame() as GameRounds;
   const myRole = useRole();
-  if (!game) return null;
 
   const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx] ?? '';
 
-  const gameQuestionRepo = new GameMCQQuestionRepository(game.id as string, game.currentRound as string);
-  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  const gameQuestionRepo = new GameMCQQuestionRepository(game?.id as string, game?.currentRound as string);
+  const { gameQuestion, loading, error } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+
+  if (!game) return null;
 
   if (error) {
     return <></>;

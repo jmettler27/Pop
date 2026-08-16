@@ -1,5 +1,8 @@
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 import { Spinner } from '@/frontend/components/ui/spinner';
+import { useRound } from '@/frontend/hooks/firestore/round/useRoundHooks';
+import { useScores } from '@/frontend/hooks/firestore/score/useGameScoreHooks';
+import { useScores as useRoundScores } from '@/frontend/hooks/firestore/score/useRoundScoreHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import type { GameRounds } from '@/models/games/game';
@@ -27,7 +30,7 @@ export default function TeamScore({ teamId }: { teamId: string }) {
 function TeamGameScore({ teamId }: { teamId: string }) {
   const gameRepositories = useGameRepositories()!;
   const { scoreRepo } = gameRepositories;
-  const { gameScores, loading, error } = scoreRepo.useScores();
+  const { gameScores, loading, error } = useScores(scoreRepo);
 
   if (error) {
     return <></>;
@@ -48,7 +51,7 @@ function TeamGameScore({ teamId }: { teamId: string }) {
 function TeamRoundScore({ teamId, roundId }: { teamId: string; roundId: string }) {
   const game = useGame();
   const roundScoreRepo = new RoundScoreRepository(game?.id ?? '', roundId);
-  const { roundScores, loading, error } = roundScoreRepo.useScores();
+  const { roundScores, loading, error } = useRoundScores(roundScoreRepo);
 
   if (error) {
     return <></>;
@@ -101,7 +104,7 @@ function CompletionRatePolicyTeamRoundActiveScore({ teamId, game }: { teamId: st
   const gameRepositories = useGameRepositories()!;
   const { roundRepo } = gameRepositories;
   const currentRound = game.currentRound as string;
-  const { round, loading, error } = roundRepo.useRound(currentRound);
+  const { round, loading, error } = useRound(roundRepo, currentRound);
 
   if (error) {
     return <></>;

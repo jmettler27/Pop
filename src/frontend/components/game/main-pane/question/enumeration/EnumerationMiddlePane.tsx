@@ -9,6 +9,9 @@ import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/ques
 import NoteButton from '@/frontend/components/game/NoteButton';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
+import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameEnumerationQuestionHooks';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -116,20 +119,20 @@ function EnumerationQuestionAnswerContent({
   isSubmitting: boolean;
 }) {
   const { timerRepo } = gameRepositories;
-  const { timer, timerLoading, timerError } = timerRepo.useTimer();
+  const { timer, timerLoading, timerError } = useTimer(timerRepo);
 
   const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id as string, game.currentRound as string);
   const {
     gameQuestion,
     loading: gameQuestionLoading,
     error: gameQuestionError,
-  } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  } = useQuestion(gameQuestionRepo, game.currentQuestion as string);
 
   const {
     data: questionPlayers,
     loading: playersLoading,
     error: playersError,
-  } = gameQuestionRepo.useQuestionPlayers(game.currentQuestion as string);
+  } = useQuestionPlayers(gameQuestionRepo, game.currentQuestion as string);
 
   if (timerError || gameQuestionError || playersError) {
     return <ErrorScreen inline />;

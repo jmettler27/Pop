@@ -8,6 +8,10 @@ import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameCh
 import { OddOneOutChooserStatusText } from '@/frontend/components/game/main-pane/question/odd-one-out/OddOneOutBottomPane';
 import { OddOneOutProposalList } from '@/frontend/components/game/main-pane/question/odd-one-out/OddOneOutCommon';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
+import { useCurrentChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useTeam from '@/frontend/hooks/useTeam';
@@ -17,7 +21,8 @@ export default function MobileOddOneOutControl() {
   const game = useGame();
 
   const baseQuestionRepo = new BaseOddOneOutQuestionRepository();
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = baseQuestionRepo.useQuestionOnce(
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(
+    baseQuestionRepo,
     game!.currentQuestion as string
   );
 
@@ -40,11 +45,13 @@ function MobileOddOneOutWithQuestion({
 }) {
   const myTeam = useTeam();
   const gameRepositories = useGameRepositories();
+  const {
+    currentChooserTeamId,
+    loading: chooserLoading,
+    error: chooserError,
+  } = useCurrentChooser(gameRepositories?.chooserRepo ?? null);
 
   if (!gameRepositories) return null;
-  const { chooserRepo } = gameRepositories;
-
-  const { currentChooserTeamId, loading: chooserLoading, error: chooserError } = chooserRepo.useCurrentChooser();
   if (chooserError) return <ErrorScreen inline />;
   if (chooserLoading) return <LoadingScreen inline />;
   if (!currentChooserTeamId) return <></>;
@@ -65,17 +72,16 @@ function MobileOddOneOutChooserControl({
 }) {
   const game = useGame();
   const gameRepositories = useGameRepositories();
-
-  if (!gameRepositories) return null;
-  const { timerRepo } = gameRepositories;
+  const { timer, timerLoading, timerError } = useTimer(gameRepositories?.timerRepo ?? null);
 
   const gameQuestionRepo = new GameOddOneOutQuestionRepository(game?.id as string, game?.currentRound as string);
   const {
     gameQuestion,
     loading: gameQuestionLoading,
     error: gameQuestionError,
-  } = gameQuestionRepo.useQuestion(game?.currentQuestion as string);
-  const { timer, timerLoading, timerError } = timerRepo.useTimer();
+  } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+
+  if (!gameRepositories) return null;
 
   if (gameQuestionError || timerError) return <ErrorScreen inline />;
   if (gameQuestionLoading || timerLoading) return <LoadingScreen inline />;

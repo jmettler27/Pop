@@ -3,6 +3,7 @@
 import RoundEndBottomPane from '@/frontend/components/game/main-pane/round/RoundEndBottomPane';
 import RoundStartBottomPane from '@/frontend/components/game/main-pane/round/RoundStartBottomPane';
 import { Spinner } from '@/frontend/components/ui/spinner';
+import { useRound } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import { GameStatus } from '@/models/games/game-status';
@@ -10,18 +11,19 @@ import { GameStatus } from '@/models/games/game-status';
 export default function RoundBottomPane() {
   const game = useGame();
   const gameRepositories = useGameRepositories();
+  const currentRound = (game?.currentRound as string | undefined) ?? '';
+  const {
+    round,
+    loading: roundLoading,
+    error: roundError,
+  } = useRound(gameRepositories?.roundRepo ?? null, currentRound);
 
   if (!game) return null;
   if (!gameRepositories) return null;
-  const { roundRepo } = gameRepositories;
-
-  const currentRound = game.currentRound as string;
 
   if (!currentRound) {
     return <></>;
   }
-
-  const { round, loading: roundLoading, error: roundError } = roundRepo.useRound(currentRound);
 
   if (roundError) {
     return <></>;

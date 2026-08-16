@@ -1,6 +1,5 @@
 import { useCallback, useRef } from 'react';
 
-import { useObject } from 'react-firebase-hooks/database';
 import { useIntl } from 'react-intl';
 
 import { SERVER_TIME_OFFSET_REF } from '@/backend/firebase/database';
@@ -11,6 +10,9 @@ import AuthorizePlayersSwitch from '@/frontend/components/game/main-pane/Authori
 import OrganizerTimerController from '@/frontend/components/game/timer/OrganizerTimerController';
 import Timer, { type TimerData } from '@/frontend/components/game/timer/Timer';
 import { Spinner } from '@/frontend/components/ui/spinner';
+import { useRealtimeDatabaseValue } from '@/frontend/hooks/database/useRealtimeDatabaseValue';
+import { useRoundOnce } from '@/frontend/hooks/firestore/round/useRoundHooks';
+import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
@@ -77,8 +79,12 @@ function OrganizerTimerPane() {
     }
   }, [game]);
 
-  const [offsetSnapshot, offsetLoading, offsetError] = useObject(SERVER_TIME_OFFSET_REF);
-  const { timer, timerLoading, timerError } = timerRepo.useTimer();
+  const {
+    data: serverTimeOffset,
+    isLoading: offsetLoading,
+    error: offsetError,
+  } = useRealtimeDatabaseValue<number>(SERVER_TIME_OFFSET_REF);
+  const { timer, timerLoading, timerError } = useTimer(timerRepo);
 
   if (!game) return null;
 
@@ -88,11 +94,9 @@ function OrganizerTimerPane() {
   if (offsetLoading || timerLoading) {
     return <Spinner />;
   }
-  if (!offsetSnapshot || !timer) {
+  if (serverTimeOffset === null || serverTimeOffset === undefined || !timer) {
     return <></>;
   }
-
-  const serverTimeOffset = offsetSnapshot.val() as number;
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-2">
@@ -111,8 +115,12 @@ function SpectatorTimerPane() {
   const gameRepositories = useGameRepositories()!;
   const { timerRepo } = gameRepositories;
 
-  const [offsetSnapshot, offsetLoading, offsetError] = useObject(SERVER_TIME_OFFSET_REF);
-  const { timer, timerLoading, timerError } = timerRepo.useTimer();
+  const {
+    data: serverTimeOffset,
+    isLoading: offsetLoading,
+    error: offsetError,
+  } = useRealtimeDatabaseValue<number>(SERVER_TIME_OFFSET_REF);
+  const { timer, timerLoading, timerError } = useTimer(timerRepo);
 
   if (offsetError || timerError) {
     return <></>;
@@ -120,11 +128,9 @@ function SpectatorTimerPane() {
   if (offsetLoading || timerLoading) {
     return <Spinner />;
   }
-  if (!offsetSnapshot || !timer) {
+  if (serverTimeOffset === null || serverTimeOffset === undefined || !timer) {
     return <></>;
   }
-
-  const serverTimeOffset = offsetSnapshot.val() as number;
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-2">
@@ -166,7 +172,7 @@ function QuestionEndTimerHeader() {
   const gameRepositories = useGameRepositories()!;
   const { roundRepo } = gameRepositories;
   const currentRound = game?.currentRound ?? '';
-  const { round, loading: roundLoading, error: roundError } = roundRepo.useRoundOnce(currentRound);
+  const { round, loading: roundLoading, error: roundError } = useRoundOnce(roundRepo, currentRound);
 
   if (roundError) {
     return <></>;

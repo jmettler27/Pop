@@ -4,6 +4,7 @@ import GameProgressiveCluesQuestionRepository from '@/backend/repositories/quest
 import NextImage from '@/frontend/components/common/NextImage';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
 import { GameRounds } from '@/models/games/game';
 import { GameStatus } from '@/models/games/game-status';
@@ -30,11 +31,12 @@ export default function ProgressiveCluesMainContent({ baseQuestion, showComplete
 
 function ProgressiveClues({ baseQuestion, showComplete }: ProgressiveCluesMainContentProps) {
   const game = useGame();
-  if (!game) return null;
   const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
 
-  const gameQuestionRepo = new GameProgressiveCluesQuestionRepository(game.id as string, currentRound as string);
-  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  const gameQuestionRepo = new GameProgressiveCluesQuestionRepository(game?.id as string, currentRound as string);
+  const { gameQuestion, loading, error } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+
+  if (!game) return null;
 
   if (error) {
     return <ErrorScreen inline />;

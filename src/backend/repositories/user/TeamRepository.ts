@@ -50,31 +50,4 @@ export default class TeamRepository extends FirebaseRepository {
     const teams = await this.getAllTeams();
     return teams.filter((t) => t.id !== teamId);
   }
-
-  useTeam(id: string) {
-    const { data, loading, error } = super.useDocument(id);
-    return { team: data ? new Team(data as unknown as TeamData) : null, loading, error };
-  }
-
-  useTeamOnce(id: string) {
-    const { data, loading, error } = super.useDocumentOnce(id);
-    return { team: data ? new Team(data as unknown as TeamData) : null, loading, error };
-  }
-
-  useAllTeams() {
-    const { data, loading, error } = super.useCollection();
-    return { teams: data.map((t) => new Team(t as unknown as TeamData)), loading, error };
-  }
-
-  useAllTeamsOnce() {
-    const { data, loading, error } = super.useCollectionOnce();
-    return { teams: data.map((t) => new Team(t as unknown as TeamData)), loading, error };
-  }
-
-  useJoinableTeams() {
-    const { data, loading, error } = super.useCollection({
-      where: { field: 'teamAllowed', operator: '==', value: true },
-    });
-    return { teams: data.map((t) => new Team(t as unknown as TeamData)), loading, error };
-  }
 }

@@ -12,7 +12,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/u
 import type { Locale } from '@/frontend/helpers/locales';
 import { LOCALE_TO_EMOJI } from '@/frontend/helpers/locales';
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
-import { timestampToDate, type FirestoreTimestamp } from '@/frontend/helpers/time';
+import { timestampToLongDateTime, type FirestoreTimestamp } from '@/frontend/helpers/time';
+import { useUserOnce } from '@/frontend/hooks/firestore/user/useUserHooks';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { BlindtestQuestion } from '@/models/questions/blindtest';
 import { MCQQuestion } from '@/models/questions/mcq';
@@ -122,7 +123,7 @@ interface QuestionCardFooterProps {
 function QuestionCardFooter({ baseQuestion }: QuestionCardFooterProps) {
   const intl = useIntl();
   const userRepository = new UserRepository();
-  const { user, loading, error } = userRepository.useUserOnce((baseQuestion as { createdBy: string }).createdBy);
+  const { user, loading, error } = useUserOnce(userRepository, (baseQuestion as { createdBy: string }).createdBy);
 
   if (error || loading || !user) {
     return <></>;
@@ -132,7 +133,11 @@ function QuestionCardFooter({ baseQuestion }: QuestionCardFooterProps) {
     <p className="text-xs sm:text-sm 2xl:text-base dark:text-white">
       {LOCALE_TO_EMOJI[(baseQuestion as { lang: keyof typeof LOCALE_TO_EMOJI }).lang]}{' '}
       {intl.formatMessage(messages.createdBy)} <strong>{user.name}</strong> (
-      {timestampToDate((baseQuestion as { createdAt: FirestoreTimestamp | null | undefined }).createdAt, intl.locale)})
+      {timestampToLongDateTime(
+        (baseQuestion as { createdAt: FirestoreTimestamp | null | undefined }).createdAt,
+        intl.locale
+      )}
+      )
     </p>
   );
 }

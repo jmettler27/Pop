@@ -4,7 +4,6 @@ import clsx from 'clsx';
 import { or, query, where } from 'firebase/firestore';
 import { Eye, LogIn, Play, UserCog, Users } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useCollectionOnce } from 'react-firebase-hooks/firestore';
 import { useIntl } from 'react-intl';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
@@ -16,6 +15,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/
 import { Skeleton } from '@/frontend/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import { Locale, localeToEmoji } from '@/frontend/helpers/locales';
+import { useFirestoreCollectionOnce } from '@/frontend/hooks/firestore/useFirestoreCollection';
+import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganizerHooks';
+import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameStatus } from '@/models/games/game-status';
@@ -31,7 +33,6 @@ const messages = defineMessages('frontend.home.OngoingGames', {
 });
 
 interface GameDocData {
-  id: string;
   title?: string;
   type?: string;
   lang?: string;
@@ -40,20 +41,24 @@ interface GameDocData {
   [key: string]: unknown;
 }
 
+const ONGOING_GAME_STATUSES = [
+  GameStatus.GAME_START,
+  GameStatus.GAME_HOME,
+  GameStatus.ROUND_START,
+  GameStatus.QUESTION_ACTIVE,
+  GameStatus.QUESTION_END,
+  GameStatus.ROUND_END,
+];
+
 export default function OngoingGames() {
   const intl = useIntl();
-  const [games, gamesLoading, gamesError] = useCollectionOnce(
-    query(
-      GAMES_COLLECTION_REF,
-      or(
-        where('status', '==', GameStatus.GAME_START),
-        where('status', '==', GameStatus.GAME_HOME),
-        where('status', '==', GameStatus.ROUND_START),
-        where('status', '==', GameStatus.QUESTION_ACTIVE),
-        where('status', '==', GameStatus.QUESTION_END),
-        where('status', '==', GameStatus.ROUND_END)
-      )
-    )
+  const {
+    data: games,
+    isLoading: gamesLoading,
+    error: gamesError,
+  } = useFirestoreCollectionOnce(
+    query(GAMES_COLLECTION_REF, or(...ONGOING_GAME_STATUSES.map((status) => where('status', '==', status)))),
+    ['games', 'ongoing', ...ONGOING_GAME_STATUSES]
   );
   if (gamesError) {
     return <></>;
@@ -64,7 +69,7 @@ export default function OngoingGames() {
   if (!games) {
     return <></>;
   }
-  const sortedOngoingGames = (games.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as GameDocData[]).sort(
+  const sortedOngoingGames = (games as ({ id: string } & GameDocData)[]).sort(
     (a, b) => (b.dateStart ?? 0) - (a.dateStart ?? 0)
   );
 
@@ -94,7 +99,7 @@ export default function OngoingGames() {
 }
 
 interface GameCardProps {
-  game: GameDocData;
+  game: { id: string } & GameDocData;
 }
 
 const GameCard = ({ game }: GameCardProps) => {
@@ -106,8 +111,8 @@ const GameCard = ({ game }: GameCardProps) => {
   const organizerRepo = new OrganizerRepository(game.id);
   const playerRepo = new PlayerRepository(game.id);
 
-  const { organizers, loading: organizersLoading, error: organizersError } = organizerRepo.useAllOrganizersOnce();
-  const { players, loading: playersLoading, error: playersError } = playerRepo.useAllPlayersOnce();
+  const { organizers, loading: organizersLoading, error: organizersError } = useAllOrganizersOnce(organizerRepo);
+  const { players, loading: playersLoading, error: playersError } = useAllPlayersOnce(playerRepo);
 
   if (organizersError || playersError) {
     return <></>;

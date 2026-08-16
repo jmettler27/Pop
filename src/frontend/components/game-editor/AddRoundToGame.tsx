@@ -20,17 +20,17 @@ import globalMessages from '@/frontend/i18n/globalMessages';
 import { Round } from '@/models/rounds/round';
 import { RoundType } from '@/models/rounds/round-type';
 
-const messages = defineMessages('frontend.gameEditor.AddNewRound', {
+const messages = defineMessages('frontend.gameEditor.AddRoundToGame', {
   addRound: 'Add round',
   createNewRound: 'Create new round',
   roundTitle: 'Title of the round',
 });
 
-interface AddNewRoundButtonProps {
+interface AddRoundToGameButtonProps {
   disabled: boolean;
 }
 
-export function AddNewRoundButton({ disabled }: AddNewRoundButtonProps) {
+export function AddRoundToGameButton({ disabled }: AddRoundToGameButtonProps) {
   const intl = useIntl();
   const [dialogOpen, setDialogOpen] = useState(false);
 

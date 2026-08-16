@@ -5,6 +5,7 @@ import {
   MatchingEdge,
   type NodeData,
 } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
+import { useIncorrectMatches } from '@/frontend/hooks/firestore/question/useGameMatchingQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
 
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
@@ -16,10 +17,11 @@ interface IncorrectMatchesProps {
 
 export default function IncorrectMatches({ nodePositions, colIndices }: IncorrectMatchesProps) {
   const game = useGame();
-  if (!game) return null;
 
-  const gameQuestionRepo = new GameMatchingQuestionRepository(game.id as string, game.currentRound as string);
-  const { incorrectMatches, loading, error } = gameQuestionRepo.useIncorrectMatches(game.currentQuestion as string);
+  const gameQuestionRepo = new GameMatchingQuestionRepository(game?.id as string, game?.currentRound as string);
+  const { incorrectMatches, loading, error } = useIncorrectMatches(gameQuestionRepo, game?.currentQuestion as string);
+
+  if (!game) return null;
 
   if (error || loading) {
     return <></>;

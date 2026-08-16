@@ -3,6 +3,7 @@ import { useIntl } from 'react-intl';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import { getRandomElement } from '@/backend/utils/arrays';
 import { WinnerName } from '@/frontend/components/game/PlayerName';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -48,16 +49,17 @@ function BuzzerAnswerText({ baseQuestion }: BuzzerAnswerProps) {
 function BuzzerWinnerInfo({ baseQuestion }: BuzzerAnswerProps) {
   const game = useGame();
   const intl = useIntl();
-  if (!game) return null;
   const bq = baseQuestion as { type?: QuestionType };
 
   const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
   const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(
     bq.type as QuestionType,
-    game.id as string,
+    game?.id as string,
     currentRound as string
   );
-  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  const { gameQuestion, loading, error } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+
+  if (!game) return null;
 
   if (error) {
     return <></>;

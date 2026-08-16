@@ -220,6 +220,28 @@ function testBaseBasicQuestions() {
   return [testBaseBasicQuestion1(), testBaseBasicQuestion2()];
 }
 
+// A handful of generic extra 'basic' questions, with distinct createdAt timestamps, so
+// QuestionSearchTable's pagination (10 questions/page, newest first) has more than one page to
+// show locally instead of just the 2 hand-authored basic questions above.
+function testExtraBasicQuestions(count) {
+  return Array.from({ length: count }, (_, i) => ({
+    id: `basic_extra_${i + 1}`,
+    type: 'basic',
+    topic: 'video_game',
+    approved: true,
+    createdAt: new Date(now.getTime() - i * 1000),
+    createdBy: USER_1_ID,
+    lang: 'en',
+    details: {
+      title: `Extra pagination test question #${i + 1}`,
+      answer: `Answer ${i + 1}`,
+      explanation: '',
+      note: '',
+      source: '',
+    },
+  }));
+}
+
 function testGameBasicQuestion(baseBasicQuestion, reward, thinkingTime) {
   return {
     dateEnd: null,
@@ -407,7 +429,6 @@ function testBaseEnumerationQuestions() {
   return [testBaseEnumerationQuestion1(), testBaseEnumerationQuestion2()];
 }
 
-
 function testBaseEstimationQuestion1() {
   return {
     id: Q_ESTIMATION_1,
@@ -420,8 +441,9 @@ function testBaseEstimationQuestion1() {
     details: {
       answer: '7',
       answerType: 'integer',
-      explanation: "Philosopher's Stone, Chamber of Secrets, Prisoner of Azkaban, Goblet of Fire, Order of the Phoenix, Half-Blood Prince, Deathly Hallows",
-      note: "Only take into account the books from the main series!",
+      explanation:
+        "Philosopher's Stone, Chamber of Secrets, Prisoner of Azkaban, Goblet of Fire, Order of the Phoenix, Half-Blood Prince, Deathly Hallows",
+      note: 'Only take into account the books from the main series!',
       source: 'Harry Potter',
       title: 'How many episodes are there?',
     },
@@ -488,9 +510,13 @@ function testBaseEstimationQuestion4() {
   };
 }
 
-
 function testBaseEstimationQuestions() {
-  return [testBaseEstimationQuestion1(), testBaseEstimationQuestion2(), testBaseEstimationQuestion3(), testBaseEstimationQuestion4()];
+  return [
+    testBaseEstimationQuestion1(),
+    testBaseEstimationQuestion2(),
+    testBaseEstimationQuestion3(),
+    testBaseEstimationQuestion4(),
+  ];
 }
 
 function testGameEstimationQuestion(baseEstimationQuestion, reward, thinkingTime) {
@@ -1094,6 +1120,9 @@ async function seedBaseQuestions() {
   // Basic questions
   await setDocument('questions', Q_BASIC_1, testBaseBasicQuestion1());
   await setDocument('questions', Q_BASIC_2, testBaseBasicQuestion2());
+  for (const q of testExtraBasicQuestions(13)) {
+    await setDocument('questions', q.id, q);
+  }
 
   // Blindtest questions
   await setDocument('questions', Q_BLINDTEST_1, testBaseBlindtestQuestion1());
@@ -1286,7 +1315,7 @@ async function seedRoundScores(gameId, roundId, teamIds) {
     rankingDiffs: null,
     roundCompletionRates: {},
     roundSortedTeams: [],
-    scores: Object.fromEntries(teamIds.map(id => [id, 0])),
+    scores: Object.fromEntries(teamIds.map((id) => [id, 0])),
     scoresProgress: {},
     teamsScoresSequences: {},
   });
@@ -1460,7 +1489,6 @@ async function seedEstimationRound(gameId, roundId) {
 
   await seedRoundScores(gameId, roundId, teamIds);
 }
-
 
 async function seedImageRound(gameId, roundId) {
   const questions = testBaseImageQuestions();

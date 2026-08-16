@@ -95,14 +95,4 @@ export default class TimerRepository extends FirebaseDocumentRepository {
       authorized: false,
     });
   }
-
-  useTimer() {
-    const { data, loading, error } = super.useDocument();
-    return { timer: data ? (data as unknown as Timer) : null, timerLoading: loading, timerError: error };
-  }
-
-  useTimerOnce() {
-    const { data, loading, error } = super.useDocumentOnce();
-    return { timer: data ? (data as unknown as Timer) : null, timerLoading: loading, timerError: error };
-  }
 }

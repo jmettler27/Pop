@@ -12,6 +12,7 @@ import ClearBuzzerButton from '@/frontend/components/game/main-pane/question/buz
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import { Button } from '@/frontend/components/ui/button';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -152,7 +153,7 @@ function NextClueButton({ baseQuestion }: BuzzerOrganizerQuestionControllerProps
     gameQuestion,
     loading: gameQuestionLoading,
     error: gameQuestionError,
-  } = gameQuestionRepo.useQuestion(game!.currentQuestion as string);
+  } = useQuestion(gameQuestionRepo, game!.currentQuestion as string);
 
   if (gameQuestionError || gameQuestionLoading || !gameQuestion) {
     return <></>;

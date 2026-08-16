@@ -103,12 +103,4 @@ export default class GameEnumerationQuestionRepository extends GameQuestionRepos
       }
     );
   }
-
-  useQuestionPlayers(questionId: string) {
-    const { data, loading, error } = this.useDocument([
-      questionId,
-      ...GameEnumerationQuestionRepository.ENUMERATION_PLAYERS_PATH,
-    ]);
-    return { data, loading, error };
-  }
 }

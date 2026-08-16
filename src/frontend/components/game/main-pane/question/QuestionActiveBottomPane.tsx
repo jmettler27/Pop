@@ -13,6 +13,7 @@ import OddOneOutBottomPane from '@/frontend/components/game/main-pane/question/o
 import QuoteBottomPane from '@/frontend/components/game/main-pane/question/quote/QuoteBottomPane';
 import ReorderingBottomPane from '@/frontend/components/game/main-pane/question/reordering/ReorderingBottomPane';
 import { Spinner } from '@/frontend/components/ui/spinner';
+import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
 import { QuestionType } from '@/models/questions/question-type';
 
@@ -21,7 +22,8 @@ export default function QuestionActiveBottomPane() {
 
   const questionType = (game!.currentQuestionType ?? '') as QuestionType;
   const baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(questionType);
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = baseQuestionRepo.useQuestionOnce(
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(
+    baseQuestionRepo,
     game!.currentQuestion as string
   );
 

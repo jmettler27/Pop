@@ -3,6 +3,7 @@
 import { useIntl } from 'react-intl';
 
 import QuestionEndBottomPane from '@/frontend/components/game/main-pane/question/QuestionEndBottomPane';
+import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/frontend/i18n/defineMessages';
 
@@ -13,10 +14,8 @@ const messages = defineMessages('frontend.game.mobile.MobileQuestionEndScreen', 
 export default function MobileQuestionEndScreen() {
   const intl = useIntl();
   const gameRepositories = useGameRepositories();
+  const { timer, timerLoading, timerError } = useTimer(gameRepositories?.timerRepo ?? null);
   if (!gameRepositories) return null;
-
-  const { timerRepo } = gameRepositories;
-  const { timer, timerLoading, timerError } = timerRepo.useTimer();
 
   if (timerError || timerLoading || !timer) return null;
 

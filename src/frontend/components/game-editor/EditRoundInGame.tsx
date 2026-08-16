@@ -35,10 +35,7 @@ import {
   updateRoundThinkingTime,
 } from '@/backend/services/edit-game/actions';
 import { QuestionCardTitle } from '@/frontend/components/common/QuestionCard';
-import {
-  AddQuestionToMixedRoundButton,
-  AddQuestionToRoundButton,
-} from '@/frontend/components/game-editor/AddNewQuestion';
+import { AddQuestionToRoundButton } from '@/frontend/components/game-editor/AddQuestionToRound';
 import { EditQuestionCard } from '@/frontend/components/game-editor/EditQuestionInRound';
 import { Button } from '@/frontend/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/ui/card';
@@ -55,6 +52,8 @@ import { Label } from '@/frontend/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/frontend/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import { type Locale } from '@/frontend/helpers/locales';
+import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
+import { useRound } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useHasMounted from '@/frontend/hooks/useHasMounted';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -113,7 +112,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({
   forceCollapse = false,
 }: EditGameRoundCardProps) {
   const roundRepo = new RoundRepository(gameId);
-  const { round, loading, error } = roundRepo.useRound(roundId);
+  const { round, loading, error } = useRound(roundRepo, roundId);
   const intl = useIntl();
 
   const [isReorderMode, setIsReorderMode] = useState(false);
@@ -403,16 +402,9 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({
             reorderedQuestions={reorderedQuestions}
             setReorderedQuestions={setReorderedQuestions}
           />
-          {status === GameStatus.GAME_EDIT &&
-            !isReorderMode &&
-            (round.type === RoundType.MIXED ? (
-              <AddQuestionToMixedRoundButton
-                roundId={round.id ?? ''}
-                disabled={round.questions.length >= Round.MAX_NUM_QUESTIONS}
-              />
-            ) : (
-              <AddQuestionToRoundButton round={round} disabled={round.questions.length >= Round.MAX_NUM_QUESTIONS} />
-            ))}
+          {status === GameStatus.GAME_EDIT && !isReorderMode && (
+            <AddQuestionToRoundButton round={round} disabled={round.questions.length >= Round.MAX_NUM_QUESTIONS} />
+          )}
         </CardContent>
       )}
     </Card>
@@ -436,7 +428,7 @@ function SortableQuestionCard({ roundId, questionId, questionOrder, status }: So
   };
 
   const baseQuestionRepo = new BaseQuestionRepository(QuestionType.BASIC);
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = baseQuestionRepo.useQuestionOnce(questionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(baseQuestionRepo, questionId);
 
   if (baseQuestionError || baseQuestionLoading || !baseQuestion) {
     return <></>;

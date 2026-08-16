@@ -7,6 +7,9 @@ import { useIntl } from 'react-intl';
 
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 import { rankingToEmoji } from '@/frontend/helpers/emojis';
+import { useScoresOnce } from '@/frontend/hooks/firestore/score/useRoundScoreHooks';
+import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
+import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useTeam from '@/frontend/hooks/useTeam';
@@ -27,16 +30,14 @@ export default function MobileRoundEndScreen() {
   const gameRepositories = useGameRepositories();
   const myTeamId = useTeam();
 
-  if (!game || !gameRepositories || !myTeamId) return null;
+  const { teams, loading: teamsLoading, error: teamsError } = useAllTeamsOnce(gameRepositories?.teamRepo ?? null);
+  const { timer, timerLoading, timerError } = useTimer(gameRepositories?.timerRepo ?? null);
 
-  const { teamRepo, timerRepo } = gameRepositories;
-  const currentRoundId = game.currentRound as string;
-
-  const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeamsOnce();
-  const { timer, timerLoading, timerError } = timerRepo.useTimer();
-
+  const currentRoundId = (game?.currentRound as string | undefined) ?? '';
   const roundScoreRepo = new RoundScoreRepository(gameId, currentRoundId);
-  const { roundScores, loading: scoresLoading, error: scoresError } = roundScoreRepo.useScoresOnce();
+  const { roundScores, loading: scoresLoading, error: scoresError } = useScoresOnce(roundScoreRepo);
+
+  if (!game || !gameRepositories || !myTeamId) return null;
 
   if (teamsError || timerError || scoresError) return null;
   if (teamsLoading || timerLoading || scoresLoading) return null;

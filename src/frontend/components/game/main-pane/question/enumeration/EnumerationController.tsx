@@ -2,6 +2,8 @@ import GameEnumerationQuestionRepository from '@/backend/repositories/question/G
 import EnumerationChallengeController from '@/frontend/components/game/main-pane/question/enumeration/EnumerationChallengeController';
 import EnumerationThinkingController from '@/frontend/components/game/main-pane/question/enumeration/EnumerationThinkingController';
 import { Spinner } from '@/frontend/components/ui/spinner';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import { EnumerationQuestion, EnumerationQuestionStatus } from '@/models/questions/enumeration';
@@ -9,19 +11,17 @@ import { EnumerationQuestion, EnumerationQuestionStatus } from '@/models/questio
 export default function EnumerationController({ baseQuestion }: { baseQuestion: EnumerationQuestion }) {
   const game = useGame();
   const gameRepositories = useGameRepositories();
+  const { timer, timerLoading, timerError } = useTimer(gameRepositories?.timerRepo ?? null);
 
-  if (!game) return null;
-  if (!gameRepositories) return null;
-
-  const { timerRepo } = gameRepositories;
-  const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id as string, game.currentRound as string);
+  const gameQuestionRepo = new GameEnumerationQuestionRepository(game?.id as string, game?.currentRound as string);
   const {
     gameQuestion,
     loading: gameQuestionLoading,
     error: gameQuestionError,
-  } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
 
-  const { timer, timerLoading, timerError } = timerRepo.useTimer();
+  if (!game) return null;
+  if (!gameRepositories) return null;
 
   if (gameQuestionError || timerError) {
     return <></>;

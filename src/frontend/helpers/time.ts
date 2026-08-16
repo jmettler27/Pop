@@ -3,9 +3,13 @@ export interface FirestoreTimestamp {
   nanoseconds?: number;
 }
 
-export function timestampToDate(timestamp: FirestoreTimestamp | null | undefined, locale?: string): string | null {
+export function timestampToLongDateTime(
+  timestamp: FirestoreTimestamp | null | undefined,
+  locale?: string
+): string | null {
   if (!timestamp) return null;
-  return new Date(timestamp.seconds * 1000).toLocaleString(locale, {
+  const date = new Date(timestamp.seconds * 1000);
+  return date.toLocaleString(locale, {
     year: 'numeric',
     month: 'long',
     weekday: 'long',
@@ -15,18 +19,27 @@ export function timestampToDate(timestamp: FirestoreTimestamp | null | undefined
   });
 }
 
-export function timestampToDate1(timestamp: FirestoreTimestamp | null | undefined): string | null {
+export function timestampToNumericDate(
+  timestamp: FirestoreTimestamp | null | undefined,
+  locale?: string
+): string | null {
   if (!timestamp) return null;
   const date = new Date(timestamp.seconds * 1000);
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const year = date.getFullYear();
-  return `${year}/${month}/${day}`;
+  return new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
+    .formatToParts(date)
+    .filter((part) => part.type === 'year' || part.type === 'month' || part.type === 'day')
+    .map((part) => part.value)
+    .join('-');
 }
 
-export function timestampToHour(timestamp: FirestoreTimestamp | null | undefined, locale?: string): string | null {
+export function timestampToShortTime(timestamp: FirestoreTimestamp | null | undefined, locale?: string): string | null {
   if (!timestamp) return null;
-  return new Date(timestamp.seconds * 1000).toLocaleString(locale, {
+  const date = new Date(timestamp.seconds * 1000);
+  return date.toLocaleString(locale, {
     hour: '2-digit',
     minute: '2-digit',
   });
@@ -47,10 +60,4 @@ export function formatDuration(totalSeconds: number, locale: string): string {
   const seconds = totalSeconds % 60;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return new (Intl as any).DurationFormat(locale, { style: 'narrow' }).format({ minutes, seconds });
-}
-
-export function formatSecondsToMinutesAndSeconds(seconds: number): string {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 }

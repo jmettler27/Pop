@@ -10,6 +10,8 @@ import { shuffleIndices } from '@/backend/utils/arrays';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Avatar, AvatarFallback, AvatarImage } from '@/frontend/components/ui/avatar';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import { usePlayerOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -81,10 +83,11 @@ function MCQMainContentQuestion({
   randomization: number[];
 }) {
   const game = useGame();
-  if (!game) return null;
 
-  const gameQuestionRepo = new GameMCQQuestionRepository(game.id as string, game.currentRound as string);
-  const { gameQuestion, loading, error } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  const gameQuestionRepo = new GameMCQQuestionRepository(game?.id as string, game?.currentRound as string);
+  const { gameQuestion, loading, error } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+
+  if (!game) return null;
 
   if (error) {
     return <ErrorScreen inline />;
@@ -238,9 +241,8 @@ function EndedMCQChoices({ baseQuestion, gameQuestion, randomization }: MCQChoic
 
 function PlayerAvatar({ playerId }: { playerId: string | null }) {
   const gameRepositories = useGameRepositories();
+  const { player, loading, error } = usePlayerOnce(gameRepositories?.playerRepo ?? null, playerId as string);
   if (!gameRepositories) return null;
-  const { playerRepo } = gameRepositories;
-  const { player, loading, error } = playerRepo.usePlayerOnce(playerId as string);
 
   return (
     !error &&

@@ -72,14 +72,4 @@ export default class RoundScoreRepository extends FirebaseDocumentRepository {
       scoresProgress: newRoundProgress,
     });
   }
-
-  useScores() {
-    const { data, loading, error } = super.useDocument();
-    return { roundScores: data, loading, error };
-  }
-
-  useScoresOnce() {
-    const { data, loading, error } = super.useDocumentOnce();
-    return { roundScores: data, loading, error };
-  }
 }

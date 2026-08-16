@@ -136,42 +136,4 @@ export default class GameMatchingQuestionRepository extends GameQuestionReposito
       { partiallyCorrectMatches: [] }
     );
   }
-
-  useCorrectMatches(questionId: string) {
-    const { data, loading, error } = this.useDocument([
-      questionId,
-      ...GameMatchingQuestionRepository.CORRECT_MATCHES_PATH,
-    ]);
-    return { correctMatches: data ? data.correctMatches : [], loading, error };
-  }
-
-  useIncorrectMatches(questionId: string) {
-    const { data, loading, error } = this.useDocument([
-      questionId,
-      ...GameMatchingQuestionRepository.INCORRECT_MATCHES_PATH,
-    ]);
-    return { incorrectMatches: data ? data.incorrectMatches : [], loading, error };
-  }
-
-  usePartiallyCorrectMatches(questionId: string) {
-    const { data, loading, error } = this.useDocument([
-      questionId,
-      ...GameMatchingQuestionRepository.PARTIALLY_CORRECT_MATCHES_PATH,
-    ]);
-    return { partiallyCorrectMatches: data ? data.partiallyCorrectMatches : [], loading, error };
-  }
-
-  useIsCanceled(questionId: string, teamId: string) {
-    const { gameQuestion, loading, error } = this.useQuestion(questionId);
-    if (loading || error) return { isCanceled: false, loading, error };
-    const q = gameQuestion as GameMatchingQuestion | null;
-    return {
-      isCanceled: q
-        ? (q.teamNumMistakes as Record<string, number>)[teamId] >=
-          (q.constructor as typeof GameMatchingQuestion).MAX_NUM_MISTAKES
-        : false,
-      loading,
-      error,
-    };
-  }
 }

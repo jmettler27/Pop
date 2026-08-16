@@ -5,6 +5,7 @@ import { incrementValidItems } from '@/backend/services/question/enumeration/act
 import { Button } from '@/frontend/components/ui/button';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
+import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -23,6 +24,7 @@ export default function ValidateChallengerCitationButton() {
   const user = useUser();
 
   const gameRepositories = useGameRepositories();
+  const { timer, timerLoading, timerError } = useTimer(gameRepositories?.timerRepo ?? null);
 
   const [handleClick, isSubmitting] = useAsyncAction(async () => {
     if (!game || !user) return;
@@ -30,8 +32,6 @@ export default function ValidateChallengerCitationButton() {
   });
 
   if (!gameRepositories) return null;
-  const { timerRepo } = gameRepositories;
-  const { timer, timerLoading, timerError } = timerRepo.useTimer();
 
   if (timerError) {
     return <></>;

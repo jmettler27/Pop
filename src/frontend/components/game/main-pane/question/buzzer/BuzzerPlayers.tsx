@@ -1,6 +1,7 @@
 import { useIntl } from 'react-intl';
 
 import { rankingToEmoji } from '@/frontend/helpers/emojis';
+import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -18,9 +19,8 @@ interface BuzzerPlayersProps {
 export default function BuzzerPlayers({ questionPlayers }: BuzzerPlayersProps) {
   const intl = useIntl();
   const gameRepositories = useGameRepositories();
+  const { players, loading, error } = useAllPlayersOnce(gameRepositories?.playerRepo ?? null);
   if (!gameRepositories) return null;
-  const { playerRepo } = gameRepositories;
-  const { players, loading, error } = playerRepo.useAllPlayersOnce();
 
   if (error || loading || !players) {
     return <></>;

@@ -4,6 +4,7 @@ import { useIntl } from 'react-intl';
 import { handleQuestionEnd } from '@/backend/services/round/actions';
 import ReadyPlayerController from '@/frontend/components/game/main-pane/ReadyPlayerController';
 import { Button } from '@/frontend/components/ui/button';
+import { useRoundOnce } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -21,11 +22,13 @@ const messages = defineMessages('frontend.game.bottom.QuestionEndBottomPane', {
 export default function QuestionEndBottomPane() {
   const game = useGame();
   const gameRepositories = useGameRepositories();
+  const {
+    round,
+    loading: roundLoading,
+    error: roundError,
+  } = useRoundOnce(gameRepositories?.roundRepo ?? null, (game?.currentRound as string | undefined) ?? '');
 
   if (!game || !gameRepositories) return null;
-
-  const { roundRepo } = gameRepositories;
-  const { round, loading: roundLoading, error: roundError } = roundRepo.useRoundOnce(game.currentRound as string);
 
   if (roundError) {
     return <></>;

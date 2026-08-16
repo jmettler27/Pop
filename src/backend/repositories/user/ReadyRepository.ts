@@ -32,9 +32,4 @@ export default class ReadyRepository extends FirebaseDocumentRepository {
   async updateNumReadyTransaction(transaction: Transaction, numReady: number): Promise<void> {
     await this.updateReadyTransaction(transaction, { numReady });
   }
-
-  useReady() {
-    const { data, loading, error } = this.useDocument();
-    return { ready: data, readyLoading: loading, readyError: error };
-  }
 }

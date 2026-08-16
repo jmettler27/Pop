@@ -6,6 +6,9 @@ import GameBasicQuestionRepository from '@/backend/repositories/question/GameBas
 import { addPlayerToBuzzer, removePlayerFromBuzzer } from '@/backend/services/question/basic/actions';
 import { Button } from '@/frontend/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
+import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import { useRound } from '@/frontend/hooks/firestore/round/useRoundHooks';
+import { usePlayer } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -30,21 +33,28 @@ export default function BasicPlayerController({ players: basicPlayers }: BasicPl
   const game = useGame();
   const user = useUser();
   const gameRepositories = useGameRepositories();
-
-  if (!game) return null;
-  if (!gameRepositories) return null;
-  const { playerRepo, roundRepo } = gameRepositories;
+  const {
+    player,
+    loading: playerLoading,
+    error: playerError,
+  } = usePlayer(gameRepositories?.playerRepo ?? null, user?.id as string);
 
   const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
-  const gameQuestionRepo = new GameBasicQuestionRepository(game.id as string, currentRound as string);
+  const {
+    round,
+    loading: roundLoading,
+    error: roundError,
+  } = useRound(gameRepositories?.roundRepo ?? null, (currentRound as string | undefined) ?? '');
 
-  const { player, loading: playerLoading, error: playerError } = playerRepo.usePlayer(user?.id as string);
-  const { round, loading: roundLoading, error: roundError } = roundRepo.useRound(currentRound as string);
+  const gameQuestionRepo = new GameBasicQuestionRepository(game?.id as string, currentRound as string);
   const {
     gameQuestion,
     loading: gameQuestionLoading,
     error: gameQuestionError,
-  } = gameQuestionRepo.useQuestion(game.currentQuestion as string);
+  } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+
+  if (!game) return null;
+  if (!gameRepositories) return null;
 
   if (playerError || roundError || gameQuestionError) {
     return <></>;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/frontend/components/ui/dialog';
+import { useIsChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
@@ -45,7 +46,7 @@ export default function SubmitMatchDialog({
   const myTeam = useTeam();
   const myRole = useRole();
   const gameRepositories = useGameRepositories();
-  const { isChooser } = gameRepositories?.chooserRepo.useIsChooser(myTeam as string) ?? {};
+  const { isChooser } = useIsChooser(gameRepositories?.chooserRepo ?? null, myTeam as string);
 
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -55,11 +56,18 @@ export default function SubmitMatchDialog({
   if (shouldAutoClose !== prevShouldAutoClose) {
     setPrevShouldAutoClose(shouldAutoClose);
     if (shouldAutoClose) {
-      setEdges([]);
-      setNewEdgeSource(null);
       setDialogOpen(false);
     }
   }
+  // edges/setNewEdgeSource are owned by an ancestor component, so they can't be reset
+  // during this component's render (React disallows updating another component's state
+  // while rendering) — an effect is required here instead of the render-phase pattern above.
+  useEffect(() => {
+    if (shouldAutoClose) {
+      setEdges([]);
+      setNewEdgeSource(null);
+    }
+  }, [shouldAutoClose, setEdges, setNewEdgeSource]);
 
   const isMatchComplete = matchIsComplete(
     edges.map((e) => ({ sourceId: e.from, targetId: e.to })),

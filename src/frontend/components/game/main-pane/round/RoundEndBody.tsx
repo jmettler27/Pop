@@ -11,6 +11,8 @@ import GameScoreboard from '@/frontend/components/scores/GameScoreboard';
 import GameScoresChart from '@/frontend/components/scores/GameScoresChart';
 import RoundScoreboard from '@/frontend/components/scores/RoundScoreboard';
 import RoundScoresChart from '@/frontend/components/scores/RoundScoresChart';
+import { useScoresOnce } from '@/frontend/hooks/firestore/score/useRoundScoreHooks';
+import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { AnyRound } from '@/models/rounds/RoundFactory';
@@ -26,12 +28,12 @@ export default function RoundEndBody({ currentRound }: { currentRound: AnyRound 
   const intl = useIntl();
 
   const gameRepositories = useGameRepositories();
-  if (!gameRepositories) return null;
-  const { teamRepo } = gameRepositories;
-  const { teams, loading: teamsLoading, error: teamsError } = teamRepo.useAllTeamsOnce();
+  const { teams, loading: teamsLoading, error: teamsError } = useAllTeamsOnce(gameRepositories?.teamRepo ?? null);
 
   const roundScoreRepo = new RoundScoreRepository(gameId as string, currentRound.id as string);
-  const { roundScores, loading: roundScoresLoading, error: roundScoresError } = roundScoreRepo.useScoresOnce();
+  const { roundScores, loading: roundScoresLoading, error: roundScoresError } = useScoresOnce(roundScoreRepo);
+
+  if (!gameRepositories) return null;
 
   if (teamsError) {
     return <ErrorScreen inline />;

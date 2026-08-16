@@ -111,24 +111,4 @@ export default class RoundRepository extends FirebaseRepository {
       order: null,
     });
   }
-
-  useRound(roundId: string) {
-    const { data, loading, error } = super.useDocument(roundId);
-    return { round: data ? RoundFactory.createRound(data.type as RoundType, data) : null, loading, error };
-  }
-
-  useRoundOnce(roundId: string) {
-    const { data, loading, error } = super.useDocumentOnce(roundId);
-    return { round: data ? RoundFactory.createRound(data.type as RoundType, data) : null, loading, error };
-  }
-
-  useAllRounds() {
-    const { data, loading, error } = super.useCollection();
-    return { rounds: data.map((r) => RoundFactory.createRound(r.type as RoundType, r)), loading, error };
-  }
-
-  useAllRoundsOnce(queryOptions: QueryOptions = {}) {
-    const { data, loading, error } = super.useCollectionOnce(queryOptions);
-    return { rounds: data.map((r) => RoundFactory.createRound(r.type as RoundType, r)), loading, error };
-  }
 }

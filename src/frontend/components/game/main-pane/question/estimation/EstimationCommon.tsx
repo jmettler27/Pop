@@ -10,6 +10,8 @@ import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/ques
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
 import { formatDuration, timestampElapsedSeconds, type FirestoreTimestamp } from '@/frontend/helpers/time';
+import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
+import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import {
@@ -126,10 +128,9 @@ interface EstimationResultsTableProps {
 export function EstimationResultsTable({ gameQuestion, baseQuestion }: EstimationResultsTableProps) {
   const intl = useIntl();
   const gameRepositories = useGameRepositories();
+  const { teams, loading: teamsLoading } = useAllTeamsOnce(gameRepositories?.teamRepo ?? null);
+  const { players, loading: playersLoading } = useAllPlayersOnce(gameRepositories?.playerRepo ?? null);
   if (!gameRepositories) return null;
-  const { teamRepo, playerRepo } = gameRepositories;
-  const { teams, loading: teamsLoading } = teamRepo.useAllTeamsOnce();
-  const { players, loading: playersLoading } = playerRepo.useAllPlayersOnce();
 
   if (teamsLoading || playersLoading) {
     return (

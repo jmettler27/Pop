@@ -55,14 +55,4 @@ export default class GameScoreRepository extends FirebaseDocumentRepository {
       scoresProgress: newGameProgress,
     });
   }
-
-  useScores() {
-    const { data, loading, error } = super.useDocument();
-    return { gameScores: data, loading, error };
-  }
-
-  useScoresOnce() {
-    const { data, loading, error } = super.useDocumentOnce();
-    return { gameScores: data, loading, error };
-  }
 }

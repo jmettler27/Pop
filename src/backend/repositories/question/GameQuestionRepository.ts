@@ -8,7 +8,7 @@ import QuestionFactory, { type AnyGameQuestion } from '@/models/questions/Questi
 const log = logger.child({ module: 'GameQuestionRepository' });
 
 export default class GameQuestionRepository extends FirebaseRepository {
-  protected questionType: QuestionType;
+  public readonly questionType: QuestionType;
 
   constructor(gameId: string, roundId: string, questionType: QuestionType) {
     super(['games', gameId, 'rounds', roundId, 'questions']);
@@ -105,23 +105,5 @@ export default class GameQuestionRepository extends FirebaseRepository {
 
   async resetQuestionWinnerTransaction(transaction: Transaction, questionId: string): Promise<void> {
     return this.updateQuestionTransaction(transaction, questionId, { winner: null });
-  }
-
-  useQuestion(questionId: string) {
-    const { data, loading, error } = super.useDocument(questionId);
-    return {
-      gameQuestion: data ? (QuestionFactory.createGameQuestion(this.questionType, data) as AnyGameQuestion) : null,
-      loading,
-      error,
-    };
-  }
-
-  useQuestionOnce(questionId: string) {
-    const { data, loading, error } = super.useDocumentOnce(questionId);
-    return {
-      gameQuestion: data ? (QuestionFactory.createGameQuestion(this.questionType, data) as AnyGameQuestion) : null,
-      loading,
-      error,
-    };
   }
 }
