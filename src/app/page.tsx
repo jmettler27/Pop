@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 
 import { useSession } from 'next-auth/react';
 
-import EndedGames from '@/frontend/components/home/EndedGames';
+// import EndedGames from '@/frontend/components/home/EndedGames';
 import GamesUnderConstruction from '@/frontend/components/home/GamesUnderConstruction';
 import NavigationBar from '@/frontend/components/home/NavigationBar';
 import OngoingGames from '@/frontend/components/home/OngoingGames';
@@ -33,7 +33,7 @@ function UserHome({ isGuest }: { isGuest: boolean }) {
       <div className="w-full max-w-7xl space-y-6 md:space-y-8 lg:space-y-10">
         <OngoingGames />
         {!isGuest && <GamesUnderConstruction />}
-        {!isGuest && <EndedGames />}
+        {/* {!isGuest && <EndedGames />} */}
       </div>
     </div>
   );
