@@ -2,7 +2,6 @@ import clsx from 'clsx';
 import { Hand, RotateCcw } from 'lucide-react';
 import { useIntl, type IntlShape } from 'react-intl';
 
-import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import { addPlayerToBuzzer, removePlayerFromBuzzer } from '@/backend/services/question/buzzer/actions';
 import { Button } from '@/frontend/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
@@ -11,7 +10,6 @@ import { useRound } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import { usePlayer } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -38,34 +36,27 @@ interface BuzzerPlayerControllerProps {
 export default function BuzzerPlayerController({ questionPlayers, compact = false }: BuzzerPlayerControllerProps) {
   const game = useGame();
   const user = useUser();
-  const gameRepositories = useGameRepositories();
-  const {
-    player,
-    loading: playerLoading,
-    error: playerError,
-  } = usePlayer(gameRepositories?.playerRepo ?? null, user?.id as string);
+  const { player, loading: playerLoading, error: playerError } = usePlayer(game?.id ?? null, user?.id as string);
 
   const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
   const {
     round,
     loading: roundLoading,
     error: roundError,
-  } = useRound(gameRepositories?.roundRepo ?? null, (currentRound as string | undefined) ?? '');
-
-  const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(
-    game?.currentQuestionType as QuestionType,
-    game?.id as string,
-    currentRound as string
-  );
+  } = useRound(game?.id ?? null, (currentRound as string | undefined) ?? '');
 
   const {
     gameQuestion,
     loading: gameQuestionLoading,
     error: gameQuestionError,
-  } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+  } = useQuestion(
+    game?.id ?? null,
+    (currentRound as string | undefined) ?? null,
+    game?.currentQuestionType as QuestionType,
+    game?.currentQuestion as string
+  );
 
   if (!game) return null;
-  if (!gameRepositories) return null;
 
   if (playerError || roundError || gameQuestionError) {
     return <></>;

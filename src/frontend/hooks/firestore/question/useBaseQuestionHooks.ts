@@ -1,15 +1,17 @@
 import { useMemo } from 'react';
 
-import { orderBy, query, where } from 'firebase/firestore';
+import { collection, doc, getCountFromServer, orderBy, query, where } from 'firebase/firestore';
 
-import type BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
+import { firestore } from '@/backend/firebase/firebase';
 import { useFirestoreCollectionPage } from '@/frontend/hooks/firestore/useFirestoreCollectionPage';
 import { useFirestoreDocument, useFirestoreDocumentOnce } from '@/frontend/hooks/firestore/useFirestoreDocument';
 import { type QuestionType } from '@/models/questions/question-type';
 import QuestionFactory from '@/models/questions/QuestionFactory';
 
-export function useQuestion(repo: BaseQuestionRepository | null, questionId: string) {
-  const { data, isLoading, error } = useFirestoreDocument(repo ? repo.getDocumentRef(questionId) : null);
+const QUESTIONS_REF = collection(firestore, 'questions');
+
+export function useQuestion(questionId: string) {
+  const { data, isLoading, error } = useFirestoreDocument(doc(QUESTIONS_REF, questionId));
   return {
     baseQuestion: data ? QuestionFactory.createBaseQuestion(data.type as QuestionType, data) : null,
     baseQuestionLoading: isLoading,
@@ -17,8 +19,8 @@ export function useQuestion(repo: BaseQuestionRepository | null, questionId: str
   };
 }
 
-export function useQuestionOnce(repo: BaseQuestionRepository | null, questionId: string) {
-  const { data, isLoading, error } = useFirestoreDocumentOnce(repo ? repo.getDocumentRef(questionId) : null);
+export function useQuestionOnce(questionId: string) {
+  const { data, isLoading, error } = useFirestoreDocumentOnce(doc(QUESTIONS_REF, questionId));
   return {
     baseQuestion: data ? QuestionFactory.createBaseQuestion(data.type as QuestionType, data) : null,
     baseQuestionLoading: isLoading,
@@ -28,27 +30,21 @@ export function useQuestionOnce(repo: BaseQuestionRepository | null, questionId:
 
 // One page of questions of this type, newest first — returns useInfiniteQuery's native shape
 // ({ data: { pages, pageParams }, fetchNextPage, hasNextPage, isLoading, ... }) rather than forcing it
-// back into the old single-page contract, since QuestionSearchTable is this hook's only consumer and
-// owns page-index bookkeeping itself (indexing into `data.pages`), see the migration plan. Unlike the
-// other hooks here, `repo` is required (not nullable) — QuestionSearchTable always constructs its own
-// BaseQuestionRepository unconditionally, so there's no early-return-guarded call site to null-guard.
-export function useQuestionsPage(repo: BaseQuestionRepository, approved: boolean, pageSize: number) {
+// back into a single-page contract, since QuestionSearchTable is this hook's only consumer and owns
+// page-index bookkeeping itself (indexing into data.pages).
+export function useQuestionsPage(questionType: QuestionType, approved: boolean, pageSize: number) {
   const result = useFirestoreCollectionPage(
     () =>
       query(
-        repo.collectionRef,
-        where('type', '==', repo.questionType),
+        QUESTIONS_REF,
+        where('type', '==', questionType),
         where('approved', '==', approved),
         orderBy('createdAt', 'desc')
       ),
     pageSize,
-    [repo.collectionRef.path, repo.questionType, approved]
+    ['questions', questionType, approved]
   );
 
-  // Map each page's raw docs through QuestionFactory, same as every other hook here — done via useMemo
-  // rather than inside queryFn so the cached raw docs stay serializable/reusable across re-renders. Built
-  // as a single ternary (not a separately-typed `pages` variable spread conditionally into `result.data`)
-  // so TypeScript doesn't widen `data.pages[].items` into a union of the mapped and raw doc shapes.
   const data = useMemo(
     () =>
       result.data
@@ -64,4 +60,11 @@ export function useQuestionsPage(repo: BaseQuestionRepository, approved: boolean
   );
 
   return { ...result, data };
+}
+
+export async function getQuestionsCount(questionType: QuestionType, approved: boolean): Promise<number> {
+  const snapshot = await getCountFromServer(
+    query(QUESTIONS_REF, where('type', '==', questionType), where('approved', '==', approved))
+  );
+  return snapshot.data().count;
 }

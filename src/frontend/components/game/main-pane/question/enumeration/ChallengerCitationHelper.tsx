@@ -1,13 +1,11 @@
 import { Progress as ProgressPrimitive } from '@base-ui/react/progress';
 import clsx from 'clsx';
 
-import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 import ValidateChallengerCitationButton from '@/frontend/components/game/main-pane/question/enumeration/ValidateChallengerCitationButton';
 import { ProgressIndicator, ProgressTrack } from '@/frontend/components/ui/progress';
-import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameEnumerationQuestionHooks';
+import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { usePlayer } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import { ParticipantRole } from '@/models/users/participant';
 
@@ -21,12 +19,15 @@ interface Challenger {
 export default function ChallengerCitationHelper() {
   const game = useGame();
 
-  const gameQuestionRepo = new GameEnumerationQuestionRepository(game?.id as string, game?.currentRound as string);
   const {
     data: questionPlayers,
     loading: playersLoading,
     error: playersError,
-  } = useQuestionPlayers(gameQuestionRepo, game?.currentQuestion as string);
+  } = useQuestionPlayers(
+    game?.id ?? null,
+    (game?.currentRound as string | undefined) ?? null,
+    game?.currentQuestion as string
+  );
 
   if (!game) return null;
 
@@ -45,13 +46,9 @@ export default function ChallengerCitationHelper() {
 }
 
 function ChallengerName({ challengerId }: { challengerId: string }) {
-  const gameRepositories = useGameRepositories();
-  const {
-    player,
-    loading: playerLoading,
-    error: playerError,
-  } = usePlayer(gameRepositories?.playerRepo ?? null, challengerId);
-  if (!gameRepositories) return null;
+  const game = useGame();
+  const { player, loading: playerLoading, error: playerError } = usePlayer(game?.id ?? null, challengerId);
+  if (!game) return null;
 
   if (playerError || playerLoading || !player) {
     return <></>;

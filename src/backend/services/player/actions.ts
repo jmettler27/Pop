@@ -11,3 +11,8 @@ export const togglePlayerAuthorization = async (gameId: string, authorized: bool
   const service = new PlayerService(gameId);
   return service.togglePlayerAuthorization(authorized);
 };
+
+export const resetAllPlayersStatus = async (gameId: string) => {
+  const service = new PlayerService(gameId);
+  return service.resetAllPlayersStatus();
+};

@@ -1,7 +1,5 @@
 import { useMemo } from 'react';
 
-import BaseOddOneOutQuestionRepository from '@/backend/repositories/question/BaseOddOneOutQuestionRepository';
-import GameOddOneOutQuestionRepository from '@/backend/repositories/question/GameOddOneOutQuestionRepository';
 import { shuffleIndices } from '@/backend/utils/arrays';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
@@ -13,18 +11,14 @@ import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestion
 import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import { useCurrentChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useTeam from '@/frontend/hooks/useTeam';
 import { GameOddOneOutQuestion, OddOneOutQuestion } from '@/models/questions/odd-one-out';
+import { QuestionType } from '@/models/questions/question-type';
 
 export default function MobileOddOneOutControl() {
   const game = useGame();
 
-  const baseQuestionRepo = new BaseOddOneOutQuestionRepository();
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(
-    baseQuestionRepo,
-    game!.currentQuestion as string
-  );
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(game!.currentQuestion as string);
 
   const bq = baseQuestion as unknown as OddOneOutQuestion;
   const randomMapping = useMemo(() => shuffleIndices((bq?.items ?? []).length), [bq?.items]);
@@ -44,14 +38,10 @@ function MobileOddOneOutWithQuestion({
   randomMapping: number[];
 }) {
   const myTeam = useTeam();
-  const gameRepositories = useGameRepositories();
-  const {
-    currentChooserTeamId,
-    loading: chooserLoading,
-    error: chooserError,
-  } = useCurrentChooser(gameRepositories?.chooserRepo ?? null);
+  const game = useGame();
+  const { currentChooserTeamId, loading: chooserLoading, error: chooserError } = useCurrentChooser(game?.id ?? null);
 
-  if (!gameRepositories) return null;
+  if (!game) return null;
   if (chooserError) return <ErrorScreen inline />;
   if (chooserLoading) return <LoadingScreen inline />;
   if (!currentChooserTeamId) return <></>;
@@ -71,17 +61,20 @@ function MobileOddOneOutChooserControl({
   randomMapping: number[];
 }) {
   const game = useGame();
-  const gameRepositories = useGameRepositories();
-  const { timer, timerLoading, timerError } = useTimer(gameRepositories?.timerRepo ?? null);
+  const { timer, timerLoading, timerError } = useTimer(game?.id ?? null);
 
-  const gameQuestionRepo = new GameOddOneOutQuestionRepository(game?.id as string, game?.currentRound as string);
   const {
     gameQuestion,
     loading: gameQuestionLoading,
     error: gameQuestionError,
-  } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+  } = useQuestion(
+    game?.id ?? null,
+    game?.currentRound ?? null,
+    QuestionType.ODD_ONE_OUT,
+    game?.currentQuestion as string
+  );
 
-  if (!gameRepositories) return null;
+  if (!game) return null;
 
   if (gameQuestionError || timerError) return <ErrorScreen inline />;
   if (gameQuestionLoading || timerLoading) return <LoadingScreen inline />;

@@ -188,10 +188,6 @@ export default class FirebaseRepository extends IRepository {
     await transaction.delete(this.getDocumentRef(idOrPath));
   }
 
-  // Firestore count() aggregation — billed as a single read regardless of match count. Plain async method
-  // (not a hook) so this class stays safe to import from server-side code (Server Actions reach this
-  // class through several repositories); pair it with a client-only hook, e.g. useFirestoreCount, to get
-  // loading/error state in a component.
   async getCount(queryBuilder: (ref: CollectionReference<DocumentData>) => Query<DocumentData>): Promise<number> {
     const snapshot = await getCountFromServer(queryBuilder(this.collectionRef));
     return snapshot.data().count;

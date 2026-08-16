@@ -4,7 +4,6 @@ import { useParams } from 'next/navigation';
 
 import { useIntl } from 'react-intl';
 
-import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import GameScoreboard from '@/frontend/components/scores/GameScoreboard';
@@ -13,7 +12,6 @@ import RoundScoreboard from '@/frontend/components/scores/RoundScoreboard';
 import RoundScoresChart from '@/frontend/components/scores/RoundScoresChart';
 import { useScoresOnce } from '@/frontend/hooks/firestore/score/useRoundScoreHooks';
 import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { AnyRound } from '@/models/rounds/RoundFactory';
 
@@ -27,13 +25,13 @@ export default function RoundEndBody({ currentRound }: { currentRound: AnyRound 
   const gameId = id as string;
   const intl = useIntl();
 
-  const gameRepositories = useGameRepositories();
-  const { teams, loading: teamsLoading, error: teamsError } = useAllTeamsOnce(gameRepositories?.teamRepo ?? null);
+  const { teams, loading: teamsLoading, error: teamsError } = useAllTeamsOnce(gameId);
 
-  const roundScoreRepo = new RoundScoreRepository(gameId as string, currentRound.id as string);
-  const { roundScores, loading: roundScoresLoading, error: roundScoresError } = useScoresOnce(roundScoreRepo);
-
-  if (!gameRepositories) return null;
+  const {
+    roundScores,
+    loading: roundScoresLoading,
+    error: roundScoresError,
+  } = useScoresOnce(gameId, currentRound.id as string);
 
   if (teamsError) {
     return <ErrorScreen inline />;

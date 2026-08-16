@@ -4,7 +4,6 @@ import { useState } from 'react';
 
 import { useIntl } from 'react-intl';
 
-import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 import { addBet } from '@/backend/services/question/enumeration/actions';
 import { range } from '@/backend/utils/arrays';
 import { Button } from '@/frontend/components/ui/button';
@@ -19,7 +18,7 @@ import {
 import { Label } from '@/frontend/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/frontend/components/ui/select';
 import { Spinner } from '@/frontend/components/ui/spinner';
-import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameEnumerationQuestionHooks';
+import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
@@ -85,15 +84,15 @@ function AddBetForm({ baseQuestion, status }: { baseQuestion: EnumerationQuestio
     setDialogOpen(false);
   });
 
-  const gameQuestionRepo = new GameEnumerationQuestionRepository(
-    game!.id as string,
-    (game as GameRounds | null)?.currentRound as string
-  );
   const {
     data: questionPlayers,
     loading: playersLoading,
     error: playersError,
-  } = useQuestionPlayers(gameQuestionRepo, (game as GameRounds | null)?.currentQuestion as string);
+  } = useQuestionPlayers(
+    game?.id ?? null,
+    ((game as GameRounds | null)?.currentRound as string | undefined) ?? null,
+    (game as GameRounds | null)?.currentQuestion as string
+  );
 
   if (playersError) {
     return <></>;

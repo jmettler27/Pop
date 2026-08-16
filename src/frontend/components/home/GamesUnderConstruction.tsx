@@ -4,9 +4,6 @@ import { Pencil, UserCog } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import GameRepository from '@/backend/repositories/game/GameRepository';
-import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
-import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import { GameOrganizersAvatarGroup } from '@/frontend/components/home/GameAvatars';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Button } from '@/frontend/components/ui/button';
@@ -31,8 +28,7 @@ const messages = defineMessages('frontend.home.GamesUnderConstruction', {
 
 export default function GamesUnderConstruction() {
   const intl = useIntl();
-  const gameRepo = new GameRepository();
-  const { games, loading, error } = useGamesByStatus(gameRepo, GameStatus.GAME_EDIT);
+  const { games, loading, error } = useGamesByStatus(GameStatus.GAME_EDIT);
   if (error) {
     return <></>;
   }
@@ -79,10 +75,8 @@ export function GameUnderConstructionCard({ game }: GameUnderConstructionCardPro
   const { data: session } = useSession();
   const user = session?.user;
 
-  const organizerRepo = new OrganizerRepository(game.id ?? '');
-  const playerRepo = new PlayerRepository(game.id ?? '');
-  const { organizers, loading: organizersLoading, error: organizersError } = useAllOrganizersOnce(organizerRepo);
-  const { players, loading: playersLoading, error: playersError } = useAllPlayersOnce(playerRepo);
+  const { organizers, loading: organizersLoading, error: organizersError } = useAllOrganizersOnce(game.id ?? null);
+  const { players, loading: playersLoading, error: playersError } = useAllPlayersOnce(game.id ?? null);
 
   if (organizersError || playersError) {
     return <></>;

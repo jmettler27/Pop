@@ -6,7 +6,6 @@ import { useParams } from 'next/navigation';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 import {
   cancelPlayer,
   handleBuzzerHeadChanged,
@@ -75,8 +74,12 @@ export default function QuoteOrganizerController({
 function QuoteOrganizerAnswerController({ buzzed, baseQuestion }: { buzzed: string[]; baseQuestion: QuoteQuestion }) {
   const game = useGame();
 
-  const gameQuestionRepo = new GameQuoteQuestionRepository(game?.id as string, game?.currentRound as string);
-  const { gameQuestion, loading, error } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+  const { gameQuestion, loading, error } = useQuestion(
+    game?.id ?? null,
+    game?.currentRound ?? null,
+    QuestionType.QUOTE,
+    game?.currentQuestion as string
+  );
 
   if (!game) return null;
 

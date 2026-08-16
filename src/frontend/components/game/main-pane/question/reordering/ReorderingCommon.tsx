@@ -14,7 +14,7 @@ import { Spinner } from '@/frontend/components/ui/spinner';
 import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
 import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
+import useGame from '@/frontend/hooks/useGame';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { questionTypeToTitle } from '@/models/questions/question-type';
 import { GameReorderingQuestion, Ordering, ReorderingItem, ReorderingQuestion } from '@/models/questions/reordering';
@@ -123,10 +123,10 @@ interface ReorderingResultsTableProps {
 
 export function ReorderingResultsTable({ gameQuestion, baseQuestion }: ReorderingResultsTableProps) {
   const intl = useIntl();
-  const gameRepositories = useGameRepositories();
-  const { teams, loading: teamsLoading } = useAllTeamsOnce(gameRepositories?.teamRepo ?? null);
-  const { players, loading: playersLoading } = useAllPlayersOnce(gameRepositories?.playerRepo ?? null);
-  if (!gameRepositories) return null;
+  const game = useGame();
+  const { teams, loading: teamsLoading } = useAllTeamsOnce(game?.id ?? null);
+  const { players, loading: playersLoading } = useAllPlayersOnce(game?.id ?? null);
+  if (!game) return null;
 
   if (teamsLoading || playersLoading) {
     return (

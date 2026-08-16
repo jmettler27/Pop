@@ -5,8 +5,6 @@ import { ChevronDown, ChevronUp, Pencil, Timer as TimerIcon, Trash2 } from 'luci
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
-import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import {
   removeQuestionFromRound,
   updateQuestionChallengeTime,
@@ -86,8 +84,7 @@ export const EditQuestionCard = memo(function EditQuestionCard({
   const gameId = id as string;
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const baseQuestionRepo = new BaseQuestionRepository(QuestionType.BASIC);
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useBaseQuestion(baseQuestionRepo, questionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useBaseQuestion(questionId);
 
   if (baseQuestionError) {
     return <></>;
@@ -144,8 +141,7 @@ function EditQuestionCardInner({
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
-  const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(baseQuestion.type, gameId, roundId);
-  const { gameQuestion } = useGameQuestion(gameQuestionRepo, questionId);
+  const { gameQuestion } = useGameQuestion(gameId, roundId, baseQuestion.type, questionId);
 
   const gameQuestionAny = gameQuestion as { thinkingTime?: number; challengeTime?: number } | null;
   const questionThinkingTime = gameQuestionAny?.thinkingTime;

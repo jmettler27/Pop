@@ -1,14 +1,32 @@
-import { limit as fsLimit, orderBy, query, where, type Query } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  limit as fsLimit,
+  orderBy,
+  query,
+  where,
+  type Query,
+  type WhereFilterOp,
+} from 'firebase/firestore';
 
-import type { QueryOptions } from '@/backend/repositories/FirebaseRepository';
-import type RoundRepository from '@/backend/repositories/round/RoundRepository';
+import { firestore } from '@/backend/firebase/firebase';
 import { useFirestoreCollection, useFirestoreCollectionOnce } from '@/frontend/hooks/firestore/useFirestoreCollection';
 import { useFirestoreDocument, useFirestoreDocumentOnce } from '@/frontend/hooks/firestore/useFirestoreDocument';
 import { type RoundType } from '@/models/rounds/round-type';
 import RoundFactory from '@/models/rounds/RoundFactory';
 
-function buildRoundQuery(repo: RoundRepository, options: QueryOptions): Query {
-  let q: Query = query(repo.collectionRef);
+interface QueryOptions {
+  where?: { field: string; operator: WhereFilterOp; value: unknown };
+  orderBy?: { field: string; direction: 'asc' | 'desc' };
+  limit?: number;
+}
+
+function roundsRef(gameId: string) {
+  return collection(firestore, 'games', gameId, 'rounds');
+}
+
+function buildRoundQuery(gameId: string, options: QueryOptions): Query {
+  let q: Query = query(roundsRef(gameId));
   if (options.where) {
     q = query(q, where(options.where.field, options.where.operator, options.where.value));
   }
@@ -32,19 +50,20 @@ function queryOptionsKey(options: QueryOptions): readonly unknown[] {
   ];
 }
 
-export function useRound(repo: RoundRepository | null, roundId: string) {
-  const { data, isLoading, error } = useFirestoreDocument(repo ? repo.getDocumentRef(roundId) : null);
+export function useRound(gameId: string | null, roundId: string) {
+  const { data, isLoading, error } = useFirestoreDocument(gameId ? doc(roundsRef(gameId), roundId) : null);
   return { round: data ? RoundFactory.createRound(data.type as RoundType, data) : null, loading: isLoading, error };
 }
 
-export function useRoundOnce(repo: RoundRepository | null, roundId: string) {
-  const { data, isLoading, error } = useFirestoreDocumentOnce(repo ? repo.getDocumentRef(roundId) : null);
+export function useRoundOnce(gameId: string | null, roundId: string) {
+  const { data, isLoading, error } = useFirestoreDocumentOnce(gameId ? doc(roundsRef(gameId), roundId) : null);
   return { round: data ? RoundFactory.createRound(data.type as RoundType, data) : null, loading: isLoading, error };
 }
 
-export function useAllRounds(repo: RoundRepository | null) {
-  const { data, isLoading, error } = useFirestoreCollection(repo ? query(repo.collectionRef) : null, [
-    repo?.collectionRef.path ?? null,
+export function useAllRounds(gameId: string | null) {
+  const { data, isLoading, error } = useFirestoreCollection(gameId ? query(roundsRef(gameId)) : null, [
+    gameId,
+    'rounds',
   ]);
   return {
     rounds: data?.map((r) => RoundFactory.createRound(r.type as RoundType, r)) ?? [],
@@ -53,9 +72,10 @@ export function useAllRounds(repo: RoundRepository | null) {
   };
 }
 
-export function useAllRoundsOnce(repo: RoundRepository | null, queryOptions: QueryOptions = {}) {
-  const { data, isLoading, error } = useFirestoreCollectionOnce(repo ? buildRoundQuery(repo, queryOptions) : null, [
-    repo?.collectionRef.path ?? null,
+export function useAllRoundsOnce(gameId: string | null, queryOptions: QueryOptions = {}) {
+  const { data, isLoading, error } = useFirestoreCollectionOnce(gameId ? buildRoundQuery(gameId, queryOptions) : null, [
+    gameId,
+    'rounds',
     ...queryOptionsKey(queryOptions),
   ]);
   return {

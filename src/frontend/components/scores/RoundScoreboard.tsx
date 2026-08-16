@@ -8,7 +8,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { rankingToEmoji } from '@/frontend/helpers/emojis';
 import { useRoundOnce } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import { GameRounds } from '@/models/games/game';
 import { RoundType } from '@/models/rounds/round-type';
 import { ScorePolicyType } from '@/models/score-policy';
@@ -36,10 +35,8 @@ export default function RoundScoreboard({ roundScores, teams }: RoundScoreboardP
   const { roundSortedTeams } = roundScores;
   const game = useGame();
 
-  const repos = useGameRepositories();
   const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
-  const { round, loading, error } = useRoundOnce(repos?.roundRepo ?? null, currentRound ?? '');
-  if (!repos) return <></>;
+  const { round, loading, error } = useRoundOnce(game?.id ?? null, currentRound ?? '');
   if (error || loading || !round || !currentRound) {
     return <></>;
   }

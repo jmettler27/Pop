@@ -1,13 +1,17 @@
-import type ChooserRepository from '@/backend/repositories/user/ChooserRepository';
+import { doc } from 'firebase/firestore';
+
+import { firestore } from '@/backend/firebase/firebase';
 import { useFirestoreDocument } from '@/frontend/hooks/firestore/useFirestoreDocument';
 
-export function useChooser(repo: ChooserRepository | null) {
-  const { data, isLoading, error } = useFirestoreDocument(repo?.docRef ?? null);
+export function useChooser(gameId: string | null) {
+  const { data, isLoading, error } = useFirestoreDocument(
+    gameId ? doc(firestore, 'games', gameId, 'realtime', 'states') : null
+  );
   return { chooser: data, loading: isLoading, error };
 }
 
-export function useCurrentChooser(repo: ChooserRepository | null) {
-  const { chooser, loading, error } = useChooser(repo);
+export function useCurrentChooser(gameId: string | null) {
+  const { chooser, loading, error } = useChooser(gameId);
   if (loading || error || !chooser) {
     return { currentChooserTeamId: null, loading, error };
   }
@@ -16,8 +20,8 @@ export function useCurrentChooser(repo: ChooserRepository | null) {
   return { currentChooserTeamId: chooserOrder[chooserIdx], loading, error };
 }
 
-export function useIsChooser(repo: ChooserRepository | null, teamId: string) {
-  const { currentChooserTeamId, loading, error } = useCurrentChooser(repo);
+export function useIsChooser(gameId: string | null, teamId: string) {
+  const { currentChooserTeamId, loading, error } = useCurrentChooser(gameId);
   if (loading || error) {
     return { isChooser: false, loading, error };
   }

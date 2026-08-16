@@ -1,6 +1,5 @@
 'use client';
 
-import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import BasicQuestionBottomPane from '@/frontend/components/game/main-pane/question/basic/BasicQuestionBottomPane';
 import BuzzerBottomPane from '@/frontend/components/game/main-pane/question/buzzer/BuzzerBottomPane';
 import EnumerationBottomPane from '@/frontend/components/game/main-pane/question/enumeration/EnumerationBottomPane';
@@ -20,12 +19,7 @@ import { QuestionType } from '@/models/questions/question-type';
 export default function QuestionActiveBottomPane() {
   const game = useGame();
 
-  const questionType = (game!.currentQuestionType ?? '') as QuestionType;
-  const baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(questionType);
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(
-    baseQuestionRepo,
-    game!.currentQuestion as string
-  );
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(game!.currentQuestion as string);
 
   if (!game!.currentQuestionType || !game!.currentQuestion) return null;
   if (baseQuestionError) return null;

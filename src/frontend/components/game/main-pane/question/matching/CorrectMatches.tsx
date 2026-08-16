@@ -1,4 +1,3 @@
-import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import { isObjectEmpty } from '@/backend/utils/objects';
 import {
   getNodeId,
@@ -19,8 +18,11 @@ interface CorrectMatchesProps {
 export default function CorrectMatches({ nodePositions, colIndices }: CorrectMatchesProps) {
   const game = useGame();
 
-  const gameQuestionRepo = new GameMatchingQuestionRepository(game?.id as string, game?.currentRound as string);
-  const { correctMatches, loading, error } = useCorrectMatches(gameQuestionRepo, game?.currentQuestion as string);
+  const { correctMatches, loading, error } = useCorrectMatches(
+    game?.id ?? null,
+    game?.currentRound ?? null,
+    game?.currentQuestion as string
+  );
 
   if (!game) return null;
 

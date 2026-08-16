@@ -4,7 +4,6 @@ import { useParams } from 'next/navigation';
 import { ArrowDown, CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/GameProgressiveCluesQuestionRepository';
 import { handleBuzzerHeadChanged, invalidateAnswer, validateAnswer } from '@/backend/services/question/buzzer/actions';
 import { revealClue } from '@/backend/services/question/progressive-clues/actions';
 import BuzzerHeadPlayer from '@/frontend/components/game/main-pane/question/buzzer/BuzzerHeadPlayer';
@@ -148,12 +147,16 @@ function NextClueButton({ baseQuestion }: BuzzerOrganizerQuestionControllerProps
     await revealClue(game!.id!, currentRound!, game!.currentQuestion!);
   });
 
-  const gameQuestionRepo = new GameProgressiveCluesQuestionRepository(game!.id as string, currentRound as string);
   const {
     gameQuestion,
     loading: gameQuestionLoading,
     error: gameQuestionError,
-  } = useQuestion(gameQuestionRepo, game!.currentQuestion as string);
+  } = useQuestion(
+    game!.id ?? null,
+    currentRound ?? null,
+    QuestionType.PROGRESSIVE_CLUES,
+    game!.currentQuestion as string
+  );
 
   if (gameQuestionError || gameQuestionLoading || !gameQuestion) {
     return <></>;

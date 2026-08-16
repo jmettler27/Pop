@@ -1,4 +1,3 @@
-import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import { isObjectEmpty } from '@/backend/utils/objects';
 import {
   getNodeId,
@@ -17,9 +16,9 @@ interface PartiallyCorrectMatchesProps {
 export default function PartiallyCorrectMatches({ nodePositions }: PartiallyCorrectMatchesProps) {
   const game = useGame();
 
-  const gameQuestionRepo = new GameMatchingQuestionRepository(game?.id as string, game?.currentRound as string);
   const { partiallyCorrectMatches, loading, error } = usePartiallyCorrectMatches(
-    gameQuestionRepo,
+    game?.id ?? null,
+    game?.currentRound ?? null,
     game?.currentQuestion as string
   );
 

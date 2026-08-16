@@ -1,26 +1,22 @@
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
-import type { GameRepositories } from '@/backend/repositories/createGameRepositories';
-import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 import { validateItem } from '@/backend/services/question/enumeration/actions';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import NoteButton from '@/frontend/components/game/NoteButton';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
-import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameEnumerationQuestionHooks';
-import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import { useQuestion, useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import type { GameRounds } from '@/models/games/game';
 import { GameStatus } from '@/models/games/game-status';
 import { EnumerationQuestion, EnumerationQuestionStatus } from '@/models/questions/enumeration';
-import { questionTypeToTitle } from '@/models/questions/question-type';
+import { QuestionType, questionTypeToTitle } from '@/models/questions/question-type';
 import { TimerStatus } from '@/models/timer';
 import { topicToEmoji, type Topic } from '@/models/topic';
 import { ParticipantRole } from '@/models/users/participant';
@@ -81,7 +77,6 @@ function EnumerationQuestionObjective({ baseQuestion }: { baseQuestion: Enumerat
 
 function EnumerationQuestionAnswer({ answer }: { answer: string[] }) {
   const game = useGame();
-  const gameRepositories = useGameRepositories();
   const myRole = useRole();
 
   const [handleClick, isSubmitting] = useAsyncAction(async (itemIdx: number) => {
@@ -89,13 +84,12 @@ function EnumerationQuestionAnswer({ answer }: { answer: string[] }) {
     await validateItem(game.id as string, game.currentRound as string, game.currentQuestion as string, itemIdx);
   });
 
-  if (!game || !gameRepositories) return null;
+  if (!game) return null;
 
   return (
     <EnumerationQuestionAnswerContent
       answer={answer}
       game={game}
-      gameRepositories={gameRepositories}
       myRole={myRole}
       handleClick={handleClick}
       isSubmitting={isSubmitting}
@@ -106,33 +100,38 @@ function EnumerationQuestionAnswer({ answer }: { answer: string[] }) {
 function EnumerationQuestionAnswerContent({
   answer,
   game,
-  gameRepositories,
   myRole,
   handleClick,
   isSubmitting,
 }: {
   answer: string[];
   game: GameRounds;
-  gameRepositories: GameRepositories;
   myRole: ParticipantRole | null;
   handleClick: (itemIdx: number) => Promise<void>;
   isSubmitting: boolean;
 }) {
-  const { timerRepo } = gameRepositories;
-  const { timer, timerLoading, timerError } = useTimer(timerRepo);
+  const { timer, timerLoading, timerError } = useTimer(game.id ?? null);
 
-  const gameQuestionRepo = new GameEnumerationQuestionRepository(game.id as string, game.currentRound as string);
   const {
     gameQuestion,
     loading: gameQuestionLoading,
     error: gameQuestionError,
-  } = useQuestion(gameQuestionRepo, game.currentQuestion as string);
+  } = useQuestion(
+    game.id ?? null,
+    (game.currentRound as string | undefined) ?? null,
+    QuestionType.ENUMERATION,
+    game.currentQuestion as string
+  );
 
   const {
     data: questionPlayers,
     loading: playersLoading,
     error: playersError,
-  } = useQuestionPlayers(gameQuestionRepo, game.currentQuestion as string);
+  } = useQuestionPlayers(
+    game.id ?? null,
+    (game.currentRound as string | undefined) ?? null,
+    game.currentQuestion as string
+  );
 
   if (timerError || gameQuestionError || playersError) {
     return <ErrorScreen inline />;

@@ -8,7 +8,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/u
 import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { TimerStatus } from '@/models/timer';
@@ -23,15 +22,12 @@ export default function ValidateChallengerCitationButton() {
   const game = useGame();
   const user = useUser();
 
-  const gameRepositories = useGameRepositories();
-  const { timer, timerLoading, timerError } = useTimer(gameRepositories?.timerRepo ?? null);
+  const { timer, timerLoading, timerError } = useTimer(game?.id ?? null);
 
   const [handleClick, isSubmitting] = useAsyncAction(async () => {
     if (!game || !user) return;
     await incrementValidItems(game.id as string, game.currentRound as string, game.currentQuestion as string, user.id!);
   });
-
-  if (!gameRepositories) return null;
 
   if (timerError) {
     return <></>;

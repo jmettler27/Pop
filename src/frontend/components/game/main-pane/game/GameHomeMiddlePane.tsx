@@ -14,7 +14,6 @@ import { formatDuration, timestampElapsedSeconds, timestampToShortTime } from '@
 import { useAllRounds } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import { useIsChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useIsMobile from '@/frontend/hooks/useIsMobile';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
@@ -60,14 +59,12 @@ function GameHomeRounds() {
     await handleRoundSelected(roundType, gameId as string, roundId, user?.id as string);
   });
 
-  const gameRepositories = useGameRepositories();
   const {
     isChooser,
     loading: isChooserLoading,
     error: isChooserError,
-  } = useIsChooser(gameRepositories?.chooserRepo ?? null, myTeam as string);
-  const { rounds, loading: roundsLoading, error: roundsError } = useAllRounds(gameRepositories?.roundRepo ?? null);
-  if (!gameRepositories) return null;
+  } = useIsChooser(gameId as string, myTeam as string);
+  const { rounds, loading: roundsLoading, error: roundsError } = useAllRounds(gameId as string);
 
   if (roundsError || isChooserError) return <ErrorScreen inline />;
   if (roundsLoading || isChooserLoading) return <LoadingScreen inline />;

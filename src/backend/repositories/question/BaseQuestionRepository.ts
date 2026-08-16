@@ -1,4 +1,4 @@
-import { query, Transaction, where } from 'firebase/firestore';
+import { Transaction } from 'firebase/firestore';
 
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 import { BaseQuestionData, UpdateBaseQuestionData, type CreateBaseQuestionData } from '@/models/questions/question';
@@ -40,14 +40,5 @@ export default class BaseQuestionRepository extends FirebaseRepository {
   ): Promise<AnyBaseQuestion> {
     const result = await super.updateTransaction(transaction, questionId, data);
     return QuestionFactory.createBaseQuestion(this.questionType, result as BaseQuestionData);
-  }
-
-  // Total count of questions of this type, for the "Page X of Y" indicator — a Firestore count()
-  // aggregation, billed as a single read regardless of how many questions match. Plain async method
-  // (not a hook), see FirebaseRepository.getCount; pair with useFirestoreCount from a client component.
-  getQuestionsCount(approved: boolean): Promise<number> {
-    return super.getCount((ref) =>
-      query(ref, where('type', '==', this.questionType), where('approved', '==', approved))
-    );
   }
 }

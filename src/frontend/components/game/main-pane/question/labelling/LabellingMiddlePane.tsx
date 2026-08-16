@@ -1,6 +1,5 @@
 'use client';
 
-import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
 import { revealLabel } from '@/backend/services/question/labelling/actions';
 import { isObjectEmpty } from '@/backend/utils/objects';
 import NextImage from '@/frontend/components/common/NextImage';
@@ -15,7 +14,7 @@ import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import { GameStatus } from '@/models/games/game-status';
 import { GameLabellingQuestion, LabellingQuestion } from '@/models/questions/labelling';
-import { questionTypeToTitle } from '@/models/questions/question-type';
+import { QuestionType, questionTypeToTitle } from '@/models/questions/question-type';
 import { topicToEmoji, type Topic } from '@/models/topic';
 import { ParticipantRole } from '@/models/users/participant';
 
@@ -55,8 +54,12 @@ function LabellingQuestionHeader({ baseQuestion }: { baseQuestion: LabellingQues
 function LabellingMainContent({ baseQuestion }: { baseQuestion: LabellingQuestion }) {
   const game = useGame();
 
-  const gameQuestionRepo = new GameLabellingQuestionRepository(game?.id as string, game?.currentRound as string);
-  const { gameQuestion, loading, error } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+  const { gameQuestion, loading, error } = useQuestion(
+    game?.id ?? null,
+    game?.currentRound ?? null,
+    QuestionType.LABELLING,
+    game?.currentQuestion as string
+  );
 
   if (!game) return null;
 

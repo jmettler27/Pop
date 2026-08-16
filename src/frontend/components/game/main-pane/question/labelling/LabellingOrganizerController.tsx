@@ -4,7 +4,6 @@ import { useParams } from 'next/navigation';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
 import {
   cancelPlayer,
   handleBuzzerHeadChanged,
@@ -81,8 +80,12 @@ function LabelOrganizerAnswerController({
 }) {
   const game = useGame();
 
-  const gameQuestionRepo = new GameLabellingQuestionRepository(game?.id as string, game?.currentRound as string);
-  const { gameQuestion, loading, error } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+  const { gameQuestion, loading, error } = useQuestion(
+    game?.id ?? null,
+    game?.currentRound ?? null,
+    QuestionType.LABELLING,
+    game?.currentQuestion as string
+  );
 
   if (!game) return null;
 

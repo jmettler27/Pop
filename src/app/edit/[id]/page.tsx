@@ -7,8 +7,6 @@ import { redirect, useParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import GameRepository from '@/backend/repositories/game/GameRepository';
-import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import { AddRoundToGameButton } from '@/frontend/components/game-editor/AddRoundToGame';
 import { EditGameRoundCard } from '@/frontend/components/game-editor/EditRoundInGame';
@@ -45,11 +43,8 @@ export default function Page() {
 
   const user = session.user;
 
-  const gameRepo = new GameRepository();
-  const organizerRepo = new OrganizerRepository(gameId);
-
-  const { game, loading: gameLoading, error: gameError } = useGame(gameRepo, gameId);
-  const { organizers, loading: organizersLoading, error: organizersError } = useAllOrganizersOnce(organizerRepo);
+  const { game, loading: gameLoading, error: gameError } = useGame(gameId);
+  const { organizers, loading: organizersLoading, error: organizersError } = useAllOrganizersOnce(gameId);
 
   if (gameError || organizersError) {
     return <ErrorScreen />;

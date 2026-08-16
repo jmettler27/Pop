@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 
-import BaseMatchingQuestionRepository from '@/backend/repositories/question/BaseMatchingQuestionRepository';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import ActiveMatchingQuestionGrid from '@/frontend/components/game/main-pane/question/matching/ActiveMatchingQuestionGrid';
@@ -9,7 +8,6 @@ import { Spinner } from '@/frontend/components/ui/spinner';
 import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useTeam from '@/frontend/hooks/useTeam';
 import { Chooser } from '@/models/chooser';
 import { MatchingAnswer, MatchingQuestion } from '@/models/questions/matching';
@@ -17,15 +15,10 @@ import { MatchingAnswer, MatchingQuestion } from '@/models/questions/matching';
 export default function MobileMatchingControl() {
   const myTeam = useTeam();
   const game = useGame();
-  const gameRepositories = useGameRepositories();
 
-  const baseQuestionRepo = new BaseMatchingQuestionRepository();
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(
-    baseQuestionRepo,
-    game!.currentQuestion as string
-  );
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(game!.currentQuestion as string);
 
-  const { chooser, loading: chooserLoading, error: chooserError } = useChooser(gameRepositories?.chooserRepo ?? null);
+  const { chooser, loading: chooserLoading, error: chooserError } = useChooser(game?.id ?? null);
 
   const bq = baseQuestion as MatchingQuestion | undefined;
   const numCols = bq?.numCols;
@@ -36,7 +29,7 @@ export default function MobileMatchingControl() {
     [numCols, numRows]
   );
 
-  if (!game || !gameRepositories) return null;
+  if (!game) return null;
   if (baseQuestionError || chooserError) return <ErrorScreen inline />;
   if (baseQuestionLoading || chooserLoading) return <Spinner />;
   if (!baseQuestion || !chooser) return null;

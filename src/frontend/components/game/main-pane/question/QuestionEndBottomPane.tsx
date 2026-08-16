@@ -7,7 +7,6 @@ import { Button } from '@/frontend/components/ui/button';
 import { useRoundOnce } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { Round } from '@/models/rounds/round';
@@ -21,14 +20,13 @@ const messages = defineMessages('frontend.game.bottom.QuestionEndBottomPane', {
 
 export default function QuestionEndBottomPane() {
   const game = useGame();
-  const gameRepositories = useGameRepositories();
   const {
     round,
     loading: roundLoading,
     error: roundError,
-  } = useRoundOnce(gameRepositories?.roundRepo ?? null, (game?.currentRound as string | undefined) ?? '');
+  } = useRoundOnce(game?.id ?? null, (game?.currentRound as string | undefined) ?? '');
 
-  if (!game || !gameRepositories) return null;
+  if (!game) return null;
 
   if (roundError) {
     return <></>;

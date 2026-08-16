@@ -8,7 +8,6 @@ import RoundQuestionsProgress from '@/frontend/components/game/sidebar/RoundQues
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { RoundTypeIcon } from '@/frontend/helpers/question-types';
 import { useRound } from '@/frontend/hooks/firestore/round/useRoundHooks';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameRounds } from '@/models/games/game';
 import { type RoundType } from '@/models/rounds/round-type';
@@ -18,13 +17,7 @@ interface RoundProgressTabPanelProps {
 }
 
 export default function RoundProgressTabPanel({ game }: RoundProgressTabPanelProps) {
-  const gameRepositories = useGameRepositories();
-  const {
-    round,
-    loading: roundLoading,
-    error: roundError,
-  } = useRound(gameRepositories?.roundRepo ?? null, game.currentRound as string);
-  if (!gameRepositories) return null;
+  const { round, loading: roundLoading, error: roundError } = useRound(game.id as string, game.currentRound as string);
 
   if (roundError) {
     return <></>;

@@ -1,15 +1,12 @@
-import GameBuzzerQuestionRepository from '@/backend/repositories/question/GameBuzzerQuestionRepository';
-import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import BuzzerOrganizerController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerOrganizerController';
 import BuzzerPlayerController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayerController';
 import BuzzerPlayers from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayers';
 import BuzzerSpectatorController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerSpectatorController';
-import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameBuzzerQuestionHooks';
+import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import { GameRounds } from '@/models/games/game';
 import { BuzzerQuestion } from '@/models/questions/buzzer';
-import { type QuestionType } from '@/models/questions/question-type';
 import { ParticipantRole } from '@/models/users/participant';
 
 interface BuzzerBottomPaneProps {
@@ -19,20 +16,13 @@ interface BuzzerBottomPaneProps {
 export default function BuzzerBottomPane({ baseQuestion }: BuzzerBottomPaneProps) {
   const game = useGame();
 
-  const bq = baseQuestion as { type?: QuestionType };
   const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
-
-  const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(
-    bq.type as QuestionType,
-    game?.id as string,
-    currentRound as string
-  );
-
   const currentQuestion = game?.currentQuestion as string;
-  // Reached only for PROGRESSIVE_CLUES/IMAGE/BLINDTEST/EMOJI (see QuestionActiveBottomPane's switch), all of
-  // which inherit useQuestionPlayers unchanged from GameBuzzerQuestionRepository.
-  const typedRepo = gameQuestionRepo as unknown as GameBuzzerQuestionRepository;
-  const { data: questionPlayers, loading, error } = useQuestionPlayers(typedRepo, currentQuestion);
+  const {
+    data: questionPlayers,
+    loading,
+    error,
+  } = useQuestionPlayers(game?.id ?? null, (currentRound as string | undefined) ?? null, currentQuestion);
 
   if (!game) return null;
 

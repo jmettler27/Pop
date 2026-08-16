@@ -1,6 +1,5 @@
 import { useIntl } from 'react-intl';
 
-import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import GameScoreboard from '@/frontend/components/scores/GameScoreboard';
@@ -9,7 +8,6 @@ import { useRoundOnce } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import { useScoresOnce } from '@/frontend/hooks/firestore/score/useRoundScoreHooks';
 import { useAllTeams } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { GameRounds } from '@/models/games/game';
 
@@ -38,24 +36,22 @@ export default function GameEndMiddlePane() {
 
 function GameEndBody() {
   const game = useGame();
-  const gameRepositories = useGameRepositories();
-  const { teams, loading: teamsLoading, error: teamsError } = useAllTeams(gameRepositories?.teamRepo ?? null);
+  const { teams, loading: teamsLoading, error: teamsError } = useAllTeams(game?.id ?? null);
 
   const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
   const {
     round: finalRound,
     loading: finalRoundLoading,
     error: finalRoundError,
-  } = useRoundOnce(gameRepositories?.roundRepo ?? null, (currentRound as string | undefined) ?? '');
+  } = useRoundOnce(game?.id ?? null, (currentRound as string | undefined) ?? '');
 
-  const roundScoreRepo = new RoundScoreRepository(
-    (game?.id as string | undefined) ?? '',
-    (currentRound as string | undefined) ?? ''
-  );
-  const { roundScores, loading: roundScoresLoading, error: roundScoresError } = useScoresOnce(roundScoreRepo);
+  const {
+    roundScores,
+    loading: roundScoresLoading,
+    error: roundScoresError,
+  } = useScoresOnce(game?.id ?? null, (currentRound as string | undefined) ?? null);
 
   if (!game) return null;
-  if (!gameRepositories) return null;
 
   if (finalRoundError || teamsError || roundScoresError) {
     return <ErrorScreen inline />;

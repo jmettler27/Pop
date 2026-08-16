@@ -16,7 +16,6 @@ import { useIntl } from 'react-intl';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { useAllRoundsOnce } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import { useScoresOnce } from '@/frontend/hooks/firestore/score/useGameScoreHooks';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { AnyRound } from '@/models/rounds/RoundFactory';
 import { GameScores } from '@/models/scores';
@@ -59,12 +58,11 @@ export default function GameScoresChart({ currentRoundOrder, teams }: GameScores
   const gameId = id as string;
 
   // Return the rounds played up to the current round
-  const repos = useGameRepositories();
   const {
     rounds,
     loading: roundsLoading,
     error: roundsError,
-  } = useAllRoundsOnce(repos?.roundRepo ?? null, {
+  } = useAllRoundsOnce(gameId, {
     where: {
       field: 'order',
       operator: '!=',
@@ -77,9 +75,8 @@ export default function GameScoresChart({ currentRoundOrder, teams }: GameScores
     limit: currentRoundOrder + 1,
   });
 
-  const { gameScores, loading: gameScoresLoading, error: gameScoresError } = useScoresOnce(repos?.scoreRepo ?? null);
+  const { gameScores, loading: gameScoresLoading, error: gameScoresError } = useScoresOnce(gameId);
 
-  if (!repos) return <></>;
   if (roundsError || gameScoresError) {
     return <></>;
   }

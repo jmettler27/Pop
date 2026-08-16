@@ -14,7 +14,6 @@ import { useRealtimeDatabaseValue } from '@/frontend/hooks/database/useRealtimeD
 import { useRoundOnce } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -38,8 +37,6 @@ export default function TimerPane() {
 function OrganizerTimerPane() {
   useUser();
   const game = useGame();
-  const gameRepositories = useGameRepositories()!;
-  const { timerRepo } = gameRepositories;
 
   const isExecutingRef = useRef(false);
 
@@ -84,7 +81,7 @@ function OrganizerTimerPane() {
     isLoading: offsetLoading,
     error: offsetError,
   } = useRealtimeDatabaseValue<number>(SERVER_TIME_OFFSET_REF);
-  const { timer, timerLoading, timerError } = useTimer(timerRepo);
+  const { timer, timerLoading, timerError } = useTimer(game?.id ?? null);
 
   if (!game) return null;
 
@@ -112,15 +109,14 @@ function OrganizerTimerPane() {
 }
 
 function SpectatorTimerPane() {
-  const gameRepositories = useGameRepositories()!;
-  const { timerRepo } = gameRepositories;
+  const game = useGame();
 
   const {
     data: serverTimeOffset,
     isLoading: offsetLoading,
     error: offsetError,
   } = useRealtimeDatabaseValue<number>(SERVER_TIME_OFFSET_REF);
-  const { timer, timerLoading, timerError } = useTimer(timerRepo);
+  const { timer, timerLoading, timerError } = useTimer(game?.id ?? null);
 
   if (offsetError || timerError) {
     return <></>;
@@ -169,10 +165,8 @@ function TimerHeader() {
 function QuestionEndTimerHeader() {
   const intl = useIntl();
   const game = useGame();
-  const gameRepositories = useGameRepositories()!;
-  const { roundRepo } = gameRepositories;
   const currentRound = game?.currentRound ?? '';
-  const { round, loading: roundLoading, error: roundError } = useRoundOnce(roundRepo, currentRound);
+  const { round, loading: roundLoading, error: roundError } = useRoundOnce(game?.id ?? null, currentRound);
 
   if (roundError) {
     return <></>;

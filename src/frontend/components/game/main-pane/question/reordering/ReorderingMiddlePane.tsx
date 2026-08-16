@@ -2,7 +2,6 @@
 
 import { useMemo } from 'react';
 
-import GameReorderingQuestionRepository from '@/backend/repositories/question/GameReorderingQuestionRepository';
 import { shuffleIndices } from '@/backend/utils/arrays';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import ReorderingOrganizerPane from '@/frontend/components/game/main-pane/question/reordering/ReorderingOrganizerPane';
@@ -12,6 +11,7 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
+import { QuestionType } from '@/models/questions/question-type';
 import { GameReorderingQuestion, ReorderingQuestion } from '@/models/questions/reordering';
 import { ParticipantRole } from '@/models/users/participant';
 
@@ -21,8 +21,12 @@ export default function ReorderingMiddlePane({ baseQuestion }: { baseQuestion: R
   // Initialize random order (consistent for the session)
   const randomMapping = useMemo(() => shuffleIndices(baseQuestion.items?.length ?? 0), [baseQuestion.items?.length]);
 
-  const gameQuestionRepo = new GameReorderingQuestionRepository(game?.id as string, game?.currentRound as string);
-  const { gameQuestion, loading, error } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+  const { gameQuestion, loading, error } = useQuestion(
+    game?.id ?? null,
+    game?.currentRound ?? null,
+    QuestionType.REORDERING,
+    game?.currentQuestion as string
+  );
 
   if (!game) return null;
 

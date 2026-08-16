@@ -1,6 +1,5 @@
 'use client';
 
-import GameNaguiQuestionRepository from '@/backend/repositories/question/GameNaguiQuestionRepository';
 import GameChooserOrder from '@/frontend/components/game/chooser/GameChooserOrder';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import NaguiOrganizerController from '@/frontend/components/game/main-pane/question/nagui/NaguiOrganizerController';
@@ -10,16 +9,16 @@ import { Spinner } from '@/frontend/components/ui/spinner';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import { Chooser } from '@/models/chooser';
 import { GameNaguiQuestion } from '@/models/questions/nagui';
+import { QuestionType } from '@/models/questions/question-type';
 import { ParticipantRole } from '@/models/users/participant';
 
 export default function NaguiBottomPane() {
-  const gameRepositories = useGameRepositories();
-  const { chooser, loading, error } = useChooser(gameRepositories?.chooserRepo ?? null);
-  if (!gameRepositories) return null;
+  const game = useGame();
+  const { chooser, loading, error } = useChooser(game?.id ?? null);
+  if (!game) return null;
 
   if (error) {
     return <></>;
@@ -54,8 +53,12 @@ function NaguiController({ chooser }: { chooser: Chooser }) {
 
   const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx] ?? '';
 
-  const gameQuestionRepo = new GameNaguiQuestionRepository(game?.id as string, game?.currentRound as string);
-  const { gameQuestion, loading, error } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+  const { gameQuestion, loading, error } = useQuestion(
+    game?.id ?? null,
+    game?.currentRound ?? null,
+    QuestionType.NAGUI,
+    game?.currentQuestion as string
+  );
 
   if (!game) return null;
 

@@ -220,9 +220,6 @@ function testBaseBasicQuestions() {
   return [testBaseBasicQuestion1(), testBaseBasicQuestion2()];
 }
 
-// A handful of generic extra 'basic' questions, with distinct createdAt timestamps, so
-// QuestionSearchTable's pagination (10 questions/page, newest first) has more than one page to
-// show locally instead of just the 2 hand-authored basic questions above.
 function testExtraBasicQuestions(count) {
   return Array.from({ length: count }, (_, i) => ({
     id: `basic_extra_${i + 1}`,

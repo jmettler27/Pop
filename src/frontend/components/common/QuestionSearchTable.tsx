@@ -12,8 +12,6 @@ import {
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useIntl, type IntlShape } from 'react-intl';
 
-import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
-import UserRepository from '@/backend/repositories/user/UserRepository';
 import {
   messages,
   questionRow,
@@ -27,7 +25,7 @@ import { Checkbox } from '@/frontend/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/frontend/components/ui/select';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/frontend/components/ui/table';
-import { useQuestionsPage } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
+import { getQuestionsCount, useQuestionsPage } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import { useFirestoreCount } from '@/frontend/hooks/firestore/useFirestoreCount';
 import { useAllUsersOnce } from '@/frontend/hooks/firestore/user/useUserHooks';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -117,12 +115,7 @@ export function QuestionSearchTable({
 
   const intl = useIntl();
 
-  // Create repository instances with memoization to prevent unnecessary recreations
-  const userRepo = useMemo(() => new UserRepository(), []);
-  const { users, loading: usersLoading, error: usersError } = useAllUsersOnce(userRepo);
-
-  // Memoize repository instance based on questionType to prevent re-fetching when other props change
-  const questionRepo = useMemo(() => new BaseQuestionRepository(questionType), [questionType]);
+  const { users, loading: usersLoading, error: usersError } = useAllUsersOnce();
 
   const [pageSize, setPageSize] = useState(10);
   const [pageIndex, setPageIndex] = useState(0);
@@ -132,9 +125,9 @@ export function QuestionSearchTable({
     fetchNextPage,
     isLoading: questionsLoading,
     error: questionsError,
-  } = useQuestionsPage(questionRepo, true, pageSize);
+  } = useQuestionsPage(questionType, true, pageSize);
   const { data: questionsCount } = useFirestoreCount(
-    () => questionRepo.getQuestionsCount(true),
+    () => getQuestionsCount(questionType, true),
     ['questions', 'count', questionType, true]
   );
   const pageCount = questionsCount !== undefined ? Math.max(1, Math.ceil(questionsCount / pageSize)) : undefined;

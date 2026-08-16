@@ -1,24 +1,29 @@
-import { query } from 'firebase/firestore';
+import { collection, doc, query } from 'firebase/firestore';
 
-import type OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
+import { firestore } from '@/backend/firebase/firebase';
 import { useFirestoreCollectionOnce } from '@/frontend/hooks/firestore/useFirestoreCollection';
 import { useFirestoreDocument, useFirestoreDocumentOnce } from '@/frontend/hooks/firestore/useFirestoreDocument';
 import { Organizer } from '@/models/users/organizer';
 import { type ParticipantData } from '@/models/users/participant';
 
-export function useOrganizer(repo: OrganizerRepository | null, id: string) {
-  const { data, isLoading, error } = useFirestoreDocument(repo ? repo.getDocumentRef(id) : null);
+function organizersRef(gameId: string) {
+  return collection(firestore, 'games', gameId, 'organizers');
+}
+
+export function useOrganizer(gameId: string | null, id: string) {
+  const { data, isLoading, error } = useFirestoreDocument(gameId ? doc(organizersRef(gameId), id) : null);
   return { organizer: data ? new Organizer(data as unknown as ParticipantData) : null, loading: isLoading, error };
 }
 
-export function useOrganizerOnce(repo: OrganizerRepository | null, id: string) {
-  const { data, isLoading, error } = useFirestoreDocumentOnce(repo ? repo.getDocumentRef(id) : null);
+export function useOrganizerOnce(gameId: string | null, id: string) {
+  const { data, isLoading, error } = useFirestoreDocumentOnce(gameId ? doc(organizersRef(gameId), id) : null);
   return { organizer: data ? new Organizer(data as unknown as ParticipantData) : null, loading: isLoading, error };
 }
 
-export function useAllOrganizersOnce(repo: OrganizerRepository | null) {
-  const { data, isLoading, error } = useFirestoreCollectionOnce(repo ? query(repo.collectionRef) : null, [
-    repo?.collectionRef.path ?? null,
+export function useAllOrganizersOnce(gameId: string | null) {
+  const { data, isLoading, error } = useFirestoreCollectionOnce(gameId ? query(organizersRef(gameId)) : null, [
+    gameId,
+    'organizers',
   ]);
   return {
     organizers: data?.map((o) => new Organizer(o as unknown as ParticipantData)) ?? [],
@@ -27,7 +32,7 @@ export function useAllOrganizersOnce(repo: OrganizerRepository | null) {
   };
 }
 
-export function useIsOrganizer(repo: OrganizerRepository | null, organizerId: string) {
-  const { data, isLoading, error } = useFirestoreDocumentOnce(repo ? repo.getDocumentRef(organizerId) : null);
+export function useIsOrganizer(gameId: string | null, organizerId: string) {
+  const { data, isLoading, error } = useFirestoreDocumentOnce(gameId ? doc(organizersRef(gameId), organizerId) : null);
   return { isOrganizer: data !== null, loading: isLoading, error };
 }

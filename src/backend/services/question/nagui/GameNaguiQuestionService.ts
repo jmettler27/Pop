@@ -142,8 +142,14 @@ export default class GameNaguiQuestionService extends GameQuestionService {
           this.log.warn({ question: questionId }, 'Game question not found');
           throw new Error('Game question not found');
         }
+
+        const players = await this.playerRepo.getPlayersByTeamId(teamId);
+        if (!players || players.length === 0) {
+          this.log.warn({ question: questionId, team: teamId }, 'No players found for team');
+          throw new Error('No players found for team');
+        }
+
         await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.READY);
-        await this.readyRepo.updateNumReadyTransaction(transaction, 1);
 
         const answerIdx = baseQuestion.answerIdx;
         const correct = choiceIdx === answerIdx;
@@ -151,6 +157,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
         const reward = correct ? round.rewardsPerQuestion[gameQuestion.option!] : 0;
 
         await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward);
+        await this.readyRepo.updateNumReadyTransaction(transaction, players.length);
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
           playerId,
           choiceIdx,
@@ -204,11 +211,17 @@ export default class GameNaguiQuestionService extends GameQuestionService {
           throw new Error('Game question not found');
         }
 
+        const players = await this.playerRepo.getPlayersByTeamId(teamId);
+        if (!players || players.length === 0) {
+          this.log.warn({ question: questionId, team: teamId }, 'No players found for team');
+          throw new Error('No players found for team');
+        }
+
         const reward = correct ? round.rewardsPerQuestion[gameQuestion.option!] : 0;
 
         await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.READY);
-        await this.readyRepo.updateNumReadyTransaction(transaction, 1);
         await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward);
+        await this.readyRepo.updateNumReadyTransaction(transaction, players.length);
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { playerId, reward, correct });
         await this.soundRepo.addSoundTransaction(transaction, correct ? 'anime_wow' : 'hysterical5');
         await this.endQuestionTransaction(transaction, questionId);

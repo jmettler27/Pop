@@ -11,7 +11,6 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { RoundTypeIcon } from '@/frontend/helpers/question-types';
 import { useRound } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameStatus } from '@/models/games/game-status';
 import { AnyRound } from '@/models/rounds/RoundFactory';
@@ -20,15 +19,13 @@ export default function RoundMiddlePane() {
   const game = useGame();
   const params = useParams();
   const intl = useIntl();
-  const gameRepositories = useGameRepositories();
   const {
     round,
     loading: roundLoading,
     error: roundError,
-  } = useRound(gameRepositories?.roundRepo ?? null, (game?.currentRound as string | undefined) ?? '');
+  } = useRound(game?.id ?? null, (game?.currentRound as string | undefined) ?? '');
 
   if (!game) return null;
-  if (!gameRepositories) return null;
 
   if (roundError) {
     return <ErrorScreen inline />;

@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { clsx } from 'clsx';
 import { Check, TriangleAlert, X } from 'lucide-react';
 
-import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
 import { selectChoice } from '@/backend/services/question/mcq/actions';
 import { shuffleIndices } from '@/backend/utils/arrays';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
@@ -14,12 +13,12 @@ import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestion
 import { usePlayerOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
 import { GameStatus } from '@/models/games/game-status';
 import { GameMCQQuestion, MCQQuestion } from '@/models/questions/mcq';
+import { QuestionType } from '@/models/questions/question-type';
 import { ParticipantRole } from '@/models/users/participant';
 
 export default function MCQMainContent({ baseQuestion }: { baseQuestion: MCQQuestion }) {
@@ -84,8 +83,12 @@ function MCQMainContentQuestion({
 }) {
   const game = useGame();
 
-  const gameQuestionRepo = new GameMCQQuestionRepository(game?.id as string, game?.currentRound as string);
-  const { gameQuestion, loading, error } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+  const { gameQuestion, loading, error } = useQuestion(
+    game?.id ?? null,
+    game?.currentRound ?? null,
+    QuestionType.MCQ,
+    game?.currentQuestion as string
+  );
 
   if (!game) return null;
 
@@ -240,9 +243,9 @@ function EndedMCQChoices({ baseQuestion, gameQuestion, randomization }: MCQChoic
 }
 
 function PlayerAvatar({ playerId }: { playerId: string | null }) {
-  const gameRepositories = useGameRepositories();
-  const { player, loading, error } = usePlayerOnce(gameRepositories?.playerRepo ?? null, playerId as string);
-  if (!gameRepositories) return null;
+  const game = useGame();
+  const { player, loading, error } = usePlayerOnce(game?.id ?? null, playerId as string);
+  if (!game) return null;
 
   return (
     !error &&

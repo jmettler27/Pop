@@ -7,7 +7,6 @@ import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import { useTeamPlayers } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import { useTeam } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useTeamContext from '@/frontend/hooks/useTeam';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -24,9 +23,9 @@ const messages = defineMessages('frontend.game.GameChooserTeamAnnouncement', {
 });
 
 export default function GameChooserTeamAnnouncement() {
-  const gameRepositories = useGameRepositories();
-  const { chooser, loading: chooserLoading, error: chooserError } = useChooser(gameRepositories?.chooserRepo ?? null);
-  if (!gameRepositories) return null;
+  const game = useGame();
+  const { chooser, loading: chooserLoading, error: chooserError } = useChooser(game?.id ?? null);
+  if (!game) return null;
 
   if (chooserError || chooserLoading || !chooser) return null;
 
@@ -56,16 +55,10 @@ export function GameChooserHelperText({ chooserTeamId }: GameChooserHelperTextPr
   const myTeam = useTeamContext();
   const myRole = useRole();
   const intl = useIntl();
-  const gameRepositories = useGameRepositories();
-  const { team, loading: teamLoading, error: teamError } = useTeam(gameRepositories?.teamRepo ?? null, chooserTeamId);
-  const {
-    players,
-    loading: playersLoading,
-    error: playersError,
-  } = useTeamPlayers(gameRepositories?.playerRepo ?? null, chooserTeamId);
+  const { team, loading: teamLoading, error: teamError } = useTeam(game?.id ?? null, chooserTeamId);
+  const { players, loading: playersLoading, error: playersError } = useTeamPlayers(game?.id ?? null, chooserTeamId);
 
   if (!game) return null;
-  if (!gameRepositories) return null;
 
   if (teamError || playersError || teamLoading || playersLoading || !team || !players) {
     return null;

@@ -7,8 +7,6 @@ import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
-import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
-import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from '@/frontend/components/home/GameAvatars';
 import { Button } from '@/frontend/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/ui/card';
@@ -108,11 +106,8 @@ const GameCard = ({ game }: GameCardProps) => {
   const { data: session } = useSession();
   const user = session?.user;
 
-  const organizerRepo = new OrganizerRepository(game.id);
-  const playerRepo = new PlayerRepository(game.id);
-
-  const { organizers, loading: organizersLoading, error: organizersError } = useAllOrganizersOnce(organizerRepo);
-  const { players, loading: playersLoading, error: playersError } = useAllPlayersOnce(playerRepo);
+  const { organizers, loading: organizersLoading, error: organizersError } = useAllOrganizersOnce(game.id);
+  const { players, loading: playersLoading, error: playersError } = useAllPlayersOnce(game.id);
 
   if (organizersError || playersError) {
     return <></>;

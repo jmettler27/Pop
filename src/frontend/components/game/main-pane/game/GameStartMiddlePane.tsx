@@ -10,7 +10,6 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Avatar, AvatarFallback, AvatarImage } from '@/frontend/components/ui/avatar';
 import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganizerHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useHasMounted from '@/frontend/hooks/useHasMounted';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { GameRounds } from '@/models/games/game';
@@ -26,18 +25,12 @@ const messages = defineMessages('frontend.game.middlePane.GameStartMiddlePane', 
 export default function GameStartMiddlePane() {
   const game = useGame();
   const intl = useIntl();
-  const gameRepositories = useGameRepositories();
   const searchParams = useSearchParams();
   const forceSpectator = searchParams.get('spectator') === '1';
 
-  const {
-    organizers,
-    loading: orgLoading,
-    error: orgError,
-  } = useAllOrganizersOnce(gameRepositories?.organizerRepo ?? null);
+  const { organizers, loading: orgLoading, error: orgError } = useAllOrganizersOnce(game?.id ?? null);
 
   if (!game) return null;
-  if (!gameRepositories) return null;
 
   if (orgLoading) return <LoadingScreen inline />;
   if (orgError) return <ErrorScreen inline />;

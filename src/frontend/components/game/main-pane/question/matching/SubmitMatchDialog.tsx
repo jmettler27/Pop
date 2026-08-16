@@ -17,7 +17,6 @@ import {
 import { useIsChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
@@ -45,8 +44,7 @@ export default function SubmitMatchDialog({
   const game = useGame();
   const myTeam = useTeam();
   const myRole = useRole();
-  const gameRepositories = useGameRepositories();
-  const { isChooser } = useIsChooser(gameRepositories?.chooserRepo ?? null, myTeam as string);
+  const { isChooser } = useIsChooser(game?.id ?? null, myTeam as string);
 
   const [dialogOpen, setDialogOpen] = useState(false);
 

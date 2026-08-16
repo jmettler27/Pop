@@ -1,31 +1,38 @@
-import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
+import { collection, doc } from 'firebase/firestore';
+
+import { firestore } from '@/backend/firebase/firebase';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { useFirestoreDocument } from '@/frontend/hooks/firestore/useFirestoreDocument';
 import { GameMatchingQuestion } from '@/models/questions/matching';
+import { QuestionType } from '@/models/questions/question-type';
 
-export function useCorrectMatches(repo: GameMatchingQuestionRepository | null, questionId: string) {
+function gameQuestionsRef(gameId: string, roundId: string) {
+  return collection(firestore, 'games', gameId, 'rounds', roundId, 'questions');
+}
+
+export function useCorrectMatches(gameId: string | null, roundId: string | null, questionId: string) {
   const { data, isLoading, error } = useFirestoreDocument(
-    repo ? repo.getDocumentRef([questionId, ...GameMatchingQuestionRepository.CORRECT_MATCHES_PATH]) : null
+    gameId && roundId ? doc(gameQuestionsRef(gameId, roundId), questionId, 'realtime', 'correct') : null
   );
   return { correctMatches: data ? data.correctMatches : [], loading: isLoading, error };
 }
 
-export function useIncorrectMatches(repo: GameMatchingQuestionRepository | null, questionId: string) {
+export function useIncorrectMatches(gameId: string | null, roundId: string | null, questionId: string) {
   const { data, isLoading, error } = useFirestoreDocument(
-    repo ? repo.getDocumentRef([questionId, ...GameMatchingQuestionRepository.INCORRECT_MATCHES_PATH]) : null
+    gameId && roundId ? doc(gameQuestionsRef(gameId, roundId), questionId, 'realtime', 'incorrect') : null
   );
   return { incorrectMatches: data ? data.incorrectMatches : [], loading: isLoading, error };
 }
 
-export function usePartiallyCorrectMatches(repo: GameMatchingQuestionRepository | null, questionId: string) {
+export function usePartiallyCorrectMatches(gameId: string | null, roundId: string | null, questionId: string) {
   const { data, isLoading, error } = useFirestoreDocument(
-    repo ? repo.getDocumentRef([questionId, ...GameMatchingQuestionRepository.PARTIALLY_CORRECT_MATCHES_PATH]) : null
+    gameId && roundId ? doc(gameQuestionsRef(gameId, roundId), questionId, 'realtime', 'partiallyCorrect') : null
   );
   return { partiallyCorrectMatches: data ? data.partiallyCorrectMatches : [], loading: isLoading, error };
 }
 
-export function useIsCanceled(repo: GameMatchingQuestionRepository | null, questionId: string, teamId: string) {
-  const { gameQuestion, loading, error } = useQuestion(repo, questionId);
+export function useIsCanceled(gameId: string | null, roundId: string | null, questionId: string, teamId: string) {
+  const { gameQuestion, loading, error } = useQuestion(gameId, roundId, QuestionType.MATCHING, questionId);
   if (loading || error) return { isCanceled: false, loading, error };
   const q = gameQuestion as GameMatchingQuestion | null;
   return {

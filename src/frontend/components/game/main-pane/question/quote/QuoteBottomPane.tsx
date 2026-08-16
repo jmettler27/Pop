@@ -1,12 +1,11 @@
 'use client';
 
-import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 import BuzzerPlayerController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayerController';
 import BuzzerPlayers from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayers';
 import BuzzerSpectatorController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerSpectatorController';
 import QuoteOrganizerController from '@/frontend/components/game/main-pane/question/quote/QuoteOrganizerController';
 import { Spinner } from '@/frontend/components/ui/spinner';
-import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameQuoteQuestionHooks';
+import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import { QuoteQuestion } from '@/models/questions/quote';
@@ -15,12 +14,11 @@ import { ParticipantRole } from '@/models/users/participant';
 export default function QuoteBottomPane({ baseQuestion }: { baseQuestion: QuoteQuestion }) {
   const game = useGame();
 
-  const gameQuestionRepo = new GameQuoteQuestionRepository(game?.id as string, game?.currentRound as string);
   const {
     data: questionPlayers,
     loading,
     error,
-  } = useQuestionPlayers(gameQuestionRepo, game?.currentQuestion as string);
+  } = useQuestionPlayers(game?.id ?? null, game?.currentRound ?? null, game?.currentQuestion as string);
 
   if (!game) return null;
 

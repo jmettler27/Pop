@@ -4,7 +4,6 @@ import Image from 'next/image';
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
-import UserRepository from '@/backend/repositories/user/UserRepository';
 import { formatAnswerValue } from '@/frontend/components/game/main-pane/question/estimation/EstimationCommon';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/frontend/components/ui/card';
 import { Separator } from '@/frontend/components/ui/separator';
@@ -122,8 +121,7 @@ interface QuestionCardFooterProps {
 
 function QuestionCardFooter({ baseQuestion }: QuestionCardFooterProps) {
   const intl = useIntl();
-  const userRepository = new UserRepository();
-  const { user, loading, error } = useUserOnce(userRepository, (baseQuestion as { createdBy: string }).createdBy);
+  const { user, loading, error } = useUserOnce((baseQuestion as { createdBy: string }).createdBy);
 
   if (error || loading || !user) {
     return <></>;

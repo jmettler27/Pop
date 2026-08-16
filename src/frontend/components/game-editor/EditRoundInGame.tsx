@@ -26,8 +26,6 @@ import { ArrowUpDown, Check, ChevronDown, ChevronUp, GripVertical, Timer as Time
 import { useIntl } from 'react-intl';
 
 import { QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
-import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
-import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import {
   removeRoundFromGame,
   updateRound,
@@ -59,7 +57,6 @@ import useHasMounted from '@/frontend/hooks/useHasMounted';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameStatus } from '@/models/games/game-status';
-import { QuestionType } from '@/models/questions/question-type';
 import { Round } from '@/models/rounds/round';
 import { RoundType, roundTypeToEmoji, roundTypeToTitle } from '@/models/rounds/round-type';
 import { AnyRound } from '@/models/rounds/RoundFactory';
@@ -111,8 +108,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({
   gameId,
   forceCollapse = false,
 }: EditGameRoundCardProps) {
-  const roundRepo = new RoundRepository(gameId);
-  const { round, loading, error } = useRound(roundRepo, roundId);
+  const { round, loading, error } = useRound(gameId, roundId);
   const intl = useIntl();
 
   const [isReorderMode, setIsReorderMode] = useState(false);
@@ -427,8 +423,7 @@ function SortableQuestionCard({ roundId, questionId, questionOrder, status }: So
     opacity: isDragging ? 0.5 : 1,
   };
 
-  const baseQuestionRepo = new BaseQuestionRepository(QuestionType.BASIC);
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(baseQuestionRepo, questionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(questionId);
 
   if (baseQuestionError || baseQuestionLoading || !baseQuestion) {
     return <></>;

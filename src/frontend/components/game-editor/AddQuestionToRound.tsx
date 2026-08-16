@@ -6,7 +6,6 @@ import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
 // New question
-import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 import { QuestionCard } from '@/frontend/components/common/QuestionCard';
 import { QuestionSearchTable } from '@/frontend/components/common/QuestionSearchTable';
@@ -439,8 +438,7 @@ interface AddExistingQuestionToRoundDialogContentProps {
 }
 
 function AddExistingQuestionToRoundDialogContent({ selectedQuestionId }: AddExistingQuestionToRoundDialogContentProps) {
-  const questionRepo = new BaseQuestionRepository(QuestionType.BASIC);
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(questionRepo, selectedQuestionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(selectedQuestionId);
 
   if (baseQuestionError || baseQuestionLoading || !baseQuestion) {
     return <></>;

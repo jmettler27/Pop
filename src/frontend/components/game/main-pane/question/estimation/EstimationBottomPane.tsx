@@ -2,13 +2,11 @@
 
 import { useIntl } from 'react-intl';
 
-import GameEstimationQuestionRepository from '@/backend/repositories/question/GameEstimationQuestionRepository';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useRole from '@/frontend/hooks/useRole';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { EstimationQuestion, GameEstimationQuestion } from '@/models/questions/estimation';
@@ -18,8 +16,12 @@ import { ParticipantRole } from '@/models/users/participant';
 export default function EstimationBottomPane({ baseQuestion }: { baseQuestion: EstimationQuestion }) {
   const game = useGame();
 
-  const gameQuestionRepo = new GameEstimationQuestionRepository(game?.id as string, game?.currentRound as string);
-  const { gameQuestion, loading, error } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+  const { gameQuestion, loading, error } = useQuestion(
+    game?.id ?? null,
+    game?.currentRound ?? null,
+    QuestionType.ESTIMATION,
+    game?.currentQuestion as string
+  );
 
   if (!game) return null;
 
@@ -62,9 +64,9 @@ function EstimationOrganizerController() {
 
 function EstimationSubmittedTeams({ gameQuestion }: { gameQuestion: GameEstimationQuestion }) {
   const intl = useIntl();
-  const gameRepositories = useGameRepositories();
-  const { teams, loading, error } = useAllTeamsOnce(gameRepositories?.teamRepo ?? null);
-  if (!gameRepositories) return null;
+  const game = useGame();
+  const { teams, loading, error } = useAllTeamsOnce(game?.id ?? null);
+  if (!game) return null;
 
   if (error || loading || !teams) {
     return <></>;

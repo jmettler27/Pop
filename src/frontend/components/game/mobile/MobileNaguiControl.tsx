@@ -5,8 +5,6 @@ import { useMemo } from 'react';
 import { clsx } from 'clsx';
 import { useIntl } from 'react-intl';
 
-import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
-import GameNaguiQuestionRepository from '@/backend/repositories/question/GameNaguiQuestionRepository';
 import { selectChoice } from '@/backend/services/question/nagui/actions';
 import { shuffleIndices } from '@/backend/utils/arrays';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
@@ -18,7 +16,6 @@ import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestion
 import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
-import useGameRepositories from '@/frontend/hooks/useGameRepositories';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -29,24 +26,17 @@ import { QuestionType } from '@/models/questions/question-type';
 export default function MobileNaguiControl() {
   const myTeam = useTeam();
   const game = useGame();
-  const gameRepositories = useGameRepositories();
-  const { chooser, loading: chooserLoading, error: chooserError } = useChooser(gameRepositories?.chooserRepo ?? null);
+  const { chooser, loading: chooserLoading, error: chooserError } = useChooser(game?.id ?? null);
 
-  const gameQuestionRepo = new GameNaguiQuestionRepository(game?.id as string, game?.currentRound as string);
   const {
     gameQuestion,
     loading: questionLoading,
     error: questionError,
-  } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+  } = useQuestion(game?.id ?? null, game?.currentRound ?? null, QuestionType.NAGUI, game?.currentQuestion as string);
 
-  const baseQuestionRepo = BaseQuestionRepositoryFactory.createRepository(QuestionType.NAGUI);
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(
-    baseQuestionRepo,
-    game?.currentQuestion as string
-  );
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(game?.currentQuestion as string);
 
   if (!game) return null;
-  if (!gameRepositories) return null;
 
   if (questionError || chooserError || baseQuestionError) return null;
   if (questionLoading || chooserLoading || baseQuestionLoading) return <Spinner />;

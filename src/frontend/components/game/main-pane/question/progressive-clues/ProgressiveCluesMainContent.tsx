@@ -1,6 +1,5 @@
 import { clsx } from 'clsx';
 
-import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/GameProgressiveCluesQuestionRepository';
 import NextImage from '@/frontend/components/common/NextImage';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
@@ -9,6 +8,7 @@ import useGame from '@/frontend/hooks/useGame';
 import { GameRounds } from '@/models/games/game';
 import { GameStatus } from '@/models/games/game-status';
 import { ProgressiveCluesQuestion } from '@/models/questions/progressive-clues';
+import { QuestionType } from '@/models/questions/question-type';
 
 interface ProgressiveCluesMainContentProps {
   baseQuestion: ProgressiveCluesQuestion;
@@ -33,8 +33,12 @@ function ProgressiveClues({ baseQuestion, showComplete }: ProgressiveCluesMainCo
   const game = useGame();
   const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
 
-  const gameQuestionRepo = new GameProgressiveCluesQuestionRepository(game?.id as string, currentRound as string);
-  const { gameQuestion, loading, error } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+  const { gameQuestion, loading, error } = useQuestion(
+    game?.id ?? null,
+    currentRound ?? null,
+    QuestionType.PROGRESSIVE_CLUES,
+    game?.currentQuestion as string
+  );
 
   if (!game) return null;
 

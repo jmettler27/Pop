@@ -1,6 +1,5 @@
 'use client';
 
-import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 import { revealQuoteElement } from '@/backend/services/question/quote/actions';
 import { isObjectEmpty } from '@/backend/utils/objects';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
@@ -13,7 +12,7 @@ import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import { GameStatus } from '@/models/games/game-status';
-import { questionTypeToTitle } from '@/models/questions/question-type';
+import { QuestionType, questionTypeToTitle } from '@/models/questions/question-type';
 import { GameQuoteQuestion, QuotePart, QuoteQuestion } from '@/models/questions/quote';
 import { topicToEmoji, type Topic } from '@/models/topic';
 import { ParticipantRole } from '@/models/users/participant';
@@ -48,8 +47,12 @@ function QuoteQuestionHeader({ baseQuestion }: { baseQuestion: QuoteQuestion }) 
 function QuoteMainContent({ baseQuestion }: { baseQuestion: QuoteQuestion }) {
   const game = useGame();
 
-  const gameQuestionRepo = new GameQuoteQuestionRepository(game?.id as string, game?.currentRound as string);
-  const { gameQuestion, loading, error } = useQuestion(gameQuestionRepo, game?.currentQuestion as string);
+  const { gameQuestion, loading, error } = useQuestion(
+    game?.id ?? null,
+    game?.currentRound ?? null,
+    QuestionType.QUOTE,
+    game?.currentQuestion as string
+  );
 
   if (!game) return null;
 
