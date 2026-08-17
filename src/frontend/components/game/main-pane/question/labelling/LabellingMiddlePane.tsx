@@ -1,7 +1,6 @@
 'use client';
 
 import { revealLabel } from '@/backend/services/question/labelling/actions';
-import { isObjectEmpty } from '@/backend/utils/objects';
 import NextImage from '@/frontend/components/common/NextImage';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
@@ -17,6 +16,7 @@ import { GameLabellingQuestion, LabellingQuestion } from '@/models/questions/lab
 import { QuestionType, questionTypeToTitle } from '@/models/questions/question-type';
 import { topicToEmoji, type Topic } from '@/models/topic';
 import { ParticipantRole } from '@/models/users/participant';
+import { isObjectEmpty } from '@/utils/objects';
 
 export default function LabellingMiddlePane({ baseQuestion }: { baseQuestion: LabellingQuestion }) {
   return (

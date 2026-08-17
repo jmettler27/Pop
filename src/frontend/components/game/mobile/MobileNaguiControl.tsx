@@ -6,7 +6,6 @@ import { clsx } from 'clsx';
 import { useIntl } from 'react-intl';
 
 import { selectChoice } from '@/backend/services/question/nagui/actions';
-import { shuffleIndices } from '@/backend/utils/arrays';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import { NaguiChooserController } from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerController';
 import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
@@ -22,6 +21,7 @@ import globalMessages from '@/frontend/i18n/globalMessages';
 import { Chooser } from '@/models/chooser';
 import { DuoNaguiOption, GameNaguiQuestion, HideNaguiOption, NaguiQuestion } from '@/models/questions/nagui';
 import { QuestionType } from '@/models/questions/question-type';
+import { shuffleIndices } from '@/utils/arrays';
 
 export default function MobileNaguiControl() {
   const myTeam = useTeam();

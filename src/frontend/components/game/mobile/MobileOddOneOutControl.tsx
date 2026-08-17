@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 
-import { shuffleIndices } from '@/backend/utils/arrays';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import { OddOneOutChooserStatusText } from '@/frontend/components/game/main-pane/question/odd-one-out/OddOneOutBottomPane';
@@ -14,6 +13,7 @@ import useGame from '@/frontend/hooks/useGame';
 import useTeam from '@/frontend/hooks/useTeam';
 import { GameOddOneOutQuestion, OddOneOutQuestion } from '@/models/questions/odd-one-out';
 import { QuestionType } from '@/models/questions/question-type';
+import { shuffleIndices } from '@/utils/arrays';
 
 export default function MobileOddOneOutControl() {
   const game = useGame();

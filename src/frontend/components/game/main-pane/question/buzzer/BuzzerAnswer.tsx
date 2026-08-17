@@ -1,6 +1,5 @@
 import { useIntl } from 'react-intl';
 
-import { getRandomElement } from '@/backend/utils/arrays';
 import { WinnerName } from '@/frontend/components/game/PlayerName';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
@@ -10,6 +9,7 @@ import { GameRounds } from '@/models/games/game';
 import { GameStatus } from '@/models/games/game-status';
 import { BuzzerQuestion } from '@/models/questions/buzzer';
 import { QuestionType } from '@/models/questions/question-type';
+import { getRandomElement } from '@/utils/arrays';
 
 const messages = defineMessages('frontend.game.BuzzerAnswer', {
   winnerText1: 'GG',

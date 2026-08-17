@@ -1,4 +1,4 @@
-import { runTransaction, serverTimestamp } from 'firebase/firestore';
+import { runTransaction, serverTimestamp, Timestamp } from 'firebase/firestore';
 import type { Logger } from 'pino';
 
 import { firestore } from '@/backend/firebase/firebase';
@@ -14,11 +14,18 @@ import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import RoundServiceFactory from '@/backend/services/round/RoundServiceFactory';
-import { getRandomElement, shuffle } from '@/backend/utils/arrays';
+import { type Locale } from '@/frontend/helpers/locales';
+import { type GameRoundsData } from '@/models/games/game';
 import { GameStatus } from '@/models/games/game-status';
+import { type GameType } from '@/models/games/game-type';
 import { Scores, ScoresProgress } from '@/models/scores';
 import Team from '@/models/team';
 import { PlayerStatus } from '@/models/users/player';
+import { getRandomElement, shuffle } from '@/utils/arrays';
+
+function serializeTimestamp(value: unknown): { seconds: number; nanoseconds: number } | null {
+  return value instanceof Timestamp ? { seconds: value.seconds, nanoseconds: value.nanoseconds } : null;
+}
 
 export default class GameService {
   gameId: string;
@@ -235,5 +242,60 @@ export default class GameService {
       this.log.error({ err: error }, 'Error ending game');
       throw error;
     }
+  }
+
+  /**
+   * Retrieves all games with the given status where the user is an organizer or a player.
+   *
+   * A plain, serializable summary of each game is returned (server actions cannot cross the
+   * client/server boundary with class instances or nested Firestore Timestamp objects).
+   */
+  static async getGamesForUserByStatus(status: string, userId: string): Promise<GameRoundsData[]> {
+    const gameRepo = new GameRepository();
+    const games = await gameRepo.getGamesByStatus(status);
+
+    const results: GameRoundsData[] = [];
+    for (const game of games) {
+      const gameId = game.id as string;
+      const organizerRepo = new OrganizerRepository(gameId);
+      const playerRepo = new PlayerRepository(gameId);
+      const [organizerIds, playerIds] = await Promise.all([
+        organizerRepo.getAllOrganizerIds(),
+        playerRepo.getAllPlayerIds(),
+      ]);
+
+      if (!organizerIds.includes(userId) && !playerIds.includes(userId)) continue;
+
+      results.push({
+        id: gameId,
+        title: game.title as string,
+        type: game.type as GameType,
+        lang: game.lang as Locale,
+        status: game.status as string,
+        dateEnd: serializeTimestamp(game.dateEnd),
+      });
+    }
+
+    results.sort((a, b) => {
+      const aSeconds = (a.dateEnd as { seconds: number } | null)?.seconds ?? 0;
+      const bSeconds = (b.dateEnd as { seconds: number } | null)?.seconds ?? 0;
+      return bSeconds - aSeconds;
+    });
+
+    return results;
+  }
+
+  /**
+   * Retrieves all ended games where the given user is an organizer or a player.
+   */
+  static async getEndedGamesForUser(userId: string): Promise<GameRoundsData[]> {
+    return GameService.getGamesForUserByStatus(GameStatus.GAME_END, userId);
+  }
+
+  /**
+   * Retrieves all games under construction where the given user is an organizer or a player.
+   */
+  static async getGamesUnderConstructionForUser(userId: string): Promise<GameRoundsData[]> {
+    return GameService.getGamesForUserByStatus(GameStatus.GAME_EDIT, userId);
   }
 }

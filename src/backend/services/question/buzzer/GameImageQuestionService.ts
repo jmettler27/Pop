@@ -1,4 +1,4 @@
-import GameBuzzerQuestionService from '@/backend/services/question/GameBuzzerQuestionService';
+import GameBuzzerQuestionService from '@/backend/services/question/buzzer/GameBuzzerQuestionService';
 import { QuestionType } from '@/models/questions/question-type';
 
 export default class GameImageQuestionService extends GameBuzzerQuestionService {

@@ -3,7 +3,6 @@ import { serverTimestamp, Transaction } from 'firebase/firestore';
 import { logger } from '@/backend/logger';
 import GameNaguiQuestionRepository from '@/backend/repositories/question/GameNaguiQuestionRepository';
 import RoundService from '@/backend/services/round/RoundService';
-import { getNextCyclicIndex, shuffle } from '@/backend/utils/arrays';
 import { GameStatus } from '@/models/games/game-status';
 import { HideNaguiOption } from '@/models/questions/nagui';
 import { QuestionType } from '@/models/questions/question-type';
@@ -13,6 +12,7 @@ import { AnyRound } from '@/models/rounds/RoundFactory';
 import { ScorePolicyType } from '@/models/score-policy';
 import { Timer } from '@/models/timer';
 import { PlayerStatus } from '@/models/users/player';
+import { getNextCyclicIndex, shuffle } from '@/utils/arrays';
 
 export default class NaguiRoundService extends RoundService {
   constructor(gameId: string) {

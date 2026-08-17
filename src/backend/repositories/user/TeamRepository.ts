@@ -1,8 +1,8 @@
 import { type Transaction } from 'firebase/firestore';
 
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
-import { shuffle } from '@/backend/utils/arrays';
 import Team, { type TeamData } from '@/models/team';
+import { shuffle } from '@/utils/arrays';
 
 export default class TeamRepository extends FirebaseRepository {
   constructor(gameId: string) {

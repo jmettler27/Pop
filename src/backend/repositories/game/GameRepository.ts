@@ -41,6 +41,10 @@ export default class GameRepository extends FirebaseRepository {
     return data.map((g) => GameFactory.createGame(g.type as GameType, g));
   }
 
+  async getGamesByStatus(status: string): Promise<Array<Record<string, unknown>>> {
+    return super.getByField('status', status);
+  }
+
   async createGame(data: Record<string, unknown>, gameId: string | null = null): Promise<GameRounds> {
     const createData = await super.create(data, gameId);
     return GameFactory.createGame(data.type as GameType, createData);

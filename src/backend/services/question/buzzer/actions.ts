@@ -1,6 +1,6 @@
 'use server';
 
-import GameBuzzerQuestionService from '@/backend/services/question/GameBuzzerQuestionService';
+import GameBuzzerQuestionService from '@/backend/services/question/buzzer/GameBuzzerQuestionService';
 import GameQuestionServiceFactory from '@/backend/services/question/GameQuestionServiceFactory';
 import { QuestionType } from '@/models/questions/question-type';
 

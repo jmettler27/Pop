@@ -8,7 +8,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import DiscordProvider from 'next-auth/providers/discord';
 import GoogleProvider from 'next-auth/providers/google';
 
-import { generateAvatarUrl } from '@/backend/utils/avatar';
+import { generateAvatarUrl } from '@/utils/avatar';
 
 const useEmulators = process.env.NEXT_PUBLIC_USE_EMULATORS === 'true';
 if (useEmulators) {

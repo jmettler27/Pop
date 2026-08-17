@@ -2,22 +2,6 @@
 
 import GameLabellingQuestionService from '@/backend/services/question/labelling/GameLabellingQuestionService';
 
-export const resetQuestion = async (gameId: string, roundId: string, questionId: string) => {
-  const service = new GameLabellingQuestionService(gameId, roundId);
-  return service.resetQuestion(questionId);
-};
-
-export const endQuestion = async (gameId: string, roundId: string, questionId: string) => {
-  const service = new GameLabellingQuestionService(gameId, roundId);
-  return service.endQuestion(questionId);
-};
-
-export const handleCountdownEnd = async (gameId: string, roundId: string, questionId: string) => {
-  const service = new GameLabellingQuestionService(gameId, roundId);
-  return service.handleCountdownEnd(questionId);
-};
-
-/* =============================================================================================================== */
 export const handleBuzzerHeadChanged = async (
   gameId: string,
   roundId: string,

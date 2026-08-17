@@ -10,7 +10,7 @@ import {
 } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
-import { isArray } from '@/backend/utils/arrays';
+import { isArray } from '@/utils/arrays';
 
 const getDocDataTransaction = async (
   transaction: Transaction,

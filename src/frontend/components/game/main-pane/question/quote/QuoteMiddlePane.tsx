@@ -1,7 +1,6 @@
 'use client';
 
 import { revealQuoteElement } from '@/backend/services/question/quote/actions';
-import { isObjectEmpty } from '@/backend/utils/objects';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
@@ -16,6 +15,7 @@ import { QuestionType, questionTypeToTitle } from '@/models/questions/question-t
 import { GameQuoteQuestion, QuotePart, QuoteQuestion } from '@/models/questions/quote';
 import { topicToEmoji, type Topic } from '@/models/topic';
 import { ParticipantRole } from '@/models/users/participant';
+import { isObjectEmpty } from '@/utils/objects';
 
 export default function QuoteMiddlePane({ baseQuestion }: { baseQuestion: QuoteQuestion }) {
   return (

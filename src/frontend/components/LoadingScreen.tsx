@@ -4,8 +4,8 @@ import { useMemo } from 'react';
 
 import { useIntl } from 'react-intl';
 
-import { getRandomElement } from '@/backend/utils/arrays';
 import globalMessages from '@/frontend/i18n/globalMessages';
+import { getRandomElement } from '@/utils/arrays';
 
 const LOADING_TIP_KEYS = [
   'loadingTip1',

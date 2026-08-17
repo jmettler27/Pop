@@ -4,7 +4,6 @@ import { CheckCircle2, ChevronDown, ChevronUp, Eye, XCircle } from 'lucide-react
 import { useIntl } from 'react-intl';
 
 import { revealQuoteElement } from '@/backend/services/question/quote/actions';
-import { isEmpty } from '@/backend/utils/arrays';
 import { Button } from '@/frontend/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/frontend/components/ui/collapsible';
 import {
@@ -28,6 +27,7 @@ import {
   QuoteQuestion,
   QuoteSourceElement,
 } from '@/models/questions/quote';
+import { isEmpty } from '@/utils/arrays';
 
 const messages = defineMessages('frontend.game.bottom.RevealQuoteElement', {
   listHeader: 'Reveal an element of the quote',

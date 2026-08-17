@@ -4,12 +4,12 @@ import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import GameQuestionService, { SYSTEM_PLAYER_ID } from '@/backend/services/question/GameQuestionService';
-import { getNextCyclicIndex, getRandomElement, moveToHead } from '@/backend/utils/arrays';
 import { GameOddOneOutQuestion, OddOneOutQuestion, SelectedItem } from '@/models/questions/odd-one-out';
 import { QuestionType } from '@/models/questions/question-type';
 import { OddOneOutRound } from '@/models/rounds/odd-one-out';
 import { ScorePolicyType } from '@/models/score-policy';
 import { Player, PlayerStatus } from '@/models/users/player';
+import { getNextCyclicIndex, getRandomElement, moveToHead } from '@/utils/arrays';
 
 export default class GameOddOneOutQuestionService extends GameQuestionService {
   readonly chooserRepo: ChooserRepository;

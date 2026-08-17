@@ -1,4 +1,3 @@
-import { isObjectEmpty } from '@/backend/utils/objects';
 import {
   getNodeId,
   MatchingEdge,
@@ -6,6 +5,7 @@ import {
 } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
 import { usePartiallyCorrectMatches } from '@/frontend/hooks/firestore/question/useGameMatchingQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
+import { isObjectEmpty } from '@/utils/objects';
 
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
 

@@ -2,7 +2,6 @@
 
 import { useMemo } from 'react';
 
-import { shuffleIndices } from '@/backend/utils/arrays';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import ReorderingOrganizerPane from '@/frontend/components/game/main-pane/question/reordering/ReorderingOrganizerPane';
 import ReorderingPlayerPane from '@/frontend/components/game/main-pane/question/reordering/ReorderingPlayerPane';
@@ -14,6 +13,7 @@ import useRole from '@/frontend/hooks/useRole';
 import { QuestionType } from '@/models/questions/question-type';
 import { GameReorderingQuestion, ReorderingQuestion } from '@/models/questions/reordering';
 import { ParticipantRole } from '@/models/users/participant';
+import { shuffleIndices } from '@/utils/arrays';
 
 export default function ReorderingMiddlePane({ baseQuestion }: { baseQuestion: ReorderingQuestion }) {
   const game = useGame();

@@ -1,10 +1,10 @@
-import { range } from '@/backend/utils/arrays';
 import ActiveMatches from '@/frontend/components/game/main-pane/question/matching/ActiveMatches';
 import CorrectMatches from '@/frontend/components/game/main-pane/question/matching/CorrectMatches';
 import { type NodeData } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
 import IncorrectMatches from '@/frontend/components/game/main-pane/question/matching/IncorrectMatches';
 import PartiallyCorrectMatches from '@/frontend/components/game/main-pane/question/matching/PartiallyCorrectMatches';
 import { MatchingAnswer } from '@/models/questions/matching';
+import { range } from '@/utils/arrays';
 
 interface ActiveMatchingQuestionGridProps {
   answer: MatchingAnswer;

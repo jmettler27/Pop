@@ -1,12 +1,5 @@
 import { Scores } from '@/models/scores';
 
-export function arrayToCommaSeparatedString(array: unknown[]): string {
-  if (array.length === 0) {
-    return '';
-  }
-  return array.slice(0, array.length).join(', ');
-}
-
 export function getNextCyclicIndex(currentIndex: number, listLength: number): number {
   return (currentIndex + 1) % listLength;
 }
@@ -74,11 +67,6 @@ export function findNextAvailableChooser(
 
 export function shuffleIndices(numItems: number): number[] {
   return shuffle(range(numItems));
-}
-
-// Counts the number of indices i such that array1[i] === array2[i]
-export function findArrayMatches<T>(array1: T[], array2: T[]): number {
-  return array1.reduce((acc, item, idx) => acc + (item === array2[idx] ? 1 : 0), 0);
 }
 
 export function isArray<T>(value: unknown): value is T[] {

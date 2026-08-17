@@ -5,7 +5,6 @@ import { useMemo } from 'react';
 import { clsx } from 'clsx';
 
 import { selectChoice } from '@/backend/services/question/mcq/actions';
-import { shuffleIndices } from '@/backend/utils/arrays';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
@@ -18,6 +17,7 @@ import useUser from '@/frontend/hooks/useUser';
 import { Chooser } from '@/models/chooser';
 import { MCQQuestion } from '@/models/questions/mcq';
 import { QuestionType } from '@/models/questions/question-type';
+import { shuffleIndices } from '@/utils/arrays';
 
 export default function MobileMCQControl() {
   const myTeam = useTeam();

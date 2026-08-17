@@ -11,7 +11,6 @@ import {
   handleBuzzerHeadChanged,
   validateAllQuoteElements,
 } from '@/backend/services/question/quote/actions';
-import { isEmpty } from '@/backend/utils/arrays';
 import BuzzerHeadPlayer from '@/frontend/components/game/main-pane/question/buzzer/BuzzerHeadPlayer';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ClearQuoteBuzzerButton from '@/frontend/components/game/main-pane/question/quote/ClearQuoteBuzzerButton';
@@ -24,6 +23,7 @@ import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { QuestionType } from '@/models/questions/question-type';
 import { GameQuoteQuestion, QuoteQuestion } from '@/models/questions/quote';
+import { isEmpty } from '@/utils/arrays';
 
 interface QuestionPlayers {
   buzzed: string[];

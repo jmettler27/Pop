@@ -1,9 +1,9 @@
-import { isArray } from '@/backend/utils/arrays';
 import { Locale } from '@/frontend/helpers/locales';
 import { GameStatus, type GameStatus as GameStatusType } from '@/models/games/game-status';
 import { isValidGameType, type GameType } from '@/models/games/game-type';
 import { QuestionType } from '@/models/questions/question-type';
 import { ScorePolicyType } from '@/models/score-policy';
+import { isArray } from '@/utils/arrays';
 
 export interface GameData {
   id?: string;

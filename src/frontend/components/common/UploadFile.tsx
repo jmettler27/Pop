@@ -31,7 +31,6 @@ interface UploadFileProps {
   [key: string]: unknown;
 }
 
-// https://mui.com/material-ui/react-button/#file-upload
 const UploadFile = ({ fileRef, onFileChange, ...props }: UploadFileProps) => {
   const [field, meta] = useField(props as { name: string });
 

@@ -1,9 +1,11 @@
 import NextLink from 'next/link';
 
+import { useQuery } from '@tanstack/react-query';
 import { Pencil, UserCog } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
+import { getGamesUnderConstruction } from '@/backend/services/game/actions';
 import { GameOrganizersAvatarGroup } from '@/frontend/components/home/GameAvatars';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Button } from '@/frontend/components/ui/button';
@@ -11,14 +13,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/
 import { Skeleton } from '@/frontend/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import { Locale, localeToEmoji } from '@/frontend/helpers/locales';
-import { useGamesByStatus } from '@/frontend/hooks/firestore/game/useGameHooks';
 import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganizerHooks';
 import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
-import { type GameRounds } from '@/models/games/game';
-import { GameStatus } from '@/models/games/game-status';
-import { gameTypeToEmoji } from '@/models/games/game-type';
+import { type GameRoundsData } from '@/models/games/game';
+import { gameTypeToEmoji, type GameType } from '@/models/games/game-type';
 
 const messages = defineMessages('frontend.home.GamesUnderConstruction', {
   title: 'Games under construction',
@@ -28,18 +28,28 @@ const messages = defineMessages('frontend.home.GamesUnderConstruction', {
 
 export default function GamesUnderConstruction() {
   const intl = useIntl();
-  const { games, loading, error } = useGamesByStatus(GameStatus.GAME_EDIT);
+  const { data: session, status: sessionStatus } = useSession();
+  const userId = session?.user?.id;
+
+  const {
+    data: games,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['games', 'under-construction', userId],
+    queryFn: () => getGamesUnderConstruction(userId as string),
+    enabled: !!userId,
+  });
+
   if (error) {
     return <></>;
   }
-  if (loading) {
+  if (isLoading || sessionStatus === 'loading') {
     return <LoadingScreen inline />;
   }
   if (!games) {
     return <></>;
   }
-
-  const sortedGames = games.sort((a, b) => (b.dateEnd as number) - (a.dateEnd as number));
 
   return (
     <Card className="bg-linear-to-br from-slate-800 to-slate-900 border-2 border-slate-700 shadow-2xl hover:shadow-yellow-500/20 transition-all duration-300">
@@ -50,13 +60,13 @@ export default function GamesUnderConstruction() {
       </CardHeader>
 
       <CardContent className="pt-4">
-        {sortedGames.length === 0 ? (
+        {games.length === 0 ? (
           <div className="text-center py-12 text-slate-400 text-sm sm:text-base">
             {intl.formatMessage(messages.empty)}
           </div>
         ) : (
           <div className="grid gap-3 sm:gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {sortedGames.map((g) => (
+            {games.map((g) => (
               <GameUnderConstructionCard key={g.id} game={g} />
             ))}
           </div>
@@ -67,7 +77,7 @@ export default function GamesUnderConstruction() {
 }
 
 interface GameUnderConstructionCardProps {
-  game: GameRounds;
+  game: GameRoundsData;
 }
 
 export function GameUnderConstructionCard({ game }: GameUnderConstructionCardProps) {
@@ -103,11 +113,11 @@ export function GameUnderConstructionCard({ game }: GameUnderConstructionCardPro
           <div className="flex-1 min-w-0">
             <Tooltip>
               <TooltipTrigger render={<div className="flex items-center gap-2" />}>
-                <span className="text-lg shrink-0">{gameTypeToEmoji(game.type)}</span>
+                <span className="text-lg shrink-0">{gameTypeToEmoji(game.type as GameType)}</span>
                 <CardTitle className="text-sm sm:text-base font-semibold text-white truncate leading-tight">
                   {game.title}
                 </CardTitle>
-                <span className="text-base shrink-0">{localeToEmoji((game as unknown as { lang: Locale }).lang)}</span>
+                <span className="text-base shrink-0">{localeToEmoji(game.lang as Locale)}</span>
               </TooltipTrigger>
               <TooltipContent>{game.title}</TooltipContent>
             </Tooltip>

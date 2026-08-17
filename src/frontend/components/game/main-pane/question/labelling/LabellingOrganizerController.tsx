@@ -9,7 +9,6 @@ import {
   handleBuzzerHeadChanged,
   validateAllLabels,
 } from '@/backend/services/question/labelling/actions';
-import { isEmpty } from '@/backend/utils/arrays';
 import BuzzerHeadPlayer from '@/frontend/components/game/main-pane/question/buzzer/BuzzerHeadPlayer';
 import ClearBuzzerButton from '@/frontend/components/game/main-pane/question/buzzer/ClearBuzzerButton';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
@@ -23,6 +22,7 @@ import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameLabellingQuestion, LabellingQuestion } from '@/models/questions/labelling';
 import { QuestionType } from '@/models/questions/question-type';
+import { isEmpty } from '@/utils/arrays';
 
 interface LabellingOrganizerControllerProps {
   baseQuestion: LabellingQuestion;

@@ -6,9 +6,9 @@ import NextLink from 'next/link';
 import { Home } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { getRandomElement } from '@/backend/utils/arrays';
 import { Button } from '@/frontend/components/ui/button';
 import globalMessages from '@/frontend/i18n/globalMessages';
+import { getRandomElement } from '@/utils/arrays';
 
 const ERROR_TIP_KEYS = [
   'errorTip1',

@@ -51,3 +51,21 @@ export const endGame = async (gameId: string) => {
   const service = new GameService(gameId);
   return service.endGame();
 };
+
+/**
+ * Retrieves all ended games where the given user is an organizer or a player
+ *
+ * @param {string} userId - The ID of the user
+ */
+export const getEndedGames = async (userId: string) => {
+  return GameService.getEndedGamesForUser(userId);
+};
+
+/**
+ * Retrieves all games under construction where the given user is an organizer or a player
+ *
+ * @param {string} userId - The ID of the user
+ */
+export const getGamesUnderConstruction = async (userId: string) => {
+  return GameService.getGamesUnderConstructionForUser(userId);
+};

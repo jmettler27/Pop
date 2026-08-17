@@ -23,7 +23,7 @@ import {
 
 import { firestore } from '@/backend/firebase/firebase';
 import { IRepository } from '@/backend/repositories/IRepository';
-import { isArray } from '@/backend/utils/arrays';
+import { isArray } from '@/utils/arrays';
 
 export interface QueryOptions {
   where?: { field: string; operator: WhereFilterOp; value: unknown };

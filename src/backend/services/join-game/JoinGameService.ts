@@ -8,8 +8,8 @@ import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import UserRepository from '@/backend/repositories/user/UserRepository';
-import { generateAvatarUrl } from '@/backend/utils/avatar';
 import { PlayerStatus } from '@/models/users/player';
+import { generateAvatarUrl } from '@/utils/avatar';
 
 export default class JoinGameService {
   private gameId: string;

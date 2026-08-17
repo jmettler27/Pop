@@ -4,7 +4,6 @@ import '@/frontend/components/game/main-pane/question/matching/styles.scss';
 
 import { useState } from 'react';
 
-import { isObjectEmpty } from '@/backend/utils/objects';
 import {
   getNode,
   getNodeText,
@@ -21,6 +20,7 @@ import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import { MatchingAnswer, MatchingEdgeData } from '@/models/questions/matching';
+import { isObjectEmpty } from '@/utils/objects';
 
 interface ActiveMatchesProps {
   answer: MatchingAnswer;

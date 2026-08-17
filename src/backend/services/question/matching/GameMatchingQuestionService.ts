@@ -6,8 +6,6 @@ import GameMatchingQuestionRepository from '@/backend/repositories/question/Game
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import GameQuestionService, { SYSTEM_PLAYER_ID } from '@/backend/services/question/GameQuestionService';
-import { aggregateTiedTeams, findNextAvailableChooser, shuffle } from '@/backend/utils/arrays';
-import { sortAscendingRoundScores, sortScores } from '@/backend/utils/scores';
 import {
   ColumnIndices,
   CorrectMatch,
@@ -20,6 +18,8 @@ import { QuestionType } from '@/models/questions/question-type';
 import { MatchingRound } from '@/models/rounds/matching';
 import { ScorePolicyType } from '@/models/score-policy';
 import { PlayerStatus } from '@/models/users/player';
+import { aggregateTiedTeams, findNextAvailableChooser, shuffle } from '@/utils/arrays';
+import { sortAscendingRoundScores, sortScores } from '@/utils/scores';
 
 export default class GameMatchingQuestionService extends GameQuestionService {
   readonly chooserRepo: ChooserRepository;

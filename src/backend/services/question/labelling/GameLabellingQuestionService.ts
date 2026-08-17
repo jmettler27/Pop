@@ -3,13 +3,13 @@ import { runTransaction, Timestamp, Transaction } from 'firebase/firestore';
 import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
-import GameBuzzerQuestionService from '@/backend/services/question/GameBuzzerQuestionService';
-import { range } from '@/backend/utils/arrays';
-import { isObjectEmpty } from '@/backend/utils/objects';
+import GameBuzzerQuestionService from '@/backend/services/question/buzzer/GameBuzzerQuestionService';
 import { GameLabellingQuestion, LabellingQuestion } from '@/models/questions/labelling';
 import { QuestionType } from '@/models/questions/question-type';
 import { LabellingRound } from '@/models/rounds/labelling';
 import { PlayerStatus } from '@/models/users/player';
+import { range } from '@/utils/arrays';
+import { isObjectEmpty } from '@/utils/objects';
 
 export default class GameLabellingQuestionService extends GameBuzzerQuestionService {
   constructor(gameId: string, roundId: string) {

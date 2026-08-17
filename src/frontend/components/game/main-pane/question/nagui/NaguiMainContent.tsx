@@ -7,7 +7,6 @@ import { clsx } from 'clsx';
 import { Check, TriangleAlert, X } from 'lucide-react';
 
 import { selectChoice } from '@/backend/services/question/nagui/actions';
-import { shuffleIndices } from '@/backend/utils/arrays';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Avatar, AvatarFallback, AvatarImage } from '@/frontend/components/ui/avatar';
@@ -28,6 +27,7 @@ import {
 } from '@/models/questions/nagui';
 import { QuestionType } from '@/models/questions/question-type';
 import { ParticipantRole } from '@/models/users/participant';
+import { shuffleIndices } from '@/utils/arrays';
 
 export default function NaguiMainContent({ baseQuestion }: { baseQuestion: NaguiQuestion }) {
   const { title, note, source } = baseQuestion;

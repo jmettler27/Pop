@@ -18,8 +18,6 @@ import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import GameQuestionServiceFactory from '@/backend/services/question/GameQuestionServiceFactory';
-import { aggregateTiedTeams, shuffle } from '@/backend/utils/arrays';
-import { sortAscendingRoundScores, sortScores } from '@/backend/utils/scores';
 import { GameStatus } from '@/models/games/game-status';
 import { type QuestionType } from '@/models/questions/question-type';
 import { AnyGameQuestion } from '@/models/questions/QuestionFactory';
@@ -29,6 +27,8 @@ import { AnyRound } from '@/models/rounds/RoundFactory';
 import { ScorePolicyType } from '@/models/score-policy';
 import { Scores, ScoresProgress } from '@/models/scores';
 import { PlayerStatus } from '@/models/users/player';
+import { aggregateTiedTeams, shuffle } from '@/utils/arrays';
+import { sortAscendingRoundScores, sortScores } from '@/utils/scores';
 
 export default class RoundService {
   protected gameId: string;

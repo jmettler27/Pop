@@ -5,7 +5,6 @@ import { UserCheck } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { setPlayerReady } from '@/backend/services/player/actions';
-import { getRandomElement } from '@/backend/utils/arrays';
 import { Button } from '@/frontend/components/ui/button';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import fmt, { keyChunks } from '@/frontend/helpers/fmt';
@@ -20,6 +19,7 @@ import defineMessages from '@/frontend/i18n/defineMessages';
 import { GameStatus } from '@/models/games/game-status';
 import { ParticipantRole } from '@/models/users/participant';
 import { PlayerStatus } from '@/models/users/player';
+import { getRandomElement } from '@/utils/arrays';
 
 const messages = defineMessages('frontend.game.bottom.ReadyPlayerController', {
   waitingForPlayers: 'Waiting for players...',

@@ -4,7 +4,6 @@ import { CheckCircle2, Eye, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
 import { revealLabel } from '@/backend/services/question/labelling/actions';
-import { isEmpty } from '@/backend/utils/arrays';
 import { Button } from '@/frontend/components/ui/button';
 import {
   Dialog,
@@ -21,6 +20,7 @@ import useGame from '@/frontend/hooks/useGame';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameLabellingQuestion, LabellingQuestion } from '@/models/questions/labelling';
+import { isEmpty } from '@/utils/arrays';
 
 const messages = defineMessages('frontend.game.bottom.RevealLabelButton', {
   revealListHeader: 'Reveal a label',

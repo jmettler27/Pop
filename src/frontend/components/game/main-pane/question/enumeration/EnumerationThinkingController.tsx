@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { useIntl } from 'react-intl';
 
 import { addBet } from '@/backend/services/question/enumeration/actions';
-import { range } from '@/backend/utils/arrays';
 import { Button } from '@/frontend/components/ui/button';
 import {
   Dialog,
@@ -30,6 +29,7 @@ import { GameRounds } from '@/models/games/game';
 import { EnumerationBet, EnumerationQuestion } from '@/models/questions/enumeration';
 import { Timer, TimerStatus } from '@/models/timer';
 import { ParticipantRole } from '@/models/users/participant';
+import { range } from '@/utils/arrays';
 
 const messages = defineMessages('frontend.game.bottom.EnumerationThinkingController', {
   betInputLabel: 'My bet',

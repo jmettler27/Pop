@@ -1,4 +1,3 @@
-import { range } from '@/backend/utils/arrays';
 import {
   getNodeId,
   getNodeText,
@@ -6,6 +5,7 @@ import {
   MatchingNode,
   type NodeData,
 } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
+import { range } from '@/utils/arrays';
 
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
 

@@ -3,7 +3,6 @@ import { serverTimestamp, Transaction } from 'firebase/firestore';
 import { logger } from '@/backend/logger';
 import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
 import RoundService from '@/backend/services/round/RoundService';
-import { getNextCyclicIndex, shuffle } from '@/backend/utils/arrays';
 import { GameStatus } from '@/models/games/game-status';
 import { QuestionType } from '@/models/questions/question-type';
 import { MCQRound } from '@/models/rounds/mcq';
@@ -12,6 +11,7 @@ import { AnyRound } from '@/models/rounds/RoundFactory';
 import { ScorePolicyType } from '@/models/score-policy';
 import { Timer } from '@/models/timer';
 import { PlayerStatus } from '@/models/users/player';
+import { getNextCyclicIndex, shuffle } from '@/utils/arrays';
 
 export default class MCQRoundService extends RoundService {
   constructor(gameId: string) {

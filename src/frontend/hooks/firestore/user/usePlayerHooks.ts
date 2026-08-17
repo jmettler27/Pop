@@ -21,15 +21,6 @@ export function usePlayerOnce(gameId: string | null, playerId: string) {
   return { player: data ? new Player(data as unknown as PlayerData) : null, loading: isLoading, error };
 }
 
-export function usePlayerIdentityOnce(gameId: string | null, playerId: string) {
-  const { data, isLoading, error } = useFirestoreDocumentOnce(gameId ? doc(playersRef(gameId), playerId) : null);
-  return {
-    player: data ? { id: data.id, name: data.name, teamId: data.teamId } : null,
-    loading: isLoading,
-    error,
-  };
-}
-
 // Every hook below is memoized on `data` so the returned array/instances stay referentially stable
 // across renders when the underlying data hasn't changed — an unmemoized `.map()` mints brand-new
 // objects on every render even when nothing changed, which is wasteful and can destabilize anything
@@ -45,15 +36,6 @@ export function useAllPlayerIdentitiesOnce(gameId: string | null) {
     [data]
   );
   return { players, loading: isLoading, error };
-}
-
-export function usePlayerStates(gameId: string | null) {
-  const { data, isLoading, error } = useFirestoreCollection(gameId ? query(playersRef(gameId)) : null, [
-    gameId,
-    'players',
-  ]);
-  const playerStates = useMemo(() => data?.map((p) => ({ id: p.id, status: p.status })) ?? [], [data]);
-  return { playerStates, loading: isLoading, error };
 }
 
 export function useAllPlayers(gameId: string | null) {

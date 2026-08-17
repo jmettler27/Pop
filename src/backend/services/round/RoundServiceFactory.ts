@@ -1,17 +1,17 @@
-import BasicRoundService from '@/backend/services/round/basic/BasicRoundService';
-import BlindtestRoundService from '@/backend/services/round/blindtest/BlindtestRoundService';
-import EmojiRoundService from '@/backend/services/round/emoji/EmojiRoundService';
-import EnumerationRoundService from '@/backend/services/round/enumeration/EnumerationRoundService';
-import EstimationRoundService from '@/backend/services/round/estimation/EstimationRoundService';
-import ImageRoundService from '@/backend/services/round/image/ImageRoundService';
-import LabellingRoundService from '@/backend/services/round/labelling/LabellingRoundService';
-import MatchingRoundService from '@/backend/services/round/matching/MatchingRoundService';
-import MCQRoundService from '@/backend/services/round/mcq/MCQRoundService';
-import NaguiRoundService from '@/backend/services/round/nagui/NaguiRoundService';
-import OddOneOutRoundService from '@/backend/services/round/odd-one-out/OddOneOutRoundService';
-import ProgressiveCluesRoundService from '@/backend/services/round/progressive-clues/ProgressiveCluesRoundService';
-import QuoteRoundService from '@/backend/services/round/quote/QuoteRoundService';
-import ReorderingRoundService from '@/backend/services/round/reordering/ReorderingRoundService';
+import BasicRoundService from '@/backend/services/round/BasicRoundService';
+import BlindtestRoundService from '@/backend/services/round/BlindtestRoundService';
+import EmojiRoundService from '@/backend/services/round/EmojiRoundService';
+import EnumerationRoundService from '@/backend/services/round/EnumerationRoundService';
+import EstimationRoundService from '@/backend/services/round/EstimationRoundService';
+import ImageRoundService from '@/backend/services/round/ImageRoundService';
+import LabellingRoundService from '@/backend/services/round/LabellingRoundService';
+import MatchingRoundService from '@/backend/services/round/MatchingRoundService';
+import MCQRoundService from '@/backend/services/round/MCQRoundService';
+import NaguiRoundService from '@/backend/services/round/NaguiRoundService';
+import OddOneOutRoundService from '@/backend/services/round/OddOneOutRoundService';
+import ProgressiveCluesRoundService from '@/backend/services/round/ProgressiveCluesRoundService';
+import QuoteRoundService from '@/backend/services/round/QuoteRoundService';
+import ReorderingRoundService from '@/backend/services/round/ReorderingRoundService';
 import { RoundType } from '@/models/rounds/round-type';
 
 export default class RoundServiceFactory {
