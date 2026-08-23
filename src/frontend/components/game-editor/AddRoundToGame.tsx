@@ -102,7 +102,7 @@ function CreateRoundForm({ onClose }: CreateRoundFormProps) {
   });
 
   const validationSchema = Yup.object({
-    type: roundTypeSchema(),
+    type: roundTypeSchema(intl),
     title: stringSchema(Round.TITLE_MAX_LENGTH),
   });
 
