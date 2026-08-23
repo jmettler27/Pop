@@ -6,7 +6,6 @@ import type { ObjectSchema } from 'yup';
 
 import { NumberInput } from '@/frontend/components/common/NumberInput';
 import { Checkbox } from '@/frontend/components/ui/checkbox';
-import { Input } from '@/frontend/components/ui/input';
 import { Select, SelectContent, SelectTrigger, SelectValue } from '@/frontend/components/ui/select';
 import { numEmojisIndicator } from '@/frontend/helpers/forms/emojis';
 import {
@@ -36,12 +35,22 @@ export function MyTextInput({
   validationSchema,
   fieldType = 'string',
   onlyEmojis,
+  type: _type,
   ...props
 }: MyTextInputProps) {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
   // which we can spread on <input> and alse replace ErrorMessage entirely.
   const [field, meta] = useField(props as { name: string });
   const intl = useIntl();
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+
+  React.useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }, [field.value]);
 
   // const maxLength = validationSchema.fields[field.name].tests.find(test => test.OPTIONS.name === 'max')?.OPTIONS.params.max || 0
   return (
@@ -55,11 +64,17 @@ export function MyTextInput({
             ? numEmojisIndicator(field.value as string, maxLength)
             : numCharsIndicator(field.value as string, maxLength))}
       </StyledLabel>
-      <Input
-        className="max-w-[400px] text-xs sm:text-sm md:text-base"
+      <textarea
+        ref={textareaRef}
+        className="min-h-8 w-full min-w-0 resize-none overflow-hidden rounded-lg border border-input bg-transparent px-2.5 py-1 text-xs transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 sm:text-sm md:text-base"
         {...field}
-        {...(props as React.InputHTMLAttributes<HTMLInputElement>)}
+        {...(props as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
         value={(field.value as string) || ''}
+        rows={1}
+        onInput={(event) => {
+          event.currentTarget.style.height = 'auto';
+          event.currentTarget.style.height = `${event.currentTarget.scrollHeight}px`;
+        }}
       />
       {meta.touched && meta.error && <FieldErrorText className="text-xs sm:text-sm">{meta.error}</FieldErrorText>}
     </>
@@ -172,7 +187,7 @@ export function MySelect({ label, validationSchema, children, onChange, ...props
         <SelectTrigger
           id={id}
           onBlur={field.onBlur}
-          className="w-full max-w-[400px] cursor-pointer text-xs sm:text-sm 2xl:text-base"
+          className="w-full cursor-pointer text-xs sm:text-sm 2xl:text-base"
         >
           <SelectValue />
         </SelectTrigger>

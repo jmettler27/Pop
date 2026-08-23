@@ -1,14 +1,9 @@
 import { hexToRgba } from '@/frontend/helpers/colors';
 import Team from '@/models/team';
 
-const BACKGROUND_BASE = 'linear-gradient(to bottom, #1e293b, #0f172a)';
+const BACKGROUND_BASE = 'white';
 
-export const DEFAULT_BACKGROUND = [
-  'radial-gradient(circle at 25% 15%, rgba(59, 130, 246, 0.3), transparent 45%)',
-  'radial-gradient(circle at 85% 80%, rgba(99, 102, 241, 0.22), transparent 50%)',
-  'radial-gradient(circle at 15% 85%, rgba(16, 185, 129, 0.2), transparent 50%)',
-  BACKGROUND_BASE,
-].join(', ');
+export const DEFAULT_BACKGROUND = 'white';
 
 export function buildTeamsBackground(teams: Team[]): string {
   if (teams.length === 0) return DEFAULT_BACKGROUND;

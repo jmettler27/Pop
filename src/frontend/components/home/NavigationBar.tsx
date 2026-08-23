@@ -79,7 +79,7 @@ export function NavigationBar() {
   };
 
   return (
-    <header className="bg-linear-to-br from-sky-500 via-blue-500 to-indigo-500 shadow-md">
+    <header className="bg-blue-500">
       <div className="mx-auto w-full max-w-[1536px] px-4">
         <nav className="flex items-center min-h-14 sm:min-h-16">
           <Gamepad2 className="hidden md:flex mr-2 size-6" />

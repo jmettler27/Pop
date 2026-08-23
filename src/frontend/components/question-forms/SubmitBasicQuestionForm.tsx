@@ -17,8 +17,10 @@ import { DEFAULT_LOCALE, Locale, localeSchema } from '@/frontend/helpers/locales
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import { BasicQuestion } from '@/models/questions/basic';
 import { CreateBaseQuestionData } from '@/models/questions/question';
-import { QuestionType } from '@/models/questions/question-type';
+import { prependQuestionTypeWithEmoji, QuestionType } from '@/models/questions/question-type';
 import { Topic } from '@/models/topic';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import globalMessages from '@/frontend/i18n/globalMessages';
 
 interface QuestionFormProps {
   userId?: string;
@@ -73,11 +75,19 @@ export default function SubmitBasicQuestionForm({ userId, ...props }: QuestionFo
   });
 
   return (
-    <Formik
-      initialValues={
-        q
-          ? {
-              lang: q.lang || DEFAULT_LOCALE,
+    <Card className="bg-white/5 max-w-4xl mt-7 mx-auto p-6">
+      <CardHeader className="border-b border-gray-700">
+        <CardTitle className="flex w-full items-center justify-between text-lg sm:text-xl md:text-2xl font-bold text-white drop-shadow-lg">
+          <span>{intl.formatMessage(globalMessages.submitQuestion)}</span>
+          <span>{prependQuestionTypeWithEmoji(QuestionType.BASIC, intl.locale as Locale)}</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Formik
+          initialValues={
+            q
+              ? {
+                  lang: q.lang || DEFAULT_LOCALE,
               topic: q.topic || '',
               source: q.source || '',
               title: q.title || '',
@@ -106,7 +116,7 @@ export default function SubmitBasicQuestionForm({ userId, ...props }: QuestionFo
         }
       }}
     >
-      <Form>
+      <Form className="grid gap-1">
         <SelectLanguage name="lang" validationSchema={validationSchema} />
 
         <SelectQuestionTopic name="topic" validationSchema={validationSchema} />
@@ -156,8 +166,12 @@ export default function SubmitBasicQuestionForm({ userId, ...props }: QuestionFo
           maxLength={BasicQuestion.EXPLANATION_MAX_LENGTH}
         />
 
-        <SubmitFormButton isSubmitting={isSubmitting} label={intl.formatMessage(questionMessages.submit)} />
+        <div className="mt-4 flex items-end justify-end">
+          <SubmitFormButton isSubmitting={isSubmitting} label={intl.formatMessage(questionMessages.submit)} />
+        </div>
       </Form>
     </Formik>
+    </CardContent>
+    </Card>
   );
 }
