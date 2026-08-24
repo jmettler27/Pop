@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getDocs, onSnapshot, type DocumentData, type Query } from 'firebase/firestore';
 
+import { acquireSharedSubscription } from '@/frontend/hooks/sharedSubscription';
+
 export type FirestoreDocs<T> = Array<{ id: string } & T>;
 
 async function fetchDocs<T>(q: Query<T>): Promise<FirestoreDocs<T>> {
@@ -44,16 +46,19 @@ export function useFirestoreCollection<T = DocumentData>(
 
   useEffect(() => {
     if (!firestoreQuery) return;
-    const unsubscribe = onSnapshot(
-      firestoreQuery,
-      (snap) =>
-        queryClient.setQueryData(
-          key,
-          snap.docs.map((d) => ({ id: d.id, ...d.data() }))
-        ),
-      () => queryClient.invalidateQueries({ queryKey: key })
+    // Shared per keyString: two components mounting this hook for the same query reuse one onSnapshot
+    // listener instead of opening a second, separately-billed one.
+    return acquireSharedSubscription(keyString, () =>
+      onSnapshot(
+        firestoreQuery,
+        (snap) =>
+          queryClient.setQueryData(
+            key,
+            snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+          ),
+        () => queryClient.invalidateQueries({ queryKey: key })
+      )
     );
-    return unsubscribe;
     // Resubscribe on the caller-supplied queryKey's value, not a fresh-but-structurally-identical Query
     // object every render (Query has no public stable identity to key off directly).
     // eslint-disable-next-line react-hooks/exhaustive-deps

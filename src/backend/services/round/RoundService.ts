@@ -1,8 +1,7 @@
-import { collection, getDocs, query, runTransaction, Transaction, where } from 'firebase/firestore';
+import { runTransaction, Transaction } from 'firebase/firestore';
 import type { Logger } from 'pino';
 
 import { firestore } from '@/backend/firebase/firebase';
-import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { logger } from '@/backend/logger';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
@@ -476,13 +475,12 @@ export default class RoundService {
       this.log.debug({ round: roundId, newChooserOrder }, 'Updating chooser order for the next round');
       // The first team in the running order - the "chooser" team - chooses the next round, hence the status 'focus'
       // All other teams are set to 'idle'
-      const playersCollectionRef = collection(GAMES_COLLECTION_REF, this.gameId, 'players');
       for (const [idx, teamId] of newChooserOrder.entries()) {
-        const playersSnapshot = await getDocs(query(playersCollectionRef, where('teamId', '==', teamId)));
-        for (const playerDoc of playersSnapshot.docs) {
+        const teamPlayers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId);
+        for (const player of teamPlayers) {
           await this.playerRepo.updatePlayerStatusTransaction(
             transaction,
-            playerDoc.id,
+            player.id!,
             idx === 0 ? PlayerStatus.FOCUS : PlayerStatus.IDLE
           );
         }

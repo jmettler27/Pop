@@ -10,7 +10,7 @@ import MobilePlayerLayout from '@/frontend/components/game/MobilePlayerLayout';
 import Sidebar from '@/frontend/components/game/sidebar/Sidebar';
 import TopPane from '@/frontend/components/game/top-pane/TopPane';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import { useScores } from '@/frontend/hooks/firestore/score/useGameScoreHooks';
+import { useCurrentTeamScores } from '@/frontend/hooks/firestore/score/useCurrentTeamScores';
 import { useAllPlayers } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import { useAllTeams } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGame from '@/frontend/hooks/useGame';
@@ -19,14 +19,18 @@ import useIsMobile from '@/frontend/hooks/useIsMobile';
 // Container components to control re-rendering
 const TopPaneContainer = memo(function TopPaneContainer({}) {
   const game = useGame();
-  const { loading: scoresLoading, error: scoresError } = useScores(game?.id ?? null);
+  // Resolved once here (which score map applies right now) and handed down as a prop, instead of every
+  // team independently re-deriving and re-fetching the same policy decision — see useCurrentTeamScores.
+  // Its own loading state stays local to the score display (below) rather than blocking the whole pane,
+  // matching the original per-team behavior.
+  const { scores, loading: scoresLoading } = useCurrentTeamScores(game);
   const { teams, loading: teamsLoading, error: teamsError } = useAllTeams(game?.id ?? null);
   const { players, loading: playersLoading, error: playersError } = useAllPlayers(game?.id ?? null);
 
-  if (teamsError || scoresError || playersError) return <ErrorScreen inline />;
-  if (teamsLoading || scoresLoading || playersLoading) return <LoadingScreen inline />;
+  if (teamsError || playersError) return <ErrorScreen inline />;
+  if (teamsLoading || playersLoading) return <LoadingScreen inline />;
 
-  return <TopPane teams={teams} players={players} />;
+  return <TopPane teams={teams} players={players} scores={scores} scoresLoading={scoresLoading} />;
 });
 
 const MiddlePaneContainer = memo(function MiddlePaneContainer({}) {

@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import {
   collection,
   doc,
@@ -50,14 +52,18 @@ function queryOptionsKey(options: QueryOptions): readonly unknown[] {
   ];
 }
 
+// Memoized on `data` (mirrors useGame/useAllPlayers) so `round`/`rounds` stay referentially stable across
+// renders when the underlying document(s) haven't changed.
 export function useRound(gameId: string | null, roundId: string) {
   const { data, isLoading, error } = useFirestoreDocument(gameId ? doc(roundsRef(gameId), roundId) : null);
-  return { round: data ? RoundFactory.createRound(data.type as RoundType, data) : null, loading: isLoading, error };
+  const round = useMemo(() => (data ? RoundFactory.createRound(data.type as RoundType, data) : null), [data]);
+  return { round, loading: isLoading, error };
 }
 
 export function useRoundOnce(gameId: string | null, roundId: string) {
   const { data, isLoading, error } = useFirestoreDocumentOnce(gameId ? doc(roundsRef(gameId), roundId) : null);
-  return { round: data ? RoundFactory.createRound(data.type as RoundType, data) : null, loading: isLoading, error };
+  const round = useMemo(() => (data ? RoundFactory.createRound(data.type as RoundType, data) : null), [data]);
+  return { round, loading: isLoading, error };
 }
 
 export function useAllRounds(gameId: string | null) {
@@ -65,11 +71,8 @@ export function useAllRounds(gameId: string | null) {
     gameId,
     'rounds',
   ]);
-  return {
-    rounds: data?.map((r) => RoundFactory.createRound(r.type as RoundType, r)) ?? [],
-    loading: isLoading,
-    error,
-  };
+  const rounds = useMemo(() => data?.map((r) => RoundFactory.createRound(r.type as RoundType, r)) ?? [], [data]);
+  return { rounds, loading: isLoading, error };
 }
 
 export function useAllRoundsOnce(gameId: string | null, queryOptions: QueryOptions = {}) {
@@ -78,9 +81,6 @@ export function useAllRoundsOnce(gameId: string | null, queryOptions: QueryOptio
     'rounds',
     ...queryOptionsKey(queryOptions),
   ]);
-  return {
-    rounds: data?.map((r) => RoundFactory.createRound(r.type as RoundType, r)) ?? [],
-    loading: isLoading,
-    error,
-  };
+  const rounds = useMemo(() => data?.map((r) => RoundFactory.createRound(r.type as RoundType, r)) ?? [], [data]);
+  return { rounds, loading: isLoading, error };
 }

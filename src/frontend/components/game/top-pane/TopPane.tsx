@@ -7,16 +7,26 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/frontend/components/ui/av
 import Team from '@/models/team';
 import { Player, PlayerStatus } from '@/models/users/player';
 
+type ScoresMap = Record<string, unknown> | undefined;
+
 interface TopPaneProps {
   teams: Team[];
   players: Player[];
+  scores: ScoresMap;
+  scoresLoading: boolean;
 }
 
-const TopPane = memo(function TopPane({ teams, players }: TopPaneProps) {
+const TopPane = memo(function TopPane({ teams, players, scores, scoresLoading }: TopPaneProps) {
   return (
     <div className="flex flex-row h-full justify-center space-x-9 items-center">
       {teams.map((team) => (
-        <TeamItem key={team.id} team={team} players={players.filter((p) => p.teamId === team.id)} />
+        <TeamItem
+          key={team.id}
+          team={team}
+          players={players.filter((p) => p.teamId === team.id)}
+          scores={scores}
+          scoresLoading={scoresLoading}
+        />
       ))}
     </div>
   );
@@ -25,9 +35,11 @@ const TopPane = memo(function TopPane({ teams, players }: TopPaneProps) {
 interface TeamItemProps {
   team: Team;
   players: Player[];
+  scores: ScoresMap;
+  scoresLoading: boolean;
 }
 
-const TeamItem = memo(function TeamItem({ team, players }: TeamItemProps) {
+const TeamItem = memo(function TeamItem({ team, players, scores, scoresLoading }: TeamItemProps) {
   return (
     <div className="flex flex-col h-[90%] items-center justify-around">
       {/* Team name */}
@@ -42,7 +54,7 @@ const TeamItem = memo(function TeamItem({ team, players }: TeamItemProps) {
 
       {/* Team score */}
       <div className="flex flex-col h-[5%] items-center justify-center">
-        <TeamScore teamId={team.id as string} />
+        <TeamScore teamId={team.id as string} scores={scores} loading={scoresLoading} />
       </div>
     </div>
   );

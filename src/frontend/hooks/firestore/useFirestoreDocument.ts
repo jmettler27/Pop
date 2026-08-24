@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getDoc, onSnapshot, type DocumentData, type DocumentReference } from 'firebase/firestore';
 
+import { acquireSharedSubscription } from '@/frontend/hooks/sharedSubscription';
+
 export type FirestoreDoc<T> = ({ id: string } & T) | null;
 
 async function fetchDoc<T>(docRef: DocumentReference<T>): Promise<FirestoreDoc<T>> {
@@ -39,16 +41,19 @@ export function useFirestoreDocument<T = DocumentData>(docRef: DocumentReference
 
   useEffect(() => {
     if (!docRef) return;
-    const unsubscribe = onSnapshot(
-      docRef,
-      (snap) => queryClient.setQueryData(key, snap.exists() ? { id: snap.id, ...snap.data() } : null),
-      // No public TanStack API pushes an out-of-band error into a query's `error` field directly;
-      // invalidating re-runs queryFn (a real getDoc), which populates `.error` through the normal channel
-      // if the failure persists (e.g. a permissions error) — reuses TanStack's own error/retry machinery
-      // instead of hand-rolling a parallel error channel.
-      () => queryClient.invalidateQueries({ queryKey: key })
+    // Shared per docRef.path: two components mounting this hook for the same document reuse one
+    // onSnapshot listener instead of opening a second, separately-billed one.
+    return acquireSharedSubscription(`firestore:doc:${docRef.path}`, () =>
+      onSnapshot(
+        docRef,
+        (snap) => queryClient.setQueryData(key, snap.exists() ? { id: snap.id, ...snap.data() } : null),
+        // No public TanStack API pushes an out-of-band error into a query's `error` field directly;
+        // invalidating re-runs queryFn (a real getDoc), which populates `.error` through the normal channel
+        // if the failure persists (e.g. a permissions error) — reuses TanStack's own error/retry machinery
+        // instead of hand-rolling a parallel error channel.
+        () => queryClient.invalidateQueries({ queryKey: key })
+      )
     );
-    return unsubscribe;
     // Resubscribe on docRef.path (the real stable identity), not a fresh-but-structurally-identical
     // docRef object every render — depending on the object itself would churn the Firestore listener.
     // eslint-disable-next-line react-hooks/exhaustive-deps
