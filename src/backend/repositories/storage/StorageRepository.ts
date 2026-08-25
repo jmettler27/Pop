@@ -1,6 +1,6 @@
 import { getDownloadURL, ref, uploadBytesResumable, type StorageReference } from 'firebase/storage';
 
-import { storage } from '@/backend/firebase/firebase';
+import { storage } from '@/firebase/firebase';
 import { isArray } from '@/utils/arrays';
 
 export default class StorageRepository {

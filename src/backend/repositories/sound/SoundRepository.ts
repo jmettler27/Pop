@@ -1,9 +1,9 @@
 import { runTransaction, serverTimestamp, type Transaction } from 'firebase/firestore';
 import type { Logger } from 'pino';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
+import { firestore } from '@/firebase/firebase';
 import { getRandomElement } from '@/utils/arrays';
 
 const WRONG_ANSWER_SOUNDS = ['roblox_oof', 'oof', 'terraria_male_damage', 'itai'];

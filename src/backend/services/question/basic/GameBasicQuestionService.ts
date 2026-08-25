@@ -1,9 +1,9 @@
 import { runTransaction, Transaction } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import GameBuzzerQuestionService from '@/backend/services/question/buzzer/GameBuzzerQuestionService';
+import { firestore } from '@/firebase/firebase';
 import { GameBasicQuestion } from '@/models/questions/basic';
 import { QuestionType } from '@/models/questions/question-type';
 import { BasicRound } from '@/models/rounds/basic';

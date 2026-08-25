@@ -1,6 +1,6 @@
 import { collection, doc } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
+import { firestore } from '@/firebase/firebase';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { useFirestoreDocument } from '@/frontend/hooks/firestore/useFirestoreDocument';
 import { GameMatchingQuestion } from '@/models/questions/matching';

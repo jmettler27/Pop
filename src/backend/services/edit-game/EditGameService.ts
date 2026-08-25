@@ -1,7 +1,6 @@
 import { runTransaction, serverTimestamp } from 'firebase/firestore';
 import type { Logger } from 'pino';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
@@ -9,6 +8,7 @@ import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQ
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
+import { firestore } from '@/firebase/firebase';
 import { GameStatus } from '@/models/games/game-status';
 import { QuestionType } from '@/models/questions/question-type';
 import { RoundData } from '@/models/rounds/round';

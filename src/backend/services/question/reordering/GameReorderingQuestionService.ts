@@ -1,8 +1,8 @@
 import { increment, runTransaction, Timestamp, Transaction } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
+import { firestore } from '@/firebase/firebase';
 import { QuestionType } from '@/models/questions/question-type';
 import { GameReorderingQuestion, Ordering, ReorderingQuestion, SubmittedOrdering } from '@/models/questions/reordering';
 import { ReorderingRound } from '@/models/rounds/reordering';

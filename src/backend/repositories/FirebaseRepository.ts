@@ -21,8 +21,8 @@ import {
   type WhereFilterOp,
 } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { IRepository } from '@/backend/repositories/IRepository';
+import { firestore } from '@/firebase/firebase';
 import { isArray } from '@/utils/arrays';
 
 export interface QueryOptions {

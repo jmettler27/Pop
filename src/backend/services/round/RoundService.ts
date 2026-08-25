@@ -1,7 +1,6 @@
 import { runTransaction, Transaction } from 'firebase/firestore';
 import type { Logger } from 'pino';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
@@ -17,6 +16,7 @@ import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import GameQuestionServiceFactory from '@/backend/services/question/GameQuestionServiceFactory';
+import { firestore } from '@/firebase/firebase';
 import { GameStatus } from '@/models/games/game-status';
 import { type QuestionType } from '@/models/questions/question-type';
 import { AnyGameQuestion } from '@/models/questions/QuestionFactory';

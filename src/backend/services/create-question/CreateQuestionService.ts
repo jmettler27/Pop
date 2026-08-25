@@ -1,10 +1,10 @@
 import { runTransaction } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import QuestionAudioRepository from '@/backend/repositories/storage/QuestionAudioRepository';
 import QuestionImageRepository from '@/backend/repositories/storage/QuestionImageRepository';
+import { firestore } from '@/firebase/firebase';
 import { UpdateBaseQuestionData, type CreateBaseQuestionData } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
 import QuestionFactory from '@/models/questions/QuestionFactory';

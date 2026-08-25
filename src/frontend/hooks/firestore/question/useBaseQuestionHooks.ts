@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { collection, doc, getCountFromServer, orderBy, query, where } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
+import { firestore } from '@/firebase/firebase';
 import { useFirestoreCollectionPage } from '@/frontend/hooks/firestore/useFirestoreCollectionPage';
 import { useFirestoreDocument, useFirestoreDocumentOnce } from '@/frontend/hooks/firestore/useFirestoreDocument';
 import { type QuestionType } from '@/models/questions/question-type';

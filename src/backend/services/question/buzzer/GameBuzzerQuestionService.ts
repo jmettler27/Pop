@@ -1,10 +1,10 @@
 import { runTransaction, serverTimestamp, Transaction } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import GameBuzzerQuestionRepository from '@/backend/repositories/question/GameBuzzerQuestionRepository';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
+import { firestore } from '@/firebase/firebase';
 import { GameStatus } from '@/models/games/game-status';
 import { GameBuzzerQuestion } from '@/models/questions/buzzer';
 import { QuestionType } from '@/models/questions/question-type';

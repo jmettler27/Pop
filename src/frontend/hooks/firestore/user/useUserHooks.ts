@@ -1,6 +1,6 @@
 import { collection, doc, query } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
+import { firestore } from '@/firebase/firebase';
 import { useFirestoreCollectionOnce } from '@/frontend/hooks/firestore/useFirestoreCollection';
 import { useFirestoreDocument, useFirestoreDocumentOnce } from '@/frontend/hooks/firestore/useFirestoreDocument';
 import User, { type UserData } from '@/models/users/user';

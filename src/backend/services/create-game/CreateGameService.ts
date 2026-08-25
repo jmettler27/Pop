@@ -1,6 +1,5 @@
 import { runTransaction } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
@@ -9,6 +8,7 @@ import TimerRepository from '@/backend/repositories/timer/TimerRepository';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
+import { firestore } from '@/firebase/firebase';
 import { CreateGameRoundsData } from '@/models/games/game';
 
 const log = logger.child({ module: 'CreateGameService' });
