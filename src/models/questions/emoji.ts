@@ -1,5 +1,9 @@
-import { BuzzerQuestion, GameBuzzerQuestion, type GameBuzzerQuestionData } from '@/models/questions/buzzer';
-import { type BaseQuestionData } from '@/models/questions/question';
+import {
+  BuzzerQuestion,
+  GameBuzzerQuestion,
+  type BuzzerQuestionData,
+  type GameBuzzerQuestionData,
+} from '@/models/questions/buzzer';
 import { QuestionType } from '@/models/questions/question-type';
 
 export interface EmojiAnswer {
@@ -7,10 +11,9 @@ export interface EmojiAnswer {
   image?: string;
 }
 
-export interface EmojiQuestionData extends BaseQuestionData {
+export interface EmojiQuestionData extends BuzzerQuestionData {
   answer?: EmojiAnswer;
   clue?: string;
-  title?: string;
   details?: { answer?: EmojiAnswer; clue?: string; title?: string };
 }
 
@@ -22,14 +25,12 @@ export class EmojiQuestion extends BuzzerQuestion {
 
   answer: EmojiAnswer;
   clue: string | undefined;
-  title: string | undefined;
 
   constructor(data: EmojiQuestionData) {
     super(data);
     const d = (data.details ?? {}) as EmojiQuestionData;
     this.answer = data.answer ?? d.answer ?? ({ title: '' } as EmojiAnswer);
     this.clue = data.clue ?? d.clue;
-    this.title = data.title ?? d.title;
   }
 
   getQuestionType(): QuestionType {

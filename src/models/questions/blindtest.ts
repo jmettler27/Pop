@@ -1,32 +1,29 @@
-import { DEFAULT_LOCALE, type Locale } from '@/frontend/helpers/locales';
-import { BuzzerQuestion, GameBuzzerQuestion, type GameBuzzerQuestionData } from '@/models/questions/buzzer';
-import { type BaseQuestionData } from '@/models/questions/question';
+import {
+  BuzzerQuestion,
+  GameBuzzerQuestion,
+  type BuzzerQuestionData,
+  type GameBuzzerQuestionData,
+} from '@/models/questions/buzzer';
 import { QuestionType } from '@/models/questions/question-type';
 
-export class BlindtestType {
-  static SONG = 'song';
-  static SOUND = 'sound';
+export const BlindtestType = {
+  SONG: 'song',
+  SOUND: 'sound',
+} as const;
 
-  static TRANSLATIONS: Record<string, { en: string; fr: string; emoji: string }> = {
-    [BlindtestType.SONG]: { en: 'Music', fr: 'Musique', emoji: '🎵' },
-    [BlindtestType.SOUND]: { en: 'Sound', fr: 'Son', emoji: '🔊' },
-  };
+export type BlindtestType = (typeof BlindtestType)[keyof typeof BlindtestType];
 
-  static getEmoji(type: string): string {
-    return this.TRANSLATIONS[type]?.emoji ?? '';
-  }
+export function isValidBlindtestType(type: string): type is BlindtestType {
+  return (Object.values(BlindtestType) as string[]).includes(type);
+}
 
-  static getTitle(type: string, lang: Locale = DEFAULT_LOCALE): string {
-    return this.TRANSLATIONS[type]?.[lang] ?? '';
-  }
+export const BlindtestTypeToEmoji: Record<BlindtestType, string> = {
+  [BlindtestType.SONG]: '🎵',
+  [BlindtestType.SOUND]: '🔊',
+};
 
-  static getAllTypes(): string[] {
-    return Object.keys(this.TRANSLATIONS);
-  }
-
-  static isValid(type: string): boolean {
-    return type in this.TRANSLATIONS;
-  }
+export function blindtestTypeToEmoji(type: string | undefined): string {
+  return type !== undefined && isValidBlindtestType(type) ? BlindtestTypeToEmoji[type] : '';
 }
 
 export interface BlindtestAnswer {
@@ -36,11 +33,10 @@ export interface BlindtestAnswer {
   image?: string;
 }
 
-export interface BlindtestQuestionData extends BaseQuestionData {
+export interface BlindtestQuestionData extends BuzzerQuestionData {
   answer?: BlindtestAnswer;
   audio?: string;
   subtype?: string;
-  title?: string;
   details?: { answer?: BlindtestAnswer; audio?: string; subtype?: string; title?: string };
 }
 
@@ -54,7 +50,6 @@ export class BlindtestQuestion extends BuzzerQuestion {
   answer: BlindtestAnswer;
   audio: string | undefined;
   subtype: string | undefined;
-  title: string | undefined;
 
   constructor(data: BlindtestQuestionData) {
     super(data);
@@ -62,7 +57,6 @@ export class BlindtestQuestion extends BuzzerQuestion {
     this.answer = data.answer ?? d.answer ?? ({} as BlindtestAnswer);
     this.audio = data.audio ?? d.audio;
     this.subtype = data.subtype ?? d.subtype;
-    this.title = data.title ?? d.title;
   }
 
   getQuestionType(): QuestionType {
@@ -86,18 +80,6 @@ export class BlindtestQuestion extends BuzzerQuestion {
 
   static validate(data: unknown): boolean {
     return BuzzerQuestion.validate(data);
-  }
-
-  static typeToEmoji(type: string): string {
-    return BlindtestType.getEmoji(type);
-  }
-
-  static typeToTitle(type: string, lang: Locale = DEFAULT_LOCALE): string {
-    return BlindtestType.getTitle(type, lang);
-  }
-
-  static prependTypeWithEmoji(type: string, lang: Locale = DEFAULT_LOCALE): string {
-    return `${this.typeToEmoji(type)} ${this.typeToTitle(type, lang)}`;
   }
 }
 

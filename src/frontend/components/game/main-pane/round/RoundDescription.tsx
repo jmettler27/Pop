@@ -7,7 +7,7 @@ import { useIntl } from 'react-intl';
 import fmt, { keyChunks } from '@/frontend/helpers/fmt';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
-import { BlindtestQuestion, BlindtestType } from '@/models/questions/blindtest';
+import { BlindtestType, blindtestTypeToEmoji } from '@/models/questions/blindtest';
 import { MatchingQuestion } from '@/models/questions/matching';
 import { OddOneOutQuestion } from '@/models/questions/odd-one-out';
 import { QuoteAuthorElement, QuotePartElement, QuoteSourceElement } from '@/models/questions/quote';
@@ -101,8 +101,8 @@ function BlindtestRoundDescription() {
     <>
       <RuleP>
         {formatMessage(messages.blindtest1, {
-          songEmoji: BlindtestQuestion.typeToEmoji(BlindtestType.SONG),
-          soundEmoji: BlindtestQuestion.typeToEmoji(BlindtestType.SOUND),
+          songEmoji: blindtestTypeToEmoji(BlindtestType.SONG),
+          soundEmoji: blindtestTypeToEmoji(BlindtestType.SOUND),
         })}
       </RuleP>
       <RuleP>{fmt(formatMessage, messages.blindtest2, richTags)}</RuleP>

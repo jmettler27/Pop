@@ -1,5 +1,9 @@
-import { BuzzerQuestion, GameBuzzerQuestion, type GameBuzzerQuestionData } from '@/models/questions/buzzer';
-import { type BaseQuestionData } from '@/models/questions/question';
+import {
+  BuzzerQuestion,
+  GameBuzzerQuestion,
+  type BuzzerQuestionData,
+  type GameBuzzerQuestionData,
+} from '@/models/questions/buzzer';
 import { QuestionType } from '@/models/questions/question-type';
 
 export interface ProgressiveCluesAnswer {
@@ -7,10 +11,9 @@ export interface ProgressiveCluesAnswer {
   image?: string;
 }
 
-export interface ProgressiveCluesQuestionData extends BaseQuestionData {
+export interface ProgressiveCluesQuestionData extends BuzzerQuestionData {
   answer?: ProgressiveCluesAnswer;
   clues?: string[];
-  title?: string;
   details?: { answer?: ProgressiveCluesAnswer; clues?: string[]; title?: string };
 }
 
@@ -23,14 +26,12 @@ export class ProgressiveCluesQuestion extends BuzzerQuestion {
 
   answer: ProgressiveCluesAnswer;
   clues: string[] | undefined;
-  title: string | undefined;
 
   constructor(data: ProgressiveCluesQuestionData) {
     super(data);
     const d = (data.details ?? {}) as ProgressiveCluesQuestionData;
     this.answer = data.answer ?? d.answer ?? ({ title: '' } as ProgressiveCluesAnswer);
     this.clues = data.clues ?? d.clues;
-    this.title = data.title ?? d.title;
   }
 
   getQuestionType(): QuestionType {

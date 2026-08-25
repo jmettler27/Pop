@@ -1,5 +1,9 @@
-import { BuzzerQuestion, GameBuzzerQuestion, type GameBuzzerQuestionData } from '@/models/questions/buzzer';
-import { type BaseQuestionData } from '@/models/questions/question';
+import {
+  BuzzerQuestion,
+  GameBuzzerQuestion,
+  type BuzzerQuestionData,
+  type GameBuzzerQuestionData,
+} from '@/models/questions/buzzer';
 import { QuestionType } from '@/models/questions/question-type';
 
 export interface ImageAnswer {
@@ -7,10 +11,9 @@ export interface ImageAnswer {
   description?: string;
 }
 
-export interface ImageQuestionData extends BaseQuestionData {
+export interface ImageQuestionData extends BuzzerQuestionData {
   answer?: ImageAnswer;
   image?: string;
-  title?: string;
   details?: { answer?: ImageAnswer; image?: string; title?: string };
 }
 
@@ -22,14 +25,12 @@ export class ImageQuestion extends BuzzerQuestion {
 
   answer: ImageAnswer;
   image: string;
-  title: string | undefined;
 
   constructor(data: ImageQuestionData) {
     super(data);
     const d = (data.details ?? {}) as ImageQuestionData;
     this.answer = data.answer ?? d.answer ?? {};
     this.image = data.image ?? d.image ?? '';
-    this.title = data.title ?? d.title;
   }
 
   getQuestionType(): QuestionType {

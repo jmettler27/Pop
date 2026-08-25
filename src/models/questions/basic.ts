@@ -1,13 +1,17 @@
-import { BuzzerQuestion, GameBuzzerQuestion, type GameBuzzerQuestionData } from '@/models/questions/buzzer';
-import { BaseQuestion, type BaseQuestionData } from '@/models/questions/question';
+import {
+  BuzzerQuestion,
+  GameBuzzerQuestion,
+  type BuzzerQuestionData,
+  type GameBuzzerQuestionData,
+} from '@/models/questions/buzzer';
+import { BaseQuestion } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
 
-export interface BasicQuestionData extends BaseQuestionData {
+export interface BasicQuestionData extends BuzzerQuestionData {
   answer?: string;
   explanation?: string;
   note?: string;
   source?: string;
-  title?: string;
   details?: { answer?: string; explanation?: string; note?: string; source?: string; title?: string };
 }
 
@@ -22,7 +26,6 @@ export class BasicQuestion extends BuzzerQuestion {
   explanation: string | undefined;
   note: string | undefined;
   source: string | undefined;
-  title: string | undefined;
 
   constructor(data: BasicQuestionData) {
     super(data);
@@ -31,7 +34,6 @@ export class BasicQuestion extends BuzzerQuestion {
     this.explanation = data.explanation ?? d.explanation;
     this.note = data.note ?? d.note;
     this.source = data.source ?? d.source;
-    this.title = data.title ?? d.title;
   }
 
   getQuestionType(): QuestionType {

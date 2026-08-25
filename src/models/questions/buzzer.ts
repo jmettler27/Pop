@@ -1,8 +1,16 @@
 import { BaseQuestion, GameQuestion, type BaseQuestionData, type GameQuestionData } from '@/models/questions/question';
 
+export interface BuzzerQuestionData extends BaseQuestionData {
+  title?: string;
+  details?: { title?: string };
+}
+
 export abstract class BuzzerQuestion extends BaseQuestion {
-  constructor(data: BaseQuestionData) {
+  title: string | undefined;
+
+  constructor(data: BuzzerQuestionData) {
     super(data);
+    this.title = data.title ?? data.details?.title;
   }
 }
 
