@@ -364,6 +364,8 @@
   "frontend.home.OngoingGames.joinGame": "Join",
   "frontend.home.OngoingGames.title": "Ongoing games",
   "frontend.home.OngoingGames.watchGame": "Watch",
+  "frontend.models.blindtestType.song": "Music",
+  "frontend.models.blindtestType.sound": "Sound",
   "frontend.questions.QuestionSearchTable.challengeTime": "Challenge time (s)",
   "frontend.questions.QuestionSearchTable.choices": "Nb. choices",
   "frontend.questions.QuestionSearchTable.createdAt": "Created at",

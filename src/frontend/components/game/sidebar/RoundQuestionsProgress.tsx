@@ -18,7 +18,7 @@ import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameRounds } from '@/models/games/game';
 import { GameStatus } from '@/models/games/game-status';
 import { BasicQuestion, GameBasicQuestion } from '@/models/questions/basic';
-import { BlindtestQuestion, GameBlindtestQuestion } from '@/models/questions/blindtest';
+import { BlindtestQuestion, blindtestTypeToEmoji, GameBlindtestQuestion } from '@/models/questions/blindtest';
 import { EmojiQuestion, GameEmojiQuestion } from '@/models/questions/emoji';
 import { EnumerationQuestion } from '@/models/questions/enumeration';
 import { EstimationQuestion } from '@/models/questions/estimation';
@@ -377,7 +377,7 @@ function BlindtestRoundQuestionAccordion({
       game={game}
       summary={
         <span className="text-lg">
-          {BlindtestQuestion.typeToEmoji(q.subtype ?? '')}
+          {blindtestTypeToEmoji(q.subtype)}
           {topicToEmoji(q.topic as Topic)}{' '}
           <strong>
             {questionTypeToTitle(QuestionType.BLINDTEST, locale as Locale)} {order + 1}

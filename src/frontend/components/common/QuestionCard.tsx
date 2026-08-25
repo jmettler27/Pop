@@ -14,7 +14,7 @@ import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
 import { timestampToLongDateTime, type FirestoreTimestamp } from '@/frontend/helpers/time';
 import { useUserOnce } from '@/frontend/hooks/firestore/user/useUserHooks';
 import defineMessages from '@/frontend/i18n/defineMessages';
-import { BlindtestQuestion } from '@/models/questions/blindtest';
+import { BlindtestQuestion, blindtestTypeToEmoji } from '@/models/questions/blindtest';
 import { MCQQuestion } from '@/models/questions/mcq';
 import { NaguiQuestion } from '@/models/questions/nagui';
 import { QuestionType, questionTypeToEmoji } from '@/models/questions/question-type';
@@ -65,7 +65,7 @@ export function QuestionCardTitle({ baseQuestion, showType = false }: QuestionCa
       return (
         <span>
           {showType && emoji}
-          {BlindtestQuestion.typeToEmoji((baseQuestion as InstanceType<typeof BlindtestQuestion>).subtype ?? '')}
+          {blindtestTypeToEmoji((baseQuestion as InstanceType<typeof BlindtestQuestion>).subtype)}
           {topicToEmoji(baseQuestion.topic as Topic)} {(baseQuestion as { title: string }).title}
         </span>
       );

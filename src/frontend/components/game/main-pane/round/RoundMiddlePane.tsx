@@ -1,7 +1,5 @@
 'use client';
 
-import { useParams } from 'next/navigation';
-
 import { useIntl } from 'react-intl';
 
 import ErrorScreen from '@/frontend/components/ErrorScreen';
@@ -17,13 +15,7 @@ import { AnyRound } from '@/models/rounds/RoundFactory';
 
 export default function RoundMiddlePane() {
   const game = useGame();
-  const params = useParams();
-  const intl = useIntl();
-  const {
-    round,
-    loading: roundLoading,
-    error: roundError,
-  } = useRound(game?.id ?? null, (game?.currentRound as string | undefined) ?? '');
+  const { round, loading: roundLoading, error: roundError } = useRound(game?.id ?? null, game?.currentRound ?? '');
 
   if (!game) return null;
 

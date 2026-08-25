@@ -14,6 +14,7 @@ import { MySelect, MyTextInput } from '@/frontend/components/common/StyledFormCo
 import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
 import { UploadAudio, UploadImage } from '@/frontend/components/common/UploadFile';
 import { SelectItem } from '@/frontend/components/ui/select';
+import { blindtestTypeToTitle } from '@/frontend/helpers/blindtestType';
 import { audioFileSchema, imageFileSchema } from '@/frontend/helpers/forms/files';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
@@ -21,7 +22,7 @@ import { topicSchema } from '@/frontend/helpers/forms/topics';
 import { DEFAULT_LOCALE, localeSchema, type Locale } from '@/frontend/helpers/locales';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import defineMessages from '@/frontend/i18n/defineMessages';
-import { BlindtestQuestion, BlindtestType } from '@/models/questions/blindtest';
+import { BlindtestQuestion, BlindtestType, blindtestTypeToEmoji } from '@/models/questions/blindtest';
 import { CreateBaseQuestionData } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
 import { Topic } from '@/models/topic';
@@ -42,7 +43,7 @@ const BLINDTEST_ANSWER_AUTHOR_EXAMPLE = 'Ludwig Göransson';
 const QUESTION_TYPE = QuestionType.BLINDTEST;
 
 const subtypeSchema = () =>
-  Yup.string().oneOf(BlindtestType.getAllTypes(), 'Invalid question subtype.').required('Required.');
+  Yup.string().oneOf(Object.values(BlindtestType), 'Invalid question subtype.').required('Required.');
 
 interface QuestionFormProps {
   userId?: string;
@@ -170,9 +171,9 @@ export default function SubmitBlindtestQuestionForm({ userId, ...props }: Questi
 
         <MySelect label={intl.formatMessage(messages.type)} name="subtype" validationSchema={validationSchema}>
           <SelectItem value="">{intl.formatMessage(messages.selectType)}</SelectItem>
-          {BlindtestType.getAllTypes().map((type) => (
+          {Object.values(BlindtestType).map((type) => (
             <SelectItem key={type} value={type}>
-              {BlindtestType.getEmoji(type)} {BlindtestType.getTitle(type, intl.locale as Locale)}
+              {blindtestTypeToEmoji(type)} {blindtestTypeToTitle(intl, type)}
             </SelectItem>
           ))}
         </MySelect>

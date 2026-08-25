@@ -9,7 +9,7 @@ import { GameStatus } from '@/models/games/game-status';
 
 export default function RoundBottomPane() {
   const game = useGame();
-  const currentRound = (game?.currentRound as string | undefined) ?? '';
+  const currentRound = game?.currentRound ?? '';
   const { round, loading: roundLoading, error: roundError } = useRound(game?.id ?? null, currentRound);
 
   if (!game) return null;

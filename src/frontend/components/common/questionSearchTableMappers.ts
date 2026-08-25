@@ -5,7 +5,7 @@ import { timestampToNumericDate, type FirestoreTimestamp } from '@/frontend/help
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { BasicQuestion } from '@/models/questions/basic';
-import { BlindtestQuestion } from '@/models/questions/blindtest';
+import { BlindtestQuestion, blindtestTypeToEmoji } from '@/models/questions/blindtest';
 import { EmojiQuestion } from '@/models/questions/emoji';
 import { EnumerationQuestion } from '@/models/questions/enumeration';
 import { EstimationQuestion } from '@/models/questions/estimation';
@@ -80,7 +80,7 @@ const basicQuestionColumns = (intl: IntlShape): ColSpec[] => [
 
 // BLINDTEST
 const blindtestQuestionRow = (question: BlindtestQuestion) => ({
-  subtype: BlindtestQuestion.typeToEmoji(question.subtype ?? ''),
+  subtype: blindtestTypeToEmoji(question.subtype),
   title: question.title,
   answer_source: question.answer.source,
   answer_author: question.answer.author,
