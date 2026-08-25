@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { collection, query } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
+import { firestore } from '@/firebase/firebase';
 import { useFirestoreCollectionOnce } from '@/frontend/hooks/firestore/useFirestoreCollection';
 import { Organizer } from '@/models/users/organizer';
 import { type ParticipantData } from '@/models/users/participant';

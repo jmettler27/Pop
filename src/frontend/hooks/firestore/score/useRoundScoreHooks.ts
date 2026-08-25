@@ -1,6 +1,6 @@
 import { doc } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
+import { firestore } from '@/firebase/firebase';
 import { useFirestoreDocument, useFirestoreDocumentOnce } from '@/frontend/hooks/firestore/useFirestoreDocument';
 
 export function useScores(gameId: string | null, roundId: string | null) {

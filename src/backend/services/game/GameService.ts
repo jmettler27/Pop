@@ -1,7 +1,6 @@
 import { runTransaction, serverTimestamp, Timestamp } from 'firebase/firestore';
 import type { Logger } from 'pino';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
@@ -14,6 +13,7 @@ import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import RoundServiceFactory from '@/backend/services/round/RoundServiceFactory';
+import { firestore } from '@/firebase/firebase';
 import { type Locale } from '@/frontend/helpers/locales';
 import { type GameRoundsData } from '@/models/games/game';
 import { GameStatus } from '@/models/games/game-status';

@@ -2,8 +2,8 @@
 
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
-import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import { logger } from '@/backend/logger';
+import { GAMES_COLLECTION_REF } from '@/firebase/firestore';
 
 const log = logger.child({ module: 'sounds' });
 

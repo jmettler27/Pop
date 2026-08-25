@@ -11,7 +11,7 @@ import {
   type WhereFilterOp,
 } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
+import { firestore } from '@/firebase/firebase';
 import { useFirestoreCollection, useFirestoreCollectionOnce } from '@/frontend/hooks/firestore/useFirestoreCollection';
 import { useFirestoreDocument, useFirestoreDocumentOnce } from '@/frontend/hooks/firestore/useFirestoreDocument';
 import { type RoundType } from '@/models/rounds/round-type';

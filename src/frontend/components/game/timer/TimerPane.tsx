@@ -2,10 +2,10 @@ import { useCallback, useRef } from 'react';
 
 import { useIntl } from 'react-intl';
 
-import { SERVER_TIME_OFFSET_REF } from '@/backend/firebase/database';
 import { startGame } from '@/backend/services/game/actions';
 import { handleCountdownEnd } from '@/backend/services/question/actions';
 import { handleQuestionEnd, startRound } from '@/backend/services/round/actions';
+import { SERVER_TIME_OFFSET_REF } from '@/firebase/database';
 import AuthorizePlayersSwitch from '@/frontend/components/game/main-pane/AuthorizePlayersSwitch';
 import OrganizerTimerController from '@/frontend/components/game/timer/OrganizerTimerController';
 import Timer, { type TimerData } from '@/frontend/components/game/timer/Timer';

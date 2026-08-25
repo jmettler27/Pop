@@ -1,9 +1,9 @@
 import { runTransaction } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/GameProgressiveCluesQuestionRepository';
 import GameBuzzerQuestionService from '@/backend/services/question/buzzer/GameBuzzerQuestionService';
+import { firestore } from '@/firebase/firebase';
 import { CanceledPlayer } from '@/models/questions/buzzer';
 import { GameProgressiveCluesQuestion } from '@/models/questions/progressive-clues';
 import { QuestionType } from '@/models/questions/question-type';

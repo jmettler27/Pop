@@ -4,8 +4,8 @@ import { useParams } from 'next/navigation';
 import { collection, onSnapshot, query, Timestamp, where } from 'firebase/firestore';
 import { Volume1, Volume2, VolumeX } from 'lucide-react';
 
-import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
 import sounds from '@/data/sounds';
+import { GAMES_COLLECTION_REF } from '@/firebase/firestore';
 import { Button } from '@/frontend/components/ui/button';
 import { Slider } from '@/frontend/components/ui/slider';
 

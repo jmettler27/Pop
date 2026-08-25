@@ -1,9 +1,9 @@
 import { runTransaction, Transaction } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
+import { firestore } from '@/firebase/firebase';
 import { GameMCQQuestion, MCQQuestion } from '@/models/questions/mcq';
 import { QuestionType } from '@/models/questions/question-type';
 import { MCQRound } from '@/models/rounds/mcq';

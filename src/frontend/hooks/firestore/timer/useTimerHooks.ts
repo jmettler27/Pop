@@ -1,6 +1,6 @@
 import { doc } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
+import { firestore } from '@/firebase/firebase';
 import { useFirestoreDocument } from '@/frontend/hooks/firestore/useFirestoreDocument';
 import { type Timer } from '@/models/timer';
 

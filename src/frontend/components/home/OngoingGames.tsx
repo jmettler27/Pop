@@ -6,7 +6,7 @@ import { Eye, LogIn, Play, UserCog, Users } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
+import { GAMES_COLLECTION_REF } from '@/firebase/firestore';
 import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from '@/frontend/components/home/GameAvatars';
 import { Button } from '@/frontend/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/ui/card';

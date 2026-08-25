@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { collection, doc } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
+import { firestore } from '@/firebase/firebase';
 import { useFirestoreDocument, useFirestoreDocumentOnce } from '@/frontend/hooks/firestore/useFirestoreDocument';
 import { type GameType } from '@/models/games/game-type';
 import GameFactory from '@/models/games/GameFactory';

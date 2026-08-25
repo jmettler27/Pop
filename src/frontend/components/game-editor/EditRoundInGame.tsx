@@ -25,13 +25,13 @@ import { doc, getDoc } from 'firebase/firestore';
 import { ArrowUpDown, Check, ChevronDown, ChevronUp, GripVertical, Timer as TimerIcon, Trash2, X } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { QUESTIONS_COLLECTION_REF } from '@/backend/firebase/firestore';
 import {
   removeRoundFromGame,
   updateRound,
   updateRoundChallengeTime,
   updateRoundThinkingTime,
 } from '@/backend/services/edit-game/actions';
+import { QUESTIONS_COLLECTION_REF } from '@/firebase/firestore';
 import { QuestionCardTitle } from '@/frontend/components/common/QuestionCard';
 import { AddQuestionToRoundButton } from '@/frontend/components/game-editor/AddQuestionToRound';
 import { EditQuestionCard } from '@/frontend/components/game-editor/EditQuestionInRound';

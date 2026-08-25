@@ -1,11 +1,11 @@
 import { runTransaction, Transaction } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import GameQuestionService, { SYSTEM_PLAYER_ID } from '@/backend/services/question/GameQuestionService';
+import { firestore } from '@/firebase/firebase';
 import {
   ColumnIndices,
   CorrectMatch,

@@ -1,6 +1,6 @@
 'use client';
 
-import { SERVER_TIME_OFFSET_REF } from '@/backend/firebase/database';
+import { SERVER_TIME_OFFSET_REF } from '@/firebase/database';
 import {
   EstimationEndView,
   EstimationQuestionHeader,

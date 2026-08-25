@@ -1,12 +1,12 @@
 import { runTransaction } from 'firebase/firestore';
 import type { Logger } from 'pino';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import SoundRepository from '@/backend/repositories/sound/SoundRepository';
 import TimerRepository from '@/backend/repositories/timer/TimerRepository';
+import { firestore } from '@/firebase/firebase';
 import { GameStatus } from '@/models/games/game-status';
 import { GameQuestion } from '@/models/questions/question';
 import { Timer } from '@/models/timer';

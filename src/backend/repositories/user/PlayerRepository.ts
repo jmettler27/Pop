@@ -1,7 +1,7 @@
 import { doc, writeBatch, type Transaction } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
+import { firestore } from '@/firebase/firebase';
 import { Player, type PlayerData } from '@/models/users/player';
 
 export default class PlayerRepository extends FirebaseRepository {

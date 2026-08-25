@@ -3,7 +3,7 @@ import { useParams } from 'next/navigation';
 
 import { doc, DocumentData, getDoc } from 'firebase/firestore';
 
-import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
+import { GAMES_COLLECTION_REF } from '@/firebase/firestore';
 import { usePlayerOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import { useTeamOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useRole from '@/frontend/hooks/useRole';

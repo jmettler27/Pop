@@ -1,7 +1,6 @@
 import { increment, runTransaction, Transaction } from 'firebase/firestore';
 import type { Logger } from 'pino';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
@@ -15,6 +14,7 @@ import SoundRepository from '@/backend/repositories/sound/SoundRepository';
 import TimerRepository from '@/backend/repositories/timer/TimerRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
+import { firestore } from '@/firebase/firebase';
 import { GameStatus } from '@/models/games/game-status';
 import { QuestionType } from '@/models/questions/question-type';
 import { GameScores, RoundScores, ScoresProgress } from '@/models/scores';

@@ -1,9 +1,9 @@
 import { runTransaction, Timestamp, Transaction } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import GameQuestionService, { SYSTEM_PLAYER_ID } from '@/backend/services/question/GameQuestionService';
+import { firestore } from '@/firebase/firebase';
 import { GameOddOneOutQuestion, OddOneOutQuestion, SelectedItem } from '@/models/questions/odd-one-out';
 import { QuestionType } from '@/models/questions/question-type';
 import { OddOneOutRound } from '@/models/rounds/odd-one-out';

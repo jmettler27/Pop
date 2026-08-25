@@ -1,10 +1,10 @@
 import { runTransaction, Transaction } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
+import { firestore } from '@/firebase/firebase';
 import { GameNaguiQuestion, NAGUI_OPTION_TO_SOUND, NaguiQuestion } from '@/models/questions/nagui';
 import { QuestionType } from '@/models/questions/question-type';
 import { NaguiRound } from '@/models/rounds/nagui';

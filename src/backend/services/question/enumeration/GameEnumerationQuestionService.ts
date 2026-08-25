@@ -1,9 +1,9 @@
 import { runTransaction, Transaction } from 'firebase/firestore';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
+import { firestore } from '@/firebase/firebase';
 import {
   EnumerationChallenger,
   EnumerationQuestion,

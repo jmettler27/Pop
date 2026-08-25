@@ -1,12 +1,12 @@
 import { runTransaction, serverTimestamp } from 'firebase/firestore';
 import type { Logger } from 'pino';
 
-import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import UserRepository from '@/backend/repositories/user/UserRepository';
+import { firestore } from '@/firebase/firebase';
 import { PlayerStatus } from '@/models/users/player';
 import { generateAvatarUrl } from '@/utils/avatar';
 
