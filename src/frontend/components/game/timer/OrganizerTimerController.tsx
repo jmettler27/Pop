@@ -5,7 +5,7 @@ import Timer, { type TimerData } from '@/frontend/components/game/timer/Timer';
 import { Button } from '@/frontend/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
+import useGameId from '@/frontend/hooks/useGameId';
 import { TimerStatus } from '@/models/timer';
 
 interface OrganizerTimerControllerProps {
@@ -24,7 +24,7 @@ export default function OrganizerTimerController({
   serverTimeOffset,
   onTimerEnd,
 }: OrganizerTimerControllerProps) {
-  const game = useGame();
+  const gameId = useGameId();
 
   const [handleTimerEnd, isEnding] = useAsyncAction(async () => {
     await onTimerEnd();
@@ -32,15 +32,15 @@ export default function OrganizerTimerController({
   });
 
   const [handleStartTimer, isStarting] = useAsyncAction(async () => {
-    await startTimer(game!.id as string, timer.duration);
+    await startTimer(gameId, timer.duration);
   });
 
   const [handleStopTimer, isStopping] = useAsyncAction(async () => {
-    await stopTimer(game!.id as string);
+    await stopTimer(gameId);
   });
 
   const [handleResetTimer, isResetting] = useAsyncAction(async () => {
-    await resetTimer(game!.id as string);
+    await resetTimer(gameId);
   });
 
   return (

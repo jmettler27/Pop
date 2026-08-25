@@ -5,7 +5,8 @@ import ValidateChallengerCitationButton from '@/frontend/components/game/main-pa
 import { ProgressIndicator, ProgressTrack } from '@/frontend/components/ui/progress';
 import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { usePlayer } from '@/frontend/hooks/firestore/user/usePlayerHooks';
-import useGame from '@/frontend/hooks/useGame';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
+import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
 import { ParticipantRole } from '@/models/users/participant';
 
@@ -17,19 +18,13 @@ interface Challenger {
 }
 
 export default function ChallengerCitationHelper() {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const {
     data: questionPlayers,
     loading: playersLoading,
     error: playersError,
-  } = useQuestionPlayers(
-    game?.id ?? null,
-    (game?.currentRound as string | undefined) ?? null,
-    game?.currentQuestion as string
-  );
-
-  if (!game) return null;
+  } = useQuestionPlayers(gameId, roundId, questionId);
 
   if (playersError || playersLoading || !questionPlayers) {
     return <></>;
@@ -46,9 +41,8 @@ export default function ChallengerCitationHelper() {
 }
 
 function ChallengerName({ challengerId }: { challengerId: string }) {
-  const game = useGame();
-  const { player, loading: playerLoading, error: playerError } = usePlayer(game?.id ?? null, challengerId);
-  if (!game) return null;
+  const gameId = useGameId();
+  const { player, loading: playerLoading, error: playerError } = usePlayer(gameId, challengerId);
 
   if (playerError || playerLoading || !player) {
     return <></>;

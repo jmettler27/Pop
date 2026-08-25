@@ -3,7 +3,7 @@ import { useIntl } from 'react-intl';
 import PlayerName from '@/frontend/components/game/PlayerName';
 import { rankingToEmoji } from '@/frontend/helpers/emojis';
 import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
-import useGame from '@/frontend/hooks/useGame';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import defineMessages from '@/frontend/i18n/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.EnumerationPlayers', {
@@ -12,19 +12,13 @@ const messages = defineMessages('frontend.game.bottom.EnumerationPlayers', {
 
 export default function EnumerationPlayers() {
   const intl = useIntl();
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const {
     data: questionPlayers,
     loading: playersLoading,
     error: playersError,
-  } = useQuestionPlayers(
-    game?.id ?? null,
-    (game?.currentRound as string | undefined) ?? null,
-    game?.currentQuestion as string
-  );
-
-  if (!game) return null;
+  } = useQuestionPlayers(gameId, roundId, questionId);
 
   if (playersError || playersLoading || !questionPlayers) {
     return <></>;

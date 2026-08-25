@@ -16,7 +16,7 @@ import SubmitMatchDialog from '@/frontend/components/game/main-pane/question/mat
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { useCorrectMatches, useIsCanceled } from '@/frontend/hooks/firestore/question/useGameMatchingQuestionHooks';
 import { useIsChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
-import useGame from '@/frontend/hooks/useGame';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import { MatchingAnswer, MatchingEdgeData } from '@/models/questions/matching';
@@ -122,27 +122,21 @@ function ActiveMatchingQuestionNodes({
   setNewEdgeSource,
   deselectOnNewEdge = true,
 }: ActiveMatchingQuestionNodesProps) {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
   const myTeam = useTeam();
   const myRole = useRole();
-  const {
-    isChooser,
-    loading: isChooserLoading,
-    error: isChooserError,
-  } = useIsChooser(game?.id ?? null, myTeam as string);
+  const { isChooser, loading: isChooserLoading, error: isChooserError } = useIsChooser(gameId, myTeam as string);
 
   const {
     isCanceled,
     loading: isCanceledLoading,
     error: isCanceledError,
-  } = useIsCanceled(game?.id ?? null, game?.currentRound ?? null, game?.currentQuestion as string, myTeam as string);
+  } = useIsCanceled(gameId, roundId, questionId, myTeam as string);
   const {
     correctMatches,
     loading: correctMatchesLoading,
     error: correctMatchesError,
-  } = useCorrectMatches(game?.id ?? null, game?.currentRound ?? null, game?.currentQuestion as string);
-
-  if (!game) return null;
+  } = useCorrectMatches(gameId, roundId, questionId);
 
   if (isChooserError || isCanceledError || correctMatchesError) return <></>;
   if (isChooserLoading || isCanceledLoading || correctMatchesLoading) return <Spinner />;

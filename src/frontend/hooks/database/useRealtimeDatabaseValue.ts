@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { onValue, type DatabaseReference } from 'firebase/database';
 
+import { acquireSharedSubscription } from '@/frontend/hooks/sharedSubscription';
+
 // Read once via `onValue`'s `onlyOnce` option, rather than `get()` — `get()` is a REST-based one-time
 // read that doesn't support the special client-only `.info/*` paths (e.g. `.info/serverTimeOffset`, this
 // hook's original motivating case), throwing "Invalid token in path". `onValue` supports every path,
@@ -40,15 +42,18 @@ export function useRealtimeDatabaseValue<T = unknown>(ref: DatabaseReference | n
 
   useEffect(() => {
     if (!ref) return;
-    const unsubscribe = onValue(
-      ref,
-      (snap) => queryClient.setQueryData(key, snap.exists() ? (snap.val() as T) : null),
-      // No public TanStack API pushes an out-of-band error into a query's `error` field directly;
-      // invalidating re-runs queryFn (a fresh one-shot read), which populates `.error` through the normal
-      // channel if the failure persists (e.g. a permissions error).
-      () => queryClient.invalidateQueries({ queryKey: key })
+    // Shared per ref.toString(): two components mounting this hook for the same path reuse one onValue
+    // listener instead of opening a second, separately-billed one.
+    return acquireSharedSubscription(`rtdb:value:${ref.toString()}`, () =>
+      onValue(
+        ref,
+        (snap) => queryClient.setQueryData(key, snap.exists() ? (snap.val() as T) : null),
+        // No public TanStack API pushes an out-of-band error into a query's `error` field directly;
+        // invalidating re-runs queryFn (a fresh one-shot read), which populates `.error` through the normal
+        // channel if the failure persists (e.g. a permissions error).
+        () => queryClient.invalidateQueries({ queryKey: key })
+      )
     );
-    return unsubscribe;
     // Resubscribe on ref.toString() (the stable identity), not a fresh-but-structurally-identical ref
     // object every render.
     // eslint-disable-next-line react-hooks/exhaustive-deps

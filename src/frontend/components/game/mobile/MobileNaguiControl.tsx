@@ -13,8 +13,8 @@ import { Spinner } from '@/frontend/components/ui/spinner';
 import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -25,18 +25,16 @@ import { shuffleIndices } from '@/utils/arrays';
 
 export default function MobileNaguiControl() {
   const myTeam = useTeam();
-  const game = useGame();
-  const { chooser, loading: chooserLoading, error: chooserError } = useChooser(game?.id ?? null);
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
+  const { chooser, loading: chooserLoading, error: chooserError } = useChooser(gameId);
 
   const {
     gameQuestion,
     loading: questionLoading,
     error: questionError,
-  } = useQuestion(game?.id ?? null, game?.currentRound ?? null, QuestionType.NAGUI, game?.currentQuestion as string);
+  } = useQuestion(gameId, roundId, QuestionType.NAGUI, questionId);
 
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(game?.currentQuestion as string);
-
-  if (!game) return null;
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(questionId);
 
   if (questionError || chooserError || baseQuestionError) return null;
   if (questionLoading || chooserLoading || baseQuestionLoading) return <Spinner />;
@@ -129,24 +127,15 @@ function MobileNaguiChoiceSelector({
   gameQuestion: GameNaguiQuestion;
   randomization: number[];
 }) {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
   const myTeam = useTeam();
   const user = useUser();
   const intl = useIntl();
 
   const [handleSelectChoice, isSubmitting] = useAsyncAction(async (idx: number) => {
-    if (!user || !game) return;
-    await selectChoice(
-      game.id as string,
-      game.currentRound as string,
-      game.currentQuestion as string,
-      user.id as string,
-      myTeam as string,
-      idx
-    );
+    if (!user) return;
+    await selectChoice(gameId, roundId, questionId, user.id as string, myTeam as string, idx);
   });
-
-  if (!game) return null;
 
   if (gameQuestion.option === HideNaguiOption.TYPE) {
     return <span className="text-2xl">{intl.formatMessage(globalMessages.firstBuzzer)} 🧐</span>;

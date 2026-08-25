@@ -24,6 +24,7 @@ import {
 } from '@/frontend/components/ui/dialog';
 import { Input } from '@/frontend/components/ui/input';
 import { Label } from '@/frontend/components/ui/label';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useIsMobile from '@/frontend/hooks/useIsMobile';
@@ -199,7 +200,7 @@ interface EstimationPlayerActiveViewProps {
 
 function EstimationPlayerActiveView({ baseQuestion, gameQuestion }: EstimationPlayerActiveViewProps) {
   const intl = useIntl();
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
   const user = useUser();
   const myTeam = useTeam();
 
@@ -224,15 +225,8 @@ function EstimationPlayerActiveView({ baseQuestion, gameQuestion }: EstimationPl
       : { type: EstimationQuestion.BetType.RANGE, lower: rangeFrom, upper: rangeTo };
 
   const [handleSubmitBet, isSubmitting] = useAsyncAction(async () => {
-    if (!game || !user) return;
-    await submitBet(
-      game.id as string,
-      game.currentRound as string,
-      game.currentQuestion as string,
-      user.id!,
-      myTeam as string,
-      bet as EstimationBet
-    );
+    if (!user) return;
+    await submitBet(gameId, roundId, questionId, user.id!, myTeam as string, bet as EstimationBet);
     setDialogOpen(false);
   });
 

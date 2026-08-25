@@ -10,6 +10,7 @@ import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestion
 import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import { useCurrentChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useGame from '@/frontend/hooks/useGame';
+import useGameId from '@/frontend/hooks/useGameId';
 import useTeam from '@/frontend/hooks/useTeam';
 import { GameOddOneOutQuestion, OddOneOutQuestion } from '@/models/questions/odd-one-out';
 import { QuestionType } from '@/models/questions/question-type';
@@ -38,10 +39,9 @@ function MobileOddOneOutWithQuestion({
   randomMapping: number[];
 }) {
   const myTeam = useTeam();
-  const game = useGame();
-  const { currentChooserTeamId, loading: chooserLoading, error: chooserError } = useCurrentChooser(game?.id ?? null);
+  const gameId = useGameId();
+  const { currentChooserTeamId, loading: chooserLoading, error: chooserError } = useCurrentChooser(gameId);
 
-  if (!game) return null;
   if (chooserError) return <ErrorScreen inline />;
   if (chooserLoading) return <LoadingScreen inline />;
   if (!currentChooserTeamId) return <></>;

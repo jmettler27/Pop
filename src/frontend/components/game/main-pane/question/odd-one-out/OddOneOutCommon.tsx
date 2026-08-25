@@ -14,6 +14,7 @@ import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
 import { usePlayerOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
+import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
 import useUser from '@/frontend/hooks/useUser';
 import { GameStatus } from '@/models/games/game-status';
@@ -200,9 +201,8 @@ function ProposalItem({
 }
 
 function SelectedProposalPlayerAvatar({ playerId }: { playerId: string }) {
-  const game = useGame();
-  const { player, loading, error } = usePlayerOnce(game?.id ?? null, playerId);
-  if (!game) return null;
+  const gameId = useGameId();
+  const { player, loading, error } = usePlayerOnce(gameId, playerId);
 
   if (error || loading || !player) return null;
 

@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import { collection, doc } from 'firebase/firestore';
 
 import { firestore } from '@/backend/firebase/firebase';
@@ -9,6 +11,8 @@ function gameQuestionsRef(gameId: string, roundId: string) {
   return collection(firestore, 'games', gameId, 'rounds', roundId, 'questions');
 }
 
+// Memoized on `data`/`questionType` (mirrors useGame/useRound) so `gameQuestion` stays referentially
+// stable across renders when the underlying document hasn't changed.
 export function useQuestion(
   gameId: string | null,
   roundId: string | null,
@@ -18,11 +22,11 @@ export function useQuestion(
   const { data, isLoading, error } = useFirestoreDocument(
     gameId && roundId ? doc(gameQuestionsRef(gameId, roundId), questionId) : null
   );
-  return {
-    gameQuestion: data ? (QuestionFactory.createGameQuestion(questionType, data) as AnyGameQuestion) : null,
-    loading: isLoading,
-    error,
-  };
+  const gameQuestion = useMemo(
+    () => (data ? (QuestionFactory.createGameQuestion(questionType, data) as AnyGameQuestion) : null),
+    [data, questionType]
+  );
+  return { gameQuestion, loading: isLoading, error };
 }
 
 export function useQuestionOnce(
@@ -34,11 +38,11 @@ export function useQuestionOnce(
   const { data, isLoading, error } = useFirestoreDocumentOnce(
     gameId && roundId ? doc(gameQuestionsRef(gameId, roundId), questionId) : null
   );
-  return {
-    gameQuestion: data ? (QuestionFactory.createGameQuestion(questionType, data) as AnyGameQuestion) : null,
-    loading: isLoading,
-    error,
-  };
+  const gameQuestion = useMemo(
+    () => (data ? (QuestionFactory.createGameQuestion(questionType, data) as AnyGameQuestion) : null),
+    [data, questionType]
+  );
+  return { gameQuestion, loading: isLoading, error };
 }
 
 export function useQuestionPlayers(gameId: string | null, roundId: string | null, questionId: string) {

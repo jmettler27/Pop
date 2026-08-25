@@ -5,7 +5,7 @@ import {
 } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { useCorrectMatches } from '@/frontend/hooks/firestore/question/useGameMatchingQuestionHooks';
-import useGame from '@/frontend/hooks/useGame';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import { isObjectEmpty } from '@/utils/objects';
 
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
@@ -16,15 +16,9 @@ interface CorrectMatchesProps {
 }
 
 export default function CorrectMatches({ nodePositions, colIndices }: CorrectMatchesProps) {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
-  const { correctMatches, loading, error } = useCorrectMatches(
-    game?.id ?? null,
-    game?.currentRound ?? null,
-    game?.currentQuestion as string
-  );
-
-  if (!game) return null;
+  const { correctMatches, loading, error } = useCorrectMatches(gameId, roundId, questionId);
 
   if (error) {
     return <></>;

@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { useParams } from 'next/navigation';
 
 import { ArrowDown, CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
@@ -12,11 +11,10 @@ import EndQuestionButton from '@/frontend/components/game/main-pane/question/End
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import { Button } from '@/frontend/components/ui/button';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
-import { GameRounds } from '@/models/games/game';
 import { BuzzerQuestion } from '@/models/questions/buzzer';
 import { GameProgressiveCluesQuestion, ProgressiveCluesQuestion } from '@/models/questions/progressive-clues';
 import { QuestionType } from '@/models/questions/question-type';
@@ -31,14 +29,11 @@ interface BuzzerOrganizerControllerProps {
 }
 
 export default function BuzzerOrganizerController({ baseQuestion, questionPlayers }: BuzzerOrganizerControllerProps) {
-  const { id } = useParams();
-  const gameId = id as string;
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
   const bq = baseQuestion as { type?: QuestionType };
 
   const { buzzed } = questionPlayers as { buzzed: string[] };
   const buzzerHead = useRef<string | null>(null);
-  const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
 
   useEffect(() => {
     if (!buzzed || buzzed.length === 0) {
@@ -47,15 +42,9 @@ export default function BuzzerOrganizerController({ baseQuestion, questionPlayer
     }
     if (buzzerHead.current !== buzzed[0]) {
       buzzerHead.current = buzzed[0];
-      handleBuzzerHeadChanged(
-        bq.type as QuestionType,
-        gameId as string,
-        currentRound as string,
-        game!.currentQuestion as string,
-        buzzerHead.current as string
-      );
+      handleBuzzerHeadChanged(bq.type as QuestionType, gameId, roundId, questionId, buzzerHead.current as string);
     }
-  }, [buzzed, bq.type, currentRound, game, gameId]);
+  }, [buzzed, bq.type, roundId, questionId, gameId]);
 
   return (
     <div className="flex flex-col h-full w-full items-center justify-around">
@@ -76,29 +65,16 @@ function BuzzerOrganizerAnswerController({
   questionType: _questionType,
 }: BuzzerOrganizerAnswerControllerProps) {
   const intl = useIntl();
-  const game = useGame();
-  const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
+  const { gameId, roundId, questionId, questionType } = useActiveQuestion()!;
 
   const buzzedIsEmpty = buzzed.length === 0;
 
   const [handleValidate, isValidating] = useAsyncAction(async () => {
-    await validateAnswer(
-      game!.currentQuestionType as QuestionType,
-      game!.id as string,
-      currentRound as string,
-      game!.currentQuestion as string,
-      buzzed[0]
-    );
+    await validateAnswer(questionType, gameId, roundId, questionId, buzzed[0]);
   });
 
   const [handleInvalidate, isInvalidating] = useAsyncAction(async () => {
-    await invalidateAnswer(
-      game!.currentQuestionType as QuestionType,
-      game!.id as string,
-      currentRound as string,
-      game!.currentQuestion as string,
-      buzzed[0]
-    );
+    await invalidateAnswer(questionType, gameId, roundId, questionId, buzzed[0]);
   });
 
   return (
@@ -140,23 +116,17 @@ function BuzzerOrganizerQuestionController({ baseQuestion }: BuzzerOrganizerQues
 
 function NextClueButton({ baseQuestion }: BuzzerOrganizerQuestionControllerProps) {
   const intl = useIntl();
-  const game = useGame();
-  const currentRound = game!.currentRound;
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const [handleClick, isLoadingNextClue] = useAsyncAction(async () => {
-    await revealClue(game!.id!, currentRound!, game!.currentQuestion!);
+    await revealClue(gameId, roundId, questionId);
   });
 
   const {
     gameQuestion,
     loading: gameQuestionLoading,
     error: gameQuestionError,
-  } = useQuestion(
-    game!.id ?? null,
-    currentRound ?? null,
-    QuestionType.PROGRESSIVE_CLUES,
-    game!.currentQuestion as string
-  );
+  } = useQuestion(gameId, roundId, QuestionType.PROGRESSIVE_CLUES, questionId);
 
   if (gameQuestionError || gameQuestionLoading || !gameQuestion) {
     return <></>;

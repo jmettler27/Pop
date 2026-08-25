@@ -10,8 +10,8 @@ import { Spinner } from '@/frontend/components/ui/spinner';
 import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
 import { Chooser } from '@/models/chooser';
@@ -21,18 +21,16 @@ import { shuffleIndices } from '@/utils/arrays';
 
 export default function MobileMCQControl() {
   const myTeam = useTeam();
-  const game = useGame();
-  const { chooser, loading: chooserLoading, error: chooserError } = useChooser(game?.id ?? null);
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
+  const { chooser, loading: chooserLoading, error: chooserError } = useChooser(gameId);
 
   const {
     gameQuestion,
     loading: questionLoading,
     error: questionError,
-  } = useQuestion(game?.id ?? null, game?.currentRound ?? null, QuestionType.MCQ, game?.currentQuestion as string);
+  } = useQuestion(gameId, roundId, QuestionType.MCQ, questionId);
 
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(game?.currentQuestion as string);
-
-  if (!game) return null;
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(questionId);
 
   if (questionError || chooserError || baseQuestionError) return null;
   if (questionLoading || chooserLoading || baseQuestionLoading) return <Spinner />;
@@ -92,23 +90,14 @@ function MobileMCQChoiceSelector({
   baseQuestion: MCQQuestion;
   randomization: number[];
 }) {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
   const myTeam = useTeam();
   const user = useUser();
 
   const [handleSelectChoice, isSubmitting] = useAsyncAction(async (idx: number) => {
-    if (!user || !game) return;
-    await selectChoice(
-      game.id as string,
-      game.currentRound as string,
-      game.currentQuestion as string,
-      user.id as string,
-      myTeam as string,
-      idx
-    );
+    if (!user) return;
+    await selectChoice(gameId, roundId, questionId, user.id as string, myTeam as string, idx);
   });
-
-  if (!game) return null;
 
   const choices = baseQuestion.choices ?? [];
 

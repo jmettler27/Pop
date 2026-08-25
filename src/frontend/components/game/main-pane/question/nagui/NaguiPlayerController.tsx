@@ -6,8 +6,8 @@ import { selectOption } from '@/backend/services/question/nagui/actions';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
 import { Button } from '@/frontend/components/ui/button';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
 import { DuoNaguiOption, GameNaguiQuestion, HideNaguiOption, SquareNaguiOption } from '@/models/questions/nagui';
@@ -47,18 +47,12 @@ export default function NaguiPlayerController({ chooserTeamId, gameQuestion }: N
 }
 
 export function NaguiChooserController() {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
   const user = useUser();
 
   const [handleSelectOption, isSelecting] = useAsyncAction(async (optionIdx: number) => {
-    if (!game || !user) return;
-    await selectOption(
-      game.id as string,
-      game.currentRound as string,
-      game.currentQuestion as string,
-      user.id as string,
-      optionIdx
-    );
+    if (!user) return;
+    await selectOption(gameId, roundId, questionId, user.id as string, optionIdx);
   });
 
   return (

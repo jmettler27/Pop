@@ -12,8 +12,10 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Avatar, AvatarFallback, AvatarImage } from '@/frontend/components/ui/avatar';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { usePlayerOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
+import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
@@ -153,24 +155,15 @@ function ActiveNaguiChoices({
   gameQuestion: GameNaguiQuestion;
   randomization: number[];
 }) {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
   const myTeam = useTeam();
   const myRole = useRole();
   const user = useUser();
 
   const [handleSelectChoice, isSubmitting] = useAsyncAction(async (idx: number) => {
-    if (!user || !game) return;
-    await selectChoice(
-      game.id as string,
-      game.currentRound as string,
-      game.currentQuestion as string,
-      user.id as string,
-      myTeam as string,
-      idx
-    );
+    if (!user) return;
+    await selectChoice(gameId, roundId, questionId, user.id as string, myTeam as string, idx);
   });
-
-  if (!game) return null;
 
   const choices = baseQuestion.choices ?? [];
   const answerIdx = baseQuestion.answerIdx;
@@ -297,9 +290,8 @@ function EndedNaguiChoices({
 }
 
 function PlayerAvatar({ playerId }: { playerId: string | null }) {
-  const game = useGame();
-  const { player, loading, error } = usePlayerOnce(game?.id ?? null, playerId ?? '');
-  if (!game) return null;
+  const gameId = useGameId();
+  const { player, loading, error } = usePlayerOnce(gameId, playerId ?? '');
 
   if (error || loading || !player) return null;
 

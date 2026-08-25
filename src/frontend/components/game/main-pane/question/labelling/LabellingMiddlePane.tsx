@@ -8,6 +8,7 @@ import NoteButton from '@/frontend/components/game/NoteButton';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
@@ -52,16 +53,9 @@ function LabellingQuestionHeader({ baseQuestion }: { baseQuestion: LabellingQues
 }
 
 function LabellingMainContent({ baseQuestion }: { baseQuestion: LabellingQuestion }) {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
-  const { gameQuestion, loading, error } = useQuestion(
-    game?.id ?? null,
-    game?.currentRound ?? null,
-    QuestionType.LABELLING,
-    game?.currentQuestion as string
-  );
-
-  if (!game) return null;
+  const { gameQuestion, loading, error } = useQuestion(gameId, roundId, QuestionType.LABELLING, questionId);
 
   if (error) {
     return <ErrorScreen inline />;

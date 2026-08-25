@@ -14,6 +14,7 @@ import { useRealtimeDatabaseValue } from '@/frontend/hooks/database/useRealtimeD
 import { useRoundOnce } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import useGame from '@/frontend/hooks/useGame';
+import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
 import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -109,14 +110,14 @@ function OrganizerTimerPane() {
 }
 
 function SpectatorTimerPane() {
-  const game = useGame();
+  const gameId = useGameId();
 
   const {
     data: serverTimeOffset,
     isLoading: offsetLoading,
     error: offsetError,
   } = useRealtimeDatabaseValue<number>(SERVER_TIME_OFFSET_REF);
-  const { timer, timerLoading, timerError } = useTimer(game?.id ?? null);
+  const { timer, timerLoading, timerError } = useTimer(gameId);
 
   if (offsetError || timerError) {
     return <></>;

@@ -6,8 +6,8 @@ import { Button } from '@/frontend/components/ui/button';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
 import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { TimerStatus } from '@/models/timer';
@@ -19,14 +19,14 @@ const messages = defineMessages('frontend.game.bottom.ValidateChallengerCitation
 
 export default function ValidateChallengerCitationButton() {
   const intl = useIntl();
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
   const user = useUser();
 
-  const { timer, timerLoading, timerError } = useTimer(game?.id ?? null);
+  const { timer, timerLoading, timerError } = useTimer(gameId);
 
   const [handleClick, isSubmitting] = useAsyncAction(async () => {
-    if (!game || !user) return;
-    await incrementValidItems(game.id as string, game.currentRound as string, game.currentQuestion as string, user.id!);
+    if (!user) return;
+    await incrementValidItems(gameId, roundId, questionId, user.id!);
   });
 
   if (timerError) {

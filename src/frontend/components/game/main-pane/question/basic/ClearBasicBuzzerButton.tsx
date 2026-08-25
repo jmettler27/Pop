@@ -3,18 +3,16 @@ import { useIntl } from 'react-intl';
 
 import { clearBuzzer } from '@/backend/services/question/basic/actions';
 import { Button } from '@/frontend/components/ui/button';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/frontend/i18n/globalMessages';
-import { GameRounds } from '@/models/games/game';
 
 export default function ClearBuzzerButton() {
   const intl = useIntl();
-  const game = useGame();
-  const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const [handleClick, isClearing] = useAsyncAction(async () => {
-    await clearBuzzer(game!.id as string, currentRound as string, game!.currentQuestion as string);
+    await clearBuzzer(gameId, roundId, questionId);
   });
 
   return (

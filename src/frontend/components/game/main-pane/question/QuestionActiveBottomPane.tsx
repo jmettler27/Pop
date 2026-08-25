@@ -13,15 +13,14 @@ import QuoteBottomPane from '@/frontend/components/game/main-pane/question/quote
 import ReorderingBottomPane from '@/frontend/components/game/main-pane/question/reordering/ReorderingBottomPane';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
-import useGame from '@/frontend/hooks/useGame';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import { QuestionType } from '@/models/questions/question-type';
 
 export default function QuestionActiveBottomPane() {
-  const game = useGame();
+  const { questionId } = useActiveQuestion()!;
 
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(game!.currentQuestion as string);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(questionId);
 
-  if (!game!.currentQuestionType || !game!.currentQuestion) return null;
   if (baseQuestionError) return null;
   if (baseQuestionLoading) return <Spinner />;
   if (!baseQuestion) return null;
