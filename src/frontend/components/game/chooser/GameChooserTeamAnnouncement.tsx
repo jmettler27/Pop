@@ -7,6 +7,7 @@ import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import { useTeamPlayers } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import { useTeam } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGame from '@/frontend/hooks/useGame';
+import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
 import useTeamContext from '@/frontend/hooks/useTeam';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -23,9 +24,8 @@ const messages = defineMessages('frontend.game.GameChooserTeamAnnouncement', {
 });
 
 export default function GameChooserTeamAnnouncement() {
-  const game = useGame();
-  const { chooser, loading: chooserLoading, error: chooserError } = useChooser(game?.id ?? null);
-  if (!game) return null;
+  const gameId = useGameId();
+  const { chooser, loading: chooserLoading, error: chooserError } = useChooser(gameId);
 
   if (chooserError || chooserLoading || !chooser) return null;
 

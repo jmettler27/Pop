@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { useParams } from 'next/navigation';
 
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
@@ -18,8 +17,8 @@ import RevealQuoteElementButton from '@/frontend/components/game/main-pane/quest
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import { Button } from '@/frontend/components/ui/button';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { QuestionType } from '@/models/questions/question-type';
 import { GameQuoteQuestion, QuoteQuestion } from '@/models/questions/quote';
@@ -37,30 +36,22 @@ export default function QuoteOrganizerController({
   baseQuestion: QuoteQuestion;
   questionPlayers: Record<string, unknown>;
 }) {
-  const { id } = useParams();
-  const gameId = id as string;
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const playersData = questionPlayers as unknown as QuestionPlayers;
   const { buzzed } = playersData;
   const buzzerHead = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!game) return;
     if (!buzzed || buzzed.length === 0) {
       buzzerHead.current = null;
       return;
     }
     if (buzzerHead.current !== buzzed[0]) {
       buzzerHead.current = buzzed[0]!;
-      handleBuzzerHeadChanged(
-        gameId as string,
-        game.currentRound as string,
-        game.currentQuestion as string,
-        buzzerHead.current
-      );
+      handleBuzzerHeadChanged(gameId, roundId, questionId, buzzerHead.current);
     }
-  }, [buzzed, gameId, game]);
+  }, [buzzed, gameId, roundId, questionId]);
 
   return (
     <div className="flex flex-col h-full w-full items-center justify-around">
@@ -72,16 +63,9 @@ export default function QuoteOrganizerController({
 }
 
 function QuoteOrganizerAnswerController({ buzzed, baseQuestion }: { buzzed: string[]; baseQuestion: QuoteQuestion }) {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
-  const { gameQuestion, loading, error } = useQuestion(
-    game?.id ?? null,
-    game?.currentRound ?? null,
-    QuestionType.QUOTE,
-    game?.currentQuestion as string
-  );
-
-  if (!game) return null;
+  const { gameQuestion, loading, error } = useQuestion(gameId, roundId, QuestionType.QUOTE, questionId);
 
   if (error || loading || !gameQuestion) {
     return <></>;
@@ -108,19 +92,13 @@ function ValidateAllQuoteElementsButton({
   gameQuestion: GameQuoteQuestion;
 }) {
   const intl = useIntl();
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const atLeastOneRevealed = gameQuestion.atLeastOneElementRevealed();
   const buzzedIsEmpty = isEmpty(buzzed);
 
   const [handleValidateAll, isValidating] = useAsyncAction(async () => {
-    if (!game) return;
-    await validateAllQuoteElements(
-      game.id as string,
-      game.currentRound as string,
-      game.currentQuestion as string,
-      buzzed[0]!
-    );
+    await validateAllQuoteElements(gameId, roundId, questionId, buzzed[0]!);
   });
 
   return (
@@ -138,13 +116,12 @@ function ValidateAllQuoteElementsButton({
 
 function CancelQuoteElementButton({ buzzed }: { buzzed: string[] }) {
   const intl = useIntl();
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const buzzedIsEmpty = isEmpty(buzzed);
 
   const [handleCancelQuote, isCanceling] = useAsyncAction(async () => {
-    if (!game) return;
-    await cancelPlayer(game.id as string, game.currentRound as string, game.currentQuestion as string, buzzed[0]!);
+    await cancelPlayer(gameId, roundId, questionId, buzzed[0]!);
   });
 
   return (

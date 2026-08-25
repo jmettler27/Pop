@@ -9,7 +9,8 @@ import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestion
 import { useRound } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import { useAllTeams } from '@/frontend/hooks/firestore/user/useTeamHooks';
-import useGame from '@/frontend/hooks/useGame';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
+import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -28,9 +29,8 @@ const messages = defineMessages('frontend.game.bottom.MatchingBottomPane', {
 });
 
 export default function MatchingBottomPane() {
-  const game = useGame();
-  const { chooser, loading, error } = useChooser(game?.id ?? null);
-  if (!game) return null;
+  const gameId = useGameId();
+  const { chooser, loading, error } = useChooser(gameId);
 
   if (error || loading || !chooser) {
     return <></>;
@@ -67,21 +67,15 @@ function MatchingController({ chooser }: { chooser: Chooser }) {
 
 function MatchingPlayerQuestionController() {
   const intl = useIntl();
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
   const myTeam = useTeam();
-  const {
-    round,
-    loading: roundLoading,
-    error: roundError,
-  } = useRound(game?.id ?? null, (game?.currentRound as string | undefined) ?? '');
+  const { round, loading: roundLoading, error: roundError } = useRound(gameId, roundId);
 
   const {
     gameQuestion,
     loading: gameQuestionLoading,
     error: gameQuestionError,
-  } = useQuestion(game?.id ?? null, game?.currentRound ?? null, QuestionType.MATCHING, game?.currentQuestion as string);
-
-  if (!game) return null;
+  } = useQuestion(gameId, roundId, QuestionType.MATCHING, questionId);
 
   if (roundError || gameQuestionError) return <></>;
   if (roundLoading || gameQuestionLoading) return <Spinner />;
@@ -127,16 +121,14 @@ interface Team {
 
 function MatchingRunningOrder({ chooser }: { chooser: Chooser }) {
   const intl = useIntl();
-  const game = useGame();
-  const { teams, loading: teamsLoading, error: teamsError } = useAllTeams(game?.id ?? null);
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
+  const { teams, loading: teamsLoading, error: teamsError } = useAllTeams(gameId);
 
   const {
     gameQuestion,
     loading: gameQuestionLoading,
     error: gameQuestionError,
-  } = useQuestion(game?.id ?? null, game?.currentRound ?? null, QuestionType.MATCHING, game?.currentQuestion as string);
-
-  if (!game) return null;
+  } = useQuestion(gameId, roundId, QuestionType.MATCHING, questionId);
 
   if (gameQuestionError || teamsError) return <></>;
   if (gameQuestionLoading || teamsLoading) return <Spinner />;

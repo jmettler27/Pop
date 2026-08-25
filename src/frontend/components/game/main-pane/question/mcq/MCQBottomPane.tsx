@@ -5,10 +5,10 @@ import ResetQuestionButton from '@/frontend/components/game/main-pane/question/R
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
-import useGame from '@/frontend/hooks/useGame';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
+import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
 import { Chooser } from '@/models/chooser';
-import { GameRounds } from '@/models/games/game';
 import { GameMCQQuestion, MCQQuestion } from '@/models/questions/mcq';
 import { QuestionType } from '@/models/questions/question-type';
 import { ParticipantRole } from '@/models/users/participant';
@@ -18,9 +18,8 @@ interface MCQBottomPaneProps {
 }
 
 export default function MCQBottomPane({ baseQuestion: _baseQuestion }: MCQBottomPaneProps) {
-  const game = useGame();
-  const { chooser, loading, error } = useChooser(game?.id ?? null);
-  if (!game) return null;
+  const gameId = useGameId();
+  const { chooser, loading, error } = useChooser(gameId);
 
   if (error) {
     return <></>;
@@ -51,19 +50,12 @@ interface MCQControllerProps {
 }
 
 function MCQController({ chooser }: MCQControllerProps) {
-  const game = useGame() as GameRounds;
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
   const myRole = useRole();
 
   const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx] ?? '';
 
-  const { gameQuestion, loading, error } = useQuestion(
-    game?.id ?? null,
-    game?.currentRound ?? null,
-    QuestionType.MCQ,
-    game?.currentQuestion as string
-  );
-
-  if (!game) return null;
+  const { gameQuestion, loading, error } = useQuestion(gameId, roundId, QuestionType.MCQ, questionId);
 
   if (error) {
     return <></>;

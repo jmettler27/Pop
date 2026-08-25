@@ -30,7 +30,7 @@ export default function MobileRoundEndScreen() {
   const { teams, loading: teamsLoading, error: teamsError } = useAllTeamsOnce(gameId);
   const { timer, timerLoading, timerError } = useTimer(game?.id ?? null);
 
-  const currentRoundId = (game?.currentRound as string | undefined) ?? '';
+  const currentRoundId = game?.currentRound ?? '';
   const { roundScores, loading: scoresLoading, error: scoresError } = useScoresOnce(gameId, currentRoundId);
 
   if (!game || !myTeamId) return null;

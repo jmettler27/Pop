@@ -40,6 +40,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/frontend/components/ui/dialog';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useIsMobile from '@/frontend/hooks/useIsMobile';
@@ -97,7 +98,7 @@ interface ReorderingPlayerActiveViewProps {
 
 function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping }: ReorderingPlayerActiveViewProps) {
   const intl = useIntl();
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
   const user = useUser();
   const myTeam = useTeam();
   const isMobile = useIsMobile();
@@ -111,19 +112,11 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
   );
 
   const [handleSubmitOrdering, isSubmitting] = useAsyncAction(async () => {
-    if (!game || !user) return;
-    await submitOrdering(
-      game.id as string,
-      game.currentRound as string,
-      game.currentQuestion as string,
-      user.id as string,
-      myTeam as string,
-      orderedIndices
-    );
+    if (!user) return;
+    await submitOrdering(gameId, roundId, questionId, user.id as string, myTeam as string, orderedIndices);
     setDialogOpen(false);
   });
 
-  if (!game) return null;
   if (!user) return null;
 
   const handleDragEnd = (event: DragEndEvent) => {

@@ -6,7 +6,8 @@ import EndQuestionButton from '@/frontend/components/game/main-pane/question/End
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
-import useGame from '@/frontend/hooks/useGame';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
+import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { QuestionType } from '@/models/questions/question-type';
@@ -14,16 +15,9 @@ import { GameReorderingQuestion, ReorderingQuestion } from '@/models/questions/r
 import { ParticipantRole } from '@/models/users/participant';
 
 export default function ReorderingBottomPane({ baseQuestion }: { baseQuestion: ReorderingQuestion }) {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
-  const { gameQuestion, loading, error } = useQuestion(
-    game?.id ?? null,
-    game?.currentRound ?? null,
-    QuestionType.REORDERING,
-    game?.currentQuestion as string
-  );
-
-  if (!game) return null;
+  const { gameQuestion, loading, error } = useQuestion(gameId, roundId, QuestionType.REORDERING, questionId);
 
   if (error || loading || !gameQuestion) {
     return <></>;
@@ -65,9 +59,8 @@ function ReorderingOrganizerController() {
 
 function ReorderingSubmittedTeams({ gameQuestion }: { gameQuestion: GameReorderingQuestion }) {
   const intl = useIntl();
-  const game = useGame();
-  const { teams, loading, error } = useAllTeamsOnce(game?.id ?? null);
-  if (!game) return null;
+  const gameId = useGameId();
+  const { teams, loading, error } = useAllTeamsOnce(gameId);
 
   if (error || loading || !teams) {
     return <></>;

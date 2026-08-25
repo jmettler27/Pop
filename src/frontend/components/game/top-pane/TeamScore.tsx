@@ -3,6 +3,7 @@ import { useRound } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import { useScores } from '@/frontend/hooks/firestore/score/useGameScoreHooks';
 import { useScores as useRoundScores } from '@/frontend/hooks/firestore/score/useRoundScoreHooks';
 import useGame from '@/frontend/hooks/useGame';
+import useGameId from '@/frontend/hooks/useGameId';
 import type { GameRounds } from '@/models/games/game';
 import { GameStatus } from '@/models/games/game-status';
 import { GameType } from '@/models/games/game-type';
@@ -26,8 +27,8 @@ export default function TeamScore({ teamId }: { teamId: string }) {
 }
 
 function TeamGameScore({ teamId }: { teamId: string }) {
-  const game = useGame();
-  const { gameScores, loading, error } = useScores(game?.id ?? null);
+  const gameId = useGameId();
+  const { gameScores, loading, error } = useScores(gameId);
 
   if (error) {
     return <></>;
@@ -46,8 +47,8 @@ function TeamGameScore({ teamId }: { teamId: string }) {
 }
 
 function TeamRoundScore({ teamId, roundId }: { teamId: string; roundId: string }) {
-  const game = useGame();
-  const { roundScores, loading, error } = useRoundScores(game?.id ?? null, roundId);
+  const gameId = useGameId();
+  const { roundScores, loading, error } = useRoundScores(gameId, roundId);
 
   if (error) {
     return <></>;

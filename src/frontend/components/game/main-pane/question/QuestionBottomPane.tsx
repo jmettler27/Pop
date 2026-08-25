@@ -3,20 +3,32 @@
 import QuestionActiveBottomPane from '@/frontend/components/game/main-pane/question/QuestionActiveBottomPane';
 import QuestionEndBottomPane from '@/frontend/components/game/main-pane/question/QuestionEndBottomPane';
 import TimerPane from '@/frontend/components/game/timer/TimerPane';
+import { ActiveQuestionProvider } from '@/frontend/contexts/ActiveQuestionContext';
 import useGame from '@/frontend/hooks/useGame';
 import { GameStatus } from '@/models/games/game-status';
+import { type QuestionType } from '@/models/questions/question-type';
 
 export default function QuestionBottomPane() {
-  return (
-    <div className="flex flex-row h-full items-center justify-center divide-x divide-solid">
-      <div className="flex flex-col h-full w-1/5 items-center justify-center">
-        <TimerPane />
-      </div>
+  const game = useGame();
+  if (!game) return null;
 
-      <div className="flex flex-col h-full w-4/5">
-        <SelectedQuestionBottomPane />
+  return (
+    <ActiveQuestionProvider
+      gameId={game.id as string}
+      roundId={game.currentRound as string}
+      questionId={game.currentQuestion as string}
+      questionType={game.currentQuestionType as QuestionType}
+    >
+      <div className="flex flex-row h-full items-center justify-center divide-x divide-solid">
+        <div className="flex flex-col h-full w-1/5 items-center justify-center">
+          <TimerPane />
+        </div>
+
+        <div className="flex flex-col h-full w-4/5">
+          <SelectedQuestionBottomPane />
+        </div>
       </div>
-    </div>
+    </ActiveQuestionProvider>
   );
 }
 

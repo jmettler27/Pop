@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { useParams } from 'next/navigation';
 
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
@@ -17,8 +16,8 @@ import ResetQuestionButton from '@/frontend/components/game/main-pane/question/R
 import { Button } from '@/frontend/components/ui/button';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameLabellingQuestion, LabellingQuestion } from '@/models/questions/labelling';
 import { QuestionType } from '@/models/questions/question-type';
@@ -35,15 +34,11 @@ export default function LabellingOrganizerController({
   baseQuestion,
   questionPlayers,
 }: LabellingOrganizerControllerProps) {
-  const { id } = useParams();
-  const gameId = id as string;
-
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
   const { buzzed } = questionPlayers;
   const buzzerHead = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!game) return;
     if (!buzzed || buzzed.length === 0) {
       buzzerHead.current = null;
       return;
@@ -51,16 +46,9 @@ export default function LabellingOrganizerController({
     const buzzerHeadId = buzzed[0]!;
     if (buzzerHead.current !== buzzerHeadId) {
       buzzerHead.current = buzzerHeadId;
-      handleBuzzerHeadChanged(
-        gameId as string,
-        game.currentRound as string,
-        game.currentQuestion as string,
-        buzzerHeadId
-      );
+      handleBuzzerHeadChanged(gameId, roundId, questionId, buzzerHeadId);
     }
-  }, [buzzed, game, gameId]);
-
-  if (!game) return null;
+  }, [buzzed, gameId, roundId, questionId]);
 
   return (
     <div className="flex flex-col h-full w-full items-center justify-around">
@@ -78,16 +66,9 @@ function LabelOrganizerAnswerController({
   buzzed: string[];
   baseQuestion: LabellingQuestion;
 }) {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
-  const { gameQuestion, loading, error } = useQuestion(
-    game?.id ?? null,
-    game?.currentRound ?? null,
-    QuestionType.LABELLING,
-    game?.currentQuestion as string
-  );
-
-  if (!game) return null;
+  const { gameQuestion, loading, error } = useQuestion(gameId, roundId, QuestionType.LABELLING, questionId);
 
   if (error) {
     return <></>;
@@ -116,14 +97,13 @@ function LabelOrganizerAnswerController({
 
 function ValidateAllLabelsButton({ buzzed, gameQuestion }: { buzzed: string[]; gameQuestion: GameLabellingQuestion }) {
   const intl = useIntl();
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const atLeastOneRevealed = gameQuestion.atLeastOneLabelIsRevealed();
   const buzzedIsEmpty = isEmpty(buzzed);
 
   const [handleValidateAll, isValidating] = useAsyncAction(async () => {
-    if (!game) return;
-    await validateAllLabels(game.id as string, game.currentRound as string, game.currentQuestion as string, buzzed[0]);
+    await validateAllLabels(gameId, roundId, questionId, buzzed[0]);
   });
 
   return (
@@ -140,13 +120,12 @@ function ValidateAllLabelsButton({ buzzed, gameQuestion }: { buzzed: string[]; g
 
 function CancelLabelButton({ buzzed }: { buzzed: string[] }) {
   const intl = useIntl();
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const buzzedIsEmpty = isEmpty(buzzed);
 
   const [handleCancelLabel, isCanceling] = useAsyncAction(async () => {
-    if (!game) return;
-    await cancelPlayer(game.id as string, game.currentRound as string, game.currentQuestion as string, buzzed[0]);
+    await cancelPlayer(gameId, roundId, questionId, buzzed[0]);
   });
 
   return (

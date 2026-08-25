@@ -5,8 +5,8 @@ import { handleQuestionEnd } from '@/backend/services/round/actions';
 import ReadyPlayerController from '@/frontend/components/game/main-pane/ReadyPlayerController';
 import { Button } from '@/frontend/components/ui/button';
 import { useRoundOnce } from '@/frontend/hooks/firestore/round/useRoundHooks';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { Round } from '@/models/rounds/round';
@@ -19,14 +19,8 @@ const messages = defineMessages('frontend.game.bottom.QuestionEndBottomPane', {
 });
 
 export default function QuestionEndBottomPane() {
-  const game = useGame();
-  const {
-    round,
-    loading: roundLoading,
-    error: roundError,
-  } = useRoundOnce(game?.id ?? null, (game?.currentRound as string | undefined) ?? '');
-
-  if (!game) return null;
+  const { gameId, roundId } = useActiveQuestion()!;
+  const { round, loading: roundLoading, error: roundError } = useRoundOnce(gameId, roundId);
 
   if (roundError) {
     return <></>;
@@ -68,16 +62,10 @@ interface QuestionEndOrganizerButtonProps {
 
 function QuestionEndOrganizerButton({ round, isLastQuestion }: QuestionEndOrganizerButtonProps) {
   const intl = useIntl();
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const [handleContinueClick, isEnding] = useAsyncAction(async () => {
-    if (!game) return;
-    await handleQuestionEnd(
-      round.type as RoundType,
-      game.id as string,
-      game.currentRound as string,
-      game.currentQuestion as string
-    );
+    await handleQuestionEnd(round.type as RoundType, gameId, roundId, questionId);
   });
 
   return (

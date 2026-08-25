@@ -13,15 +13,15 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { useScores } from '@/frontend/hooks/firestore/score/useGameScoreHooks';
 import { useAllPlayers } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import { useAllTeams } from '@/frontend/hooks/firestore/user/useTeamHooks';
-import useGame from '@/frontend/hooks/useGame';
+import useGameId from '@/frontend/hooks/useGameId';
 import useIsMobile from '@/frontend/hooks/useIsMobile';
 
 // Container components to control re-rendering
 const TopPaneContainer = memo(function TopPaneContainer({}) {
-  const game = useGame();
-  const { loading: scoresLoading, error: scoresError } = useScores(game?.id ?? null);
-  const { teams, loading: teamsLoading, error: teamsError } = useAllTeams(game?.id ?? null);
-  const { players, loading: playersLoading, error: playersError } = useAllPlayers(game?.id ?? null);
+  const gameId = useGameId();
+  const { loading: scoresLoading, error: scoresError } = useScores(gameId);
+  const { teams, loading: teamsLoading, error: teamsError } = useAllTeams(gameId);
+  const { players, loading: playersLoading, error: playersError } = useAllPlayers(gameId);
 
   if (teamsError || scoresError || playersError) return <ErrorScreen inline />;
   if (teamsLoading || scoresLoading || playersLoading) return <LoadingScreen inline />;

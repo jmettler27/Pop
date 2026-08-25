@@ -1,15 +1,9 @@
 import { useRound } from '@/frontend/hooks/firestore/round/useRoundHooks';
-import useGame from '@/frontend/hooks/useGame';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 
 export default function CurrentRoundQuestionOrder() {
-  const game = useGame();
-  const {
-    round,
-    loading: roundLoading,
-    error: roundError,
-  } = useRound(game?.id ?? null, (game?.currentRound as string | undefined) ?? '');
-
-  if (!game) return <>❓</>;
+  const { gameId, roundId } = useActiveQuestion()!;
+  const { round, loading: roundLoading, error: roundError } = useRound(gameId, roundId);
 
   if (roundError) return <>❓</>;
   if (roundLoading || !round) return <>❓</>;

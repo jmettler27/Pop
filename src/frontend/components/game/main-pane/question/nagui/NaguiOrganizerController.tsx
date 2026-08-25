@@ -9,8 +9,8 @@ import EndQuestionButton from '@/frontend/components/game/main-pane/question/End
 import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import { Button } from '@/frontend/components/ui/button';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameNaguiQuestion } from '@/models/questions/nagui';
 import { QuestionType } from '@/models/questions/question-type';
@@ -39,14 +39,13 @@ export default function NaguiOrganizerController({ gameQuestion }: { gameQuestio
 
 function NaguiOrganizerHideAnswerController({ gameQuestion }: { gameQuestion: GameNaguiQuestion }) {
   const intl = useIntl();
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const [handleClick, isHandling] = useAsyncAction(async (correct: boolean) => {
-    if (!game) return;
     await handleHideAnswer(
-      game.id as string,
-      game.currentRound as string,
-      game.currentQuestion as string,
+      gameId,
+      roundId,
+      questionId,
       gameQuestion.playerId as string,
       gameQuestion.teamId as string,
       correct

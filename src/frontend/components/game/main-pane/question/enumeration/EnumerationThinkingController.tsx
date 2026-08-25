@@ -18,14 +18,13 @@ import { Label } from '@/frontend/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/frontend/components/ui/select';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
-import { GameRounds } from '@/models/games/game';
 import { EnumerationBet, EnumerationQuestion } from '@/models/questions/enumeration';
 import { Timer, TimerStatus } from '@/models/timer';
 import { ParticipantRole } from '@/models/users/participant';
@@ -63,7 +62,7 @@ function EnumPlayerThinkingController({ baseQuestion, timer }: { baseQuestion: E
 
 function AddBetForm({ baseQuestion, status }: { baseQuestion: EnumerationQuestion; status: TimerStatus }) {
   const intl = useIntl();
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
   const user = useUser();
   const myTeam = useTeam();
 
@@ -72,14 +71,14 @@ function AddBetForm({ baseQuestion, status }: { baseQuestion: EnumerationQuestio
   const [hasValidated, setHasValidated] = useState(false);
 
   const [handleBetValidate, isSubmitting] = useAsyncAction(async () => {
-    if (!game || !user) return;
+    if (!user) return;
     const bet: EnumerationBet = {
       bet: Number(myBet),
       playerId: user.id!,
       teamId: myTeam as string,
       timestamp: Date.now(),
     };
-    await addBet(game.id as string, game.currentRound as string, game.currentQuestion as string, bet);
+    await addBet(gameId, roundId, questionId, bet);
     setHasValidated(true);
     setDialogOpen(false);
   });
@@ -88,11 +87,7 @@ function AddBetForm({ baseQuestion, status }: { baseQuestion: EnumerationQuestio
     data: questionPlayers,
     loading: playersLoading,
     error: playersError,
-  } = useQuestionPlayers(
-    game?.id ?? null,
-    ((game as GameRounds | null)?.currentRound as string | undefined) ?? null,
-    (game as GameRounds | null)?.currentQuestion as string
-  );
+  } = useQuestionPlayers(gameId, roundId, questionId);
 
   if (playersError) {
     return <></>;
