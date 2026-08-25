@@ -15,8 +15,8 @@ import {
 } from '@/frontend/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/frontend/components/ui/popover';
 import { rankingToEmoji } from '@/frontend/helpers/emojis';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameLabellingQuestion, LabellingQuestion } from '@/models/questions/labelling';
@@ -127,15 +127,15 @@ interface RevealLabelDialogProps {
 
 function RevealLabelDialog({ baseQuestion, labelIdx, dialogOpen, onDialogClose }: RevealLabelDialogProps) {
   const intl = useIntl();
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const [handleRevealLabel, isRevealing] = useAsyncAction(async () => {
-    if (!game || labelIdx === null) return;
-    await revealLabel(game.id as string, game.currentRound as string, game.currentQuestion as string, labelIdx!);
+    if (labelIdx === null) return;
+    await revealLabel(gameId, roundId, questionId, labelIdx);
     onDialogClose();
   });
 
-  if (!game || labelIdx === null) return null;
+  if (labelIdx === null) return null;
 
   const labelToReveal = baseQuestion.labels?.[labelIdx];
 

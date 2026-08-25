@@ -1,7 +1,7 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import { collection, onSnapshot, query } from 'firebase/firestore';
+import { collection, onSnapshot, query, Timestamp, where } from 'firebase/firestore';
 import { Volume1, Volume2, VolumeX } from 'lucide-react';
 
 import { GAMES_COLLECTION_REF } from '@/backend/firebase/firestore';
@@ -37,7 +37,15 @@ const SoundboardAudioPlayer = memo(function SoundboardAudioPlayer() {
   };
 
   useEffect(() => {
-    const q = query(collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue'));
+    // Scoped to sounds queued from this mount onward — without the `where`, a client that attaches
+    // partway through a game (a refresh, a reconnect, a late-joining spectator) would be billed a read
+    // for every sound event queued since the game started, not just new ones. `isInitialLoad` below is
+    // kept as a second guard for the (tiny) race between capturing `now` and the listener attaching
+    // server-side.
+    const q = query(
+      collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue'),
+      where('timestamp', '>', Timestamp.now())
+    );
     let isInitialLoad = true;
     const unsubscribe = onSnapshot(q, (snapshot) => {
       // Skip the first snapshot: Firestore reports all pre-existing docs as 'added' on subscribe,

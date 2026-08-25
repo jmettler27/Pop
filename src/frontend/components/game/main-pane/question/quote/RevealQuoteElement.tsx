@@ -15,8 +15,8 @@ import {
   DialogTitle,
 } from '@/frontend/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/frontend/components/ui/popover';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import {
@@ -253,17 +253,11 @@ function RevealQuoteElementDialog({
   onDialogClose,
 }: RevealQuoteElementDialogProps) {
   const intl = useIntl();
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const [handleRevealQuoteElement, isRevealing] = useAsyncAction(async () => {
-    if (!game || !quoteElem) return;
-    await revealQuoteElement(
-      game.id as string,
-      game.currentRound as string,
-      game.currentQuestion as string,
-      quoteElem,
-      quotePartIdx
-    );
+    if (!quoteElem) return;
+    await revealQuoteElement(gameId, roundId, questionId, quoteElem, quotePartIdx);
     onDialogClose();
   });
 

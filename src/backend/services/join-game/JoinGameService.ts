@@ -3,7 +3,6 @@ import type { Logger } from 'pino';
 
 import { firestore } from '@/backend/firebase/firebase';
 import { logger } from '@/backend/logger';
-import GameRepository from '@/backend/repositories/game/GameRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
@@ -14,7 +13,6 @@ import { generateAvatarUrl } from '@/utils/avatar';
 export default class JoinGameService {
   private gameId: string;
   private userRepo: UserRepository;
-  private gameRepo: GameRepository;
   private playerRepo: PlayerRepository;
   private teamRepo: TeamRepository;
   private readyRepo: ReadyRepository;
@@ -28,7 +26,6 @@ export default class JoinGameService {
 
     this.log = logger.child({ module: 'JoinGameService', game: this.gameId });
     this.userRepo = new UserRepository();
-    this.gameRepo = new GameRepository();
     this.playerRepo = new PlayerRepository(gameId);
     this.teamRepo = new TeamRepository(gameId);
     this.readyRepo = new ReadyRepository(gameId);

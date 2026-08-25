@@ -8,7 +8,7 @@ import EndQuestionButton from '@/frontend/components/game/main-pane/question/End
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
-import useGame from '@/frontend/hooks/useGame';
+import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -22,9 +22,8 @@ const messages = defineMessages('frontend.game.bottom.OddOneOutBottomPane', {
 });
 
 export default function OddOneOutBottomPane() {
-  const game = useGame();
-  const { chooser, loading, error } = useChooser(game?.id ?? null);
-  if (!game) return null;
+  const gameId = useGameId();
+  const { chooser, loading, error } = useChooser(gameId);
 
   if (error || loading || !chooser) {
     return <></>;
@@ -71,9 +70,8 @@ export function OddOneOutChooserStatusText({ authorized }: { authorized: boolean
 }
 
 function OddOneOutChooserController() {
-  const game = useGame();
-  const { timer, timerLoading, timerError } = useTimer(game?.id ?? null);
-  if (!game) return null;
+  const gameId = useGameId();
+  const { timer, timerLoading, timerError } = useTimer(gameId);
 
   if (timerError || timerLoading || !timer) {
     return <></>;

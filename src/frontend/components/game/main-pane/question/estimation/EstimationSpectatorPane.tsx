@@ -10,6 +10,7 @@ import { Spinner } from '@/frontend/components/ui/spinner';
 import { useRealtimeDatabaseValue } from '@/frontend/hooks/database/useRealtimeDatabaseValue';
 import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import useGame from '@/frontend/hooks/useGame';
+import useGameId from '@/frontend/hooks/useGameId';
 import { GameStatus } from '@/models/games/game-status';
 import { EstimationQuestion, GameEstimationQuestion } from '@/models/questions/estimation';
 
@@ -37,14 +38,13 @@ export default function EstimationSpectatorPane({ baseQuestion, gameQuestion }: 
 }
 
 function EstimationSpectatorActiveView() {
-  const game = useGame();
+  const gameId = useGameId();
   const {
     data: serverTimeOffset,
     isLoading: offsetLoading,
     error: offsetError,
   } = useRealtimeDatabaseValue<number>(SERVER_TIME_OFFSET_REF);
-  const { timer, timerLoading, timerError } = useTimer(game?.id ?? null);
-  if (!game) return null;
+  const { timer, timerLoading, timerError } = useTimer(gameId);
 
   if (
     offsetError ||

@@ -4,7 +4,7 @@ import {
   type NodeData,
 } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
 import { usePartiallyCorrectMatches } from '@/frontend/hooks/firestore/question/useGameMatchingQuestionHooks';
-import useGame from '@/frontend/hooks/useGame';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import { isObjectEmpty } from '@/utils/objects';
 
 import '@/frontend/components/game/main-pane/question/matching/styles.scss';
@@ -14,15 +14,9 @@ interface PartiallyCorrectMatchesProps {
 }
 
 export default function PartiallyCorrectMatches({ nodePositions }: PartiallyCorrectMatchesProps) {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
-  const { partiallyCorrectMatches, loading, error } = usePartiallyCorrectMatches(
-    game?.id ?? null,
-    game?.currentRound ?? null,
-    game?.currentQuestion as string
-  );
-
-  if (!game) return null;
+  const { partiallyCorrectMatches, loading, error } = usePartiallyCorrectMatches(gameId, roundId, questionId);
 
   if (error || loading) {
     return <></>;

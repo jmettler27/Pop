@@ -8,12 +8,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/u
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { useRound } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import { usePlayer } from '@/frontend/hooks/firestore/user/usePlayerHooks';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
 import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
-import { GameRounds } from '@/models/games/game';
 import { type QuestionType } from '@/models/questions/question-type';
 import { type AnyRound } from '@/models/rounds/RoundFactory';
 import { PlayerStatus } from '@/models/users/player';
@@ -34,29 +33,17 @@ interface BuzzerPlayerControllerProps {
 }
 
 export default function BuzzerPlayerController({ questionPlayers, compact = false }: BuzzerPlayerControllerProps) {
-  const game = useGame();
+  const { gameId, roundId, questionId, questionType } = useActiveQuestion()!;
   const user = useUser();
-  const { player, loading: playerLoading, error: playerError } = usePlayer(game?.id ?? null, user?.id as string);
+  const { player, loading: playerLoading, error: playerError } = usePlayer(gameId, user?.id as string);
 
-  const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
-  const {
-    round,
-    loading: roundLoading,
-    error: roundError,
-  } = useRound(game?.id ?? null, (currentRound as string | undefined) ?? '');
+  const { round, loading: roundLoading, error: roundError } = useRound(gameId, roundId);
 
   const {
     gameQuestion,
     loading: gameQuestionLoading,
     error: gameQuestionError,
-  } = useQuestion(
-    game?.id ?? null,
-    (currentRound as string | undefined) ?? null,
-    game?.currentQuestionType as QuestionType,
-    game?.currentQuestion as string
-  );
-
-  if (!game) return null;
+  } = useQuestion(gameId, roundId, questionType, questionId);
 
   if (playerError || roundError || gameQuestionError) {
     return <></>;
@@ -196,18 +183,11 @@ interface BuzzerButtonProps {
 }
 
 function BuzzerButton({ isDisabled, questionType, compact = false }: BuzzerButtonProps) {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
   const user = useUser();
-  const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
 
   const [handleBuzz, isBuzzing] = useAsyncAction(async () => {
-    await addPlayerToBuzzer(
-      questionType,
-      game!.id as string,
-      currentRound as string,
-      game!.currentQuestion as string,
-      user?.id as string
-    );
+    await addPlayerToBuzzer(questionType, gameId, roundId, questionId, user?.id as string);
   });
 
   return (
@@ -231,18 +211,11 @@ interface BuzzerResetButtonProps {
 }
 
 function BuzzerResetButton({ isDisabled, questionType, compact = false }: BuzzerResetButtonProps) {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
   const user = useUser();
-  const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
 
   const [handleResetBuzz, isResetting] = useAsyncAction(async () => {
-    await removePlayerFromBuzzer(
-      questionType,
-      game!.id as string,
-      currentRound as string,
-      game!.currentQuestion as string,
-      user?.id as string
-    );
+    await removePlayerFromBuzzer(questionType, gameId, roundId, questionId, user?.id as string);
   });
 
   return (

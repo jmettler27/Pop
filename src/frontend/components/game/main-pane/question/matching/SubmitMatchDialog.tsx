@@ -15,8 +15,8 @@ import {
   DialogTitle,
 } from '@/frontend/components/ui/dialog';
 import { useIsChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
@@ -41,10 +41,10 @@ export default function SubmitMatchDialog({
 }: SubmitMatchDialogProps) {
   const intl = useIntl();
   const user = useUser();
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
   const myTeam = useTeam();
   const myRole = useRole();
-  const { isChooser } = useIsChooser(game?.id ?? null, myTeam as string);
+  const { isChooser } = useIsChooser(gameId, myTeam as string);
 
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -86,15 +86,8 @@ export default function SubmitMatchDialog({
   };
 
   const [handleMatchValidate, isSubmitting] = useAsyncAction(async () => {
-    if (!game || !user) return;
-    await submitMatch(
-      game.id as string,
-      game.currentRound as string,
-      game.currentQuestion as string,
-      user.id as string,
-      edges,
-      null
-    );
+    if (!user) return;
+    await submitMatch(gameId, roundId, questionId, user.id as string, edges, null);
     setEdges([]);
     setNewEdgeSource(null);
     setDialogOpen(false);

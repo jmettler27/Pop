@@ -6,7 +6,7 @@ import { Spinner } from '@/frontend/components/ui/spinner';
 import type { Locale } from '@/frontend/helpers/locales';
 import { usePlayerOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import { useTeamOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
-import useGame from '@/frontend/hooks/useGame';
+import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { GameNaguiQuestion } from '@/models/questions/nagui';
@@ -20,14 +20,9 @@ export default function NaguiPlayerOptionHelperText({ gameQuestion }: { gameQues
   const intl = useIntl();
   useRole();
 
-  const game = useGame();
-  const {
-    player,
-    loading: playerLoading,
-    error: playerError,
-  } = usePlayerOnce(game?.id ?? null, gameQuestion.playerId ?? '');
-  const { team, loading: teamLoading, error: teamError } = useTeamOnce(game?.id ?? null, gameQuestion.teamId ?? '');
-  if (!game) return null;
+  const gameId = useGameId();
+  const { player, loading: playerLoading, error: playerError } = usePlayerOnce(gameId, gameQuestion.playerId ?? '');
+  const { team, loading: teamLoading, error: teamError } = useTeamOnce(gameId, gameQuestion.teamId ?? '');
 
   if (playerError || teamError) {
     return <></>;

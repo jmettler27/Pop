@@ -10,22 +10,24 @@ import QuestionFactory from '@/models/questions/QuestionFactory';
 
 const QUESTIONS_REF = collection(firestore, 'questions');
 
+// Memoized on `data` (mirrors useGame/useRound) so `baseQuestion` stays referentially stable across
+// renders when the underlying document hasn't changed.
 export function useQuestion(questionId: string) {
   const { data, isLoading, error } = useFirestoreDocument(doc(QUESTIONS_REF, questionId));
-  return {
-    baseQuestion: data ? QuestionFactory.createBaseQuestion(data.type as QuestionType, data) : null,
-    baseQuestionLoading: isLoading,
-    baseQuestionError: error,
-  };
+  const baseQuestion = useMemo(
+    () => (data ? QuestionFactory.createBaseQuestion(data.type as QuestionType, data) : null),
+    [data]
+  );
+  return { baseQuestion, baseQuestionLoading: isLoading, baseQuestionError: error };
 }
 
 export function useQuestionOnce(questionId: string) {
   const { data, isLoading, error } = useFirestoreDocumentOnce(doc(QUESTIONS_REF, questionId));
-  return {
-    baseQuestion: data ? QuestionFactory.createBaseQuestion(data.type as QuestionType, data) : null,
-    baseQuestionLoading: isLoading,
-    baseQuestionError: error,
-  };
+  const baseQuestion = useMemo(
+    () => (data ? QuestionFactory.createBaseQuestion(data.type as QuestionType, data) : null),
+    [data]
+  );
+  return { baseQuestion, baseQuestionLoading: isLoading, baseQuestionError: error };
 }
 
 // One page of questions of this type, newest first — returns useInfiniteQuery's native shape

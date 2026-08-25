@@ -3,7 +3,7 @@ import BuzzerPlayers from '@/frontend/components/game/main-pane/question/buzzer/
 import BuzzerSpectatorController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerSpectatorController';
 import LabellingOrganizerController from '@/frontend/components/game/main-pane/question/labelling/LabellingOrganizerController';
 import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
-import useGame from '@/frontend/hooks/useGame';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useRole from '@/frontend/hooks/useRole';
 import { LabellingQuestion } from '@/models/questions/labelling';
 import { ParticipantRole } from '@/models/users/participant';
@@ -13,19 +13,17 @@ interface QuestionPlayersData extends Record<string, unknown> {
 }
 
 export default function LabellingBottomPane({ baseQuestion }: { baseQuestion: LabellingQuestion }) {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const {
     data: questionPlayers,
     loading,
     error,
-  } = useQuestionPlayers(game?.id ?? null, game?.currentRound ?? null, game?.currentQuestion as string) as unknown as {
+  } = useQuestionPlayers(gameId, roundId, questionId) as unknown as {
     data: QuestionPlayersData | null;
     loading: boolean;
     error: Error | undefined;
   };
-
-  if (!game) return null;
 
   if (error || loading || !questionPlayers) {
     return <></>;

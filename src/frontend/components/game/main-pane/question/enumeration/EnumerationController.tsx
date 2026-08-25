@@ -3,26 +3,19 @@ import EnumerationThinkingController from '@/frontend/components/game/main-pane/
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
-import useGame from '@/frontend/hooks/useGame';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import { EnumerationQuestion, EnumerationQuestionStatus } from '@/models/questions/enumeration';
 import { QuestionType } from '@/models/questions/question-type';
 
 export default function EnumerationController({ baseQuestion }: { baseQuestion: EnumerationQuestion }) {
-  const game = useGame();
-  const { timer, timerLoading, timerError } = useTimer(game?.id ?? null);
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
+  const { timer, timerLoading, timerError } = useTimer(gameId);
 
   const {
     gameQuestion,
     loading: gameQuestionLoading,
     error: gameQuestionError,
-  } = useQuestion(
-    game?.id ?? null,
-    (game?.currentRound as string | undefined) ?? null,
-    QuestionType.ENUMERATION,
-    game?.currentQuestion as string
-  );
-
-  if (!game) return null;
+  } = useQuestion(gameId, roundId, QuestionType.ENUMERATION, questionId);
 
   if (gameQuestionError || timerError) {
     return <></>;

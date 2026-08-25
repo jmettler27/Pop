@@ -3,7 +3,7 @@ import GoGameHomeButton from '@/frontend/components/game/main-pane/GoGameHomeBut
 import ReadyPlayerController from '@/frontend/components/game/main-pane/ReadyPlayerController';
 import TimerPane from '@/frontend/components/game/timer/TimerPane';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
+import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
 import { ParticipantRole } from '@/models/users/participant';
 
@@ -33,13 +33,10 @@ function GameStartController() {
 }
 
 function GameStartOrganizerController() {
-  const game = useGame();
+  const gameId = useGameId();
 
   const [handleStartGame, isStarting] = useAsyncAction(async () => {
-    if (!game) {
-      return;
-    }
-    await startGame(game!.id as string);
+    await startGame(gameId);
   });
 
   return <GoGameHomeButton onClick={handleStartGame} disabled={isStarting} />;

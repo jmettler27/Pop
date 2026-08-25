@@ -4,6 +4,7 @@ import BasicQuestionOrganizerController from '@/frontend/components/game/main-pa
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useGame from '@/frontend/hooks/useGame';
+import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
 import { Chooser } from '@/models/chooser';
 import { GameRounds } from '@/models/games/game';
@@ -12,9 +13,8 @@ import { QuestionType } from '@/models/questions/question-type';
 import { ParticipantRole } from '@/models/users/participant';
 
 export default function BasicQuestionBottomPane() {
-  const game = useGame();
-  const { chooser, loading: chooserLoading, error: chooserError } = useChooser(game?.id ?? null);
-  if (!game) return <></>;
+  const gameId = useGameId();
+  const { chooser, loading: chooserLoading, error: chooserError } = useChooser(gameId);
   if (chooserError || chooserLoading || !chooser) {
     return <></>;
   }

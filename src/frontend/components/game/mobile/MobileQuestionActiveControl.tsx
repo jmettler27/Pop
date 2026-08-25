@@ -9,6 +9,7 @@ import MobileMCQControl from '@/frontend/components/game/mobile/MobileMCQControl
 import MobileNaguiControl from '@/frontend/components/game/mobile/MobileNaguiControl';
 import MobileOddOneOutControl from '@/frontend/components/game/mobile/MobileOddOneOutControl';
 import RotateDevicePrompt from '@/frontend/components/game/mobile/RotateDevicePrompt';
+import { ActiveQuestionProvider } from '@/frontend/contexts/ActiveQuestionContext';
 import useGame from '@/frontend/hooks/useGame';
 import useOrientation, { Orientation } from '@/frontend/hooks/useOrientation';
 import { QuestionType } from '@/models/questions/question-type';
@@ -34,6 +35,25 @@ export default function MobileQuestionActiveControl() {
 
   const questionType = game.currentQuestionType as QuestionType;
 
+  return (
+    <ActiveQuestionProvider
+      gameId={game.id as string}
+      roundId={game.currentRound as string}
+      questionId={game.currentQuestion as string}
+      questionType={questionType}
+    >
+      <SelectedMobileQuestionActiveControl questionType={questionType} orientation={orientation} />
+    </ActiveQuestionProvider>
+  );
+}
+
+function SelectedMobileQuestionActiveControl({
+  questionType,
+  orientation,
+}: {
+  questionType: QuestionType;
+  orientation: Orientation | null;
+}) {
   if (LANDSCAPE_REQUIRED_TYPES.has(questionType) && orientation === Orientation.PORTRAIT) {
     return <RotateDevicePrompt />;
   }

@@ -6,10 +6,9 @@ import ClearBasicBuzzerButton from '@/frontend/components/game/main-pane/questio
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/frontend/components/game/main-pane/question/ResetQuestionButton';
 import { Button } from '@/frontend/components/ui/button';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/frontend/i18n/globalMessages';
-import { GameRounds } from '@/models/games/game';
 import { GameBasicQuestion } from '@/models/questions/basic';
 import { QuestionType } from '@/models/questions/question-type';
 
@@ -32,28 +31,15 @@ interface BasicQuestionOrganizerAnswerControllerProps {
 
 function BasicQuestionOrganizerAnswerController({ gameQuestion }: BasicQuestionOrganizerAnswerControllerProps) {
   const intl = useIntl();
-  const game = useGame();
-  const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
   const gq = gameQuestion as { teamId?: string };
 
   const [validateBasicAnswer, isValidating] = useAsyncAction(async () => {
-    await handleAnswer(
-      game!.id as string,
-      currentRound as string,
-      game!.currentQuestion as string,
-      gq.teamId as string,
-      true
-    );
+    await handleAnswer(gameId, roundId, questionId, gq.teamId as string, true);
   });
 
   const [invalidateBasicAnswer, isInvalidating] = useAsyncAction(async () => {
-    await handleAnswer(
-      game!.id as string,
-      currentRound as string,
-      game!.currentQuestion as string,
-      gq.teamId as string,
-      false
-    );
+    await handleAnswer(gameId, roundId, questionId, gq.teamId as string, false);
   });
 
   return (

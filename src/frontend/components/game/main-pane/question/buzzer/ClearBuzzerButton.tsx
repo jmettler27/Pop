@@ -3,10 +3,9 @@ import { useIntl } from 'react-intl';
 
 import { clearBuzzer } from '@/backend/services/question/buzzer/actions';
 import { Button } from '@/frontend/components/ui/button';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGame from '@/frontend/hooks/useGame';
 import globalMessages from '@/frontend/i18n/globalMessages';
-import { GameRounds } from '@/models/games/game';
 import { type QuestionType } from '@/models/questions/question-type';
 
 interface ClearBuzzerButtonProps {
@@ -15,16 +14,10 @@ interface ClearBuzzerButtonProps {
 
 export default function ClearBuzzerButton({ questionType: _questionType }: ClearBuzzerButtonProps) {
   const intl = useIntl();
-  const game = useGame();
-  const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
+  const { gameId, roundId, questionId, questionType } = useActiveQuestion()!;
 
   const [handleClick, isClearing] = useAsyncAction(async () => {
-    await clearBuzzer(
-      game!.currentQuestionType as QuestionType,
-      game!.id as string,
-      currentRound as string,
-      game!.currentQuestion as string
-    );
+    await clearBuzzer(questionType, gameId, roundId, questionId);
   });
 
   return (

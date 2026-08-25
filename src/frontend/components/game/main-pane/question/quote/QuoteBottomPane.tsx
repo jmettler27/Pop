@@ -6,21 +6,15 @@ import BuzzerSpectatorController from '@/frontend/components/game/main-pane/ques
 import QuoteOrganizerController from '@/frontend/components/game/main-pane/question/quote/QuoteOrganizerController';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
-import useGame from '@/frontend/hooks/useGame';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useRole from '@/frontend/hooks/useRole';
 import { QuoteQuestion } from '@/models/questions/quote';
 import { ParticipantRole } from '@/models/users/participant';
 
 export default function QuoteBottomPane({ baseQuestion }: { baseQuestion: QuoteQuestion }) {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
-  const {
-    data: questionPlayers,
-    loading,
-    error,
-  } = useQuestionPlayers(game?.id ?? null, game?.currentRound ?? null, game?.currentQuestion as string);
-
-  if (!game) return null;
+  const { data: questionPlayers, loading, error } = useQuestionPlayers(gameId, roundId, questionId);
 
   if (error) {
     return <></>;

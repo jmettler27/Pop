@@ -7,6 +7,7 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
 import { QuestionTypeIcon } from '@/frontend/helpers/question-types';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
@@ -45,16 +46,9 @@ function QuoteQuestionHeader({ baseQuestion }: { baseQuestion: QuoteQuestion }) 
 }
 
 function QuoteMainContent({ baseQuestion }: { baseQuestion: QuoteQuestion }) {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
-  const { gameQuestion, loading, error } = useQuestion(
-    game?.id ?? null,
-    game?.currentRound ?? null,
-    QuestionType.QUOTE,
-    game?.currentQuestion as string
-  );
-
-  if (!game) return null;
+  const { gameQuestion, loading, error } = useQuestion(gameId, roundId, QuestionType.QUOTE, questionId);
 
   if (error) {
     return <ErrorScreen inline />;

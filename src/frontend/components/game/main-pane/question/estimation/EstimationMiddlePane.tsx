@@ -6,24 +6,17 @@ import EstimationPlayerPane from '@/frontend/components/game/main-pane/question/
 import EstimationSpectatorPane from '@/frontend/components/game/main-pane/question/estimation/EstimationSpectatorPane';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
-import useGame from '@/frontend/hooks/useGame';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useRole from '@/frontend/hooks/useRole';
 import { EstimationQuestion, GameEstimationQuestion } from '@/models/questions/estimation';
 import { QuestionType } from '@/models/questions/question-type';
 import { ParticipantRole } from '@/models/users/participant';
 
 export default function EstimationMiddlePane({ baseQuestion }: { baseQuestion: EstimationQuestion }) {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
   const myRole = useRole();
 
-  const { gameQuestion, loading, error } = useQuestion(
-    game?.id ?? null,
-    game?.currentRound ?? null,
-    QuestionType.ESTIMATION,
-    game?.currentQuestion as string
-  );
-
-  if (!game) return null;
+  const { gameQuestion, loading, error } = useQuestion(gameId, roundId, QuestionType.ESTIMATION, questionId);
 
   if (error) {
     return <ErrorScreen inline />;

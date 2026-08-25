@@ -3,9 +3,8 @@ import BuzzerPlayerController from '@/frontend/components/game/main-pane/questio
 import BuzzerPlayers from '@/frontend/components/game/main-pane/question/buzzer/BuzzerPlayers';
 import BuzzerSpectatorController from '@/frontend/components/game/main-pane/question/buzzer/BuzzerSpectatorController';
 import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
-import useGame from '@/frontend/hooks/useGame';
+import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useRole from '@/frontend/hooks/useRole';
-import { GameRounds } from '@/models/games/game';
 import { BuzzerQuestion } from '@/models/questions/buzzer';
 import { ParticipantRole } from '@/models/users/participant';
 
@@ -14,17 +13,9 @@ interface BuzzerBottomPaneProps {
 }
 
 export default function BuzzerBottomPane({ baseQuestion }: BuzzerBottomPaneProps) {
-  const game = useGame();
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
-  const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
-  const currentQuestion = game?.currentQuestion as string;
-  const {
-    data: questionPlayers,
-    loading,
-    error,
-  } = useQuestionPlayers(game?.id ?? null, (currentRound as string | undefined) ?? null, currentQuestion);
-
-  if (!game) return null;
+  const { data: questionPlayers, loading, error } = useQuestionPlayers(gameId, roundId, questionId);
 
   if (error || loading || !questionPlayers) {
     return <></>;
