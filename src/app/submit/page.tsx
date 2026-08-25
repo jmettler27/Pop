@@ -58,10 +58,10 @@ function SubmitQuestionCard({ questionType }: { questionType: QuestionType }) {
   return (
     <Link href={'/submit/' + questionType.replaceAll('_', '-')} className="h-full no-underline group">
       <Card className="h-full flex flex-col overflow-hidden bg-white/5 border-gray-700 hover:border-blue-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer">
-        <div className="absolute inset-0 bg-linear-to-br from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/10 group-hover:to-purple-500/10 transition-all duration-300 pointer-events-none" />
+        <div className="absolute inset-0 transition-all group-hover:bg-blue-500/10 duration-300 pointer-events-none" />
 
         <CardHeader className="flex flex-row items-center justify-start pb-2 relative z-10">
-          <CardTitle className="text-md sm:text-lg md:text-xl text-white group-hover:text-blue-400 transition-colors duration-300">
+          <CardTitle className="text-md sm:text-lg md:text-xl text-white group-hover:text-yellow-500 transition-colors duration-300">
             {prependQuestionTypeWithEmoji(questionType, locale)}
           </CardTitle>
         </CardHeader>
@@ -73,7 +73,7 @@ function SubmitQuestionCard({ questionType }: { questionType: QuestionType }) {
         </CardContent>
 
         <CardFooter className="pt-4 relative z-10">
-          <div className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-500 group-hover:bg-blue-400 text-white font-semibold rounded-lg transition-all duration-300 group-hover:shadow-lg text-center text-xs md:text-sm">
+          <div className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 bg-blue-500 group-hover:bg-yellow-500 text-white font-semibold rounded-lg transition-all duration-300 group-hover:shadow-lg text-center text-xs md:text-sm">
             <CirclePlus className="size-[1.2em]" />
             {intl.formatMessage(globalMessages.createNewQuestion)}
           </div>

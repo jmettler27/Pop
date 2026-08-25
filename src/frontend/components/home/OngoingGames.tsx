@@ -74,7 +74,7 @@ export default function OngoingGames() {
   return (
     <Card className="bg-linear-to-br from-slate-800 to-slate-900 border-2 border-slate-700 shadow-2xl hover:shadow-orange-500/20 transition-all duration-300">
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 border-b border-slate-700">
-        <CardTitle className="text-xs sm:text-sm md:text-md lg:text-base xl:text-xl font-bold bg-linear-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
+        <CardTitle className="text-xs sm:text-sm md:text-md lg:text-base xl:text-xl font-bold bg-yellow-500 bg-clip-text text-transparent">
           🕒 {intl.formatMessage(messages.title)} ({sortedOngoingGames.length})
         </CardTitle>
       </CardHeader>
@@ -173,7 +173,7 @@ const GameCard = ({ game }: GameCardProps) => {
   return (
     <Card
       size="sm"
-      className="bg-slate-800/50 border border-orange-600/20 shadow-lg hover:shadow-orange-500/40 hover:border-orange-400/60 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+      className="bg-slate-800/50 border border-orange-600/20 shadow-lg hover:scale-105 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
     >
       {/* Compact Header */}
       <CardHeader className="pb-2 pt-3 px-3 bg-linear-to-br from-orange-900/20 to-transparent">

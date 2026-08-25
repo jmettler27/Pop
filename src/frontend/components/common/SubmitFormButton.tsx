@@ -16,7 +16,7 @@ export default function SubmitFormButton({ isSubmitting, label }: SubmitFormButt
   return (
     <Button
       // size='large'
-      className="bg-blue-500 text-white hover:bg-blue-500/80"
+      className="bg-blue-500 text-white hover:bg-yellow-500 hover:scale-105 transition-all duration-300"
       disabled={isSubmitting || formik.isSubmitting}
       type="submit"
     >
