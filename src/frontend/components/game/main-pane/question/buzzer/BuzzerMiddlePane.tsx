@@ -24,11 +24,11 @@ interface BuzzerMiddlePaneProps {
 }
 
 export default function BuzzerMiddlePane({ baseQuestion }: BuzzerMiddlePaneProps) {
-  const myRole = useRole();
+  const role = useRole();
   const game = useGame();
   if (!game) return null;
 
-  const showAnswer = game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER;
+  const showAnswer = game.status === GameStatus.QUESTION_END || role === ParticipantRole.ORGANIZER;
 
   return (
     <div className={clsx('flex flex-col h-full items-center')}>

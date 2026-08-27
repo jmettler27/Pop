@@ -22,12 +22,12 @@ export default function GameStartBottomPane() {
 }
 
 function GameStartController() {
-  const myRole = useRole();
+  const role = useRole();
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-5">
       <ReadyPlayerController />
-      {myRole === ParticipantRole.ORGANIZER && <GameStartOrganizerController />}
+      {role === ParticipantRole.ORGANIZER && <GameStartOrganizerController />}
     </div>
   );
 }

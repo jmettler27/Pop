@@ -1,7 +1,5 @@
 'use client';
 
-import { useParams } from 'next/navigation';
-
 import { useIntl } from 'react-intl';
 
 import ErrorScreen from '@/frontend/components/ErrorScreen';
@@ -12,6 +10,7 @@ import RoundScoreboard from '@/frontend/components/scores/RoundScoreboard';
 import RoundScoresChart from '@/frontend/components/scores/RoundScoresChart';
 import { useScoresOnce } from '@/frontend/hooks/firestore/score/useRoundScoreHooks';
 import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
+import useGameId from '@/frontend/hooks/useGameId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { AnyRound } from '@/models/rounds/RoundFactory';
 
@@ -21,8 +20,7 @@ const messages = defineMessages('frontend.game.middle.RoundEndBody', {
 });
 
 export default function RoundEndBody({ currentRound }: { currentRound: AnyRound }) {
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
   const intl = useIntl();
 
   const { teams, loading: teamsLoading, error: teamsError } = useAllTeamsOnce(gameId);

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { memo, useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
 
 import {
   closestCenter,
@@ -53,6 +52,7 @@ import { type Locale } from '@/frontend/helpers/locales';
 import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import { useRound } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGameId from '@/frontend/hooks/useGameId';
 import useHasMounted from '@/frontend/hooks/useHasMounted';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -615,8 +615,7 @@ interface RemoveRoundFromGameButtonProps {
 
 function RemoveRoundFromGameButton({ roundId }: RemoveRoundFromGameButtonProps) {
   const intl = useIntl();
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
 
   const [dialogOpen, setDialogOpen] = useState(false);
 

@@ -1,5 +1,3 @@
-import { useParams } from 'next/navigation';
-
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -16,6 +14,7 @@ import { useIntl } from 'react-intl';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { useAllRoundsOnce } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import { useScoresOnce } from '@/frontend/hooks/firestore/score/useGameScoreHooks';
+import useGameId from '@/frontend/hooks/useGameId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { AnyRound } from '@/models/rounds/RoundFactory';
 import { GameScores } from '@/models/scores';
@@ -54,8 +53,7 @@ interface GameScoresChartProps {
 
 export default function GameScoresChart({ currentRoundOrder, teams }: GameScoresChartProps) {
   const intl = useIntl();
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
 
   // Return the rounds played up to the current round
   const {

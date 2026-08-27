@@ -12,7 +12,7 @@ import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestion
 import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useTeam from '@/frontend/hooks/useTeam';
+import useTeamId from '@/frontend/hooks/useTeamId';
 import useUser from '@/frontend/hooks/useUser';
 import { Chooser } from '@/models/chooser';
 import { MCQQuestion } from '@/models/questions/mcq';
@@ -20,7 +20,7 @@ import { QuestionType } from '@/models/questions/question-type';
 import { shuffleIndices } from '@/utils/arrays';
 
 export default function MobileMCQControl() {
-  const myTeam = useTeam();
+  const teamId = useTeamId();
   const { gameId, roundId, questionId } = useActiveQuestion()!;
   const { chooser, loading: chooserLoading, error: chooserError } = useChooser(gameId);
 
@@ -38,7 +38,7 @@ export default function MobileMCQControl() {
 
   const chooserData = chooser as unknown as Chooser;
   const chooserTeamId = chooserData.chooserOrder[chooserData.chooserIdx] ?? '';
-  const isChooser = myTeam === chooserTeamId;
+  const isChooser = teamId === chooserTeamId;
 
   return (
     <div className="flex flex-col h-full">
@@ -91,12 +91,12 @@ function MobileMCQChoiceSelector({
   randomization: number[];
 }) {
   const { gameId, roundId, questionId } = useActiveQuestion()!;
-  const myTeam = useTeam();
+  const teamId = useTeamId();
   const user = useUser();
 
   const [handleSelectChoice, isSubmitting] = useAsyncAction(async (idx: number) => {
     if (!user) return;
-    await selectChoice(gameId, roundId, questionId, user.id as string, myTeam as string, idx);
+    await selectChoice(gameId, roundId, questionId, user.id as string, teamId as string, idx);
   });
 
   const choices = baseQuestion.choices ?? [];

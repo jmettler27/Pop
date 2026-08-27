@@ -44,7 +44,7 @@ import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useIsMobile from '@/frontend/hooks/useIsMobile';
-import useTeam from '@/frontend/hooks/useTeam';
+import useTeamId from '@/frontend/hooks/useTeamId';
 import useUser from '@/frontend/hooks/useUser';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameStatus } from '@/models/games/game-status';
@@ -100,7 +100,7 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
   const intl = useIntl();
   const { gameId, roundId, questionId } = useActiveQuestion()!;
   const user = useUser();
-  const myTeam = useTeam();
+  const teamId = useTeamId();
   const isMobile = useIsMobile();
   const [orderedIndices, setOrderedIndices] = useState<number[]>(randomMapping);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -113,7 +113,7 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
 
   const [handleSubmitOrdering, isSubmitting] = useAsyncAction(async () => {
     if (!user) return;
-    await submitOrdering(gameId, roundId, questionId, user.id as string, myTeam as string, orderedIndices);
+    await submitOrdering(gameId, roundId, questionId, user.id as string, teamId as string, orderedIndices);
     setDialogOpen(false);
   });
 
@@ -129,7 +129,7 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
   };
 
   const orderings = gameQuestion.orderings ?? [];
-  const teamOrdering = myTeam ? orderings.find((o) => o.teamId === myTeam) : undefined;
+  const teamOrdering = teamId ? orderings.find((o) => o.teamId === teamId) : undefined;
   const teamSubmitted = !!teamOrdering;
   const teamSubmission = teamOrdering?.ordering;
   const submittedByMe = false; // playerId not available from orderings map

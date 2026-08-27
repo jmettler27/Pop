@@ -73,7 +73,7 @@ interface BasicQuestionMainContentProps {
 
 function BasicQuestionMainContent({ baseQuestion }: BasicQuestionMainContentProps) {
   const game = useGame();
-  const myRole = useRole();
+  const role = useRole();
 
   const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
   const { gameQuestion, loading, error } = useQuestion(
@@ -103,7 +103,7 @@ function BasicQuestionMainContent({ baseQuestion }: BasicQuestionMainContentProp
         <BasicQuestionAnswer baseQuestion={baseQuestion} gameQuestion={gameQuestion as GameBasicQuestion} />
       </div>
       <div className="shrink-0 w-full flex flex-col items-center justify-center gap-2 py-2 px-4">
-        {(game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER) && (
+        {(game.status === GameStatus.QUESTION_END || role === ParticipantRole.ORGANIZER) && (
           <BasicQuestionPlayerAnswerText gameQuestion={gameQuestion as GameBasicQuestion} />
         )}
         {game.status === GameStatus.QUESTION_END && explanation && (
@@ -124,17 +124,17 @@ interface BasicQuestionAnswerProps {
 
 function BasicQuestionAnswer({ baseQuestion, gameQuestion }: BasicQuestionAnswerProps) {
   const game = useGame();
-  const myRole = useRole();
+  const role = useRole();
   if (!game) return null;
 
   const statusToColor = (correct: boolean | null | undefined) => {
     if (correct === true) return 'text-green-600';
     else if (correct === false) return 'text-red-600';
-    else return myRole === ParticipantRole.ORGANIZER && 'text-orange-300';
+    else return role === ParticipantRole.ORGANIZER && 'text-orange-300';
   };
 
   return (
-    (game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER) && (
+    (game.status === GameStatus.QUESTION_END || role === ParticipantRole.ORGANIZER) && (
       <span
         className={`2xl:text-4xl font-bold ${statusToColor((gameQuestion as { correct?: boolean | null }).correct)}`}
       >

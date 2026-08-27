@@ -15,7 +15,7 @@ import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
-import useTeam from '@/frontend/hooks/useTeam';
+import useTeamId from '@/frontend/hooks/useTeamId';
 import useUser from '@/frontend/hooks/useUser';
 import { GameStatus } from '@/models/games/game-status';
 import { GameMCQQuestion, MCQQuestion } from '@/models/questions/mcq';
@@ -124,8 +124,8 @@ function MCQMainContentQuestion({
   );
 }
 
-const choiceIsDisabled = (myRole: ParticipantRole | null, isChooser: boolean) =>
-  !(myRole === ParticipantRole.PLAYER && isChooser);
+const choiceIsDisabled = (role: ParticipantRole | null, isChooser: boolean) =>
+  !(role === ParticipantRole.PLAYER && isChooser);
 
 interface MCQChoicesProps {
   baseQuestion: MCQQuestion;
@@ -135,16 +135,16 @@ interface MCQChoicesProps {
 
 function ActiveMCQChoices({ baseQuestion, gameQuestion, randomization }: MCQChoicesProps) {
   const { gameId, roundId, questionId } = useActiveQuestion()!;
-  const myTeam = useTeam();
-  const myRole = useRole();
+  const teamId = useTeamId();
+  const role = useRole();
   const user = useUser();
 
   const choices = baseQuestion.choices ?? [];
-  const isChooser = myTeam === gameQuestion.teamId;
+  const isChooser = teamId === gameQuestion.teamId;
 
   const [handleSelectChoice, isSubmitting] = useAsyncAction(async (idx: number) => {
     if (!user) return;
-    await selectChoice(gameId, roundId, questionId, user.id as string, myTeam as string, idx);
+    await selectChoice(gameId, roundId, questionId, user.id as string, teamId as string, idx);
   });
 
   return (
@@ -153,7 +153,7 @@ function ActiveMCQChoices({ baseQuestion, gameQuestion, randomization }: MCQChoi
         <li key={idx} className={clsx(idx !== choices.length - 1 && 'border-b border-border')}>
           <button
             type="button"
-            disabled={isSubmitting || choiceIsDisabled(myRole, isChooser)}
+            disabled={isSubmitting || choiceIsDisabled(role, isChooser)}
             className="w-full text-left px-4 py-2 border-4 border-solid rounded-lg border-blue-500 hover:text-blue-400 disabled:opacity-100"
             onClick={() => handleSelectChoice(origIdx)}
           >

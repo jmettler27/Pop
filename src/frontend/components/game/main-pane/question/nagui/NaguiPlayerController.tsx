@@ -8,7 +8,7 @@ import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/qu
 import { Button } from '@/frontend/components/ui/button';
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useTeam from '@/frontend/hooks/useTeam';
+import useTeamId from '@/frontend/hooks/useTeamId';
 import useUser from '@/frontend/hooks/useUser';
 import { DuoNaguiOption, GameNaguiQuestion, HideNaguiOption, SquareNaguiOption } from '@/models/questions/nagui';
 
@@ -24,8 +24,8 @@ interface NaguiPlayerControllerProps {
 }
 
 export default function NaguiPlayerController({ chooserTeamId, gameQuestion }: NaguiPlayerControllerProps) {
-  const myTeam = useTeam();
-  const isChooser = myTeam === chooserTeamId;
+  const teamId = useTeamId();
+  const isChooser = teamId === chooserTeamId;
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-3">

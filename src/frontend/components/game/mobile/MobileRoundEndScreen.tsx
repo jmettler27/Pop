@@ -1,7 +1,5 @@
 'use client';
 
-import { useParams } from 'next/navigation';
-
 import { ChevronDown, ChevronUp, Minus } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
@@ -10,7 +8,8 @@ import { useScoresOnce } from '@/frontend/hooks/firestore/score/useRoundScoreHoo
 import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGame from '@/frontend/hooks/useGame';
-import useTeam from '@/frontend/hooks/useTeam';
+import useGameId from '@/frontend/hooks/useGameId';
+import useTeamId from '@/frontend/hooks/useTeamId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { RankingDifferences } from '@/models/scores';
 
@@ -22,10 +21,9 @@ const messages = defineMessages('frontend.game.mobile.MobileRoundEndScreen', {
 
 export default function MobileRoundEndScreen() {
   const intl = useIntl();
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
   const game = useGame();
-  const myTeamId = useTeam();
+  const teamId = useTeamId();
 
   const { teams, loading: teamsLoading, error: teamsError } = useAllTeamsOnce(gameId);
   const { timer, timerLoading, timerError } = useTimer(game?.id ?? null);
@@ -33,7 +31,7 @@ export default function MobileRoundEndScreen() {
   const currentRoundId = game?.currentRound ?? '';
   const { roundScores, loading: scoresLoading, error: scoresError } = useScoresOnce(gameId, currentRoundId);
 
-  if (!game || !myTeamId) return null;
+  if (!game || !teamId) return null;
 
   if (teamsError || timerError || scoresError) return null;
   if (teamsLoading || timerLoading || scoresLoading) return null;
@@ -45,18 +43,18 @@ export default function MobileRoundEndScreen() {
   }[];
   const rankingDiffs = (roundScores as Record<string, unknown>).rankingDiffs as RankingDifferences | undefined;
 
-  const myRankIndex = gameSortedTeams.findIndex((item) => item.teams.includes(myTeamId));
+  const myRankIndex = gameSortedTeams.findIndex((item) => item.teams.includes(teamId));
   const myEntry = gameSortedTeams[myRankIndex];
-  const myTeam = teams.find((t) => t.id === myTeamId);
-  const myRankDiff = rankingDiffs?.[myTeamId];
+  const team = teams.find((t) => t.id === teamId);
+  const myRankDiff = rankingDiffs?.[teamId];
 
-  if (!myEntry || !myTeam) return null;
+  if (!myEntry || !team) return null;
 
   return (
     <div className="flex flex-col items-center gap-4 flex-1 justify-center">
       <span className="text-6xl">{rankingToEmoji(myRankIndex)}</span>
-      <span className="text-2xl font-bold" style={{ color: myTeam.color }}>
-        {myTeam.name}
+      <span className="text-2xl font-bold" style={{ color: team.color }}>
+        {team.name}
       </span>
       <div className="flex flex-col items-center gap-1">
         <span className="text-lg text-slate-400">{intl.formatMessage(messages.gameScore)}</span>

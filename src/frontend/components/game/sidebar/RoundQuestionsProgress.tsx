@@ -1,5 +1,4 @@
 import { memo, ReactNode, useState, type CSSProperties } from 'react';
-import { useParams } from 'next/navigation';
 
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
@@ -13,6 +12,7 @@ import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQues
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
+import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameRounds } from '@/models/games/game';
@@ -120,7 +120,7 @@ interface TypedAccordionProps {
 /* ============================================================ */
 
 function useRoundQuestion(questionType: QuestionType, roundId: string, questionId: string) {
-  const { id: gameId } = useParams();
+  const gameId = useGameId();
   const {
     gameQuestion,
     loading: gqLoading,
@@ -136,14 +136,14 @@ function useRoundQuestion(questionType: QuestionType, roundId: string, questionI
 }
 
 function useAccordionState(game: GameRounds, isCurrent: boolean, hasEnded: boolean, hasNotStarted: boolean) {
-  const myRole = useRole();
+  const role = useRole();
   return {
     showComplete:
-      myRole === ParticipantRole.ORGANIZER ||
+      role === ParticipantRole.ORGANIZER ||
       (isCurrent && game.status === GameStatus.QUESTION_END) ||
       hasEnded ||
       game.status === GameStatus.ROUND_END,
-    disabled: myRole !== ParticipantRole.ORGANIZER && hasNotStarted,
+    disabled: role !== ParticipantRole.ORGANIZER && hasNotStarted,
   };
 }
 

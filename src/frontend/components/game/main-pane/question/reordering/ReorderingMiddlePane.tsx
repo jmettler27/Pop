@@ -17,7 +17,7 @@ import { shuffleIndices } from '@/utils/arrays';
 
 export default function ReorderingMiddlePane({ baseQuestion }: { baseQuestion: ReorderingQuestion }) {
   const { gameId, roundId, questionId } = useActiveQuestion()!;
-  const myRole = useRole();
+  const role = useRole();
   // Initialize random order (consistent for the session)
   const randomMapping = useMemo(() => shuffleIndices(baseQuestion.items?.length ?? 0), [baseQuestion.items?.length]);
 
@@ -33,7 +33,7 @@ export default function ReorderingMiddlePane({ baseQuestion }: { baseQuestion: R
     return <></>;
   }
 
-  switch (myRole) {
+  switch (role) {
     case ParticipantRole.ORGANIZER:
       return (
         <ReorderingOrganizerPane baseQuestion={baseQuestion} gameQuestion={gameQuestion as GameReorderingQuestion} />

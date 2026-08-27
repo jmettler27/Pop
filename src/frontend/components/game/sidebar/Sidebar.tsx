@@ -20,7 +20,7 @@ const messages = defineMessages('frontend.game.sidebar.Sidebar', {
 });
 
 export default function Sidebar() {
-  const myRole = useRole();
+  const role = useRole();
   const intl = useIntl();
   const { locale, setLocale } = useLocale();
 
@@ -66,7 +66,7 @@ export default function Sidebar() {
         </TabsContent>
       </Tabs>
 
-      {myRole === ParticipantRole.ORGANIZER && <OrganizerSpeedDial />}
+      {role === ParticipantRole.ORGANIZER && <OrganizerSpeedDial />}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { redirect, useParams, useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 
 import { Field, useFormikContext } from 'formik';
 import { useSession } from 'next-auth/react';
@@ -27,6 +27,7 @@ import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganiz
 import { useAllPlayerIdentitiesOnce, useTeamPlayers } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import { useJoinableTeams } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGameId from '@/frontend/hooks/useGameId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import Game from '@/models/games/game';
 import Team from '@/models/team';
@@ -70,8 +71,7 @@ type StepProps = {
 type GeneralInfoStepProps = StepProps & { isGuest: boolean };
 
 function JoinGameHeader() {
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
   const { game, loading, error } = useGameOnce(gameId);
   const intl = useIntl();
 
@@ -103,8 +103,7 @@ const useGameData = (gameId: string) => {
 export default function Page() {
   const { data: session } = useSession();
 
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
   const intl = useIntl();
   const router = useRouter();
 
@@ -279,8 +278,7 @@ function GeneralInfoStep({ onSubmit, validationSchema, isGuest }: GeneralInfoSte
 }
 
 function JoinOrCreateTeam({ validationSchema }: { validationSchema: AnyObjectSchema }) {
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
   const formik = useFormikContext<JoinFormValues>();
   const values = formik.values;
   const intl = useIntl();
@@ -333,8 +331,7 @@ function JoinOrCreateTeam({ validationSchema }: { validationSchema: AnyObjectSch
 }
 
 function SelectTeamOption({ team }: { team: Team }) {
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
   const { players, loading, error } = useTeamPlayers(gameId, team.id!);
 
   if (error) {

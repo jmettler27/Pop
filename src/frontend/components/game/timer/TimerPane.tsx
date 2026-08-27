@@ -31,8 +31,8 @@ const messages = defineMessages('frontend.game.timer.TimerPane', {
 });
 
 export default function TimerPane() {
-  const myRole = useRole();
-  return myRole === ParticipantRole.ORGANIZER ? <OrganizerTimerPane /> : <SpectatorTimerPane />;
+  const role = useRole();
+  return role === ParticipantRole.ORGANIZER ? <OrganizerTimerPane /> : <SpectatorTimerPane />;
 }
 
 function OrganizerTimerPane() {

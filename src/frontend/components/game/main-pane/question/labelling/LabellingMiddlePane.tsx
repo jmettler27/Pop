@@ -99,7 +99,7 @@ interface DisplayedLabelProps {
 
 const DisplayedLabel = ({ revealed, label, labelIdx }: DisplayedLabelProps) => {
   const game = useGame();
-  const myRole = useRole();
+  const role = useRole();
 
   const [handleLabelClick] = useAsyncAction(async () => {
     if (!game) return;
@@ -119,7 +119,7 @@ const DisplayedLabel = ({ revealed, label, labelIdx }: DisplayedLabelProps) => {
     return <span className="text-blue-500">{label}</span>;
   }
 
-  if (myRole === ParticipantRole.ORGANIZER) {
+  if (role === ParticipantRole.ORGANIZER) {
     return (
       <span className="text-yellow-500 pointer-events-auto cursor-pointer hover:opacity-50" onClick={handleLabelClick}>
         {label}

@@ -9,7 +9,7 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import { useIsChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useGameId from '@/frontend/hooks/useGameId';
-import useTeam from '@/frontend/hooks/useTeam';
+import useTeamId from '@/frontend/hooks/useTeamId';
 import { GameOddOneOutQuestion, OddOneOutQuestion } from '@/models/questions/odd-one-out';
 
 interface OddOneOutPlayerPaneProps {
@@ -20,8 +20,8 @@ interface OddOneOutPlayerPaneProps {
 
 export default function OddOneOutPlayerPane({ baseQuestion, gameQuestion, randomMapping }: OddOneOutPlayerPaneProps) {
   const gameId = useGameId();
-  const myTeam = useTeam();
-  const { isChooser, loading: chooserLoading, error: chooserError } = useIsChooser(gameId, myTeam as string);
+  const teamId = useTeamId();
+  const { isChooser, loading: chooserLoading, error: chooserError } = useIsChooser(gameId, teamId as string);
   const { timer, timerLoading, timerError } = useTimer(gameId);
 
   if (chooserError || timerError) return <ErrorScreen inline />;

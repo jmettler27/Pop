@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
 
 import { doc, DocumentData, getDoc } from 'firebase/firestore';
 
 import { GAMES_COLLECTION_REF } from '@/firebase/firestore';
 import { usePlayerOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import { useTeamOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
+import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
 import { ParticipantRole } from '@/models/users/participant';
 
@@ -15,10 +15,9 @@ interface PlayerNameProps {
 }
 
 export default function PlayerName({ playerId, teamColor = true }: PlayerNameProps) {
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
 
-  const myRole = useRole();
+  const role = useRole();
 
   const { player, loading: playerLoading, error: playerError } = usePlayerOnce(gameId, playerId);
 
@@ -49,7 +48,7 @@ export default function PlayerName({ playerId, teamColor = true }: PlayerNamePro
     return <></>;
   }
   if (playerLoading || (teamColor && teamLoading)) {
-    return myRole === ParticipantRole.ORGANIZER && <span>Loading player info...</span>;
+    return role === ParticipantRole.ORGANIZER && <span>Loading player info...</span>;
   }
   if (!player) {
     return <span>Player not found</span>;
@@ -67,9 +66,8 @@ interface WinnerNameProps {
 }
 
 export function WinnerName({ playerId, teamId }: WinnerNameProps) {
-  const { id } = useParams();
-  const gameId = id as string;
-  const myRole = useRole();
+  const gameId = useGameId();
+  const role = useRole();
 
   const { player, loading: playerLoading, error: playerError } = usePlayerOnce(gameId, playerId);
   const { team, loading: teamLoading, error: teamError } = useTeamOnce(gameId, teamId);
@@ -78,7 +76,7 @@ export function WinnerName({ playerId, teamId }: WinnerNameProps) {
     return <></>;
   }
   if (playerLoading || teamLoading) {
-    return myRole === ParticipantRole.ORGANIZER && <span>Loading player info...</span>;
+    return role === ParticipantRole.ORGANIZER && <span>Loading player info...</span>;
   }
   if (!player) {
     return <span>Player not found</span>;

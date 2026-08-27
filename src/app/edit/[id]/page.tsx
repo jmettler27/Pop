@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { redirect, useParams } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
@@ -15,6 +15,7 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Locale, localeToEmoji } from '@/frontend/helpers/locales';
 import { useGame } from '@/frontend/hooks/firestore/game/useGameHooks';
 import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganizerHooks';
+import useGameId from '@/frontend/hooks/useGameId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameRounds } from '@/models/games/game';
@@ -30,8 +31,7 @@ const messages = defineMessages('frontend.gameEditor.EditGamePage', {
 export default function Page() {
   const { data: session } = useSession();
   const intl = useIntl();
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
 
   // Protected route
   if (!session || !session.user) {

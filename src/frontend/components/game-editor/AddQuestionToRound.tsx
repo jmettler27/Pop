@@ -1,8 +1,6 @@
 import { useCallback, useState } from 'react';
-import { useParams } from 'next/navigation';
 
 import { CirclePlus, XCircle } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
 // New question
@@ -29,6 +27,8 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Popover, PopoverContent, PopoverTrigger } from '@/frontend/components/ui/popover';
 import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGameId from '@/frontend/hooks/useGameId';
+import useUserId from '@/frontend/hooks/useUserId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { QuestionType, questionTypeToEmoji } from '@/models/questions/question-type';
@@ -156,10 +156,8 @@ interface CreateQuestionDialogProps {
 }
 
 function CreateQuestionDialog({ roundId, questionType, onDialogClose }: CreateQuestionDialogProps) {
-  const { id } = useParams();
-  const gameId = id as string;
-  const { data: session } = useSession();
-  const userId = session?.user?.id ?? '';
+  const gameId = useGameId();
+  const userId = useUserId() ?? '';
 
   switch (questionType) {
     case QuestionType.BASIC:
@@ -378,9 +376,8 @@ function AddExistingQuestionToRoundDialog({
   onDialogClose,
 }: AddExistingQuestionToRoundDialogProps) {
   const intl = useIntl();
-  const { id } = useParams();
-  const gameId = id as string;
-  const { data: session } = useSession();
+  const gameId = useGameId();
+  const userId = useUserId() ?? '';
 
   const selectedQuestionId = questionSelectionModel[0];
 
@@ -396,7 +393,7 @@ function AddExistingQuestionToRoundDialog({
   };
 
   const [handleValidate, isValidating] = useAsyncAction(async () => {
-    await addQuestionToRound(gameId, roundId, selectedQuestionId, session?.user?.id ?? '');
+    await addQuestionToRound(gameId, roundId, selectedQuestionId, userId);
     setValidationDialogOpen(false);
     onDialogClose();
     setSelectedQuestionModel([]);

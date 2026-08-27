@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import { Edit, Home, ListMusic, Plus, RotateCcw, Share, X } from 'lucide-react';
 import { useIntl } from 'react-intl';
@@ -9,6 +9,7 @@ import SoundboardController from '@/frontend/components/game/soundboard/Soundboa
 import { Button } from '@/frontend/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/frontend/components/ui/sheet';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
+import useGameId from '@/frontend/hooks/useGameId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 
@@ -20,8 +21,7 @@ const messages = defineMessages('frontend.game.speedDial.OrganizerSpeedDial', {
 });
 
 export default function OrganizerSpeedDial() {
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
   const intl = useIntl();
   const router = useRouter();
 

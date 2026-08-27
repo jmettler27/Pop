@@ -17,7 +17,7 @@ import { shuffleIndices } from '@/utils/arrays';
 
 export default function OddOneOutMiddlePane({ baseQuestion }: { baseQuestion: OddOneOutQuestion }) {
   const { gameId, roundId, questionId } = useActiveQuestion()!;
-  const myRole = useRole();
+  const role = useRole();
   const randomMapping = useMemo(() => shuffleIndices((baseQuestion.items ?? []).length), [baseQuestion.items]);
 
   const { gameQuestion, loading, error } = useQuestion(gameId, roundId, QuestionType.ODD_ONE_OUT, questionId);
@@ -28,7 +28,7 @@ export default function OddOneOutMiddlePane({ baseQuestion }: { baseQuestion: Od
 
   const gameQuestionData = gameQuestion as unknown as GameOddOneOutQuestion;
 
-  switch (myRole) {
+  switch (role) {
     case ParticipantRole.ORGANIZER:
       return (
         <OddOneOutOrganizerPane
