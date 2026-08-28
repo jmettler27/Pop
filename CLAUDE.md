@@ -34,7 +34,10 @@ Run `/check` before pushing.
   **Service** classes (business logic, own the Firestore transactions) → **Repository** classes
   (`src/backend/repositories`, data access only) → `src/firebase/admin.ts` (firebase-admin). `src/models` is shared by both sides.
 - The backend uses **firebase-admin** (`src/firebase/admin.ts` — `adminDb()`, `adminAuth()`, `adminStorageBucket()`),
-  a trusted context that bypasses security rules (prod rules are `allow read: if true; allow write: if false`).
+  a trusted context that bypasses security rules. Prod Firestore rules are `allow write: if false` everywhere
+  (admin SDK only); reads are scoped per collection (`firebase/firestore.prod.rules`) — `games/**` and
+  `questions/**` read-open for the client's `onSnapshot` listeners, `users/**` denied (client uses the
+  `getPublicUsersByIds` action). `firebase/firestore.rules` mirrors the read scoping for the emulator.
   The Firebase **client** SDK is frontend-only (realtime `onSnapshot` listeners). `next.config.ts` externalizes
   `firebase-admin`/`@google-cloud/*`/`grpc`/`pino` from the server bundle.
 - **Admin SDK vs client SDK gotchas** (the two base repos already handle these): `docSnap.exists` is a

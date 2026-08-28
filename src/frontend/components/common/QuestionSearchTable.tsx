@@ -27,7 +27,7 @@ import { Spinner } from '@/frontend/components/ui/spinner';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/frontend/components/ui/table';
 import { getQuestionsCount, useQuestionsPage } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import { useFirestoreCount } from '@/frontend/hooks/firestore/useFirestoreCount';
-import { useAllUsersOnce } from '@/frontend/hooks/firestore/user/useUserHooks';
+import { useUsersByIds } from '@/frontend/hooks/useUsersByIds';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { QuestionType } from '@/models/questions/question-type';
 
@@ -115,8 +115,6 @@ export function QuestionSearchTable({
 
   const intl = useIntl();
 
-  const { users, loading: usersLoading, error: usersError } = useAllUsersOnce();
-
   const [pageSize, setPageSize] = useState(10);
   const [pageIndex, setPageIndex] = useState(0);
 
@@ -136,6 +134,13 @@ export function QuestionSearchTable({
   const currentPage = pages[pageIndex];
   const questions = currentPage?.items;
   const hasMore = currentPage?.hasMore ?? false;
+
+  // Author display fields come from a server action — production Firestore rules deny client reads of `users/**`.
+  const {
+    users,
+    loading: usersLoading,
+    error: usersError,
+  } = useUsersByIds((questions ?? []).map((question) => question.createdBy));
 
   const goToPreviousPage = () => setPageIndex((i) => Math.max(0, i - 1));
   const goToNextPage = () => {

@@ -12,7 +12,7 @@ import type { Locale } from '@/frontend/helpers/locales';
 import { LOCALE_TO_EMOJI } from '@/frontend/helpers/locales';
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
 import { timestampToLongDateTime, type FirestoreTimestamp } from '@/frontend/helpers/time';
-import { useUserOnce } from '@/frontend/hooks/firestore/user/useUserHooks';
+import { useUsersByIds } from '@/frontend/hooks/useUsersByIds';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { BlindtestQuestion, blindtestTypeToEmoji } from '@/models/questions/blindtest';
 import { MCQQuestion } from '@/models/questions/mcq';
@@ -121,7 +121,8 @@ interface QuestionCardFooterProps {
 
 function QuestionCardFooter({ baseQuestion }: QuestionCardFooterProps) {
   const intl = useIntl();
-  const { user, loading, error } = useUserOnce((baseQuestion as { createdBy: string }).createdBy);
+  const { users, loading, error } = useUsersByIds([(baseQuestion as { createdBy: string }).createdBy]);
+  const user = users[0];
 
   if (error || loading || !user) {
     return <></>;
