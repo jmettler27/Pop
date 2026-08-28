@@ -17,7 +17,7 @@ export default class BlindtestRoundService extends BuzzerRoundService {
     const gameQuestionRepo = new GameBlindtestQuestionRepository(this.gameId, roundId);
 
     /* Game: fetch next question and reset every player's state */
-    const playerIds = await this.playerRepo.getAllPlayerIds();
+    const playerIds = await this.playerRepo.getAllPlayerIdsTransaction(transaction);
     if (playerIds.length === 0) {
       this.log.warn({ round: roundId }, 'No players found in game, cannot move to next question');
       throw new Error('No players found in game, cannot move to next question');

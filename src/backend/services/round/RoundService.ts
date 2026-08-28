@@ -431,7 +431,7 @@ export default class RoundService {
     // This element is useful only for visualization purposes in the summary shown at the end of the round
     let rankingDiffs = null;
     if ((round.order ?? 0) > 0) {
-      const prevRounds = await this.roundRepo.getRounds({
+      const prevRounds = await this.roundRepo.getRoundsTransaction(transaction, {
         where: {
           field: 'order',
           operator: '==',

@@ -56,6 +56,10 @@ export default class MatchingRoundService extends RoundService {
       return;
     }
 
+    // If it is the first round, a random chooser order is needed. Read it before any write below.
+    const needsChooserOrder = chooser.chooserOrder.length === 0 || chooser.chooserIdx === null;
+    const shuffledTeamIds = needsChooserOrder ? await this.teamRepo.getShuffledTeamIdsTransaction(transaction) : null;
+
     await this.roundRepo.updateRoundTransaction(transaction, roundId, {
       type: RoundType.MATCHING,
       dateStart: FieldValue.serverTimestamp(),
@@ -64,11 +68,9 @@ export default class MatchingRoundService extends RoundService {
       maxPoints: 0,
     });
 
-    // If it is the first round, find a random order for the chooser teams
-    if (chooser.chooserOrder.length === 0 || chooser.chooserIdx === null) {
-      const teamIds = await this.teamRepo.getShuffledTeamIds();
-      await this.chooserRepo.updateChooserOrderTransaction(transaction, teamIds);
-      this.log.debug({ round: roundId, teamIds }, 'Chooser order set for the round');
+    if (needsChooserOrder) {
+      await this.chooserRepo.updateChooserOrderTransaction(transaction, shuffledTeamIds!);
+      this.log.debug({ round: roundId, teamIds: shuffledTeamIds }, 'Chooser order set for the round');
     }
 
     await this.chooserRepo.resetChoosersTransaction(transaction);
