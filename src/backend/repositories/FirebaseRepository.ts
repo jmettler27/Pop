@@ -60,6 +60,12 @@ export default class FirebaseRepository extends IRepository {
     return querySnapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
   }
 
+  async getAllTransaction(transaction: Transaction): Promise<Array<Record<string, unknown>>> {
+    // Real transactional read of the whole collection (must precede all writes in the callback).
+    const querySnapshot = await transaction.get(this.collectionRef);
+    return querySnapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+  }
+
   async getNumDocuments(): Promise<number> {
     return (await this.getAll()).length;
   }

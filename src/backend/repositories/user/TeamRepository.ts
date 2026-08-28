@@ -19,6 +19,11 @@ export default class TeamRepository extends FirebaseRepository {
     return data.map((t) => new Team(t as unknown as TeamData));
   }
 
+  async getAllTeamsTransaction(transaction: Transaction): Promise<Team[]> {
+    const data = await super.getAllTransaction(transaction);
+    return data.map((t) => new Team(t as unknown as TeamData));
+  }
+
   async createTeam(data: TeamData, id: string | null = null): Promise<Team> {
     Team.validateName(data.name);
     Team.validateColor(data.color);
@@ -41,13 +46,27 @@ export default class TeamRepository extends FirebaseRepository {
     return super.getNumDocuments();
   }
 
+  async getNumTeamsTransaction(transaction: Transaction): Promise<number> {
+    return (await this.getAllTeamsTransaction(transaction)).length;
+  }
+
   async getShuffledTeamIds(): Promise<string[]> {
     const teams = await this.getAllTeams();
     return shuffle(teams.map((t) => t.id!));
   }
 
+  async getShuffledTeamIdsTransaction(transaction: Transaction): Promise<string[]> {
+    const teams = await this.getAllTeamsTransaction(transaction);
+    return shuffle(teams.map((t) => t.id!));
+  }
+
   async getOtherTeams(teamId: string): Promise<Team[]> {
     const teams = await this.getAllTeams();
+    return teams.filter((t) => t.id !== teamId);
+  }
+
+  async getOtherTeamsTransaction(transaction: Transaction, teamId: string): Promise<Team[]> {
+    const teams = await this.getAllTeamsTransaction(transaction);
     return teams.filter((t) => t.id !== teamId);
   }
 }
