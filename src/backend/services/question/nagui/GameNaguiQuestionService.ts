@@ -142,7 +142,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
           throw new Error('Game question not found');
         }
 
-        const players = await this.playerRepo.getPlayersByTeamId(teamId);
+        const players = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId);
         if (!players || players.length === 0) {
           this.log.warn({ question: questionId, team: teamId }, 'No players found for team');
           throw new Error('No players found for team');
@@ -210,7 +210,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
           throw new Error('Game question not found');
         }
 
-        const players = await this.playerRepo.getPlayersByTeamId(teamId);
+        const players = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId);
         if (!players || players.length === 0) {
           this.log.warn({ question: questionId, team: teamId }, 'No players found for team');
           throw new Error('No players found for team');

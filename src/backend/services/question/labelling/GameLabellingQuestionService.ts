@@ -36,7 +36,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
       throw new Error('Game question not found');
     }
 
-    const playerIds = await this.playerRepo.getAllPlayerIds();
+    const playerIds = await this.playerRepo.getAllPlayerIdsTransaction(transaction);
     if (!playerIds) {
       this.log.warn({ question: questionId }, 'Player IDs not found');
       throw new Error('Player IDs not found');

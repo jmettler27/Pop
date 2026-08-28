@@ -25,7 +25,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
   }
 
   async resetQuestionTransaction(transaction: Transaction, questionId: string) {
-    const playerIds = await this.playerRepo.getAllPlayerIds();
+    const playerIds = await this.playerRepo.getAllPlayerIdsTransaction(transaction);
     if (!playerIds || playerIds.length <= 0) {
       this.log.warn({ question: questionId }, 'Player IDs not found');
       throw new Error('Player IDs not found');
@@ -94,7 +94,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
 
     if (!challenger) {
       // We end the question before any bet is submitted
-      const teams = await this.teamRepo.getAllTeams();
+      const teams = await this.teamRepo.getAllTeamsTransaction(transaction);
       if (!teams || teams.length <= 0) {
         this.log.warn({ question: questionId }, 'Teams not found');
         throw new Error('Teams not found');
@@ -118,13 +118,13 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
     } else {
       // Regular case: at least one bet has been submitted
       const { teamId, playerId, numCorrect, bet } = challenger;
-      const challengers = await this.playerRepo.getPlayersByTeamId(teamId);
+      const challengers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId);
       if (!challengers || challengers.length <= 0) {
         this.log.warn({ question: questionId }, 'Challengers not found');
         throw new Error('Challengers not found');
       }
 
-      const spectators = await this.playerRepo.getAllOtherPlayers(teamId);
+      const spectators = await this.playerRepo.getAllOtherPlayersTransaction(transaction, teamId);
       if (!spectators || spectators.length <= 0) {
         this.log.warn({ question: questionId }, 'Spectators not found');
         throw new Error('Spectators not found');
@@ -132,7 +132,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
 
       if (numCorrect < bet) {
         // The challenger did not succeed in its challenge
-        const spectatorTeams = await this.teamRepo.getOtherTeams(teamId);
+        const spectatorTeams = await this.teamRepo.getOtherTeamsTransaction(transaction, teamId);
         if (!spectatorTeams || spectatorTeams.length <= 0) {
           this.log.warn({ question: questionId }, 'Spectator teams not found');
           throw new Error('Spectator teams not found');

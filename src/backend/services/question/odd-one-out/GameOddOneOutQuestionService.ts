@@ -155,7 +155,7 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
       }
     }
 
-    const teamPlayers = await this.playerRepo.getPlayersByTeamId(teamId);
+    const teamPlayers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId);
     if (!teamPlayers) {
       this.log.warn({ question: questionId }, 'Team players not found');
       throw new Error('Team players not found');
@@ -191,14 +191,18 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
       } else {
         // The selected proposal is not the last remaining one
         const newChooserIdx = getNextCyclicIndex(chooserIdx, chooserOrder.length);
-        await this.chooserRepo.updateChooserIndexTransaction(transaction, newChooserIdx);
         const newChooserTeamId = chooserOrder[newChooserIdx];
-        const newChooserTeamPlayers = await this.playerRepo.getPlayersByTeamId(newChooserTeamId);
+        // Read before the chooser-index write below (all reads must precede writes).
+        const newChooserTeamPlayers = await this.playerRepo.getPlayersByTeamIdTransaction(
+          transaction,
+          newChooserTeamId
+        );
         if (!newChooserTeamPlayers) {
           this.log.warn({ question: questionId, team: newChooserTeamId }, 'New chooser team players not found');
           throw new Error('New chooser team players not found');
         }
 
+        await this.chooserRepo.updateChooserIndexTransaction(transaction, newChooserIdx);
         await this.playerRepo.updateAllPlayersStatusTransaction(
           transaction,
           PlayerStatus.FOCUS,
