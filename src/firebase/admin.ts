@@ -3,11 +3,17 @@ import 'server-only';
 import { cert, getApps, initializeApp, type App } from 'firebase-admin/app';
 import { getAuth, type Auth } from 'firebase-admin/auth';
 import { getFirestore, type Firestore } from 'firebase-admin/firestore';
+import { getStorage } from 'firebase-admin/storage';
 
 const useEmulators = process.env.NEXT_PUBLIC_USE_EMULATORS === 'true';
 
+// Emulator storage bucket mirrors the client SDK config in `src/firebase/firebase.ts`
+// so manually-built download URLs match what `getDownloadURL()` produced before.
+const EMULATOR_STORAGE_BUCKET = 'demo-pop.appspot.com';
+
 if (useEmulators) {
   process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
+  process.env.FIREBASE_STORAGE_EMULATOR_HOST = '127.0.0.1:9199';
   delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
 }
 
@@ -31,7 +37,7 @@ function resolveAdminApp(): App | null {
   }
 
   if (useEmulators) {
-    cachedApp = initializeApp({ projectId: 'demo-pop' });
+    cachedApp = initializeApp({ projectId: 'demo-pop', storageBucket: EMULATOR_STORAGE_BUCKET });
     return cachedApp;
   }
 
@@ -43,7 +49,10 @@ function resolveAdminApp(): App | null {
     return cachedApp;
   }
 
-  cachedApp = initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) });
+  cachedApp = initializeApp({
+    credential: cert({ projectId, clientEmail, privateKey }),
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  });
   return cachedApp;
 }
 
@@ -71,4 +80,35 @@ export function adminAuth(): Auth {
 export function adminFirestore(): Firestore | null {
   const app = resolveAdminApp();
   return app ? getFirestore(app) : null;
+}
+
+/**
+ * Admin Firestore, guaranteed non-null — the backend data-access layer's single
+ * handle. Throws when admin credentials are missing; production always has them
+ * (and the emulator path in this file supplies a `projectId`), so call sites stay
+ * free of null checks.
+ */
+export function adminDb(): Firestore {
+  const db = adminFirestore();
+  if (!db) {
+    throw new Error(
+      'firebase-admin is not configured: set FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY and NEXT_PUBLIC_FIREBASE_PROJECT_ID.'
+    );
+  }
+  return db;
+}
+
+/**
+ * The default Storage bucket, guaranteed non-null. Throws when admin credentials
+ * are missing (same contract as `adminDb`). The bucket name comes from the app's
+ * `storageBucket` option set above.
+ */
+export function adminStorageBucket() {
+  const app = resolveAdminApp();
+  if (!app) {
+    throw new Error(
+      'firebase-admin is not configured: set FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY and NEXT_PUBLIC_FIREBASE_PROJECT_ID.'
+    );
+  }
+  return getStorage(app).bucket();
 }

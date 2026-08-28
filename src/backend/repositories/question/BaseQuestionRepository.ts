@@ -1,4 +1,4 @@
-import { Transaction } from 'firebase/firestore';
+import { Transaction } from 'firebase-admin/firestore';
 
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 import { BaseQuestionData, UpdateBaseQuestionData, type CreateBaseQuestionData } from '@/models/questions/question';

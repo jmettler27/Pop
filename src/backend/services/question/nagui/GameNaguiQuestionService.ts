@@ -1,11 +1,9 @@
-import { Transaction } from 'firebase/firestore';
+import { Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
 import { GameNaguiQuestion, NAGUI_OPTION_TO_SOUND, NaguiQuestion } from '@/models/questions/nagui';
 import { QuestionType } from '@/models/questions/question-type';
 import { NaguiRound } from '@/models/rounds/nagui';
@@ -57,7 +55,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
     const playerId = gameQuestion.playerId;
     const choiceIdx = gameQuestion.choiceIdx;
 
-    await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.READY);
+    this.pendingStatus.enqueueTeam(teamId, PlayerStatus.READY);
 
     const correct = false;
     const reward = 0;
@@ -89,7 +87,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await this.pendingStatus.runTransaction(async (transaction) => {
         const option = GameNaguiQuestion.NAGUI_OPTIONS[optionIdx];
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { playerId, option });
         await this.soundRepo.addSoundTransaction(transaction, NAGUI_OPTION_TO_SOUND[option]);
@@ -119,7 +117,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await this.pendingStatus.runTransaction(async (transaction) => {
         const baseQuestion = (await this.baseQuestionRepo.getQuestionTransaction(
           transaction,
           questionId
@@ -150,7 +148,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
           throw new Error('No players found for team');
         }
 
-        await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.READY);
+        this.pendingStatus.enqueueTeam(teamId, PlayerStatus.READY);
 
         const answerIdx = baseQuestion.answerIdx;
         const correct = choiceIdx === answerIdx;
@@ -196,7 +194,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await this.pendingStatus.runTransaction(async (transaction) => {
         const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as NaguiRound;
         if (!round) {
           this.log.warn({ question: questionId }, 'Round not found');
@@ -220,7 +218,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
 
         const reward = correct ? round.rewardsPerQuestion[gameQuestion.option!] : 0;
 
-        await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.READY);
+        this.pendingStatus.enqueueTeam(teamId, PlayerStatus.READY);
         await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward);
         await this.readyRepo.updateNumReadyTransaction(transaction, players.length);
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { playerId, reward, correct });

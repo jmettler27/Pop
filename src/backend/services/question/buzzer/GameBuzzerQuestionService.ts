@@ -1,11 +1,10 @@
-import { serverTimestamp, Transaction } from 'firebase/firestore';
+import { FieldValue, Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import GameBuzzerQuestionRepository from '@/backend/repositories/question/GameBuzzerQuestionRepository';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
+import { adminDb } from '@/firebase/admin';
 import { GameStatus } from '@/models/games/game-status';
 import { GameBuzzerQuestion } from '@/models/questions/buzzer';
 import { QuestionType } from '@/models/questions/question-type';
@@ -37,11 +36,11 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
       throw new Error('Question ID is required');
     }
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         // Update game status
         await this.gameRepo.updateGameStatusTransaction(transaction, this.gameId, GameStatus.QUESTION_END);
         await (this.gameQuestionRepo as GameBuzzerQuestionRepository).updateTransaction(transaction, questionId, {
-          dateEnd: serverTimestamp(),
+          dateEnd: FieldValue.serverTimestamp(),
         });
         await this.timerRepo.prepareTimerForReadyTransaction(transaction);
 
@@ -95,7 +94,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         const gameQuestion = (await (this.gameQuestionRepo as GameBuzzerQuestionRepository).getQuestionTransaction(
           transaction,
           questionId
@@ -127,7 +126,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         await (this.gameQuestionRepo as GameBuzzerQuestionRepository).addPlayerToBuzzerTransaction(
           transaction,
           questionId,
@@ -155,7 +154,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         const gqRepo = this.gameQuestionRepo as GameBuzzerQuestionRepository;
         const gameQuestion = await gqRepo.getQuestionTransaction(transaction, questionId);
         if (!gameQuestion) {
@@ -187,7 +186,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         const gameQuestion = await (this.gameQuestionRepo as GameBuzzerQuestionRepository).getQuestionTransaction(
           transaction,
           questionId
@@ -236,7 +235,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     }
 
     try {
-      await runBackendTransaction(firestore, (transaction: Transaction) =>
+      await adminDb().runTransaction((transaction: Transaction) =>
         this.validateAnswerTransaction(transaction, questionId, playerId)
       );
     } catch (error) {
@@ -293,7 +292,7 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
     }
 
     try {
-      await runBackendTransaction(firestore, (transaction: Transaction) =>
+      await adminDb().runTransaction((transaction: Transaction) =>
         this.invalidateAnswerTransaction(transaction, questionId, playerId)
       );
     } catch (error) {

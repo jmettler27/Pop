@@ -1,4 +1,4 @@
-import { serverTimestamp, Transaction } from 'firebase/firestore';
+import { FieldValue, Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
@@ -76,7 +76,7 @@ export default class BuzzerRoundService extends RoundService {
 
     await this.roundRepo.updateRoundTransaction(transaction, roundId, {
       type: this.roundType,
-      dateStart: serverTimestamp(),
+      dateStart: FieldValue.serverTimestamp(),
       order: newOrder,
       currentQuestionIdx: 0,
       ...(maxPoints !== null && { maxPoints }),

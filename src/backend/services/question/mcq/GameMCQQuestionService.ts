@@ -1,10 +1,8 @@
-import { Transaction } from 'firebase/firestore';
+import { Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
 import { GameMCQQuestion, MCQQuestion } from '@/models/questions/mcq';
 import { QuestionType } from '@/models/questions/question-type';
 import { MCQRound } from '@/models/rounds/mcq';
@@ -53,7 +51,7 @@ export default class GameMCQQuestionService extends GameQuestionService {
     const playerId = gameQuestion.playerId;
     const choiceIdx = gameQuestion.choiceIdx;
 
-    await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.READY);
+    this.pendingStatus.enqueueTeam(teamId, PlayerStatus.READY);
 
     const correct = false;
     const reward = 0;
@@ -88,7 +86,7 @@ export default class GameMCQQuestionService extends GameQuestionService {
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await this.pendingStatus.runTransaction(async (transaction) => {
         const baseQuestion = (await this.baseQuestionRepo.getQuestionTransaction(
           transaction,
           questionId
@@ -110,7 +108,7 @@ export default class GameMCQQuestionService extends GameQuestionService {
         const reward = correct ? mcqRound.rewardsPerQuestion : 0;
 
         await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, reward);
-        await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.READY);
+        this.pendingStatus.enqueueTeam(teamId, PlayerStatus.READY);
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, {
           playerId,
           choiceIdx,

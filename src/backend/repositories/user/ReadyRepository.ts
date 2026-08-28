@@ -1,4 +1,4 @@
-import { increment, type Transaction } from 'firebase/firestore';
+import { FieldValue, type Transaction } from 'firebase-admin/firestore';
 
 import FirebaseDocumentRepository from '@/backend/repositories/FirebaseDocumentRepository';
 import { Ready } from '@/models/ready';
@@ -26,7 +26,7 @@ export default class ReadyRepository extends FirebaseDocumentRepository {
   }
 
   async incrementReadyTransaction(transaction: Transaction): Promise<void> {
-    await this.updateReadyTransaction(transaction, { numReady: increment(1) });
+    await this.updateReadyTransaction(transaction, { numReady: FieldValue.increment(1) });
   }
 
   async updateNumReadyTransaction(transaction: Transaction, numReady: number): Promise<void> {

@@ -1,4 +1,4 @@
-import { increment, type Transaction } from 'firebase/firestore';
+import { FieldValue, type Transaction } from 'firebase-admin/firestore';
 
 import GameBuzzerQuestionRepository from '@/backend/repositories/question/GameBuzzerQuestionRepository';
 import { GameProgressiveCluesQuestion } from '@/models/questions/progressive-clues';
@@ -28,6 +28,6 @@ export default class GameProgressiveCluesQuestionRepository extends GameBuzzerQu
   }
 
   async incrementClueTransaction(transaction: Transaction, questionId: string): Promise<void> {
-    await this.updateQuestionTransaction(transaction, questionId, { currentClueIdx: increment(1) });
+    await this.updateQuestionTransaction(transaction, questionId, { currentClueIdx: FieldValue.increment(1) });
   }
 }

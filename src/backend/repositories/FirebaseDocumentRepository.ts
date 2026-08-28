@@ -1,16 +1,6 @@
-import {
-  addDoc,
-  deleteDoc,
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  type DocumentReference,
-  type Transaction,
-} from 'firebase/firestore';
+import type { DocumentReference, Transaction } from 'firebase-admin/firestore';
 
-import { ensureBackendAuth } from '@/firebase/backend-auth';
-import { firestore } from '@/firebase/firebase';
+import { adminDb } from '@/firebase/admin';
 import { isArray } from '@/utils/arrays';
 
 const getDocDataTransaction = async (
@@ -27,16 +17,15 @@ export default class FirebaseDocumentRepository {
   constructor(documentPath: string | string[]) {
     if (isArray(documentPath)) {
       const path = documentPath as string[];
-      this.docRef = doc(firestore, path[0], ...path.slice(1));
+      this.docRef = adminDb().doc(path.join('/'));
     } else {
-      this.docRef = doc(firestore, documentPath as string);
+      this.docRef = adminDb().doc(documentPath as string);
     }
   }
 
   async get(): Promise<Record<string, unknown> | null> {
-    await ensureBackendAuth();
-    const docSnap = await getDoc(this.docRef);
-    return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null;
+    const docSnap = await this.docRef.get();
+    return docSnap.exists ? { id: docSnap.id, ...(docSnap.data() ?? {}) } : null;
   }
 
   async getTransaction(transaction: Transaction): Promise<Record<string, unknown> | undefined> {
@@ -44,8 +33,7 @@ export default class FirebaseDocumentRepository {
   }
 
   async update(data: Record<string, unknown>): Promise<Record<string, unknown>> {
-    await ensureBackendAuth();
-    await updateDoc(this.docRef, data);
+    await this.docRef.update(data);
     return { id: this.docRef.id, ...data };
   }
 
@@ -55,8 +43,7 @@ export default class FirebaseDocumentRepository {
   }
 
   async set(data: Record<string, unknown>): Promise<Record<string, unknown>> {
-    await ensureBackendAuth();
-    await setDoc(this.docRef, data);
+    await this.docRef.set(data);
     return { id: this.docRef.id, ...data };
   }
 
@@ -66,9 +53,9 @@ export default class FirebaseDocumentRepository {
   }
 
   async create(data: Record<string, unknown>): Promise<Record<string, unknown>> {
-    await ensureBackendAuth();
-    const newDocRef = await addDoc(this.docRef as unknown as Parameters<typeof addDoc>[0], data);
-    return { id: newDocRef.id, ...data };
+    // Doc repositories address a single fixed document; "create" writes it.
+    await this.docRef.set(data);
+    return { id: this.docRef.id, ...data };
   }
 
   async createTransaction(transaction: Transaction, data: Record<string, unknown>): Promise<Record<string, unknown>> {
@@ -77,8 +64,7 @@ export default class FirebaseDocumentRepository {
   }
 
   async delete(): Promise<void> {
-    await ensureBackendAuth();
-    await deleteDoc(this.docRef);
+    await this.docRef.delete();
   }
 
   async deleteTransaction(transaction: Transaction): Promise<void> {

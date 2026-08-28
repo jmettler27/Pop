@@ -1,4 +1,4 @@
-import { serverTimestamp } from 'firebase/firestore';
+import { FieldValue } from 'firebase-admin/firestore';
 import type { Logger } from 'pino';
 
 import { logger } from '@/backend/logger';
@@ -6,8 +6,7 @@ import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import UserRepository from '@/backend/repositories/user/UserRepository';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
+import { adminDb } from '@/firebase/admin';
 import { PlayerStatus } from '@/models/users/player';
 import { generateAvatarUrl } from '@/utils/avatar';
 
@@ -41,7 +40,7 @@ export default class JoinGameService {
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         const user = await this.userRepo.getUserTransaction(transaction, userId);
         if (!user) {
           throw new Error('User not found');
@@ -55,7 +54,7 @@ export default class JoinGameService {
             name: data.playerName,
             teamAllowed: false,
             createdBy: userId,
-            createdAt: serverTimestamp(),
+            createdAt: FieldValue.serverTimestamp(),
           });
           data.teamId = team.id;
         } else if (!data.joinTeam) {
@@ -66,7 +65,7 @@ export default class JoinGameService {
             name: data.teamName,
             teamAllowed: true,
             createdBy: userId,
-            createdAt: serverTimestamp(),
+            createdAt: FieldValue.serverTimestamp(),
           });
           data.teamId = team.id;
         }
@@ -79,7 +78,7 @@ export default class JoinGameService {
             name: data.playerName,
             status: PlayerStatus.IDLE,
             teamId: data.teamId,
-            joinedAt: serverTimestamp(),
+            joinedAt: FieldValue.serverTimestamp(),
           },
           userId
         );

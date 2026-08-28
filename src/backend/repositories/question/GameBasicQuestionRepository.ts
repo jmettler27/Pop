@@ -1,4 +1,4 @@
-import { type Transaction } from 'firebase/firestore';
+import { type Transaction } from 'firebase-admin/firestore';
 
 import GameBuzzerQuestionRepository from '@/backend/repositories/question/GameBuzzerQuestionRepository';
 import { QuestionType } from '@/models/questions/question-type';

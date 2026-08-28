@@ -1,18 +1,16 @@
 'use server';
 
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { FieldValue } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
-import { ensureBackendAuth } from '@/firebase/backend-auth';
-import { GAMES_COLLECTION_REF } from '@/firebase/firestore';
+import { adminDb } from '@/firebase/admin';
 
 const log = logger.child({ module: 'sounds' });
 
 export async function addSound(gameId: string, filename: string) {
-  await ensureBackendAuth();
-  const queueCollectionRef = collection(GAMES_COLLECTION_REF, gameId, 'realtime', 'sounds', 'queue');
-  await addDoc(queueCollectionRef, {
-    timestamp: serverTimestamp(),
+  const queueCollectionRef = adminDb().collection(`games/${gameId}/realtime/sounds/queue`);
+  await queueCollectionRef.add({
+    timestamp: FieldValue.serverTimestamp(),
     filename: filename,
   });
   log.info({ game: gameId, filename }, 'Sound added to queue');

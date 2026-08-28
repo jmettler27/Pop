@@ -1,4 +1,4 @@
-import { serverTimestamp, Timestamp } from 'firebase/firestore';
+import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import type { Logger } from 'pino';
 
 import { logger } from '@/backend/logger';
@@ -12,9 +12,9 @@ import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
+import { PendingStatusChanges } from '@/backend/services/pendingStatusChanges';
 import RoundServiceFactory from '@/backend/services/round/RoundServiceFactory';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
+import { adminDb } from '@/firebase/admin';
 import { type Locale } from '@/frontend/helpers/locales';
 import { type GameRoundsData } from '@/models/games/game';
 import { GameStatus } from '@/models/games/game-status';
@@ -40,6 +40,7 @@ export default class GameService {
   playerRepo: PlayerRepository;
   organizerRepo: OrganizerRepository;
   roundRepo: RoundRepository;
+  private readonly pendingStatus: PendingStatusChanges;
   private log: Logger;
 
   constructor(gameId: string) {
@@ -58,6 +59,7 @@ export default class GameService {
     this.gameScoreRepo = new GameScoreRepository(gameId);
     this.teamRepo = new TeamRepository(gameId);
     this.playerRepo = new PlayerRepository(gameId);
+    this.pendingStatus = new PendingStatusChanges(this.playerRepo);
     this.organizerRepo = new OrganizerRepository(gameId);
     this.roundRepo = new RoundRepository(gameId);
   }
@@ -68,7 +70,7 @@ export default class GameService {
    */
   async startGame() {
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await this.pendingStatus.runTransaction(async (transaction) => {
         const teams = await this.teamRepo.getAll();
 
         const { teamIds, initTeamGameScores, initTeamGameScoresProgress } = (teams as unknown as Team[]).reduce(
@@ -91,15 +93,11 @@ export default class GameService {
         const shuffledTeamIds = shuffle(teamIds);
         const chooserTeamId = shuffledTeamIds[0];
 
-        await this.playerRepo.updateTeamAndOtherTeamsPlayersStatus(
-          chooserTeamId,
-          PlayerStatus.FOCUS,
-          PlayerStatus.IDLE
-        );
+        this.pendingStatus.enqueueTeamAndOthers(chooserTeamId, PlayerStatus.FOCUS, PlayerStatus.IDLE);
 
         await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
           status: GameStatus.GAME_HOME,
-          dateStart: serverTimestamp(),
+          dateStart: FieldValue.serverTimestamp(),
         });
 
         await this.chooserRepo.initializeChoosersTransaction(transaction, shuffledTeamIds);
@@ -198,7 +196,7 @@ export default class GameService {
    */
   async returnToGameHome() {
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         await this.soundRepo.addSoundTransaction(transaction, 'ui_confirmation_alert_b2');
         await this.gameRepo.updateGameStatusTransaction(transaction, this.gameId, GameStatus.GAME_HOME);
 
@@ -215,7 +213,7 @@ export default class GameService {
    */
   async resumeEditing() {
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         await this.gameRepo.updateGameStatusTransaction(transaction, this.gameId, GameStatus.GAME_EDIT);
 
         this.log.info('Editing resumed');
@@ -231,10 +229,10 @@ export default class GameService {
    */
   async endGame() {
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
           status: GameStatus.GAME_END,
-          dateEnd: serverTimestamp(),
+          dateEnd: FieldValue.serverTimestamp(),
         });
 
         this.log.info('Game ended');

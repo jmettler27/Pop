@@ -292,6 +292,7 @@ const commonQuestionFields = (question: BaseQuestion, locale: string, users: Use
   const { name, image } = user!;
 
   return {
+    id: question.id,
     lang: question.lang ? localeToEmoji(question.lang) : undefined,
     topic: question.topic ? topicToEmoji(question.topic) : undefined,
     createdAt: timestampToNumericDate(question.createdAt as FirestoreTimestamp | null | undefined, locale),

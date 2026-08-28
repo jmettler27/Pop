@@ -1,10 +1,9 @@
-import { Transaction } from 'firebase/firestore';
+import { Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import GameBuzzerQuestionService from '@/backend/services/question/buzzer/GameBuzzerQuestionService';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
+import { adminDb } from '@/firebase/admin';
 import { GameBasicQuestion } from '@/models/questions/basic';
 import { QuestionType } from '@/models/questions/question-type';
 import { BasicRound } from '@/models/rounds/basic';
@@ -69,7 +68,7 @@ export default class GameBasicQuestionService extends GameBuzzerQuestionService 
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction: Transaction) => {
+      await adminDb().runTransaction(async (transaction: Transaction) => {
         const choosers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId);
         if (choosers.length === 0) {
           this.log.warn({ question: questionId, team: teamId }, 'No choosers found for team, cannot handle answer');

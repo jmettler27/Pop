@@ -1,4 +1,4 @@
-import { serverTimestamp, Transaction } from 'firebase/firestore';
+import { FieldValue, Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
@@ -58,7 +58,7 @@ export default class MatchingRoundService extends RoundService {
 
     await this.roundRepo.updateRoundTransaction(transaction, roundId, {
       type: RoundType.MATCHING,
-      dateStart: serverTimestamp(),
+      dateStart: FieldValue.serverTimestamp(),
       order: newOrder,
       currentQuestionIdx: 0,
       maxPoints: 0,
@@ -119,7 +119,7 @@ export default class MatchingRoundService extends RoundService {
     await this.chooserRepo.resetChoosersTransaction(transaction);
     const newChooserTeamId = chooser.chooserOrder[0];
     this.log.debug({ round: roundId, question: questionId, newChooserTeamId }, 'New chooser team for the question');
-    await this.playerRepo.updateTeamAndOtherTeamsPlayersStatus(newChooserTeamId, PlayerStatus.FOCUS, PlayerStatus.IDLE);
+    this.pendingStatus.enqueueTeamAndOthers(newChooserTeamId, PlayerStatus.FOCUS, PlayerStatus.IDLE);
     await this.timerRepo.startTimerTransaction(
       transaction,
       gameMatchingQuestion.thinkingTime * (baseMatchingQuestion.numCols! - 1)

@@ -1,4 +1,4 @@
-import { type Transaction } from 'firebase/firestore';
+import { type Transaction } from 'firebase-admin/firestore';
 
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 import User, { type UserData } from '@/models/users/user';

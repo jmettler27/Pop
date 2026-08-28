@@ -2,8 +2,7 @@ import { logger } from '@/backend/logger';
 import BaseQuestionRepositoryFactory from '@/backend/repositories/question/BaseQuestionRepositoryFactory';
 import QuestionAudioRepository from '@/backend/repositories/storage/QuestionAudioRepository';
 import QuestionImageRepository from '@/backend/repositories/storage/QuestionImageRepository';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
+import { adminDb } from '@/firebase/admin';
 import { UpdateBaseQuestionData, type CreateBaseQuestionData } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
 import QuestionFactory from '@/models/questions/QuestionFactory';
@@ -45,7 +44,7 @@ export default class CreateQuestionService {
         throw new Error(`Question ${questionId} not found`);
       }
 
-      return await runBackendTransaction(firestore, async (transaction) => {
+      return await adminDb().runTransaction(async (transaction) => {
         const existingObj = existing.toObject();
         const mergedData = {
           id: questionId,
@@ -104,7 +103,7 @@ export default class CreateQuestionService {
     }
 
     try {
-      return await runBackendTransaction(firestore, async (transaction) => {
+      return await adminDb().runTransaction(async (transaction) => {
         const createData: CreateBaseQuestionData = {
           ...data,
           createdAt: new Date(),

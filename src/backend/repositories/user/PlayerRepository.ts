@@ -1,7 +1,7 @@
-import { doc, writeBatch, type Transaction } from 'firebase/firestore';
+import { type Transaction } from 'firebase-admin/firestore';
 
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
-import { firestore } from '@/firebase/firebase';
+import { adminDb } from '@/firebase/admin';
 import { Player, type PlayerData } from '@/models/users/player';
 
 export default class PlayerRepository extends FirebaseRepository {
@@ -88,8 +88,8 @@ export default class PlayerRepository extends FirebaseRepository {
   }
 
   async updateAllPlayersStatus(status: string, playerIds: string[]): Promise<void> {
-    const batch = writeBatch(firestore);
-    playerIds.forEach((id: string) => batch.update(doc(this.collectionRef, id), { status }));
+    const batch = adminDb().batch();
+    playerIds.forEach((id: string) => batch.update(this.getDocumentRef(id), { status }));
     await batch.commit();
   }
 
@@ -98,13 +98,13 @@ export default class PlayerRepository extends FirebaseRepository {
     status: string,
     playerIds: string[]
   ): Promise<void> {
-    playerIds.map((id: string) => doc(this.collectionRef, id)).forEach((ref) => transaction.update(ref, { status }));
+    playerIds.map((id: string) => this.getDocumentRef(id)).forEach((ref) => transaction.update(ref, { status }));
   }
 
   async updateTeamPlayersStatus(teamId: string, status: string): Promise<void> {
     const players = await this.getPlayersByTeamId(teamId);
-    const batch = writeBatch(firestore);
-    for (const player of players) batch.update(doc(this.collectionRef, player.id!), { status });
+    const batch = adminDb().batch();
+    for (const player of players) batch.update(this.getDocumentRef(player.id!), { status });
     await batch.commit();
   }
 
@@ -115,9 +115,9 @@ export default class PlayerRepository extends FirebaseRepository {
   ): Promise<void> {
     const players = await this.getPlayersByTeamId(teamId);
     const otherPlayers = await this.getAllOtherPlayers(teamId);
-    const batch = writeBatch(firestore);
-    for (const player of players) batch.update(doc(this.collectionRef, player.id!), { status: teamStatus });
-    for (const player of otherPlayers) batch.update(doc(this.collectionRef, player.id!), { status: otherTeamsStatus });
+    const batch = adminDb().batch();
+    for (const player of players) batch.update(this.getDocumentRef(player.id!), { status: teamStatus });
+    for (const player of otherPlayers) batch.update(this.getDocumentRef(player.id!), { status: otherTeamsStatus });
     await batch.commit();
   }
 }

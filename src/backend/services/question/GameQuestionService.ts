@@ -1,4 +1,4 @@
-import { increment, Transaction } from 'firebase/firestore';
+import { FieldValue, Transaction } from 'firebase-admin/firestore';
 import type { Logger } from 'pino';
 
 import { logger } from '@/backend/logger';
@@ -14,8 +14,7 @@ import SoundRepository from '@/backend/repositories/sound/SoundRepository';
 import TimerRepository from '@/backend/repositories/timer/TimerRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
+import { PendingStatusChanges } from '@/backend/services/pendingStatusChanges';
 import { GameStatus } from '@/models/games/game-status';
 import { QuestionType } from '@/models/questions/question-type';
 import { GameScores, RoundScores, ScoresProgress } from '@/models/scores';
@@ -38,6 +37,7 @@ export default class GameQuestionService {
   protected roundId: string;
   protected roundRepo: RoundRepository;
   protected roundScoreRepo: RoundScoreRepository;
+  protected readonly pendingStatus: PendingStatusChanges;
   protected log: Logger;
 
   constructor(gameId: string, roundId: string, questionType: QuestionType) {
@@ -57,6 +57,7 @@ export default class GameQuestionService {
     this.gameRepo = new GameRepository();
     this.gameScoreRepo = new GameScoreRepository(gameId);
     this.playerRepo = new PlayerRepository(gameId);
+    this.pendingStatus = new PendingStatusChanges(this.playerRepo);
     this.teamRepo = new TeamRepository(gameId);
     this.timerRepo = new TimerRepository(gameId);
     this.soundRepo = new SoundRepository(gameId);
@@ -76,7 +77,7 @@ export default class GameQuestionService {
     }
 
     try {
-      await runBackendTransaction(firestore, (transaction) => this.resetQuestionTransaction(transaction, questionId));
+      await this.pendingStatus.runTransaction((transaction) => this.resetQuestionTransaction(transaction, questionId));
     } catch (error) {
       this.log.error({ question: questionId, err: error }, 'Failed to reset the question');
       throw error;
@@ -95,7 +96,7 @@ export default class GameQuestionService {
     }
 
     try {
-      await runBackendTransaction(firestore, (transaction) => this.endQuestionTransaction(transaction, questionId));
+      await this.pendingStatus.runTransaction((transaction) => this.endQuestionTransaction(transaction, questionId));
     } catch (error) {
       this.log.error({ question: questionId, err: error }, 'Failed to end the question');
       throw error;
@@ -118,7 +119,7 @@ export default class GameQuestionService {
     }
 
     try {
-      await runBackendTransaction(firestore, (transaction) =>
+      await this.pendingStatus.runTransaction((transaction) =>
         this.handleCountdownEndTransaction(transaction, questionId)
       );
     } catch (error) {
@@ -164,7 +165,7 @@ export default class GameQuestionService {
     }
 
     await this.gameScoreRepo.updateScoresTransaction(transaction, {
-      [`scores.${teamId}`]: increment(points),
+      [`scores.${teamId}`]: FieldValue.increment(points),
       scoresProgress: newGameProgress,
     });
 
@@ -180,7 +181,7 @@ export default class GameQuestionService {
       };
     }
     await this.roundScoreRepo.updateScoresTransaction(transaction, {
-      [`scores.${teamId}`]: increment(points > 0 ? points : 1),
+      [`scores.${teamId}`]: FieldValue.increment(points > 0 ? points : 1),
       scoresProgress: newRoundProgress,
     });
   }

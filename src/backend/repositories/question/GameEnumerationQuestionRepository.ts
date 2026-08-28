@@ -1,4 +1,4 @@
-import { arrayUnion, increment, serverTimestamp, Timestamp, type Transaction } from 'firebase/firestore';
+import { FieldValue, Timestamp, type Transaction } from 'firebase-admin/firestore';
 
 import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
 import {
@@ -75,7 +75,7 @@ export default class GameEnumerationQuestionRepository extends GameQuestionRepos
       transaction,
       [questionId, ...GameEnumerationQuestionRepository.ENUMERATION_PLAYERS_PATH],
       {
-        bets: arrayUnion({
+        bets: FieldValue.arrayUnion({
           ...bet,
           timestamp: Timestamp.now(),
         }),
@@ -88,7 +88,7 @@ export default class GameEnumerationQuestionRepository extends GameQuestionRepos
       transaction,
       [questionId, ...GameEnumerationQuestionRepository.ENUMERATION_PLAYERS_PATH],
       {
-        'challenger.numCorrect': increment(1),
+        'challenger.numCorrect': FieldValue.increment(1),
       }
     );
   }
@@ -98,8 +98,8 @@ export default class GameEnumerationQuestionRepository extends GameQuestionRepos
       transaction,
       [questionId, ...GameEnumerationQuestionRepository.ENUMERATION_PLAYERS_PATH],
       {
-        'challenger.numCorrect': increment(1),
-        [`challenger.cited.${itemIdx}`]: serverTimestamp(),
+        'challenger.numCorrect': FieldValue.increment(1),
+        [`challenger.cited.${itemIdx}`]: FieldValue.serverTimestamp(),
       }
     );
   }

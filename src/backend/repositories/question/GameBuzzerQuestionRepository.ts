@@ -1,4 +1,4 @@
-import { arrayRemove, arrayUnion, Timestamp, type Transaction } from 'firebase/firestore';
+import { FieldValue, Timestamp, type Transaction } from 'firebase-admin/firestore';
 
 import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
 import { BuzzerQuestionPlayers, GameBuzzerQuestion } from '@/models/questions/buzzer';
@@ -86,8 +86,8 @@ export default class GameBuzzerQuestionRepository extends GameQuestionRepository
     clueIdx = 0
   ): Promise<void> {
     await this.updatePlayersTransaction(transaction, questionId, {
-      canceled: arrayUnion({ clueIdx, playerId, timestamp: Timestamp.now() }),
-      buzzed: arrayRemove(playerId),
+      canceled: FieldValue.arrayUnion({ clueIdx, playerId, timestamp: Timestamp.now() }),
+      buzzed: FieldValue.arrayRemove(playerId),
     });
   }
 
@@ -98,7 +98,7 @@ export default class GameBuzzerQuestionRepository extends GameQuestionRepository
   }
 
   async addPlayerToBuzzerTransaction(transaction: Transaction, questionId: string, playerId: string): Promise<void> {
-    await this.updatePlayersTransaction(transaction, questionId, { buzzed: arrayUnion(playerId) });
+    await this.updatePlayersTransaction(transaction, questionId, { buzzed: FieldValue.arrayUnion(playerId) });
   }
 
   async removePlayerFromBuzzerTransaction(
@@ -106,7 +106,7 @@ export default class GameBuzzerQuestionRepository extends GameQuestionRepository
     questionId: string,
     playerId: string
   ): Promise<void> {
-    await this.updatePlayersTransaction(transaction, questionId, { buzzed: arrayRemove(playerId) });
+    await this.updatePlayersTransaction(transaction, questionId, { buzzed: FieldValue.arrayRemove(playerId) });
   }
 
   async clearBuzzerTransaction(transaction: Transaction, questionId: string): Promise<void> {

@@ -1,4 +1,4 @@
-import { serverTimestamp, Timestamp, type Transaction } from 'firebase/firestore';
+import { FieldValue, Timestamp, type Transaction } from 'firebase-admin/firestore';
 
 import FirebaseDocumentRepository from '@/backend/repositories/FirebaseDocumentRepository';
 import { Timer, TimerStatus } from '@/models/timer';
@@ -43,7 +43,7 @@ export default class TimerRepository extends FirebaseDocumentRepository {
   async startTimerTransaction(transaction: Transaction, duration: number | null = null): Promise<void> {
     const updateData: Record<string, unknown> = {
       status: TimerStatus.START,
-      timestamp: serverTimestamp(),
+      timestamp: FieldValue.serverTimestamp(),
     };
     if (duration != null) {
       updateData.duration = duration;

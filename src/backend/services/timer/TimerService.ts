@@ -5,8 +5,7 @@ import GameRepository from '@/backend/repositories/game/GameRepository';
 import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQuestionRepositoryFactory';
 import SoundRepository from '@/backend/repositories/sound/SoundRepository';
 import TimerRepository from '@/backend/repositories/timer/TimerRepository';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
+import { adminDb } from '@/firebase/admin';
 import { GameStatus } from '@/models/games/game-status';
 import { GameQuestion } from '@/models/questions/question';
 import { Timer } from '@/models/timer';
@@ -32,7 +31,7 @@ export default class TimerService {
 
   async endTimer() {
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         await this.timerRepo.endTimerTransaction(transaction);
 
         this.log.info('Timer ended');
@@ -45,7 +44,7 @@ export default class TimerService {
 
   async startTimer(duration: number) {
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         await this.soundRepo.addSoundTransaction(transaction, 'message_incoming');
         await this.timerRepo.startTimerTransaction(transaction, duration);
 
@@ -59,7 +58,7 @@ export default class TimerService {
 
   async stopTimer() {
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         await this.timerRepo.stopTimerTransaction(transaction);
 
         this.log.info('Timer stopped');
@@ -72,7 +71,7 @@ export default class TimerService {
 
   async resetTimer() {
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
         if (!game) {
           this.log.warn('Game not found');

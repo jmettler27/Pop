@@ -1,4 +1,4 @@
-import { Transaction } from 'firebase/firestore';
+import { Transaction } from 'firebase-admin/firestore';
 import type { Logger } from 'pino';
 
 import { logger } from '@/backend/logger';
@@ -15,9 +15,8 @@ import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
+import { PendingStatusChanges } from '@/backend/services/pendingStatusChanges';
 import GameQuestionServiceFactory from '@/backend/services/question/GameQuestionServiceFactory';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
 import { GameStatus } from '@/models/games/game-status';
 import { type QuestionType } from '@/models/questions/question-type';
 import { AnyGameQuestion } from '@/models/questions/QuestionFactory';
@@ -26,7 +25,7 @@ import { RoundType } from '@/models/rounds/round-type';
 import { AnyRound } from '@/models/rounds/RoundFactory';
 import { ScorePolicyType } from '@/models/score-policy';
 import { Scores, ScoresProgress } from '@/models/scores';
-import { PlayerStatus } from '@/models/users/player';
+import { Player, PlayerStatus } from '@/models/users/player';
 import { aggregateTiedTeams, shuffle } from '@/utils/arrays';
 import { sortAscendingRoundScores, sortScores } from '@/utils/scores';
 
@@ -43,6 +42,7 @@ export default class RoundService {
   protected soundRepo: SoundRepository;
   protected readyRepo: ReadyRepository;
   protected baseQuestionRepo: BaseQuestionRepository;
+  protected readonly pendingStatus: PendingStatusChanges;
   protected log: Logger;
 
   constructor(gameId: string, roundType: RoundType) {
@@ -60,6 +60,7 @@ export default class RoundService {
     this.gameScoreRepo = new GameScoreRepository(this.gameId);
 
     this.playerRepo = new PlayerRepository(this.gameId);
+    this.pendingStatus = new PendingStatusChanges(this.playerRepo);
     this.teamRepo = new TeamRepository(this.gameId);
     this.chooserRepo = new ChooserRepository(this.gameId);
     this.timerRepo = new TimerRepository(this.gameId);
@@ -122,7 +123,7 @@ export default class RoundService {
    */
   async startRound(roundId: string) {
     try {
-      await runBackendTransaction(firestore, (transaction) => this.startRoundTransaction(transaction, roundId));
+      await this.pendingStatus.runTransaction((transaction) => this.startRoundTransaction(transaction, roundId));
     } catch (error) {
       this.log.error({ err: error }, 'Error starting round');
       throw error;
@@ -152,7 +153,7 @@ export default class RoundService {
     }
 
     try {
-      await runBackendTransaction(firestore, (transaction) =>
+      await this.pendingStatus.runTransaction((transaction) =>
         this.handleQuestionEndTransaction(transaction, roundId, questionId)
       );
     } catch (error) {
@@ -187,8 +188,7 @@ export default class RoundService {
     }
 
     try {
-      await runBackendTransaction(
-        firestore,
+      await this.pendingStatus.runTransaction(
         async (transaction) => await this.endRoundTransaction(transaction, roundId)
       );
     } catch (error) {
@@ -460,6 +460,16 @@ export default class RoundService {
       rankingDiffs = Round.calculateRankDifferences(prevRoundScores!.gameSortedTeams, gameSortedTeams);
     }
 
+    // Firestore transactions require every read before any write. The chooser-order
+    // update below reads each next-round team's players, so do those reads here, up front.
+    const isFinalRound = (round.order ?? 0) >= game.rounds.length - 1;
+    const playersByTeam = new Map<string, Player[]>();
+    if (!isFinalRound) {
+      for (const teamId of newChooserOrder) {
+        playersByTeam.set(teamId, await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId));
+      }
+    }
+
     /* =================================== WRITES =================================== */
     await roundScoreRepo.updateScoresTransaction(transaction, {
       roundSortedTeams,
@@ -475,13 +485,12 @@ export default class RoundService {
     });
 
     // If the round is not the last one, update the running order of teams for the next round
-    if ((round.order ?? 0) < game.rounds.length - 1) {
+    if (!isFinalRound) {
       this.log.debug({ round: roundId, newChooserOrder }, 'Updating chooser order for the next round');
       // The first team in the running order - the "chooser" team - chooses the next round, hence the status 'focus'
       // All other teams are set to 'idle'
       for (const [idx, teamId] of newChooserOrder.entries()) {
-        const teamPlayers = await this.playerRepo.getPlayersByTeamIdTransaction(transaction, teamId);
-        for (const player of teamPlayers) {
+        for (const player of playersByTeam.get(teamId) ?? []) {
           await this.playerRepo.updatePlayerStatusTransaction(
             transaction,
             player.id!,
@@ -520,8 +529,7 @@ export default class RoundService {
     }
 
     try {
-      await runBackendTransaction(
-        firestore,
+      await this.pendingStatus.runTransaction(
         async (transaction) => await this.handleRoundSelectedTransaction(transaction, roundId, userId)
       );
     } catch (error) {

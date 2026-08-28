@@ -1,4 +1,4 @@
-import { arrayRemove, arrayUnion, serverTimestamp, type Transaction } from 'firebase/firestore';
+import { FieldValue, type Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import FirebaseRepository, { type QueryOptions } from '@/backend/repositories/FirebaseRepository';
@@ -69,19 +69,19 @@ export default class RoundRepository extends FirebaseRepository {
   }
 
   async addQuestionTransaction(transaction: Transaction, roundId: string, questionId: string): Promise<void> {
-    await this.updateRoundTransaction(transaction, roundId, { questions: arrayUnion(questionId) });
+    await this.updateRoundTransaction(transaction, roundId, { questions: FieldValue.arrayUnion(questionId) });
   }
 
   async removeQuestionTransaction(transaction: Transaction, roundId: string, questionId: string): Promise<void> {
-    await this.updateRoundTransaction(transaction, roundId, { questions: arrayRemove(questionId) });
+    await this.updateRoundTransaction(transaction, roundId, { questions: FieldValue.arrayRemove(questionId) });
   }
 
   async startRoundTransaction(transaction: Transaction, roundId: string): Promise<void> {
-    await this.updateRoundTransaction(transaction, roundId, { dateStart: serverTimestamp() });
+    await this.updateRoundTransaction(transaction, roundId, { dateStart: FieldValue.serverTimestamp() });
   }
 
   async endRoundTransaction(transaction: Transaction, roundId: string): Promise<void> {
-    await this.updateRoundTransaction(transaction, roundId, { dateEnd: serverTimestamp() });
+    await this.updateRoundTransaction(transaction, roundId, { dateEnd: FieldValue.serverTimestamp() });
   }
 
   async setCurrentQuestionIdxTransaction(

@@ -1,4 +1,4 @@
-import { arrayRemove, arrayUnion, type Transaction } from 'firebase/firestore';
+import { FieldValue, type Transaction } from 'firebase-admin/firestore';
 
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
 import { CreateGameRoundsData, GameRounds, GameRoundsData } from '@/models/games/game';
@@ -78,11 +78,11 @@ export default class GameRepository extends FirebaseRepository {
   }
 
   async addRoundTransaction(transaction: Transaction, gameId: string, roundId: string): Promise<void> {
-    await this.updateTransaction(transaction, gameId, { rounds: arrayUnion(roundId) });
+    await this.updateTransaction(transaction, gameId, { rounds: FieldValue.arrayUnion(roundId) });
   }
 
   async removeRoundTransaction(transaction: Transaction, gameId: string, roundId: string): Promise<void> {
-    await this.updateTransaction(transaction, gameId, { rounds: arrayRemove(roundId) });
+    await this.updateTransaction(transaction, gameId, { rounds: FieldValue.arrayRemove(roundId) });
   }
 
   async setCurrentQuestionTransaction(

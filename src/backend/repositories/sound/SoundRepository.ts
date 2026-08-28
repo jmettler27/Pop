@@ -1,10 +1,9 @@
-import { serverTimestamp, type Transaction } from 'firebase/firestore';
+import { FieldValue, type Transaction } from 'firebase-admin/firestore';
 import type { Logger } from 'pino';
 
 import { logger } from '@/backend/logger';
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
+import { adminDb } from '@/firebase/admin';
 import { getRandomElement } from '@/utils/arrays';
 
 const WRONG_ANSWER_SOUNDS = ['roblox_oof', 'oof', 'terraria_male_damage', 'itai'];
@@ -22,7 +21,7 @@ export default class SoundRepository extends FirebaseRepository {
   async initializeSoundsTransaction(transaction: Transaction): Promise<Record<string, unknown>> {
     return this.createTransaction(transaction, {
       played: false,
-      timestamp: serverTimestamp(),
+      timestamp: FieldValue.serverTimestamp(),
     });
   }
 
@@ -31,7 +30,7 @@ export default class SoundRepository extends FirebaseRepository {
       throw new Error('Filename is required');
     }
     try {
-      await runBackendTransaction(firestore, (transaction) => this.addSoundTransaction(transaction, filename));
+      await adminDb().runTransaction((transaction) => this.addSoundTransaction(transaction, filename));
     } catch (error) {
       this.log.error({ err: error }, 'Error adding sound');
       throw error;
@@ -41,7 +40,7 @@ export default class SoundRepository extends FirebaseRepository {
   async addSoundTransaction(transaction: Transaction, filename: string): Promise<Record<string, unknown>> {
     const sound = await this.createTransaction(transaction, {
       filename,
-      timestamp: serverTimestamp(),
+      timestamp: FieldValue.serverTimestamp(),
     });
     this.log.debug({ filename }, 'Sound added');
     return sound;
@@ -49,7 +48,7 @@ export default class SoundRepository extends FirebaseRepository {
 
   async clearSounds(): Promise<void> {
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         const sounds = await this.getAll();
         for (const sound of sounds) {
           await this.deleteTransaction(transaction, sound.id as string);

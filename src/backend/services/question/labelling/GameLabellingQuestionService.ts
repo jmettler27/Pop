@@ -1,10 +1,9 @@
-import { Timestamp, Transaction } from 'firebase/firestore';
+import { Timestamp, Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
 import GameBuzzerQuestionService from '@/backend/services/question/buzzer/GameBuzzerQuestionService';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
+import { adminDb } from '@/firebase/admin';
 import { GameLabellingQuestion, LabellingQuestion } from '@/models/questions/labelling';
 import { QuestionType } from '@/models/questions/question-type';
 import { LabellingRound } from '@/models/rounds/labelling';
@@ -110,7 +109,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
     }
     try {
       // transaction
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         const baseQuestion = (await this.baseQuestionRepo.getQuestionTransaction(
           transaction,
           questionId
@@ -209,7 +208,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         const baseQuestion = (await this.baseQuestionRepo.getQuestionTransaction(
           transaction,
           questionId
@@ -279,7 +278,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         await (this.gameQuestionRepo as GameLabellingQuestionRepository).cancelPlayerTransaction(
           transaction,
           questionId,

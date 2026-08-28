@@ -1,9 +1,8 @@
-import { increment, Timestamp, Transaction } from 'firebase/firestore';
+import { FieldValue, Timestamp, Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
+import { adminDb } from '@/firebase/admin';
 import { QuestionType } from '@/models/questions/question-type';
 import { GameReorderingQuestion, Ordering, ReorderingQuestion, SubmittedOrdering } from '@/models/questions/reordering';
 import { ReorderingRound } from '@/models/rounds/reordering';
@@ -153,7 +152,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
     }
     for (const [teamId, reward] of Object.entries(teamRewards)) {
       if (reward > 0) {
-        scoreUpdates[`scores.${teamId}`] = increment(reward);
+        scoreUpdates[`scores.${teamId}`] = FieldValue.increment(reward);
       }
     }
 
@@ -197,7 +196,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         await this.submitOrderingTransaction(transaction, questionId, playerId, teamId, ordering);
       });
     } catch (error) {

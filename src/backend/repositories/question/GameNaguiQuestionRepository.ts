@@ -1,4 +1,4 @@
-import { Transaction } from 'firebase/firestore';
+import { Transaction } from 'firebase-admin/firestore';
 
 import { QuestionType } from '@/models/questions/question-type';
 
