@@ -24,8 +24,18 @@ export default class PlayerRepository extends FirebaseRepository {
     return data.map((p) => new Player(p as unknown as PlayerData));
   }
 
+  async getAllPlayersTransaction(transaction: Transaction): Promise<Player[]> {
+    const data = await super.getAllTransaction(transaction);
+    return data.map((p) => new Player(p as unknown as PlayerData));
+  }
+
   async getAllPlayerIds(): Promise<string[]> {
     const data = await super.getAll();
+    return data.map((p) => p.id as string);
+  }
+
+  async getAllPlayerIdsTransaction(transaction: Transaction): Promise<string[]> {
+    const data = await super.getAllTransaction(transaction);
     return data.map((p) => p.id as string);
   }
 

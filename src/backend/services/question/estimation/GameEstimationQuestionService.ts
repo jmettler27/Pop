@@ -72,7 +72,7 @@ export default class GameEstimationQuestionService extends GameQuestionService {
 
     if (bets.length === 0) {
       // We end the question before any bet is submitted
-      const teams = await this.teamRepo.getAllTeams();
+      const teams = await this.teamRepo.getAllTeamsTransaction(transaction);
       if (!teams || teams.length <= 0) {
         this.log.warn({ question: questionId }, 'Teams not found');
         throw new Error('Teams not found');
@@ -119,6 +119,13 @@ export default class GameEstimationQuestionService extends GameQuestionService {
     questionId: string,
     transaction: Transaction
   ) {
+    // All transactional reads must precede the writes below.
+    const players = await this.playerRepo.getAllPlayersTransaction(transaction);
+    if (!players || players.length <= 0) {
+      this.log.warn({ question: questionId }, 'Players not found');
+      throw new Error('Players not found');
+    }
+
     const answerType = baseQuestion.answerType;
     const parsedAnswer = EstimationQuestion.parseAnswer(answerType, baseQuestion.answer);
     const isDate = answerType === EstimationQuestion.AnswerType.DATE;
@@ -201,12 +208,6 @@ export default class GameEstimationQuestionService extends GameQuestionService {
     await this.roundScoreRepo.updateScoresTransaction(transaction, scoreUpdates);
 
     // Step 5: update player statuses
-    const players = await this.playerRepo.getAllPlayers();
-    if (!players || players.length <= 0) {
-      this.log.warn({ question: questionId }, 'Players not found');
-      throw new Error('Players not found');
-    }
-
     for (const tid of Object.keys(currRoundScores)) {
       const playerIds = players.filter((p) => p.teamId === tid).map((p) => p.id!);
       if (playerIds.length > 0) {
@@ -263,7 +264,7 @@ export default class GameEstimationQuestionService extends GameQuestionService {
       throw new Error('Game question not found');
     }
 
-    const numTeams = await this.teamRepo.getNumTeams();
+    const numTeams = await this.teamRepo.getNumTeamsTransaction(transaction);
     const teamAlreadySubmitted = gameQuestion.bets && gameQuestion.bets.some((b: EstimationBet) => b.teamId === teamId);
     if (teamAlreadySubmitted) {
       this.log.warn({ question: questionId, team: teamId }, 'Team has already submitted a bet');

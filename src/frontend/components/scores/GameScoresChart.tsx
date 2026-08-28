@@ -90,9 +90,8 @@ export default function GameScoresChart({ currentRoundOrder, teams }: GameScores
   const labels = ['', ...rounds.map((round) => round.title)];
 
   const teamGameScoresSequence = (teamId: string) => {
-    return rounds.map(
-      (round: AnyRound) => (gameScores as unknown as GameScores).scoresProgress[teamId][round.id as string]
-    );
+    const teamProgress = (gameScores as unknown as GameScores).scoresProgress[teamId] ?? {};
+    return rounds.map((round: AnyRound) => teamProgress[round.id as string]);
   };
 
   const datasets = teams.map((team: Team) => ({

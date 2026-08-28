@@ -28,8 +28,12 @@ export default class BaseQuestionRepository extends FirebaseRepository {
     return questions.map((q) => QuestionFactory.createBaseQuestion(q.type as QuestionType, q));
   }
 
-  async createQuestionTransaction(transaction: Transaction, data: CreateBaseQuestionData): Promise<AnyBaseQuestion> {
-    const result = await super.createTransaction(transaction, data);
+  async createQuestionTransaction(
+    transaction: Transaction,
+    data: CreateBaseQuestionData,
+    id: string | null = null
+  ): Promise<AnyBaseQuestion> {
+    const result = await super.createTransaction(transaction, data, id);
     return QuestionFactory.createBaseQuestion(this.questionType, result as BaseQuestionData);
   }
 

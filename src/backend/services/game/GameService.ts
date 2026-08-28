@@ -71,7 +71,7 @@ export default class GameService {
   async startGame() {
     try {
       await this.pendingStatus.runTransaction(async (transaction) => {
-        const teams = await this.teamRepo.getAll();
+        const teams = await this.teamRepo.getAllTransaction(transaction);
 
         const { teamIds, initTeamGameScores, initTeamGameScoresProgress } = (teams as unknown as Team[]).reduce(
           (
@@ -152,11 +152,12 @@ export default class GameService {
       chooserOrder: shuffledTeamIds,
     });
 
+    // Move the game out of ROUND_END *before* wiping per-round score docs, so the
+    // round-end view unmounts instead of rendering half-cleared score data.
+    await this.gameRepo.resetGame(this.gameId);
+
     // Reset all rounds - assuming a method exists in gameRepo
     await this.resetAllRounds();
-
-    // Reset game
-    await this.gameRepo.resetGame(this.gameId);
 
     // Reset timer
     const managerId = getRandomElement(organizerIds);

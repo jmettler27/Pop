@@ -305,7 +305,8 @@ export default class GameBuzzerQuestionService extends GameQuestionService {
   }
 
   async invalidateAnswerTransaction(transaction: Transaction, questionId: string, playerId: string) {
-    const gameQuestion = (await (this.gameQuestionRepo as GameBuzzerQuestionRepository).getQuestion(
+    const gameQuestion = (await (this.gameQuestionRepo as GameBuzzerQuestionRepository).getQuestionTransaction(
+      transaction,
       questionId
     )) as GameBuzzerQuestion;
     if (!gameQuestion) {

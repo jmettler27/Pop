@@ -73,7 +73,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
         'No orderings submitted for this question, skipping rewards calculation'
       );
       // We end the question before any ordering is submitted
-      const teams = await this.teamRepo.getAllTeams();
+      const teams = await this.teamRepo.getAllTeamsTransaction(transaction);
       if (!teams) {
         this.log.warn({ question: questionId }, 'No teams found when ending question');
         throw new Error('No teams found when ending question');
@@ -122,7 +122,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
     transaction: Transaction,
     maxScore: number
   ) {
-    const players = await this.playerRepo.getAllPlayers();
+    const players = await this.playerRepo.getAllPlayersTransaction(transaction);
     if (!players) {
       this.log.warn({ question: questionId }, 'No players found when calculating rewards');
       throw new Error('No players found when calculating rewards');
@@ -230,7 +230,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
       throw new Error('Base question not found');
     }
 
-    const numTeams = await this.teamRepo.getNumTeams();
+    const numTeams = await this.teamRepo.getNumTeamsTransaction(transaction);
     const orderings = gameQuestion.orderings || [];
 
     // Check if team has already submitted

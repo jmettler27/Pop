@@ -20,7 +20,7 @@ export default class LabellingRoundService extends RoundService {
   }
 
   async handleRoundSelectedTransaction(transaction: Transaction, roundId: string, userId: string) {
-    const playerIds = await this.playerRepo.getAllPlayerIds();
+    const playerIds = await this.playerRepo.getAllPlayerIdsTransaction(transaction);
     if (!playerIds || playerIds.length === 0) {
       this.log.warn({ round: roundId }, 'No players in the game, cannot start round');
       throw new Error('No players in the game, cannot start round');
@@ -68,6 +68,14 @@ export default class LabellingRoundService extends RoundService {
       return;
     }
 
+    // If it is the first round, a random chooser order is needed. Read it before any write below.
+    const needsChooserOrder = (chooser.chooserOrder as unknown[]).length === 0 || chooser.chooserIdx === null;
+    const shuffledTeamIds = needsChooserOrder ? await this.teamRepo.getShuffledTeamIdsTransaction(transaction) : null;
+    if (needsChooserOrder && (!shuffledTeamIds || shuffledTeamIds.length === 0)) {
+      this.log.warn({ round: roundId }, 'No teams found when setting chooser order');
+      throw new Error('No teams found when setting chooser order');
+    }
+
     // Set the status of every player to 'idle'
     await this.playerRepo.updateAllPlayersStatusTransaction(transaction, PlayerStatus.IDLE, playerIds);
 
@@ -79,16 +87,9 @@ export default class LabellingRoundService extends RoundService {
       ...(maxPoints !== null && { maxPoints }),
     });
 
-    // If the round requires an order of chooser teams (e.g. OOO, MCQ) and it is the first round, find a random order for the chooser teams
-    if ((chooser.chooserOrder as unknown[]).length === 0 || chooser.chooserIdx === null) {
-      const teamIds = await this.teamRepo.getShuffledTeamIds();
-      if (!teamIds) {
-        this.log.warn({ round: roundId }, 'No teams found when setting chooser order');
-        throw new Error('No teams found when setting chooser order');
-      }
-
-      await this.chooserRepo.updateChooserOrderTransaction(transaction, teamIds);
-      this.log.debug({ round: roundId, teamIds }, 'Chooser order set for the round');
+    if (needsChooserOrder) {
+      await this.chooserRepo.updateChooserOrderTransaction(transaction, shuffledTeamIds!);
+      this.log.debug({ round: roundId, teamIds: shuffledTeamIds }, 'Chooser order set for the round');
     }
 
     await this.chooserRepo.resetChoosersTransaction(transaction);
@@ -120,7 +121,7 @@ export default class LabellingRoundService extends RoundService {
       throw new Error('Game question not found');
     }
 
-    const playerIds = await this.playerRepo.getAllPlayerIds();
+    const playerIds = await this.playerRepo.getAllPlayerIdsTransaction(transaction);
     if (!playerIds || playerIds.length === 0) {
       this.log.warn({ round: roundId }, 'No players in the game, cannot start question');
       throw new Error('No players in the game, cannot start question');

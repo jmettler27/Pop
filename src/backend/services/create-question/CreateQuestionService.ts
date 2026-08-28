@@ -44,6 +44,19 @@ export default class CreateQuestionService {
         throw new Error(`Question ${questionId} not found`);
       }
 
+      // Storage uploads must happen outside the transaction: they are non-transactional
+      // side effects that would re-run on every retry of the callback.
+      let imageUrl: string | undefined;
+      let audioUrl: string | undefined;
+      if (files.image) {
+        this.imageRepo = new QuestionImageRepository();
+        imageUrl = await this.imageRepo.uploadQuestionImage(questionId, files.image);
+      }
+      if (files.audio) {
+        this.audioRepo = new QuestionAudioRepository();
+        audioUrl = await this.audioRepo.uploadQuestionAudio(questionId, files.audio);
+      }
+
       return await adminDb().runTransaction(async (transaction) => {
         const existingObj = existing.toObject();
         const mergedData = {
@@ -59,17 +72,8 @@ export default class CreateQuestionService {
 
         const baseQuestion = QuestionFactory.createBaseQuestion(existing.type, mergedData);
 
-        if (files.image) {
-          this.imageRepo = new QuestionImageRepository();
-          const imageUrl = await this.imageRepo.uploadQuestionImage(questionId, files.image);
-          baseQuestion.setImage(imageUrl);
-        }
-
-        if (files.audio) {
-          this.audioRepo = new QuestionAudioRepository();
-          const audioUrl = await this.audioRepo.uploadQuestionAudio(questionId, files.audio);
-          baseQuestion.setAudio(audioUrl);
-        }
+        if (imageUrl) baseQuestion.setImage(imageUrl);
+        if (audioUrl) baseQuestion.setAudio(audioUrl);
 
         await this.baseQuestionRepo.updateQuestionTransaction(
           transaction,
@@ -103,6 +107,21 @@ export default class CreateQuestionService {
     }
 
     try {
+      // Reserve the doc id up front so Storage uploads (non-transactional side effects
+      // that would re-run on every retry) can happen before the transaction opens.
+      const questionId = this.baseQuestionRepo.collectionRef.doc().id;
+
+      let imageUrl: string | undefined;
+      let audioUrl: string | undefined;
+      if (files.image) {
+        this.imageRepo = new QuestionImageRepository();
+        imageUrl = await this.imageRepo.uploadQuestionImage(questionId, files.image);
+      }
+      if (files.audio) {
+        this.audioRepo = new QuestionAudioRepository();
+        audioUrl = await this.audioRepo.uploadQuestionAudio(questionId, files.audio);
+      }
+
       return await adminDb().runTransaction(async (transaction) => {
         const createData: CreateBaseQuestionData = {
           ...data,
@@ -110,30 +129,14 @@ export default class CreateQuestionService {
           createdBy: userId,
           approved: true,
         };
-        const baseQuestion = await this.baseQuestionRepo.createQuestionTransaction(transaction, createData);
+        const baseQuestion = await this.baseQuestionRepo.createQuestionTransaction(transaction, createData, questionId);
         if (!baseQuestion) {
           throw new Error('Question not found');
         }
 
-        // Handle file uploads if any
-        let hasFiles = false;
-
-        if (files.image) {
-          this.imageRepo = new QuestionImageRepository();
-          const imageUrl = await this.imageRepo.uploadQuestionImage(baseQuestion.id!, files.image);
-          baseQuestion.setImage(imageUrl);
-          hasFiles = true;
-        }
-
-        if (files.audio) {
-          this.audioRepo = new QuestionAudioRepository();
-          const audioUrl = await this.audioRepo.uploadQuestionAudio(baseQuestion.id!, files.audio);
-          baseQuestion.setAudio(audioUrl);
-          hasFiles = true;
-        }
-
-        // Update the question with file URLs if any files were uploaded
-        if (hasFiles) {
+        if (imageUrl || audioUrl) {
+          if (imageUrl) baseQuestion.setImage(imageUrl);
+          if (audioUrl) baseQuestion.setAudio(audioUrl);
           await this.baseQuestionRepo.updateQuestionTransaction(
             transaction,
             baseQuestion.id!,

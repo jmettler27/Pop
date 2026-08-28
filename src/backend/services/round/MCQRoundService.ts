@@ -66,6 +66,14 @@ export default class MCQRoundService extends RoundService {
       return;
     }
 
+    // If it is the first round, a random chooser order is needed. Read it before any write below.
+    const needsChooserOrder = chooser.chooserOrder.length === 0 || chooser.chooserIdx === null;
+    const shuffledTeamIds = needsChooserOrder ? await this.teamRepo.getShuffledTeamIdsTransaction(transaction) : null;
+    if (needsChooserOrder && (!shuffledTeamIds || shuffledTeamIds.length === 0)) {
+      this.log.warn({ round: roundId }, 'No teams found when setting chooser order');
+      throw new Error('No teams found when setting chooser order');
+    }
+
     await this.roundRepo.updateRoundTransaction(transaction, roundId, {
       type: RoundType.MCQ,
       dateStart: FieldValue.serverTimestamp(),
@@ -75,16 +83,9 @@ export default class MCQRoundService extends RoundService {
       ...(maxPoints !== null && { maxPoints }),
     });
 
-    // If the round requires an order of chooser teams (e.g. OOO, MCQ) and it is the first round, find a random order for the chooser teams
-    if (chooser.chooserOrder.length === 0 || chooser.chooserIdx === null) {
-      const teamIds = await this.teamRepo.getShuffledTeamIds();
-      if (!teamIds) {
-        this.log.warn({ round: roundId }, 'No teams found when setting chooser order');
-        throw new Error('No teams found when setting chooser order');
-      }
-
-      await this.chooserRepo.updateChooserOrderTransaction(transaction, teamIds);
-      this.log.debug({ round: roundId, teamIds }, 'Chooser order set for the round');
+    if (needsChooserOrder) {
+      await this.chooserRepo.updateChooserOrderTransaction(transaction, shuffledTeamIds!);
+      this.log.debug({ round: roundId, teamIds: shuffledTeamIds }, 'Chooser order set for the round');
     }
 
     await this.chooserRepo.resetChoosersTransaction(transaction);
@@ -154,7 +155,7 @@ export default class MCQRoundService extends RoundService {
 
   async calculateMaxPointsTransaction(transaction: Transaction, round: AnyRound): Promise<number> {
     const mcqRound = round as MCQRound;
-    const numTeams = await this.teamRepo.getNumTeams();
+    const numTeams = await this.teamRepo.getNumTeamsTransaction(transaction);
     if (!numTeams) {
       this.log.warn({ round: round.id }, 'No teams found when calculating max points for completion rate policy');
       throw new Error('No teams found when calculating max points for completion rate policy');

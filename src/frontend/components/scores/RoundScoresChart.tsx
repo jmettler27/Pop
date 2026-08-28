@@ -61,7 +61,9 @@ export default function RoundScoresChart({ round, teams, roundScores }: RoundSco
   const datasets = teams.map((team) => ({
     id: team.id,
     label: team.name,
-    data: [0, ...roundScores.teamsScoresSequences[team.id!]],
+    // teamsScoresSequences can be missing a team mid-reset (resetGame wipes it to {})
+    // or for a team added after the round was scored — treat as an empty sequence.
+    data: [0, ...(roundScores.teamsScoresSequences[team.id!] ?? [])],
     borderColor: team.color,
     backgroundColor: team.color + '50',
     fill: false,

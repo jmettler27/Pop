@@ -20,7 +20,7 @@ export default class ReorderingRoundService extends RoundService {
   }
 
   async handleRoundSelectedTransaction(transaction: Transaction, roundId: string, userId: string) {
-    const playerIds = await this.playerRepo.getAllPlayerIds();
+    const playerIds = await this.playerRepo.getAllPlayerIdsTransaction(transaction);
     if (!playerIds) {
       this.log.warn({ round: roundId }, 'Player IDs not found');
       throw new Error('Player IDs not found');
@@ -93,7 +93,7 @@ export default class ReorderingRoundService extends RoundService {
     const gameQuestionRepo = new GameReorderingQuestionRepository(this.gameId, roundId);
 
     /* Game: fetch next question and reset every player's state */
-    const playerIds = await this.playerRepo.getAllPlayerIds();
+    const playerIds = await this.playerRepo.getAllPlayerIdsTransaction(transaction);
     if (!playerIds) {
       this.log.warn({ round: roundId }, 'Player IDs not found');
       throw new Error('Player IDs not found');
