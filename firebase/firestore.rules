@@ -17,8 +17,10 @@ service cloud.firestore {
       }
     }
 
+    // Mirrors prod: `get` by known id is allowed, `list` (collection queries) is not.
     match /questions/{questionId} {
-      allow read: if true;
+      allow get: if true;
+      allow list: if false;
       allow write: if true;
     }
 

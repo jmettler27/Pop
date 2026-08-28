@@ -24,11 +24,14 @@ service cloud.firestore {
       }
     }
 
-    // Question bank. Still client-readable: in-game rendering and the game editor
-    // read `questions/{id}` directly. A follow-up relocates those reads behind a
-    // server action that redacts answers, then tightens this to `if false`.
+    // Question bank. `get` (a single doc by known id) stays open — in-game rendering
+    // and the game editor still read `questions/{id}` directly. `list` (collection
+    // queries) is denied: the bank browser goes through a server action now, and a
+    // query is how you'd dump every answer at once. A follow-up redacts the `get`
+    // path and closes it too.
     match /questions/{questionId} {
-      allow read: if true;
+      allow get: if true;
+      allow list: if false;
       allow write: if false;
     }
 

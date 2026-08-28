@@ -25,8 +25,7 @@ import { Checkbox } from '@/frontend/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/frontend/components/ui/select';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/frontend/components/ui/table';
-import { getQuestionsCount, useQuestionsPage } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
-import { useFirestoreCount } from '@/frontend/hooks/firestore/useFirestoreCount';
+import { useApprovedQuestionsCount, useApprovedQuestionsPage } from '@/frontend/hooks/questionBank';
 import { useUsersByIds } from '@/frontend/hooks/useUsersByIds';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { QuestionType } from '@/models/questions/question-type';
@@ -99,14 +98,13 @@ interface QuestionSearchTableProps {
   onQuestionSelectionModelChange?: (model: string[]) => void;
 }
 
-// Renders a paginated table of existing questions, fetched one Firestore page at a time (newest first)
-// via useQuestionsPage (a useInfiniteQuery wrapper), with row-selection checkboxes. `pageIndex` is the
-// only pagination state kept here — it indexes into useInfiniteQuery's own page cache (`data.pages`)
-// instead of a hand-maintained cursor stack, so navigating back to an already-fetched page is instant.
-// Row selection is left fully uncontrolled (TanStack owns that state internally) and is keyed by row id,
-// so it survives navigating between pages — only the selected row ids are surfaced upward, one-way, via
-// onQuestionSelectionModelChange. To clear the selection from outside, remount this component (e.g. via
-// a changing `key`).
+// Renders a paginated table of existing questions (newest first), one offset page at a time via the
+// `useApprovedQuestionsPage` server action, with row-selection checkboxes. `pageIndex` is the only
+// pagination state kept here; TanStack Query caches each page (and keeps the previous one visible while
+// the next loads). Row selection is left fully uncontrolled (TanStack owns that state internally) and is
+// keyed by row id, so it survives navigating between pages — only the selected row ids are surfaced
+// upward, one-way, via onQuestionSelectionModelChange. To clear the selection from outside, remount this
+// component (e.g. via a changing `key`).
 export function QuestionSearchTable({
   questionType,
   onQuestionSelectionModelChange = () => {},
@@ -118,45 +116,35 @@ export function QuestionSearchTable({
   const [pageSize, setPageSize] = useState(10);
   const [pageIndex, setPageIndex] = useState(0);
 
+  // The question bank and its count come from server actions — production Firestore rules deny the client
+  // querying the `questions` collection (only `get` on a known id is allowed).
   const {
-    data: questionPages,
-    fetchNextPage,
-    isLoading: questionsLoading,
+    items: questions,
+    hasMore,
+    loading: questionsLoading,
     error: questionsError,
-  } = useQuestionsPage(questionType, true, pageSize);
-  const { data: questionsCount } = useFirestoreCount(
-    () => getQuestionsCount(questionType, true),
-    ['questions', 'count', questionType, true]
-  );
+  } = useApprovedQuestionsPage(questionType, pageSize, pageIndex);
+  const questionsCount = useApprovedQuestionsCount(questionType);
   const pageCount = questionsCount !== undefined ? Math.max(1, Math.ceil(questionsCount / pageSize)) : undefined;
-
-  const pages = questionPages?.pages ?? [];
-  const currentPage = pages[pageIndex];
-  const questions = currentPage?.items;
-  const hasMore = currentPage?.hasMore ?? false;
 
   // Author display fields come from a server action — production Firestore rules deny client reads of `users/**`.
   const {
     users,
     loading: usersLoading,
     error: usersError,
-  } = useUsersByIds((questions ?? []).map((question) => question.createdBy));
+  } = useUsersByIds(questions.map((question) => question.createdBy));
 
   const goToPreviousPage = () => setPageIndex((i) => Math.max(0, i - 1));
   const goToNextPage = () => {
-    if (pageIndex + 1 < pages.length) {
-      setPageIndex((i) => i + 1); // already fetched — instant, no network call
-    } else if (hasMore) {
-      fetchNextPage().then(() => setPageIndex((i) => i + 1));
-    }
+    if (hasMore) setPageIndex((i) => i + 1);
   };
   const changePageSize = (size: number) => {
-    setPageSize(size); // baked into useQuestionsPage's cache key — starts a fresh page set automatically
+    setPageSize(size);
     setPageIndex(0);
   };
 
   const rows = useMemo(
-    () => (users && questions ? questions.map((question) => questionRow(question, intl.locale, users)) : []),
+    () => questions.map((question) => questionRow(question, intl.locale, users)),
     [questions, intl.locale, users]
   );
   const columns = useMemo<ColumnDef<Features, Row>[]>(
@@ -181,9 +169,6 @@ export function QuestionSearchTable({
   }
   if (usersLoading || questionsLoading) {
     return <Spinner />;
-  }
-  if (!users || !questions) {
-    return <></>;
   }
 
   return (
