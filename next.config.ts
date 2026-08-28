@@ -37,17 +37,9 @@ const nextConfig: NextConfig = {
     ],
     unoptimized: true,
   },
-  // Externalize Firebase packages from the server bundle so Node.js resolves
-  // them natively. This allows gRPC to work properly (it breaks when bundled).
+  // Externalize firebase-admin (and its transitive gRPC/gax deps) from the server
+  // bundle so Node.js resolves them natively — gRPC breaks when bundled.
   serverExternalPackages: [
-    'firebase',
-    '@firebase/firestore',
-    '@firebase/app',
-    '@firebase/component',
-    '@firebase/util',
-    '@firebase/logger',
-    '@grpc/grpc-js',
-    '@grpc/proto-loader',
     'firebase-admin',
     '@google-cloud/firestore',
     '@google-cloud/storage',
