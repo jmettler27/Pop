@@ -71,7 +71,7 @@ export default class GameService {
   async startGame() {
     try {
       await this.pendingStatus.runTransaction(async (transaction) => {
-        const teams = await this.teamRepo.getAll();
+        const teams = await this.teamRepo.getAllTransaction(transaction);
 
         const { teamIds, initTeamGameScores, initTeamGameScoresProgress } = (teams as unknown as Team[]).reduce(
           (

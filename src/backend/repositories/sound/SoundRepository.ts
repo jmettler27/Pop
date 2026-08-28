@@ -49,7 +49,7 @@ export default class SoundRepository extends FirebaseRepository {
   async clearSounds(): Promise<void> {
     try {
       await adminDb().runTransaction(async (transaction) => {
-        const sounds = await this.getAll();
+        const sounds = await this.getAllTransaction(transaction);
         for (const sound of sounds) {
           await this.deleteTransaction(transaction, sound.id as string);
         }
