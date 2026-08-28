@@ -21,13 +21,51 @@ import { PlayerStatus } from '@/models/users/player';
 import { aggregateTiedTeams, findNextAvailableChooser, shuffle } from '@/utils/arrays';
 import { sortAscendingRoundScores, sortScores } from '@/utils/scores';
 
+/**
+ * A pending "set every player of this team to this status" change, applied *after* the
+ * enclosing Firestore transaction commits. `runTransaction` retries its callback on write
+ * contention, so performing these (non-transactional) batch writes inside the callback made
+ * them fire once per attempt — the root cause of the duplicate match submissions.
+ */
+type TeamPlayerStatusChange = { teamId: string; status: PlayerStatus };
+
 export default class GameMatchingQuestionService extends GameQuestionService {
   readonly chooserRepo: ChooserRepository;
+
+  /** Player-status changes collected during the running transaction, flushed once it commits. */
+  private pendingStatusChanges: TeamPlayerStatusChange[] = [];
 
   constructor(gameId: string, roundId: string) {
     super(gameId, roundId, QuestionType.MATCHING);
     this.log = logger.child({ module: 'GameMatchingQuestionService', game: gameId, round: roundId });
     this.chooserRepo = new ChooserRepository(gameId);
+  }
+
+  /**
+   * Applies the player-status changes collected during a transaction. Runs *after* the
+   * transaction has committed, so a `runTransaction` retry can never replay these writes.
+   */
+  private async flushPendingStatusChanges() {
+    const changes = this.pendingStatusChanges;
+    this.pendingStatusChanges = [];
+    for (const { teamId, status } of changes) {
+      await this.playerRepo.updateTeamPlayersStatus(teamId, status);
+    }
+  }
+
+  async resetQuestion(questionId: string) {
+    if (!questionId) {
+      throw new Error('Question ID is required');
+    }
+
+    try {
+      this.pendingStatusChanges = [];
+      await runTransaction(firestore, (transaction) => this.resetQuestionTransaction(transaction, questionId));
+      await this.flushPendingStatusChanges();
+    } catch (error) {
+      this.log.error({ question: questionId, err: error }, 'Failed to reset the question');
+      throw error;
+    }
   }
 
   async resetQuestionTransaction(transaction: Transaction, questionId: string) {
@@ -41,10 +79,9 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     }
 
     const chooser = await this.chooserRepo.resetAndGetChoosersTransaction(transaction);
-    if (chooser) {
-      const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx];
-      await this.playerRepo.updateTeamPlayersStatus(chooserTeamId, PlayerStatus.FOCUS);
-    }
+    this.pendingStatusChanges = chooser
+      ? [{ teamId: chooser.chooserOrder[chooser.chooserIdx], status: PlayerStatus.FOCUS }]
+      : [];
     await (this.gameQuestionRepo as GameMatchingQuestionRepository).resetQuestionTransaction(transaction, questionId);
     await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
 
@@ -54,6 +91,21 @@ export default class GameMatchingQuestionService extends GameQuestionService {
   async endQuestionTransaction(transaction: Transaction, questionId: string) {
     await super.endQuestionTransaction(transaction, questionId);
     this.log.info({ question: questionId }, 'Matching question ended');
+  }
+
+  async handleCountdownEnd(questionId: string) {
+    if (!questionId) {
+      throw new Error('Question ID is required');
+    }
+
+    try {
+      this.pendingStatusChanges = [];
+      await runTransaction(firestore, (transaction) => this.handleCountdownEndTransaction(transaction, questionId));
+      await this.flushPendingStatusChanges();
+    } catch (error) {
+      this.log.error({ question: questionId, err: error }, 'Failed to handle question countdown');
+      throw error;
+    }
   }
 
   async handleCountdownEndTransaction(transaction: Transaction, questionId: string) {
@@ -92,7 +144,13 @@ export default class GameMatchingQuestionService extends GameQuestionService {
       correctMatchIndices
     );
 
-    await this.submitMatchTransaction(transaction, questionId, SYSTEM_PLAYER_ID, null, match);
+    this.pendingStatusChanges = await this.submitMatchTransaction(
+      transaction,
+      questionId,
+      SYSTEM_PLAYER_ID,
+      null,
+      match
+    );
     this.log.info({ question: questionId }, 'Matching question countdown end handled');
   }
 
@@ -110,9 +168,10 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     }
 
     try {
-      await runTransaction(firestore, (transaction) =>
+      this.pendingStatusChanges = await runTransaction(firestore, (transaction) =>
         this.submitMatchTransaction(transaction, questionId, playerId, edges, match)
       );
+      await this.flushPendingStatusChanges();
     } catch (error) {
       this.log.error({ question: questionId, err: error }, 'Failed to submit the match');
       throw error;
@@ -125,7 +184,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     playerId: string,
     edges: MatchingEdgeData[] | null,
     match: ColumnIndices | null
-  ) {
+  ): Promise<TeamPlayerStatusChange[]> {
     const chooser = await this.chooserRepo.getChooserTransaction(transaction);
     if (!chooser) {
       this.log.warn({ question: questionId }, 'Chooser not found');
@@ -159,12 +218,12 @@ export default class GameMatchingQuestionService extends GameQuestionService {
 
     const isCorrect = rows.every((row) => row === rows[0]);
 
-    if (isCorrect) {
-      await this.handleCorrectMatchTransaction(transaction, questionId, playerId, teamId, rows);
-    } else {
-      await this.handleIncorrectMatchTransaction(transaction, questionId, playerId, teamId, rows);
-    }
+    const statusChanges = isCorrect
+      ? await this.handleCorrectMatchTransaction(transaction, questionId, playerId, teamId, rows)
+      : await this.handleIncorrectMatchTransaction(transaction, questionId, playerId, teamId, rows);
+
     this.log.info({ question: questionId, user: playerId, team: teamId, rows }, 'Match submitted');
+    return statusChanges;
   }
 
   async handleCorrectMatchTransaction(
@@ -173,7 +232,9 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     userId: string,
     teamId: string,
     rows: ColumnIndices
-  ) {
+  ): Promise<TeamPlayerStatusChange[]> {
+    const statusChanges: TeamPlayerStatusChange[] = [];
+
     const correctMatches = await (this.gameQuestionRepo as GameMatchingQuestionRepository).getCorrectMatchesTransaction(
       transaction,
       questionId
@@ -206,7 +267,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
 
       await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, 0);
 
-      await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.CORRECT);
+      statusChanges.push({ teamId, status: PlayerStatus.CORRECT });
       await (this.gameQuestionRepo as GameMatchingQuestionRepository).addCorrectMatchTransaction(
         transaction,
         questionId,
@@ -248,9 +309,9 @@ export default class GameMatchingQuestionService extends GameQuestionService {
 
       const { newChooserIdx, newChooserTeamId } = findNextAvailableChooser(chooserIdx, chooserOrder, canceled);
       await this.chooserRepo.updateChooserIndexTransaction(transaction, newChooserIdx);
-      await this.playerRepo.updateTeamPlayersStatus(newChooserTeamId, PlayerStatus.FOCUS);
+      statusChanges.push({ teamId: newChooserTeamId, status: PlayerStatus.FOCUS });
       if (newChooserTeamId !== teamId) {
-        await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.IDLE);
+        statusChanges.push({ teamId, status: PlayerStatus.IDLE });
       }
 
       await (this.gameQuestionRepo as GameMatchingQuestionRepository).addCorrectMatchTransaction(
@@ -265,6 +326,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     }
 
     this.log.info({ question: questionId, user: userId, team: teamId, rows }, 'Correct match handled');
+    return statusChanges;
   }
 
   // Case 2: The matching is incorrect
@@ -274,7 +336,9 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     userId: string,
     teamId: string,
     rows: ColumnIndices
-  ) {
+  ): Promise<TeamPlayerStatusChange[]> {
+    const statusChanges: TeamPlayerStatusChange[] = [];
+
     const roundRepo = new RoundRepository(this.gameId);
 
     const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
@@ -379,8 +443,8 @@ export default class GameMatchingQuestionService extends GameQuestionService {
       const { newChooserIdx, newChooserTeamId } = findNextAvailableChooser(chooserIdx, chooserOrder, newCanceled);
       await this.chooserRepo.updateChooserIndexTransaction(transaction, newChooserIdx);
 
-      await this.playerRepo.updateTeamPlayersStatus(newChooserTeamId, PlayerStatus.FOCUS);
-      await this.playerRepo.updateTeamPlayersStatus(teamId, isCanceled ? PlayerStatus.WRONG : PlayerStatus.IDLE);
+      statusChanges.push({ teamId: newChooserTeamId, status: PlayerStatus.FOCUS });
+      statusChanges.push({ teamId, status: isCanceled ? PlayerStatus.WRONG : PlayerStatus.IDLE });
       await this.soundRepo.addSoundTransaction(
         transaction,
         isCanceled ? 'zelda_wind_waker_kaboom' : 'zelda_wind_waker_sploosh'
@@ -396,11 +460,12 @@ export default class GameMatchingQuestionService extends GameQuestionService {
         .reverse()
         .flatMap(({ teams }) => shuffle(teams));
       await this.chooserRepo.updateChooserOrderTransaction(transaction, newChooserOrder);
-      await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.WRONG);
+      statusChanges.push({ teamId, status: PlayerStatus.WRONG });
       await this.soundRepo.addSoundTransaction(transaction, 'zelda_wind_waker_game_over');
       await this.endQuestionTransaction(transaction, questionId);
     }
 
     this.log.info({ question: questionId, user: userId, team: teamId, rows }, 'Incorrect match handled');
+    return statusChanges;
   }
 }
