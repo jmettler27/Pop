@@ -1,8 +1,9 @@
-import { increment, runTransaction, Timestamp, Transaction } from 'firebase/firestore';
+import { increment, Timestamp, Transaction } from 'firebase/firestore';
 
 import { logger } from '@/backend/logger';
 import GameEstimationQuestionRepository from '@/backend/repositories/question/GameEstimationQuestionRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
+import { runBackendTransaction } from '@/firebase/backend-firestore';
 import { firestore } from '@/firebase/firebase';
 import {
   EstimationBet,
@@ -239,7 +240,7 @@ export default class GameEstimationQuestionService extends GameQuestionService {
     }
 
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         await this.submitBetTransaction(transaction, questionId, playerId, teamId, bet);
       });
     } catch (error) {

@@ -1,5 +1,6 @@
 import { getDownloadURL, ref, uploadBytesResumable, type StorageReference } from 'firebase/storage';
 
+import { ensureBackendAuth } from '@/firebase/backend-auth';
 import { storage } from '@/firebase/firebase';
 import { isArray } from '@/utils/arrays';
 
@@ -15,6 +16,7 @@ export default class StorageRepository {
   }
 
   async uploadFile(file: File, path: string): Promise<string> {
+    await ensureBackendAuth();
     const fullPath = this.getFullPath(path);
     const fileRef = ref(storage, fullPath);
     await uploadBytesResumable(fileRef, file);

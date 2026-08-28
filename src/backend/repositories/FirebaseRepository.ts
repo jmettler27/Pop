@@ -22,6 +22,7 @@ import {
 } from 'firebase/firestore';
 
 import { IRepository } from '@/backend/repositories/IRepository';
+import { ensureBackendAuth } from '@/firebase/backend-auth';
 import { firestore } from '@/firebase/firebase';
 import { isArray } from '@/utils/arrays';
 
@@ -58,6 +59,7 @@ export default class FirebaseRepository extends IRepository {
   }
 
   async get(idOrPath: string | string[]): Promise<Record<string, unknown> | null> {
+    await ensureBackendAuth();
     const docRef = this.getDocumentRef(idOrPath);
     const docSnap = await getDoc(docRef);
     return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null;
@@ -70,6 +72,7 @@ export default class FirebaseRepository extends IRepository {
   }
 
   async getAll(): Promise<Array<Record<string, unknown>>> {
+    await ensureBackendAuth();
     const querySnapshot = await getDocs(query(this.collectionRef));
     return querySnapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
   }
@@ -93,6 +96,7 @@ export default class FirebaseRepository extends IRepository {
   }
 
   async getByQuery(queryOptions: QueryOptions = {}): Promise<Array<Record<string, unknown>>> {
+    await ensureBackendAuth();
     const querySnapshot = await getDocs(this.buildQuery(queryOptions));
     return querySnapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
   }
@@ -119,6 +123,7 @@ export default class FirebaseRepository extends IRepository {
   }
 
   async update(idOrPath: string | string[], data: Record<string, unknown>): Promise<Record<string, unknown>> {
+    await ensureBackendAuth();
     const docRef = this.getDocumentRef(idOrPath);
     await updateDoc(docRef, data);
     return { id: docRef.id, ...data };
@@ -135,6 +140,7 @@ export default class FirebaseRepository extends IRepository {
   }
 
   async updateAll(data: Record<string, unknown>): Promise<void> {
+    await ensureBackendAuth();
     const querySnapshot = await getDocs(query(this.collectionRef));
     const batch = writeBatch(firestore);
     for (const d of querySnapshot.docs) batch.update(d.ref, data);
@@ -142,6 +148,7 @@ export default class FirebaseRepository extends IRepository {
   }
 
   async set(idOrPath: string | string[], data: Record<string, unknown>): Promise<Record<string, unknown>> {
+    await ensureBackendAuth();
     const docRef = this.getDocumentRef(idOrPath);
     await setDoc(docRef, data);
     return { id: docRef.id, ...data };
@@ -161,6 +168,7 @@ export default class FirebaseRepository extends IRepository {
     data: Record<string, unknown>,
     idOrPath: string | string[] | null = null
   ): Promise<Record<string, unknown>> {
+    await ensureBackendAuth();
     if (idOrPath) {
       const docRef = this.getDocumentRef(idOrPath);
       await setDoc(docRef, data);
@@ -181,6 +189,7 @@ export default class FirebaseRepository extends IRepository {
   }
 
   async delete(idOrPath: string | string[]): Promise<void> {
+    await ensureBackendAuth();
     await deleteDoc(this.getDocumentRef(idOrPath));
   }
 
@@ -189,6 +198,7 @@ export default class FirebaseRepository extends IRepository {
   }
 
   async getCount(queryBuilder: (ref: CollectionReference<DocumentData>) => Query<DocumentData>): Promise<number> {
+    await ensureBackendAuth();
     const snapshot = await getCountFromServer(queryBuilder(this.collectionRef));
     return snapshot.data().count;
   }

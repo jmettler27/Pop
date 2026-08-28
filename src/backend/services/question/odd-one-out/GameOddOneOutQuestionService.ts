@@ -1,8 +1,9 @@
-import { runTransaction, Timestamp, Transaction } from 'firebase/firestore';
+import { Timestamp, Transaction } from 'firebase/firestore';
 
 import { logger } from '@/backend/logger';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import GameQuestionService, { SYSTEM_PLAYER_ID } from '@/backend/services/question/GameQuestionService';
+import { runBackendTransaction } from '@/firebase/backend-firestore';
 import { firestore } from '@/firebase/firebase';
 import { GameOddOneOutQuestion, OddOneOutQuestion, SelectedItem } from '@/models/questions/odd-one-out';
 import { QuestionType } from '@/models/questions/question-type';
@@ -93,7 +94,7 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
       throw new Error('Invalid proposal index!');
     }
 
-    await runTransaction(
+    await runBackendTransaction(
       firestore,
       async (transaction) => await this.selectProposalTransaction(transaction, questionId, playerId, idx)
     );

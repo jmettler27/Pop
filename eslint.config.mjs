@@ -21,4 +21,24 @@ export default [
       '@typescript-eslint/no-explicit-any': 'warn',
     },
   },
+  {
+    // Backend writes must go through the authenticated wrapper so production
+    // security rules (request.auth.token.backend) allow them.
+    files: ['src/backend/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'firebase/firestore',
+              importNames: ['runTransaction'],
+              message:
+                'Import runBackendTransaction from @/firebase/backend-firestore instead — it signs in the backend identity before opening the transaction.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 ];

@@ -1,10 +1,11 @@
-import { runTransaction, Transaction } from 'firebase/firestore';
+import { Transaction } from 'firebase/firestore';
 
 import { logger } from '@/backend/logger';
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import GameQuestionService, { SYSTEM_PLAYER_ID } from '@/backend/services/question/GameQuestionService';
+import { runBackendTransaction } from '@/firebase/backend-firestore';
 import { firestore } from '@/firebase/firebase';
 import {
   ColumnIndices,
@@ -110,7 +111,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     }
 
     try {
-      await runTransaction(firestore, (transaction) =>
+      await runBackendTransaction(firestore, (transaction) =>
         this.submitMatchTransaction(transaction, questionId, playerId, edges, match)
       );
     } catch (error) {

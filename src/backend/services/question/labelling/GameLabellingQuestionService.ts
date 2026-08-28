@@ -1,8 +1,9 @@
-import { runTransaction, Timestamp, Transaction } from 'firebase/firestore';
+import { Timestamp, Transaction } from 'firebase/firestore';
 
 import { logger } from '@/backend/logger';
 import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
 import GameBuzzerQuestionService from '@/backend/services/question/buzzer/GameBuzzerQuestionService';
+import { runBackendTransaction } from '@/firebase/backend-firestore';
 import { firestore } from '@/firebase/firebase';
 import { GameLabellingQuestion, LabellingQuestion } from '@/models/questions/labelling';
 import { QuestionType } from '@/models/questions/question-type';
@@ -109,7 +110,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
     }
     try {
       // transaction
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         const baseQuestion = (await this.baseQuestionRepo.getQuestionTransaction(
           transaction,
           questionId
@@ -208,7 +209,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
     }
 
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         const baseQuestion = (await this.baseQuestionRepo.getQuestionTransaction(
           transaction,
           questionId
@@ -278,7 +279,7 @@ export default class GameLabellingQuestionService extends GameBuzzerQuestionServ
     }
 
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         await (this.gameQuestionRepo as GameLabellingQuestionRepository).cancelPlayerTransaction(
           transaction,
           questionId,

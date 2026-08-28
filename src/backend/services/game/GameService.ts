@@ -1,4 +1,4 @@
-import { runTransaction, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { serverTimestamp, Timestamp } from 'firebase/firestore';
 import type { Logger } from 'pino';
 
 import { logger } from '@/backend/logger';
@@ -13,6 +13,7 @@ import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import RoundServiceFactory from '@/backend/services/round/RoundServiceFactory';
+import { runBackendTransaction } from '@/firebase/backend-firestore';
 import { firestore } from '@/firebase/firebase';
 import { type Locale } from '@/frontend/helpers/locales';
 import { type GameRoundsData } from '@/models/games/game';
@@ -67,7 +68,7 @@ export default class GameService {
    */
   async startGame() {
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         const teams = await this.teamRepo.getAll();
 
         const { teamIds, initTeamGameScores, initTeamGameScoresProgress } = (teams as unknown as Team[]).reduce(
@@ -197,7 +198,7 @@ export default class GameService {
    */
   async returnToGameHome() {
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         await this.soundRepo.addSoundTransaction(transaction, 'ui_confirmation_alert_b2');
         await this.gameRepo.updateGameStatusTransaction(transaction, this.gameId, GameStatus.GAME_HOME);
 
@@ -214,7 +215,7 @@ export default class GameService {
    */
   async resumeEditing() {
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         await this.gameRepo.updateGameStatusTransaction(transaction, this.gameId, GameStatus.GAME_EDIT);
 
         this.log.info('Editing resumed');
@@ -230,7 +231,7 @@ export default class GameService {
    */
   async endGame() {
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         await this.gameRepo.updateGameTransaction(transaction, this.gameId, {
           status: GameStatus.GAME_END,
           dateEnd: serverTimestamp(),

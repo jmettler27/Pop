@@ -1,9 +1,10 @@
-import { runTransaction, Transaction } from 'firebase/firestore';
+import { Transaction } from 'firebase/firestore';
 
 import { logger } from '@/backend/logger';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
+import { runBackendTransaction } from '@/firebase/backend-firestore';
 import { firestore } from '@/firebase/firebase';
 import { GameNaguiQuestion, NAGUI_OPTION_TO_SOUND, NaguiQuestion } from '@/models/questions/nagui';
 import { QuestionType } from '@/models/questions/question-type';
@@ -88,7 +89,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
     }
 
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         const option = GameNaguiQuestion.NAGUI_OPTIONS[optionIdx];
         await this.gameQuestionRepo.updateQuestionTransaction(transaction, questionId, { playerId, option });
         await this.soundRepo.addSoundTransaction(transaction, NAGUI_OPTION_TO_SOUND[option]);
@@ -118,7 +119,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
     }
 
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         const baseQuestion = (await this.baseQuestionRepo.getQuestionTransaction(
           transaction,
           questionId
@@ -195,7 +196,7 @@ export default class GameNaguiQuestionService extends GameQuestionService {
     }
 
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         const round = (await this.roundRepo.getRoundTransaction(transaction, this.roundId)) as NaguiRound;
         if (!round) {
           this.log.warn({ question: questionId }, 'Round not found');

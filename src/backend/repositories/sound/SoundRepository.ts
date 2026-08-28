@@ -1,8 +1,9 @@
-import { runTransaction, serverTimestamp, type Transaction } from 'firebase/firestore';
+import { serverTimestamp, type Transaction } from 'firebase/firestore';
 import type { Logger } from 'pino';
 
 import { logger } from '@/backend/logger';
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
+import { runBackendTransaction } from '@/firebase/backend-firestore';
 import { firestore } from '@/firebase/firebase';
 import { getRandomElement } from '@/utils/arrays';
 
@@ -30,7 +31,7 @@ export default class SoundRepository extends FirebaseRepository {
       throw new Error('Filename is required');
     }
     try {
-      await runTransaction(firestore, (transaction) => this.addSoundTransaction(transaction, filename));
+      await runBackendTransaction(firestore, (transaction) => this.addSoundTransaction(transaction, filename));
     } catch (error) {
       this.log.error({ err: error }, 'Error adding sound');
       throw error;
@@ -48,7 +49,7 @@ export default class SoundRepository extends FirebaseRepository {
 
   async clearSounds(): Promise<void> {
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         const sounds = await this.getAll();
         for (const sound of sounds) {
           await this.deleteTransaction(transaction, sound.id as string);

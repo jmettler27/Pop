@@ -1,5 +1,6 @@
 import type { FirebaseApp, FirebaseOptions } from 'firebase/app';
 import { getApps, initializeApp } from 'firebase/app';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { connectDatabaseEmulator, getDatabase } from 'firebase/database';
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 import { connectStorageEmulator, getStorage } from 'firebase/storage';
@@ -24,6 +25,9 @@ export const firebaseApp: FirebaseApp = getApps().length === 0 ? initializeApp(f
 export const firestore = getFirestore(firebaseApp);
 export const storage = getStorage(firebaseApp);
 export const database = getDatabase(firebaseApp);
+// Server-side only in practice: the backend signs this in as the `pop-backend`
+// identity (see `backend-auth.ts`) so security rules can gate writes to it.
+export const firebaseAuth = getAuth(firebaseApp);
 
 if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
   const log = logger.child({ module: 'firebase' });
@@ -31,6 +35,9 @@ if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
     connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
     connectDatabaseEmulator(database, '127.0.0.1', 9000);
     connectStorageEmulator(storage, '127.0.0.1', 9199);
+    // Wired for parity even though Option B keeps `ensureBackendAuth()` a no-op
+    // locally; harmless if no Auth emulator is running (nothing calls it).
+    connectAuthEmulator(firebaseAuth, 'http://127.0.0.1:9099', { disableWarnings: true });
     log.info({ projectId: firebaseConfig.projectId }, 'Connected to Firebase Emulator Suite');
   } catch {
     // Emulators already connected (hot reload)

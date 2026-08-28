@@ -1,7 +1,8 @@
-import { increment, runTransaction, Timestamp, Transaction } from 'firebase/firestore';
+import { increment, Timestamp, Transaction } from 'firebase/firestore';
 
 import { logger } from '@/backend/logger';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
+import { runBackendTransaction } from '@/firebase/backend-firestore';
 import { firestore } from '@/firebase/firebase';
 import { QuestionType } from '@/models/questions/question-type';
 import { GameReorderingQuestion, Ordering, ReorderingQuestion, SubmittedOrdering } from '@/models/questions/reordering';
@@ -196,7 +197,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
     }
 
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         await this.submitOrderingTransaction(transaction, questionId, playerId, teamId, ordering);
       });
     } catch (error) {

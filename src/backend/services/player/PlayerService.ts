@@ -1,4 +1,4 @@
-import { runTransaction, serverTimestamp } from 'firebase/firestore';
+import { serverTimestamp } from 'firebase/firestore';
 import type { Logger } from 'pino';
 
 import { logger } from '@/backend/logger';
@@ -6,6 +6,7 @@ import SoundRepository from '@/backend/repositories/sound/SoundRepository';
 import TimerRepository from '@/backend/repositories/timer/TimerRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
+import { runBackendTransaction } from '@/firebase/backend-firestore';
 import { firestore } from '@/firebase/firebase';
 import { Timer, TimerStatus } from '@/models/timer';
 import { PlayerStatus } from '@/models/users/player';
@@ -37,7 +38,7 @@ export default class PlayerService {
     }
 
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         const ready = await this.readyRepo.getReadyTransaction(transaction);
         if (!ready) {
           throw new Error('Ready document');
@@ -78,7 +79,7 @@ export default class PlayerService {
 
   async togglePlayerAuthorization(authorized: boolean | null = null) {
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         let newVal = authorized;
         if (authorized === null) {
           const timer = await this.timerRepo.getTimerTransaction(transaction);

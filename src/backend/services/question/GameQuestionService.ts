@@ -1,4 +1,4 @@
-import { increment, runTransaction, Transaction } from 'firebase/firestore';
+import { increment, Transaction } from 'firebase/firestore';
 import type { Logger } from 'pino';
 
 import { logger } from '@/backend/logger';
@@ -14,6 +14,7 @@ import SoundRepository from '@/backend/repositories/sound/SoundRepository';
 import TimerRepository from '@/backend/repositories/timer/TimerRepository';
 import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
+import { runBackendTransaction } from '@/firebase/backend-firestore';
 import { firestore } from '@/firebase/firebase';
 import { GameStatus } from '@/models/games/game-status';
 import { QuestionType } from '@/models/questions/question-type';
@@ -75,7 +76,7 @@ export default class GameQuestionService {
     }
 
     try {
-      await runTransaction(firestore, (transaction) => this.resetQuestionTransaction(transaction, questionId));
+      await runBackendTransaction(firestore, (transaction) => this.resetQuestionTransaction(transaction, questionId));
     } catch (error) {
       this.log.error({ question: questionId, err: error }, 'Failed to reset the question');
       throw error;
@@ -94,7 +95,7 @@ export default class GameQuestionService {
     }
 
     try {
-      await runTransaction(firestore, (transaction) => this.endQuestionTransaction(transaction, questionId));
+      await runBackendTransaction(firestore, (transaction) => this.endQuestionTransaction(transaction, questionId));
     } catch (error) {
       this.log.error({ question: questionId, err: error }, 'Failed to end the question');
       throw error;
@@ -117,7 +118,9 @@ export default class GameQuestionService {
     }
 
     try {
-      await runTransaction(firestore, (transaction) => this.handleCountdownEndTransaction(transaction, questionId));
+      await runBackendTransaction(firestore, (transaction) =>
+        this.handleCountdownEndTransaction(transaction, questionId)
+      );
     } catch (error) {
       this.log.error({ question: questionId, err: error }, 'Failed to handle question countdown');
       throw error;

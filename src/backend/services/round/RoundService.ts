@@ -1,4 +1,4 @@
-import { runTransaction, Transaction } from 'firebase/firestore';
+import { Transaction } from 'firebase/firestore';
 import type { Logger } from 'pino';
 
 import { logger } from '@/backend/logger';
@@ -16,6 +16,7 @@ import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import GameQuestionServiceFactory from '@/backend/services/question/GameQuestionServiceFactory';
+import { runBackendTransaction } from '@/firebase/backend-firestore';
 import { firestore } from '@/firebase/firebase';
 import { GameStatus } from '@/models/games/game-status';
 import { type QuestionType } from '@/models/questions/question-type';
@@ -121,7 +122,7 @@ export default class RoundService {
    */
   async startRound(roundId: string) {
     try {
-      await runTransaction(firestore, (transaction) => this.startRoundTransaction(transaction, roundId));
+      await runBackendTransaction(firestore, (transaction) => this.startRoundTransaction(transaction, roundId));
     } catch (error) {
       this.log.error({ err: error }, 'Error starting round');
       throw error;
@@ -151,7 +152,7 @@ export default class RoundService {
     }
 
     try {
-      await runTransaction(firestore, (transaction) =>
+      await runBackendTransaction(firestore, (transaction) =>
         this.handleQuestionEndTransaction(transaction, roundId, questionId)
       );
     } catch (error) {
@@ -186,7 +187,10 @@ export default class RoundService {
     }
 
     try {
-      await runTransaction(firestore, async (transaction) => await this.endRoundTransaction(transaction, roundId));
+      await runBackendTransaction(
+        firestore,
+        async (transaction) => await this.endRoundTransaction(transaction, roundId)
+      );
     } catch (error) {
       this.log.error({ err: error }, 'Error ending round');
       throw error;
@@ -516,7 +520,7 @@ export default class RoundService {
     }
 
     try {
-      await runTransaction(
+      await runBackendTransaction(
         firestore,
         async (transaction) => await this.handleRoundSelectedTransaction(transaction, roundId, userId)
       );

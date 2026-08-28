@@ -1,8 +1,9 @@
-import { runTransaction, serverTimestamp, Transaction } from 'firebase/firestore';
+import { serverTimestamp, Transaction } from 'firebase/firestore';
 
 import { logger } from '@/backend/logger';
 import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 import GameBuzzerQuestionService from '@/backend/services/question/buzzer/GameBuzzerQuestionService';
+import { runBackendTransaction } from '@/firebase/backend-firestore';
 import { firestore } from '@/firebase/firebase';
 import { BuzzerQuestionPlayers } from '@/models/questions/buzzer';
 import { QuestionType } from '@/models/questions/question-type';
@@ -116,7 +117,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
     }
 
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         const gameQuestion = (await this.gameQuestionRepo.getQuestionTransaction(
           transaction,
           questionId
@@ -157,7 +158,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
     }
 
     try {
-      await runTransaction(
+      await runBackendTransaction(
         firestore,
         async (transaction) => await this.cancelPlayerTransaction(transaction, questionId, playerId)
       );
@@ -201,7 +202,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
       throw new Error('The quote part index is not valid!');
     }
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         const baseQuestion = (await this.baseQuestionRepo.getQuestionTransaction(
           transaction,
           questionId
@@ -317,7 +318,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
       throw new Error('No player ID has been provided!');
     }
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         const baseQuestion = (await this.baseQuestionRepo.getQuestionTransaction(
           transaction,
           questionId
