@@ -1,10 +1,9 @@
-import { Timestamp, Transaction } from 'firebase/firestore';
+import { Timestamp, Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import GameQuestionService, { SYSTEM_PLAYER_ID } from '@/backend/services/question/GameQuestionService';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
+import { adminDb } from '@/firebase/admin';
 import { GameOddOneOutQuestion, OddOneOutQuestion, SelectedItem } from '@/models/questions/odd-one-out';
 import { QuestionType } from '@/models/questions/question-type';
 import { OddOneOutRound } from '@/models/rounds/odd-one-out';
@@ -94,8 +93,7 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
       throw new Error('Invalid proposal index!');
     }
 
-    await runBackendTransaction(
-      firestore,
+    await adminDb().runTransaction(
       async (transaction) => await this.selectProposalTransaction(transaction, questionId, playerId, idx)
     );
   }

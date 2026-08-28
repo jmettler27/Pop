@@ -1,4 +1,4 @@
-import { arrayUnion, Timestamp, type Transaction } from 'firebase/firestore';
+import { FieldValue, Timestamp, type Transaction } from 'firebase-admin/firestore';
 
 import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
 import {
@@ -38,7 +38,7 @@ export default class GameMatchingQuestionRepository extends GameQuestionReposito
     teamId: string
   ): Promise<void> {
     await this.updateTransaction(transaction, [questionId, ...GameMatchingQuestionRepository.CORRECT_MATCHES_PATH], {
-      correctMatches: arrayUnion({ matchIdx, userId, teamId, timestamp: Timestamp.now() }),
+      correctMatches: FieldValue.arrayUnion({ matchIdx, userId, teamId, timestamp: Timestamp.now() }),
     });
   }
 
@@ -65,7 +65,13 @@ export default class GameMatchingQuestionRepository extends GameQuestionReposito
       transaction,
       [questionId, ...GameMatchingQuestionRepository.PARTIALLY_CORRECT_MATCHES_PATH],
       {
-        partiallyCorrectMatches: arrayUnion({ colIndices, matchIdx, userId, teamId, timestamp: Timestamp.now() }),
+        partiallyCorrectMatches: FieldValue.arrayUnion({
+          colIndices,
+          matchIdx,
+          userId,
+          teamId,
+          timestamp: Timestamp.now(),
+        }),
       }
     );
   }
@@ -86,7 +92,7 @@ export default class GameMatchingQuestionRepository extends GameQuestionReposito
     teamId: string
   ): Promise<void> {
     await this.updateTransaction(transaction, [questionId, ...GameMatchingQuestionRepository.INCORRECT_MATCHES_PATH], {
-      incorrectMatches: arrayUnion({ match, userId, teamId, timestamp: Timestamp.now() }),
+      incorrectMatches: FieldValue.arrayUnion({ match, userId, teamId, timestamp: Timestamp.now() }),
     });
   }
 

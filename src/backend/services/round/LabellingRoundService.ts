@@ -1,4 +1,4 @@
-import { serverTimestamp, Transaction } from 'firebase/firestore';
+import { FieldValue, Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import GameLabellingQuestionRepository from '@/backend/repositories/question/GameLabellingQuestionRepository';
@@ -73,7 +73,7 @@ export default class LabellingRoundService extends RoundService {
 
     await this.roundRepo.updateRoundTransaction(transaction, roundId, {
       type: RoundType.LABELLING,
-      dateStart: serverTimestamp(),
+      dateStart: FieldValue.serverTimestamp(),
       order: newOrder,
       currentQuestionIdx: 0,
       ...(maxPoints !== null && { maxPoints }),

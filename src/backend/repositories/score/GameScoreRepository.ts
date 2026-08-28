@@ -1,4 +1,4 @@
-import { increment, type Transaction } from 'firebase/firestore';
+import { FieldValue, type Transaction } from 'firebase-admin/firestore';
 
 import FirebaseDocumentRepository from '@/backend/repositories/FirebaseDocumentRepository';
 import { GameScores, Scores, ScoresProgress } from '@/models/scores';
@@ -51,7 +51,7 @@ export default class GameScoreRepository extends FirebaseDocumentRepository {
       };
     }
     await this.updateTransaction(transaction, {
-      [`scores.${teamId}`]: increment(points),
+      [`scores.${teamId}`]: FieldValue.increment(points),
       scoresProgress: newGameProgress,
     });
   }

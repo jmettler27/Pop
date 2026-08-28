@@ -1,10 +1,9 @@
-import { increment, Timestamp, Transaction } from 'firebase/firestore';
+import { FieldValue, Timestamp, Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import GameEstimationQuestionRepository from '@/backend/repositories/question/GameEstimationQuestionRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
+import { adminDb } from '@/firebase/admin';
 import {
   EstimationBet,
   EstimationQuestion,
@@ -196,7 +195,7 @@ export default class GameEstimationQuestionService extends GameQuestionService {
         [questionId]: (currRoundScores[tid] || 0) + (isWinner ? round.rewardsPerQuestion : 0),
       };
       if (isWinner) {
-        scoreUpdates[`scores.${tid}`] = increment(round.rewardsPerQuestion);
+        scoreUpdates[`scores.${tid}`] = FieldValue.increment(round.rewardsPerQuestion);
       }
     }
     await this.roundScoreRepo.updateScoresTransaction(transaction, scoreUpdates);
@@ -240,7 +239,7 @@ export default class GameEstimationQuestionService extends GameQuestionService {
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         await this.submitBetTransaction(transaction, questionId, playerId, teamId, bet);
       });
     } catch (error) {

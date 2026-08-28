@@ -1,4 +1,4 @@
-import { serverTimestamp, type Transaction } from 'firebase/firestore';
+import { FieldValue, type Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import FirebaseRepository from '@/backend/repositories/FirebaseRepository';
@@ -87,11 +87,11 @@ export default class GameQuestionRepository extends FirebaseRepository {
   }
 
   async startQuestionTransaction(transaction: Transaction, questionId: string): Promise<void> {
-    return this.updateQuestionTransaction(transaction, questionId, { dateStart: serverTimestamp() });
+    return this.updateQuestionTransaction(transaction, questionId, { dateStart: FieldValue.serverTimestamp() });
   }
 
   async endQuestionTransaction(transaction: Transaction, questionId: string): Promise<void> {
-    return this.updateQuestionTransaction(transaction, questionId, { dateEnd: serverTimestamp() });
+    return this.updateQuestionTransaction(transaction, questionId, { dateEnd: FieldValue.serverTimestamp() });
   }
 
   async updateQuestionWinnerTransaction(

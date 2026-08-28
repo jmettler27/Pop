@@ -1,4 +1,4 @@
-import { type Transaction } from 'firebase/firestore';
+import { type Transaction } from 'firebase-admin/firestore';
 
 import FirebaseDocumentRepository from '@/backend/repositories/FirebaseDocumentRepository';
 import { Chooser } from '@/models/chooser';

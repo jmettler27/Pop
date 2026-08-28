@@ -1,4 +1,4 @@
-import { serverTimestamp, Transaction } from 'firebase/firestore';
+import { FieldValue, Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import GameMCQQuestionRepository from '@/backend/repositories/question/GameMCQQuestionRepository';
@@ -68,7 +68,7 @@ export default class MCQRoundService extends RoundService {
 
     await this.roundRepo.updateRoundTransaction(transaction, roundId, {
       type: RoundType.MCQ,
-      dateStart: serverTimestamp(),
+      dateStart: FieldValue.serverTimestamp(),
       order: newOrder,
       currentQuestionIdx: 0,
       questions: shuffle(questionIds),
@@ -131,11 +131,7 @@ export default class MCQRoundService extends RoundService {
       const newChooserTeamId = chooserOrder[newChooserIdx];
       await this.chooserRepo.updateChooserIndexTransaction(transaction, newChooserIdx);
       await gameQuestionRepo.updateQuestionTeamTransaction(transaction, questionId, newChooserTeamId);
-      await this.playerRepo.updateTeamAndOtherTeamsPlayersStatus(
-        newChooserTeamId,
-        PlayerStatus.FOCUS,
-        PlayerStatus.IDLE
-      );
+      this.pendingStatus.enqueueTeamAndOthers(newChooserTeamId, PlayerStatus.FOCUS, PlayerStatus.IDLE);
     } else {
       const chooserTeamId = chooserOrder[chooserIdx];
       await gameQuestionRepo.updateQuestionTeamTransaction(transaction, questionId, chooserTeamId);

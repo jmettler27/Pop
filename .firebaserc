@@ -1,5 +1,8 @@
 {
-    "projects": {
-        "default": "demo-pop"
-    }
+  "projects": {
+    "default": "demo-pop",
+    "prod": "qpc-app"
+  },
+  "targets": {},
+  "etags": {}
 }

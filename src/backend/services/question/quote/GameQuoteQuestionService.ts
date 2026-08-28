@@ -1,10 +1,9 @@
-import { serverTimestamp, Transaction } from 'firebase/firestore';
+import { FieldValue, Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import GameQuoteQuestionRepository from '@/backend/repositories/question/GameQuoteQuestionRepository';
 import GameBuzzerQuestionService from '@/backend/services/question/buzzer/GameBuzzerQuestionService';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
+import { adminDb } from '@/firebase/admin';
 import { BuzzerQuestionPlayers } from '@/models/questions/buzzer';
 import { QuestionType } from '@/models/questions/question-type';
 import { GameQuoteQuestion, QuoteQuestion } from '@/models/questions/quote';
@@ -117,7 +116,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         const gameQuestion = (await this.gameQuestionRepo.getQuestionTransaction(
           transaction,
           questionId
@@ -158,8 +157,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
     }
 
     try {
-      await runBackendTransaction(
-        firestore,
+      await adminDb().runTransaction(
         async (transaction) => await this.cancelPlayerTransaction(transaction, questionId, playerId)
       );
     } catch (error) {
@@ -202,7 +200,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
       throw new Error('The quote part index is not valid!');
     }
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         const baseQuestion = (await this.baseQuestionRepo.getQuestionTransaction(
           transaction,
           questionId
@@ -240,12 +238,12 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
         const newRevealed = gameQuestion.revealed;
         if (quoteElem === 'quote') {
           newRevealed[quoteElem][quotePartIdx!] = {
-            revealedAt: serverTimestamp(),
+            revealedAt: FieldValue.serverTimestamp(),
             playerId,
           };
         } else {
           newRevealed[quoteElem] = {
-            revealedAt: serverTimestamp(),
+            revealedAt: FieldValue.serverTimestamp(),
             playerId,
           } as unknown as Record<string | number, unknown>;
         }
@@ -318,7 +316,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
       throw new Error('No player ID has been provided!');
     }
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         const baseQuestion = (await this.baseQuestionRepo.getQuestionTransaction(
           transaction,
           questionId
@@ -353,7 +351,7 @@ export default class GameQuoteQuestionService extends GameBuzzerQuestionService 
         const toGuess = baseQuestion.toGuess!;
         const quoteParts = baseQuestion.quoteParts!;
 
-        const timestamp = serverTimestamp();
+        const timestamp = FieldValue.serverTimestamp();
         for (const quoteElem of toGuess) {
           if (quoteElem === 'quote') {
             for (let i = 0; i < quoteParts.length; i++) {

@@ -1,12 +1,10 @@
-import { Transaction } from 'firebase/firestore';
+import { Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import GameMatchingQuestionRepository from '@/backend/repositories/question/GameMatchingQuestionRepository';
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import GameQuestionService, { SYSTEM_PLAYER_ID } from '@/backend/services/question/GameQuestionService';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
 import {
   ColumnIndices,
   CorrectMatch,
@@ -44,7 +42,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     const chooser = await this.chooserRepo.resetAndGetChoosersTransaction(transaction);
     if (chooser) {
       const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx];
-      await this.playerRepo.updateTeamPlayersStatus(chooserTeamId, PlayerStatus.FOCUS);
+      this.pendingStatus.enqueueTeam(chooserTeamId, PlayerStatus.FOCUS);
     }
     await (this.gameQuestionRepo as GameMatchingQuestionRepository).resetQuestionTransaction(transaction, questionId);
     await this.timerRepo.resetTimerTransaction(transaction, gameQuestion.thinkingTime);
@@ -111,7 +109,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
     }
 
     try {
-      await runBackendTransaction(firestore, (transaction) =>
+      await this.pendingStatus.runTransaction((transaction) =>
         this.submitMatchTransaction(transaction, questionId, playerId, edges, match)
       );
     } catch (error) {
@@ -207,7 +205,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
 
       await this.roundScoreRepo.increaseTeamScoreTransaction(transaction, questionId, teamId, 0);
 
-      await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.CORRECT);
+      this.pendingStatus.enqueueTeam(teamId, PlayerStatus.CORRECT);
       await (this.gameQuestionRepo as GameMatchingQuestionRepository).addCorrectMatchTransaction(
         transaction,
         questionId,
@@ -249,9 +247,9 @@ export default class GameMatchingQuestionService extends GameQuestionService {
 
       const { newChooserIdx, newChooserTeamId } = findNextAvailableChooser(chooserIdx, chooserOrder, canceled);
       await this.chooserRepo.updateChooserIndexTransaction(transaction, newChooserIdx);
-      await this.playerRepo.updateTeamPlayersStatus(newChooserTeamId, PlayerStatus.FOCUS);
+      this.pendingStatus.enqueueTeam(newChooserTeamId, PlayerStatus.FOCUS);
       if (newChooserTeamId !== teamId) {
-        await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.IDLE);
+        this.pendingStatus.enqueueTeam(teamId, PlayerStatus.IDLE);
       }
 
       await (this.gameQuestionRepo as GameMatchingQuestionRepository).addCorrectMatchTransaction(
@@ -380,8 +378,8 @@ export default class GameMatchingQuestionService extends GameQuestionService {
       const { newChooserIdx, newChooserTeamId } = findNextAvailableChooser(chooserIdx, chooserOrder, newCanceled);
       await this.chooserRepo.updateChooserIndexTransaction(transaction, newChooserIdx);
 
-      await this.playerRepo.updateTeamPlayersStatus(newChooserTeamId, PlayerStatus.FOCUS);
-      await this.playerRepo.updateTeamPlayersStatus(teamId, isCanceled ? PlayerStatus.WRONG : PlayerStatus.IDLE);
+      this.pendingStatus.enqueueTeam(newChooserTeamId, PlayerStatus.FOCUS);
+      this.pendingStatus.enqueueTeam(teamId, isCanceled ? PlayerStatus.WRONG : PlayerStatus.IDLE);
       await this.soundRepo.addSoundTransaction(
         transaction,
         isCanceled ? 'zelda_wind_waker_kaboom' : 'zelda_wind_waker_sploosh'
@@ -397,7 +395,7 @@ export default class GameMatchingQuestionService extends GameQuestionService {
         .reverse()
         .flatMap(({ teams }) => shuffle(teams));
       await this.chooserRepo.updateChooserOrderTransaction(transaction, newChooserOrder);
-      await this.playerRepo.updateTeamPlayersStatus(teamId, PlayerStatus.WRONG);
+      this.pendingStatus.enqueueTeam(teamId, PlayerStatus.WRONG);
       await this.soundRepo.addSoundTransaction(transaction, 'zelda_wind_waker_game_over');
       await this.endQuestionTransaction(transaction, questionId);
     }

@@ -1,8 +1,7 @@
 import { logger } from '@/backend/logger';
 import GameProgressiveCluesQuestionRepository from '@/backend/repositories/question/GameProgressiveCluesQuestionRepository';
 import GameBuzzerQuestionService from '@/backend/services/question/buzzer/GameBuzzerQuestionService';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
+import { adminDb } from '@/firebase/admin';
 import { CanceledPlayer } from '@/models/questions/buzzer';
 import { GameProgressiveCluesQuestion } from '@/models/questions/progressive-clues';
 import { QuestionType } from '@/models/questions/question-type';
@@ -23,7 +22,7 @@ export default class GameProgressiveCluesQuestionService extends GameBuzzerQuest
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         const questionPlayers = await (
           this.gameQuestionRepo as GameProgressiveCluesQuestionRepository
         ).getPlayersTransaction(transaction, questionId);

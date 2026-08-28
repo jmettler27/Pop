@@ -1,10 +1,9 @@
-import { Transaction } from 'firebase/firestore';
+import { Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
-import { runBackendTransaction } from '@/firebase/backend-firestore';
-import { firestore } from '@/firebase/firebase';
+import { adminDb } from '@/firebase/admin';
 import {
   EnumerationChallenger,
   EnumerationQuestion,
@@ -215,7 +214,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         await this.soundRepo.addSoundTransaction(transaction, 'pop');
         await (this.gameQuestionRepo as GameEnumerationQuestionRepository).addBetTransaction(
           transaction,
@@ -235,7 +234,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
     }
 
     try {
-      await runBackendTransaction(firestore, (transaction) => this.endThinkingTransaction(transaction, questionId));
+      await adminDb().runTransaction((transaction) => this.endThinkingTransaction(transaction, questionId));
     } catch (error) {
       this.log.error({ question: questionId, err: error }, 'Failed to end the enum thinking');
       throw error;
@@ -301,7 +300,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         await this.soundRepo.addSoundTransaction(transaction, 'super_mario_world_coin');
         await (this.gameQuestionRepo as GameEnumerationQuestionRepository).validateItemTransaction(
           transaction,
@@ -325,7 +324,7 @@ export default class GameEnumerationQuestionService extends GameQuestionService 
     }
 
     try {
-      await runBackendTransaction(firestore, async (transaction) => {
+      await adminDb().runTransaction(async (transaction) => {
         await this.soundRepo.addSoundTransaction(transaction, 'super_mario_world_coin');
         await (this.gameQuestionRepo as GameEnumerationQuestionRepository).incrementValidItemsTransaction(
           transaction,

@@ -1,4 +1,4 @@
-import { serverTimestamp, Transaction } from 'firebase/firestore';
+import { FieldValue, Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import GameNaguiQuestionRepository from '@/backend/repositories/question/GameNaguiQuestionRepository';
@@ -69,7 +69,7 @@ export default class NaguiRoundService extends RoundService {
 
     await this.roundRepo.updateRoundTransaction(transaction, roundId, {
       type: RoundType.NAGUI,
-      dateStart: serverTimestamp(),
+      dateStart: FieldValue.serverTimestamp(),
       order: newOrder,
       currentQuestionIdx: 0,
       questions: shuffle(questionIds),
@@ -131,11 +131,7 @@ export default class NaguiRoundService extends RoundService {
       const newChooserTeamId = chooserOrder[newChooserIdx];
       await this.chooserRepo.updateChooserIndexTransaction(transaction, newChooserIdx);
       await gameQuestionRepo.updateQuestionTeamTransaction(transaction, questionId, newChooserTeamId);
-      await this.playerRepo.updateTeamAndOtherTeamsPlayersStatus(
-        newChooserTeamId,
-        PlayerStatus.FOCUS,
-        PlayerStatus.IDLE
-      );
+      this.pendingStatus.enqueueTeamAndOthers(newChooserTeamId, PlayerStatus.FOCUS, PlayerStatus.IDLE);
     } else {
       this.log.debug(
         { round: roundId, questionOrder },

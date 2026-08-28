@@ -1,4 +1,4 @@
-import { arrayRemove, arrayUnion, Timestamp, type Transaction } from 'firebase/firestore';
+import { FieldValue, Timestamp, type Transaction } from 'firebase-admin/firestore';
 
 import GameBuzzerQuestionRepository from '@/backend/repositories/question/GameBuzzerQuestionRepository';
 import { BuzzerQuestionPlayers } from '@/models/questions/buzzer';
@@ -62,8 +62,8 @@ export default class GameQuoteQuestionRepository extends GameBuzzerQuestionRepos
 
   async cancelPlayerTransaction(transaction: Transaction, questionId: string, playerId: string): Promise<void> {
     await this.updateTransaction(transaction, [questionId, ...GameQuoteQuestionRepository.QUOTE_PLAYERS_PATH], {
-      canceled: arrayUnion({ playerId, timestamp: Timestamp.now() }),
-      buzzed: arrayRemove(playerId),
+      canceled: FieldValue.arrayUnion({ playerId, timestamp: Timestamp.now() }),
+      buzzed: FieldValue.arrayRemove(playerId),
     });
   }
 

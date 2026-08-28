@@ -1,4 +1,4 @@
-import { Transaction } from 'firebase/firestore';
+import { Transaction } from 'firebase-admin/firestore';
 
 import RoundService from '@/backend/services/round/RoundService';
 import { RoundType } from '@/models/rounds/round-type';

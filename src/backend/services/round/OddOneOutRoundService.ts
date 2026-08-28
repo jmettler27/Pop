@@ -1,4 +1,4 @@
-import { serverTimestamp, Transaction } from 'firebase/firestore';
+import { FieldValue, Transaction } from 'firebase-admin/firestore';
 
 import { logger } from '@/backend/logger';
 import GameOddOneOutQuestionRepository from '@/backend/repositories/question/GameOddOneOutQuestionRepository';
@@ -55,7 +55,7 @@ export default class OddOneOutRoundService extends RoundService {
 
     await this.roundRepo.updateRoundTransaction(transaction, roundId, {
       type: RoundType.ODD_ONE_OUT,
-      dateStart: serverTimestamp(),
+      dateStart: FieldValue.serverTimestamp(),
       order: newOrder,
       currentQuestionIdx: 0,
       maxPoints: 0,
@@ -107,7 +107,7 @@ export default class OddOneOutRoundService extends RoundService {
     }
     await this.chooserRepo.resetChoosersTransaction(transaction);
     const newChooserTeamId = chooser.chooserOrder[0];
-    await this.playerRepo.updateTeamAndOtherTeamsPlayersStatus(newChooserTeamId, PlayerStatus.FOCUS, PlayerStatus.IDLE);
+    this.pendingStatus.enqueueTeamAndOthers(newChooserTeamId, PlayerStatus.FOCUS, PlayerStatus.IDLE);
     await this.timerRepo.startTimerTransaction(transaction, gameQuestion.thinkingTime);
     await this.soundRepo.addSoundTransaction(transaction, 'skyrim_skill_increase');
     await this.roundRepo.setCurrentQuestionIdxTransaction(transaction, roundId, questionOrder);

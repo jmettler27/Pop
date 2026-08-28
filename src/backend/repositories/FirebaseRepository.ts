@@ -1,29 +1,14 @@
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  getCountFromServer,
-  getDoc,
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  setDoc,
-  updateDoc,
-  where,
-  writeBatch,
-  type CollectionReference,
-  type DocumentData,
-  type DocumentReference,
-  type Query,
-  type Transaction,
-  type WhereFilterOp,
-} from 'firebase/firestore';
+import type {
+  CollectionReference,
+  DocumentData,
+  DocumentReference,
+  Query,
+  Transaction,
+  WhereFilterOp,
+} from 'firebase-admin/firestore';
 
 import { IRepository } from '@/backend/repositories/IRepository';
-import { ensureBackendAuth } from '@/firebase/backend-auth';
-import { firestore } from '@/firebase/firebase';
+import { adminDb } from '@/firebase/admin';
 import { isArray } from '@/utils/arrays';
 
 export interface QueryOptions {
@@ -43,9 +28,9 @@ export default class FirebaseRepository extends IRepository {
       if (invalidIdx !== -1) {
         throw new Error(`Invalid Firestore path segment at index ${invalidIdx}: ${String(path[invalidIdx])}`);
       }
-      this.collectionRef = collection(firestore, path[0], ...path.slice(1));
+      this.collectionRef = adminDb().collection(path.join('/'));
     } else {
-      this.collectionRef = collection(firestore, collectionPath as string);
+      this.collectionRef = adminDb().collection(collectionPath as string);
     }
   }
 
@@ -53,27 +38,25 @@ export default class FirebaseRepository extends IRepository {
     if (isArray(idOrPath)) {
       const path = idOrPath as string[];
       if (path.length === 0) throw new Error('Path must be a non-empty array of path segments');
-      return doc(this.collectionRef, ...path);
+      return this.collectionRef.doc(path.join('/'));
     }
-    return doc(this.collectionRef, idOrPath as string);
+    return this.collectionRef.doc(idOrPath as string);
   }
 
   async get(idOrPath: string | string[]): Promise<Record<string, unknown> | null> {
-    await ensureBackendAuth();
     const docRef = this.getDocumentRef(idOrPath);
-    const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null;
+    const docSnap = await docRef.get();
+    return docSnap.exists ? { id: docSnap.id, ...(docSnap.data() ?? {}) } : null;
   }
 
   async getTransaction(transaction: Transaction, idOrPath: string | string[]): Promise<Record<string, unknown> | null> {
     const docRef = this.getDocumentRef(idOrPath);
     const docSnap = await transaction.get(docRef);
-    return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null;
+    return docSnap.exists ? { id: docSnap.id, ...(docSnap.data() ?? {}) } : null;
   }
 
   async getAll(): Promise<Array<Record<string, unknown>>> {
-    await ensureBackendAuth();
-    const querySnapshot = await getDocs(query(this.collectionRef));
+    const querySnapshot = await this.collectionRef.get();
     return querySnapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
   }
 
@@ -82,22 +65,21 @@ export default class FirebaseRepository extends IRepository {
   }
 
   private buildQuery(queryOptions: QueryOptions): Query<DocumentData> {
-    let q: Query<DocumentData> = query(this.collectionRef);
+    let q: Query<DocumentData> = this.collectionRef;
     if (queryOptions.where) {
-      q = query(q, where(queryOptions.where.field, queryOptions.where.operator, queryOptions.where.value));
+      q = q.where(queryOptions.where.field, queryOptions.where.operator, queryOptions.where.value);
     }
     if (queryOptions.orderBy) {
-      q = query(q, orderBy(queryOptions.orderBy.field, queryOptions.orderBy.direction));
+      q = q.orderBy(queryOptions.orderBy.field, queryOptions.orderBy.direction);
     }
     if (queryOptions.limit) {
-      q = query(q, limit(queryOptions.limit));
+      q = q.limit(queryOptions.limit);
     }
     return q;
   }
 
   async getByQuery(queryOptions: QueryOptions = {}): Promise<Array<Record<string, unknown>>> {
-    await ensureBackendAuth();
-    const querySnapshot = await getDocs(this.buildQuery(queryOptions));
+    const querySnapshot = await this.buildQuery(queryOptions).get();
     return querySnapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
   }
 
@@ -105,8 +87,9 @@ export default class FirebaseRepository extends IRepository {
     transaction: Transaction,
     queryOptions: QueryOptions = {}
   ): Promise<Array<Record<string, unknown>>> {
-    // Note: Firestore client transactions don't support queries; falling back to getDocs
-    const querySnapshot = await getDocs(this.buildQuery(queryOptions));
+    // Admin `transaction.get()` accepts a Query, so this is a real transactional
+    // read (reads must still precede all writes in the callback).
+    const querySnapshot = await transaction.get(this.buildQuery(queryOptions));
     return querySnapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
   }
 
@@ -123,9 +106,8 @@ export default class FirebaseRepository extends IRepository {
   }
 
   async update(idOrPath: string | string[], data: Record<string, unknown>): Promise<Record<string, unknown>> {
-    await ensureBackendAuth();
     const docRef = this.getDocumentRef(idOrPath);
-    await updateDoc(docRef, data);
+    await docRef.update(data);
     return { id: docRef.id, ...data };
   }
 
@@ -140,17 +122,15 @@ export default class FirebaseRepository extends IRepository {
   }
 
   async updateAll(data: Record<string, unknown>): Promise<void> {
-    await ensureBackendAuth();
-    const querySnapshot = await getDocs(query(this.collectionRef));
-    const batch = writeBatch(firestore);
+    const querySnapshot = await this.collectionRef.get();
+    const batch = adminDb().batch();
     for (const d of querySnapshot.docs) batch.update(d.ref, data);
     await batch.commit();
   }
 
   async set(idOrPath: string | string[], data: Record<string, unknown>): Promise<Record<string, unknown>> {
-    await ensureBackendAuth();
     const docRef = this.getDocumentRef(idOrPath);
-    await setDoc(docRef, data);
+    await docRef.set(data);
     return { id: docRef.id, ...data };
   }
 
@@ -168,13 +148,12 @@ export default class FirebaseRepository extends IRepository {
     data: Record<string, unknown>,
     idOrPath: string | string[] | null = null
   ): Promise<Record<string, unknown>> {
-    await ensureBackendAuth();
     if (idOrPath) {
       const docRef = this.getDocumentRef(idOrPath);
-      await setDoc(docRef, data);
+      await docRef.set(data);
       return { id: docRef.id, ...data };
     }
-    const newDocRef = await addDoc(this.collectionRef, data);
+    const newDocRef = await this.collectionRef.add(data);
     return { id: newDocRef.id, ...data };
   }
 
@@ -183,14 +162,13 @@ export default class FirebaseRepository extends IRepository {
     data: Record<string, unknown>,
     idOrPath: string | string[] | null = null
   ): Promise<Record<string, unknown>> {
-    const docRef = idOrPath ? this.getDocumentRef(idOrPath) : doc(this.collectionRef);
+    const docRef = idOrPath ? this.getDocumentRef(idOrPath) : this.collectionRef.doc();
     await transaction.set(docRef, data);
     return { id: docRef.id, ...data };
   }
 
   async delete(idOrPath: string | string[]): Promise<void> {
-    await ensureBackendAuth();
-    await deleteDoc(this.getDocumentRef(idOrPath));
+    await this.getDocumentRef(idOrPath).delete();
   }
 
   async deleteTransaction(transaction: Transaction, idOrPath: string | string[]): Promise<void> {
@@ -198,8 +176,7 @@ export default class FirebaseRepository extends IRepository {
   }
 
   async getCount(queryBuilder: (ref: CollectionReference<DocumentData>) => Query<DocumentData>): Promise<number> {
-    await ensureBackendAuth();
-    const snapshot = await getCountFromServer(queryBuilder(this.collectionRef));
+    const snapshot = await queryBuilder(this.collectionRef).count().get();
     return snapshot.data().count;
   }
 }

@@ -1,8 +1,13 @@
-import { getDownloadURL, ref, uploadBytesResumable, type StorageReference } from 'firebase/storage';
+import { randomUUID } from 'crypto';
 
-import { ensureBackendAuth } from '@/firebase/backend-auth';
-import { storage } from '@/firebase/firebase';
+import { adminStorageBucket } from '@/firebase/admin';
 import { isArray } from '@/utils/arrays';
+
+// Host for the manually-built Firebase download URL. Matches what the client SDK's
+// `getDownloadURL()` returned: the emulator serves the same `/v0/b/{bucket}/o/...`
+// download API on its own host.
+const STORAGE_DOWNLOAD_HOST =
+  process.env.NEXT_PUBLIC_USE_EMULATORS === 'true' ? 'http://127.0.0.1:9199' : 'https://firebasestorage.googleapis.com';
 
 export default class StorageRepository {
   protected basePath: string;
@@ -16,14 +21,18 @@ export default class StorageRepository {
   }
 
   async uploadFile(file: File, path: string): Promise<string> {
-    await ensureBackendAuth();
     const fullPath = this.getFullPath(path);
-    const fileRef = ref(storage, fullPath);
-    await uploadBytesResumable(fileRef, file);
-    return getDownloadURL(fileRef);
-  }
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const token = randomUUID();
+    const bucket = adminStorageBucket();
 
-  getRef(path: string): StorageReference {
-    return ref(storage, this.getFullPath(path));
+    await bucket.file(fullPath).save(buffer, {
+      contentType: file.type || 'application/octet-stream',
+      // Nested: object metadata → custom metadata. `firebaseStorageDownloadTokens`
+      // is what the `?token=` download URL validates against.
+      metadata: { metadata: { firebaseStorageDownloadTokens: token } },
+    });
+
+    return `${STORAGE_DOWNLOAD_HOST}/v0/b/${bucket.name}/o/${encodeURIComponent(fullPath)}?alt=media&token=${token}`;
   }
 }
