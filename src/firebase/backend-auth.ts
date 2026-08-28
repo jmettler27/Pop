@@ -1,10 +1,17 @@
-import { signInWithCustomToken } from 'firebase/auth';
+import 'server-only';
+
+import { getAuth, signInWithCustomToken } from 'firebase/auth';
 
 import { logger } from '@/backend/logger';
 import { adminAuth } from '@/firebase/admin';
-import { firebaseAuth } from '@/firebase/firebase';
+import { firebaseApp } from '@/firebase/firebase';
 
 const useEmulators = process.env.NEXT_PUBLIC_USE_EMULATORS === 'true';
+
+// Server-only: `getAuth` eagerly validates `apiKey`, which is undefined in the
+// browser (the config reads non-`NEXT_PUBLIC_` env vars). The client never needs
+// Firebase Auth — user sessions are handled by NextAuth.
+const firebaseAuth = getAuth(firebaseApp);
 
 /** Firebase Auth uid for the trusted backend. Arbitrary — no user record needed. */
 const BACKEND_UID = 'pop-backend';
