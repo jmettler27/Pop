@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { countApprovedQuestions, listApprovedQuestions } from '@/backend/services/question/bank-actions';
@@ -17,9 +19,13 @@ export function useApprovedQuestionsPage(questionType: QuestionType, pageSize: n
     placeholderData: keepPreviousData,
   });
 
-  const items = (data?.items ?? []).map((raw) =>
-    QuestionFactory.createBaseQuestion(raw.type as QuestionType, raw)
-  ) as AnyBaseQuestion[];
+  const items = useMemo(
+    () =>
+      (data?.items ?? []).map(
+        (raw) => QuestionFactory.createBaseQuestion(raw.type as QuestionType, raw) as AnyBaseQuestion
+      ),
+    [data]
+  );
 
   return { items, hasMore: data?.hasMore ?? false, loading: isLoading, error };
 }

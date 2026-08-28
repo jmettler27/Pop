@@ -12,8 +12,8 @@ import QuoteMiddlePane from '@/frontend/components/game/main-pane/question/quote
 import ReorderingMiddlePane from '@/frontend/components/game/main-pane/question/reordering/ReorderingMiddlePane';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { ActiveQuestionProvider } from '@/frontend/contexts/ActiveQuestionContext';
-import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import useGame from '@/frontend/hooks/useGame';
+import { usePlayableQuestion } from '@/frontend/hooks/usePlayableQuestion';
 import type { BasicQuestion } from '@/models/questions/basic';
 import type { BuzzerQuestion } from '@/models/questions/buzzer';
 import type { EnumerationQuestion } from '@/models/questions/enumeration';
@@ -31,7 +31,11 @@ import type { ReorderingQuestion } from '@/models/questions/reordering';
 export default function QuestionMiddlePane() {
   const game = useGame();
 
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(game!.currentQuestion as string);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = usePlayableQuestion(
+    game?.currentRound as string | undefined,
+    game?.currentQuestionType as QuestionType | undefined,
+    game?.currentQuestion as string | undefined
+  );
 
   if (!game) return null;
   if (baseQuestionError) return <ErrorScreen inline />;

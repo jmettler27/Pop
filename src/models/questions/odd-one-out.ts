@@ -1,5 +1,6 @@
 import { BaseQuestion, GameQuestion, type BaseQuestionData, type GameQuestionData } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
+import { omit } from '@/utils/objects';
 
 export interface OddOneOutItem {
   title: string;
@@ -44,6 +45,19 @@ export class OddOneOutQuestion extends BaseQuestion {
     return {
       ...super.toObject(),
       details: { items: this.items, answerIdx: this.answerIdx, title: this.title, note: this.note },
+    };
+  }
+
+  // Players see item titles (shuffled client-side) but not which one is odd, nor the
+  // per-item explanations that would give it away.
+  toPlayableObject(): Record<string, unknown> {
+    const obj = this.toObject();
+    return {
+      ...obj,
+      details: {
+        ...omit(obj.details as Record<string, unknown>, ['answerIdx']),
+        items: (this.items ?? []).map((item) => ({ title: item.title })),
+      },
     };
   }
 

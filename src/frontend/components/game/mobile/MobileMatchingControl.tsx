@@ -5,18 +5,23 @@ import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameCh
 import ActiveMatchingQuestionGrid from '@/frontend/components/game/main-pane/question/matching/ActiveMatchingQuestionGrid';
 import { generateShuffledNodePositions } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
 import { Spinner } from '@/frontend/components/ui/spinner';
-import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
+import { usePlayableQuestion } from '@/frontend/hooks/usePlayableQuestion';
 import useTeam from '@/frontend/hooks/useTeam';
 import { Chooser } from '@/models/chooser';
 import { MatchingAnswer, MatchingQuestion } from '@/models/questions/matching';
+import { QuestionType } from '@/models/questions/question-type';
 
 export default function MobileMatchingControl() {
   const myTeam = useTeam();
-  const { gameId, questionId } = useActiveQuestion()!;
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(questionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = usePlayableQuestion(
+    roundId,
+    QuestionType.MATCHING,
+    questionId
+  );
 
   const { chooser, loading: chooserLoading, error: chooserError } = useChooser(gameId);
 

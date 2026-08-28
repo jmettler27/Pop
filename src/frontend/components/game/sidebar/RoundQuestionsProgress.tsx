@@ -9,10 +9,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Separator } from '@/frontend/components/ui/separator';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { Locale } from '@/frontend/helpers/locales';
-import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
+import { usePlayableQuestion } from '@/frontend/hooks/usePlayableQuestion';
 import useRole from '@/frontend/hooks/useRole';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameRounds } from '@/models/games/game';
@@ -126,7 +126,11 @@ function useRoundQuestion(questionType: QuestionType, roundId: string, questionI
     loading: gqLoading,
     error: gqError,
   } = useQuestion(gameId as string, roundId, questionType, questionId);
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(questionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = usePlayableQuestion(
+    roundId,
+    questionType,
+    questionId
+  );
   return {
     gameQuestion,
     baseQuestion,

@@ -10,11 +10,11 @@ import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameCh
 import { NaguiChooserController } from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerController';
 import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
 import { Spinner } from '@/frontend/components/ui/spinner';
-import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import { usePlayableQuestion } from '@/frontend/hooks/usePlayableQuestion';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -34,7 +34,11 @@ export default function MobileNaguiControl() {
     error: questionError,
   } = useQuestion(gameId, roundId, QuestionType.NAGUI, questionId);
 
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(questionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = usePlayableQuestion(
+    roundId,
+    QuestionType.NAGUI,
+    questionId
+  );
 
   if (questionError || chooserError || baseQuestionError) return null;
   if (questionLoading || chooserLoading || baseQuestionLoading) return <Spinner />;
