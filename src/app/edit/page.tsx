@@ -9,7 +9,7 @@ import { useIntl } from 'react-intl';
 /* Validation */
 import * as Yup from 'yup';
 
-import CreateGameService from '@/backend/services/create-game/CreateGameService';
+import { createGame } from '@/backend/services/create-game/actions';
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import SelectRoundScorePolicy from '@/frontend/components/common/SelectRoundScorePolicy';
 import { MyNumberInput, MyTextInput } from '@/frontend/components/common/StyledFormComponents';
@@ -48,7 +48,6 @@ export default function Page() {
 
   const [createNewGame, isSubmitting] = useAsyncAction(async (values: CreateGameFormValues, user: Session['user']) => {
     const { title, lang, maxPlayers, roundScorePolicy, organizerName } = values;
-    const createGameService = new CreateGameService();
     const data: CreateGameRoundsData = {
       title,
       type: GameType.ROUNDS,
@@ -60,7 +59,7 @@ export default function Page() {
       organizerImage: user.image ?? '',
     };
 
-    const gameId = await createGameService.createGame(data);
+    const gameId = await createGame(data);
     router.push('/edit/' + gameId);
   });
 

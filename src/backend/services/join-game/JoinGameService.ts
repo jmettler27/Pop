@@ -1,4 +1,4 @@
-import { runTransaction, serverTimestamp } from 'firebase/firestore';
+import { serverTimestamp } from 'firebase/firestore';
 import type { Logger } from 'pino';
 
 import { logger } from '@/backend/logger';
@@ -6,6 +6,7 @@ import PlayerRepository from '@/backend/repositories/user/PlayerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
 import TeamRepository from '@/backend/repositories/user/TeamRepository';
 import UserRepository from '@/backend/repositories/user/UserRepository';
+import { runBackendTransaction } from '@/firebase/backend-firestore';
 import { firestore } from '@/firebase/firebase';
 import { PlayerStatus } from '@/models/users/player';
 import { generateAvatarUrl } from '@/utils/avatar';
@@ -40,7 +41,7 @@ export default class JoinGameService {
     }
 
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         const user = await this.userRepo.getUserTransaction(transaction, userId);
         if (!user) {
           throw new Error('User not found');

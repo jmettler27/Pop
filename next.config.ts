@@ -42,6 +42,7 @@ const nextConfig: NextConfig = {
   serverExternalPackages: [
     'firebase',
     '@firebase/firestore',
+    '@firebase/auth',
     '@firebase/app',
     '@firebase/component',
     '@firebase/util',

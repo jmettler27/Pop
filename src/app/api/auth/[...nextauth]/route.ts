@@ -1,39 +1,21 @@
 import { randomUUID } from 'crypto';
 
 import { FirestoreAdapter } from '@auth/firebase-adapter';
-import { cert, getApps, initializeApp } from 'firebase-admin/app';
-import { Firestore, getFirestore } from 'firebase-admin/firestore';
 import NextAuth, { Profile, type NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import DiscordProvider from 'next-auth/providers/discord';
 import GoogleProvider from 'next-auth/providers/google';
 
+import { adminFirestore } from '@/firebase/admin';
 import { generateAvatarUrl } from '@/utils/avatar';
 
 const useEmulators = process.env.NEXT_PUBLIC_USE_EMULATORS === 'true';
-if (useEmulators) {
-  process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
-  delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
-}
 
-// adminDB is used by the guest provider to create ephemeral user records
-let adminDB: Firestore | null = null;
-
-const firestoreAdapter = (() => {
-  if (useEmulators) {
-    const app = getApps().length === 0 ? initializeApp({ projectId: 'demo-pop' }) : getApps()[0];
-    adminDB = getFirestore(app);
-    return FirestoreAdapter(adminDB);
-  }
-  const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY ? JSON.parse(process.env.FIREBASE_PRIVATE_KEY) : undefined;
-  if (!projectId || !clientEmail || !privateKey) return undefined;
-  const app =
-    getApps().length === 0 ? initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) }) : getApps()[0];
-  adminDB = getFirestore(app);
-  return FirestoreAdapter(adminDB);
-})();
+// `adminDB` backs the guest provider's ephemeral user records. The NextAuth
+// Firestore adapter is only wired into `authOptions` outside the emulators (see
+// below), but it is still constructed here so `events.signIn` can use it.
+const adminDB = adminFirestore();
+const firestoreAdapter = adminDB ? FirestoreAdapter(adminDB) : undefined;
 
 const providers: NextAuthOptions['providers'] = [];
 

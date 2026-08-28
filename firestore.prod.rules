@@ -1,0 +1,16 @@
+rules_version = '2';
+
+// PRODUCTION rules. Deployed with `npm run deploy:rules` (via firebase.prod.json).
+// The emulator uses the permissive firestore.rules instead.
+//
+// Reads stay open (the frontend reads Firestore directly via onSnapshot).
+// Writes require the custom claim minted in src/firebase/backend-auth.ts —
+// keep the claim key `backend` in sync with that file.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read: if true;
+      allow write: if request.auth.token.backend == true;
+    }
+  }
+}

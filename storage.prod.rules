@@ -1,0 +1,16 @@
+rules_version = '2';
+
+// PRODUCTION rules. Deployed with `npm run deploy:rules` (via firebase.prod.json).
+// The emulator uses the permissive storage.rules instead.
+//
+// Reads stay open (download URLs are rendered directly by the client).
+// Uploads require the backend custom claim — keep `backend` in sync with
+// src/firebase/backend-auth.ts.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth.token.backend == true;
+    }
+  }
+}

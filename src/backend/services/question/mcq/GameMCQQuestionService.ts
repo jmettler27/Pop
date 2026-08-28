@@ -1,8 +1,9 @@
-import { runTransaction, Transaction } from 'firebase/firestore';
+import { Transaction } from 'firebase/firestore';
 
 import { logger } from '@/backend/logger';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
+import { runBackendTransaction } from '@/firebase/backend-firestore';
 import { firestore } from '@/firebase/firebase';
 import { GameMCQQuestion, MCQQuestion } from '@/models/questions/mcq';
 import { QuestionType } from '@/models/questions/question-type';
@@ -87,7 +88,7 @@ export default class GameMCQQuestionService extends GameQuestionService {
     }
 
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         const baseQuestion = (await this.baseQuestionRepo.getQuestionTransaction(
           transaction,
           questionId

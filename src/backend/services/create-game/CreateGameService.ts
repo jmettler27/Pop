@@ -1,5 +1,3 @@
-import { runTransaction } from 'firebase/firestore';
-
 import { logger } from '@/backend/logger';
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
@@ -8,6 +6,7 @@ import TimerRepository from '@/backend/repositories/timer/TimerRepository';
 import ChooserRepository from '@/backend/repositories/user/ChooserRepository';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import ReadyRepository from '@/backend/repositories/user/ReadyRepository';
+import { runBackendTransaction } from '@/firebase/backend-firestore';
 import { firestore } from '@/firebase/firebase';
 import { CreateGameRoundsData } from '@/models/games/game';
 
@@ -37,7 +36,7 @@ export default class CreateGameService {
     log.debug({ data }, 'Creating game');
 
     try {
-      return await runTransaction(firestore, async (transaction) => {
+      return await runBackendTransaction(firestore, async (transaction) => {
         const { title, type, lang, maxPlayers, roundScorePolicy, organizerName, organizerId, organizerImage } = data;
         log.debug(
           { title, type, lang, maxPlayers, roundScorePolicy, organizerName, organizerId, organizerImage },

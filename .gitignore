@@ -46,3 +46,4 @@ firebase-export-*
 /config/
 
 *.cursor*
+.env*

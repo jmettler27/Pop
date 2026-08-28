@@ -9,6 +9,7 @@ import {
   type Transaction,
 } from 'firebase/firestore';
 
+import { ensureBackendAuth } from '@/firebase/backend-auth';
 import { firestore } from '@/firebase/firebase';
 import { isArray } from '@/utils/arrays';
 
@@ -33,6 +34,7 @@ export default class FirebaseDocumentRepository {
   }
 
   async get(): Promise<Record<string, unknown> | null> {
+    await ensureBackendAuth();
     const docSnap = await getDoc(this.docRef);
     return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null;
   }
@@ -42,6 +44,7 @@ export default class FirebaseDocumentRepository {
   }
 
   async update(data: Record<string, unknown>): Promise<Record<string, unknown>> {
+    await ensureBackendAuth();
     await updateDoc(this.docRef, data);
     return { id: this.docRef.id, ...data };
   }
@@ -52,6 +55,7 @@ export default class FirebaseDocumentRepository {
   }
 
   async set(data: Record<string, unknown>): Promise<Record<string, unknown>> {
+    await ensureBackendAuth();
     await setDoc(this.docRef, data);
     return { id: this.docRef.id, ...data };
   }
@@ -62,6 +66,7 @@ export default class FirebaseDocumentRepository {
   }
 
   async create(data: Record<string, unknown>): Promise<Record<string, unknown>> {
+    await ensureBackendAuth();
     const newDocRef = await addDoc(this.docRef as unknown as Parameters<typeof addDoc>[0], data);
     return { id: newDocRef.id, ...data };
   }
@@ -72,6 +77,7 @@ export default class FirebaseDocumentRepository {
   }
 
   async delete(): Promise<void> {
+    await ensureBackendAuth();
     await deleteDoc(this.docRef);
   }
 

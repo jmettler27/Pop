@@ -1,4 +1,4 @@
-import { runTransaction, serverTimestamp } from 'firebase/firestore';
+import { serverTimestamp } from 'firebase/firestore';
 import type { Logger } from 'pino';
 
 import { logger } from '@/backend/logger';
@@ -8,6 +8,7 @@ import GameQuestionRepositoryFactory from '@/backend/repositories/question/GameQ
 import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import GameScoreRepository from '@/backend/repositories/score/GameScoreRepository';
 import RoundScoreRepository from '@/backend/repositories/score/RoundScoreRepository';
+import { runBackendTransaction } from '@/firebase/backend-firestore';
 import { firestore } from '@/firebase/firebase';
 import { GameStatus } from '@/models/games/game-status';
 import { QuestionType } from '@/models/questions/question-type';
@@ -56,7 +57,7 @@ export default class EditGameService {
     }
 
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         const game = await this.gameRepo.getGameTransaction(transaction, this.gameId);
         if (!game) {
           this.log.error('Game not found');
@@ -103,7 +104,7 @@ export default class EditGameService {
     }
 
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         const baseQuestion = await this.baseQuestionRepo.getQuestionTransaction(transaction, questionId);
         if (!baseQuestion) {
           throw new Error('Question not found');
@@ -136,7 +137,7 @@ export default class EditGameService {
     }
 
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         await this.roundRepo.deleteRoundTransaction(transaction, roundId);
         await this.gameRepo.removeRoundTransaction(transaction, this.gameId, roundId);
       });
@@ -164,7 +165,7 @@ export default class EditGameService {
     }
 
     try {
-      await runTransaction(firestore, async (transaction) => {
+      await runBackendTransaction(firestore, async (transaction) => {
         const gameQuestionRepo = GameQuestionRepositoryFactory.createRepository(questionType, this.gameId, roundId);
         await gameQuestionRepo.deleteQuestionTransaction(transaction, questionId);
         await this.roundRepo.removeQuestionTransaction(transaction, roundId, questionId);
@@ -206,7 +207,7 @@ export default class EditGameService {
       throw new Error(
         `Thinking time must be between ${Timer.MIN_THINKING_TIME_SECONDS} and ${Timer.MAX_THINKING_TIME_SECONDS} seconds`
       );
-    await runTransaction(firestore, async (transaction) => {
+    await runBackendTransaction(firestore, async (transaction) => {
       const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
       if (!round) {
         throw new Error('Round not found');
@@ -259,7 +260,7 @@ export default class EditGameService {
       throw new Error(
         `Challenge time must be between ${Timer.MIN_CHALLENGE_TIME_SECONDS} and ${Timer.MAX_CHALLENGE_TIME_SECONDS} seconds`
       );
-    await runTransaction(firestore, async (transaction) => {
+    await runBackendTransaction(firestore, async (transaction) => {
       const round = await this.roundRepo.getRoundTransaction(transaction, roundId);
       if (!round) {
         throw new Error('Round not found');
