@@ -28,28 +28,34 @@ For detailed gameplay rules, round type descriptions, scoring mechanics, and mor
 | **Framework** | [Next.js](https://nextjs.org/)                                                                               |
 | **UI**        | [React](https://reactjs.org/), [shadcn/ui](https://ui.shadcn.com/), [Tailwind CSS](https://tailwindcss.com/) |
 | **Auth**      | [NextAuth.js](https://next-auth.js.org/) (Google, Discord)                                                   |
-| **Database**  | [Firestore](https://firebase.google.com/docs/firestore)                                                      |
-| **Storage**   | [Firebase Storage](https://firebase.google.com/docs/storage)                                                 |
-| **Forms**     | [Formik](https://formik.org/), [Yup](https://github.com/jquense/yup)                                         |
+| **Database**  | [Firestore](https://firebase.google.com/docs/firestore) — frontend via the client SDK (realtime), backend via [firebase-admin](https://firebase.google.com/docs/admin/setup) |
+| **Storage**   | [Firebase Storage](https://firebase.google.com/docs/storage) (backend uploads via firebase-admin)            |
+| **Forms**     | [React Hook Form](https://react-hook-form.com/) + [Yup](https://github.com/jquense/yup) (legacy forms: [Formik](https://formik.org/)) |
 
 ## Getting Started
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v18+)
-- [JDK](https://www.oracle.com/java/technologies/downloads/) (v21+)
+- [Node.js](https://nodejs.org/) (v20+ — CI runs Node 24)
+- [JDK](https://www.oracle.com/java/technologies/downloads/) (v11+, for the Firebase emulators)
 
 ### Available Scripts
 
-| Command                 | Description                                             |
-| ----------------------- | ------------------------------------------------------- |
-| `npm run dev`           | Start the development server (uses production Firebase) |
-| `npm run dev:emulators` | Start emulators + dev server together (local data)      |
-| `npm run emulators`     | Start Firebase Emulator Suite only                      |
-| `npm run seed`          | Seed the running emulators with sample data             |
-| `npm run build`         | Build for production                                    |
-| `npm run start`         | Start the production server                             |
-| `npm run lint`          | Run ESLint                                              |
+| Command                  | Description                                             |
+| ------------------------ | ------------------------------------------------------- |
+| `npm run dev`            | Start the development server (uses production Firebase) |
+| `npm run dev:emulators`  | Start emulators + dev server together (local data)      |
+| `npm run emulators`      | Start Firebase Emulator Suite only                      |
+| `npm run seed`           | Seed the running emulators with sample data             |
+| `npm run build`          | Build for production                                    |
+| `npm run start`          | Start the production server                             |
+| `npm run typecheck`      | Type-check (`tsc --noEmit`)                             |
+| `npm run eslint`         | Lint `src` (`eslint:fix` to autofix)                    |
+| `npm run prettier-check` | Check formatting (`prettier-write` to fix)              |
+| `npm run update-i18n`    | Regenerate the i18n catalogs from `defineMessages()`    |
+| `npm run deploy:rules`   | Deploy production Firestore / RTDB / Storage rules      |
+
+CI (`.github/workflows/ci.yml`) gates PRs to `main` on **build + prettier-check + eslint + typecheck**.
 
 ## Local Development with Emulators
 
@@ -76,6 +82,9 @@ npm run seed
 - `.env.development` sets `NEXT_PUBLIC_USE_EMULATORS=true` and uses a demo project (`demo-pop`)
 - When this flag is set, the app connects to local emulators instead of production Firebase
 - Running `npm run dev` without `.env.development` connects to your real Firebase project
+- The backend talks to Firebase through **firebase-admin** (`src/firebase/admin.ts`), a trusted context that
+  bypasses security rules; the frontend uses the Firebase **client** SDK for realtime `onSnapshot` listeners
+- The emulator runs as project `demo-pop` (pinned via `--project` in the `emulators` script)
 - Emulator data is persisted in `emulator-data/` (git-ignored) via `--export-on-exit`
 
 ### Emulator Ports
@@ -90,6 +99,10 @@ npm run seed
 ## Project Structure
 
 ```
+firebase/                   # Firestore / RTDB / Storage security rules + indexes
+firebase.json               # Emulator config
+firebase.prod.json          # Production rules deploy target (npm run deploy:rules)
+scripts/                    # One-off scripts (emulator seeding)
 src/
 ├── app/                    # Next.js App Router pages & layouts
 │   ├── (game)/             # Game page
@@ -99,23 +112,22 @@ src/
 │   ├── edit/               # Game editor
 │   ├── join/               # Join game flow
 │   └── submit/             # Question submission forms (one per question type)
-├── backend/                # Server-side logic
-│   ├── config/             # App configuration
+├── backend/                # Server-side logic (firebase-admin)
+│   ├── config/             # Env-driven configuration
 │   ├── errors/             # Custom error types
-│   ├── firebase/           # Firebase (Firestore, Realtime DB, Storage) configuration
-│   ├── repositories/       # Data access layer
-│   ├── services/           # Business logic
-│   ├── utils/              # Shared server-side utilities
+│   ├── repositories/       # Data access layer (Firestore / Storage via firebase-admin)
+│   ├── services/           # Business logic — own the Firestore transactions
 │   └── logger.ts           # Pino logger instance
 ├── data/                   # Static app data (e.g. sound effects list)
+├── firebase/               # Firebase SDK init: admin.ts (backend), firebase.ts + barrels (frontend client SDK)
 ├── frontend/               # Client-side components & utilities
-│   ├── components/         # React components
-│   │   └── ui/             # shadcn/ui primitives
+│   ├── components/         # React components (ui/ = shadcn/ui primitives)
 │   ├── contexts/           # React contexts
 │   ├── helpers/            # Client utility functions
-│   ├── hooks/              # React hooks
-│   ├── i18n/               # Internationalization (English/French)
+│   ├── hooks/              # React hooks (hooks/firestore/ = Query + onSnapshot data layer)
+│   ├── i18n/               # Internationalization (English / French)
 │   └── lib/                # Shared client utilities (e.g. cn helper)
 ├── models/                 # Shared domain models used by both frontend & backend
-└── types/                  # Ambient/global TypeScript declarations (e.g. NextAuth module augmentation)
+├── types/                  # Ambient/global TypeScript declarations (e.g. NextAuth module augmentation)
+└── utils/                  # Shared utilities (arrays, scores, avatars, …)
 ```

@@ -1,7 +1,7 @@
 rules_version = '2';
 
 // PRODUCTION rules. Deployed with `npm run deploy:rules` (via firebase.prod.json).
-// The emulator uses the permissive storage.rules instead.
+// The emulator uses the permissive firebase/storage.rules instead.
 //
 // Reads stay open (download URLs are rendered directly by the client).
 // All uploads go through the firebase-admin SDK, which bypasses these rules.
