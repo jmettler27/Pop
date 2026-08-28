@@ -84,10 +84,6 @@ export default class TimerRepository extends FirebaseDocumentRepository {
     await this.update({ forward });
   }
 
-  async updateAuthorized(authorized: boolean): Promise<void> {
-    await this.update({ authorized });
-  }
-
   async prepareTimerForReadyTransaction(transaction: Transaction): Promise<void> {
     await this.updateTimerTransaction(transaction, {
       status: TimerStatus.RESET,

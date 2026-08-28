@@ -227,7 +227,7 @@ export default class GameOddOneOutQuestionService extends GameQuestionService {
         },
       ],
     });
-    await this.timerRepo.updateAuthorized(false);
+    await this.timerRepo.updateTimerTransaction(transaction, { authorized: false });
 
     this.log.info({ question: questionId, player: playerId, option: idx }, 'OOO proposal selected');
   }
