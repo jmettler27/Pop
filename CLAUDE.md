@@ -15,6 +15,7 @@ React Compiler on) + Firebase (Firestore, Realtime DB, Storage) + NextAuth. Type
 | `npm run prettier-check` / `prettier-write` | Formatting                                          |
 | `npm run build`            | Production build                                                     |
 | `npm run update-i18n`      | Regenerate `en.json` + re-sort `fr.json` from `defineMessages()` calls |
+| `npm run deploy:rules`     | Deploy prod Firestore/RTDB/Storage rules (`firebase.prod.json` → `firebase/*.prod.rules`) |
 
 CI (`.github/workflows/ci.yml`, Node 24) gates PRs to `main` on **build + prettier-check + eslint + typecheck**.
 Run `/check` before pushing.
@@ -36,6 +37,14 @@ Run `/check` before pushing.
   a trusted context that bypasses security rules (prod rules are `allow read: if true; allow write: if false`).
   The Firebase **client** SDK is frontend-only (realtime `onSnapshot` listeners). `next.config.ts` externalizes
   `firebase-admin`/`@google-cloud/*`/`grpc`/`pino` from the server bundle.
+- **Admin SDK vs client SDK gotchas** (the two base repos already handle these): `docSnap.exists` is a
+  **property**, not `exists()`. `getByQueryTransaction` runs a **real transactional query** now, so a query
+  read after any write in the same callback throws "reads must precede writes" — hoist reads up (see
+  `RoundService.endRoundTransaction`). Storage uploads go through `adminStorageBucket()` and rebuild the
+  `?token=` download URL by hand.
+- **Firebase project config** lives in `firebase/` (`*.rules`, `*.prod.rules`, `firestore.indexes.json`).
+  `firebase.json` (emulator), `firebase.prod.json` (prod deploy target for `deploy:rules`), and `.firebaserc`
+  stay at repo root. `.firebaserc` aliases: `default` → `demo-pop` (emulator), `prod` → `qpc-app`.
 - **Per-type polymorphism:** `QuestionType` / `RoundType` enums + `*Factory` classes switch on the enum
   (`QuestionFactory`, `GameQuestionServiceFactory`, `RoundServiceFactory`, repo factories). Adding a type
   touches ~15 files across every layer — use `/add-question-type`.
@@ -73,7 +82,9 @@ Run `/check` before pushing.
 - `src/backend/config/index.ts` — env-driven config
 - `src/frontend/hooks/firestore/**` — the Query + snapshot data layer
 - `src/frontend/i18n/` — `defineMessages.ts`, `locale/{en,fr}.json`, `update-i18n.mjs`
+- `src/backend/services/pendingStatusChanges.ts` — defer whole-team `status` writes past a transaction commit
 - `next.config.ts` — React Compiler, `serverExternalPackages`, 4 MB server-action body limit
+- `firebase/` — Firestore/RTDB/Storage rules + indexes; `firebase.json` / `firebase.prod.json` / `.firebaserc` at root
 - `README.md` — full emulator setup + ports (Firestore 8080, RTDB 9000, Storage 9199, UI 4000)
 
 ## Gotchas
