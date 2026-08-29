@@ -110,6 +110,28 @@ function revealEnumerationAnswersSoFar(
 }
 
 /**
+ * Odd-one-out hides every per-item `explanation` in `toPlayableObject()`; put back the ones
+ * for items the chooser team has already selected. Mirrors the client's per-item `isClicked`
+ * reveal in `ProposalItem` (`selectedItems.some((s) => s.idx === i)`). `answerIdx` stays
+ * hidden — while the question is live a selected item is always a "correct" (non-odd) one,
+ * because picking the odd one ends the question, which flips this to a full reveal.
+ */
+function revealOddOneOutExplanationsSoFar(
+  payload: Record<string, unknown>,
+  base: { items?: { title: string; explanation: string }[] },
+  gameQuestion: { selectedItems?: { idx: number }[] } | null
+): void {
+  const allItems = base.items ?? [];
+  const selected = new Set((gameQuestion?.selectedItems ?? []).map((s) => s.idx));
+  const details = (payload.details ?? {}) as Record<string, unknown>;
+  details.items = allItems.map((item, i) => ({
+    title: item.title,
+    explanation: selected.has(i) ? item.explanation : '',
+  }));
+  payload.details = details;
+}
+
+/**
  * Nagui: the chooser picks a lifeline blind, so `toPlayableObject()` withholds `choices`
  * too. Once the lifeline is "square" or "duo" the player needs the choices back; "hide"
  * never shows them (buzz-and-answer). For "duo" also hand back `duoIndices` — the visible
@@ -204,6 +226,13 @@ export default class PlayableQuestionService {
     if (!reveal && base.type === QuestionType.ENUMERATION) {
       const cited = (enumPlayers as { challenger?: { cited?: Record<string, unknown> } } | null)?.challenger?.cited;
       revealEnumerationAnswersSoFar(payload, base as { answer?: string[] }, cited);
+    }
+    if (!reveal && base.type === QuestionType.ODD_ONE_OUT) {
+      revealOddOneOutExplanationsSoFar(
+        payload,
+        base as { items?: { title: string; explanation: string }[] },
+        gameQuestion as { selectedItems?: { idx: number }[] } | null
+      );
     }
     // Runs for every role: organizers/`QUESTION_END` already have `choices`, but the client
     // filters the duo pair off `duoIndices` uniformly, so that must be present for them too.

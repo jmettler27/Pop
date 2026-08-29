@@ -20,6 +20,7 @@ const PROGRESSIVE_REVEAL_TYPES = new Set<QuestionType>([
   QuestionType.QUOTE,
   QuestionType.ENUMERATION,
   QuestionType.NAGUI,
+  QuestionType.ODD_ONE_OUT,
 ]);
 
 /**
@@ -57,6 +58,11 @@ function revealProgressKey(
   if (questionType === QuestionType.NAGUI) {
     // The payload gains `duoIndices` once the chooser picks the duo lifeline.
     return `nagui:${(revealStateDoc as { option?: string | null }).option ?? ''}`;
+  }
+  if (questionType === QuestionType.ODD_ONE_OUT) {
+    // `selectedItems` grows by one per chooser pick; each pick unlocks that item's explanation.
+    const selected = (revealStateDoc as { selectedItems?: { idx: number }[] }).selectedItems ?? [];
+    return `ooo:${selected.map((s) => s.idx).join(',')}`;
   }
   return '';
 }

@@ -49,7 +49,8 @@ export class OddOneOutQuestion extends BaseQuestion {
   }
 
   // Players see item titles (shuffled client-side) but not which one is odd, nor the
-  // per-item explanations that would give it away.
+  // per-item explanations that would give it away. `PlayableQuestionService` puts back the
+  // explanation for each item the chooser team has already selected (revealed on pick).
   toPlayableObject(): Record<string, unknown> {
     const obj = this.toObject();
     return {
