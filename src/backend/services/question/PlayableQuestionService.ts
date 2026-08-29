@@ -6,6 +6,7 @@ import GameQuestionRepository from '@/backend/repositories/question/GameQuestion
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import { GameStatus } from '@/models/games/game-status';
 import { QuestionType } from '@/models/questions/question-type';
+import { redactQuoteDetails, type QuoteDetails } from '@/models/questions/quote';
 
 function serializeTimestamps(obj: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {};
@@ -58,6 +59,34 @@ function revealLabelsSoFar(
 }
 
 /**
+ * Quote hides its `toGuess` elements in `toPlayableObject()`; recompute that mask against
+ * the live `revealed` map so uncovered elements / quote parts come back in the clear. A
+ * non-empty `revealed[element]` (or `revealed.quote[sortedPartIdx]`) means it's shown,
+ * matching `DisplayedQuoteElement` / `DisplayedQuote`.
+ */
+function revealQuoteElementsSoFar(
+  payload: Record<string, unknown>,
+  base: QuoteDetails,
+  gameQuestion: { revealed?: Record<string, Record<string, unknown>> } | null
+): void {
+  const revealed = gameQuestion?.revealed ?? {};
+  const nonEmpty = (v: unknown) => !!v && typeof v === 'object' && Object.keys(v as object).length > 0;
+  const isRevealed = (element: string) => nonEmpty(revealed[element]);
+  const isQuotePartRevealed = (sortedIdx: number) => nonEmpty((revealed['quote'] ?? {})[sortedIdx]);
+  payload.details = redactQuoteDetails(
+    {
+      author: base.author,
+      quote: base.quote,
+      quoteParts: base.quoteParts,
+      source: base.source,
+      toGuess: base.toGuess,
+    },
+    isRevealed,
+    isQuotePartRevealed
+  );
+}
+
+/**
  * Serves the base question (`questions/{id}`) to in-game clients, redacting the
  * answer-bearing fields while the question is still live for players and
  * spectators. Organizers always get the full question (they run the game); so does
@@ -99,6 +128,13 @@ export default class PlayableQuestionService {
         payload,
         base as { labels?: string[] },
         gameQuestion as { revealed?: Record<string, unknown>[] } | null
+      );
+    }
+    if (!reveal && base.type === QuestionType.QUOTE) {
+      revealQuoteElementsSoFar(
+        payload,
+        base as QuoteDetails,
+        gameQuestion as { revealed?: Record<string, Record<string, unknown>> } | null
       );
     }
 

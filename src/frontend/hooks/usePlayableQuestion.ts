@@ -14,7 +14,11 @@ import QuestionFactory, { type AnyBaseQuestion } from '@/models/questions/Questi
 // Question types whose playable payload is redacted progressively as the question runs
 // (not just flipped open at QUESTION_END). For these we watch the game-question doc and
 // fold its reveal state into the query key so the payload refetches as more unlocks.
-const PROGRESSIVE_REVEAL_TYPES = new Set<QuestionType>([QuestionType.PROGRESSIVE_CLUES, QuestionType.LABELLING]);
+const PROGRESSIVE_REVEAL_TYPES = new Set<QuestionType>([
+  QuestionType.PROGRESSIVE_CLUES,
+  QuestionType.LABELLING,
+  QuestionType.QUOTE,
+]);
 
 /**
  * A short signature of the game-question doc's reveal state. It only needs to *change*
@@ -32,6 +36,12 @@ function revealProgressKey(
   if (questionType === QuestionType.LABELLING) {
     const revealed = (gameQuestionData as { revealed?: Record<string, unknown>[] }).revealed ?? [];
     return `label:${revealed.map((entry) => (entry && Object.keys(entry).length > 0 ? '1' : '0')).join('')}`;
+  }
+  if (questionType === QuestionType.QUOTE) {
+    // Small object (a flag per toGuess element, nested per quote part); only grows as
+    // things are revealed, so stringifying it is a stable refetch trigger.
+    const revealed = (gameQuestionData as { revealed?: unknown }).revealed;
+    return `quote:${revealed ? JSON.stringify(revealed) : ''}`;
   }
   return '';
 }

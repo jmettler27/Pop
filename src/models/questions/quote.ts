@@ -139,12 +139,83 @@ export class QuoteQuestion extends BaseQuestion {
     };
   }
 
+  // Everything in `toGuess` is masked here (nothing revealed yet). `PlayableQuestionService`
+  // re-runs `redactQuoteDetails` with the live `revealed` state so uncovered elements /
+  // quote parts come back in the clear as the game progresses.
+  toPlayableObject(): Record<string, unknown> {
+    const obj = this.toObject();
+    return {
+      ...obj,
+      details: redactQuoteDetails(
+        obj.details as QuoteDetails,
+        () => false,
+        () => false
+      ),
+    };
+  }
+
   static validate(data: unknown): boolean {
     return BaseQuestion.validate(data);
   }
 
   setImage(_imageUrl: string): void {}
   setAudio(_audioUrl: string): void {}
+}
+
+/** Placeholder the client shows for an unrevealed `author` / `source` (its own JSX hardcodes
+ *  `???`; this only needs to be truthy so the element still renders). */
+export const QUOTE_HIDDEN_ELEMENT = '???';
+
+export interface QuoteDetails {
+  author?: string;
+  quote?: string;
+  quoteParts?: QuotePart[];
+  source?: string;
+  toGuess?: string[];
+}
+
+/**
+ * A copy of a quote's `details` safe to hand a viewer who still has to guess the
+ * `toGuess` elements. `isRevealed(element)` and `isQuotePartRevealed(sortedIdx)` decide
+ * what stays in the clear; the rest is masked exactly the way the client's
+ * `DisplayedQuote` / `DisplayedQuoteElement` would render it — a fixed `???` for
+ * author/source, a length-preserving `_` run for each quote-part range.
+ */
+export function redactQuoteDetails(
+  details: QuoteDetails,
+  isRevealed: (element: string) => boolean,
+  isQuotePartRevealed: (sortedIdx: number) => boolean
+): QuoteDetails {
+  const toGuess = details.toGuess ?? [];
+  const quoteParts = details.quoteParts ?? [];
+  const out: QuoteDetails = { ...details };
+
+  if (toGuess.includes('author') && !isRevealed('author')) out.author = QUOTE_HIDDEN_ELEMENT;
+  if (toGuess.includes('source') && !isRevealed('source')) out.source = QUOTE_HIDDEN_ELEMENT;
+  if (toGuess.includes('quote') && quoteParts.length > 0) {
+    out.quote = maskQuoteParts(details.quote ?? '', quoteParts, isQuotePartRevealed);
+  }
+  return out;
+}
+
+/** Replace every non-whitespace char inside each still-hidden quote-part range with `_`.
+ *  Parts are walked in `startIdx` order to match the client's `DisplayedQuote`. */
+function maskQuoteParts(
+  quote: string,
+  quoteParts: QuotePart[],
+  isQuotePartRevealed: (sortedIdx: number) => boolean
+): string {
+  const sorted = [...quoteParts].sort((a, b) => a.startIdx - b.startIdx);
+  let result = '';
+  let lastIndex = 0;
+  sorted.forEach((part, idx) => {
+    result += quote.substring(lastIndex, part.startIdx);
+    const within = quote.substring(part.startIdx, part.endIdx + 1);
+    result += isQuotePartRevealed(idx) ? within : within.replace(/\S/g, '_');
+    lastIndex = part.endIdx + 1;
+  });
+  result += quote.substring(lastIndex);
+  return result;
 }
 
 export interface GameQuoteQuestionData extends GameBuzzerQuestionData {
