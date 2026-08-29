@@ -441,8 +441,8 @@ function EmojiRoundQuestionAccordion({
           {topicToEmoji(q.topic as Topic)}{' '}
           <strong>
             {questionTypeToTitle(QuestionType.EMOJI, locale as Locale)} {order + 1}
-          </strong>{' '}
-          - {q.title}
+          </strong>
+          {q.title ? <> - {q.title}</> : null}
         </span>
       }
       details={
@@ -607,8 +607,8 @@ function ImageRoundQuestionAccordion({
           {topicToEmoji(q.topic as Topic)}{' '}
           <strong>
             {questionTypeToTitle(QuestionType.IMAGE, locale as Locale)} {order + 1}
-          </strong>{' '}
-          - {q.title}
+          </strong>
+          {q.title ? <> - {q.title}</> : null}
         </span>
       }
       details={
@@ -660,8 +660,8 @@ function LabellingRoundQuestionAccordion({
           {topicToEmoji(q.topic as Topic)}{' '}
           <strong>
             {questionTypeToTitle(QuestionType.LABELLING, locale as Locale)} {order + 1}
-          </strong>{' '}
-          ({(q.labels ?? []).length} pts)
+          </strong>
+          {q.labels?.length ? <> ({q.labels.length} pts)</> : null}
         </span>
       }
       details={
@@ -713,8 +713,8 @@ function MatchingRoundQuestionAccordion({
           {topicToEmoji(q.topic as Topic)}{' '}
           <strong>
             {questionTypeToTitle(QuestionType.MATCHING, locale as Locale)} {order + 1}
-          </strong>{' '}
-          ({q.numCols} col)
+          </strong>
+          {q.numCols ? <> ({q.numCols} col)</> : null}
         </span>
       }
       details={
@@ -941,8 +941,8 @@ function ProgressiveCluesRoundQuestionAccordion({
           {topicToEmoji(q.topic as Topic)}{' '}
           <strong>
             {questionTypeToTitle(QuestionType.PROGRESSIVE_CLUES, locale as Locale)} {order + 1}
-          </strong>{' '}
-          - {q.title}
+          </strong>
+          {q.title ? <> - {q.title}</> : null}
         </span>
       }
       details={

@@ -8,6 +8,7 @@ import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository
 import { GameStatus } from '@/models/games/game-status';
 import { QuestionType } from '@/models/questions/question-type';
 import { redactQuoteDetails, type QuoteDetails } from '@/models/questions/quote';
+import { omit } from '@/utils/objects';
 
 function serializeTimestamps(obj: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {};
@@ -135,11 +136,20 @@ export default class PlayableQuestionService {
 
     const isOrganizer = organizer != null;
     const questionHasEnded = (gameQuestion as { dateEnd?: unknown } | null)?.dateEnd != null;
+    const isCurrentQuestion = (game as { currentQuestion?: string } | null)?.currentQuestion === questionId;
     const gameShowingAnswer =
-      (game as { status?: string } | null)?.status === GameStatus.QUESTION_END &&
-      (game as { currentQuestion?: string } | null)?.currentQuestion === questionId;
+      (game as { status?: string } | null)?.status === GameStatus.QUESTION_END && isCurrentQuestion;
 
     const reveal = isOrganizer || questionHasEnded || gameShowingAnswer;
+
+    // A question that hasn't run yet: the round sidebar only shows its topic. Withhold the
+    // whole prompt (title / image / note / choices / …), not just the answer — otherwise a
+    // player can read every upcoming question from the network tab before it starts.
+    const started = isCurrentQuestion || (gameQuestion as { dateStart?: unknown } | null)?.dateStart != null;
+    if (!reveal && !started) {
+      return { id: questionId, ...serializeTimestamps(omit(base.toObject(), ['details'])) };
+    }
+
     const payload = reveal ? base.toObject() : base.toPlayableObject();
 
     if (!reveal && base.type === QuestionType.PROGRESSIVE_CLUES) {
