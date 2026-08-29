@@ -28,6 +28,11 @@ export default class GameEnumerationQuestionRepository extends GameQuestionRepos
     await this.deletePlayersTransaction(transaction, questionId);
   }
 
+  async getPlayers(questionId: string): Promise<EnumerationQuestionPlayers | null> {
+    const result = await this.get([questionId, ...GameEnumerationQuestionRepository.ENUMERATION_PLAYERS_PATH]);
+    return result as EnumerationQuestionPlayers | null;
+  }
+
   async getPlayersTransaction(
     transaction: Transaction,
     questionId: string

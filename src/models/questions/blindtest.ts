@@ -5,6 +5,7 @@ import {
   type GameBuzzerQuestionData,
 } from '@/models/questions/buzzer';
 import { QuestionType } from '@/models/questions/question-type';
+import { omit } from '@/utils/objects';
 
 export const BlindtestType = {
   SONG: 'song',
@@ -68,6 +69,11 @@ export class BlindtestQuestion extends BuzzerQuestion {
       ...super.toObject(),
       details: { answer: this.answer, audio: this.audio ?? null, subtype: this.subtype, title: this.title },
     };
+  }
+
+  toPlayableObject(): Record<string, unknown> {
+    const obj = this.toObject();
+    return { ...obj, details: omit(obj.details as Record<string, unknown>, ['answer']) };
   }
 
   setImage(imageUrl: string): void {

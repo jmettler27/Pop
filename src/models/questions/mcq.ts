@@ -1,5 +1,6 @@
 import { BaseQuestion, GameQuestion, type BaseQuestionData, type GameQuestionData } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
+import { omit } from '@/utils/objects';
 
 export interface MCQQuestionData extends BaseQuestionData {
   choices?: string[];
@@ -62,6 +63,11 @@ export class MCQQuestion extends BaseQuestion {
         explanation: this.explanation,
       },
     };
+  }
+
+  toPlayableObject(): Record<string, unknown> {
+    const obj = this.toObject();
+    return { ...obj, details: omit(obj.details as Record<string, unknown>, ['answerIdx', 'explanation']) };
   }
 
   setImage(imageUrl: string): void {

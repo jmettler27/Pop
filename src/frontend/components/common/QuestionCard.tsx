@@ -12,7 +12,7 @@ import type { Locale } from '@/frontend/helpers/locales';
 import { LOCALE_TO_EMOJI } from '@/frontend/helpers/locales';
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
 import { timestampToLongDateTime, type FirestoreTimestamp } from '@/frontend/helpers/time';
-import { useUserOnce } from '@/frontend/hooks/firestore/user/useUserHooks';
+import { useUsersByIds } from '@/frontend/hooks/useUsersByIds';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { BlindtestQuestion, blindtestTypeToEmoji } from '@/models/questions/blindtest';
 import { MCQQuestion } from '@/models/questions/mcq';
@@ -121,7 +121,8 @@ interface QuestionCardFooterProps {
 
 function QuestionCardFooter({ baseQuestion }: QuestionCardFooterProps) {
   const intl = useIntl();
-  const { user, loading, error } = useUserOnce((baseQuestion as { createdBy: string }).createdBy);
+  const { users, loading, error } = useUsersByIds([(baseQuestion as { createdBy: string }).createdBy]);
+  const user = users[0];
 
   if (error || loading || !user) {
     return <></>;
@@ -145,6 +146,11 @@ interface QuestionCardContentProps {
 }
 
 export function QuestionCardContent({ baseQuestion }: QuestionCardContentProps) {
+  // In-game this can be a bare shell (a question that hasn't run yet — see
+  // `PlayableQuestionService`); the per-type renderers below assume their fields exist.
+  const details = baseQuestion.toObject().details as Record<string, unknown> | undefined;
+  if (!details || Object.values(details).every((v) => v == null)) return null;
+
   switch (baseQuestion.type) {
     case QuestionType.BASIC:
       return <BasicCardMainContent baseQuestion={baseQuestion} />;
@@ -204,7 +210,7 @@ const BlindtestCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuest
     answer: { image?: string; title: string; author?: string; source?: string };
   };
   const audio = q.audio;
-  const answer = q.answer;
+  const answer = q.answer ?? {};
   const image = answer.image;
   const title = answer.title;
   const author = answer.author;
@@ -246,9 +252,9 @@ const BlindtestCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuest
 };
 
 const EmojiCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuestion }) => {
-  const q = baseQuestion as { answer: { image?: string; title: string }; clue: string };
-  const image = q.answer.image;
-  const title = q.answer.title;
+  const q = baseQuestion as { answer?: { image?: string; title: string }; clue: string };
+  const image = q.answer?.image;
+  const title = q.answer?.title ?? '';
   const clue = q.clue;
 
   return (
@@ -277,10 +283,10 @@ const EmojiCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuestion 
 };
 
 const ImageCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuestion }) => {
-  const q = baseQuestion as { image: string; answer: { description?: string; source: string } };
+  const q = baseQuestion as { image: string; answer?: { description?: string; source: string } };
   const image = q.image;
-  const description = q.answer.description;
-  const source = q.answer.source;
+  const description = q.answer?.description;
+  const source = q.answer?.source ?? '';
 
   return (
     <div className="flex flex-col w-full space-y-2">
@@ -321,7 +327,7 @@ const EnumerationCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQue
   };
   const note = q.note;
   const maxIsKnown = q.maxIsKnown;
-  const answer = q.answer;
+  const answer = q.answer ?? [];
 
   const totalNumElements = answer.length;
 
@@ -380,10 +386,10 @@ const EstimationCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQues
 };
 
 const LabellingCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuestion }) => {
-  const q = baseQuestion as { title: string; image?: string; labels: string[] };
+  const q = baseQuestion as { title: string; image?: string; labels?: string[] };
   const title = q.title;
   const image = q.image;
-  const labels = q.labels;
+  const labels = q.labels ?? [];
 
   return (
     <div className="flex flex-col w-full space-y-2">
@@ -414,9 +420,9 @@ const LabellingCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuest
 };
 
 const MatchingCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuestion }) => {
-  const q = baseQuestion as { note?: string; answer: Record<string, string[]> };
+  const q = baseQuestion as { note?: string; answer?: Record<string, string[]> };
   const note = q.note;
-  const answer = q.answer;
+  const answer = q.answer ?? {};
 
   return (
     <div className="flex flex-col w-full space-y-2">
@@ -437,9 +443,9 @@ const MatchingCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuesti
 };
 
 const MCQCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuestion }) => {
-  const q = baseQuestion as { note?: string; choices: string[]; answerIdx: number; explanation?: string };
+  const q = baseQuestion as { note?: string; choices?: string[]; answerIdx: number; explanation?: string };
   const note = q.note;
-  const choices = q.choices;
+  const choices = q.choices ?? [];
   const answerIdx = q.answerIdx;
   const explanation = q.explanation;
 
@@ -471,13 +477,13 @@ const MCQCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuestion })
 const NaguiCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuestion }) => {
   const q = baseQuestion as {
     note?: string;
-    choices: string[];
+    choices?: string[];
     answerIdx: number;
     duoIdx: number;
     explanation?: string;
   };
   const note = q.note;
-  const choices = q.choices;
+  const choices = q.choices ?? [];
   const answerIdx = q.answerIdx;
   const duoIdx = q.duoIdx;
   const explanation = q.explanation;
@@ -509,9 +515,9 @@ const NaguiCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuestion 
 };
 
 const OOOCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuestion }) => {
-  const q = baseQuestion as { note?: string; items: Array<{ title: string; explanation: string }>; answerIdx: number };
+  const q = baseQuestion as { note?: string; items?: Array<{ title: string; explanation: string }>; answerIdx: number };
   const note = q.note;
-  const items = q.items;
+  const items = q.items ?? [];
   const answerIdx = q.answerIdx;
 
   return (
@@ -541,10 +547,10 @@ const OOOCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuestion })
 };
 
 const ProgressiveCluesCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuestion }) => {
-  const q = baseQuestion as { clues: string[]; answer: { image?: string; title: string } };
-  const clues = q.clues;
-  const image = q.answer.image;
-  const title = q.answer.title;
+  const q = baseQuestion as { clues?: string[]; answer?: { image?: string; title: string } };
+  const clues = q.clues ?? [];
+  const image = q.answer?.image;
+  const title = q.answer?.title ?? '';
 
   return (
     <div className="flex flex-col w-full space-y-2">
@@ -579,17 +585,17 @@ const ProgressiveCluesCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBa
 
 const QuoteCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuestion }) => {
   const q = baseQuestion as unknown as {
-    quote: string;
+    quote?: string;
     source?: string;
     author?: string;
-    toGuess: string[];
-    quoteParts: Array<{ startIdx: number; endIdx: number }>;
+    toGuess?: string[];
+    quoteParts?: Array<{ startIdx: number; endIdx: number }>;
   };
-  const quote = q.quote;
+  const quote = q.quote ?? '';
   const source = q.source;
   const author = q.author;
-  const toGuess = q.toGuess;
-  const quoteParts = q.quoteParts;
+  const toGuess = q.toGuess ?? [];
+  const quoteParts = q.quoteParts ?? [];
 
   return (
     <div className="flex flex-col w-full space-y-2">
@@ -667,9 +673,9 @@ const DisplayedQuote = ({ toGuess, quote, quoteParts }: DisplayedQuoteProps) => 
 };
 
 const ReorderingCardMainContent = ({ baseQuestion }: { baseQuestion: AnyBaseQuestion }) => {
-  const q = baseQuestion as { note?: string; items: Array<{ title: string; explanation: string }> };
+  const q = baseQuestion as { note?: string; items?: Array<{ title: string; explanation: string }> };
   const note = q.note;
-  const items = q.items;
+  const items = q.items ?? [];
 
   return (
     <div className="flex flex-col w-full space-y-2">

@@ -12,14 +12,18 @@ import OddOneOutBottomPane from '@/frontend/components/game/main-pane/question/o
 import QuoteBottomPane from '@/frontend/components/game/main-pane/question/quote/QuoteBottomPane';
 import ReorderingBottomPane from '@/frontend/components/game/main-pane/question/reordering/ReorderingBottomPane';
 import { Spinner } from '@/frontend/components/ui/spinner';
-import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
+import { usePlayableQuestion } from '@/frontend/hooks/usePlayableQuestion';
 import { QuestionType } from '@/models/questions/question-type';
 
 export default function QuestionActiveBottomPane() {
-  const { questionId } = useActiveQuestion()!;
+  const { roundId, questionId, questionType } = useActiveQuestion()!;
 
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(questionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = usePlayableQuestion(
+    roundId,
+    questionType,
+    questionId
+  );
 
   if (baseQuestionError) return null;
   if (baseQuestionLoading) return <Spinner />;

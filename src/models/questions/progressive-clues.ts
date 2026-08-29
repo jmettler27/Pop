@@ -5,6 +5,7 @@ import {
   type GameBuzzerQuestionData,
 } from '@/models/questions/buzzer';
 import { QuestionType } from '@/models/questions/question-type';
+import { omit } from '@/utils/objects';
 
 export interface ProgressiveCluesAnswer {
   title: string;
@@ -40,6 +41,13 @@ export class ProgressiveCluesQuestion extends BuzzerQuestion {
 
   toObject(): Record<string, unknown> {
     return { ...super.toObject(), details: { answer: this.answer, clues: this.clues, title: this.title } };
+  }
+
+  // Players get neither the answer nor the clue texts. `PlayableQuestionService` layers
+  // back the clues revealed so far (`gameQuestion.currentClueIdx`) while the question is live.
+  toPlayableObject(): Record<string, unknown> {
+    const obj = this.toObject();
+    return { ...obj, details: omit(obj.details as Record<string, unknown>, ['answer', 'clues']) };
   }
 
   setImage(imageUrl: string): void {

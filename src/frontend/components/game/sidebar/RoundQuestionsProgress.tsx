@@ -9,10 +9,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Separator } from '@/frontend/components/ui/separator';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { Locale } from '@/frontend/helpers/locales';
-import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import { useAllTeamsOnce } from '@/frontend/hooks/firestore/user/useTeamHooks';
+import { usePlayableQuestion } from '@/frontend/hooks/usePlayableQuestion';
 import useRole from '@/frontend/hooks/useRole';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameRounds } from '@/models/games/game';
@@ -126,7 +126,11 @@ function useRoundQuestion(questionType: QuestionType, roundId: string, questionI
     loading: gqLoading,
     error: gqError,
   } = useQuestion(gameId as string, roundId, questionType, questionId);
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(questionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = usePlayableQuestion(
+    roundId,
+    questionType,
+    questionId
+  );
   return {
     gameQuestion,
     baseQuestion,
@@ -437,8 +441,8 @@ function EmojiRoundQuestionAccordion({
           {topicToEmoji(q.topic as Topic)}{' '}
           <strong>
             {questionTypeToTitle(QuestionType.EMOJI, locale as Locale)} {order + 1}
-          </strong>{' '}
-          - {q.title}
+          </strong>
+          {q.title ? <> - {q.title}</> : null}
         </span>
       }
       details={
@@ -603,8 +607,8 @@ function ImageRoundQuestionAccordion({
           {topicToEmoji(q.topic as Topic)}{' '}
           <strong>
             {questionTypeToTitle(QuestionType.IMAGE, locale as Locale)} {order + 1}
-          </strong>{' '}
-          - {q.title}
+          </strong>
+          {q.title ? <> - {q.title}</> : null}
         </span>
       }
       details={
@@ -656,8 +660,8 @@ function LabellingRoundQuestionAccordion({
           {topicToEmoji(q.topic as Topic)}{' '}
           <strong>
             {questionTypeToTitle(QuestionType.LABELLING, locale as Locale)} {order + 1}
-          </strong>{' '}
-          ({(q.labels ?? []).length} pts)
+          </strong>
+          {q.labels?.length ? <> ({q.labels.length} pts)</> : null}
         </span>
       }
       details={
@@ -709,8 +713,8 @@ function MatchingRoundQuestionAccordion({
           {topicToEmoji(q.topic as Topic)}{' '}
           <strong>
             {questionTypeToTitle(QuestionType.MATCHING, locale as Locale)} {order + 1}
-          </strong>{' '}
-          ({q.numCols} col)
+          </strong>
+          {q.numCols ? <> ({q.numCols} col)</> : null}
         </span>
       }
       details={
@@ -937,8 +941,8 @@ function ProgressiveCluesRoundQuestionAccordion({
           {topicToEmoji(q.topic as Topic)}{' '}
           <strong>
             {questionTypeToTitle(QuestionType.PROGRESSIVE_CLUES, locale as Locale)} {order + 1}
-          </strong>{' '}
-          - {q.title}
+          </strong>
+          {q.title ? <> - {q.title}</> : null}
         </span>
       }
       details={

@@ -9,7 +9,7 @@ function makeQueryClient(): QueryClient {
     defaultOptions: {
       // "Once" reads are fetch-once by design; "live" reads are kept fresh by onSnapshot, not refetch
       // heuristics — staleTime: Infinity as the default covers both without disabling refetchOnWindowFocus
-      // etc. individually. Only useFirestoreCount overrides this per-call (billed, needs periodic refresh).
+      // etc. individually. Server-action-backed queries (e.g. the question bank) set their own staleTime.
       queries: { staleTime: Infinity },
     },
   });

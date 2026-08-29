@@ -1,12 +1,17 @@
 import EnumerationController from '@/frontend/components/game/main-pane/question/enumeration/EnumerationController';
-import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
+import { usePlayableQuestion } from '@/frontend/hooks/usePlayableQuestion';
 import { EnumerationQuestion } from '@/models/questions/enumeration';
+import { QuestionType } from '@/models/questions/question-type';
 
 export default function MobileEnumerationControl() {
-  const { questionId } = useActiveQuestion()!;
+  const { roundId, questionId } = useActiveQuestion()!;
 
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(questionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = usePlayableQuestion(
+    roundId,
+    QuestionType.ENUMERATION,
+    questionId
+  );
 
   if (baseQuestionError || baseQuestionLoading || !baseQuestion) return null;
 

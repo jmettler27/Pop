@@ -1,11 +1,38 @@
 rules_version = '2';
 
-// Permissive rules for local emulator development only.
-// Do NOT deploy these rules to production.
+// Local emulator rules. Mirrors the READ scoping of firebase/firestore.prod.rules
+// so `npm run dev:emulators` exercises the real rules, but keeps writes open — the
+// seed script and some local flows write directly, and admin writes bypass rules
+// in prod anyway.
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    match /games/{gameId} {
+      allow read: if true;
+      allow write: if true;
+
+      match /{document=**} {
+        allow read: if true;
+        allow write: if true;
+      }
+    }
+
+    // Mirrors prod: the client must not read `questions/**` directly — in-game goes
+    // through `getPlayableQuestion`, the editor through `getEditableQuestion`.
+    match /questions/{questionId} {
+      allow read: if false;
+      allow write: if true;
+    }
+
+    // Mirrors prod: the client must not read `users/**` directly.
+    match /users/{userId} {
+      allow read: if false;
+      allow write: if true;
+    }
+
     match /{document=**} {
-      allow read, write: if true;
+      allow read: if false;
+      allow write: if true;
     }
   }
 }

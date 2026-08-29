@@ -5,6 +5,7 @@ import {
   type GameBuzzerQuestionData,
 } from '@/models/questions/buzzer';
 import { QuestionType } from '@/models/questions/question-type';
+import { omit } from '@/utils/objects';
 
 export interface EmojiAnswer {
   title: string;
@@ -39,6 +40,11 @@ export class EmojiQuestion extends BuzzerQuestion {
 
   toObject(): Record<string, unknown> {
     return { ...super.toObject(), details: { answer: this.answer, clue: this.clue, title: this.title } };
+  }
+
+  toPlayableObject(): Record<string, unknown> {
+    const obj = this.toObject();
+    return { ...obj, details: omit(obj.details as Record<string, unknown>, ['answer']) };
   }
 
   setImage(imageUrl: string): void {

@@ -7,11 +7,11 @@ import { clsx } from 'clsx';
 import { selectChoice } from '@/backend/services/question/mcq/actions';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import { Spinner } from '@/frontend/components/ui/spinner';
-import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import { usePlayableQuestion } from '@/frontend/hooks/usePlayableQuestion';
 import useTeam from '@/frontend/hooks/useTeam';
 import useUser from '@/frontend/hooks/useUser';
 import { Chooser } from '@/models/chooser';
@@ -30,7 +30,11 @@ export default function MobileMCQControl() {
     error: questionError,
   } = useQuestion(gameId, roundId, QuestionType.MCQ, questionId);
 
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(questionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = usePlayableQuestion(
+    roundId,
+    QuestionType.MCQ,
+    questionId
+  );
 
   if (questionError || chooserError || baseQuestionError) return null;
   if (questionLoading || chooserLoading || baseQuestionLoading) return <Spinner />;

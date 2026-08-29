@@ -10,7 +10,13 @@ Adding a question type is cross-cutting. First pick the closest existing type as
 **Models — `src/models/`**
 
 - `questions/question-type.ts` — add the `QuestionType` enum member
-- `questions/<type>.ts` — `XQuestion` (submitted) + `GameXQuestion` (in-game) classes
+- `questions/<type>.ts` — `XQuestion` (submitted) + `GameXQuestion` (in-game) classes.
+  **`XQuestion.toPlayableObject()`** — override it to strip the answer fields (`answerIdx`, `answer`,
+  `labels`, `toGuess`, correct order, …); the base returns the full `toObject()`, so *without an override the
+  answer leaks to players* via `getPlayableQuestion`. If the answer is revealed piecemeal during play
+  (driven by the game-question / realtime doc), the field-omission lives here and `PlayableQuestionService`
+  re-adds the revealed slice + `usePlayableQuestion` gets a per-type `revealKey` — copy the closest of
+  progressive-clues / labelling / quote / enumeration / nagui.
 - `questions/QuestionFactory.ts` — both switch statements
 - `rounds/<type>.ts`, `rounds/round-type.ts`, `rounds/RoundFactory.ts` — only if it needs its own round type
 

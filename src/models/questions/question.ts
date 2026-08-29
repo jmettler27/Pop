@@ -107,6 +107,17 @@ export abstract class BaseQuestion extends Question {
     };
   }
 
+  /**
+   * The question as a non-organizer client may see it while the question is still
+   * live — i.e. `toObject()` with the answer-bearing fields removed. The base
+   * implementation reveals everything; answer-bearing types override it. The
+   * backend (`PlayableQuestionService`) picks this over `toObject()` for
+   * players/spectators until the question ends.
+   */
+  toPlayableObject(): Record<string, unknown> {
+    return this.toObject();
+  }
+
   static validate(data: unknown): boolean {
     Question.validate(data);
     const d = data as BaseQuestionData;

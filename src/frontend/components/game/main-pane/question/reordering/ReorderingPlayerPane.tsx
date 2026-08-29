@@ -105,6 +105,8 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
   const [orderedIndices, setOrderedIndices] = useState<number[]>(randomMapping);
   const [dialogOpen, setDialogOpen] = useState(false);
 
+  const items = baseQuestion.items ?? [];
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
@@ -113,7 +115,9 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
 
   const [handleSubmitOrdering, isSubmitting] = useAsyncAction(async () => {
     if (!user) return;
-    await submitOrdering(gameId, roundId, questionId, user.id as string, myTeam as string, orderedIndices);
+    // Items arrive shuffled and index-less, so submit the arrangement by title.
+    const orderedTitles = orderedIndices.map((i) => items[i]?.title ?? '');
+    await submitOrdering(gameId, roundId, questionId, user.id as string, myTeam as string, orderedTitles);
     setDialogOpen(false);
   });
 
@@ -131,15 +135,14 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
   const orderings = gameQuestion.orderings ?? [];
   const teamOrdering = myTeam ? orderings.find((o) => o.teamId === myTeam) : undefined;
   const teamSubmitted = !!teamOrdering;
-  const teamSubmission = teamOrdering?.ordering;
+  // Titles, not indices — this client only has the shuffled item list.
+  const teamSubmittedTitles = teamOrdering?.submittedTitles ?? [];
   const submittedByMe = false; // playerId not available from orderings map
 
   const handleOpenDialog = () => setDialogOpen(true);
   const handleCloseDialog = () => setDialogOpen(false);
 
-  const items = baseQuestion.items ?? [];
-
-  if (teamSubmitted && teamSubmission) {
+  if (teamSubmitted) {
     return (
       <div className="h-full w-full flex flex-col items-center justify-center p-4 space-y-4">
         <div
@@ -148,14 +151,14 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
             isMobile ? 'w-[90vw]' : 'w-1/2'
           )}
         >
-          {teamSubmission.map((idx: number, displayOrder: number) => (
+          {teamSubmittedTitles.map((title: string, displayOrder: number) => (
             <div
-              key={idx}
-              className={clsx('px-4 py-2', displayOrder !== teamSubmission.length - 1 && 'border-b border-border')}
+              key={displayOrder}
+              className={clsx('px-4 py-2', displayOrder !== teamSubmittedTitles.length - 1 && 'border-b border-border')}
             >
               <h6 className="text-xl flex items-center">
                 <span className="mr-4 font-bold text-lg">{displayOrder + 1}.</span>
-                {items[idx]?.title}
+                {title}
               </h6>
             </div>
           ))}
