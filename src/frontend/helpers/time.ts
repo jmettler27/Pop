@@ -3,46 +3,14 @@ export interface FirestoreTimestamp {
   nanoseconds?: number;
 }
 
-export function timestampToLongDateTime(
-  timestamp: FirestoreTimestamp | null | undefined,
-  locale?: string
-): string | null {
+/**
+ * Null-safe Firestore-timestamp → Date. react-intl's `formatDate` / `formatTime` default a
+ * missing value to "now", so callers convert first and guard on null themselves, then format
+ * via `intl.formatDate` / `intl.formatTime` (named formats registered in `LocaleProvider`).
+ */
+export function timestampToDate(timestamp: FirestoreTimestamp | null | undefined): Date | null {
   if (!timestamp) return null;
-  const date = new Date(timestamp.seconds * 1000);
-  return date.toLocaleString(locale, {
-    year: 'numeric',
-    month: 'long',
-    weekday: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
-
-export function timestampToNumericDate(
-  timestamp: FirestoreTimestamp | null | undefined,
-  locale?: string
-): string | null {
-  if (!timestamp) return null;
-  const date = new Date(timestamp.seconds * 1000);
-  return new Intl.DateTimeFormat(locale, {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  })
-    .formatToParts(date)
-    .filter((part) => part.type === 'year' || part.type === 'month' || part.type === 'day')
-    .map((part) => part.value)
-    .join('-');
-}
-
-export function timestampToShortTime(timestamp: FirestoreTimestamp | null | undefined, locale?: string): string | null {
-  if (!timestamp) return null;
-  const date = new Date(timestamp.seconds * 1000);
-  return date.toLocaleString(locale, {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  return new Date(timestamp.seconds * 1000);
 }
 
 export function timestampElapsedSeconds(
@@ -58,6 +26,7 @@ export function timestampElapsedSeconds(
 export function formatDuration(totalSeconds: number, locale: string): string {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
+  // react-intl has no duration formatter; `Intl.DurationFormat` isn't in the TS lib yet.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return new (Intl as any).DurationFormat(locale, { style: 'narrow' }).format({ minutes, seconds });
 }

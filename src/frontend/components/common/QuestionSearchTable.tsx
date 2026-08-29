@@ -143,10 +143,7 @@ export function QuestionSearchTable({
     setPageIndex(0);
   };
 
-  const rows = useMemo(
-    () => questions.map((question) => questionRow(question, intl.locale, users)),
-    [questions, intl.locale, users]
-  );
+  const rows = useMemo(() => questions.map((question) => questionRow(question, intl, users)), [questions, intl, users]);
   const columns = useMemo<ColumnDef<Features, Row>[]>(
     () => [selectColumn, ...questionColumns(questionType, intl)],
     [questionType, intl]

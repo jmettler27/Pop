@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/frontend/components/
 import { Skeleton } from '@/frontend/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import { Locale, localeToEmoji } from '@/frontend/helpers/locales';
-import { timestampToLongDateTime, type FirestoreTimestamp } from '@/frontend/helpers/time';
+import { timestampToDate, type FirestoreTimestamp } from '@/frontend/helpers/time';
 import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganizerHooks';
 import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import useUserId from '@/frontend/hooks/useUserId';
@@ -101,6 +101,8 @@ export function EndedGameCard({ game }: EndedGameCardProps) {
   const isPlayer = players.some((p) => p.id === user?.id);
   if (!isOrganizer && !isPlayer) return null;
 
+  const dateEnd = timestampToDate(game.dateEnd as FirestoreTimestamp | null | undefined);
+
   return (
     <Card
       size="sm"
@@ -173,9 +175,7 @@ export function EndedGameCard({ game }: EndedGameCardProps) {
         {/* Date Footer with Icon */}
         <div className="flex items-center gap-1.5 pt-1.5 border-t border-slate-700/50">
           <Clock className="size-3.5 text-slate-400" />
-          <span className="text-xs text-slate-400">
-            {timestampToLongDateTime(game.dateEnd as FirestoreTimestamp | null | undefined, intl.locale)}
-          </span>
+          <span className="text-xs text-slate-400">{dateEnd && intl.formatDate(dateEnd, { format: 'long' })}</span>
         </div>
       </CardContent>
     </Card>
