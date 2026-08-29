@@ -36,6 +36,7 @@ export default class GameBuzzerQuestionRepository extends GameQuestionRepository
   async resetQuestionTransaction(transaction: Transaction, questionId: string): Promise<void> {
     await this.resetPlayersTransaction(transaction, questionId);
     await this.resetQuestionWinnerTransaction(transaction, questionId);
+    await this.updateQuestionTransaction(transaction, questionId, { dateStart: null, dateEnd: null });
   }
 
   async deleteQuestionTransaction(transaction: Transaction, questionId: string): Promise<void> {

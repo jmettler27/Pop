@@ -20,6 +20,8 @@ export default class GameEnumerationQuestionRepository extends GameQuestionRepos
     await this.updateQuestionTransaction(transaction, questionId, {
       status: EnumerationQuestionStatus.THINKING,
       winner: null,
+      dateStart: null,
+      dateEnd: null,
     });
   }
 

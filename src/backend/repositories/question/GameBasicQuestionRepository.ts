@@ -9,6 +9,11 @@ export default class GameBasicQuestionRepository extends GameBuzzerQuestionRepos
   }
 
   async resetQuestionTransaction(transaction: Transaction, questionId: string): Promise<void> {
-    await this.updateQuestionTransaction(transaction, questionId, { teamId: null, correct: null });
+    await this.updateQuestionTransaction(transaction, questionId, {
+      teamId: null,
+      correct: null,
+      dateStart: null,
+      dateEnd: null,
+    });
   }
 }

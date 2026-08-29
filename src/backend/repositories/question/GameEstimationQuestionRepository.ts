@@ -9,7 +9,7 @@ export default class GameEstimationQuestionRepository extends GameQuestionReposi
   }
 
   async resetQuestionTransaction(transaction: Transaction, questionId: string): Promise<void> {
-    await this.updateQuestionTransaction(transaction, questionId, { bets: [] });
+    await this.updateQuestionTransaction(transaction, questionId, { bets: [], dateStart: null, dateEnd: null });
     await this.resetQuestionWinnersTransaction(transaction, questionId);
   }
 

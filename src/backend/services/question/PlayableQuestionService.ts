@@ -2,6 +2,7 @@ import GameRepository from '@/backend/repositories/game/GameRepository';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
+import RoundRepository from '@/backend/repositories/round/RoundRepository';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import { GameStatus } from '@/models/games/game-status';
 import { DuoNaguiOption, SquareNaguiOption } from '@/models/questions/nagui';
@@ -178,8 +179,9 @@ export default class PlayableQuestionService {
     const base = await new BaseQuestionRepository(questionType).getQuestion(questionId);
     if (!base) return null;
 
-    const [game, organizer, gameQuestion, enumPlayers] = await Promise.all([
+    const [game, round, organizer, gameQuestion, enumPlayers] = await Promise.all([
       new GameRepository().get(gameId),
+      new RoundRepository(gameId).getRound(roundId).catch(() => null),
       viewerId ? new OrganizerRepository(gameId).getOrganizer(viewerId) : Promise.resolve(null),
       new GameQuestionRepository(gameId, roundId, questionType).getQuestion(questionId).catch(() => null),
       questionType === QuestionType.ENUMERATION
@@ -187,18 +189,49 @@ export default class PlayableQuestionService {
         : Promise.resolve(null),
     ]);
 
+    const g = game as { status?: string; currentQuestion?: string; currentRound?: string } | null;
+    const r = round as {
+      questions?: string[];
+      currentQuestionIdx?: number | null;
+      order?: number | null;
+      dateEnd?: unknown;
+    } | null;
+
     const isOrganizer = organizer != null;
-    const questionHasEnded = (gameQuestion as { dateEnd?: unknown } | null)?.dateEnd != null;
-    const isCurrentQuestion = (game as { currentQuestion?: string } | null)?.currentQuestion === questionId;
-    const gameShowingAnswer =
-      (game as { status?: string } | null)?.status === GameStatus.QUESTION_END && isCurrentQuestion;
+
+    // Whether the question has run is derived from *live* game/round progress, never from the
+    // per-question `dateStart` / `dateEnd`: those survive a round or single-question reset (only
+    // nagui + reordering clear them), so a replayed round would otherwise serve every question —
+    // answers included — from the network tab while the game still sits in `round_start`.
+    // See `.claude/plans/firestore-read-scoping.md`.
+    const status = g?.status;
+    const roundIsCurrent = g?.currentRound === roundId;
+    const questionOrder = r?.questions?.indexOf(questionId) ?? -1;
+    const currentQuestionIdx = typeof r?.currentQuestionIdx === 'number' ? r.currentQuestionIdx : -1;
+    const inQuestionPhase =
+      status === GameStatus.QUESTION_ACTIVE || status === GameStatus.QUESTION_END || status === GameStatus.ROUND_END;
+    // The whole current round is over, or a past round that genuinely played to the end (both
+    // `dateEnd` and `order` are nulled by `RoundRepository.resetRound`).
+    const roundIsOver = roundIsCurrent && status === GameStatus.ROUND_END;
+    const inEndedPastRound = !roundIsCurrent && r?.dateEnd != null && r?.order != null;
+
+    const isCurrentQuestion = roundIsCurrent && g?.currentQuestion === questionId;
+    const gameShowingAnswer = status === GameStatus.QUESTION_END && isCurrentQuestion;
+    const questionHasEnded =
+      inEndedPastRound ||
+      roundIsOver ||
+      (roundIsCurrent && inQuestionPhase && questionOrder >= 0 && questionOrder < currentQuestionIdx);
+    const started =
+      isCurrentQuestion ||
+      inEndedPastRound ||
+      roundIsOver ||
+      (roundIsCurrent && inQuestionPhase && questionOrder >= 0 && questionOrder <= currentQuestionIdx);
 
     const reveal = isOrganizer || questionHasEnded || gameShowingAnswer;
 
     // A question that hasn't run yet: the round sidebar only shows its topic. Withhold the
     // whole prompt (title / image / note / choices / …), not just the answer — otherwise a
     // player can read every upcoming question from the network tab before it starts.
-    const started = isCurrentQuestion || (gameQuestion as { dateStart?: unknown } | null)?.dateStart != null;
     if (!reveal && !started) {
       const full = base.toObject();
       return { id: questionId, type: full.type, topic: full.topic, lang: full.lang };
