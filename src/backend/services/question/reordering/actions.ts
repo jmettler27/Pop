@@ -1,7 +1,6 @@
 'use server';
 
 import GameReorderingQuestionService from '@/backend/services/question/reordering/GameReorderingQuestionService';
-import { SubmittedOrdering } from '@/models/questions/reordering';
 
 export const submitOrdering = async (
   gameId: string,
@@ -9,8 +8,8 @@ export const submitOrdering = async (
   questionId: string,
   playerId: string,
   teamId: string,
-  ordering: SubmittedOrdering
+  orderedTitles: string[]
 ) => {
   const service = new GameReorderingQuestionService(gameId, roundId);
-  return service.submitOrdering(questionId, playerId, teamId, ordering);
+  return service.submitOrdering(questionId, playerId, teamId, orderedTitles);
 };

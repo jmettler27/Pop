@@ -41,6 +41,14 @@ export class ReorderingQuestion extends BaseQuestion {
     return { ...super.toObject(), details: { items: this.items, title: this.title, note: this.note } };
   }
 
+  // The stored order of `items` *is* the answer, so players never get `toObject()`.
+  // `PlayableQuestionService` replaces `items` with a shuffled, explanation-free copy;
+  // the client then submits its ordering by item title, not by index.
+  toPlayableObject(): Record<string, unknown> {
+    const shuffled = shuffleReorderingItems(this.items ?? []);
+    return { ...super.toObject(), details: { items: shuffled, title: this.title, note: this.note } };
+  }
+
   static validate(data: unknown): boolean {
     return BaseQuestion.validate(data);
   }
@@ -49,10 +57,27 @@ export class ReorderingQuestion extends BaseQuestion {
   setAudio(_audioUrl: string): void {}
 }
 
+/** A copy of the items in random order with explanations dropped — never the stored order. */
+export function shuffleReorderingItems(items: ReorderingItem[]): Array<{ title: string }> {
+  const out = items.map((it) => ({ title: it.title }));
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j]!, out[i]!];
+  }
+  // Never hand back the canonical order.
+  if (out.length > 1 && out.every((it, i) => it.title === items[i]!.title)) {
+    [out[0], out[1]] = [out[1]!, out[0]!];
+  }
+  return out;
+}
+
 export type SubmittedOrdering = number[];
 
 export interface Ordering {
   ordering: SubmittedOrdering;
+  /** The item titles in the order the team submitted — lets a teammate's client show the
+   *  submission while it still only has the shuffled item list (no canonical indices). */
+  submittedTitles?: string[];
   playerId: string;
   score: number;
   submittedAt: unknown;
