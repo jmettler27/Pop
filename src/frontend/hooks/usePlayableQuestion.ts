@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { collection, doc } from 'firebase/firestore';
 
 import { getPlayableQuestion } from '@/backend/services/question/playable-actions';
@@ -69,6 +69,9 @@ export function usePlayableQuestion(
       getPlayableQuestion(gameId as string, roundId as string, questionType as QuestionType, questionId as string),
     enabled,
     staleTime: Infinity,
+    // As `revealKey` advances (progressive-clues), keep showing the current payload while the
+    // next one loads — no unmount of the pane, no loading-screen flicker between clues.
+    placeholderData: keepPreviousData,
   });
 
   // Memoized on `data` (mirrors useGame/useRound) so `baseQuestion` keeps its identity across renders
