@@ -7,7 +7,6 @@ import { getPlayableQuestion } from '@/backend/services/question/playable-action
 import { firestore } from '@/firebase/firebase';
 import { useFirestoreDocument } from '@/frontend/hooks/firestore/useFirestoreDocument';
 import useGame from '@/frontend/hooks/useGame';
-import { GameStatus } from '@/models/games/game-status';
 import { QuestionType } from '@/models/questions/question-type';
 import QuestionFactory, { type AnyBaseQuestion } from '@/models/questions/QuestionFactory';
 
@@ -80,7 +79,7 @@ export function usePlayableQuestion(
 ) {
   const game = useGame();
   const gameId = game?.id ?? null;
-  const answerRevealed = game?.status === GameStatus.QUESTION_END;
+  const gameStatus = game?.status ?? null;
   const enabled = Boolean(gameId && roundId && questionType && questionId);
 
   // Watch a reveal-state doc only for a progressively-revealed type that is the *current*
@@ -100,12 +99,16 @@ export function usePlayableQuestion(
   const revealKey = revealProgressKey(questionType, revealStateDoc);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['playableQuestion', gameId, roundId, questionId, questionType, answerRevealed, revealKey],
+    // `gameStatus` + `isCurrentQuestion` are part of the key because the redaction level is a
+    // function of game state, not just the (immutable) question: `staleTime: Infinity` would
+    // otherwise pin whatever was fetched first — e.g. the bare shell the round sidebar pulls
+    // for a not-yet-started question, which would then be served once it goes live.
+    queryKey: ['playableQuestion', gameId, roundId, questionId, questionType, gameStatus, isCurrentQuestion, revealKey],
     queryFn: () =>
       getPlayableQuestion(gameId as string, roundId as string, questionType as QuestionType, questionId as string),
     enabled,
     staleTime: Infinity,
-    // As `revealKey` advances, keep showing the current payload while the next one loads —
+    // As the key advances, keep showing the current payload while the next one loads —
     // no unmount of the pane, no loading-screen flicker between reveals.
     placeholderData: keepPreviousData,
   });
