@@ -1,6 +1,6 @@
 'use client';
 
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 
 import {
@@ -30,7 +30,6 @@ import {
   updateRoundChallengeTime,
   updateRoundThinkingTime,
 } from '@/backend/services/edit-game/actions';
-import { getEditableQuestionTopics } from '@/backend/services/question/editable-actions';
 import { QuestionCardTitle } from '@/frontend/components/common/QuestionCard';
 import { AddQuestionToRoundButton } from '@/frontend/components/game-editor/AddQuestionToRound';
 import { EditQuestionCard } from '@/frontend/components/game-editor/EditQuestionInRound';
@@ -49,7 +48,7 @@ import { Label } from '@/frontend/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/frontend/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import { type Locale } from '@/frontend/helpers/locales';
-import { useEditableQuestion } from '@/frontend/hooks/editableQuestion';
+import { useEditableQuestion, useEditableQuestions } from '@/frontend/hooks/editableQuestion';
 import { useRound } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useHasMounted from '@/frontend/hooks/useHasMounted';
@@ -411,9 +410,16 @@ interface SortableQuestionCardProps {
   questionId: string;
   questionOrder: number;
   status: string;
+  siblingQuestionIds: string[];
 }
 
-function SortableQuestionCard({ roundId, questionId, questionOrder, status }: SortableQuestionCardProps) {
+function SortableQuestionCard({
+  roundId,
+  questionId,
+  questionOrder,
+  status,
+  siblingQuestionIds,
+}: SortableQuestionCardProps) {
   const { id: gameId } = useParams();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: questionId });
 
@@ -423,7 +429,11 @@ function SortableQuestionCard({ roundId, questionId, questionOrder, status }: So
     opacity: isDragging ? 0.5 : 1,
   };
 
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useEditableQuestion(gameId as string, questionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useEditableQuestion(
+    gameId as string,
+    questionId,
+    siblingQuestionIds
+  );
 
   if (baseQuestionError || baseQuestionLoading || !baseQuestion) {
     return <></>;
@@ -457,33 +467,24 @@ interface RoundTopicDistributionProps {
 function RoundTopicDistribution({ round }: RoundTopicDistributionProps) {
   const { id: gameId } = useParams();
   const { questions: ids } = round;
-
-  const [topics, setTopics] = useState<Record<string, number>>({});
   const hasMounted = useHasMounted();
 
-  useEffect(() => {
-    getEditableQuestionTopics(gameId as string, ids).then(
-      (fetchedTopics) => {
-        const topicDistribution = fetchedTopics.reduce<Record<string, number>>((acc, topic) => {
-          acc[topic] = acc[topic] ? acc[topic] + 1 : 1;
-          return acc;
-        }, {});
+  // Rides the same batch request as the question cards below.
+  const { questionsById } = useEditableQuestions(gameId as string, ids);
 
-        // Sort alphabetically by the keys
-        const sortedTopics = Object.keys(topicDistribution)
-          .sort()
-          .reduce<Record<string, number>>((acc, key) => {
-            acc[key] = topicDistribution[key];
-            return acc;
-          }, {});
-
-        setTopics(sortedTopics);
-      },
-      (error) => {
-        console.error('Error fetching topics', error);
-      }
-    );
-  }, [gameId, ids]);
+  const topics = useMemo(() => {
+    const distribution = ids.reduce<Record<string, number>>((acc, id) => {
+      const topic = (questionsById[id] as { topic?: string } | undefined)?.topic ?? '';
+      acc[topic] = (acc[topic] ?? 0) + 1;
+      return acc;
+    }, {});
+    return Object.keys(distribution)
+      .sort()
+      .reduce<Record<string, number>>((acc, key) => {
+        acc[key] = distribution[key];
+        return acc;
+      }, {});
+  }, [ids, questionsById]);
 
   const totalQuestions = ids.length;
 
@@ -579,6 +580,7 @@ function EditGameRoundQuestionCards({
                 questionId={questionId}
                 questionOrder={idx}
                 status={status}
+                siblingQuestionIds={questionIds}
               />
             ))}
           </div>
@@ -596,6 +598,7 @@ function EditGameRoundQuestionCards({
           questionId={questionId}
           questionOrder={idx}
           status={status}
+          siblingQuestionIds={questionIds}
           roundThinkingTime={roundWithTimes.thinkingTime}
           roundChallengeTime={roundWithTimes.challengeTime}
         />

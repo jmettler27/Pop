@@ -69,6 +69,7 @@ interface EditQuestionCardProps {
   questionId: string;
   questionOrder: number;
   status: string;
+  siblingQuestionIds: string[];
   roundThinkingTime?: number | null;
   roundChallengeTime?: number | null;
 }
@@ -78,6 +79,7 @@ export const EditQuestionCard = memo(function EditQuestionCard({
   questionId,
   questionOrder: _questionOrder,
   status,
+  siblingQuestionIds,
   roundThinkingTime,
   roundChallengeTime,
 }: EditQuestionCardProps) {
@@ -85,7 +87,11 @@ export const EditQuestionCard = memo(function EditQuestionCard({
   const gameId = id as string;
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useEditableQuestion(gameId, questionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useEditableQuestion(
+    gameId,
+    questionId,
+    siblingQuestionIds
+  );
 
   if (baseQuestionError) {
     return <></>;
@@ -144,8 +150,8 @@ function EditQuestionCardInner({
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const closeEditDialog = () => {
     setEditDialogOpen(false);
-    // The edit went through a `Submit*QuestionForm`; refresh this card's cached copy.
-    queryClient.invalidateQueries({ queryKey: ['editableQuestion', gameId, questionId] });
+    // The edit went through a `Submit*QuestionForm`; refresh the editor's cached copies.
+    queryClient.invalidateQueries({ queryKey: ['editableQuestions', gameId] });
   };
 
   const { gameQuestion } = useGameQuestion(gameId, roundId, baseQuestion.type, questionId);

@@ -25,22 +25,22 @@ const questionsRepo = () => new BaseQuestionRepository(QuestionType.BASIC);
 /**
  * Full `questions/{id}` docs for the in-game round editor. Organizer-gated: production
  * Firestore rules deny the client reading `questions/{id}` directly, and these carry the
- * unredacted answers, so the caller must organize the game.
+ * unredacted answers, so the caller must organize the game. Fetched a whole round at a
+ * time (one auth check, one round-trip) — the editor renders every question at once.
  */
 export default class EditableQuestionService {
-  static async get(
+  static async getMany(
     gameId: string,
-    questionId: string,
+    questionIds: string[],
     viewerId: string | undefined
-  ): Promise<Record<string, unknown> | null> {
-    await assertOrganizer(gameId, viewerId);
-    const raw = await questionsRepo().get(questionId);
-    return raw ? serializeTimestamps(raw) : null;
-  }
-
-  static async getTopics(gameId: string, questionIds: string[], viewerId: string | undefined): Promise<string[]> {
+  ): Promise<Record<string, Record<string, unknown>>> {
     await assertOrganizer(gameId, viewerId);
     const docs = await Promise.all(questionIds.map((id) => questionsRepo().get(id)));
-    return docs.map((doc) => (doc as { topic?: string } | null)?.topic ?? '');
+    const out: Record<string, Record<string, unknown>> = {};
+    questionIds.forEach((id, i) => {
+      const doc = docs[i];
+      if (doc) out[id] = serializeTimestamps(doc);
+    });
+    return out;
   }
 }
