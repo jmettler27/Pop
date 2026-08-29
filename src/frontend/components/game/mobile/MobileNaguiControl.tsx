@@ -146,14 +146,13 @@ function MobileNaguiChoiceSelector({
   }
 
   const choices = baseQuestion.choices ?? [];
-  const answerIdx = baseQuestion.answerIdx;
-  const duoIdx = baseQuestion.duoIdx;
+  const duoIndices = baseQuestion.duoIndices ?? [];
 
   return (
     <ul className="rounded-lg w-4/5 overflow-y-auto space-y-3">
       {randomization.map(
         (origIdx, idx) =>
-          (gameQuestion.option !== DuoNaguiOption.TYPE || origIdx === answerIdx || origIdx === duoIdx) && (
+          (gameQuestion.option !== DuoNaguiOption.TYPE || duoIndices.includes(origIdx)) && (
             <li key={idx} className={clsx(idx !== choices.length - 1 && 'border-b border-border')}>
               <button
                 type="button"

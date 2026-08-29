@@ -2,6 +2,7 @@ import { DEFAULT_LOCALE, type Locale } from '@/frontend/helpers/locales';
 import { prependWithEmojiAndSpace } from '@/frontend/helpers/strings';
 import { BaseQuestion, GameQuestion, type BaseQuestionData, type GameQuestionData } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
+import { omit } from '@/utils/objects';
 
 export class NaguiOption {
   static TYPE_TO_TITLE: Record<Locale, string> = { en: '', fr: '' };
@@ -40,6 +41,7 @@ export interface NaguiQuestionData extends BaseQuestionData {
   choices?: string[];
   answerIdx?: number;
   duoIdx?: number;
+  duoIndices?: number[];
   source?: string;
   title?: string;
   note?: string;
@@ -48,6 +50,7 @@ export interface NaguiQuestionData extends BaseQuestionData {
     choices?: string[];
     answerIdx?: number;
     duoIdx?: number;
+    duoIndices?: number[];
     source?: string;
     title?: string;
     note?: string;
@@ -75,6 +78,10 @@ export class NaguiQuestion extends BaseQuestion {
   choices: string[] | undefined;
   answerIdx: number | undefined;
   duoIdx: number | undefined;
+  // The two choice indices the "duo" lifeline leaves visible (answer + one decoy), sorted so
+  // order gives nothing away. Filled in by `PlayableQuestionService` once the chooser picks
+  // duo — the client filters choices on this instead of the hidden `answerIdx`/`duoIdx`.
+  duoIndices: number[] | undefined;
   source: string | undefined;
   title: string | undefined;
   note: string | undefined;
@@ -86,6 +93,7 @@ export class NaguiQuestion extends BaseQuestion {
     this.choices = data.choices ?? d.choices;
     this.answerIdx = data.answerIdx ?? d.answerIdx;
     this.duoIdx = data.duoIdx ?? d.duoIdx;
+    this.duoIndices = data.duoIndices ?? d.duoIndices;
     this.source = data.source ?? d.source;
     this.title = data.title ?? d.title;
     this.note = data.note ?? d.note;
@@ -103,12 +111,21 @@ export class NaguiQuestion extends BaseQuestion {
         choices: this.choices,
         answerIdx: this.answerIdx,
         duoIdx: this.duoIdx,
+        duoIndices: this.duoIndices,
         source: this.source,
         title: this.title,
         note: this.note,
         explanation: this.explanation,
       },
     };
+  }
+
+  // Players don't get `answerIdx` / `duoIdx` / `explanation`. When the chooser picks the
+  // "duo" lifeline, `PlayableQuestionService` adds back `duoIndices` — the visible pair,
+  // without saying which is correct.
+  toPlayableObject(): Record<string, unknown> {
+    const obj = this.toObject();
+    return { ...obj, details: omit(obj.details as Record<string, unknown>, ['answerIdx', 'duoIdx', 'explanation']) };
   }
 
   setImage(imageUrl: string): void {

@@ -20,6 +20,7 @@ const PROGRESSIVE_REVEAL_TYPES = new Set<QuestionType>([
   QuestionType.LABELLING,
   QuestionType.QUOTE,
   QuestionType.ENUMERATION,
+  QuestionType.NAGUI,
 ]);
 
 /**
@@ -53,6 +54,10 @@ function revealProgressKey(
       .map(Number)
       .sort((a, b) => a - b)
       .join(',')}`;
+  }
+  if (questionType === QuestionType.NAGUI) {
+    // The payload gains `duoIndices` once the chooser picks the duo lifeline.
+    return `nagui:${(revealStateDoc as { option?: string | null }).option ?? ''}`;
   }
   return '';
 }
