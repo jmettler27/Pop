@@ -20,12 +20,19 @@ export default class GameEnumerationQuestionRepository extends GameQuestionRepos
     await this.updateQuestionTransaction(transaction, questionId, {
       status: EnumerationQuestionStatus.THINKING,
       winner: null,
+      dateStart: null,
+      dateEnd: null,
     });
   }
 
   async deleteQuestionTransaction(transaction: Transaction, questionId: string): Promise<void> {
     await super.deleteQuestionTransaction(transaction, questionId);
     await this.deletePlayersTransaction(transaction, questionId);
+  }
+
+  async getPlayers(questionId: string): Promise<EnumerationQuestionPlayers | null> {
+    const result = await this.get([questionId, ...GameEnumerationQuestionRepository.ENUMERATION_PLAYERS_PATH]);
+    return result as EnumerationQuestionPlayers | null;
   }
 
   async getPlayersTransaction(

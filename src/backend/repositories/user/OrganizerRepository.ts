@@ -10,8 +10,15 @@ export default class OrganizerRepository extends FirebaseRepository {
   }
 
   async getOrganizer(id: string): Promise<Organizer | null> {
-    const data = await super.get(id);
-    return data ? new Organizer(data as unknown as ParticipantData) : null;
+    // Two organizer-doc shapes exist: the emulator seed (and any doc-id-keyed data) stores
+    // it at `organizers/{userId}` with no `id` field, while `CreateGameService` writes an
+    // auto-id doc carrying the user id in an `id` field. Try the doc-id read first, then
+    // fall back to matching that field — the identity every other organizer check uses.
+    const byDocId = await super.get(id);
+    if (byDocId) return new Organizer({ id, ...byDocId } as unknown as ParticipantData);
+
+    const [byField] = await super.getByField('id', id);
+    return byField ? new Organizer(byField as unknown as ParticipantData) : null;
   }
 
   async getAllOrganizers(): Promise<Organizer[]> {

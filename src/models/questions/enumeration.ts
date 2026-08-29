@@ -1,5 +1,6 @@
 import { BaseQuestion, GameQuestion, type BaseQuestionData, type GameQuestionData } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
+import { omit } from '@/utils/objects';
 
 export interface EnumerationQuestionData extends BaseQuestionData {
   answer?: string[];
@@ -59,6 +60,16 @@ export class EnumerationQuestion extends BaseQuestion {
         title: this.title,
       },
     };
+  }
+
+  // Players may know how many answers there are (the objective line and the bet selector
+  // both need the count), but not what they are. Keep a same-length blanked list here;
+  // `PlayableQuestionService` fills in entries the challenger has been credited with
+  // (`challenger.cited`) during the challenge phase.
+  toPlayableObject(): Record<string, unknown> {
+    const obj = this.toObject();
+    const details = omit(obj.details as Record<string, unknown>, ['answer']);
+    return { ...obj, details: { ...details, answer: (this.answer ?? []).map(() => '') } };
   }
 
   static validate(data: unknown): boolean {

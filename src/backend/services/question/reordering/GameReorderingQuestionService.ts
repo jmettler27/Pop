@@ -4,7 +4,7 @@ import { logger } from '@/backend/logger';
 import GameQuestionService from '@/backend/services/question/GameQuestionService';
 import { adminDb } from '@/firebase/admin';
 import { QuestionType } from '@/models/questions/question-type';
-import { GameReorderingQuestion, Ordering, ReorderingQuestion, SubmittedOrdering } from '@/models/questions/reordering';
+import { GameReorderingQuestion, Ordering, ReorderingQuestion } from '@/models/questions/reordering';
 import { ReorderingRound } from '@/models/rounds/reordering';
 import { Scores, ScoresProgress } from '@/models/scores';
 import { PlayerStatus } from '@/models/users/player';
@@ -173,12 +173,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
 
   /* =============================================================================================================== */
 
-  async submitOrdering(
-    questionId: string,
-    playerId: string,
-    teamId: string,
-    ordering: SubmittedOrdering
-  ): Promise<void> {
+  async submitOrdering(questionId: string, playerId: string, teamId: string, orderedTitles: string[]): Promise<void> {
     if (!questionId) {
       throw new Error('No question ID has been provided!');
     }
@@ -188,16 +183,16 @@ export default class GameReorderingQuestionService extends GameQuestionService {
     if (!teamId) {
       throw new Error('No team ID has been provided!');
     }
-    if (!ordering) {
+    if (!orderedTitles) {
       throw new Error('No ordering has been provided!');
     }
-    if (!Array.isArray(ordering)) {
+    if (!Array.isArray(orderedTitles)) {
       throw new Error('Ordering must be an array');
     }
 
     try {
       await adminDb().runTransaction(async (transaction) => {
-        await this.submitOrderingTransaction(transaction, questionId, playerId, teamId, ordering);
+        await this.submitOrderingTransaction(transaction, questionId, playerId, teamId, orderedTitles);
       });
     } catch (error) {
       this.log.error({ question: questionId, err: error }, 'Failed to submit the ordering');
@@ -210,7 +205,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
     questionId: string,
     playerId: string,
     teamId: string,
-    ordering: SubmittedOrdering
+    orderedTitles: string[]
   ) {
     const gameQuestion = (await this.gameQuestionRepo.getQuestionTransaction(
       transaction,
@@ -241,9 +236,19 @@ export default class GameReorderingQuestionService extends GameQuestionService {
     }
 
     // Validate ordering length matches items
-    if (ordering.length !== baseQuestion.items!.length) {
+    const items = baseQuestion.items ?? [];
+    if (orderedTitles.length !== items.length) {
       this.log.warn({ question: questionId }, 'Ordering length does not match items length');
       throw new Error('Ordering length does not match items length');
+    }
+
+    // The client only ever sees the items shuffled, so it submits by title. Map each back to
+    // its canonical index; `ordering` stays canonical-index-based for scoring and the results table.
+    const titleToIdx = new Map(items.map((it, i) => [it.title, i]));
+    const ordering = orderedTitles.map((title) => titleToIdx.get(title) ?? -1);
+    if (ordering.includes(-1) || new Set(ordering).size !== items.length) {
+      this.log.warn({ question: questionId }, 'Submitted titles do not match the question items');
+      throw new Error('Submitted ordering does not match the question items');
     }
 
     // Score = number of items in correct position
@@ -253,6 +258,7 @@ export default class GameReorderingQuestionService extends GameQuestionService {
     const newOrdering = {
       teamId,
       ordering,
+      submittedTitles: orderedTitles,
       score,
       playerId,
       submittedAt: Timestamp.now(),

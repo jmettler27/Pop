@@ -5,12 +5,12 @@ import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameCh
 import { OddOneOutChooserStatusText } from '@/frontend/components/game/main-pane/question/odd-one-out/OddOneOutBottomPane';
 import { OddOneOutProposalList } from '@/frontend/components/game/main-pane/question/odd-one-out/OddOneOutCommon';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
-import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import { useCurrentChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useGameId from '@/frontend/hooks/useGameId';
+import { usePlayableQuestion } from '@/frontend/hooks/usePlayableQuestion';
 import useTeam from '@/frontend/hooks/useTeam';
 import { GameOddOneOutQuestion, OddOneOutQuestion } from '@/models/questions/odd-one-out';
 import { QuestionType } from '@/models/questions/question-type';
@@ -19,7 +19,11 @@ import { shuffleIndices } from '@/utils/arrays';
 export default function MobileOddOneOutControl() {
   const game = useGame();
 
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(game!.currentQuestion as string);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = usePlayableQuestion(
+    game?.currentRound as string | undefined,
+    QuestionType.ODD_ONE_OUT,
+    game?.currentQuestion as string | undefined
+  );
 
   const bq = baseQuestion as unknown as OddOneOutQuestion;
   const randomMapping = useMemo(() => shuffleIndices((bq?.items ?? []).length), [bq?.items]);

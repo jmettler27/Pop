@@ -27,7 +27,7 @@ import { Button } from '@/frontend/components/ui/button';
 import { Card, CardContent } from '@/frontend/components/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/frontend/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/frontend/components/ui/popover';
-import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
+import { useEditableQuestion } from '@/frontend/hooks/editableQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -438,7 +438,11 @@ interface AddExistingQuestionToRoundDialogContentProps {
 }
 
 function AddExistingQuestionToRoundDialogContent({ selectedQuestionId }: AddExistingQuestionToRoundDialogContentProps) {
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(selectedQuestionId);
+  const { id: gameId } = useParams();
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useEditableQuestion(
+    gameId as string,
+    selectedQuestionId
+  );
 
   if (baseQuestionError || baseQuestionLoading || !baseQuestion) {
     return <></>;

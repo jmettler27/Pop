@@ -6,6 +6,7 @@ import {
 } from '@/models/questions/buzzer';
 import { BaseQuestion } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
+import { omit } from '@/utils/objects';
 
 export interface BasicQuestionData extends BuzzerQuestionData {
   answer?: string;
@@ -51,6 +52,11 @@ export class BasicQuestion extends BuzzerQuestion {
         title: this.title,
       },
     };
+  }
+
+  toPlayableObject(): Record<string, unknown> {
+    const obj = this.toObject();
+    return { ...obj, details: omit(obj.details as Record<string, unknown>, ['answer', 'explanation']) };
   }
 
   static validate(data: unknown): boolean {

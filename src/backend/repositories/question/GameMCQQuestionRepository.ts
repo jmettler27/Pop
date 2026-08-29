@@ -13,6 +13,11 @@ export default class GameMCQQuestionRepository extends GameQuestionRepository {
   }
 
   async resetQuestionTransaction(transaction: Transaction, questionId: string): Promise<void> {
-    await this.updateQuestionTransaction(transaction, questionId, { reward: null, correct: null });
+    await this.updateQuestionTransaction(transaction, questionId, {
+      reward: null,
+      correct: null,
+      dateStart: null,
+      dateEnd: null,
+    });
   }
 }

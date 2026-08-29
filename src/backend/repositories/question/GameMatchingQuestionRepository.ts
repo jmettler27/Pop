@@ -129,7 +129,12 @@ export default class GameMatchingQuestionRepository extends GameQuestionReposito
   }
 
   async resetQuestionTransaction(transaction: Transaction, questionId: string): Promise<void> {
-    await this.updateQuestionTransaction(transaction, questionId, { teamNumMistakes: {}, canceled: [] });
+    await this.updateQuestionTransaction(transaction, questionId, {
+      teamNumMistakes: {},
+      canceled: [],
+      dateStart: null,
+      dateEnd: null,
+    });
     await this.setTransaction(transaction, [questionId, ...GameMatchingQuestionRepository.CORRECT_MATCHES_PATH], {
       correctMatches: [],
     });

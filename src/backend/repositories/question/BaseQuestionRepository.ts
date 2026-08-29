@@ -28,6 +28,27 @@ export default class BaseQuestionRepository extends FirebaseRepository {
     return questions.map((q) => QuestionFactory.createBaseQuestion(q.type as QuestionType, q));
   }
 
+  /**
+   * One offset page of approved questions of this repo's type, newest first. Backs the
+   * organizer-only question-bank browser (the client no longer queries `questions`
+   * directly — production rules deny `list`). Uses the `(type, approved, createdAt DESC)`
+   * composite index.
+   */
+  async listApproved(limit: number, offset: number): Promise<Array<Record<string, unknown>>> {
+    const snapshot = await this.collectionRef
+      .where('type', '==', this.questionType)
+      .where('approved', '==', true)
+      .orderBy('createdAt', 'desc')
+      .offset(offset)
+      .limit(limit)
+      .get();
+    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+  }
+
+  async countApproved(): Promise<number> {
+    return this.getCount((ref) => ref.where('type', '==', this.questionType).where('approved', '==', true));
+  }
+
   async createQuestionTransaction(
     transaction: Transaction,
     data: CreateBaseQuestionData,

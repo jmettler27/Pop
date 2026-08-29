@@ -12,6 +12,11 @@ export default class GameOddOneOutQuestionRepository extends GameQuestionReposit
   }
 
   async resetQuestionTransaction(transaction: Transaction, questionId: string): Promise<void> {
-    await this.updateQuestionTransaction(transaction, questionId, { winner: null, selectedItems: [] });
+    await this.updateQuestionTransaction(transaction, questionId, {
+      winner: null,
+      selectedItems: [],
+      dateStart: null,
+      dateEnd: null,
+    });
   }
 }

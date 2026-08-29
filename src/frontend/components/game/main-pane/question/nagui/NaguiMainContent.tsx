@@ -137,11 +137,10 @@ const choiceIsDisabled = (
   myRole: string | null,
   isChooser: boolean,
   option: string | null,
-  duoIdx: number | undefined,
-  answerIdx: number | undefined
+  duoIndices: number[]
 ): boolean => {
   if (!(myRole === ParticipantRole.PLAYER && isChooser)) return true;
-  if (option === DuoNaguiOption.TYPE) return !(choiceIdx === duoIdx || choiceIdx === answerIdx);
+  if (option === DuoNaguiOption.TYPE) return !duoIndices.includes(choiceIdx);
   if (option === SquareNaguiOption.TYPE) return false;
   return true;
 };
@@ -166,8 +165,7 @@ function ActiveNaguiChoices({
   });
 
   const choices = baseQuestion.choices ?? [];
-  const answerIdx = baseQuestion.answerIdx;
-  const duoIdx = baseQuestion.duoIdx;
+  const duoIndices = baseQuestion.duoIndices ?? [];
 
   const isChooser = myTeam === gameQuestion.teamId;
 
@@ -183,13 +181,11 @@ function ActiveNaguiChoices({
     <ul className="rounded-lg max-h-full w-1/2 overflow-y-auto mb-3 space-y-3">
       {randomization.map(
         (origIdx, idx) =>
-          (gameQuestion.option !== DuoNaguiOption.TYPE || origIdx === answerIdx || origIdx === duoIdx) && (
+          (gameQuestion.option !== DuoNaguiOption.TYPE || duoIndices.includes(origIdx)) && (
             <li key={idx} className={clsx(idx !== choices.length - 1 && 'border-b border-border')}>
               <button
                 type="button"
-                disabled={
-                  isSubmitting || choiceIsDisabled(origIdx, myRole, isChooser, gameQuestion.option, duoIdx, answerIdx)
-                }
+                disabled={isSubmitting || choiceIsDisabled(origIdx, myRole, isChooser, gameQuestion.option, duoIndices)}
                 className="w-full text-left px-4 py-2 border-4 border-solid rounded-lg border-blue-500 hover:text-blue-400 disabled:opacity-100"
                 onClick={() => handleSelectChoice(origIdx)}
               >

@@ -1,6 +1,6 @@
 import { BaseQuestion, GameQuestion, type BaseQuestionData, type GameQuestionData } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
-import { isObjectEmpty } from '@/utils/objects';
+import { isObjectEmpty, omit } from '@/utils/objects';
 
 export interface LabellingQuestionData extends BaseQuestionData {
   title?: string;
@@ -40,6 +40,13 @@ export class LabellingQuestion extends BaseQuestion {
       ...super.toObject(),
       details: { title: this.title, note: this.note, image: this.image, labels: this.labels },
     };
+  }
+
+  // Players don't get the label texts. `PlayableQuestionService` puts back a same-length
+  // array with only the labels revealed so far (`gameQuestion.revealed`) filled in.
+  toPlayableObject(): Record<string, unknown> {
+    const obj = this.toObject();
+    return { ...obj, details: omit(obj.details as Record<string, unknown>, ['labels']) };
   }
 
   setImage(imageUrl: string): void {

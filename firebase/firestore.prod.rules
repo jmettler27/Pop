@@ -1,15 +1,46 @@
 rules_version = '2';
 
 // PRODUCTION rules. Deployed with `npm run deploy:rules` (via firebase.prod.json).
-// The emulator uses the permissive firebase/firestore.rules instead.
+// The emulator uses firebase/firestore.rules, which mirrors the read scoping below
+// but keeps writes open for local development.
 //
-// Reads stay open (the frontend reads Firestore directly via onSnapshot).
-// All writes go through the firebase-admin SDK, which bypasses these rules.
+// All writes go through the firebase-admin SDK, which bypasses these rules, so
+// every collection is `allow write: if false`. Reads are scoped per collection:
+// the frontend reads game state directly via onSnapshot, but has no legitimate
+// need for the `users` collection (a server action returns just display fields).
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
+
+    // Ephemeral game state, keyed by an unguessable gameId: game doc, rounds,
+    // in-play questions, realtime score/timer/chooser/sound docs, players, teams,
+    // organizers. Read-open so the client's onSnapshot listeners work.
+    match /games/{gameId} {
       allow read: if true;
       allow write: if false;
+
+      match /{document=**} {
+        allow read: if true;
+        allow write: if false;
+      }
+    }
+
+    // Question bank — carries the correct answers. The client never touches it
+    // directly any more: in-game rendering goes through `getPlayableQuestion` (answers
+    // redacted for players until a question ends) and the round editor through
+    // `getEditableQuestion` (organizer-gated). Fully denied.
+    match /questions/{questionId} {
+      allow read, write: if false;
+    }
+
+    // User profiles — names, avatars, provider ids, guest flags. The client never
+    // reads these directly (see `getPublicUsersByIds`); deny.
+    match /users/{userId} {
+      allow read, write: if false;
+    }
+
+    // Everything else: deny.
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

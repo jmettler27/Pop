@@ -22,7 +22,9 @@ import type { AnyBaseQuestion } from '@/models/questions/QuestionFactory';
 import { QuoteAuthorElement, QuotePartElement, QuoteQuestion, QuoteSourceElement } from '@/models/questions/quote';
 import { ReorderingQuestion } from '@/models/questions/reordering';
 import { topicToEmoji } from '@/models/topic';
-import User from '@/models/users/user';
+
+/** Minimal user shape the rows need — just the author's display fields. */
+type RowUser = { id?: string; name: string; image?: string | null };
 
 export const messages = defineMessages('frontend.questions.QuestionSearchTable', {
   id: 'ID',
@@ -287,9 +289,9 @@ function questionFields(question: AnyBaseQuestion): Row {
   throw new Error(`Unhandled question type: ${question.type}`);
 }
 
-const commonQuestionFields = (question: BaseQuestion, locale: string, users: User[]): Row => {
+const commonQuestionFields = (question: BaseQuestion, locale: string, users: RowUser[]): Row => {
   const user = users.find((u) => u.id === question.createdBy);
-  const { name, image } = user!;
+  const { name, image } = user ?? { name: '', image: null };
 
   return {
     id: question.id,
@@ -300,7 +302,7 @@ const commonQuestionFields = (question: BaseQuestion, locale: string, users: Use
   };
 };
 
-export const questionRow = (question: AnyBaseQuestion, locale: string, users: User[]): Row => ({
+export const questionRow = (question: AnyBaseQuestion, locale: string, users: RowUser[]): Row => ({
   ...commonQuestionFields(question, locale, users),
   ...questionFields(question),
 });
