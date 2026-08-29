@@ -120,12 +120,17 @@ export class NaguiQuestion extends BaseQuestion {
     };
   }
 
-  // Players don't get `answerIdx` / `duoIdx` / `explanation`. When the chooser picks the
-  // "duo" lifeline, `PlayableQuestionService` adds back `duoIndices` — the visible pair,
-  // without saying which is correct.
+  // Players get neither the answer (`answerIdx` / `duoIdx` / `explanation`) nor the
+  // `choices` — the chooser picks a lifeline blind, so the choices must not influence
+  // that pick. `PlayableQuestionService` adds `choices` back once the lifeline is
+  // "square" or "duo" (never for "hide"), plus `duoIndices` (the visible pair, order
+  // shuffled) for "duo".
   toPlayableObject(): Record<string, unknown> {
     const obj = this.toObject();
-    return { ...obj, details: omit(obj.details as Record<string, unknown>, ['answerIdx', 'duoIdx', 'explanation']) };
+    return {
+      ...obj,
+      details: omit(obj.details as Record<string, unknown>, ['choices', 'answerIdx', 'duoIdx', 'explanation']),
+    };
   }
 
   setImage(imageUrl: string): void {

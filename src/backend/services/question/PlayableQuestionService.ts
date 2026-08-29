@@ -4,7 +4,7 @@ import GameEnumerationQuestionRepository from '@/backend/repositories/question/G
 import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import { GameStatus } from '@/models/games/game-status';
-import { DuoNaguiOption } from '@/models/questions/nagui';
+import { DuoNaguiOption, SquareNaguiOption } from '@/models/questions/nagui';
 import { QuestionType } from '@/models/questions/question-type';
 import { redactQuoteDetails, type QuoteDetails } from '@/models/questions/quote';
 
@@ -110,21 +110,30 @@ function revealEnumerationAnswersSoFar(
 }
 
 /**
- * Nagui's "duo" lifeline shows the chooser two choices — the answer and one decoy
- * (`duoIdx`). Those indices are hidden from `toPlayableObject()`, so once the chooser has
- * picked duo, hand back the pair (sorted, so position gives nothing away) for the client
- * to filter on. No-op for the other lifelines / before one is picked.
+ * Nagui: the chooser picks a lifeline blind, so `toPlayableObject()` withholds `choices`
+ * too. Once the lifeline is "square" or "duo" the player needs the choices back; "hide"
+ * never shows them (buzz-and-answer). For "duo" also hand back `duoIndices` — the visible
+ * pair (answer + decoy), sorted so position gives nothing away. A full-reveal payload
+ * already carries `choices`; this still runs for it so `duoIndices` is present (the client
+ * filters the duo pair off that field for every role).
  */
-function revealNaguiDuoPair(
+function revealNaguiPlayableFields(
   payload: Record<string, unknown>,
-  base: { answerIdx?: number; duoIdx?: number },
+  base: { choices?: string[]; answerIdx?: number; duoIdx?: number },
   gameQuestion: { option?: string | null } | null
 ): void {
-  if (gameQuestion?.option !== DuoNaguiOption.TYPE) return;
-  const { answerIdx, duoIdx } = base;
-  if (typeof answerIdx !== 'number' || typeof duoIdx !== 'number') return;
+  const option = gameQuestion?.option;
+  if (option !== SquareNaguiOption.TYPE && option !== DuoNaguiOption.TYPE) return;
+
   const details = (payload.details ?? {}) as Record<string, unknown>;
-  details.duoIndices = [answerIdx, duoIdx].sort((a, b) => a - b);
+  details.choices = base.choices ?? [];
+
+  if (option === DuoNaguiOption.TYPE) {
+    const { answerIdx, duoIdx } = base;
+    if (typeof answerIdx === 'number' && typeof duoIdx === 'number') {
+      details.duoIndices = [answerIdx, duoIdx].sort((a, b) => a - b);
+    }
+  }
   payload.details = details;
 }
 
@@ -196,11 +205,12 @@ export default class PlayableQuestionService {
       const cited = (enumPlayers as { challenger?: { cited?: Record<string, unknown> } } | null)?.challenger?.cited;
       revealEnumerationAnswersSoFar(payload, base as { answer?: string[] }, cited);
     }
-    // Not gated on `!reveal`: the client filters the duo pair off `duoIndices` for everyone.
+    // Runs for every role: organizers/`QUESTION_END` already have `choices`, but the client
+    // filters the duo pair off `duoIndices` uniformly, so that must be present for them too.
     if (base.type === QuestionType.NAGUI) {
-      revealNaguiDuoPair(
+      revealNaguiPlayableFields(
         payload,
-        base as { answerIdx?: number; duoIdx?: number },
+        base as { choices?: string[]; answerIdx?: number; duoIdx?: number },
         gameQuestion as { option?: string | null } | null
       );
     }
