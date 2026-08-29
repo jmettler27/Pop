@@ -35,6 +35,29 @@ function revealCluesSoFar(
 }
 
 /**
+ * Labelling hides every label text from `toPlayableObject()`; put back a same-length
+ * array with only the labels the organizer/players have revealed so far filled in — the
+ * rest stay `''`. Length is preserved because the client renders a numbered list from it
+ * (and the round sidebar reads `labels.length` for the point value). A non-empty
+ * `revealed[i]` entry means label `i` is shown, matching `GameLabellingQuestion.labelIsRevealed`.
+ */
+function revealLabelsSoFar(
+  payload: Record<string, unknown>,
+  base: { labels?: string[] },
+  gameQuestion: { revealed?: Record<string, unknown>[] } | null
+): void {
+  const allLabels = base.labels ?? [];
+  const revealed = gameQuestion?.revealed ?? [];
+  const isRevealed = (i: number) => {
+    const entry = revealed[i];
+    return !!entry && Object.keys(entry).length > 0;
+  };
+  const details = (payload.details ?? {}) as Record<string, unknown>;
+  details.labels = allLabels.map((text, i) => (isRevealed(i) ? text : ''));
+  payload.details = details;
+}
+
+/**
  * Serves the base question (`questions/{id}`) to in-game clients, redacting the
  * answer-bearing fields while the question is still live for players and
  * spectators. Organizers always get the full question (they run the game); so does
@@ -70,6 +93,13 @@ export default class PlayableQuestionService {
 
     if (!reveal && base.type === QuestionType.PROGRESSIVE_CLUES) {
       revealCluesSoFar(payload, base as { clues?: string[] }, gameQuestion as { currentClueIdx?: number } | null);
+    }
+    if (!reveal && base.type === QuestionType.LABELLING) {
+      revealLabelsSoFar(
+        payload,
+        base as { labels?: string[] },
+        gameQuestion as { revealed?: Record<string, unknown>[] } | null
+      );
     }
 
     return { id: questionId, ...serializeTimestamps(payload) };
