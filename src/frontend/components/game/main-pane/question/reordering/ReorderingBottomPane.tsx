@@ -39,11 +39,11 @@ export default function ReorderingBottomPane({ baseQuestion }: { baseQuestion: R
 }
 
 function ReorderingController() {
-  const myRole = useRole();
+  const role = useRole();
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-2">
-      {myRole === ParticipantRole.ORGANIZER && <ReorderingOrganizerController />}
+      {role === ParticipantRole.ORGANIZER && <ReorderingOrganizerController />}
     </div>
   );
 }

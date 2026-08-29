@@ -152,15 +152,15 @@ function ProposalItem({
   isSubmitting,
 }: ProposalItemProps) {
   const game = useGame();
-  const myRole = useRole();
+  const role = useRole();
 
   const isClicked = selectedItem != null;
   const showExplanation = game?.status === GameStatus.QUESTION_END || isClicked;
-  const showComplete = myRole === ParticipantRole.ORGANIZER || showExplanation;
+  const showComplete = role === ParticipantRole.ORGANIZER || showExplanation;
 
   const isItemInteractive =
-    myRole === ParticipantRole.ORGANIZER ||
-    (myRole === ParticipantRole.PLAYER && isChooser && authorized && !showExplanation);
+    role === ParticipantRole.ORGANIZER ||
+    (role === ParticipantRole.PLAYER && isChooser && authorized && !showExplanation);
 
   return showExplanation ? (
     <Accordion value={expanded ? ['item'] : []} onValueChange={() => onAccordionChange()} className="grow">

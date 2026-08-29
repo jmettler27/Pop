@@ -1,5 +1,4 @@
 import { useMemo, type ReactNode } from 'react';
-import { useParams } from 'next/navigation';
 
 import { UserCheck } from 'lucide-react';
 import { useIntl } from 'react-intl';
@@ -13,6 +12,7 @@ import { usePlayer } from '@/frontend/hooks/firestore/user/usePlayerHooks';
 import { useReady } from '@/frontend/hooks/firestore/user/useReadyHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
+import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
 import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -77,9 +77,8 @@ interface ReadyPlayerControllerProps {
 }
 
 export default function ReadyPlayerController({ isLastQuestion }: ReadyPlayerControllerProps) {
-  const { id } = useParams();
-  const gameId = id as string;
-  const myRole = useRole();
+  const gameId = useGameId();
+  const role = useRole();
 
   const { timer, timerLoading, timerError } = useTimer(gameId);
 
@@ -98,7 +97,7 @@ export default function ReadyPlayerController({ isLastQuestion }: ReadyPlayerCon
       {timer.authorized && (
         <>
           <ReadyPlayerHeader isLastQuestion={isLastQuestion} />
-          {myRole === ParticipantRole.PLAYER && <ReadyPlayerButton />}
+          {role === ParticipantRole.PLAYER && <ReadyPlayerButton />}
         </>
       )}
     </div>
@@ -112,7 +111,7 @@ interface ReadyPlayerHeaderProps {
 function ReadyPlayerHeader({ isLastQuestion }: ReadyPlayerHeaderProps) {
   const intl = useIntl();
   const game = useGame();
-  const myRole = useRole();
+  const role = useRole();
 
   const { ready, readyLoading, readyError } = useReady(game?.id ?? null);
   if (!game) return null;
@@ -133,7 +132,7 @@ function ReadyPlayerHeader({ isLastQuestion }: ReadyPlayerHeaderProps) {
 
   const b = (chunks: ReactNode[]) => <strong>{keyChunks(chunks)}</strong>;
 
-  if (myRole === ParticipantRole.PLAYER) {
+  if (role === ParticipantRole.PLAYER) {
     const msg =
       game!.status === GameStatus.GAME_START
         ? messages.hotForGameStart
@@ -157,8 +156,7 @@ function ReadyPlayerHeader({ isLastQuestion }: ReadyPlayerHeaderProps) {
 
 export function ReadyPlayerButton() {
   const intl = useIntl();
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
   const user = useUser();
 
   const [handleClickReady, isSubmitting] = useAsyncAction(async () => {

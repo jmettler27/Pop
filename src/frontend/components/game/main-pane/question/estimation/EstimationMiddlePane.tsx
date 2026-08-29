@@ -14,7 +14,7 @@ import { ParticipantRole } from '@/models/users/participant';
 
 export default function EstimationMiddlePane({ baseQuestion }: { baseQuestion: EstimationQuestion }) {
   const { gameId, roundId, questionId } = useActiveQuestion()!;
-  const myRole = useRole();
+  const role = useRole();
 
   const { gameQuestion, loading, error } = useQuestion(gameId, roundId, QuestionType.ESTIMATION, questionId);
 
@@ -30,7 +30,7 @@ export default function EstimationMiddlePane({ baseQuestion }: { baseQuestion: E
 
   const gameQuestionData = gameQuestion as unknown as GameEstimationQuestion;
 
-  switch (myRole) {
+  switch (role) {
     case ParticipantRole.ORGANIZER:
       return <EstimationOrganizerPane baseQuestion={baseQuestion} gameQuestion={gameQuestionData} />;
     case ParticipantRole.PLAYER:

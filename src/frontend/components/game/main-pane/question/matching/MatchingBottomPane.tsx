@@ -12,7 +12,7 @@ import { useAllTeams } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
-import useTeam from '@/frontend/hooks/useTeam';
+import useTeamId from '@/frontend/hooks/useTeamId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { Chooser } from '@/models/chooser';
@@ -51,7 +51,7 @@ export default function MatchingBottomPane() {
 }
 
 function MatchingController({ chooser }: { chooser: Chooser }) {
-  const myRole = useRole();
+  const role = useRole();
   const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx];
 
   return (
@@ -59,8 +59,8 @@ function MatchingController({ chooser }: { chooser: Chooser }) {
       <span className="2xl:text-4xl font-bold">
         <GameChooserHelperText chooserTeamId={chooserTeamId ?? ''} />
       </span>
-      {myRole === ParticipantRole.PLAYER && <MatchingPlayerQuestionController />}
-      {myRole === ParticipantRole.ORGANIZER && <MatchingOrganizerQuestionController />}
+      {role === ParticipantRole.PLAYER && <MatchingPlayerQuestionController />}
+      {role === ParticipantRole.ORGANIZER && <MatchingOrganizerQuestionController />}
     </div>
   );
 }
@@ -68,7 +68,7 @@ function MatchingController({ chooser }: { chooser: Chooser }) {
 function MatchingPlayerQuestionController() {
   const intl = useIntl();
   const { gameId, roundId, questionId } = useActiveQuestion()!;
-  const myTeam = useTeam();
+  const teamId = useTeamId();
   const { round, loading: roundLoading, error: roundError } = useRound(gameId, roundId);
 
   const {
@@ -85,9 +85,9 @@ function MatchingPlayerQuestionController() {
   const matchingQuestion = gameQuestion as unknown as GameMatchingQuestion;
   const teamNumMistakes = matchingQuestion.teamNumMistakes ?? {};
   const maxMistakes = matchingRound.maxMistakes ?? GameMatchingQuestion.MAX_NUM_MISTAKES;
-  const remainingMistakes = maxMistakes - (teamNumMistakes[myTeam ?? ''] ?? 0);
+  const remainingMistakes = maxMistakes - (teamNumMistakes[teamId ?? ''] ?? 0);
 
-  const isCanceled = GameMatchingQuestion.matchingTeamIsCanceled(myTeam ?? '', teamNumMistakes, maxMistakes);
+  const isCanceled = GameMatchingQuestion.matchingTeamIsCanceled(teamId ?? '', teamNumMistakes, maxMistakes);
 
   return isCanceled ? (
     <span className="2xl:text-3xl text-red-500">

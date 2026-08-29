@@ -29,12 +29,12 @@ export default function RoundStartBottomPane() {
 }
 
 function RoundStartController() {
-  const myRole = useRole();
+  const role = useRole();
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-5">
       <ReadyPlayerController />
-      {myRole === ParticipantRole.ORGANIZER && <RoundStartOrganizerButton />}
+      {role === ParticipantRole.ORGANIZER && <RoundStartOrganizerButton />}
     </div>
   );
 }

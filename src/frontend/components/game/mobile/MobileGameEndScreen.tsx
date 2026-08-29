@@ -1,13 +1,12 @@
 'use client';
 
-import { useParams } from 'next/navigation';
-
 import { useIntl } from 'react-intl';
 
 import GameScoreboard from '@/frontend/components/scores/GameScoreboard';
 import { useScoresOnce } from '@/frontend/hooks/firestore/score/useRoundScoreHooks';
 import { useAllTeams } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGame from '@/frontend/hooks/useGame';
+import useGameId from '@/frontend/hooks/useGameId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { GameRounds } from '@/models/games/game';
 
@@ -18,8 +17,7 @@ const messages = defineMessages('frontend.game.mobile.MobileGameEndScreen', {
 
 export default function MobileGameEndScreen() {
   const intl = useIntl();
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
   const game = useGame();
   const { teams, loading: teamsLoading, error: teamsError } = useAllTeams(gameId);
 

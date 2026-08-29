@@ -39,9 +39,9 @@ interface BuzzerControllerProps {
 }
 
 function BuzzerController({ baseQuestion, questionPlayers }: BuzzerControllerProps) {
-  const myRole = useRole();
+  const role = useRole();
 
-  switch (myRole) {
+  switch (role) {
     case ParticipantRole.PLAYER:
       return <BuzzerPlayerController questionPlayers={questionPlayers} />;
     case ParticipantRole.ORGANIZER:

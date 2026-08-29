@@ -38,11 +38,11 @@ export default function EstimationBottomPane({ baseQuestion }: { baseQuestion: E
 }
 
 function EstimationController() {
-  const myRole = useRole();
+  const role = useRole();
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-2">
-      {myRole === ParticipantRole.ORGANIZER && <EstimationOrganizerController />}
+      {role === ParticipantRole.ORGANIZER && <EstimationOrganizerController />}
     </div>
   );
 }

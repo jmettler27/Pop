@@ -1,15 +1,14 @@
 import { memo } from 'react';
-import { useParams } from 'next/navigation';
 
 import { addSound } from '@/backend/services/sound/sounds';
 import sounds from '@/data/sounds';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/frontend/components/ui/select';
+import useGameId from '@/frontend/hooks/useGameId';
 
 const soundboardTextSize = 'text-sm sm:text-base md:text-[1.0625rem] xl:text-lg';
 
 const SoundboardController = memo(function SoundboardController({}) {
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
 
   const handleSelectSound = (value: string | null) => {
     if (value) addSound(gameId as string, value);

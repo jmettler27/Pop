@@ -28,7 +28,7 @@ import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useIsMobile from '@/frontend/hooks/useIsMobile';
-import useTeam from '@/frontend/hooks/useTeam';
+import useTeamId from '@/frontend/hooks/useTeamId';
 import useUser from '@/frontend/hooks/useUser';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameStatus } from '@/models/games/game-status';
@@ -202,7 +202,7 @@ function EstimationPlayerActiveView({ baseQuestion, gameQuestion }: EstimationPl
   const intl = useIntl();
   const { gameId, roundId, questionId } = useActiveQuestion()!;
   const user = useUser();
-  const myTeam = useTeam();
+  const teamId = useTeamId();
 
   const [betType, setBetType] = useState<string | null>(null);
   const [exactValue, setExactValue] = useState('');
@@ -210,8 +210,8 @@ function EstimationPlayerActiveView({ baseQuestion, gameQuestion }: EstimationPl
   const [rangeTo, setRangeTo] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const teamSubmitted = gameQuestion.bets?.some((b) => b.teamId === myTeam);
-  const teamSubmission = gameQuestion.bets?.find((b) => b.teamId === myTeam);
+  const teamSubmitted = gameQuestion.bets?.some((b) => b.teamId === teamId);
+  const teamSubmission = gameQuestion.bets?.find((b) => b.teamId === teamId);
   const submittedByMe = teamSubmission?.playerId === user?.id;
 
   const isExactValid = betType === EstimationQuestion.BetType.EXACT && exactValue !== '';
@@ -226,7 +226,7 @@ function EstimationPlayerActiveView({ baseQuestion, gameQuestion }: EstimationPl
 
   const [handleSubmitBet, isSubmitting] = useAsyncAction(async () => {
     if (!user) return;
-    await submitBet(gameId, roundId, questionId, user.id!, myTeam as string, bet as EstimationBet);
+    await submitBet(gameId, roundId, questionId, user.id!, teamId as string, bet as EstimationBet);
     setDialogOpen(false);
   });
 

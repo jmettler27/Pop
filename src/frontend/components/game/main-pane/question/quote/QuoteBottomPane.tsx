@@ -45,9 +45,9 @@ function QuoteController({
   baseQuestion: QuoteQuestion;
   questionPlayers: Record<string, unknown>;
 }) {
-  const myRole = useRole();
+  const role = useRole();
 
-  switch (myRole) {
+  switch (role) {
     case ParticipantRole.PLAYER:
       return <BuzzerPlayerController questionPlayers={questionPlayers} />;
     case ParticipantRole.ORGANIZER:

@@ -1,9 +1,7 @@
 import React, { memo, useState } from 'react';
-import { useParams } from 'next/navigation';
 
 import { useQueryClient } from '@tanstack/react-query';
 import { ChevronDown, ChevronUp, Pencil, Timer as TimerIcon, Trash2 } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
 import {
@@ -43,6 +41,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/u
 import { useEditableQuestion } from '@/frontend/hooks/editableQuestion';
 import { useQuestion as useGameQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGameId from '@/frontend/hooks/useGameId';
+import useUserId from '@/frontend/hooks/useUserId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameStatus } from '@/models/games/game-status';
@@ -83,8 +83,7 @@ export const EditQuestionCard = memo(function EditQuestionCard({
   roundThinkingTime,
   roundChallengeTime,
 }: EditQuestionCardProps) {
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const { baseQuestion, baseQuestionLoading, baseQuestionError } = useEditableQuestion(
@@ -143,8 +142,7 @@ function EditQuestionCardInner({
 }: EditQuestionCardInnerProps) {
   const intl = useIntl();
   const queryClient = useQueryClient();
-  const { data: session } = useSession();
-  const userId = session?.user?.id;
+  const userId = useUserId();
   const canEdit = userId && baseQuestion.createdBy === userId;
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -509,8 +507,7 @@ interface RemoveQuestionFromRoundButtonProps {
 
 function RemoveQuestionFromRoundButton({ questionType, roundId, questionId }: RemoveQuestionFromRoundButtonProps) {
   const intl = useIntl();
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
 
   const [dialogOpen, setDialogOpen] = useState(false);
 

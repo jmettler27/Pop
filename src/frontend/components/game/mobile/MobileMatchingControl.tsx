@@ -8,13 +8,13 @@ import { Spinner } from '@/frontend/components/ui/spinner';
 import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import { usePlayableQuestion } from '@/frontend/hooks/usePlayableQuestion';
-import useTeam from '@/frontend/hooks/useTeam';
+import useTeamId from '@/frontend/hooks/useTeamId';
 import { Chooser } from '@/models/chooser';
 import { MatchingAnswer, MatchingQuestion } from '@/models/questions/matching';
 import { QuestionType } from '@/models/questions/question-type';
 
 export default function MobileMatchingControl() {
-  const myTeam = useTeam();
+  const teamId = useTeamId();
   const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const { baseQuestion, baseQuestionLoading, baseQuestionError } = usePlayableQuestion(
@@ -41,7 +41,7 @@ export default function MobileMatchingControl() {
 
   const chooserData = chooser as unknown as Chooser;
   const chooserTeamId = chooserData.chooserOrder[chooserData.chooserIdx] ?? '';
-  const isChooser = myTeam === chooserTeamId;
+  const isChooser = teamId === chooserTeamId;
 
   if (!isChooser) {
     return (

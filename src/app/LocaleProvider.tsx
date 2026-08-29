@@ -39,11 +39,22 @@ export default function LocaleProvider({ children }: { children: React.ReactNode
   useEffect(() => {
     const stored = typeof window !== 'undefined' && localStorage.getItem(LOCALE_STORAGE_KEY);
     const initial = (stored || DEFAULT_LOCALE) as Locale;
-    loadMessages(initial).then((msgs) => {
-      setLocaleState(initial);
-      setMessages(msgs);
-      setReady(true);
-    });
+    // Retry once, then give up gracefully: on a cold dev server the first dynamic import() can
+    // reject while the chunk is still compiling. Without this, a transient failure leaves the
+    // provider stuck rendering null — a blank page until the user manually refreshes.
+    loadMessages(initial)
+      .catch(() => loadMessages(initial))
+      .then((msgs) => {
+        setLocaleState(initial);
+        setMessages(msgs);
+      })
+      .catch(() => {
+        // Fall back to react-intl's bundled defaultMessage strings rather than blocking the app.
+        setLocaleState(DEFAULT_LOCALE);
+      })
+      .finally(() => {
+        setReady(true);
+      });
   }, []);
 
   const setLocale = (newLocale: Locale) => {

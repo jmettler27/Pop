@@ -33,7 +33,7 @@ export default function BasicQuestionBottomPane() {
 
 function BasicQuestionController() {
   const game = useGame();
-  const myRole = useRole();
+  const role = useRole();
 
   const currentRound = game instanceof GameRounds ? game.currentRound : undefined;
   const {
@@ -53,7 +53,7 @@ function BasicQuestionController() {
     return <></>;
   }
 
-  switch (myRole) {
+  switch (role) {
     case ParticipantRole.ORGANIZER:
       return <BasicQuestionOrganizerController gameQuestion={gameQuestion as GameBasicQuestion} />;
     default:

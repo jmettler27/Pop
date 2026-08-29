@@ -10,7 +10,7 @@ import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import { useChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
-import useTeam from '@/frontend/hooks/useTeam';
+import useTeamId from '@/frontend/hooks/useTeamId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { Chooser } from '@/models/chooser';
 import { QuestionType } from '@/models/questions/question-type';
@@ -44,8 +44,8 @@ export default function OddOneOutBottomPane() {
 }
 
 function OddOneOutController({ chooser }: { chooser: Chooser }) {
-  const myRole = useRole();
-  const myTeam = useTeam();
+  const role = useRole();
+  const teamId = useTeamId();
 
   const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx] ?? '';
 
@@ -54,8 +54,8 @@ function OddOneOutController({ chooser }: { chooser: Chooser }) {
       <span className="2xl:text-4xl font-bold">
         <GameChooserHelperText chooserTeamId={chooserTeamId} />
       </span>
-      {myRole === ParticipantRole.ORGANIZER && <OddOneOutOrganizerController />}
-      {myRole === ParticipantRole.PLAYER && myTeam === chooserTeamId && <OddOneOutChooserController />}
+      {role === ParticipantRole.ORGANIZER && <OddOneOutOrganizerController />}
+      {role === ParticipantRole.PLAYER && teamId === chooserTeamId && <OddOneOutChooserController />}
     </div>
   );
 }
