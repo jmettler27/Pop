@@ -41,12 +41,12 @@ export class ReorderingQuestion extends BaseQuestion {
     return { ...super.toObject(), details: { items: this.items, title: this.title, note: this.note } };
   }
 
-  // The stored order of `items` *is* the answer, so players never get `toObject()`.
-  // `PlayableQuestionService` replaces `items` with a shuffled, explanation-free copy;
-  // the client then submits its ordering by item title, not by index.
+  // The stored order of `items` *is* the answer, so players get it shuffled with the
+  // explanations dropped; the client then submits its ordering by item title, not by index.
   toPlayableObject(): Record<string, unknown> {
-    const shuffled = shuffleReorderingItems(this.items ?? []);
-    return { ...super.toObject(), details: { items: shuffled, title: this.title, note: this.note } };
+    const obj = this.toObject();
+    const details = obj.details as { items?: ReorderingItem[]; title?: string; note?: string };
+    return { ...obj, details: { ...details, items: shuffleReorderingItems(details.items ?? []) } };
   }
 
   static validate(data: unknown): boolean {
@@ -58,14 +58,16 @@ export class ReorderingQuestion extends BaseQuestion {
 }
 
 /** A copy of the items in random order with explanations dropped — never the stored order. */
-export function shuffleReorderingItems(items: ReorderingItem[]): Array<{ title: string }> {
-  const out = items.map((it) => ({ title: it.title }));
+export function shuffleReorderingItems(items: ReorderingItem[] | undefined): Array<{ title: string }> {
+  const source: Array<ReorderingItem | undefined> = Array.isArray(items) ? items : Object.values(items ?? {});
+  const canonical = source.map((it) => it?.title ?? '');
+  const out = canonical.map((title) => ({ title }));
   for (let i = out.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [out[i], out[j]] = [out[j]!, out[i]!];
   }
   // Never hand back the canonical order.
-  if (out.length > 1 && out.every((it, i) => it.title === items[i]!.title)) {
+  if (out.length > 1 && out.every((it, i) => it.title === canonical[i])) {
     [out[0], out[1]] = [out[1]!, out[0]!];
   }
   return out;
