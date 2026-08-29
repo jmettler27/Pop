@@ -77,7 +77,7 @@ function EnumerationQuestionObjective({ baseQuestion }: { baseQuestion: Enumerat
 
 function EnumerationQuestionAnswer({ answer }: { answer: string[] }) {
   const game = useGame();
-  const myRole = useRole();
+  const role = useRole();
 
   const [handleClick, isSubmitting] = useAsyncAction(async (itemIdx: number) => {
     if (!game) return;
@@ -90,7 +90,7 @@ function EnumerationQuestionAnswer({ answer }: { answer: string[] }) {
     <EnumerationQuestionAnswerContent
       answer={answer}
       game={game}
-      myRole={myRole}
+      role={role}
       handleClick={handleClick}
       isSubmitting={isSubmitting}
     />
@@ -100,13 +100,13 @@ function EnumerationQuestionAnswer({ answer }: { answer: string[] }) {
 function EnumerationQuestionAnswerContent({
   answer,
   game,
-  myRole,
+  role,
   handleClick,
   isSubmitting,
 }: {
   answer: string[];
   game: GameRounds;
-  myRole: ParticipantRole | null;
+  role: ParticipantRole | null;
   handleClick: (itemIdx: number) => Promise<void>;
   isSubmitting: boolean;
 }) {
@@ -143,7 +143,7 @@ function EnumerationQuestionAnswerContent({
     return <></>;
   }
 
-  const showComplete = game.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER;
+  const showComplete = game.status === GameStatus.QUESTION_END || role === ParticipantRole.ORGANIZER;
 
   const timerStatus = timer.status;
   const gameQuestionStatus = (gameQuestion as unknown as { status?: string }).status;
@@ -156,7 +156,7 @@ function EnumerationQuestionAnswerContent({
 
         const isSelectable =
           !isSubmitting &&
-          myRole === ParticipantRole.ORGANIZER &&
+          role === ParticipantRole.ORGANIZER &&
           gameQuestionStatus === EnumerationQuestionStatus.CHALLENGE &&
           timerStatus === TimerStatus.START &&
           !isCited;

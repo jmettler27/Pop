@@ -1,7 +1,6 @@
 'use client';
 
 import React, { memo, useMemo, useState } from 'react';
-import { useParams } from 'next/navigation';
 
 import {
   closestCenter,
@@ -51,6 +50,7 @@ import { type Locale } from '@/frontend/helpers/locales';
 import { useEditableQuestion, useEditableQuestions } from '@/frontend/hooks/editableQuestion';
 import { useRound } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGameId from '@/frontend/hooks/useGameId';
 import useHasMounted from '@/frontend/hooks/useHasMounted';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -420,7 +420,7 @@ function SortableQuestionCard({
   status,
   siblingQuestionIds,
 }: SortableQuestionCardProps) {
-  const { id: gameId } = useParams();
+  const gameId = useGameId();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: questionId });
 
   const style = {
@@ -465,7 +465,7 @@ interface RoundTopicDistributionProps {
 }
 
 function RoundTopicDistribution({ round }: RoundTopicDistributionProps) {
-  const { id: gameId } = useParams();
+  const gameId = useGameId();
   const { questions: ids } = round;
   const hasMounted = useHasMounted();
 
@@ -613,8 +613,7 @@ interface RemoveRoundFromGameButtonProps {
 
 function RemoveRoundFromGameButton({ roundId }: RemoveRoundFromGameButtonProps) {
   const intl = useIntl();
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
 
   const [dialogOpen, setDialogOpen] = useState(false);
 

@@ -43,12 +43,12 @@ interface QuestionEndControllerProps {
 }
 
 function QuestionEndController({ round, isLastQuestion }: QuestionEndControllerProps) {
-  const myRole = useRole();
+  const role = useRole();
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-5">
       <ReadyPlayerController isLastQuestion={isLastQuestion} />
-      {myRole === ParticipantRole.ORGANIZER && (
+      {role === ParticipantRole.ORGANIZER && (
         <QuestionEndOrganizerButton round={round} isLastQuestion={isLastQuestion} />
       )}
     </div>

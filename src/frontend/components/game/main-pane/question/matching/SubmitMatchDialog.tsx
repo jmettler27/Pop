@@ -18,7 +18,7 @@ import { useIsChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useRole from '@/frontend/hooks/useRole';
-import useTeam from '@/frontend/hooks/useTeam';
+import useTeamId from '@/frontend/hooks/useTeamId';
 import useUser from '@/frontend/hooks/useUser';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameMatchingQuestion, MatchingAnswer, MatchingEdgeData } from '@/models/questions/matching';
@@ -42,14 +42,14 @@ export default function SubmitMatchDialog({
   const intl = useIntl();
   const user = useUser();
   const { gameId, roundId, questionId } = useActiveQuestion()!;
-  const myTeam = useTeam();
-  const myRole = useRole();
-  const { isChooser } = useIsChooser(gameId, myTeam as string);
+  const teamId = useTeamId();
+  const role = useRole();
+  const { isChooser } = useIsChooser(gameId, teamId as string);
 
   const [dialogOpen, setDialogOpen] = useState(false);
 
   // Closes the dialog when no longer chooser (i.e. other player in team has submitted)
-  const shouldAutoClose = dialogOpen && myRole === ParticipantRole.PLAYER && !isChooser;
+  const shouldAutoClose = dialogOpen && role === ParticipantRole.PLAYER && !isChooser;
   const [prevShouldAutoClose, setPrevShouldAutoClose] = useState(shouldAutoClose);
   if (shouldAutoClose !== prevShouldAutoClose) {
     setPrevShouldAutoClose(shouldAutoClose);

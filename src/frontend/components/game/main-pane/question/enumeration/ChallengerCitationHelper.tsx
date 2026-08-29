@@ -80,7 +80,7 @@ const progressToBarColor: Record<number, string> = {
 };
 
 function ChallengerProgress({ challenger }: { challenger: Challenger }) {
-  const myRole = useRole();
+  const role = useRole();
 
   const percentage = (challenger.numCorrect * 100) / challenger.bet;
   const cappedPercentage = Math.min(percentage, 100);
@@ -100,7 +100,7 @@ function ChallengerProgress({ challenger }: { challenger: Challenger }) {
         {challenger.numCorrect}/<strong>{challenger.bet}</strong>
       </h5>
 
-      {myRole === ParticipantRole.ORGANIZER && <ValidateChallengerCitationButton />}
+      {role === ParticipantRole.ORGANIZER && <ValidateChallengerCitationButton />}
     </div>
   );
 }

@@ -18,7 +18,7 @@ import { useCorrectMatches, useIsCanceled } from '@/frontend/hooks/firestore/que
 import { useIsChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useRole from '@/frontend/hooks/useRole';
-import useTeam from '@/frontend/hooks/useTeam';
+import useTeamId from '@/frontend/hooks/useTeamId';
 import { MatchingAnswer, MatchingEdgeData } from '@/models/questions/matching';
 import { isObjectEmpty } from '@/utils/objects';
 
@@ -29,7 +29,7 @@ interface ActiveMatchesProps {
 }
 
 export default function ActiveMatches({ answer, nodePositions, numCols }: ActiveMatchesProps) {
-  const myRole = useRole();
+  const role = useRole();
 
   const [edges, setEdges] = useState<MatchingEdgeData[]>([]);
   const [newEdgeSource, setNewEdgeSource] = useState<string | null>(null);
@@ -46,7 +46,7 @@ export default function ActiveMatches({ answer, nodePositions, numCols }: Active
         setNewEdgeSource={setNewEdgeSource}
       />
 
-      {(myRole === ParticipantRole.PLAYER || myRole === ParticipantRole.ORGANIZER) && (
+      {(role === ParticipantRole.PLAYER || role === ParticipantRole.ORGANIZER) && (
         <>
           <UserMatches
             edges={edges}
@@ -82,7 +82,7 @@ const nodeIsDisabled = (
   foundMatches: FoundMatch[],
   edges: MatchingEdgeData[],
   numCols: number,
-  myRole: ParticipantRole,
+  role: ParticipantRole,
   isChooser: boolean,
   isCanceled: boolean
 ) => {
@@ -94,8 +94,8 @@ const nodeIsDisabled = (
     )
   )
     return true;
-  if (myRole === ParticipantRole.ORGANIZER) return false;
-  if (myRole === ParticipantRole.PLAYER) {
+  if (role === ParticipantRole.ORGANIZER) return false;
+  if (role === ParticipantRole.PLAYER) {
     return isCanceled || !isChooser;
   }
   return true;
@@ -123,15 +123,15 @@ function ActiveMatchingQuestionNodes({
   deselectOnNewEdge = true,
 }: ActiveMatchingQuestionNodesProps) {
   const { gameId, roundId, questionId } = useActiveQuestion()!;
-  const myTeam = useTeam();
-  const myRole = useRole();
-  const { isChooser, loading: isChooserLoading, error: isChooserError } = useIsChooser(gameId, myTeam as string);
+  const teamId = useTeamId();
+  const role = useRole();
+  const { isChooser, loading: isChooserLoading, error: isChooserError } = useIsChooser(gameId, teamId as string);
 
   const {
     isCanceled,
     loading: isCanceledLoading,
     error: isCanceledError,
-  } = useIsCanceled(gameId, roundId, questionId, myTeam as string);
+  } = useIsCanceled(gameId, roundId, questionId, teamId as string);
   const {
     correctMatches,
     loading: correctMatchesLoading,
@@ -159,7 +159,7 @@ function ActiveMatchingQuestionNodes({
           foundMatches,
           edges,
           numCols,
-          myRole ?? ParticipantRole.SPECTATOR,
+          role ?? ParticipantRole.SPECTATOR,
           isChooser,
           isCanceled
         )

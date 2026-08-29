@@ -1,5 +1,4 @@
 import { memo, useEffect, useRef, useState } from 'react';
-import { useParams } from 'next/navigation';
 
 import { collection, onSnapshot, query, Timestamp, where } from 'firebase/firestore';
 import { Volume1, Volume2, VolumeX } from 'lucide-react';
@@ -8,12 +7,12 @@ import sounds from '@/data/sounds';
 import { GAMES_COLLECTION_REF } from '@/firebase/firestore';
 import { Button } from '@/frontend/components/ui/button';
 import { Slider } from '@/frontend/components/ui/slider';
+import useGameId from '@/frontend/hooks/useGameId';
 
 const initVolume = 0.4;
 
 const SoundboardAudioPlayer = memo(function SoundboardAudioPlayer() {
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
   const [volume, setVolume] = useState(initVolume);
 
   // Ref so the onSnapshot callback always reads the latest volume without needing to re-subscribe.

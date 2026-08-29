@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { useParams } from 'next/navigation';
 
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
@@ -14,9 +13,10 @@ import { formatDuration, timestampElapsedSeconds, timestampToShortTime } from '@
 import { useAllRounds } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import { useIsChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGameId from '@/frontend/hooks/useGameId';
 import useIsMobile from '@/frontend/hooks/useIsMobile';
 import useRole from '@/frontend/hooks/useRole';
-import useTeam from '@/frontend/hooks/useTeam';
+import useTeamId from '@/frontend/hooks/useTeamId';
 import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { RoundType } from '@/models/rounds/round-type';
@@ -46,11 +46,10 @@ export default function GameHomeMiddlePane() {
 }
 
 function GameHomeRounds() {
-  const params = useParams();
-  const gameId = params.id;
+  const gameId = useGameId();
 
-  const myRole = useRole();
-  const myTeam = useTeam();
+  const role = useRole();
+  const teamId = useTeamId();
   const user = useUser();
   const isMobile = useIsMobile();
   const intl = useIntl();
@@ -63,7 +62,7 @@ function GameHomeRounds() {
     isChooser,
     loading: isChooserLoading,
     error: isChooserError,
-  } = useIsChooser(gameId as string, myTeam as string);
+  } = useIsChooser(gameId as string, teamId as string);
   const { rounds, loading: roundsLoading, error: roundsError } = useAllRounds(gameId as string);
 
   if (roundsError || isChooserError) return <ErrorScreen inline />;
@@ -80,8 +79,8 @@ function GameHomeRounds() {
 
   const isRoundDisabled = (roundId: string | undefined): boolean => {
     if (endedRoundIds.has(roundId as string)) return true;
-    if (myRole === ParticipantRole.ORGANIZER) return false;
-    if (myRole === ParticipantRole.PLAYER) return !isChooser;
+    if (role === ParticipantRole.ORGANIZER) return false;
+    if (role === ParticipantRole.PLAYER) return !isChooser;
     return true;
   };
 

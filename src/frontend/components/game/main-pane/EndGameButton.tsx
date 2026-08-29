@@ -1,10 +1,9 @@
-import { useParams } from 'next/navigation';
-
 import { useIntl } from 'react-intl';
 
 import { endGame } from '@/backend/services/game/actions';
 import { Button } from '@/frontend/components/ui/button';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGameId from '@/frontend/hooks/useGameId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 
 const messages = defineMessages('frontend.game.bottom.EndGameButton', {
@@ -13,8 +12,7 @@ const messages = defineMessages('frontend.game.bottom.EndGameButton', {
 
 export default function EndGameButton() {
   const intl = useIntl();
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
 
   const [handleEndGame, isEnding] = useAsyncAction(async () => {
     await endGame(gameId as string);

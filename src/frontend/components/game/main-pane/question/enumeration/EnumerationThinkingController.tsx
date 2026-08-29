@@ -21,7 +21,7 @@ import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameQ
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useRole from '@/frontend/hooks/useRole';
-import useTeam from '@/frontend/hooks/useTeam';
+import useTeamId from '@/frontend/hooks/useTeamId';
 import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
@@ -42,9 +42,9 @@ export default function EnumerationThinkingController({
   baseQuestion: EnumerationQuestion;
   timer: Timer;
 }) {
-  const myRole = useRole();
+  const role = useRole();
 
-  switch (myRole) {
+  switch (role) {
     case ParticipantRole.PLAYER:
       return <EnumPlayerThinkingController baseQuestion={baseQuestion} timer={timer} />;
     default:
@@ -64,7 +64,7 @@ function AddBetForm({ baseQuestion, status }: { baseQuestion: EnumerationQuestio
   const intl = useIntl();
   const { gameId, roundId, questionId } = useActiveQuestion()!;
   const user = useUser();
-  const myTeam = useTeam();
+  const teamId = useTeamId();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [myBet, setMyBet] = useState(0);
@@ -75,7 +75,7 @@ function AddBetForm({ baseQuestion, status }: { baseQuestion: EnumerationQuestio
     const bet: EnumerationBet = {
       bet: Number(myBet),
       playerId: user.id!,
-      teamId: myTeam as string,
+      teamId: teamId as string,
       timestamp: Date.now(),
     };
     await addBet(gameId, roundId, questionId, bet);

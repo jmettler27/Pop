@@ -51,7 +51,7 @@ interface MCQControllerProps {
 
 function MCQController({ chooser }: MCQControllerProps) {
   const { gameId, roundId, questionId } = useActiveQuestion()!;
-  const myRole = useRole();
+  const role = useRole();
 
   const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx] ?? '';
 
@@ -67,7 +67,7 @@ function MCQController({ chooser }: MCQControllerProps) {
     return <></>;
   }
 
-  switch (myRole) {
+  switch (role) {
     case ParticipantRole.ORGANIZER:
       return <MCQOrganizerController gameQuestion={gameQuestion as GameMCQQuestion} />;
     case ParticipantRole.PLAYER:

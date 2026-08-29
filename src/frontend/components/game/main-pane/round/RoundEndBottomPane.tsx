@@ -1,7 +1,5 @@
 'use client';
 
-import { useParams } from 'next/navigation';
-
 import { useIntl } from 'react-intl';
 
 import { returnToGameHome } from '@/backend/services/game/actions';
@@ -10,6 +8,7 @@ import EndGameButton from '@/frontend/components/game/main-pane/EndGameButton';
 import GoGameHomeButton from '@/frontend/components/game/main-pane/GoGameHomeButton';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
+import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { AnyRound } from '@/models/rounds/RoundFactory';
@@ -21,9 +20,8 @@ const messages = defineMessages('frontend.game.bottom.RoundEndBottomPane', {
 
 export default function RoundEndBottomPane({ endedRound }: { endedRound: AnyRound }) {
   const intl = useIntl();
-  const { id } = useParams();
-  const gameId = id as string;
-  const myRole = useRole();
+  const gameId = useGameId();
+  const role = useRole();
   const game = useGame();
 
   const [handleClick, isHandling] = useAsyncAction(async () => {
@@ -42,7 +40,7 @@ export default function RoundEndBottomPane({ endedRound }: { endedRound: AnyRoun
           <GameChooserTeamAnnouncement /> {intl.formatMessage(messages.theRound)} {(endedRound.order ?? 0) + 1 + 1}
         </span>
       )}
-      {myRole === ParticipantRole.ORGANIZER &&
+      {role === ParticipantRole.ORGANIZER &&
         (isFinalRound ? <EndGameButton /> : <GoGameHomeButton onClick={handleClick} disabled={isHandling} />)}
     </div>
   );

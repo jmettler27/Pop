@@ -2,8 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { redirect, useParams } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
+import { ChevronDown, ChevronUp, Home, LineChart, Package2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
@@ -15,6 +16,7 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Locale, localeToEmoji } from '@/frontend/helpers/locales';
 import { useGame } from '@/frontend/hooks/firestore/game/useGameHooks';
 import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganizerHooks';
+import useGameId from '@/frontend/hooks/useGameId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameRounds } from '@/models/games/game';
@@ -30,8 +32,7 @@ const messages = defineMessages('frontend.gameEditor.EditGamePage', {
 export default function Page() {
   const { data: session } = useSession();
   const intl = useIntl();
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
 
   // Protected route
   if (!session || !session.user) {
@@ -87,7 +88,7 @@ export default function Page() {
                 className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-700 transition-all hover:bg-blue-50 hover:text-blue-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-blue-400 group"
                 prefetch={false}
               >
-                <HomeIcon className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                <Home className="h-5 w-5 group-hover:scale-110 transition-transform" />
                 {intl.formatMessage(globalMessages.home)}
               </Link>
               {/* <Link
@@ -114,7 +115,7 @@ export default function Page() {
                 href={'/edit/' + gameId + '/analytics'}
                 className="flex items-center gap-3 rounded-xl px-4 py-3 text-slate-700 transition-all hover:bg-blue-50 hover:text-blue-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-blue-400 group"
               >
-                <LineChartIcon className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                <LineChart className="h-5 w-5 group-hover:scale-110 transition-transform" />
                 {intl.formatMessage(messages.analytics)}
               </Link>
             </nav>
@@ -126,7 +127,7 @@ export default function Page() {
           {/* Search bar + user menu */}
           <header className="flex h-20 items-center gap-4 border-b border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md px-8 shadow-xs">
             <Link className="lg:hidden" href="#">
-              <Package2Icon className="h-6 w-6" />
+              <Package2 className="h-6 w-6" />
               <span className="sr-only">{intl.formatMessage(globalMessages.home)}</span>
             </Link>
 
@@ -204,12 +205,12 @@ function EditGameRounds({ game }: { game: GameRounds }) {
           >
             {allCollapsed ? (
               <>
-                <ChevronDownIcon className="h-5 w-5" />
+                <ChevronDown className="h-5 w-5" />
                 {intl.formatMessage(messages.expandAll)}
               </>
             ) : (
               <>
-                <ChevronUpIcon className="h-5 w-5" />
+                <ChevronUp className="h-5 w-5" />
                 {intl.formatMessage(messages.collapseAll)}
               </>
             )}
@@ -234,146 +235,5 @@ function EditGameRounds({ game }: { game: GameRounds }) {
         )}
       </main>
     </>
-  );
-}
-
-function Package2Icon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
-      <path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9" />
-      <path d="M12 3v6" />
-    </svg>
-  );
-}
-
-function BellIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-    </svg>
-  );
-}
-
-function HomeIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-      <polyline points="9 22 9 12 15 12 15 22" />
-    </svg>
-  );
-}
-
-function UsersIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
-  );
-}
-
-function LineChartIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M3 3v18h18" />
-      <path d="m19 9-5 5-4-4-3 3" />
-    </svg>
-  );
-}
-
-function ChevronDownIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="6 9 12 15 18 9" />
-    </svg>
-  );
-}
-
-function ChevronUpIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="18 15 12 9 6 15" />
-    </svg>
   );
 }

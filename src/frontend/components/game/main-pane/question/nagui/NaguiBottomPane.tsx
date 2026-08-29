@@ -49,7 +49,7 @@ export default function NaguiBottomPane() {
 
 function NaguiController({ chooser }: { chooser: Chooser }) {
   const { gameId, roundId, questionId } = useActiveQuestion()!;
-  const myRole = useRole();
+  const role = useRole();
 
   const chooserTeamId = chooser.chooserOrder[chooser.chooserIdx] ?? '';
 
@@ -67,7 +67,7 @@ function NaguiController({ chooser }: { chooser: Chooser }) {
 
   const gameQuestionData = gameQuestion as unknown as GameNaguiQuestion;
 
-  switch (myRole) {
+  switch (role) {
     case ParticipantRole.ORGANIZER:
       return <NaguiOrganizerController gameQuestion={gameQuestionData} />;
     case ParticipantRole.PLAYER:

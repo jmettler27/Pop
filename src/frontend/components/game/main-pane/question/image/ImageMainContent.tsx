@@ -44,9 +44,9 @@ interface DisplayedImageElementProps {
 
 const DisplayedImageElement = ({ element }: DisplayedImageElementProps) => {
   const game = useGame();
-  const myRole = useRole();
+  const role = useRole();
 
-  if (game!.status === GameStatus.QUESTION_END || myRole === ParticipantRole.ORGANIZER) {
+  if (game!.status === GameStatus.QUESTION_END || role === ParticipantRole.ORGANIZER) {
     return <span className="text-green-500">{element}</span>;
   }
 

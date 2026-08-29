@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useParams } from 'next/navigation';
 
 import { Form, Formik } from 'formik';
 import { CirclePlus } from 'lucide-react';
@@ -15,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/frontend/com
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { roundTypeSchema } from '@/frontend/helpers/forms/game';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGameId from '@/frontend/hooks/useGameId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { Round } from '@/models/rounds/round';
@@ -88,8 +88,7 @@ interface CreateRoundFormValues {
 
 function CreateRoundForm({ onClose }: CreateRoundFormProps) {
   const intl = useIntl();
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
 
   const [submitRound, isSubmitting] = useAsyncAction(async (values: CreateRoundFormValues) => {
     try {

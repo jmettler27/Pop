@@ -16,6 +16,7 @@ import { Locale, localeToEmoji } from '@/frontend/helpers/locales';
 import { timestampToLongDateTime, type FirestoreTimestamp } from '@/frontend/helpers/time';
 import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganizerHooks';
 import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
+import useUserId from '@/frontend/hooks/useUserId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { type GameRoundsData } from '@/models/games/game';
@@ -29,8 +30,8 @@ const messages = defineMessages('frontend.home.EndedGames', {
 
 export default function EndedGames() {
   const intl = useIntl();
-  const { data: session, status: sessionStatus } = useSession();
-  const userId = session?.user?.id;
+  const { status: sessionStatus } = useSession();
+  const userId = useUserId();
 
   const {
     data: games,

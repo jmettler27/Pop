@@ -47,9 +47,9 @@ interface LabellingControllerProps {
 }
 
 function LabellingController({ baseQuestion, questionPlayers }: LabellingControllerProps) {
-  const myRole = useRole();
+  const role = useRole();
 
-  switch (myRole) {
+  switch (role) {
     case ParticipantRole.PLAYER:
       return <BuzzerPlayerController questionPlayers={questionPlayers} />;
     case ParticipantRole.ORGANIZER:

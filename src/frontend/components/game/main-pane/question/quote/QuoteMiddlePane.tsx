@@ -117,7 +117,7 @@ interface DisplayedQuoteElementProps {
 
 const DisplayedQuoteElement = ({ toGuess, revealed, quoteElement, quoteElementStr }: DisplayedQuoteElementProps) => {
   const game = useGame();
-  const myRole = useRole();
+  const role = useRole();
 
   const [handleQuoteElementClick] = useAsyncAction(async () => {
     if (!game) return;
@@ -147,7 +147,7 @@ const DisplayedQuoteElement = ({ toGuess, revealed, quoteElement, quoteElementSt
     return <span className="text-blue-500">{quoteElement}</span>;
   }
 
-  if (myRole === ParticipantRole.ORGANIZER) {
+  if (role === ParticipantRole.ORGANIZER) {
     return (
       <span
         className="text-yellow-500 pointer-events-auto cursor-pointer hover:opacity-50"
@@ -170,7 +170,7 @@ interface DisplayedQuoteProps {
 
 const DisplayedQuote = ({ toGuess, revealed, quote, quoteParts }: DisplayedQuoteProps) => {
   const game = useGame();
-  const myRole = useRole();
+  const role = useRole();
 
   const [handleQuotePartClick] = useAsyncAction(async (quotePartIdx: number) => {
     if (!game) return;
@@ -222,7 +222,7 @@ const DisplayedQuote = ({ toGuess, revealed, quote, quoteParts }: DisplayedQuote
               </span>
             );
           }
-        } else if (myRole === ParticipantRole.ORGANIZER) {
+        } else if (role === ParticipantRole.ORGANIZER) {
           parts.push(
             <span
               key={`within_${idx}`}

@@ -9,7 +9,7 @@ import { useTeam } from '@/frontend/hooks/firestore/user/useTeamHooks';
 import useGame from '@/frontend/hooks/useGame';
 import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
-import useTeamContext from '@/frontend/hooks/useTeam';
+import useTeamId from '@/frontend/hooks/useTeamId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { GameStatus } from '@/models/games/game-status';
 import { ParticipantRole } from '@/models/users/participant';
@@ -52,8 +52,8 @@ interface GameChooserHelperTextProps {
 
 export function GameChooserHelperText({ chooserTeamId }: GameChooserHelperTextProps) {
   const game = useGame();
-  const myTeam = useTeamContext();
-  const myRole = useRole();
+  const teamId = useTeamId();
+  const role = useRole();
   const intl = useIntl();
   const { team, loading: teamLoading, error: teamError } = useTeam(game?.id ?? null, chooserTeamId);
   const { players, loading: playersLoading, error: playersError } = useTeamPlayers(game?.id ?? null, chooserTeamId);
@@ -64,7 +64,7 @@ export function GameChooserHelperText({ chooserTeamId }: GameChooserHelperTextPr
     return null;
   }
 
-  const isChooser = myRole === ParticipantRole.PLAYER && chooserTeamId === myTeam;
+  const isChooser = role === ParticipantRole.PLAYER && chooserTeamId === teamId;
   const teamHasManyPlayers = players.length > 1;
   const action =
     game.status === GameStatus.QUESTION_ACTIVE

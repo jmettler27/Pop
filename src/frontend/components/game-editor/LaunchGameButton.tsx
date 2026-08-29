@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import { Rocket } from 'lucide-react';
 import { useIntl } from 'react-intl';
@@ -16,6 +16,7 @@ import {
 } from '@/frontend/components/ui/dialog';
 import { Switch } from '@/frontend/components/ui/switch';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useGameId from '@/frontend/hooks/useGameId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 
@@ -29,8 +30,7 @@ const messages = defineMessages('frontend.gameEditor.LaunchGameButton', {
 
 export function LaunchGameButton() {
   const intl = useIntl();
-  const { id } = useParams();
-  const gameId = id as string;
+  const gameId = useGameId();
 
   const router = useRouter();
 
