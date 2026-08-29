@@ -21,7 +21,6 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import clsx from 'clsx';
-import { doc, getDoc } from 'firebase/firestore';
 import { ArrowUpDown, Check, ChevronDown, ChevronUp, GripVertical, Timer as TimerIcon, Trash2, X } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
@@ -31,7 +30,7 @@ import {
   updateRoundChallengeTime,
   updateRoundThinkingTime,
 } from '@/backend/services/edit-game/actions';
-import { QUESTIONS_COLLECTION_REF } from '@/firebase/firestore';
+import { getEditableQuestionTopics } from '@/backend/services/question/editable-actions';
 import { QuestionCardTitle } from '@/frontend/components/common/QuestionCard';
 import { AddQuestionToRoundButton } from '@/frontend/components/game-editor/AddQuestionToRound';
 import { EditQuestionCard } from '@/frontend/components/game-editor/EditQuestionInRound';
@@ -50,7 +49,7 @@ import { Label } from '@/frontend/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/frontend/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import { type Locale } from '@/frontend/helpers/locales';
-import { useQuestionOnce } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
+import { useEditableQuestion } from '@/frontend/hooks/editableQuestion';
 import { useRound } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useHasMounted from '@/frontend/hooks/useHasMounted';
@@ -415,6 +414,7 @@ interface SortableQuestionCardProps {
 }
 
 function SortableQuestionCard({ roundId, questionId, questionOrder, status }: SortableQuestionCardProps) {
+  const { id: gameId } = useParams();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: questionId });
 
   const style = {
@@ -423,7 +423,7 @@ function SortableQuestionCard({ roundId, questionId, questionOrder, status }: So
     opacity: isDragging ? 0.5 : 1,
   };
 
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useQuestionOnce(questionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useEditableQuestion(gameId as string, questionId);
 
   if (baseQuestionError || baseQuestionLoading || !baseQuestion) {
     return <></>;
@@ -450,24 +450,19 @@ function SortableQuestionCard({ roundId, questionId, questionOrder, status }: So
   );
 }
 
-const fetchTopics = async (questionIds: string[]) => {
-  const promises = questionIds.map((id: string) => getDoc(doc(QUESTIONS_COLLECTION_REF, id)));
-  const documents = await Promise.all(promises);
-  return documents.map((doc) => (doc.data() as { topic?: string })?.topic ?? '');
-};
-
 interface RoundTopicDistributionProps {
   round: AnyRound;
 }
 
 function RoundTopicDistribution({ round }: RoundTopicDistributionProps) {
+  const { id: gameId } = useParams();
   const { questions: ids } = round;
 
   const [topics, setTopics] = useState<Record<string, number>>({});
   const hasMounted = useHasMounted();
 
   useEffect(() => {
-    fetchTopics(ids).then(
+    getEditableQuestionTopics(gameId as string, ids).then(
       (fetchedTopics) => {
         const topicDistribution = fetchedTopics.reduce<Record<string, number>>((acc, topic) => {
           acc[topic] = acc[topic] ? acc[topic] + 1 : 1;
@@ -488,7 +483,7 @@ function RoundTopicDistribution({ round }: RoundTopicDistributionProps) {
         console.error('Error fetching topics', error);
       }
     );
-  }, [ids]);
+  }, [gameId, ids]);
 
   const totalQuestions = ids.length;
 

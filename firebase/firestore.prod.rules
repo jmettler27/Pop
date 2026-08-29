@@ -24,15 +24,12 @@ service cloud.firestore {
       }
     }
 
-    // Question bank. `get` (a single doc by known id) stays open — in-game rendering
-    // and the game editor still read `questions/{id}` directly. `list` (collection
-    // queries) is denied: the bank browser goes through a server action now, and a
-    // query is how you'd dump every answer at once. A follow-up redacts the `get`
-    // path and closes it too.
+    // Question bank — carries the correct answers. The client never touches it
+    // directly any more: in-game rendering goes through `getPlayableQuestion` (answers
+    // redacted for players until a question ends) and the round editor through
+    // `getEditableQuestion` (organizer-gated). Fully denied.
     match /questions/{questionId} {
-      allow get: if true;
-      allow list: if false;
-      allow write: if false;
+      allow read, write: if false;
     }
 
     // User profiles — names, avatars, provider ids, guest flags. The client never

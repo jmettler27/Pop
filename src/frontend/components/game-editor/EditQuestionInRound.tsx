@@ -1,6 +1,7 @@
 import React, { memo, useState } from 'react';
 import { useParams } from 'next/navigation';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { ChevronDown, ChevronUp, Pencil, Timer as TimerIcon, Trash2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
@@ -39,7 +40,7 @@ import { Input } from '@/frontend/components/ui/input';
 import { Label } from '@/frontend/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/frontend/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
-import { useQuestion as useBaseQuestion } from '@/frontend/hooks/firestore/question/useBaseQuestionHooks';
+import { useEditableQuestion } from '@/frontend/hooks/editableQuestion';
 import { useQuestion as useGameQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import defineMessages from '@/frontend/i18n/defineMessages';
@@ -84,7 +85,7 @@ export const EditQuestionCard = memo(function EditQuestionCard({
   const gameId = id as string;
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useBaseQuestion(questionId);
+  const { baseQuestion, baseQuestionLoading, baseQuestionError } = useEditableQuestion(gameId, questionId);
 
   if (baseQuestionError) {
     return <></>;
@@ -135,11 +136,17 @@ function EditQuestionCardInner({
   setIsCollapsed,
 }: EditQuestionCardInnerProps) {
   const intl = useIntl();
+  const queryClient = useQueryClient();
   const { data: session } = useSession();
   const userId = session?.user?.id;
   const canEdit = userId && baseQuestion.createdBy === userId;
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const closeEditDialog = () => {
+    setEditDialogOpen(false);
+    // The edit went through a `Submit*QuestionForm`; refresh this card's cached copy.
+    queryClient.invalidateQueries({ queryKey: ['editableQuestion', gameId, questionId] });
+  };
 
   const { gameQuestion } = useGameQuestion(gameId, roundId, baseQuestion.type, questionId);
 
@@ -396,12 +403,7 @@ function EditQuestionCardInner({
         </CardContent>
       )}
 
-      <EditQuestionDialog
-        baseQuestion={baseQuestion}
-        userId={userId}
-        open={editDialogOpen}
-        onClose={() => setEditDialogOpen(false)}
-      />
+      <EditQuestionDialog baseQuestion={baseQuestion} userId={userId} open={editDialogOpen} onClose={closeEditDialog} />
     </Card>
   );
 }

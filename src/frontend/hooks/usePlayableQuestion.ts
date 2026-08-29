@@ -64,9 +64,9 @@ function revealProgressKey(
 /**
  * The base question for an in-game view, fetched via a server action that redacts
  * the answer for players/spectators until the question ends (organizers always get
- * it in full). Drop-in replacement for `useQuestion`/`useQuestionOnce` from
- * `useBaseQuestionHooks` inside the game — production Firestore rules no longer let
- * gameplay read `questions/{id}` directly.
+ * it in full). This is how gameplay reads a base question now — production Firestore
+ * rules no longer let the client read `questions/{id}` directly. (The round editor
+ * uses `useEditableQuestion`, which is organizer-gated.)
  *
  * `gameId` and the reveal state come from `GameContext`; the query refetches when
  * the current question ends so the answer appears, and — for progressively-revealed
