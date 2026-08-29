@@ -2,6 +2,7 @@ import { Timestamp } from 'firebase-admin/firestore';
 
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
+import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
 import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import { GameStatus } from '@/models/games/game-status';
@@ -87,6 +88,24 @@ function revealQuoteElementsSoFar(
 }
 
 /**
+ * Enumeration keeps a blanked, same-length `answer` list in `toPlayableObject()` (the
+ * count is public); fill in the entries the organizer has credited to the challenger.
+ * `challenger.cited` is an index→timestamp map on the `realtime/players` doc, matching the
+ * client's `challenger?.cited?.[index] !== undefined` check.
+ */
+function revealEnumerationAnswersSoFar(
+  payload: Record<string, unknown>,
+  base: { answer?: string[] },
+  cited: Record<string, unknown> | null | undefined
+): void {
+  const allAnswers = base.answer ?? [];
+  const citedMap = cited ?? {};
+  const details = (payload.details ?? {}) as Record<string, unknown>;
+  details.answer = allAnswers.map((text, i) => (citedMap[i] !== undefined ? text : ''));
+  payload.details = details;
+}
+
+/**
  * Serves the base question (`questions/{id}`) to in-game clients, redacting the
  * answer-bearing fields while the question is still live for players and
  * spectators. Organizers always get the full question (they run the game); so does
@@ -105,10 +124,13 @@ export default class PlayableQuestionService {
     const base = await new BaseQuestionRepository(questionType).getQuestion(questionId);
     if (!base) return null;
 
-    const [game, organizer, gameQuestion] = await Promise.all([
+    const [game, organizer, gameQuestion, enumPlayers] = await Promise.all([
       new GameRepository().get(gameId),
       viewerId ? new OrganizerRepository(gameId).getOrganizer(viewerId) : Promise.resolve(null),
       new GameQuestionRepository(gameId, roundId, questionType).getQuestion(questionId).catch(() => null),
+      questionType === QuestionType.ENUMERATION
+        ? new GameEnumerationQuestionRepository(gameId, roundId).getPlayers(questionId).catch(() => null)
+        : Promise.resolve(null),
     ]);
 
     const isOrganizer = organizer != null;
@@ -136,6 +158,10 @@ export default class PlayableQuestionService {
         base as QuoteDetails,
         gameQuestion as { revealed?: Record<string, Record<string, unknown>> } | null
       );
+    }
+    if (!reveal && base.type === QuestionType.ENUMERATION) {
+      const cited = (enumPlayers as { challenger?: { cited?: Record<string, unknown> } } | null)?.challenger?.cited;
+      revealEnumerationAnswersSoFar(payload, base as { answer?: string[] }, cited);
     }
 
     return { id: questionId, ...serializeTimestamps(payload) };
