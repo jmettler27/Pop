@@ -1,5 +1,3 @@
-import { Timestamp } from 'firebase-admin/firestore';
-
 import GameRepository from '@/backend/repositories/game/GameRepository';
 import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestionRepository';
 import GameEnumerationQuestionRepository from '@/backend/repositories/question/GameEnumerationQuestionRepository';
@@ -8,12 +6,16 @@ import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository
 import { GameStatus } from '@/models/games/game-status';
 import { QuestionType } from '@/models/questions/question-type';
 import { redactQuoteDetails, type QuoteDetails } from '@/models/questions/quote';
-import { omit } from '@/utils/objects';
 
-function serializeTimestamps(obj: Record<string, unknown>): Record<string, unknown> {
-  const out: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(obj)) {
-    out[key] = value instanceof Timestamp ? { seconds: value.seconds, nanoseconds: value.nanoseconds } : value;
+// The only base-question fields an in-game client needs — identity plus what it renders.
+// `approved` / `createdAt` / `createdBy` are DB bookkeeping (and `createdAt` is the only
+// Firestore Timestamp in the object, so dropping it also removes the serialization concern).
+const PUBLIC_FIELDS = ['type', 'topic', 'lang', 'details'] as const;
+
+function publicQuestion(id: string, obj: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = { id };
+  for (const key of PUBLIC_FIELDS) {
+    if (key in obj) out[key] = obj[key];
   }
   return out;
 }
@@ -147,7 +149,8 @@ export default class PlayableQuestionService {
     // player can read every upcoming question from the network tab before it starts.
     const started = isCurrentQuestion || (gameQuestion as { dateStart?: unknown } | null)?.dateStart != null;
     if (!reveal && !started) {
-      return { id: questionId, ...serializeTimestamps(omit(base.toObject(), ['details'])) };
+      const full = base.toObject();
+      return { id: questionId, type: full.type, topic: full.topic, lang: full.lang };
     }
 
     const payload = reveal ? base.toObject() : base.toPlayableObject();
@@ -174,6 +177,6 @@ export default class PlayableQuestionService {
       revealEnumerationAnswersSoFar(payload, base as { answer?: string[] }, cited);
     }
 
-    return { id: questionId, ...serializeTimestamps(payload) };
+    return publicQuestion(questionId, payload);
   }
 }
