@@ -9,7 +9,7 @@ import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Avatar, AvatarFallback } from '@/frontend/components/ui/avatar';
 import { type Locale } from '@/frontend/helpers/locales';
 import { RoundTypeIcon } from '@/frontend/helpers/question-types';
-import { formatDuration, timestampElapsedSeconds, timestampToShortTime } from '@/frontend/helpers/time';
+import { formatDuration, timestampElapsedSeconds, timestampToDate } from '@/frontend/helpers/time';
 import { useAllRounds } from '@/frontend/hooks/firestore/round/useRoundHooks';
 import { useIsChooser } from '@/frontend/hooks/firestore/user/useChooserHooks';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
@@ -156,9 +156,11 @@ function GameHomeRoundItem({ round, isDisabled, onSelectRound }: GameHomeRoundIt
   const isEnded = !!round.dateEnd;
 
   const secondaryText = (): string => {
-    if (!round.dateStart) return '';
-    const startTime = timestampToShortTime(round.dateStart as TS, intl.locale as Locale);
-    if (!round.dateEnd) {
+    const start = timestampToDate(round.dateStart as TS);
+    if (!start) return '';
+    const startTime = intl.formatTime(start, { format: 'short' });
+    const end = timestampToDate(round.dateEnd as TS);
+    if (!end) {
       const elapsed = formatDuration(timestampElapsedSeconds(round.dateStart as TS), intl.locale as Locale);
       return intl.formatMessage(messages.roundStarted, { time: startTime, elapsed });
     }
@@ -167,7 +169,7 @@ function GameHomeRoundItem({ round, isDisabled, onSelectRound }: GameHomeRoundIt
       intl.locale as Locale
     );
     return intl.formatMessage(messages.roundEnded, {
-      time: timestampToShortTime(round.dateEnd as TS, intl.locale as Locale),
+      time: intl.formatTime(end, { format: 'short' }),
       duration,
     });
   };

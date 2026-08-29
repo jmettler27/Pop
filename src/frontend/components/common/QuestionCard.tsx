@@ -11,7 +11,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/u
 import type { Locale } from '@/frontend/helpers/locales';
 import { LOCALE_TO_EMOJI } from '@/frontend/helpers/locales';
 import { QUESTION_ELEMENT_TO_EMOJI } from '@/frontend/helpers/question';
-import { timestampToLongDateTime, type FirestoreTimestamp } from '@/frontend/helpers/time';
+import { timestampToDate, type FirestoreTimestamp } from '@/frontend/helpers/time';
 import { useUsersByIds } from '@/frontend/hooks/useUsersByIds';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { BlindtestQuestion, blindtestTypeToEmoji } from '@/models/questions/blindtest';
@@ -128,15 +128,13 @@ function QuestionCardFooter({ baseQuestion }: QuestionCardFooterProps) {
     return <></>;
   }
 
+  const createdAt = timestampToDate((baseQuestion as { createdAt: FirestoreTimestamp | null | undefined }).createdAt);
+
   return (
     <p className="text-xs sm:text-sm 2xl:text-base dark:text-white">
       {LOCALE_TO_EMOJI[(baseQuestion as { lang: keyof typeof LOCALE_TO_EMOJI }).lang]}{' '}
-      {intl.formatMessage(messages.createdBy)} <strong>{user.name}</strong> (
-      {timestampToLongDateTime(
-        (baseQuestion as { createdAt: FirestoreTimestamp | null | undefined }).createdAt,
-        intl.locale
-      )}
-      )
+      {intl.formatMessage(messages.createdBy)} <strong>{user.name}</strong>
+      {createdAt && ` (${intl.formatDate(createdAt, { format: 'long' })})`}
     </p>
   );
 }

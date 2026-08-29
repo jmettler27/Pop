@@ -1,7 +1,7 @@
 import type { IntlShape } from 'react-intl';
 
 import { localeToEmoji } from '@/frontend/helpers/locales';
-import { timestampToNumericDate, type FirestoreTimestamp } from '@/frontend/helpers/time';
+import { timestampToDate, type FirestoreTimestamp } from '@/frontend/helpers/time';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { BasicQuestion } from '@/models/questions/basic';
@@ -289,20 +289,28 @@ function questionFields(question: AnyBaseQuestion): Row {
   throw new Error(`Unhandled question type: ${question.type}`);
 }
 
-const commonQuestionFields = (question: BaseQuestion, locale: string, users: RowUser[]): Row => {
+const commonQuestionFields = (question: BaseQuestion, intl: IntlShape, users: RowUser[]): Row => {
   const user = users.find((u) => u.id === question.createdBy);
   const { name, image } = user ?? { name: '', image: null };
+  const createdAt = timestampToDate(question.createdAt as FirestoreTimestamp | null | undefined);
 
   return {
     id: question.id,
     lang: question.lang ? localeToEmoji(question.lang) : undefined,
     topic: question.topic ? topicToEmoji(question.topic) : undefined,
-    createdAt: timestampToNumericDate(question.createdAt as FirestoreTimestamp | null | undefined, locale),
+    // Locale-ordered numeric parts, `-`-joined (e.g. `29-08-2026` / `08-29-2026`).
+    createdAt: createdAt
+      ? intl
+          .formatDateToParts(createdAt, { format: 'numeric' })
+          .filter((part) => part.type === 'year' || part.type === 'month' || part.type === 'day')
+          .map((part) => part.value)
+          .join('-')
+      : null,
     createdBy: { name, image },
   };
 };
 
-export const questionRow = (question: AnyBaseQuestion, locale: string, users: RowUser[]): Row => ({
-  ...commonQuestionFields(question, locale, users),
+export const questionRow = (question: AnyBaseQuestion, intl: IntlShape, users: RowUser[]): Row => ({
+  ...commonQuestionFields(question, intl, users),
   ...questionFields(question),
 });

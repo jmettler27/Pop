@@ -2,9 +2,20 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import { IntlProvider } from 'react-intl';
+import { IntlProvider, type CustomFormats } from 'react-intl';
 
 import { DEFAULT_LOCALE, type Locale } from '@/frontend/helpers/locales';
+
+// Named date/time formats consumed via `intl.formatDate(d, { format: 'long' })` etc.
+const INTL_FORMATS: CustomFormats = {
+  date: {
+    long: { year: 'numeric', month: 'long', weekday: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' },
+    numeric: { year: 'numeric', month: '2-digit', day: '2-digit' },
+  },
+  time: {
+    short: { hour: '2-digit', minute: '2-digit' },
+  },
+};
 
 interface LocaleContextValue {
   locale: Locale;
@@ -77,7 +88,7 @@ export default function LocaleProvider({ children }: { children: React.ReactNode
 
   return (
     <LocaleContext.Provider value={{ locale, setLocale }}>
-      <IntlProvider locale={locale} messages={messages} defaultLocale={DEFAULT_LOCALE}>
+      <IntlProvider locale={locale} messages={messages} defaultLocale={DEFAULT_LOCALE} formats={INTL_FORMATS}>
         {children}
       </IntlProvider>
     </LocaleContext.Provider>
