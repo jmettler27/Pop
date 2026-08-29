@@ -5,7 +5,7 @@ import BaseQuestionRepository from '@/backend/repositories/question/BaseQuestion
 import GameQuestionRepository from '@/backend/repositories/question/GameQuestionRepository';
 import OrganizerRepository from '@/backend/repositories/user/OrganizerRepository';
 import { GameStatus } from '@/models/games/game-status';
-import { type QuestionType } from '@/models/questions/question-type';
+import { QuestionType } from '@/models/questions/question-type';
 
 function serializeTimestamps(obj: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {};
@@ -13,6 +13,25 @@ function serializeTimestamps(obj: Record<string, unknown>): Record<string, unkno
     out[key] = value instanceof Timestamp ? { seconds: value.seconds, nanoseconds: value.nanoseconds } : value;
   }
   return out;
+}
+
+/**
+ * Progressive-clues hides every clue text from `toPlayableObject()`; put back only the
+ * ones the organizer has revealed so far. `currentClueIdx` is -1 before the first clue
+ * and advances by one per reveal, so clues `0..currentClueIdx` are visible. Mirrors the
+ * client's old `clues.slice` against the live `currentClueIdx`.
+ */
+function revealCluesSoFar(
+  payload: Record<string, unknown>,
+  base: { clues?: string[] },
+  gameQuestion: { currentClueIdx?: number } | null
+): void {
+  const allClues = base.clues ?? [];
+  const rawIdx = gameQuestion?.currentClueIdx;
+  const idx = typeof rawIdx === 'number' ? rawIdx : 0;
+  const details = (payload.details ?? {}) as Record<string, unknown>;
+  details.clues = idx >= 0 ? allClues.slice(0, idx + 1) : [];
+  payload.details = details;
 }
 
 /**
@@ -48,6 +67,10 @@ export default class PlayableQuestionService {
 
     const reveal = isOrganizer || questionHasEnded || gameShowingAnswer;
     const payload = reveal ? base.toObject() : base.toPlayableObject();
+
+    if (!reveal && base.type === QuestionType.PROGRESSIVE_CLUES) {
+      revealCluesSoFar(payload, base as { clues?: string[] }, gameQuestion as { currentClueIdx?: number } | null);
+    }
 
     return { id: questionId, ...serializeTimestamps(payload) };
   }
