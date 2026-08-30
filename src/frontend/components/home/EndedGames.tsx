@@ -1,11 +1,9 @@
 import NextLink from 'next/link';
 
-import { useQuery } from '@tanstack/react-query';
 import { Clock, LayoutDashboard, UserCog, Users } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import { getEndedGames } from '@/backend/services/game/actions';
 import { GameOrganizersAvatarGroup, GamePlayersAvatarGroup } from '@/frontend/components/home/GameAvatars';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Button } from '@/frontend/components/ui/button';
@@ -16,7 +14,7 @@ import { Locale, localeToEmoji } from '@/frontend/helpers/locales';
 import { timestampToLongDateTime, type FirestoreTimestamp } from '@/frontend/helpers/time';
 import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganizerHooks';
 import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
-import useUserId from '@/frontend/hooks/useUserId';
+import { useEndedGames } from '@/frontend/hooks/gameLists';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { type GameRoundsData } from '@/models/games/game';
@@ -31,22 +29,13 @@ const messages = defineMessages('frontend.home.EndedGames', {
 export default function EndedGames() {
   const intl = useIntl();
   const { status: sessionStatus } = useSession();
-  const userId = useUserId();
 
-  const {
-    data: games,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['games', 'ended', userId],
-    queryFn: () => getEndedGames(userId as string),
-    enabled: !!userId,
-  });
+  const { games, loading, error } = useEndedGames();
 
   if (error) {
     return <></>;
   }
-  if (isLoading || sessionStatus === 'loading') {
+  if (loading || sessionStatus === 'loading') {
     return <LoadingScreen inline />;
   }
   if (!games) {

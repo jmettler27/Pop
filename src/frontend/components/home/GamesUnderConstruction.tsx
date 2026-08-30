@@ -1,11 +1,9 @@
 import NextLink from 'next/link';
 
-import { useQuery } from '@tanstack/react-query';
 import { Pencil, UserCog } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import { getGamesUnderConstruction } from '@/backend/services/game/actions';
 import { GameOrganizersAvatarGroup } from '@/frontend/components/home/GameAvatars';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Button } from '@/frontend/components/ui/button';
@@ -15,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/u
 import { Locale, localeToEmoji } from '@/frontend/helpers/locales';
 import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganizerHooks';
 import { useAllPlayersOnce } from '@/frontend/hooks/firestore/user/usePlayerHooks';
-import useUserId from '@/frontend/hooks/useUserId';
+import { useGamesUnderConstruction } from '@/frontend/hooks/gameLists';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { type GameRoundsData } from '@/models/games/game';
@@ -30,22 +28,13 @@ const messages = defineMessages('frontend.home.GamesUnderConstruction', {
 export default function GamesUnderConstruction() {
   const intl = useIntl();
   const { status: sessionStatus } = useSession();
-  const userId = useUserId();
 
-  const {
-    data: games,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['games', 'under-construction', userId],
-    queryFn: () => getGamesUnderConstruction(userId as string),
-    enabled: !!userId,
-  });
+  const { games, loading, error } = useGamesUnderConstruction();
 
   if (error) {
     return <></>;
   }
-  if (isLoading || sessionStatus === 'loading') {
+  if (loading || sessionStatus === 'loading') {
     return <LoadingScreen inline />;
   }
   if (!games) {
