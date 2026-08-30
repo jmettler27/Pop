@@ -3,8 +3,7 @@ import { useCallback, useState } from 'react';
 import { CirclePlus, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-// New question
-import { addQuestionToRound } from '@/backend/services/edit-game/actions';
+import { addRoundQuestion } from '@/frontend/api';
 import { QuestionCard } from '@/frontend/components/common/QuestionCard';
 import { QuestionSearchTable } from '@/frontend/components/common/QuestionSearchTable';
 import SubmitBasicQuestionForm from '@/frontend/components/question-forms/SubmitBasicQuestionForm';
@@ -377,7 +376,6 @@ function AddExistingQuestionToRoundDialog({
 }: AddExistingQuestionToRoundDialogProps) {
   const intl = useIntl();
   const gameId = useGameId();
-  const userId = useUserId() ?? '';
 
   const selectedQuestionId = questionSelectionModel[0];
 
@@ -393,7 +391,7 @@ function AddExistingQuestionToRoundDialog({
   };
 
   const [handleValidate, isValidating] = useAsyncAction(async () => {
-    await addQuestionToRound(gameId, roundId, selectedQuestionId, userId);
+    await addRoundQuestion(gameId, roundId, { questionId: selectedQuestionId });
     setValidationDialogOpen(false);
     onDialogClose();
     setSelectedQuestionModel([]);

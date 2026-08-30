@@ -7,8 +7,6 @@ import { Form, Formik, useFormikContext } from 'formik';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 
-import { editQuestion, submitQuestion } from '@/backend/services/create-question/actions';
-import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
 import { MyTextInput } from '@/frontend/components/common/StyledFormComponents';
@@ -18,11 +16,11 @@ import { emojiCount, onlyEmojis } from '@/frontend/helpers/emojis';
 import { imageFileSchema } from '@/frontend/helpers/forms/files';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
+import { submitQuestionForm, type QuestionFormPayload } from '@/frontend/helpers/forms/submitQuestionForm';
 import { topicSchema } from '@/frontend/helpers/forms/topics';
 import { DEFAULT_LOCALE, Locale, localeSchema } from '@/frontend/helpers/locales';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import { EmojiQuestion } from '@/models/questions/emoji';
-import { CreateBaseQuestionData } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
 import { Topic } from '@/models/topic';
 
@@ -59,7 +57,7 @@ interface QuestionFormProps {
   onDialogClose?: () => void;
 }
 
-export default function SubmitEmojiQuestionForm({ userId, ...props }: QuestionFormProps) {
+export default function SubmitEmojiQuestionForm(props: QuestionFormProps) {
   const intl = useIntl();
   const router = useRouter();
   const q = props.questionToEdit as Record<string, unknown> | undefined;
@@ -71,27 +69,17 @@ export default function SubmitEmojiQuestionForm({ userId, ...props }: QuestionFo
     async (values: Record<string, string>, image: File | null) => {
       try {
         const { topic, lang, title, clue, answer_title } = values as typeof values & { topic: Topic; lang: Locale };
-        const data = {
-          details: { title, clue, answer: { title: answer_title } },
+        const data: QuestionFormPayload = {
           type: QUESTION_TYPE,
           topic,
           lang,
-        } as unknown as CreateBaseQuestionData;
-        const files = { image: image || undefined };
-
-        if (q) {
-          await editQuestion(data, q.id as string, files);
-        } else {
-          const questionId = await submitQuestion(data, userId as string, files);
-          if (props.inGameEditor) {
-            await addQuestionToRound(
-              props.gameId as string,
-              props.roundId as string,
-              questionId as string,
-              userId as string
-            );
-          }
-        }
+          details: { title, clue, answer: { title: answer_title } },
+        };
+        await submitQuestionForm(data, {
+          editId: q?.id as string | undefined,
+          files: { image: image || undefined },
+          round: props.inGameEditor ? { gameId: props.gameId as string, roundId: props.roundId as string } : undefined,
+        });
       } catch (error) {
         console.error('Failed to submit your question:', error);
       }

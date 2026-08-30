@@ -4,19 +4,17 @@ import { Form, Formik } from 'formik';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 
-import { editQuestion, submitQuestion } from '@/backend/services/create-question/actions';
-import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
 import { MyTextInput } from '@/frontend/components/common/StyledFormComponents';
 import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
+import { submitQuestionForm, type QuestionFormPayload } from '@/frontend/helpers/forms/submitQuestionForm';
 import { topicSchema } from '@/frontend/helpers/forms/topics';
 import { DEFAULT_LOCALE, Locale, localeSchema } from '@/frontend/helpers/locales';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import { BasicQuestion } from '@/models/questions/basic';
-import { CreateBaseQuestionData } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
 import { Topic } from '@/models/topic';
 
@@ -30,7 +28,7 @@ interface QuestionFormProps {
   onDialogClose?: () => void;
 }
 
-export default function SubmitBasicQuestionForm({ userId, ...props }: QuestionFormProps) {
+export default function SubmitBasicQuestionForm(props: QuestionFormProps) {
   const intl = useIntl();
   const router = useRouter();
   const q = props.questionToEdit as Record<string, string> | undefined;
@@ -38,25 +36,16 @@ export default function SubmitBasicQuestionForm({ userId, ...props }: QuestionFo
   const [submitBasicQuestion, isSubmitting] = useAsyncAction(async (values: Record<string, string>) => {
     try {
       const { topic, lang, ...others } = values as { topic: Topic; lang: Locale; [key: string]: string };
-      const questionData = {
-        details: { ...others },
+      const questionData: QuestionFormPayload = {
         type: QuestionType.BASIC,
         topic,
         lang,
-      } as unknown as CreateBaseQuestionData;
-      if (q) {
-        await editQuestion(questionData, q.id);
-      } else {
-        const questionId = await submitQuestion(questionData, userId as string);
-        if (props.inGameEditor) {
-          await addQuestionToRound(
-            props.gameId as string,
-            props.roundId as string,
-            questionId as string,
-            userId as string
-          );
-        }
-      }
+        details: { ...others },
+      };
+      await submitQuestionForm(questionData, {
+        editId: q?.id,
+        round: props.inGameEditor ? { gameId: props.gameId as string, roundId: props.roundId as string } : undefined,
+      });
     } catch (error) {
       console.error('Failed to submit your question:', error);
     }

@@ -7,8 +7,6 @@ import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 import type { ObjectSchema } from 'yup';
 
-import { editQuestion, submitQuestion } from '@/backend/services/create-question/actions';
-import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
@@ -17,13 +15,13 @@ import { Button } from '@/frontend/components/ui/button';
 import { SelectItem } from '@/frontend/components/ui/select';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
+import { submitQuestionForm, type QuestionFormPayload } from '@/frontend/helpers/forms/submitQuestionForm';
 import { topicSchema } from '@/frontend/helpers/forms/topics';
 import { DEFAULT_LOCALE, Locale, localeSchema } from '@/frontend/helpers/locales';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { OddOneOutQuestion } from '@/models/questions/odd-one-out';
-import { CreateBaseQuestionData } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
 import { Topic } from '@/models/topic';
 
@@ -115,38 +113,18 @@ interface QuestionFormProps {
   onDialogClose?: () => void;
 }
 
-export default function SubmitOddOneOutQuestionForm({ userId, ...props }: QuestionFormProps) {
+export default function SubmitOddOneOutQuestionForm(props: QuestionFormProps) {
   const router = useRouter();
   const q = props.questionToEdit as Record<string, unknown> | undefined;
 
   const [submitOOOQuestion, isSubmitting] = useAsyncAction(async (values: OOOFormValues) => {
     try {
       const { topic, lang, ...others } = values as typeof values & { topic: Topic; lang: Locale };
-      if (q) {
-        await editQuestion(
-          { details: { ...others }, type: QUESTION_TYPE, topic, lang } as unknown as CreateBaseQuestionData,
-          q.id as string
-        );
-      } else {
-        const questionId = await submitQuestion(
-          {
-            details: { ...others },
-            type: QUESTION_TYPE,
-            topic,
-            // subtopics,,
-            lang,
-          } as unknown as CreateBaseQuestionData,
-          userId as string
-        );
-        if (props.inGameEditor) {
-          await addQuestionToRound(
-            props.gameId as string,
-            props.roundId as string,
-            questionId as string,
-            userId as string
-          );
-        }
-      }
+      const data: QuestionFormPayload = { type: QUESTION_TYPE, topic, lang, details: { ...others } };
+      await submitQuestionForm(data, {
+        editId: q?.id as string | undefined,
+        round: props.inGameEditor ? { gameId: props.gameId as string, roundId: props.roundId as string } : undefined,
+      });
     } catch (error) {
       console.error('Failed to submit your question:', error);
     }

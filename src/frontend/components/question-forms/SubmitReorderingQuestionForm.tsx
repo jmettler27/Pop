@@ -7,8 +7,6 @@ import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 import type { ObjectSchema } from 'yup';
 
-import { editQuestion, submitQuestion } from '@/backend/services/create-question/actions';
-import { addQuestionToRound } from '@/backend/services/edit-game/actions';
 import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import SelectQuestionTopic from '@/frontend/components/common/SelectQuestionTopic';
@@ -16,6 +14,7 @@ import { MyTextInput, StyledErrorMessage } from '@/frontend/components/common/St
 import { Button } from '@/frontend/components/ui/button';
 import { stringSchema } from '@/frontend/helpers/forms/forms';
 import { messages as questionMessages } from '@/frontend/helpers/forms/questions';
+import { submitQuestionForm, type QuestionFormPayload } from '@/frontend/helpers/forms/submitQuestionForm';
 import { topicSchema } from '@/frontend/helpers/forms/topics';
 import { DEFAULT_LOCALE, Locale, localeSchema } from '@/frontend/helpers/locales';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
@@ -90,35 +89,18 @@ interface QuestionFormProps {
   onDialogClose?: () => void;
 }
 
-export default function SubmitReorderingQuestionForm({ userId, ...props }: QuestionFormProps) {
+export default function SubmitReorderingQuestionForm(props: QuestionFormProps) {
   const router = useRouter();
   const q = props.questionToEdit as Record<string, unknown> | undefined;
 
   const [submitReorderingQuestion, isSubmitting] = useAsyncAction(async (values: ReorderingFormValues) => {
     try {
       const { topic, lang, ...others } = values as typeof values & { topic: Topic; lang: Locale };
-      if (q) {
-        await editQuestion({ details: { ...others }, type: QUESTION_TYPE, topic, lang }, q.id as string);
-      } else {
-        const questionId = await submitQuestion(
-          {
-            details: { ...others },
-            type: QUESTION_TYPE,
-            topic,
-            // subtopics,,
-            lang,
-          },
-          userId as string
-        );
-        if (props.inGameEditor) {
-          await addQuestionToRound(
-            props.gameId as string,
-            props.roundId as string,
-            questionId as string,
-            userId as string
-          );
-        }
-      }
+      const data: QuestionFormPayload = { type: QUESTION_TYPE, topic, lang, details: { ...others } };
+      await submitQuestionForm(data, {
+        editId: q?.id as string | undefined,
+        round: props.inGameEditor ? { gameId: props.gameId as string, roundId: props.roundId as string } : undefined,
+      });
     } catch (error) {
       console.error('Failed to submit your question:', error);
     }
