@@ -23,12 +23,7 @@ import clsx from 'clsx';
 import { ArrowUpDown, Check, ChevronDown, ChevronUp, GripVertical, Timer as TimerIcon, Trash2, X } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import {
-  removeRoundFromGame,
-  updateRound,
-  updateRoundChallengeTime,
-  updateRoundThinkingTime,
-} from '@/backend/services/edit-game/actions';
+import { removeRound, updateRound } from '@/frontend/api';
 import { QuestionCardTitle } from '@/frontend/components/common/QuestionCard';
 import { AddQuestionToRoundButton } from '@/frontend/components/game-editor/AddQuestionToRound';
 import { EditQuestionCard } from '@/frontend/components/game-editor/EditQuestionInRound';
@@ -121,7 +116,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({
   const [thinkingTimePopoverOpen, setThinkingTimePopoverOpen] = useState(false);
   const [thinkingTimeEditValue, setThinkingTimeEditValue] = useState('');
   const [handleSaveThinkingTime, isSavingThinkingTime] = useAsyncAction(async (value: number) => {
-    await updateRoundThinkingTime(gameId, roundId, value);
+    await updateRound(gameId, roundId, { action: 'thinking_time', thinkingTime: value });
     setThinkingTimePopoverOpen(false);
   });
 
@@ -134,7 +129,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({
   const [challengeTimePopoverOpen, setChallengeTimePopoverOpen] = useState(false);
   const [challengeTimeEditValue, setChallengeTimeEditValue] = useState('');
   const [handleSaveChallengeTime, isSavingChallengeTime] = useAsyncAction(async (value: number) => {
-    await updateRoundChallengeTime(gameId, roundId, value);
+    await updateRound(gameId, roundId, { action: 'challenge_time', challengeTime: value });
     setChallengeTimePopoverOpen(false);
   });
 
@@ -161,21 +156,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({
 
   const handleConfirmReorder = async () => {
     try {
-      // Serialize round data to plain object (convert Timestamps to ISO strings)
-      const roundObj = round.toObject();
-      const toDateSafe = (val: unknown) => {
-        const v = val as { toDate?: () => Date } | null | undefined;
-        return v?.toDate?.() ? v.toDate().toISOString() : val;
-      };
-      const updatedRoundData = {
-        ...roundObj,
-        questions: reorderedQuestions,
-        createdAt: toDateSafe(roundObj.createdAt),
-        dateStart: toDateSafe(roundObj.dateStart),
-        dateEnd: toDateSafe(roundObj.dateEnd),
-      };
-
-      await updateRound(gameId, round.id!, updatedRoundData);
+      await updateRound(gameId, round.id!, { action: 'update', questions: reorderedQuestions });
       setIsReorderMode(false);
     } catch (error) {
       console.error('Failed to reorder questions:', error);
@@ -618,7 +599,7 @@ function RemoveRoundFromGameButton({ roundId }: RemoveRoundFromGameButtonProps) 
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const [handleRemoveRound, isRemoving] = useAsyncAction(async () => {
-    await removeRoundFromGame(gameId as string, roundId as string);
+    await removeRound(gameId as string, roundId as string);
   });
 
   const onCancel = () => {

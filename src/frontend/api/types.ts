@@ -208,6 +208,16 @@ export interface RoundActionRequest {
   questionId?: string;
 }
 
+/**
+ * `PUT /games/{g}/rounds/{r}/questions/{q}` — per-question editor override. The
+ * round-level `RoundActionRequest` sets the default for every question; this
+ * overrides a single one.
+ */
+export interface RoundQuestionActionRequest {
+  action: 'thinking_time' | 'challenge_time';
+  seconds: number;
+}
+
 export type QuestionActionName =
   | 'end'
   | 'reset'

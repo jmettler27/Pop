@@ -5,7 +5,7 @@ import { CirclePlus } from 'lucide-react';
 import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 
-import { addRoundToGame } from '@/backend/services/edit-game/actions';
+import { addRound, type QuestionType } from '@/frontend/api';
 import SelectRoundType from '@/frontend/components/common/SelectRoundType';
 import { MyTextInput } from '@/frontend/components/common/StyledFormComponents';
 import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
@@ -93,7 +93,8 @@ function CreateRoundForm({ onClose }: CreateRoundFormProps) {
   const [submitRound, isSubmitting] = useAsyncAction(async (values: CreateRoundFormValues) => {
     try {
       const { type, title } = values;
-      await addRoundToGame(gameId, title, type);
+      // A round's type is the question type it holds; the Go API rejects `mixed` (out of scope).
+      await addRound(gameId, { title, type: type as QuestionType });
     } catch (error) {
       console.error('Failed to create the round:', error);
       throw error;

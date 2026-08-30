@@ -4,11 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ChevronDown, ChevronUp, Pencil, Timer as TimerIcon, Trash2 } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import {
-  removeQuestionFromRound,
-  updateQuestionChallengeTime,
-  updateQuestionThinkingTime,
-} from '@/backend/services/edit-game/actions';
+import { removeRoundQuestion, updateRoundQuestion } from '@/frontend/api';
 import { QuestionCardContent, QuestionCardTitle } from '@/frontend/components/common/QuestionCard';
 import SubmitBasicQuestionForm from '@/frontend/components/question-forms/SubmitBasicQuestionForm';
 import SubmitBlindtestQuestionForm from '@/frontend/components/question-forms/SubmitBlindtestQuestionForm';
@@ -162,7 +158,7 @@ function EditQuestionCardInner({
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [editValue, setEditValue] = useState('');
   const [handleSaveThinkingTime, isSaving] = useAsyncAction(async (value: number) => {
-    await updateQuestionThinkingTime(gameId, baseQuestion.type, roundId, questionId, value);
+    await updateRoundQuestion(gameId, roundId, questionId, { action: 'thinking_time', seconds: value });
     setPopoverOpen(false);
   });
 
@@ -186,7 +182,7 @@ function EditQuestionCardInner({
   const [challengePopoverOpen, setChallengePopoverOpen] = useState(false);
   const [editValueChallenge, setEditValueChallenge] = useState('');
   const [handleSaveChallengeTime, isSavingChallenge] = useAsyncAction(async (value: number) => {
-    await updateQuestionChallengeTime(gameId, baseQuestion.type, roundId, questionId, value);
+    await updateRoundQuestion(gameId, roundId, questionId, { action: 'challenge_time', seconds: value });
     setChallengePopoverOpen(false);
   });
 
@@ -395,7 +391,7 @@ function EditQuestionCardInner({
             </Tooltip>
           )}
           {status === GameStatus.GAME_EDIT && (
-            <RemoveQuestionFromRoundButton questionType={baseQuestion.type} roundId={roundId} questionId={questionId} />
+            <RemoveQuestionFromRoundButton roundId={roundId} questionId={questionId} />
           )}
         </div>
         {/* <UpdateCreatorButton roundId={roundId} questionId={questionId} /> */}
@@ -500,19 +496,18 @@ function EditQuestionFormByType({ baseQuestion, userId, onClose }: EditQuestionF
 }
 
 interface RemoveQuestionFromRoundButtonProps {
-  questionType: QuestionType;
   roundId: string;
   questionId: string;
 }
 
-function RemoveQuestionFromRoundButton({ questionType, roundId, questionId }: RemoveQuestionFromRoundButtonProps) {
+function RemoveQuestionFromRoundButton({ roundId, questionId }: RemoveQuestionFromRoundButtonProps) {
   const intl = useIntl();
   const gameId = useGameId();
 
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const [handleRemoveQuestion, isRemoving] = useAsyncAction(async () => {
-    await removeQuestionFromRound(questionType, gameId, roundId, questionId);
+    await removeRoundQuestion(gameId, roundId, questionId);
   });
 
   const onCancel = () => {

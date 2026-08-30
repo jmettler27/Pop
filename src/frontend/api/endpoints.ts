@@ -23,6 +23,7 @@ import type {
   QuestionType,
   RoundActionRequest,
   RoundIdResponse,
+  RoundQuestionActionRequest,
   TimerActionRequest,
 } from './types';
 
@@ -102,6 +103,16 @@ export const removeRoundQuestion = (
   init?: ApiRequestInit
 ): Promise<void> =>
   apiDelete<void>(`/games/${seg(gameId)}/rounds/${seg(roundId)}/questions/${seg(questionId)}`, undefined, init);
+
+/** `PUT /games/{id}/rounds/{roundId}/questions/{questionId}` — per-question thinking / challenge time override. */
+export const updateRoundQuestion = (
+  gameId: string,
+  roundId: string,
+  questionId: string,
+  body: RoundQuestionActionRequest,
+  init?: ApiRequestInit
+): Promise<void> =>
+  apiPut<void>(`/games/${seg(gameId)}/rounds/${seg(roundId)}/questions/${seg(questionId)}`, body, init);
 
 // --- In-game question ------------------------------------------------
 
