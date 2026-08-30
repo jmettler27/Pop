@@ -3,6 +3,23 @@ export interface FirestoreTimestamp {
   nanoseconds?: number;
 }
 
+/**
+ * Normalize a value that may be an ISO 8601 string (the Go backend serializes
+ * timestamps that way) into the `{ seconds }` shape the helpers below expect.
+ * Passes an existing `{ seconds }` object through untouched; `null` / unparseable
+ * → `null`. Lets migrated `@/frontend/api` responses feed the same rendering path
+ * as the not-yet-migrated Firestore reads.
+ */
+export function isoToFirestoreTimestamp(
+  value: string | FirestoreTimestamp | null | undefined
+): FirestoreTimestamp | null {
+  if (value == null) return null;
+  if (typeof value === 'object') return value;
+  const ms = Date.parse(value);
+  if (Number.isNaN(ms)) return null;
+  return { seconds: Math.floor(ms / 1000), nanoseconds: (ms % 1000) * 1_000_000 };
+}
+
 export function timestampToLongDateTime(
   timestamp: FirestoreTimestamp | null | undefined,
   locale?: string
