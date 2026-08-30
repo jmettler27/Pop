@@ -2,10 +2,10 @@ import { useCallback, useRef } from 'react';
 
 import { useIntl } from 'react-intl';
 
-import { startGame } from '@/backend/services/game/actions';
 import { handleCountdownEnd } from '@/backend/services/question/actions';
 import { handleQuestionEnd, startRound } from '@/backend/services/round/actions';
 import { SERVER_TIME_OFFSET_REF } from '@/firebase/database';
+import { updateGame } from '@/frontend/api';
 import AuthorizePlayersSwitch from '@/frontend/components/game/main-pane/AuthorizePlayersSwitch';
 import OrganizerTimerController from '@/frontend/components/game/timer/OrganizerTimerController';
 import Timer, { type TimerData } from '@/frontend/components/game/timer/Timer';
@@ -55,7 +55,7 @@ function OrganizerTimerPane() {
 
       switch (currentStatus) {
         case GameStatus.GAME_START:
-          await startGame(currentGameId);
+          await updateGame(currentGameId, { action: 'start' });
           break;
         case GameStatus.ROUND_START:
           await startRound(currentQuestionType as QuestionType, currentGameId, currentRound);

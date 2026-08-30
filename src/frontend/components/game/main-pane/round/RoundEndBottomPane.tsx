@@ -2,7 +2,7 @@
 
 import { useIntl } from 'react-intl';
 
-import { returnToGameHome } from '@/backend/services/game/actions';
+import { updateGame } from '@/frontend/api';
 import GameChooserTeamAnnouncement from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import EndGameButton from '@/frontend/components/game/main-pane/EndGameButton';
 import GoGameHomeButton from '@/frontend/components/game/main-pane/GoGameHomeButton';
@@ -25,7 +25,7 @@ export default function RoundEndBottomPane({ endedRound }: { endedRound: AnyRoun
   const game = useGame();
 
   const [handleClick, isHandling] = useAsyncAction(async () => {
-    await returnToGameHome(gameId as string);
+    await updateGame(gameId as string, { action: 'return_to_home' });
   });
 
   if (!game) return null;
