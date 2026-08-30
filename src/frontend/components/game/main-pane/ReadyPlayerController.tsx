@@ -3,7 +3,7 @@ import { useMemo, type ReactNode } from 'react';
 import { UserCheck } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { setPlayerReady } from '@/backend/services/player/actions';
+import { updatePlayer } from '@/frontend/api';
 import { Button } from '@/frontend/components/ui/button';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import fmt, { keyChunks } from '@/frontend/helpers/fmt';
@@ -160,7 +160,7 @@ export function ReadyPlayerButton() {
   const user = useUser();
 
   const [handleClickReady, isSubmitting] = useAsyncAction(async () => {
-    await setPlayerReady(gameId as string, user?.id as string);
+    await updatePlayer(gameId as string, user?.id as string, { action: 'ready' });
   });
 
   const readyButtonText = useMemo(() => {

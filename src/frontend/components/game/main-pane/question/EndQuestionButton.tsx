@@ -1,7 +1,7 @@
 import { SkipForward } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { endQuestion } from '@/backend/services/question/actions';
+import { questionAction } from '@/frontend/api';
 import { Button } from '@/frontend/components/ui/button';
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
@@ -16,12 +16,12 @@ interface EndQuestionButtonProps {
   questionType: QuestionType;
 }
 
-export default function EndQuestionButton({ questionType }: EndQuestionButtonProps) {
+export default function EndQuestionButton(_props: EndQuestionButtonProps) {
   const intl = useIntl();
   const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const [handleEndQuestion, isEnding] = useAsyncAction(async () => {
-    await endQuestion(gameId, roundId, questionId, questionType);
+    await questionAction(gameId, roundId, questionId, { action: 'end' });
   });
 
   return (

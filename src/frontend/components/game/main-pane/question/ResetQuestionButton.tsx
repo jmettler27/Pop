@@ -1,11 +1,11 @@
 import { RotateCcw } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { resetAllPlayersStatus } from '@/backend/services/player/actions';
-import { resetQuestion } from '@/backend/services/question/actions';
+import { questionAction, updatePlayer } from '@/frontend/api';
 import { Button } from '@/frontend/components/ui/button';
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
+import useUserId from '@/frontend/hooks/useUserId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { type QuestionType } from '@/models/questions/question-type';
 
@@ -17,12 +17,16 @@ interface ResetQuestionButtonProps {
   questionType: QuestionType;
 }
 
-export default function ResetQuestionButton({ questionType }: ResetQuestionButtonProps) {
+export default function ResetQuestionButton(_props: ResetQuestionButtonProps) {
   const intl = useIntl();
+  const userId = useUserId();
   const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const [handleResetQuestion, isResetting] = useAsyncAction(async () => {
-    await Promise.all([resetAllPlayersStatus(gameId), resetQuestion(gameId, roundId, questionId, questionType)]);
+    await Promise.all([
+      updatePlayer(gameId, userId as string, { action: 'reset_all_status' }),
+      questionAction(gameId, roundId, questionId, { action: 'reset' }),
+    ]);
   });
 
   return (

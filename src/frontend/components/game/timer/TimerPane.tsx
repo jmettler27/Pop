@@ -2,9 +2,8 @@ import { useCallback, useRef } from 'react';
 
 import { useIntl } from 'react-intl';
 
-import { handleCountdownEnd } from '@/backend/services/question/actions';
 import { SERVER_TIME_OFFSET_REF } from '@/firebase/database';
-import { updateGame, updateRound } from '@/frontend/api';
+import { questionAction, updateGame, updateRound } from '@/frontend/api';
 import AuthorizePlayersSwitch from '@/frontend/components/game/main-pane/AuthorizePlayersSwitch';
 import OrganizerTimerController from '@/frontend/components/game/timer/OrganizerTimerController';
 import Timer, { type TimerData } from '@/frontend/components/game/timer/Timer';
@@ -18,7 +17,6 @@ import useRole from '@/frontend/hooks/useRole';
 import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { GameStatus } from '@/models/games/game-status';
-import { type QuestionType } from '@/models/questions/question-type';
 import { ParticipantRole } from '@/models/users/participant';
 
 const messages = defineMessages('frontend.game.timer.TimerPane', {
@@ -47,7 +45,6 @@ function OrganizerTimerPane() {
     try {
       const currentStatus = game.status;
       const currentGameId = game.id as string;
-      const currentQuestionType = game.currentQuestionType as QuestionType;
       const currentRound = game.currentRound as string;
       const currentQuestion = game.currentQuestion as string;
 
@@ -59,7 +56,7 @@ function OrganizerTimerPane() {
           await updateRound(currentGameId, currentRound, { action: 'start' });
           break;
         case GameStatus.QUESTION_ACTIVE:
-          await handleCountdownEnd(currentQuestionType as QuestionType, currentGameId, currentRound, currentQuestion);
+          await questionAction(currentGameId, currentRound, currentQuestion, { action: 'countdown_end' });
           break;
         case GameStatus.QUESTION_END:
           await updateRound(currentGameId, currentRound, { action: 'question_end', questionId: currentQuestion });

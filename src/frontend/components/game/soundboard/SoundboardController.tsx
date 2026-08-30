@@ -1,7 +1,7 @@
 import { memo } from 'react';
 
-import { addSound } from '@/backend/services/sound/sounds';
 import sounds from '@/data/sounds';
+import { addSound } from '@/frontend/api';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/frontend/components/ui/select';
 import useGameId from '@/frontend/hooks/useGameId';
 
@@ -11,7 +11,7 @@ const SoundboardController = memo(function SoundboardController({}) {
   const gameId = useGameId();
 
   const handleSelectSound = (value: string | null) => {
-    if (value) addSound(gameId as string, value);
+    if (value) addSound(gameId as string, { filename: value });
   };
 
   return (
