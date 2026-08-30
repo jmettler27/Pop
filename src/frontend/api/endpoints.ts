@@ -16,6 +16,7 @@ import type {
   JoinGameRequest,
   PlayableQuestionResponse,
   PlayerActionRequest,
+  PublicUser,
   QuestionActionRequest,
   QuestionBankPage,
   QuestionCountResponse,
@@ -180,3 +181,9 @@ export const updateQuestion = (
   init?: ApiRequestInit
 ): Promise<QuestionIdResponse> =>
   apiFetch<QuestionIdResponse>(`/questions/${seg(questionId)}`, { ...init, method: 'PUT', body: form });
+
+// --- Users -------------------------------------------------------------
+
+/** `GET /users?ids=` — public display fields (name, avatar); unknown ids are omitted. */
+export const getUsers = (ids: string[], init?: ApiRequestInit): Promise<PublicUser[]> =>
+  apiGet<PublicUser[]>('/users', { ...init, query: { ids: ids.join(',') } });

@@ -148,6 +148,13 @@ export interface RoundIdResponse {
   id: string;
 }
 
+/** `GET /users?ids=` — public display fields; unknown ids are omitted. */
+export interface PublicUser {
+  id: string;
+  name: string;
+  image: string | null;
+}
+
 // ---------------------------------------------------------------------------
 // Request bodies
 // ---------------------------------------------------------------------------
@@ -157,6 +164,8 @@ export interface CreateGameRequest {
   lang: Locale;
   maxPlayers: number;
   roundScorePolicy: ScorePolicy;
+  /** Optional per-game organizer nickname; falls back to the token profile name. */
+  organizerName?: string;
 }
 
 export interface GameActionRequest {

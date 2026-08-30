@@ -5,10 +5,7 @@ import { useEffect, useRef, type ReactNode } from 'react';
 import { onAuthStateChanged, signInWithCustomToken, signOut } from 'firebase/auth';
 import { useSession } from 'next-auth/react';
 
-import { logger } from '@/backend/logger';
 import { auth } from '@/firebase/firebase';
-
-const log = logger.child({ module: 'firebase-auth' });
 
 /**
  * Bridges the NextAuth session into a Firebase Auth session: fetches a custom
@@ -35,13 +32,13 @@ export default function FirebaseAuthProvider({ children }: { children: ReactNode
             const { token } = (await response.json()) as { token: string };
             await signInWithCustomToken(auth, token);
           } catch (error) {
-            log.error({ error }, 'Firebase custom-token sign-in failed');
+            console.error('[firebase-auth] custom-token sign-in failed', error);
           } finally {
             signingIn.current = false;
           }
         })();
       } else if (!expectedUid && firebaseUser) {
-        signOut(auth).catch((error) => log.error({ error }, 'Firebase sign-out failed'));
+        signOut(auth).catch((error) => console.error('[firebase-auth] sign-out failed', error));
       }
     });
   }, [status, expectedUid]);

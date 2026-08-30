@@ -3,13 +3,12 @@
 import { redirect, useRouter } from 'next/navigation';
 
 import { Form, Formik } from 'formik';
-import { type Session } from 'next-auth';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 /* Validation */
 import * as Yup from 'yup';
 
-import { createGame } from '@/backend/services/create-game/actions';
+import { createGame } from '@/frontend/api';
 import SelectLanguage from '@/frontend/components/common/SelectLanguage';
 import SelectRoundScorePolicy from '@/frontend/components/common/SelectRoundScorePolicy';
 import { MyNumberInput, MyTextInput } from '@/frontend/components/common/StyledFormComponents';
@@ -19,8 +18,7 @@ import { DEFAULT_LOCALE, Locale, localeSchema } from '@/frontend/helpers/locales
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
-import Game, { CreateGameRoundsData } from '@/models/games/game';
-import { GameType } from '@/models/games/game-type';
+import Game from '@/models/games/game';
 import { ScorePolicyType } from '@/models/score-policy';
 
 export const roundScorePolicySchema = () =>
@@ -46,21 +44,19 @@ export default function Page() {
   const router = useRouter();
   const intl = useIntl();
 
-  const [createNewGame, isSubmitting] = useAsyncAction(async (values: CreateGameFormValues, user: Session['user']) => {
+  const [createNewGame, isSubmitting] = useAsyncAction(async (values: CreateGameFormValues) => {
     const { title, lang, maxPlayers, roundScorePolicy, organizerName } = values;
-    const data: CreateGameRoundsData = {
+
+    // The organizer identity (id + avatar) is resolved server-side from the
+    // token; `organizerName` is the optional per-game nickname.
+    const game = await createGame({
       title,
-      type: GameType.ROUNDS,
       lang: lang as Locale,
       maxPlayers,
       roundScorePolicy: roundScorePolicy as ScorePolicyType,
       organizerName,
-      organizerId: user.id,
-      organizerImage: user.image ?? '',
-    };
-
-    const gameId = await createGame(data);
-    router.push('/edit/' + gameId);
+    });
+    router.push('/edit/' + game.id);
   });
 
   // Protected route
@@ -100,7 +96,7 @@ export default function Page() {
         }}
         onSubmit={async (values: CreateGameFormValues) => {
           try {
-            await createNewGame(values, user);
+            await createNewGame(values);
           } catch (error) {
             console.error('Failed to create the game:', error);
             router.push('/');
