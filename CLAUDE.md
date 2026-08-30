@@ -45,10 +45,16 @@ and trust CI for the tree-wide pass.
   `EditQuestionInRound` → `addRound` / `updateGame` / `updateRound` / `removeRound` /
   `removeRoundQuestion` / `updateRoundQuestion`), and the 14 question submit forms + `AddQuestionToRound`
   (via `src/frontend/helpers/forms/submitQuestionForm.ts` → `createQuestion` / `updateQuestion`
-  multipart + `addRoundQuestion`). `create-question/**` + `edit-game/**` are now dead (kept until the
-  final delete). Everything else still runs through `actions.ts` below. **Last group:** gameplay +
-  the generic question action (game status transitions, timer, sounds, join, round lifecycle,
-  `question/**/actions.ts` → `questionAction`, `usePlayableQuestion`). A migrated feature needs the Go service running
+  multipart + `addRoundQuestion`), and most of gameplay — game status (`updateGame`), timer
+  (`updateTimer`), round lifecycle (`updateRound {start|select|question_end}`), player-ready +
+  authorize (`updatePlayer`), sounds (`addSound`), join (`joinGame`), the generic question actions
+  `end`/`reset`/`countdown_end` (`questionAction`), and the `usePlayableQuestion` / `useEditableQuestions`
+  reads (`getPlayableQuestion` / `getEditableQuestions`). `create-question/**`, `edit-game/**`,
+  `game/actions.ts`, `timer/`, `player/`, `sound/`, `round/actions.ts`, `join-game/`, and the generic
+  + playable + editable `question/*-actions.ts` are now dead (kept until the final delete). **Still on
+  `actions.ts`:** the per-type in-game question actions (buzz / select / submit / reveal / validate for
+  the 12 question types, under `src/frontend/components/game/main-pane/question/**`) → migrate to
+  `questionAction(g,r,q,{action,…})`. Then delete `src/backend/**`. A migrated feature needs the Go service running
   (`back-pop` `make run` + emulators + `BACKEND_ORIGIN` + `npm run dev:emulators`); `npm run dev`
   alone still hits prod Firebase and has no Go service.
 - **Layering:** `src/app` (RSC pages) → `src/backend/services/**/actions.ts` (`'use server'` thin wrappers) →
