@@ -163,7 +163,14 @@ async function main() {
     Array.isArray(users.data) && users.data.length === 2 && users.data.every((u) => u.id && u.name && 'image' in u);
   expect('  → shape [{id,name,image}], ghost omitted', { status: shapeOk ? 200 : 500, data: users.data }, [200]);
 
-  // A full mcq + a full buzzer question, each on its own fresh game with two teams.
+  // A full mcq + a full buzzer question, each on its own fresh game with two
+  // teams, driven through a VALID game lifecycle — back-pop's precondition guard
+  // layer now enforces the state machine, so the order matters:
+  //   launch (game_edit→game_start) → players join + ready in the lobby →
+  //   game start (game_start→game_home) → round select (→round_start) →
+  //   round start (→question_active) → play → round question_end.
+  // `reset` / `countdown_end` / `question_end` (and the guard-covered `end`
+  // question action, not re-exercised here) all share the bare `{action}` shape.
   for (const type of ['mcq', 'basic']) {
     console.log(`\n== gameplay: ${type} question (fresh game) ==`);
     const gid = (
@@ -174,6 +181,9 @@ async function main() {
     const rid = (await call('POST', `/games/${gid}/rounds`, { body: { title: 'R', type } })).data.id;
     await call('POST', `/games/${gid}/rounds/${rid}/questions`, { body: { questionId: `${type}_1` } });
     await call('POST', `/games/${gid}/rounds/${rid}/questions`, { body: { questionId: `${type}_2` } });
+
+    // --- lobby: launch, then players join + ready while game_start ---
+    expect('launch', await call('PUT', `/games/${gid}`, { body: { action: 'launch' } }));
     expect(
       'bob joins (team Reds)',
       await call('POST', `/games/${gid}/players`, {
@@ -188,61 +198,80 @@ async function main() {
         body: { playerName: 'Charlie', playInTeams: true, joinTeam: false, teamName: 'Blues', teamColor: '#0000ff' },
       })
     );
-    expect('launch', await call('PUT', `/games/${gid}`, { body: { action: 'launch' } }));
-    expect('game start', await call('PUT', `/games/${gid}`, { body: { action: 'start' } }));
     expect('bob ready', await call('PUT', `/games/${gid}/players/bob`, { token: T.bob, body: { action: 'ready' } }));
     expect(
       'charlie ready',
       await call('PUT', `/games/${gid}/players/charlie`, { token: T.charlie, body: { action: 'ready' } })
     );
-    expect('round start', await call('PUT', `/games/${gid}/rounds/${rid}`, { body: { action: 'start' } }));
+
+    // --- game_start → game_home → round_start → question_active ---
+    expect('game start', await call('PUT', `/games/${gid}`, { body: { action: 'start' } }));
     expect('round select', await call('PUT', `/games/${gid}/rounds/${rid}`, { body: { action: 'select' } }));
-    const q = (await call('GET', `/games/${gid}`)).data.currentQuestion || `${type}_1`;
-    const base = `/games/${gid}/rounds/${rid}/questions/${q}`;
-    expect('GET playable as alice (organizer, full)', await call('GET', base, { query: { type } }), [200]);
-    expect('GET playable as bob (player, redacted)', await call('GET', base, { token: T.bob, query: { type } }), [200]);
+    expect('round start', await call('PUT', `/games/${gid}/rounds/${rid}`, { body: { action: 'start' } }));
+
+    const q1 = (await call('GET', `/games/${gid}`)).data.currentQuestion || `${type}_1`;
+    const base1 = `/games/${gid}/rounds/${rid}/questions/${q1}`;
+    expect('GET playable as alice (organizer, full)', await call('GET', base1, { query: { type } }), [200]);
+    expect(
+      'GET playable as bob (player, redacted)',
+      await call('GET', base1, { token: T.bob, query: { type } }),
+      [200]
+    );
     expect('addSound', await call('POST', `/games/${gid}/sounds`, { body: { filename: 'pop' } }));
     expect('timer start', await call('PUT', `/games/${gid}/timer`, { body: { action: 'start' } }));
+    expect('reset (stays question_active)', await call('POST', base1, { body: { action: 'reset' } }));
 
     if (type === 'mcq') {
-      expect(
-        'select_choice {choiceIdx} as bob',
-        await call('POST', base, { token: T.bob, body: { action: 'select_choice', choiceIdx: 0 } })
-      );
-      expect(
-        'select_choice {choiceIdx} as charlie',
-        await call('POST', base, { token: T.charlie, body: { action: 'select_choice', choiceIdx: 1 } })
-      );
+      // select_choice is chooser-team only; the shuffle picks one of the two, so
+      // try bob first and fall back to charlie — exactly one is the chooser.
+      const first = await call('POST', base1, { token: T.bob, body: { action: 'select_choice', choiceIdx: 0 } });
+      const res =
+        first.status < 400
+          ? first
+          : await call('POST', base1, { token: T.charlie, body: { action: 'select_choice', choiceIdx: 1 } });
+      expect('select_choice {choiceIdx} (chooser team)', res);
     } else {
       expect(
         'add_player_to_buzzer as bob',
-        await call('POST', base, { token: T.bob, body: { action: 'add_player_to_buzzer' } })
+        await call('POST', base1, { token: T.bob, body: { action: 'add_player_to_buzzer' } })
       );
       expect(
         'add_player_to_buzzer as charlie',
-        await call('POST', base, { token: T.charlie, body: { action: 'add_player_to_buzzer' } })
+        await call('POST', base1, { token: T.charlie, body: { action: 'add_player_to_buzzer' } })
       );
       expect(
         'handle_buzzer_head_changed {playerId}',
-        await call('POST', base, { body: { action: 'handle_buzzer_head_changed', playerId: 'bob' } })
+        await call('POST', base1, { body: { action: 'handle_buzzer_head_changed', playerId: 'bob' } })
       );
       expect(
-        'invalidate_answer {playerId}',
-        await call('POST', base, { body: { action: 'invalidate_answer', playerId: 'bob' } })
+        'invalidate_answer {playerId} (re-arms)',
+        await call('POST', base1, { body: { action: 'invalidate_answer', playerId: 'bob' } })
+      );
+      expect('clear_buzzer', await call('POST', base1, { body: { action: 'clear_buzzer' } }));
+      expect(
+        'add_player_to_buzzer as charlie (re-buzz)',
+        await call('POST', base1, { token: T.charlie, body: { action: 'add_player_to_buzzer' } })
       );
       expect(
-        'validate_answer {playerId}',
-        await call('POST', base, { body: { action: 'validate_answer', playerId: 'charlie' } })
+        'validate_answer {playerId} (ends question)',
+        await call('POST', base1, { body: { action: 'validate_answer', playerId: 'charlie' } })
       );
-      expect('clear_buzzer', await call('POST', base, { body: { action: 'clear_buzzer' } }));
     }
-    expect('countdown_end', await call('POST', base, { body: { action: 'countdown_end' } }));
-    expect('end', await call('POST', base, { body: { action: 'end' } }));
-    expect('reset', await call('POST', base, { body: { action: 'reset' } }));
+
+    // question_end → advance to the second question → countdown_end it → round_end
     expect(
-      'round question_end',
+      'round question_end (advance)',
       await call('PUT', `/games/${gid}/rounds/${rid}`, { body: { action: 'question_end' } })
     );
+    const q2 = (await call('GET', `/games/${gid}`)).data.currentQuestion;
+    if (q2 && q2 !== q1) {
+      const base2 = `/games/${gid}/rounds/${rid}/questions/${q2}`;
+      expect('countdown_end', await call('POST', base2, { body: { action: 'countdown_end' } }));
+      expect(
+        'round question_end (end round)',
+        await call('PUT', `/games/${gid}/rounds/${rid}`, { body: { action: 'question_end' } })
+      );
+    }
     expect('game end', await call('PUT', `/games/${gid}`, { body: { action: 'end' } }));
   }
 
