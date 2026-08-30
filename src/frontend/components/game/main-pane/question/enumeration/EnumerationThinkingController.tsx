@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { useIntl } from 'react-intl';
 
-import { addBet } from '@/backend/services/question/enumeration/actions';
+import { questionAction } from '@/frontend/api';
 import { Button } from '@/frontend/components/ui/button';
 import {
   Dialog,
@@ -21,11 +21,10 @@ import { useQuestionPlayers } from '@/frontend/hooks/firestore/question/useGameQ
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useRole from '@/frontend/hooks/useRole';
-import useTeamId from '@/frontend/hooks/useTeamId';
 import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
-import { EnumerationBet, EnumerationQuestion } from '@/models/questions/enumeration';
+import { EnumerationQuestion } from '@/models/questions/enumeration';
 import { Timer, TimerStatus } from '@/models/timer';
 import { ParticipantRole } from '@/models/users/participant';
 import { range } from '@/utils/arrays';
@@ -64,21 +63,13 @@ function AddBetForm({ baseQuestion, status }: { baseQuestion: EnumerationQuestio
   const intl = useIntl();
   const { gameId, roundId, questionId } = useActiveQuestion()!;
   const user = useUser();
-  const teamId = useTeamId();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [myBet, setMyBet] = useState(0);
   const [hasValidated, setHasValidated] = useState(false);
 
   const [handleBetValidate, isSubmitting] = useAsyncAction(async () => {
-    if (!user) return;
-    const bet: EnumerationBet = {
-      bet: Number(myBet),
-      playerId: user.id!,
-      teamId: teamId as string,
-      timestamp: Date.now(),
-    };
-    await addBet(gameId, roundId, questionId, bet);
+    await questionAction(gameId, roundId, questionId, { action: 'add_bet', bet: Number(myBet) });
     setHasValidated(true);
     setDialogOpen(false);
   });

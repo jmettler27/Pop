@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import { clsx } from 'clsx';
 import { Check, X } from 'lucide-react';
 
-import { selectProposal } from '@/backend/services/question/odd-one-out/actions';
+import { questionAction } from '@/frontend/api';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import NoteButton from '@/frontend/components/game/NoteButton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/frontend/components/ui/accordion';
@@ -16,7 +16,6 @@ import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
-import useUser from '@/frontend/hooks/useUser';
 import { GameStatus } from '@/models/games/game-status';
 import { GameOddOneOutQuestion, OddOneOutItem, OddOneOutQuestion } from '@/models/questions/odd-one-out';
 import { questionTypeToTitle } from '@/models/questions/question-type';
@@ -66,21 +65,17 @@ export function OddOneOutProposalList({
   listClassName,
 }: OddOneOutProposalListProps) {
   const game = useGame();
-  const user = useUser();
   const selectedItems = useMemo(
     () => (gameQuestion.selectedItems as unknown as SelectedItem[]) ?? [],
     [gameQuestion.selectedItems]
   );
 
   const [handleSelectProposal, isSubmitting] = useAsyncAction(async (idx: number) => {
-    if (!game || !user) return;
-    await selectProposal(
-      game.id as string,
-      game.currentRound as string,
-      game.currentQuestion as string,
-      user.id as string,
-      idx
-    );
+    if (!game) return;
+    await questionAction(game.id as string, game.currentRound as string, game.currentQuestion as string, {
+      action: 'select_proposal',
+      itemIdx: idx,
+    });
   });
 
   const [expandedIdx, setExpandedIdx] = useState<number | false>(false);

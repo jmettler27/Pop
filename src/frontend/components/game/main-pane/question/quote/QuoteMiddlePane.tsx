@@ -1,6 +1,6 @@
 'use client';
 
-import { revealQuoteElement } from '@/backend/services/question/quote/actions';
+import { questionAction } from '@/frontend/api';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import CurrentRoundQuestionOrder from '@/frontend/components/game/main-pane/question/QuestionHeader';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
@@ -121,12 +121,10 @@ const DisplayedQuoteElement = ({ toGuess, revealed, quoteElement, quoteElementSt
 
   const [handleQuoteElementClick] = useAsyncAction(async () => {
     if (!game) return;
-    await revealQuoteElement(
-      game.id as string,
-      game.currentRound as string,
-      game.currentQuestion as string,
-      quoteElementStr
-    );
+    await questionAction(game.id as string, game.currentRound as string, game.currentQuestion as string, {
+      action: 'reveal_quote_element',
+      quoteElem: quoteElementStr as 'source' | 'author' | 'quote',
+    });
   });
 
   const isToGuess = toGuess.includes(quoteElementStr);
@@ -174,13 +172,11 @@ const DisplayedQuote = ({ toGuess, revealed, quote, quoteParts }: DisplayedQuote
 
   const [handleQuotePartClick] = useAsyncAction(async (quotePartIdx: number) => {
     if (!game) return;
-    await revealQuoteElement(
-      game.id as string,
-      game.currentRound as string,
-      game.currentQuestion as string,
-      'quote',
-      quotePartIdx as unknown as null
-    );
+    await questionAction(game.id as string, game.currentRound as string, game.currentQuestion as string, {
+      action: 'reveal_quote_element',
+      quoteElem: 'quote',
+      quotePartIdx,
+    });
   });
 
   if (toGuess.includes('quote') && quoteParts.length > 0) {

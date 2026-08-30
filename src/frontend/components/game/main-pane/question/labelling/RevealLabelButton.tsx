@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { CheckCircle2, Eye, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { revealLabel } from '@/backend/services/question/labelling/actions';
+import { questionAction } from '@/frontend/api';
 import { Button } from '@/frontend/components/ui/button';
 import {
   Dialog,
@@ -131,7 +131,7 @@ function RevealLabelDialog({ baseQuestion, labelIdx, dialogOpen, onDialogClose }
 
   const [handleRevealLabel, isRevealing] = useAsyncAction(async () => {
     if (labelIdx === null) return;
-    await revealLabel(gameId, roundId, questionId, labelIdx);
+    await questionAction(gameId, roundId, questionId, { action: 'reveal_label', labelIdx });
     onDialogClose();
   });
 

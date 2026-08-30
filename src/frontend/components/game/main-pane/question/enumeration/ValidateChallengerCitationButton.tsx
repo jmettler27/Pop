@@ -1,14 +1,13 @@
 import { Plus } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { incrementValidItems } from '@/backend/services/question/enumeration/actions';
+import { questionAction } from '@/frontend/api';
 import { Button } from '@/frontend/components/ui/button';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import { useTimer } from '@/frontend/hooks/firestore/timer/useTimerHooks';
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { TimerStatus } from '@/models/timer';
 
@@ -20,13 +19,11 @@ const messages = defineMessages('frontend.game.bottom.ValidateChallengerCitation
 export default function ValidateChallengerCitationButton() {
   const intl = useIntl();
   const { gameId, roundId, questionId } = useActiveQuestion()!;
-  const user = useUser();
 
   const { timer, timerLoading, timerError } = useTimer(gameId);
 
   const [handleClick, isSubmitting] = useAsyncAction(async () => {
-    if (!user) return;
-    await incrementValidItems(gameId, roundId, questionId, user.id!);
+    await questionAction(gameId, roundId, questionId, { action: 'increment_valid_items' });
   });
 
   if (timerError) {

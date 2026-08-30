@@ -3,11 +3,7 @@ import { useEffect, useRef } from 'react';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import {
-  cancelPlayer,
-  handleBuzzerHeadChanged,
-  validateAllLabels,
-} from '@/backend/services/question/labelling/actions';
+import { questionAction } from '@/frontend/api';
 import BuzzerHeadPlayer from '@/frontend/components/game/main-pane/question/buzzer/BuzzerHeadPlayer';
 import ClearBuzzerButton from '@/frontend/components/game/main-pane/question/buzzer/ClearBuzzerButton';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
@@ -46,7 +42,7 @@ export default function LabellingOrganizerController({
     const buzzerHeadId = buzzed[0]!;
     if (buzzerHead.current !== buzzerHeadId) {
       buzzerHead.current = buzzerHeadId;
-      handleBuzzerHeadChanged(gameId, roundId, questionId, buzzerHeadId);
+      questionAction(gameId, roundId, questionId, { action: 'handle_buzzer_head_changed', playerId: buzzerHeadId });
     }
   }, [buzzed, gameId, roundId, questionId]);
 
@@ -103,7 +99,7 @@ function ValidateAllLabelsButton({ buzzed, gameQuestion }: { buzzed: string[]; g
   const buzzedIsEmpty = isEmpty(buzzed);
 
   const [handleValidateAll, isValidating] = useAsyncAction(async () => {
-    await validateAllLabels(gameId, roundId, questionId, buzzed[0]);
+    await questionAction(gameId, roundId, questionId, { action: 'validate_all_labels', playerId: buzzed[0] });
   });
 
   return (
@@ -125,7 +121,7 @@ function CancelLabelButton({ buzzed }: { buzzed: string[] }) {
   const buzzedIsEmpty = isEmpty(buzzed);
 
   const [handleCancelLabel, isCanceling] = useAsyncAction(async () => {
-    await cancelPlayer(gameId, roundId, questionId, buzzed[0]);
+    await questionAction(gameId, roundId, questionId, { action: 'cancel_player', playerId: buzzed[0] });
   });
 
   return (

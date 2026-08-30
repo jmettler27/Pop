@@ -6,7 +6,7 @@ import { clsx } from 'clsx';
 import { CheckCircle2, SlidersHorizontal, Target } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { submitBet } from '@/backend/services/question/estimation/actions';
+import { questionAction, type QuestionActionRequest } from '@/frontend/api';
 import {
   EstimationEndView,
   EstimationQuestionHeader,
@@ -32,12 +32,7 @@ import useTeamId from '@/frontend/hooks/useTeamId';
 import useUser from '@/frontend/hooks/useUser';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameStatus } from '@/models/games/game-status';
-import {
-  EstimationBet,
-  EstimationQuestion,
-  GameEstimationQuestion,
-  RangeEstimationBet,
-} from '@/models/questions/estimation';
+import { EstimationQuestion, GameEstimationQuestion, RangeEstimationBet } from '@/models/questions/estimation';
 
 const darkInputClassName = clsx(
   'min-w-[200px] xl:min-w-[300px]',
@@ -219,14 +214,16 @@ function EstimationPlayerActiveView({ baseQuestion, gameQuestion }: EstimationPl
     betType === EstimationQuestion.BetType.RANGE && isRangeValid(baseQuestion.answerType, rangeFrom, rangeTo);
   const canSubmit = isExactValid || isRangeValidState;
 
-  const bet =
-    betType === EstimationQuestion.BetType.EXACT
-      ? { type: EstimationQuestion.BetType.EXACT, estimation: exactValue }
-      : { type: EstimationQuestion.BetType.RANGE, lower: rangeFrom, upper: rangeTo };
+  const isExactBet = betType === EstimationQuestion.BetType.EXACT;
 
   const [handleSubmitBet, isSubmitting] = useAsyncAction(async () => {
-    if (!user) return;
-    await submitBet(gameId, roundId, questionId, user.id!, teamId as string, bet as EstimationBet);
+    await questionAction(gameId, roundId, questionId, {
+      action: 'submit_bet',
+      betType: (isExactBet ? 'exact' : 'range') as QuestionActionRequest['betType'],
+      estimation: isExactBet ? exactValue : undefined,
+      lower: isExactBet ? undefined : rangeFrom,
+      upper: isExactBet ? undefined : rangeTo,
+    });
     setDialogOpen(false);
   });
 

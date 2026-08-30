@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { submitMatch } from '@/backend/services/question/matching/actions';
+import { questionAction } from '@/frontend/api';
 import { matchIsComplete } from '@/frontend/components/game/main-pane/question/matching/gridUtils';
 import { Button } from '@/frontend/components/ui/button';
 import {
@@ -19,7 +19,6 @@ import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useRole from '@/frontend/hooks/useRole';
 import useTeamId from '@/frontend/hooks/useTeamId';
-import useUser from '@/frontend/hooks/useUser';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameMatchingQuestion, MatchingAnswer, MatchingEdgeData } from '@/models/questions/matching';
 import { ParticipantRole } from '@/models/users/participant';
@@ -40,7 +39,6 @@ export default function SubmitMatchDialog({
   answer,
 }: SubmitMatchDialogProps) {
   const intl = useIntl();
-  const user = useUser();
   const { gameId, roundId, questionId } = useActiveQuestion()!;
   const teamId = useTeamId();
   const role = useRole();
@@ -86,8 +84,7 @@ export default function SubmitMatchDialog({
   };
 
   const [handleMatchValidate, isSubmitting] = useAsyncAction(async () => {
-    if (!user) return;
-    await submitMatch(gameId, roundId, questionId, user.id as string, edges, null);
+    await questionAction(gameId, roundId, questionId, { action: 'submit_match', edges });
     setEdges([]);
     setNewEdgeSource(null);
     setDialogOpen(false);
