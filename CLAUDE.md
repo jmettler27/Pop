@@ -40,9 +40,12 @@ and trust CI for the tree-wide pass.
   `/api/backend/*` → `BACKEND_ORIGIN`). Call sites are being swapped to `@/frontend/api` **group by
   group**; the old `src/backend/services/**/actions.ts` files stay in place until the last group,
   then get deleted. **Migrated so far:** the question-bank hooks (`src/frontend/hooks/questionBank.ts`
-  → `listQuestions` / `countQuestions`) and the home-page game lists (`src/frontend/hooks/gameLists.ts`
-  → `listGames`). Everything else still runs through `actions.ts` below. Next groups: editor writes →
-  gameplay / question-action last. A migrated feature needs the Go service running
+  → `listQuestions` / `countQuestions`), the home-page game lists (`src/frontend/hooks/gameLists.ts`
+  → `listGames`), and the round editor writes (`AddRoundToGame` / `LaunchGameButton` /
+  `EditRoundInGame` / `EditQuestionInRound` → `addRound` / `updateGame` / `updateRound` /
+  `removeRound` / `removeRoundQuestion` / `updateRoundQuestion`). Everything else still runs through
+  `actions.ts` below. Next groups: the 14 `Submit*QuestionForm`s (`submitQuestion` / `editQuestion` /
+  `addQuestionToRound`) → gameplay / question-action last. A migrated feature needs the Go service running
   (`back-pop` `make run` + emulators + `BACKEND_ORIGIN` + `npm run dev:emulators`); `npm run dev`
   alone still hits prod Firebase and has no Go service.
 - **Layering:** `src/app` (RSC pages) → `src/backend/services/**/actions.ts` (`'use server'` thin wrappers) →
