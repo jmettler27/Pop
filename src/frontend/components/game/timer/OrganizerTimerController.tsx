@@ -1,6 +1,6 @@
 import { Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 
-import { resetTimer, startTimer, stopTimer } from '@/backend/services/timer/actions';
+import { updateTimer } from '@/frontend/api';
 import Timer, { type TimerData } from '@/frontend/components/game/timer/Timer';
 import { Button } from '@/frontend/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
@@ -32,15 +32,15 @@ export default function OrganizerTimerController({
   });
 
   const [handleStartTimer, isStarting] = useAsyncAction(async () => {
-    await startTimer(gameId, timer.duration);
+    await updateTimer(gameId, { action: 'start', duration: timer.duration });
   });
 
   const [handleStopTimer, isStopping] = useAsyncAction(async () => {
-    await stopTimer(gameId);
+    await updateTimer(gameId, { action: 'stop' });
   });
 
   const [handleResetTimer, isResetting] = useAsyncAction(async () => {
-    await resetTimer(gameId);
+    await updateTimer(gameId, { action: 'reset' });
   });
 
   return (

@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
-import { handleRoundSelected } from '@/backend/services/round/actions';
+import { updateRound } from '@/frontend/api';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Avatar, AvatarFallback } from '@/frontend/components/ui/avatar';
@@ -17,9 +17,7 @@ import useGameId from '@/frontend/hooks/useGameId';
 import useIsMobile from '@/frontend/hooks/useIsMobile';
 import useRole from '@/frontend/hooks/useRole';
 import useTeamId from '@/frontend/hooks/useTeamId';
-import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/frontend/i18n/defineMessages';
-import { RoundType } from '@/models/rounds/round-type';
 import { type AnyRound } from '@/models/rounds/RoundFactory';
 import { ParticipantRole } from '@/models/users/participant';
 
@@ -50,12 +48,11 @@ function GameHomeRounds() {
 
   const role = useRole();
   const teamId = useTeamId();
-  const user = useUser();
   const isMobile = useIsMobile();
   const intl = useIntl();
 
-  const [handleSelect, isHandling] = useAsyncAction(async (roundId: string, roundType: RoundType) => {
-    await handleRoundSelected(roundType, gameId as string, roundId, user?.id as string);
+  const [handleSelect, isHandling] = useAsyncAction(async (roundId: string) => {
+    await updateRound(gameId as string, roundId, { action: 'select' });
   });
 
   const {
@@ -97,7 +94,7 @@ function GameHomeRounds() {
                   key={round.id}
                   round={round}
                   isDisabled={isHandling || isRoundDisabled(round.id)}
-                  onSelectRound={() => handleSelect(round.id as string, round.type as RoundType)}
+                  onSelectRound={() => handleSelect(round.id as string)}
                 />
               ))}
             </div>
@@ -120,7 +117,7 @@ function GameHomeRounds() {
                       key={round.id}
                       round={round}
                       isDisabled={isHandling || isRoundDisabled(round.id)}
-                      onSelectRound={() => handleSelect(round.id as string, round.type as RoundType)}
+                      onSelectRound={() => handleSelect(round.id as string)}
                     />
                   ))}
                 </div>

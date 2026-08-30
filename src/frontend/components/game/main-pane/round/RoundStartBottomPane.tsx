@@ -3,7 +3,7 @@
 import { ArrowRight } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { startRound } from '@/backend/services/round/actions';
+import { updateRound } from '@/frontend/api';
 import ReadyPlayerController from '@/frontend/components/game/main-pane/ReadyPlayerController';
 import TimerPane from '@/frontend/components/game/timer/TimerPane';
 import { Button } from '@/frontend/components/ui/button';
@@ -11,7 +11,6 @@ import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGame from '@/frontend/hooks/useGame';
 import useRole from '@/frontend/hooks/useRole';
 import defineMessages from '@/frontend/i18n/defineMessages';
-import { RoundType } from '@/models/rounds/round-type';
 import { ParticipantRole } from '@/models/users/participant';
 
 export default function RoundStartBottomPane() {
@@ -49,7 +48,7 @@ function RoundStartOrganizerButton() {
 
   const [handleContinueClick, isHandling] = useAsyncAction(async () => {
     if (!game) return;
-    await startRound(game.currentQuestionType as RoundType, game.id as string, game.currentRound as string);
+    await updateRound(game.id as string, game.currentRound as string, { action: 'start' });
   });
 
   if (!game) return null;

@@ -3,9 +3,8 @@ import { useCallback, useRef } from 'react';
 import { useIntl } from 'react-intl';
 
 import { handleCountdownEnd } from '@/backend/services/question/actions';
-import { handleQuestionEnd, startRound } from '@/backend/services/round/actions';
 import { SERVER_TIME_OFFSET_REF } from '@/firebase/database';
-import { updateGame } from '@/frontend/api';
+import { updateGame, updateRound } from '@/frontend/api';
 import AuthorizePlayersSwitch from '@/frontend/components/game/main-pane/AuthorizePlayersSwitch';
 import OrganizerTimerController from '@/frontend/components/game/timer/OrganizerTimerController';
 import Timer, { type TimerData } from '@/frontend/components/game/timer/Timer';
@@ -20,7 +19,6 @@ import useUser from '@/frontend/hooks/useUser';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { GameStatus } from '@/models/games/game-status';
 import { type QuestionType } from '@/models/questions/question-type';
-import { RoundType } from '@/models/rounds/round-type';
 import { ParticipantRole } from '@/models/users/participant';
 
 const messages = defineMessages('frontend.game.timer.TimerPane', {
@@ -58,18 +56,13 @@ function OrganizerTimerPane() {
           await updateGame(currentGameId, { action: 'start' });
           break;
         case GameStatus.ROUND_START:
-          await startRound(currentQuestionType as QuestionType, currentGameId, currentRound);
+          await updateRound(currentGameId, currentRound, { action: 'start' });
           break;
         case GameStatus.QUESTION_ACTIVE:
           await handleCountdownEnd(currentQuestionType as QuestionType, currentGameId, currentRound, currentQuestion);
           break;
         case GameStatus.QUESTION_END:
-          await handleQuestionEnd(
-            currentQuestionType as unknown as RoundType,
-            currentGameId,
-            currentRound,
-            currentQuestion
-          );
+          await updateRound(currentGameId, currentRound, { action: 'question_end', questionId: currentQuestion });
           break;
       }
     } finally {

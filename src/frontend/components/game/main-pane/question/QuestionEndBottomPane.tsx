@@ -1,7 +1,7 @@
 import { FastForward, Trophy } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { handleQuestionEnd } from '@/backend/services/round/actions';
+import { updateRound } from '@/frontend/api';
 import ReadyPlayerController from '@/frontend/components/game/main-pane/ReadyPlayerController';
 import { Button } from '@/frontend/components/ui/button';
 import { useRoundOnce } from '@/frontend/hooks/firestore/round/useRoundHooks';
@@ -9,8 +9,6 @@ import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useRole from '@/frontend/hooks/useRole';
 import defineMessages from '@/frontend/i18n/defineMessages';
-import { Round } from '@/models/rounds/round';
-import { RoundType } from '@/models/rounds/round-type';
 import { ParticipantRole } from '@/models/users/participant';
 
 const messages = defineMessages('frontend.game.bottom.QuestionEndBottomPane', {
@@ -34,38 +32,34 @@ export default function QuestionEndBottomPane() {
 
   const isLastQuestion = round.currentQuestionIdx === round.questions.length - 1;
 
-  return <QuestionEndController round={round} isLastQuestion={isLastQuestion} />;
+  return <QuestionEndController isLastQuestion={isLastQuestion} />;
 }
 
 interface QuestionEndControllerProps {
-  round: Round;
   isLastQuestion: boolean;
 }
 
-function QuestionEndController({ round, isLastQuestion }: QuestionEndControllerProps) {
+function QuestionEndController({ isLastQuestion }: QuestionEndControllerProps) {
   const role = useRole();
 
   return (
     <div className="flex flex-col h-full items-center justify-center space-y-5">
       <ReadyPlayerController isLastQuestion={isLastQuestion} />
-      {role === ParticipantRole.ORGANIZER && (
-        <QuestionEndOrganizerButton round={round} isLastQuestion={isLastQuestion} />
-      )}
+      {role === ParticipantRole.ORGANIZER && <QuestionEndOrganizerButton isLastQuestion={isLastQuestion} />}
     </div>
   );
 }
 
 interface QuestionEndOrganizerButtonProps {
-  round: Round;
   isLastQuestion: boolean;
 }
 
-function QuestionEndOrganizerButton({ round, isLastQuestion }: QuestionEndOrganizerButtonProps) {
+function QuestionEndOrganizerButton({ isLastQuestion }: QuestionEndOrganizerButtonProps) {
   const intl = useIntl();
   const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const [handleContinueClick, isEnding] = useAsyncAction(async () => {
-    await handleQuestionEnd(round.type as RoundType, gameId, roundId, questionId);
+    await updateRound(gameId, roundId, { action: 'question_end', questionId });
   });
 
   return (
