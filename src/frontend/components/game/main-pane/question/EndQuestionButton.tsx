@@ -6,17 +6,12 @@ import { Button } from '@/frontend/components/ui/button';
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import defineMessages from '@/frontend/i18n/defineMessages';
-import { type QuestionType } from '@/models/questions/question-type';
 
 const messages = defineMessages('frontend.game.bottom.EndQuestionButton', {
   endQuestion: 'End question',
 });
 
-interface EndQuestionButtonProps {
-  questionType: QuestionType;
-}
-
-export default function EndQuestionButton(_props: EndQuestionButtonProps) {
+export default function EndQuestionButton() {
   const intl = useIntl();
   const { gameId, roundId, questionId } = useActiveQuestion()!;
 

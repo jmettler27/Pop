@@ -108,8 +108,8 @@ function MatchingPlayerQuestionController() {
 function MatchingOrganizerQuestionController() {
   return (
     <div className="flex flex-row w-full justify-end">
-      <ResetQuestionButton questionType={QuestionType.MATCHING} />
-      <EndQuestionButton questionType={QuestionType.MATCHING} />
+      <ResetQuestionButton />
+      <EndQuestionButton />
     </div>
   );
 }

@@ -105,8 +105,8 @@ function BuzzerOrganizerQuestionController({ baseQuestion }: BuzzerOrganizerQues
   return (
     <div className="flex flex-row w-full justify-end">
       {bq.type === QuestionType.PROGRESSIVE_CLUES && <NextClueButton baseQuestion={baseQuestion} />}
-      <ResetQuestionButton questionType={bq.type as QuestionType} />
-      <EndQuestionButton questionType={bq.type as QuestionType} />
+      <ResetQuestionButton />
+      <EndQuestionButton />
       <ClearBuzzerButton questionType={bq.type as QuestionType} />
     </div>
   );

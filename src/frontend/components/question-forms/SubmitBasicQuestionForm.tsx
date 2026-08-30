@@ -19,7 +19,6 @@ import { QuestionType } from '@/models/questions/question-type';
 import { Topic } from '@/models/topic';
 
 interface QuestionFormProps {
-  userId?: string;
   questionToEdit?: Record<string, unknown>;
   inGameEditor?: boolean;
   inSubmitPage?: boolean;

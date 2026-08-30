@@ -30,7 +30,6 @@ const messages = defineMessages('frontend.forms.submitQuestion.image', {
 const QUESTION_TYPE = QuestionType.IMAGE;
 
 interface QuestionFormProps {
-  userId?: string;
   questionToEdit?: Record<string, unknown>;
   inGameEditor?: boolean;
   inSubmitPage?: boolean;

@@ -24,7 +24,7 @@ export default function Page() {
   return (
     <>
       <QuestionFormHeader questionType={QUESTION_TYPE} />
-      <SubmitMatchingQuestionForm userId={session.user.id} inSubmitPage={true} />
+      <SubmitMatchingQuestionForm inSubmitPage={true} />
     </>
   );
 }

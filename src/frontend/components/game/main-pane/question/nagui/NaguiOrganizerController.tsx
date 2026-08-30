@@ -13,7 +13,6 @@ import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameNaguiQuestion } from '@/models/questions/nagui';
-import { QuestionType } from '@/models/questions/question-type';
 
 export default function NaguiOrganizerController({ gameQuestion }: { gameQuestion: GameNaguiQuestion }) {
   return (
@@ -30,8 +29,8 @@ export default function NaguiOrganizerController({ gameQuestion }: { gameQuestio
       )}
       {gameQuestion.option === 'hide' && <NaguiOrganizerHideAnswerController gameQuestion={gameQuestion} />}
       <div className="flex flex-row w-full justify-end">
-        <ResetQuestionButton questionType={QuestionType.NAGUI} />
-        <EndQuestionButton questionType={QuestionType.NAGUI} />
+        <ResetQuestionButton />
+        <EndQuestionButton />
       </div>
     </div>
   );

@@ -10,7 +10,6 @@ import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { GameBasicQuestion } from '@/models/questions/basic';
-import { QuestionType } from '@/models/questions/question-type';
 
 interface BasicQuestionOrganizerControllerProps {
   gameQuestion: GameBasicQuestion;
@@ -66,8 +65,8 @@ function BasicQuestionOrganizerAnswerController({ gameQuestion }: BasicQuestionO
 function QuestionOrganizerController() {
   return (
     <div className="flex flex-row w-full justify-end">
-      <ResetQuestionButton questionType={QuestionType.BASIC} />
-      <EndQuestionButton questionType={QuestionType.BASIC} />
+      <ResetQuestionButton />
+      <EndQuestionButton />
       <ClearBasicBuzzerButton />
     </div>
   );

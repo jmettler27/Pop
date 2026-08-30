@@ -403,7 +403,7 @@ function EditQuestionCardInner({
         </CardContent>
       )}
 
-      <EditQuestionDialog baseQuestion={baseQuestion} userId={userId} open={editDialogOpen} onClose={closeEditDialog} />
+      <EditQuestionDialog baseQuestion={baseQuestion} open={editDialogOpen} onClose={closeEditDialog} />
     </Card>
   );
 }
@@ -429,12 +429,11 @@ function QuestionCardSkeleton() {
 
 interface EditQuestionDialogProps {
   baseQuestion: AnyBaseQuestion;
-  userId: string | undefined;
   open: boolean;
   onClose: () => void;
 }
 
-function EditQuestionDialog({ baseQuestion, userId, open, onClose }: EditQuestionDialogProps) {
+function EditQuestionDialog({ baseQuestion, open, onClose }: EditQuestionDialogProps) {
   const intl = useIntl();
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
@@ -442,7 +441,7 @@ function EditQuestionDialog({ baseQuestion, userId, open, onClose }: EditQuestio
         <DialogHeader>
           <DialogTitle>{intl.formatMessage(messages.editQuestionDialogTitle)}</DialogTitle>
         </DialogHeader>
-        <EditQuestionFormByType baseQuestion={baseQuestion} userId={userId} onClose={onClose} />
+        <EditQuestionFormByType baseQuestion={baseQuestion} onClose={onClose} />
       </DialogContent>
     </Dialog>
   );
@@ -450,13 +449,11 @@ function EditQuestionDialog({ baseQuestion, userId, open, onClose }: EditQuestio
 
 interface EditQuestionFormByTypeProps {
   baseQuestion: AnyBaseQuestion;
-  userId: string | undefined;
   onClose: () => void;
 }
 
-function EditQuestionFormByType({ baseQuestion, userId, onClose }: EditQuestionFormByTypeProps) {
+function EditQuestionFormByType({ baseQuestion, onClose }: EditQuestionFormByTypeProps) {
   const commonProps = {
-    userId,
     questionToEdit: baseQuestion as unknown as Record<string, unknown>,
     inGameEditor: true,
     onDialogClose: onClose,

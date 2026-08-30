@@ -24,7 +24,7 @@ export default function Page() {
   return (
     <>
       <QuestionFormHeader questionType={QUESTION_TYPE} />
-      <SubmitNaguiQuestionForm userId={session.user.id} inSubmitPage={true} />
+      <SubmitNaguiQuestionForm inSubmitPage={true} />
     </>
   );
 }

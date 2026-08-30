@@ -24,7 +24,7 @@ export default function Page() {
   return (
     <>
       <QuestionFormHeader questionType={QUESTION_TYPE} />
-      <SubmitEnumerationQuestionForm userId={session.user.id} inSubmitPage={true} />
+      <SubmitEnumerationQuestionForm inSubmitPage={true} />
     </>
   );
 }

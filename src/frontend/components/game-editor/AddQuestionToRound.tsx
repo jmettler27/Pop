@@ -27,7 +27,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/frontend/components/u
 import { useEditableQuestion } from '@/frontend/hooks/editableQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useGameId from '@/frontend/hooks/useGameId';
-import useUserId from '@/frontend/hooks/useUserId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { QuestionType, questionTypeToEmoji } from '@/models/questions/question-type';
@@ -156,23 +155,15 @@ interface CreateQuestionDialogProps {
 
 function CreateQuestionDialog({ roundId, questionType, onDialogClose }: CreateQuestionDialogProps) {
   const gameId = useGameId();
-  const userId = useUserId() ?? '';
 
   switch (questionType) {
     case QuestionType.BASIC:
       return (
-        <SubmitBasicQuestionForm
-          userId={userId}
-          inGameEditor={true}
-          gameId={gameId}
-          roundId={roundId}
-          onDialogClose={onDialogClose}
-        />
+        <SubmitBasicQuestionForm inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
       );
     case QuestionType.BLINDTEST:
       return (
         <SubmitBlindtestQuestionForm
-          userId={userId}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -181,18 +172,11 @@ function CreateQuestionDialog({ roundId, questionType, onDialogClose }: CreateQu
       );
     case QuestionType.EMOJI:
       return (
-        <SubmitEmojiQuestionForm
-          userId={userId}
-          inGameEditor={true}
-          gameId={gameId}
-          roundId={roundId}
-          onDialogClose={onDialogClose}
-        />
+        <SubmitEmojiQuestionForm inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
       );
     case QuestionType.ENUMERATION:
       return (
         <SubmitEnumerationQuestionForm
-          userId={userId}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -202,7 +186,6 @@ function CreateQuestionDialog({ roundId, questionType, onDialogClose }: CreateQu
     case QuestionType.ESTIMATION:
       return (
         <SubmitEstimationQuestionForm
-          userId={userId}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -211,18 +194,11 @@ function CreateQuestionDialog({ roundId, questionType, onDialogClose }: CreateQu
       );
     case QuestionType.IMAGE:
       return (
-        <SubmitImageQuestionForm
-          userId={userId}
-          inGameEditor={true}
-          gameId={gameId}
-          roundId={roundId}
-          onDialogClose={onDialogClose}
-        />
+        <SubmitImageQuestionForm inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
       );
     case QuestionType.LABELLING:
       return (
         <SubmitLabellingQuestionForm
-          userId={userId}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -232,7 +208,6 @@ function CreateQuestionDialog({ roundId, questionType, onDialogClose }: CreateQu
     case QuestionType.MATCHING:
       return (
         <SubmitMatchingQuestionForm
-          userId={userId}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -240,29 +215,14 @@ function CreateQuestionDialog({ roundId, questionType, onDialogClose }: CreateQu
         />
       );
     case QuestionType.MCQ:
-      return (
-        <SubmitMCQForm
-          userId={userId}
-          inGameEditor={true}
-          gameId={gameId}
-          roundId={roundId}
-          onDialogClose={onDialogClose}
-        />
-      );
+      return <SubmitMCQForm inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />;
     case QuestionType.NAGUI:
       return (
-        <SubmitNaguiQuestionForm
-          userId={userId}
-          inGameEditor={true}
-          gameId={gameId}
-          roundId={roundId}
-          onDialogClose={onDialogClose}
-        />
+        <SubmitNaguiQuestionForm inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
       );
     case QuestionType.ODD_ONE_OUT:
       return (
         <SubmitOddOneOutQuestionForm
-          userId={userId}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -272,7 +232,6 @@ function CreateQuestionDialog({ roundId, questionType, onDialogClose }: CreateQu
     case QuestionType.PROGRESSIVE_CLUES:
       return (
         <SubmitProgressiveCluesQuestionForm
-          userId={userId}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}
@@ -281,18 +240,11 @@ function CreateQuestionDialog({ roundId, questionType, onDialogClose }: CreateQu
       );
     case QuestionType.QUOTE:
       return (
-        <SubmitQuoteQuestionForm
-          userId={userId}
-          inGameEditor={true}
-          gameId={gameId}
-          roundId={roundId}
-          onDialogClose={onDialogClose}
-        />
+        <SubmitQuoteQuestionForm inGameEditor={true} gameId={gameId} roundId={roundId} onDialogClose={onDialogClose} />
       );
     case QuestionType.REORDERING:
       return (
         <SubmitReorderingQuestionForm
-          userId={userId}
           inGameEditor={true}
           gameId={gameId}
           roundId={roundId}

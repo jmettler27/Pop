@@ -48,7 +48,6 @@ export const emojiClueSchema = () =>
     .required('Required.');
 
 interface QuestionFormProps {
-  userId?: string;
   questionToEdit?: Record<string, unknown>;
   inGameEditor?: boolean;
   inSubmitPage?: boolean;

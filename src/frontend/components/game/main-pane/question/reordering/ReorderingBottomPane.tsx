@@ -51,8 +51,8 @@ function ReorderingController() {
 function ReorderingOrganizerController() {
   return (
     <div className="flex flex-row h-full items-center justify-center">
-      <ResetQuestionButton questionType={QuestionType.REORDERING} />
-      <EndQuestionButton questionType={QuestionType.REORDERING} />
+      <ResetQuestionButton />
+      <EndQuestionButton />
     </div>
   );
 }

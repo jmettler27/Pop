@@ -68,7 +68,6 @@ interface MatchingFormValues {
 }
 
 interface QuestionFormProps {
-  userId?: string;
   questionToEdit?: Record<string, unknown>;
   inGameEditor?: boolean;
   inSubmitPage?: boolean;

@@ -44,7 +44,6 @@ const subtypeSchema = () =>
   Yup.string().oneOf(Object.values(BlindtestType), 'Invalid question subtype.').required('Required.');
 
 interface QuestionFormProps {
-  userId?: string;
   questionToEdit?: Record<string, unknown>;
   inGameEditor?: boolean;
   inSubmitPage?: boolean;

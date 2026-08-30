@@ -24,7 +24,7 @@ export default function Page() {
   return (
     <>
       <QuestionFormHeader questionType={QUESTION_TYPE} />
-      <SubmitProgressiveCluesQuestionForm userId={session.user.id} inSubmitPage={true} />
+      <SubmitProgressiveCluesQuestionForm inSubmitPage={true} />
     </>
   );
 }

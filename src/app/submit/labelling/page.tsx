@@ -24,7 +24,7 @@ export default function Page({}) {
   return (
     <>
       <QuestionFormHeader questionType={QUESTION_TYPE} />
-      <SubmitLabellingQuestionForm userId={session.user.id} inSubmitPage={true} />
+      <SubmitLabellingQuestionForm inSubmitPage={true} />
     </>
   );
 }

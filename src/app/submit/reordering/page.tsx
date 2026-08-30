@@ -24,7 +24,7 @@ export default function Page() {
   return (
     <>
       <QuestionFormHeader questionType={QUESTION_TYPE} />
-      <SubmitReorderingQuestionForm userId={session.user.id} inSubmitPage={true} />
+      <SubmitReorderingQuestionForm inSubmitPage={true} />
     </>
   );
 }

@@ -137,8 +137,8 @@ function CancelLabelButton({ buzzed }: { buzzed: string[] }) {
 function LabelOrganizerQuestionController() {
   return (
     <div className="flex flex-row w-full justify-end">
-      <ResetQuestionButton questionType={QuestionType.LABELLING} />
-      <EndQuestionButton questionType={QuestionType.LABELLING} />
+      <ResetQuestionButton />
+      <EndQuestionButton />
       <ClearBuzzerButton questionType={QuestionType.LABELLING} />
     </div>
   );

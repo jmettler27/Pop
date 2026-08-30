@@ -13,7 +13,6 @@ import useRole from '@/frontend/hooks/useRole';
 import useTeamId from '@/frontend/hooks/useTeamId';
 import defineMessages from '@/frontend/i18n/defineMessages';
 import { Chooser } from '@/models/chooser';
-import { QuestionType } from '@/models/questions/question-type';
 import { ParticipantRole } from '@/models/users/participant';
 
 const messages = defineMessages('frontend.game.bottom.OddOneOutBottomPane', {
@@ -83,8 +82,8 @@ function OddOneOutChooserController() {
 function OddOneOutOrganizerController() {
   return (
     <div className="flex flex-row h-full items-center justify-center">
-      <ResetQuestionButton questionType={QuestionType.ODD_ONE_OUT} />
-      <EndQuestionButton questionType={QuestionType.ODD_ONE_OUT} />
+      <ResetQuestionButton />
+      <EndQuestionButton />
     </div>
   );
 }

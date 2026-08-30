@@ -136,8 +136,8 @@ function CancelQuoteElementButton({ buzzed }: { buzzed: string[] }) {
 function QuoteOrganizerQuestionController() {
   return (
     <div className="flex flex-row w-full justify-end">
-      <ResetQuestionButton questionType={QuestionType.QUOTE} />
-      <EndQuestionButton questionType={QuestionType.QUOTE} />
+      <ResetQuestionButton />
+      <EndQuestionButton />
       <ClearQuoteBuzzerButton />
     </div>
   );

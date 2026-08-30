@@ -50,8 +50,8 @@ function EstimationController() {
 function EstimationOrganizerController() {
   return (
     <div className="flex flex-row h-full items-center justify-center">
-      <ResetQuestionButton questionType={QuestionType.ESTIMATION} />
-      <EndQuestionButton questionType={QuestionType.ESTIMATION} />
+      <ResetQuestionButton />
+      <EndQuestionButton />
     </div>
   );
 }
