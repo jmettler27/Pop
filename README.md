@@ -2,7 +2,7 @@
 
 # Pop!
 
-**Pop!** is a real-time, interactive quiz game web app built with [Next.js](https://nextjs.org/) and [Firebase](https://firebase.google.com). Gameplay, scoring, and the question bank are served by a standalone Go backend, [`back-pop`](https://github.com/jmettler27/back-pop) (developed in a sibling repo).
+**Pop!** is a real-time, interactive quiz game web app built with [Next.js](https://nextjs.org/) and [Firebase](https://firebase.google.com). Gameplay, scoring, and the question bank are served by a standalone Go backend, [`back-pop`](https://github.com/pop-quiz/back-pop) (developed in a sibling repo).
 
 Create, organize, play, and spectate quiz games with friends — covering **video games**, **movies**, **anime/manga**, **music**, **literature**, **Internet culture**, and more.
 
@@ -26,7 +26,7 @@ For detailed gameplay rules, round type descriptions, scoring mechanics, and mor
 | Layer        | Technology                                                                                                                                                         |
 | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Frontend** | [Next.js](https://nextjs.org/), [React](https://reactjs.org/), [shadcn/ui](https://ui.shadcn.com/), [Tailwind CSS](https://tailwindcss.com/)                       |
-| **Backend**  | [`back-pop`](https://github.com/jmettler27/back-pop) — a standalone Go REST service (writes, one-shot reads, the question bank)                                    |
+| **Backend**  | [`back-pop`](https://github.com/pop-quiz/back-pop) — a standalone Go REST service (writes, one-shot reads, the question bank)                                    |
 | **Auth**     | [NextAuth.js](https://next-auth.js.org/) (Google, Discord) + a Firebase custom-token bridge so the browser can call `back-pop`                                     |
 | **Database** | [Firestore](https://firebase.google.com/docs/firestore) — the browser keeps realtime `onSnapshot` listeners on `games/**`; everything else goes through `back-pop` |
 | **Storage**  | [Firebase Storage](https://firebase.google.com/docs/storage) — question image/audio uploads go through `back-pop`                                                  |
@@ -35,7 +35,7 @@ For detailed gameplay rules, round type descriptions, scoring mechanics, and mor
 ## Backend
 
 This repo is **frontend-only**. Every write, every one-shot read, and the whole question bank are
-served by [`back-pop`](https://github.com/jmettler27/back-pop), a Go REST service developed in a
+served by [`back-pop`](https://github.com/pop-quiz/back-pop), a Go REST service developed in a
 sibling repo (clone it next to this one as `../back-pop`).
 
 - **`src/api/`** is the seam: `client.ts` (`apiFetch` — attaches a Firebase ID token as
@@ -59,7 +59,7 @@ sibling repo (clone it next to this one as `../back-pop`).
 
 - [Node.js](https://nodejs.org/) (v20+ — CI runs Node 24)
 - [JDK](https://www.oracle.com/java/technologies/downloads/) (v11+, for the Firebase emulators)
-- [Go](https://go.dev/) (1.27+) and a clone of [`back-pop`](https://github.com/jmettler27/back-pop)
+- [Go](https://go.dev/) (1.27+) and a clone of [`back-pop`](https://github.com/pop-quiz/back-pop)
   at `../back-pop` — only needed to run the backend locally
 
 ### Available Scripts
@@ -156,5 +156,5 @@ src/
 └── types/                  # Ambient/global TypeScript declarations (e.g. NextAuth module augmentation)
 ```
 
-> Gameplay / scoring / the question bank live in [`back-pop`](https://github.com/jmettler27/back-pop),
+> Gameplay / scoring / the question bank live in [`back-pop`](https://github.com/pop-quiz/back-pop),
 > not here.

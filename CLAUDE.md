@@ -33,7 +33,7 @@ and trust CI for the tree-wide pass.
 ## Architecture
 
 - **The backend is a standalone Go service** in the sibling repo `../back-pop`
-  (`github.com/jmettler27/back-pop`; its `CLAUDE.md` is the backend bible). The old in-repo
+  (`github.com/pop-quiz/back-pop`; its `CLAUDE.md` is the backend bible). The old in-repo
   `src/backend/**` (Server Actions → Service → Repository → firebase-admin) is **deleted** — the
   migration is complete (plan: `~/.claude/plans/back-pop-migrating-majestic-corbato.md`, gitignored,
   not in either repo). This repo keeps only: the Firebase **auth bridge**
