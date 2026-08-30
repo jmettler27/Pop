@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { clsx } from 'clsx';
 import { Check, TriangleAlert, X } from 'lucide-react';
 
-import { selectChoice } from '@/backend/services/question/nagui/actions';
+import { questionAction } from '@/frontend/api';
 import ErrorScreen from '@/frontend/components/ErrorScreen';
 import LoadingScreen from '@/frontend/components/LoadingScreen';
 import { Avatar, AvatarFallback, AvatarImage } from '@/frontend/components/ui/avatar';
@@ -18,7 +18,6 @@ import useGame from '@/frontend/hooks/useGame';
 import useGameId from '@/frontend/hooks/useGameId';
 import useRole from '@/frontend/hooks/useRole';
 import useTeamId from '@/frontend/hooks/useTeamId';
-import useUser from '@/frontend/hooks/useUser';
 import { GameStatus } from '@/models/games/game-status';
 import {
   DuoNaguiOption,
@@ -157,11 +156,9 @@ function ActiveNaguiChoices({
   const { gameId, roundId, questionId } = useActiveQuestion()!;
   const teamId = useTeamId();
   const role = useRole();
-  const user = useUser();
 
   const [handleSelectChoice, isSubmitting] = useAsyncAction(async (idx: number) => {
-    if (!user) return;
-    await selectChoice(gameId, roundId, questionId, user.id as string, teamId as string, idx);
+    await questionAction(gameId, roundId, questionId, { action: 'select_choice', choiceIdx: idx });
   });
 
   const choices = baseQuestion.choices ?? [];

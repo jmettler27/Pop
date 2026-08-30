@@ -1,7 +1,7 @@
 import { RotateCcw } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { clearBuzzer } from '@/backend/services/question/basic/actions';
+import { questionAction } from '@/frontend/api';
 import { Button } from '@/frontend/components/ui/button';
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
@@ -12,7 +12,7 @@ export default function ClearBuzzerButton() {
   const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const [handleClick, isClearing] = useAsyncAction(async () => {
-    await clearBuzzer(gameId, roundId, questionId);
+    await questionAction(gameId, roundId, questionId, { action: 'clear_buzzer' });
   });
 
   return (

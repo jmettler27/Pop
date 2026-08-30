@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import { clsx } from 'clsx';
 import { useIntl } from 'react-intl';
 
-import { selectChoice } from '@/backend/services/question/nagui/actions';
+import { questionAction } from '@/frontend/api';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import { NaguiChooserController } from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerController';
 import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
@@ -16,7 +16,6 @@ import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import { usePlayableQuestion } from '@/frontend/hooks/usePlayableQuestion';
 import useTeamId from '@/frontend/hooks/useTeamId';
-import useUser from '@/frontend/hooks/useUser';
 import globalMessages from '@/frontend/i18n/globalMessages';
 import { Chooser } from '@/models/chooser';
 import { DuoNaguiOption, GameNaguiQuestion, HideNaguiOption, NaguiQuestion } from '@/models/questions/nagui';
@@ -132,13 +131,10 @@ function MobileNaguiChoiceSelector({
   randomization: number[];
 }) {
   const { gameId, roundId, questionId } = useActiveQuestion()!;
-  const teamId = useTeamId();
-  const user = useUser();
   const intl = useIntl();
 
   const [handleSelectChoice, isSubmitting] = useAsyncAction(async (idx: number) => {
-    if (!user) return;
-    await selectChoice(gameId, roundId, questionId, user.id as string, teamId as string, idx);
+    await questionAction(gameId, roundId, questionId, { action: 'select_choice', choiceIdx: idx });
   });
 
   if (gameQuestion.option === HideNaguiOption.TYPE) {

@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 
 import { clsx } from 'clsx';
 
-import { selectChoice } from '@/backend/services/question/mcq/actions';
+import { questionAction } from '@/frontend/api';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import { Spinner } from '@/frontend/components/ui/spinner';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
@@ -13,7 +13,6 @@ import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import { usePlayableQuestion } from '@/frontend/hooks/usePlayableQuestion';
 import useTeamId from '@/frontend/hooks/useTeamId';
-import useUser from '@/frontend/hooks/useUser';
 import { Chooser } from '@/models/chooser';
 import { MCQQuestion } from '@/models/questions/mcq';
 import { QuestionType } from '@/models/questions/question-type';
@@ -95,12 +94,9 @@ function MobileMCQChoiceSelector({
   randomization: number[];
 }) {
   const { gameId, roundId, questionId } = useActiveQuestion()!;
-  const teamId = useTeamId();
-  const user = useUser();
 
   const [handleSelectChoice, isSubmitting] = useAsyncAction(async (idx: number) => {
-    if (!user) return;
-    await selectChoice(gameId, roundId, questionId, user.id as string, teamId as string, idx);
+    await questionAction(gameId, roundId, questionId, { action: 'select_choice', choiceIdx: idx });
   });
 
   const choices = baseQuestion.choices ?? [];

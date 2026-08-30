@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { Hand, RotateCcw } from 'lucide-react';
 import { useIntl, type IntlShape } from 'react-intl';
 
-import { addPlayerToBuzzer, removePlayerFromBuzzer } from '@/backend/services/question/buzzer/actions';
+import { questionAction } from '@/frontend/api';
 import { Button } from '@/frontend/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/frontend/components/ui/tooltip';
 import { useQuestion } from '@/frontend/hooks/firestore/question/useGameQuestionHooks';
@@ -84,16 +84,8 @@ export default function BuzzerPlayerController({ questionPlayers, compact = fals
           compact ? 'flex-col items-center gap-3' : 'flex-row items-center gap-2'
         )}
       >
-        <BuzzerButton
-          isDisabled={hasBuzzed || hasExceededMaxTries || remaining > 0}
-          questionType={gq.type as QuestionType}
-          compact={compact}
-        />
-        <BuzzerResetButton
-          isDisabled={!hasBuzzed || hasExceededMaxTries}
-          questionType={gq.type as QuestionType}
-          compact={compact}
-        />
+        <BuzzerButton isDisabled={hasBuzzed || hasExceededMaxTries || remaining > 0} compact={compact} />
+        <BuzzerResetButton isDisabled={!hasBuzzed || hasExceededMaxTries} compact={compact} />
       </div>
     </div>
   );
@@ -178,16 +170,14 @@ function remainingWaitingClues(
 
 interface BuzzerButtonProps {
   isDisabled: boolean;
-  questionType: QuestionType;
   compact?: boolean;
 }
 
-function BuzzerButton({ isDisabled, questionType, compact = false }: BuzzerButtonProps) {
+function BuzzerButton({ isDisabled, compact = false }: BuzzerButtonProps) {
   const { gameId, roundId, questionId } = useActiveQuestion()!;
-  const user = useUser();
 
   const [handleBuzz, isBuzzing] = useAsyncAction(async () => {
-    await addPlayerToBuzzer(questionType, gameId, roundId, questionId, user?.id as string);
+    await questionAction(gameId, roundId, questionId, { action: 'add_player_to_buzzer' });
   });
 
   return (
@@ -206,16 +196,14 @@ function BuzzerButton({ isDisabled, questionType, compact = false }: BuzzerButto
 
 interface BuzzerResetButtonProps {
   isDisabled: boolean;
-  questionType: QuestionType;
   compact?: boolean;
 }
 
-function BuzzerResetButton({ isDisabled, questionType, compact = false }: BuzzerResetButtonProps) {
+function BuzzerResetButton({ isDisabled, compact = false }: BuzzerResetButtonProps) {
   const { gameId, roundId, questionId } = useActiveQuestion()!;
-  const user = useUser();
 
   const [handleResetBuzz, isResetting] = useAsyncAction(async () => {
-    await removePlayerFromBuzzer(questionType, gameId, roundId, questionId, user?.id as string);
+    await questionAction(gameId, roundId, questionId, { action: 'remove_player_from_buzzer' });
   });
 
   return (

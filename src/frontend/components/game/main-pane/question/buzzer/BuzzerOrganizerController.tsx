@@ -3,8 +3,7 @@ import { useEffect, useRef } from 'react';
 import { ArrowDown, CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { handleBuzzerHeadChanged, invalidateAnswer, validateAnswer } from '@/backend/services/question/buzzer/actions';
-import { revealClue } from '@/backend/services/question/progressive-clues/actions';
+import { questionAction } from '@/frontend/api';
 import BuzzerHeadPlayer from '@/frontend/components/game/main-pane/question/buzzer/BuzzerHeadPlayer';
 import ClearBuzzerButton from '@/frontend/components/game/main-pane/question/buzzer/ClearBuzzerButton';
 import EndQuestionButton from '@/frontend/components/game/main-pane/question/EndQuestionButton';
@@ -42,14 +41,17 @@ export default function BuzzerOrganizerController({ baseQuestion, questionPlayer
     }
     if (buzzerHead.current !== buzzed[0]) {
       buzzerHead.current = buzzed[0];
-      handleBuzzerHeadChanged(bq.type as QuestionType, gameId, roundId, questionId, buzzerHead.current as string);
+      questionAction(gameId, roundId, questionId, {
+        action: 'handle_buzzer_head_changed',
+        playerId: buzzerHead.current as string,
+      });
     }
-  }, [buzzed, bq.type, roundId, questionId, gameId]);
+  }, [buzzed, roundId, questionId, gameId]);
 
   return (
     <div className="flex flex-col h-full w-full items-center justify-around">
       <BuzzerHeadPlayer buzzed={buzzed} />
-      <BuzzerOrganizerAnswerController buzzed={buzzed} questionType={bq.type as QuestionType} />
+      <BuzzerOrganizerAnswerController buzzed={buzzed} />
       <BuzzerOrganizerQuestionController baseQuestion={baseQuestion} />
     </div>
   );
@@ -57,24 +59,20 @@ export default function BuzzerOrganizerController({ baseQuestion, questionPlayer
 
 interface BuzzerOrganizerAnswerControllerProps {
   buzzed: string[];
-  questionType: QuestionType;
 }
 
-function BuzzerOrganizerAnswerController({
-  buzzed,
-  questionType: _questionType,
-}: BuzzerOrganizerAnswerControllerProps) {
+function BuzzerOrganizerAnswerController({ buzzed }: BuzzerOrganizerAnswerControllerProps) {
   const intl = useIntl();
-  const { gameId, roundId, questionId, questionType } = useActiveQuestion()!;
+  const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const buzzedIsEmpty = buzzed.length === 0;
 
   const [handleValidate, isValidating] = useAsyncAction(async () => {
-    await validateAnswer(questionType, gameId, roundId, questionId, buzzed[0]);
+    await questionAction(gameId, roundId, questionId, { action: 'validate_answer', playerId: buzzed[0] });
   });
 
   const [handleInvalidate, isInvalidating] = useAsyncAction(async () => {
-    await invalidateAnswer(questionType, gameId, roundId, questionId, buzzed[0]);
+    await questionAction(gameId, roundId, questionId, { action: 'invalidate_answer', playerId: buzzed[0] });
   });
 
   return (
@@ -119,7 +117,7 @@ function NextClueButton({ baseQuestion }: BuzzerOrganizerQuestionControllerProps
   const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const [handleClick, isLoadingNextClue] = useAsyncAction(async () => {
-    await revealClue(gameId, roundId, questionId);
+    await questionAction(gameId, roundId, questionId, { action: 'reveal_clue' });
   });
 
   const {

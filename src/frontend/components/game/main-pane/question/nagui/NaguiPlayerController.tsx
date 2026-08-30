@@ -2,14 +2,13 @@
 
 import { Columns2, EyeOff, Grid2x2 } from 'lucide-react';
 
-import { selectOption } from '@/backend/services/question/nagui/actions';
+import { questionAction } from '@/frontend/api';
 import { GameChooserHelperText } from '@/frontend/components/game/chooser/GameChooserTeamAnnouncement';
 import NaguiPlayerOptionHelperText from '@/frontend/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
 import { Button } from '@/frontend/components/ui/button';
 import useActiveQuestion from '@/frontend/hooks/useActiveQuestion';
 import useAsyncAction from '@/frontend/hooks/useAsyncAction';
 import useTeamId from '@/frontend/hooks/useTeamId';
-import useUser from '@/frontend/hooks/useUser';
 import { DuoNaguiOption, GameNaguiQuestion, HideNaguiOption, SquareNaguiOption } from '@/models/questions/nagui';
 
 const NAGUI_OPTION_TO_ICON: Record<string, React.ReactElement> = {
@@ -48,11 +47,9 @@ export default function NaguiPlayerController({ chooserTeamId, gameQuestion }: N
 
 export function NaguiChooserController() {
   const { gameId, roundId, questionId } = useActiveQuestion()!;
-  const user = useUser();
 
   const [handleSelectOption, isSelecting] = useAsyncAction(async (optionIdx: number) => {
-    if (!user) return;
-    await selectOption(gameId, roundId, questionId, user.id as string, optionIdx);
+    await questionAction(gameId, roundId, questionId, { action: 'select_option', optionIdx });
   });
 
   return (
