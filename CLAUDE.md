@@ -45,16 +45,15 @@ and trust CI for the tree-wide pass.
   `EditQuestionInRound` → `addRound` / `updateGame` / `updateRound` / `removeRound` /
   `removeRoundQuestion` / `updateRoundQuestion`), and the 14 question submit forms + `AddQuestionToRound`
   (via `src/frontend/helpers/forms/submitQuestionForm.ts` → `createQuestion` / `updateQuestion`
-  multipart + `addRoundQuestion`), and most of gameplay — game status (`updateGame`), timer
+  multipart + `addRoundQuestion`), and all of gameplay — game status (`updateGame`), timer
   (`updateTimer`), round lifecycle (`updateRound {start|select|question_end}`), player-ready +
-  authorize (`updatePlayer`), sounds (`addSound`), join (`joinGame`), the generic question actions
-  `end`/`reset`/`countdown_end` (`questionAction`), and the `usePlayableQuestion` / `useEditableQuestions`
-  reads (`getPlayableQuestion` / `getEditableQuestions`). `create-question/**`, `edit-game/**`,
-  `game/actions.ts`, `timer/`, `player/`, `sound/`, `round/actions.ts`, `join-game/`, and the generic
-  + playable + editable `question/*-actions.ts` are now dead (kept until the final delete). **Still on
-  `actions.ts`:** the per-type in-game question actions (buzz / select / submit / reveal / validate for
-  the 12 question types, under `src/frontend/components/game/main-pane/question/**`) → migrate to
-  `questionAction(g,r,q,{action,…})`. Then delete `src/backend/**`. A migrated feature needs the Go service running
+  authorize (`updatePlayer`), sounds (`addSound`), join (`joinGame`), the `usePlayableQuestion` /
+  `useEditableQuestions` reads, and **every in-game question action** — generic
+  (`end`/`reset`/`countdown_end`) and all 12 per-type (buzz / select / submit / reveal / validate) →
+  `questionAction(g,r,q,{action,…})`. **Not yet migrated:** `src/app/edit/page.tsx` `createGame` (Go
+  `CreateGameRequest` has no per-game `organizerName` — needs a decision) and
+  `src/frontend/hooks/useUsersByIds.ts` (`GET /users` still 501 in Go). Everything migrated leaves its
+  server action / service dead (kept until the final `src/backend/**` delete). A migrated feature needs the Go service running
   (`back-pop` `make run` + emulators + `BACKEND_ORIGIN` + `npm run dev:emulators`); `npm run dev`
   alone still hits prod Firebase and has no Go service.
 - **Layering:** `src/app` (RSC pages) → `src/backend/services/**/actions.ts` (`'use server'` thin wrappers) →
