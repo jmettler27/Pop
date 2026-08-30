@@ -37,9 +37,13 @@ and trust CI for the tree-wide pass.
   not in either repo). Landed on branch `phase-7-auth-bridge`: a Firebase auth bridge
   (`src/app/api/auth/firebase-token/route.ts` + `src/app/FirebaseAuthProvider.tsx`) and a typed API
   client (`src/frontend/api/` — `apiFetch` + one fn per Go endpoint, `next.config.ts` `rewrites`
-  `/api/backend/*` → `BACKEND_ORIGIN`). **No call sites use `@/frontend/api` yet** — every feature
-  still runs through `src/backend/services/**/actions.ts` below. Swapping call sites group by group
-  is the next phase.
+  `/api/backend/*` → `BACKEND_ORIGIN`). Call sites are being swapped to `@/frontend/api` **group by
+  group**; the old `src/backend/services/**/actions.ts` files stay in place until the last group,
+  then get deleted. **Migrated so far:** the question-bank hooks (`src/frontend/hooks/questionBank.ts`
+  → `listQuestions` / `countQuestions`). Everything else still runs through `actions.ts` below. Next
+  groups: game lists → editor writes → gameplay. A migrated feature needs the Go service running
+  (`back-pop` `make run` + emulators + `BACKEND_ORIGIN` + `npm run dev:emulators`); `npm run dev`
+  alone still hits prod Firebase and has no Go service.
 - **Layering:** `src/app` (RSC pages) → `src/backend/services/**/actions.ts` (`'use server'` thin wrappers) →
   **Service** classes (business logic, own the Firestore transactions) → **Repository** classes
   (`src/backend/repositories`, data access only) → `src/firebase/admin.ts` (firebase-admin). `src/models` is shared by both sides.
