@@ -32,6 +32,14 @@ and trust CI for the tree-wide pass.
 
 ## Architecture
 
+- **Backend → Go migration in progress.** `src/backend/**` is being replaced by a standalone Go
+  service in the sibling repo `../back-pop` (plan: `~/.claude/plans/back-pop-migrating-majestic-corbato.md`,
+  not in either repo). Landed on branch `phase-7-auth-bridge`: a Firebase auth bridge
+  (`src/app/api/auth/firebase-token/route.ts` + `src/app/FirebaseAuthProvider.tsx`) and a typed API
+  client (`src/frontend/api/` — `apiFetch` + one fn per Go endpoint, `next.config.ts` `rewrites`
+  `/api/backend/*` → `BACKEND_ORIGIN`). **No call sites use `@/frontend/api` yet** — every feature
+  still runs through `src/backend/services/**/actions.ts` below. Swapping call sites group by group
+  is the next phase.
 - **Layering:** `src/app` (RSC pages) → `src/backend/services/**/actions.ts` (`'use server'` thin wrappers) →
   **Service** classes (business logic, own the Firestore transactions) → **Repository** classes
   (`src/backend/repositories`, data access only) → `src/firebase/admin.ts` (firebase-admin). `src/models` is shared by both sides.
