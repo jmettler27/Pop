@@ -1,5 +1,6 @@
 import type { FirebaseApp, FirebaseOptions } from 'firebase/app';
 import { getApps, initializeApp } from 'firebase/app';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { connectDatabaseEmulator, getDatabase } from 'firebase/database';
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 import { connectStorageEmulator, getStorage } from 'firebase/storage';
@@ -21,6 +22,7 @@ export const firebaseConfig: FirebaseOptions = {
 };
 
 export const firebaseApp: FirebaseApp = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+export const auth = getAuth(firebaseApp);
 export const firestore = getFirestore(firebaseApp);
 export const storage = getStorage(firebaseApp);
 export const database = getDatabase(firebaseApp);
@@ -28,6 +30,7 @@ export const database = getDatabase(firebaseApp);
 if (process.env.NEXT_PUBLIC_USE_EMULATORS === 'true') {
   const log = logger.child({ module: 'firebase' });
   try {
+    connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
     connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
     connectDatabaseEmulator(database, '127.0.0.1', 9000);
     connectStorageEmulator(storage, '127.0.0.1', 9199);
