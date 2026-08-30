@@ -8,7 +8,7 @@ import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 import type { AnyObjectSchema } from 'yup';
 
-import { joinGame } from '@/backend/services/join-game/actions';
+import { joinGame, type JoinGameRequest } from '@/frontend/api';
 import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';
 import MyColorPicker from '@/frontend/components/common/MyColorPicker';
 import {
@@ -110,7 +110,8 @@ export default function Page() {
   const [handleJoinGame, isJoining] = useAsyncAction(async (values: JoinFormValues) => {
     if (!session?.user?.id) return;
     try {
-      await joinGame(gameId, session.user.id, values);
+      // The Go endpoint takes the caller uid from the token.
+      await joinGame(gameId, values as unknown as JoinGameRequest);
       router.push(`/${gameId}`);
     } catch (error) {
       console.error('Failed to join the game:', error);

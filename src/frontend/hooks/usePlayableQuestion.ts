@@ -3,10 +3,11 @@ import { useMemo } from 'react';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { collection, doc } from 'firebase/firestore';
 
-import { getPlayableQuestion } from '@/backend/services/question/playable-actions';
 import { firestore } from '@/firebase/firebase';
+import { getPlayableQuestion } from '@/frontend/api';
 import { useFirestoreDocument } from '@/frontend/hooks/firestore/useFirestoreDocument';
 import useGame from '@/frontend/hooks/useGame';
+import { type BaseQuestionData } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
 import QuestionFactory, { type AnyBaseQuestion } from '@/models/questions/QuestionFactory';
 
@@ -111,7 +112,7 @@ export function usePlayableQuestion(
     // for a not-yet-started question, which would then be served once it goes live.
     queryKey: ['playableQuestion', gameId, roundId, questionId, questionType, gameStatus, isCurrentQuestion, revealKey],
     queryFn: () =>
-      getPlayableQuestion(gameId as string, roundId as string, questionType as QuestionType, questionId as string),
+      getPlayableQuestion(gameId as string, roundId as string, questionId as string, questionType as QuestionType),
     enabled,
     staleTime: Infinity,
     // As the key advances, keep showing the current payload while the next one loads —
@@ -121,10 +122,11 @@ export function usePlayableQuestion(
 
   // Memoized on `data` (mirrors useGame/useRound) so `baseQuestion` keeps its identity across renders
   // when the payload hasn't changed — consumers derive `useMemo`s (e.g. shuffles) from it.
-  const baseQuestion = useMemo(
-    () => (data ? (QuestionFactory.createBaseQuestion(data.type as QuestionType, data) as AnyBaseQuestion) : null),
-    [data]
-  );
+  const baseQuestion = useMemo(() => {
+    if (!data) return null;
+    const raw: BaseQuestionData = { ...data };
+    return QuestionFactory.createBaseQuestion(data.type as QuestionType, raw) as AnyBaseQuestion;
+  }, [data]);
 
   return { baseQuestion, baseQuestionLoading: enabled && isLoading, baseQuestionError: error };
 }

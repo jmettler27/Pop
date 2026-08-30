@@ -2,15 +2,24 @@ import { useMemo } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getEditableQuestions } from '@/backend/services/question/editable-actions';
+import { getEditableQuestions, type EditableQuestion } from '@/frontend/api';
+import { isoToFirestoreTimestamp } from '@/frontend/helpers/time';
+import { type BaseQuestionData } from '@/models/questions/question';
 import { type QuestionType } from '@/models/questions/question-type';
 import QuestionFactory, { type AnyBaseQuestion } from '@/models/questions/QuestionFactory';
 
+/** Wire item → the shape `QuestionFactory.createBaseQuestion` reconstructs from. */
+const toBaseQuestionData = (item: EditableQuestion): BaseQuestionData => ({
+  ...item,
+  createdAt: isoToFirestoreTimestamp(item.createdAt),
+});
+
 /**
- * Full `questions/{id}` docs for the in-game round editor, via an organizer-gated server
- * action (production Firestore rules deny the client reading `questions/{id}`). Fetched a
- * whole round at once so every card shares a single request. Cached indefinitely; after
- * editing a question, invalidate `['editableQuestions', gameId]` to refresh.
+ * Full `questions/{id}` docs for the in-game round editor, from the Go backend
+ * (`GET /games/{id}/questions:editable`, organizer-gated — production Firestore
+ * rules deny the client reading `questions/{id}`). Fetched a whole round at once
+ * so every card shares a single request. Cached indefinitely; after editing a
+ * question, invalidate `['editableQuestions', gameId]` to refresh.
  */
 export function useEditableQuestions(gameId: string | undefined, questionIds: string[]) {
   const idsKey = [...questionIds].sort().join(',');
@@ -26,7 +35,12 @@ export function useEditableQuestions(gameId: string | undefined, questionIds: st
     staleTime: Infinity,
   });
 
-  return { questionsById: data ?? {}, loading: enabled && isLoading, error };
+  const questionsById = useMemo(() => {
+    const entries = Object.entries(data?.questions ?? {});
+    return Object.fromEntries(entries.map(([id, item]) => [id, toBaseQuestionData(item)]));
+  }, [data]);
+
+  return { questionsById, loading: enabled && isLoading, error };
 }
 
 /**
