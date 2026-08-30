@@ -6,16 +6,16 @@ React Compiler on) + Firebase (Firestore, Realtime DB, Storage) + NextAuth. Type
 
 ## Commands
 
-| Command                                     | Use                                                                                       |
-| ------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `npm run dev`                               | Dev server; **production** Firebase for `onSnapshot`, no backend (API calls fail)         |
-| `npm run dev:emulators`                     | Emulators + dev server, local data (`npm run seed` first run) — flaky, see below          |
-| `npm run typecheck`                         | `tsc --noEmit`                                                                            |
-| `npm run eslint` / `:fix`                   | `eslint src --ext .ts,.tsx`                                                               |
-| `npm run prettier-check` / `prettier-write` | Formatting                                                                                |
-| `npm run build`                             | Production build                                                                          |
-| `npm run update-i18n`                       | Regenerate `en.json` + re-sort `fr.json` from `defineMessages()` calls                    |
-| `npm run deploy:rules`                      | Deploy prod Firestore/RTDB/Storage rules (`firebase.prod.json` → `firebase/*.prod.rules`) |
+| Command                                     | Use                                                                                              |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `npm run dev`                               | Dev server; **production** Firebase for `onSnapshot`, no backend (API calls fail)                |
+| `npm run dev:emulators`                     | Emulators + dev server, local data (`npm run seed` first run) — flaky, see below                 |
+| `npm run typecheck`                         | `tsc --noEmit`                                                                                   |
+| `npm run eslint` / `:fix`                   | `eslint src --ext .ts,.tsx`                                                                      |
+| `npm run prettier-check` / `prettier-write` | Formatting                                                                                       |
+| `npm run build`                             | Production build                                                                                 |
+| `npm run update-i18n`                       | Regenerate `en.json` + re-sort `fr.json` from `defineMessages()` calls                           |
+| `npm run deploy:rules`                      | Deploy prod Firestore/RTDB/Storage rules (`firebase.prod.json` → `firebase-config/*.prod.rules`) |
 
 CI (`.github/workflows/ci.yml`, Node 24, Linux) gates PRs to `main` on **build + prettier-check + eslint + typecheck**.
 Run `/check` before pushing. On Windows with `core.autocrlf=true`, `npm run prettier-check` flags the
@@ -39,11 +39,11 @@ and trust CI for the tree-wide pass.
   not in either repo). This repo keeps only: the Firebase **auth bridge**
   (`src/app/api/auth/firebase-token/route.ts` mints a custom token from the NextAuth session +
   `src/app/FirebaseAuthProvider.tsx` exchanges it via `signInWithCustomToken` so the client SDK holds
-  an ID token), the **typed API client** (`src/frontend/api/` — `apiFetch` sends
+  an ID token), the **typed API client** (`src/api/` — `apiFetch` sends
   `Authorization: Bearer <idToken>`, plus one fn per Go endpoint in `endpoints.ts`; wire types in
   `types.ts` are hand-mirrored from `back-pop/api/openapi.yaml` — keep in sync), and the realtime
   Firebase-client `onSnapshot` listeners on `games/**`.
-- **Layering:** `src/app` / `src/frontend` → `@/frontend/api` (`apiFetch` → `fetch`) → the Go service.
+- **Layering:** the frontend (`src/app` + `src/{components,hooks,contexts,helpers}`) → `@/api` (`apiFetch` → `fetch`) → the Go service.
   In dev, `next.config.ts` `async rewrites()` proxies `/api/backend/*` → `BACKEND_ORIGIN` (Go on
   `:8090`); in prod set `NEXT_PUBLIC_BACKEND_URL` to hit the service directly (CORS). `src/models` is
   now **client-only** — domain enums + model classes + `*Factory` classes the Yup forms and question
@@ -58,8 +58,8 @@ and trust CI for the tree-wide pass.
   `next.config.ts` still externalizes `firebase-admin`/`@google-cloud/*`/`grpc` from the server bundle
   for those. Firestore rules: prod `games/**` stays read-open for the client's `onSnapshot`;
   `questions/**` and `users/**` are client-denied (the Go `GET /games/{g}/rounds/{r}/questions/{q}`,
-  `…:editable`, and `GET /users` serve those). `firebase/firestore.rules` mirrors it for the emulator.
-- **Firebase project config** lives in `firebase/` (`*.rules`, `*.prod.rules`, `firestore.indexes.json`).
+  `…:editable`, and `GET /users` serve those). `firebase-config/firestore.rules` mirrors it for the emulator.
+- **Firebase project config** lives in `firebase-config/` (`*.rules`, `*.prod.rules`, `firestore.indexes.json`).
   `firebase.json` (emulator), `firebase.prod.json` (prod deploy target for `deploy:rules`), and `.firebaserc`
   stay at repo root. `.firebaserc` aliases: `default` → `demo-pop` (emulator), `prod` → `qpc-app`.
 - **Per-type polymorphism (client side):** `QuestionType` / `RoundType` enums + the client `*Factory`
@@ -73,7 +73,7 @@ and trust CI for the tree-wide pass.
   one `useQuery` (`staleTime: Infinity`) + a shared `onSnapshot` pushed into the cache. Listeners are deduped
   per doc/query path (`acquireSharedSubscription`) to avoid double billing. (Migrated off react-firebase-hooks.)
 - **Base questions (`questions/{id}`) are never read from the client** — the rule is `allow read: if false`.
-  In-game: `usePlayableQuestion` → `getPlayableQuestion(g,r,q,type)` (`@/frontend/api`) → the Go
+  In-game: `usePlayableQuestion` → `getPlayableQuestion(g,r,q,type)` (`@/api`) → the Go
   `GET …/questions/{q}`, which strips answer fields for players/spectators and returns the full doc for
   organizers / once the question has ended, re-adding progressively-revealed pieces (clues, labelling,
   quote, enumeration, nagui) from live game state. `usePlayableQuestion` keys its cache on
@@ -83,19 +83,19 @@ and trust CI for the tree-wide pass.
   (see `.claude/plans/firestore-read-scoping.md`).
 - **Game view state** comes via contexts, not props/refetch: `useGame`, `useRole`, `useTeamId`,
   `useUser`/`useUserId`, `useActiveQuestion`.
-- **Action buttons:** wrap the `@/frontend/api` call in `useAsyncAction` — it has a ref-based
+- **Action buttons:** wrap the `@/api` call in `useAsyncAction` — it has a ref-based
   re-entrancy guard for double/triple clicks (don't rely on `isLoading` alone).
 - **Logging:** client code uses `console.*` directly (there are only a handful of sites). Structured
   logging (Pino-equivalent `slog`) lives in `back-pop`.
-- **UI:** shadcn/ui (`base-nova` style, Base UI primitives) in `src/frontend/components/ui` — generated,
-  don't hand-edit casually. `cn()` from `@/frontend/lib/utils`. Icons: `lucide-react`. Tailwind v4 (CSS-config,
+- **UI:** shadcn/ui (`base-nova` style, Base UI primitives) in `src/components/ui` — generated,
+  don't hand-edit casually. `cn()` from `@/lib/utils`. Icons: `lucide-react`. Tailwind v4 (CSS-config,
   `src/app/globals.css`).
 - **Forms:** react-hook-form + `@hookform/resolvers` + Yup; wired fields in
-  `components/common/ReactHookFormComponents.tsx`. Older submit forms still use Formik — migration in progress.
+  `src/components/common/ReactHookFormComponents.tsx`. Older submit forms still use Formik — migration in progress.
 
 ## Core files
 
-- `src/frontend/api/` — the backend seam. `client.ts` (`apiFetch`/`apiGet`/… + `ApiError`; awaits
+- `src/api/` — the backend seam. `client.ts` (`apiFetch`/`apiGet`/… + `ApiError`; awaits
   `auth.authStateReady()`, sends the Bearer ID token), `endpoints.ts` (one fn per Go operation),
   `types.ts` (wire types hand-mirrored from `back-pop/api/openapi.yaml` — **keep in sync**), `index.ts`
   barrel
@@ -103,20 +103,24 @@ and trust CI for the tree-wide pass.
 - `src/models/**` — client-only domain models + `game-type.ts` / `question-type.ts` / `round-type.ts`
   enums + `QuestionFactory` / `RoundFactory` / `NaguiOptionFactory`
 - `src/firebase/admin.ts` — firebase-admin (auth-bridge custom-token minting + NextAuth adapter only);
-  `src/firebase/firebase.ts` — client SDK init (frontend only). Both keyed off `NEXT_PUBLIC_USE_EMULATORS`
-- `src/frontend/helpers/forms/submitQuestionForm.ts` — builds the multipart body for `createQuestion` /
+  `src/firebase/client.ts` — client SDK init (frontend only). Both keyed off `NEXT_PUBLIC_USE_EMULATORS`
+- `src/helpers/forms/submitQuestionForm.ts` — builds the multipart body for `createQuestion` /
   `updateQuestion`
-- `src/frontend/helpers/time.ts` — `isoToFirestoreTimestamp` (Go ISO `date-time` → the `{seconds}`
+- `src/helpers/time.ts` — `isoToFirestoreTimestamp` (Go ISO `date-time` → the `{seconds}`
   shape the `time.ts` helpers expect)
-- `src/frontend/hooks/firestore/**` — the Query + snapshot data layer (realtime `games/**` reads)
-- `src/frontend/i18n/` — `defineMessages.ts`, `locale/{en,fr}.json`, `update-i18n.mjs`
+- `src/hooks/firestore/**` — the Query + snapshot data layer (realtime `games/**` reads)
+- `src/i18n/` — `defineMessages.ts`, `locale/{en,fr}.json`, `update-i18n.mjs`
 - `next.config.ts` — React Compiler, `async rewrites()` (`/api/backend/*` → `BACKEND_ORIGIN`),
   `serverExternalPackages`
-- `firebase/` — Firestore/RTDB/Storage rules + indexes; `firebase.json` / `firebase.prod.json` / `.firebaserc` at root
-- `README.md` — full emulator setup + ports (Firestore 8080, Auth 9099, RTDB 9000, Storage 9199, UI 4000)
+- `scripts/smoke-backend.mjs` — scripted front↔back API check (drives the `endpoints.ts` payloads
+  against the emulators + `back-pop`); `/smoke-backend` runs it with the full stack bring-up
+- `firebase-config/` — Firestore/RTDB/Storage rules + indexes; `firebase.json` / `firebase.prod.json` / `.firebaserc` at root
+- `README.md` — full emulator setup + ports (Firebase Auth 9099, Firestore 8080, RTDB 9000, Storage 9199, UI 4000, `back-pop` 8090)
 
 ## Gotchas
 
 - `dev:emulators` is flaky locally: crashes / leaves stray processes on the emulator ports (`preemulators`
   only frees 8080/9000). Use `/emulators` for a clean restart; don't rabbit-hole debugging it for one-off checks.
+- `src/api/types.ts` is hand-mirrored from `back-pop/api/openapi.yaml` — `tsc` can't catch drift between
+  them. After touching either side of the seam, run `/smoke-backend` (or `node scripts/smoke-backend.mjs`).
 - No MCP servers are configured for this repo.

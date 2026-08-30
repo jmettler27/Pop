@@ -8,27 +8,27 @@ import { useIntl } from 'react-intl';
 import * as Yup from 'yup';
 import type { AnyObjectSchema } from 'yup';
 
-import { joinGame, type JoinGameRequest } from '@/frontend/api';
-import { Wizard, WizardStep } from '@/frontend/components/common/MultiStepComponents';
-import MyColorPicker from '@/frontend/components/common/MyColorPicker';
+import { joinGame, type JoinGameRequest } from '@/api';
+import { Wizard, WizardStep } from '@/components/common/MultiStepComponents';
+import MyColorPicker from '@/components/common/MyColorPicker';
 import {
   FieldError,
   MyRadioGroup,
   MySelect,
   MyTextInput,
   radioInputClassName,
-} from '@/frontend/components/common/StyledFormComponents';
-import ErrorScreen from '@/frontend/components/ErrorScreen';
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-import { SelectItem } from '@/frontend/components/ui/select';
-import { Spinner } from '@/frontend/components/ui/spinner';
-import { useGameOnce } from '@/frontend/hooks/firestore/game/useGameHooks';
-import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganizerHooks';
-import { useAllPlayerIdentitiesOnce, useTeamPlayers } from '@/frontend/hooks/firestore/user/usePlayerHooks';
-import { useJoinableTeams } from '@/frontend/hooks/firestore/user/useTeamHooks';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import useGameId from '@/frontend/hooks/useGameId';
-import defineMessages from '@/frontend/i18n/defineMessages';
+} from '@/components/common/StyledFormComponents';
+import ErrorScreen from '@/components/ErrorScreen';
+import LoadingScreen from '@/components/LoadingScreen';
+import { SelectItem } from '@/components/ui/select';
+import { Spinner } from '@/components/ui/spinner';
+import { useGameOnce } from '@/hooks/firestore/game/useGameHooks';
+import { useAllOrganizersOnce } from '@/hooks/firestore/user/useOrganizerHooks';
+import { useAllPlayerIdentitiesOnce, useTeamPlayers } from '@/hooks/firestore/user/usePlayerHooks';
+import { useJoinableTeams } from '@/hooks/firestore/user/useTeamHooks';
+import useAsyncAction from '@/hooks/useAsyncAction';
+import useGameId from '@/hooks/useGameId';
+import defineMessages from '@/i18n/defineMessages';
 import Game from '@/models/games/game';
 import Team from '@/models/team';
 

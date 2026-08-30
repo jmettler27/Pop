@@ -4,8 +4,8 @@ import { redirect } from 'next/navigation';
 
 import { useSession } from 'next-auth/react';
 
-import QuestionFormHeader from '@/frontend/components/common/QuestionFormHeader';
-import SubmitNaguiQuestionForm from '@/frontend/components/question-forms/SubmitNaguiQuestionForm';
+import QuestionFormHeader from '@/components/common/QuestionFormHeader';
+import SubmitNaguiQuestionForm from '@/components/question-forms/SubmitNaguiQuestionForm';
 import { QuestionType } from '@/models/questions/question-type';
 
 const QUESTION_TYPE = QuestionType.NAGUI;

@@ -4,8 +4,8 @@ import { redirect } from 'next/navigation';
 
 import { useSession } from 'next-auth/react';
 
-import QuestionFormHeader from '@/frontend/components/common/QuestionFormHeader';
-import SubmitQuoteQuestionForm from '@/frontend/components/question-forms/SubmitQuoteQuestionForm';
+import QuestionFormHeader from '@/components/common/QuestionFormHeader';
+import SubmitQuoteQuestionForm from '@/components/question-forms/SubmitQuoteQuestionForm';
 import { QuestionType } from '@/models/questions/question-type';
 
 const QUESTION_TYPE = QuestionType.QUOTE;

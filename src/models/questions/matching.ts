@@ -1,6 +1,6 @@
+import { range, shuffle } from '@/helpers/arrays';
 import { BaseQuestion, GameQuestion, type BaseQuestionData, type GameQuestionData } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
-import { range, shuffle } from '@/utils/arrays';
 
 export interface MatchingQuestionData extends BaseQuestionData {
   answer?: MatchingAnswer;

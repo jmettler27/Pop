@@ -8,17 +8,17 @@ import { ChevronDown, ChevronUp, Home, LineChart, Package2 } from 'lucide-react'
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import ErrorScreen from '@/frontend/components/ErrorScreen';
-import { AddRoundToGameButton } from '@/frontend/components/game-editor/AddRoundToGame';
-import { EditGameRoundCard } from '@/frontend/components/game-editor/EditRoundInGame';
-import { LaunchGameButton } from '@/frontend/components/game-editor/LaunchGameButton';
-import LoadingScreen from '@/frontend/components/LoadingScreen';
-import { Locale, localeToEmoji } from '@/frontend/helpers/locales';
-import { useGame } from '@/frontend/hooks/firestore/game/useGameHooks';
-import { useAllOrganizersOnce } from '@/frontend/hooks/firestore/user/useOrganizerHooks';
-import useGameId from '@/frontend/hooks/useGameId';
-import defineMessages from '@/frontend/i18n/defineMessages';
-import globalMessages from '@/frontend/i18n/globalMessages';
+import ErrorScreen from '@/components/ErrorScreen';
+import { AddRoundToGameButton } from '@/components/game-editor/AddRoundToGame';
+import { EditGameRoundCard } from '@/components/game-editor/EditRoundInGame';
+import { LaunchGameButton } from '@/components/game-editor/LaunchGameButton';
+import LoadingScreen from '@/components/LoadingScreen';
+import { Locale, localeToEmoji } from '@/helpers/locales';
+import { useGame } from '@/hooks/firestore/game/useGameHooks';
+import { useAllOrganizersOnce } from '@/hooks/firestore/user/useOrganizerHooks';
+import useGameId from '@/hooks/useGameId';
+import defineMessages from '@/i18n/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 import { GameRounds } from '@/models/games/game';
 import { GameStatus } from '@/models/games/game-status';
 import { gameTypeToEmoji } from '@/models/games/game-type';

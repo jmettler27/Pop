@@ -10,8 +10,8 @@ import FirebaseAuthProvider from '@/app/FirebaseAuthProvider';
 import LocaleProvider from '@/app/LocaleProvider';
 import QueryProvider from '@/app/QueryProvider';
 import SessionProvider from '@/app/SessionProvider';
-import { TooltipProvider } from '@/frontend/components/ui/tooltip';
-import { cn } from '@/frontend/lib/utils';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 

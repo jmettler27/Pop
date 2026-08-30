@@ -1,9 +1,8 @@
-import { Locale } from '@/frontend/helpers/locales';
+import { Locale } from '@/helpers/locales';
 import { GameStatus, type GameStatus as GameStatusType } from '@/models/games/game-status';
 import { isValidGameType, type GameType } from '@/models/games/game-type';
 import { QuestionType } from '@/models/questions/question-type';
 import { ScorePolicyType } from '@/models/score-policy';
-import { isArray } from '@/utils/arrays';
 
 export interface GameData {
   id?: string;
@@ -166,16 +165,6 @@ export class GameRounds extends Game {
     return true;
   }
 
-  static validateRounds(rounds: unknown): boolean {
-    if (!rounds) throw new Error('Rounds are required');
-    if (!isArray(rounds)) throw new Error('Rounds must be an array');
-    if ((rounds as unknown[]).length < GameRounds.MIN_NUM_ROUNDS)
-      throw new Error(`Game must have at least ${GameRounds.MIN_NUM_ROUNDS} round`);
-    if ((rounds as unknown[]).length > GameRounds.MAX_NUM_ROUNDS)
-      throw new Error(`Game must have at most ${GameRounds.MAX_NUM_ROUNDS} rounds`);
-    return true;
-  }
-
   getCurrentRound(): string | undefined {
     return this.currentRound;
   }
@@ -198,21 +187,5 @@ export class GameRandom extends Game {
 
   toObject(): Record<string, unknown> {
     return { ...super.toObject(), questions: this.questions };
-  }
-
-  static validate(data: unknown): boolean {
-    super.validate(data);
-    GameRandom.validateQuestions((data as GameRandomData).questions);
-    return true;
-  }
-
-  static validateQuestions(questions: unknown): boolean {
-    if (!questions) throw new Error('Questions are required');
-    if (!isArray(questions)) throw new Error('Questions must be an array');
-    if ((questions as unknown[]).length < GameRandom.MIN_NUM_QUESTIONS)
-      throw new Error(`Game must have at least ${GameRandom.MIN_NUM_QUESTIONS} question`);
-    if ((questions as unknown[]).length > GameRandom.MAX_NUM_QUESTIONS)
-      throw new Error(`Game must have at most ${GameRandom.MAX_NUM_QUESTIONS} questions`);
-    return true;
   }
 }

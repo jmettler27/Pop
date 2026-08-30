@@ -1,13 +1,13 @@
 {
   "firestore": {
-    "rules": "firebase/firestore.rules",
-    "indexes": "firebase/firestore.indexes.json"
+    "rules": "firebase-config/firestore.rules",
+    "indexes": "firebase-config/firestore.indexes.json"
   },
   "database": {
-    "rules": "firebase/database.rules.json"
+    "rules": "firebase-config/database.rules.json"
   },
   "storage": {
-    "rules": "firebase/storage.rules"
+    "rules": "firebase-config/storage.rules"
   },
   "emulators": {
     "auth": {

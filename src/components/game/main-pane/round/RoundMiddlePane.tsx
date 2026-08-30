@@ -1,0 +1,66 @@
+'use client';
+
+import { useIntl } from 'react-intl';
+
+import ErrorScreen from '@/components/ErrorScreen';
+import RoundEndBody from '@/components/game/main-pane/round/RoundEndBody';
+import RoundStartBody from '@/components/game/main-pane/round/RoundStartBody';
+import LoadingScreen from '@/components/LoadingScreen';
+import { RoundTypeIcon } from '@/helpers/question-types';
+import { useRound } from '@/hooks/firestore/round/useRoundHooks';
+import useGame from '@/hooks/useGame';
+import globalMessages from '@/i18n/globalMessages';
+import { GameStatus } from '@/models/games/game-status';
+import { AnyRound } from '@/models/rounds/RoundFactory';
+
+export default function RoundMiddlePane() {
+  const game = useGame();
+  const { round, loading: roundLoading, error: roundError } = useRound(game?.id ?? null, game?.currentRound ?? '');
+
+  if (!game) return null;
+
+  if (roundError) {
+    return <ErrorScreen inline />;
+  }
+  if (roundLoading) {
+    return <LoadingScreen inline />;
+  }
+  if (!round) {
+    return <></>;
+  }
+
+  const selectedRoundBody = () => {
+    switch (game.status) {
+      case GameStatus.ROUND_START:
+        return <RoundStartBody round={round} />;
+      case GameStatus.ROUND_END:
+        return <RoundEndBody currentRound={round} />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full w-full items-center justify-center">
+      <div className="flex h-[10%] w-full items-center justify-center mt-3">
+        <RoundHeader round={round} />
+      </div>
+      <div className="flex h-[90%] w-full items-center justify-center">{selectedRoundBody()}</div>
+    </div>
+  );
+}
+
+function RoundHeader({ round }: { round: AnyRound }) {
+  const intl = useIntl();
+  return (
+    <div className="flex flex-row items-center justify-center space-x-1">
+      <RoundTypeIcon roundType={round.type!} className="size-7 md:size-[50px]" />
+      <h1 className="2xl:text-5xl">
+        <span className="font-bold">
+          {intl.formatMessage(globalMessages.round)} {(round.order ?? 0) + 1}
+        </span>{' '}
+        - <i>{round.title}</i>{' '}
+      </h1>
+    </div>
+  );
+}

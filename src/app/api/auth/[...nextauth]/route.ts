@@ -7,7 +7,7 @@ import DiscordProvider from 'next-auth/providers/discord';
 import GoogleProvider from 'next-auth/providers/google';
 
 import { adminFirestore } from '@/firebase/admin';
-import { generateAvatarUrl } from '@/utils/avatar';
+import { generateAvatarUrl } from '@/helpers/avatar';
 
 const useEmulators = process.env.NEXT_PUBLIC_USE_EMULATORS === 'true';
 

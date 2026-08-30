@@ -1,8 +1,8 @@
-import { DEFAULT_LOCALE, type Locale } from '@/frontend/helpers/locales';
-import { prependWithEmojiAndSpace } from '@/frontend/helpers/strings';
+import { DEFAULT_LOCALE, type Locale } from '@/helpers/locales';
+import { omit } from '@/helpers/objects';
+import { prependWithEmojiAndSpace } from '@/helpers/strings';
 import { BaseQuestion, GameQuestion, type BaseQuestionData, type GameQuestionData } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
-import { omit } from '@/utils/objects';
 
 export class NaguiOption {
   static TYPE_TO_TITLE: Record<Locale, string> = { en: '', fr: '' };

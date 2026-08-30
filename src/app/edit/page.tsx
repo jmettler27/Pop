@@ -8,16 +8,16 @@ import { useIntl } from 'react-intl';
 /* Validation */
 import * as Yup from 'yup';
 
-import { createGame } from '@/frontend/api';
-import SelectLanguage from '@/frontend/components/common/SelectLanguage';
-import SelectRoundScorePolicy from '@/frontend/components/common/SelectRoundScorePolicy';
-import { MyNumberInput, MyTextInput } from '@/frontend/components/common/StyledFormComponents';
-import SubmitFormButton from '@/frontend/components/common/SubmitFormButton';
-import { gameTitleSchema, participantNameSchema } from '@/frontend/helpers/forms/game';
-import { DEFAULT_LOCALE, Locale, localeSchema } from '@/frontend/helpers/locales';
-import useAsyncAction from '@/frontend/hooks/useAsyncAction';
-import defineMessages from '@/frontend/i18n/defineMessages';
-import globalMessages from '@/frontend/i18n/globalMessages';
+import { createGame } from '@/api';
+import SelectLanguage from '@/components/common/SelectLanguage';
+import SelectRoundScorePolicy from '@/components/common/SelectRoundScorePolicy';
+import { MyNumberInput, MyTextInput } from '@/components/common/StyledFormComponents';
+import SubmitFormButton from '@/components/common/SubmitFormButton';
+import { gameTitleSchema, participantNameSchema } from '@/helpers/forms/game';
+import { DEFAULT_LOCALE, Locale, localeSchema } from '@/helpers/locales';
+import useAsyncAction from '@/hooks/useAsyncAction';
+import defineMessages from '@/i18n/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 import Game from '@/models/games/game';
 import { ScorePolicyType } from '@/models/score-policy';
 

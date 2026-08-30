@@ -5,7 +5,7 @@ import { useEffect, useRef, type ReactNode } from 'react';
 import { onAuthStateChanged, signInWithCustomToken, signOut } from 'firebase/auth';
 import { useSession } from 'next-auth/react';
 
-import { auth } from '@/firebase/firebase';
+import { auth } from '@/firebase/client';
 
 /**
  * Bridges the NextAuth session into a Firebase Auth session: fetches a custom
