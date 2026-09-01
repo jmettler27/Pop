@@ -2,7 +2,7 @@
 
 import { Columns2, EyeOff, Grid2x2 } from 'lucide-react';
 
-import { questionAction } from '@/api';
+import { QUESTION_ACTIONS, questionAction } from '@/api';
 import { GameChooserHelperText } from '@/components/game/chooser/GameChooserTeamAnnouncement';
 import NaguiPlayerOptionHelperText from '@/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
 import { Button } from '@/components/ui/button';
@@ -49,7 +49,7 @@ export function NaguiChooserController() {
   const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const [handleSelectOption, isSelecting] = useAsyncAction(async (optionIdx: number) => {
-    await questionAction(gameId, roundId, questionId, { action: 'select_option', optionIdx });
+    await questionAction(gameId, roundId, questionId, { action: QUESTION_ACTIONS.NaguiSelectOption, optionIdx });
   });
 
   return (

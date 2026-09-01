@@ -1,7 +1,7 @@
 import { RotateCcw } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { questionAction, updatePlayer } from '@/api';
+import { QUESTION_ACTIONS, questionAction, updatePlayer } from '@/api';
 import { Button } from '@/components/ui/button';
 import useActiveQuestion from '@/hooks/useActiveQuestion';
 import useAsyncAction from '@/hooks/useAsyncAction';
@@ -20,7 +20,7 @@ export default function ResetQuestionButton() {
   const [handleResetQuestion, isResetting] = useAsyncAction(async () => {
     await Promise.all([
       updatePlayer(gameId, userId as string, { action: 'reset_all_status' }),
-      questionAction(gameId, roundId, questionId, { action: 'reset' }),
+      questionAction(gameId, roundId, questionId, { action: QUESTION_ACTIONS.QuestionReset }),
     ]);
   });
 

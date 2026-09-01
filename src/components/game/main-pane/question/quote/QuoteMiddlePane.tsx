@@ -1,6 +1,6 @@
 'use client';
 
-import { questionAction } from '@/api';
+import { QUESTION_ACTIONS, questionAction } from '@/api';
 import ErrorScreen from '@/components/ErrorScreen';
 import CurrentRoundQuestionOrder from '@/components/game/main-pane/question/QuestionHeader';
 import LoadingScreen from '@/components/LoadingScreen';
@@ -122,7 +122,7 @@ const DisplayedQuoteElement = ({ toGuess, revealed, quoteElement, quoteElementSt
   const [handleQuoteElementClick] = useAsyncAction(async () => {
     if (!game) return;
     await questionAction(game.id as string, game.currentRound as string, game.currentQuestion as string, {
-      action: 'reveal_quote_element',
+      action: QUESTION_ACTIONS.QuoteReveal,
       quoteElem: quoteElementStr as 'source' | 'author' | 'quote',
     });
   });
@@ -173,7 +173,7 @@ const DisplayedQuote = ({ toGuess, revealed, quote, quoteParts }: DisplayedQuote
   const [handleQuotePartClick] = useAsyncAction(async (quotePartIdx: number) => {
     if (!game) return;
     await questionAction(game.id as string, game.currentRound as string, game.currentQuestion as string, {
-      action: 'reveal_quote_element',
+      action: QUESTION_ACTIONS.QuoteReveal,
       quoteElem: 'quote',
       quotePartIdx,
     });

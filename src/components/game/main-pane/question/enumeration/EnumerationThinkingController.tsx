@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { useIntl } from 'react-intl';
 
-import { questionAction } from '@/api';
+import { QUESTION_ACTIONS, questionAction } from '@/api';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -69,7 +69,7 @@ function AddBetForm({ baseQuestion, status }: { baseQuestion: EnumerationQuestio
   const [hasValidated, setHasValidated] = useState(false);
 
   const [handleBetValidate, isSubmitting] = useAsyncAction(async () => {
-    await questionAction(gameId, roundId, questionId, { action: 'add_bet', bet: Number(myBet) });
+    await questionAction(gameId, roundId, questionId, { action: QUESTION_ACTIONS.EnumerationBet, bet: Number(myBet) });
     setHasValidated(true);
     setDialogOpen(false);
   });

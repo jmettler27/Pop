@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { ArrowDown, CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { questionAction } from '@/api';
+import { QUESTION_ACTIONS, questionAction } from '@/api';
 import BuzzerHeadPlayer from '@/components/game/main-pane/question/buzzer/BuzzerHeadPlayer';
 import ClearBuzzerButton from '@/components/game/main-pane/question/buzzer/ClearBuzzerButton';
 import EndQuestionButton from '@/components/game/main-pane/question/EndQuestionButton';
@@ -42,7 +42,7 @@ export default function BuzzerOrganizerController({ baseQuestion, questionPlayer
     if (buzzerHead.current !== buzzed[0]) {
       buzzerHead.current = buzzed[0];
       questionAction(gameId, roundId, questionId, {
-        action: 'handle_buzzer_head_changed',
+        action: QUESTION_ACTIONS.BuzzerHandleHeadChange,
         playerId: buzzerHead.current as string,
       });
     }
@@ -68,11 +68,14 @@ function BuzzerOrganizerAnswerController({ buzzed }: BuzzerOrganizerAnswerContro
   const buzzedIsEmpty = buzzed.length === 0;
 
   const [handleValidate, isValidating] = useAsyncAction(async () => {
-    await questionAction(gameId, roundId, questionId, { action: 'validate_answer', playerId: buzzed[0] });
+    await questionAction(gameId, roundId, questionId, { action: QUESTION_ACTIONS.BuzzerValidate, playerId: buzzed[0] });
   });
 
   const [handleInvalidate, isInvalidating] = useAsyncAction(async () => {
-    await questionAction(gameId, roundId, questionId, { action: 'invalidate_answer', playerId: buzzed[0] });
+    await questionAction(gameId, roundId, questionId, {
+      action: QUESTION_ACTIONS.BuzzerInvalidate,
+      playerId: buzzed[0],
+    });
   });
 
   return (
@@ -117,7 +120,7 @@ function NextClueButton({ baseQuestion }: BuzzerOrganizerQuestionControllerProps
   const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const [handleClick, isLoadingNextClue] = useAsyncAction(async () => {
-    await questionAction(gameId, roundId, questionId, { action: 'reveal_clue' });
+    await questionAction(gameId, roundId, questionId, { action: QUESTION_ACTIONS.ProgressiveCluesReveal });
   });
 
   const {

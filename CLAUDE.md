@@ -97,8 +97,10 @@ and trust CI for the tree-wide pass.
 
 - `src/api/` — the backend seam. `client.ts` (`apiFetch`/`apiGet`/… + `ApiError`; awaits
   `auth.authStateReady()`, sends the Bearer ID token), `endpoints.ts` (one fn per Go operation),
-  `types.ts` (wire types hand-mirrored from `back-pop/api/openapi.yaml` — **keep in sync**), `index.ts`
-  barrel
+  `types.ts` (wire types hand-mirrored from `back-pop/api/openapi.yaml` — **keep in sync**),
+  `questionActions.ts` (`QUESTION_ACTIONS` name constants + `QuestionActionName`, mirroring the
+  `action` enum / `back-pop/pkg/question/actions.go` — every name prefixed by its question type or
+  family), `index.ts` barrel
 - `src/app/api/auth/firebase-token/route.ts` + `src/app/FirebaseAuthProvider.tsx` — the auth bridge
 - `src/models/**` — client-only domain models + `game-type.ts` / `question-type.ts` / `round-type.ts`
   enums + `QuestionFactory` / `RoundFactory` / `NaguiOptionFactory`
@@ -121,6 +123,8 @@ and trust CI for the tree-wide pass.
 
 - `dev:emulators` is flaky locally: crashes / leaves stray processes on the emulator ports (`preemulators`
   only frees 8080/9000). Use `/emulators` for a clean restart; don't rabbit-hole debugging it for one-off checks.
-- `src/api/types.ts` is hand-mirrored from `back-pop/api/openapi.yaml` — `tsc` can't catch drift between
-  them. After touching either side of the seam, run `/smoke-backend` (or `node scripts/smoke-backend.mjs`).
+- `src/api/types.ts` + `src/api/questionActions.ts` are hand-mirrored from `back-pop/api/openapi.yaml`
+  (`questionActions.ts` ⇔ the `QuestionActionRequest.action` enum / `back-pop/pkg/question/actions.go`) —
+  `tsc` can't catch drift between them. After touching either side of the seam, run `/smoke-backend`
+  (or `node scripts/smoke-backend.mjs`).
 - No MCP servers are configured for this repo.

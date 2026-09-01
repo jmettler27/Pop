@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { questionAction } from '@/api';
+import { QUESTION_ACTIONS, questionAction } from '@/api';
 import BuzzerHeadPlayer from '@/components/game/main-pane/question/buzzer/BuzzerHeadPlayer';
 import EndQuestionButton from '@/components/game/main-pane/question/EndQuestionButton';
 import ClearQuoteBuzzerButton from '@/components/game/main-pane/question/quote/ClearQuoteBuzzerButton';
@@ -46,7 +46,7 @@ export default function QuoteOrganizerController({
     if (buzzerHead.current !== buzzed[0]) {
       buzzerHead.current = buzzed[0]!;
       questionAction(gameId, roundId, questionId, {
-        action: 'handle_buzzer_head_changed',
+        action: QUESTION_ACTIONS.BuzzerHandleHeadChange,
         playerId: buzzerHead.current,
       });
     }
@@ -97,7 +97,10 @@ function ValidateAllQuoteElementsButton({
   const buzzedIsEmpty = isEmpty(buzzed);
 
   const [handleValidateAll, isValidating] = useAsyncAction(async () => {
-    await questionAction(gameId, roundId, questionId, { action: 'validate_all_quote_elements', playerId: buzzed[0] });
+    await questionAction(gameId, roundId, questionId, {
+      action: QUESTION_ACTIONS.QuoteValidateAll,
+      playerId: buzzed[0],
+    });
   });
 
   return (
@@ -120,7 +123,10 @@ function CancelQuoteElementButton({ buzzed }: { buzzed: string[] }) {
   const buzzedIsEmpty = isEmpty(buzzed);
 
   const [handleCancelQuote, isCanceling] = useAsyncAction(async () => {
-    await questionAction(gameId, roundId, questionId, { action: 'cancel_player', playerId: buzzed[0] });
+    await questionAction(gameId, roundId, questionId, {
+      action: QUESTION_ACTIONS.QuoteInvalidate,
+      playerId: buzzed[0],
+    });
   });
 
   return (

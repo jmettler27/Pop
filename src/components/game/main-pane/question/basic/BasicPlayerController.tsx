@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { Hand, RotateCcw } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { questionAction } from '@/api';
+import { QUESTION_ACTIONS, questionAction } from '@/api';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useQuestion } from '@/hooks/firestore/question/useGameQuestionHooks';
@@ -148,7 +148,7 @@ function BuzzerButton({ isDisabled }: BuzzerButtonProps) {
   const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const [handleBuzz, isBuzzing] = useAsyncAction(async () => {
-    await questionAction(gameId, roundId, questionId, { action: 'add_player_to_buzzer' });
+    await questionAction(gameId, roundId, questionId, { action: QUESTION_ACTIONS.BuzzerPress });
   });
 
   return (
@@ -172,7 +172,7 @@ function BuzzerResetButton({ isDisabled }: BuzzerResetButtonProps) {
   const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const [handleResetBuzz, isResetting] = useAsyncAction(async () => {
-    await questionAction(gameId, roundId, questionId, { action: 'remove_player_from_buzzer' });
+    await questionAction(gameId, roundId, questionId, { action: QUESTION_ACTIONS.BuzzerRelease });
   });
 
   return (

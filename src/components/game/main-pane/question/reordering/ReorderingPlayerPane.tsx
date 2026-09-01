@@ -25,7 +25,7 @@ import { clsx } from 'clsx';
 import { CheckCircle2, GripVertical } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { questionAction } from '@/api';
+import { QUESTION_ACTIONS, questionAction } from '@/api';
 import {
   messages,
   ReorderingEndView,
@@ -116,7 +116,7 @@ function ReorderingPlayerActiveView({ baseQuestion, gameQuestion, randomMapping 
   const [handleSubmitOrdering, isSubmitting] = useAsyncAction(async () => {
     // Items arrive shuffled and index-less, so submit the arrangement by title.
     const orderedTitles = orderedIndices.map((i) => items[i]?.title ?? '');
-    await questionAction(gameId, roundId, questionId, { action: 'submit_ordering', orderedTitles });
+    await questionAction(gameId, roundId, questionId, { action: QUESTION_ACTIONS.ReorderingSubmit, orderedTitles });
     setDialogOpen(false);
   });
 

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { questionAction } from '@/api';
+import { QUESTION_ACTIONS, questionAction } from '@/api';
 import { matchIsComplete } from '@/components/game/main-pane/question/matching/gridUtils';
 import { Button } from '@/components/ui/button';
 import {
@@ -84,7 +84,7 @@ export default function SubmitMatchDialog({
   };
 
   const [handleMatchValidate, isSubmitting] = useAsyncAction(async () => {
-    await questionAction(gameId, roundId, questionId, { action: 'submit_match', edges });
+    await questionAction(gameId, roundId, questionId, { action: QUESTION_ACTIONS.MatchingSubmit, edges });
     setEdges([]);
     setNewEdgeSource(null);
     setDialogOpen(false);

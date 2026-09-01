@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import { clsx } from 'clsx';
 import { Check, X } from 'lucide-react';
 
-import { questionAction } from '@/api';
+import { QUESTION_ACTIONS, questionAction } from '@/api';
 import CurrentRoundQuestionOrder from '@/components/game/main-pane/question/QuestionHeader';
 import NoteButton from '@/components/game/NoteButton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -73,7 +73,7 @@ export function OddOneOutProposalList({
   const [handleSelectProposal, isSubmitting] = useAsyncAction(async (idx: number) => {
     if (!game) return;
     await questionAction(game.id as string, game.currentRound as string, game.currentQuestion as string, {
-      action: 'select_proposal',
+      action: QUESTION_ACTIONS.OddOneOutSelect,
       itemIdx: idx,
     });
   });

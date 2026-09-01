@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 
 import { clsx } from 'clsx';
 
-import { questionAction } from '@/api';
+import { QUESTION_ACTIONS, questionAction } from '@/api';
 import { GameChooserHelperText } from '@/components/game/chooser/GameChooserTeamAnnouncement';
 import { Spinner } from '@/components/ui/spinner';
 import { shuffleIndices } from '@/helpers/arrays';
@@ -96,7 +96,7 @@ function MobileMCQChoiceSelector({
   const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const [handleSelectChoice, isSubmitting] = useAsyncAction(async (idx: number) => {
-    await questionAction(gameId, roundId, questionId, { action: 'select_choice', choiceIdx: idx });
+    await questionAction(gameId, roundId, questionId, { action: QUESTION_ACTIONS.McqSelect, choiceIdx: idx });
   });
 
   const choices = baseQuestion.choices ?? [];

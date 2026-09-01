@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { CheckCircle2, ChevronDown, ChevronUp, Eye, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { questionAction, type QuestionActionRequest } from '@/api';
+import { QUESTION_ACTIONS, questionAction, type QuestionActionRequest } from '@/api';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
@@ -258,7 +258,7 @@ function RevealQuoteElementDialog({
   const [handleRevealQuoteElement, isRevealing] = useAsyncAction(async () => {
     if (!quoteElem) return;
     await questionAction(gameId, roundId, questionId, {
-      action: 'reveal_quote_element',
+      action: QUESTION_ACTIONS.QuoteReveal,
       quoteElem: quoteElem as QuestionActionRequest['quoteElem'],
       quotePartIdx: quotePartIdx ?? undefined,
     });

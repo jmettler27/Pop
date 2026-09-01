@@ -6,7 +6,7 @@ import { clsx } from 'clsx';
 import { CheckCircle2, SlidersHorizontal, Target } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { questionAction, type QuestionActionRequest } from '@/api';
+import { QUESTION_ACTIONS, questionAction, type QuestionActionRequest } from '@/api';
 import {
   EstimationEndView,
   EstimationQuestionHeader,
@@ -218,7 +218,7 @@ function EstimationPlayerActiveView({ baseQuestion, gameQuestion }: EstimationPl
 
   const [handleSubmitBet, isSubmitting] = useAsyncAction(async () => {
     await questionAction(gameId, roundId, questionId, {
-      action: 'submit_bet',
+      action: QUESTION_ACTIONS.EstimationSubmit,
       betType: (isExactBet ? 'exact' : 'range') as QuestionActionRequest['betType'],
       estimation: isExactBet ? exactValue : undefined,
       lower: isExactBet ? undefined : rangeFrom,

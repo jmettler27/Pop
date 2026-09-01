@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
-import { questionAction } from '@/api';
+import { QUESTION_ACTIONS, questionAction } from '@/api';
 import ErrorScreen from '@/components/ErrorScreen';
 import CurrentRoundQuestionOrder from '@/components/game/main-pane/question/QuestionHeader';
 import NoteButton from '@/components/game/NoteButton';
@@ -82,7 +82,7 @@ function EnumerationQuestionAnswer({ answer }: { answer: string[] }) {
   const [handleClick, isSubmitting] = useAsyncAction(async (itemIdx: number) => {
     if (!game) return;
     await questionAction(game.id as string, game.currentRound as string, game.currentQuestion as string, {
-      action: 'validate_item',
+      action: QUESTION_ACTIONS.EnumerationValidateItem,
       itemIdx,
     });
   });

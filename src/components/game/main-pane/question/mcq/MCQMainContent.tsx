@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { clsx } from 'clsx';
 import { Check, TriangleAlert, X } from 'lucide-react';
 
-import { questionAction } from '@/api';
+import { QUESTION_ACTIONS, questionAction } from '@/api';
 import ErrorScreen from '@/components/ErrorScreen';
 import LoadingScreen from '@/components/LoadingScreen';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -141,7 +141,7 @@ function ActiveMCQChoices({ baseQuestion, gameQuestion, randomization }: MCQChoi
   const isChooser = teamId === gameQuestion.teamId;
 
   const [handleSelectChoice, isSubmitting] = useAsyncAction(async (idx: number) => {
-    await questionAction(gameId, roundId, questionId, { action: 'select_choice', choiceIdx: idx });
+    await questionAction(gameId, roundId, questionId, { action: QUESTION_ACTIONS.McqSelect, choiceIdx: idx });
   });
 
   return (

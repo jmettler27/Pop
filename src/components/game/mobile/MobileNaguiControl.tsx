@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import { clsx } from 'clsx';
 import { useIntl } from 'react-intl';
 
-import { questionAction } from '@/api';
+import { QUESTION_ACTIONS, questionAction } from '@/api';
 import { GameChooserHelperText } from '@/components/game/chooser/GameChooserTeamAnnouncement';
 import { NaguiChooserController } from '@/components/game/main-pane/question/nagui/NaguiPlayerController';
 import NaguiPlayerOptionHelperText from '@/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
@@ -134,7 +134,7 @@ function MobileNaguiChoiceSelector({
   const intl = useIntl();
 
   const [handleSelectChoice, isSubmitting] = useAsyncAction(async (idx: number) => {
-    await questionAction(gameId, roundId, questionId, { action: 'select_choice', choiceIdx: idx });
+    await questionAction(gameId, roundId, questionId, { action: QUESTION_ACTIONS.NaguiSelectChoice, choiceIdx: idx });
   });
 
   if (gameQuestion.option === HideNaguiOption.TYPE) {

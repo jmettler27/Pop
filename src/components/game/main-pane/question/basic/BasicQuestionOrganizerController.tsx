@@ -1,7 +1,7 @@
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { questionAction } from '@/api';
+import { QUESTION_ACTIONS, questionAction } from '@/api';
 import ClearBasicBuzzerButton from '@/components/game/main-pane/question/basic/ClearBasicBuzzerButton';
 import EndQuestionButton from '@/components/game/main-pane/question/EndQuestionButton';
 import ResetQuestionButton from '@/components/game/main-pane/question/ResetQuestionButton';
@@ -34,11 +34,19 @@ function BasicQuestionOrganizerAnswerController({ gameQuestion }: BasicQuestionO
   const gq = gameQuestion as { teamId?: string };
 
   const [validateBasicAnswer, isValidating] = useAsyncAction(async () => {
-    await questionAction(gameId, roundId, questionId, { action: 'handle_answer', teamId: gq.teamId, correct: true });
+    await questionAction(gameId, roundId, questionId, {
+      action: QUESTION_ACTIONS.BasicHandleAnswer,
+      teamId: gq.teamId,
+      correct: true,
+    });
   });
 
   const [invalidateBasicAnswer, isInvalidating] = useAsyncAction(async () => {
-    await questionAction(gameId, roundId, questionId, { action: 'handle_answer', teamId: gq.teamId, correct: false });
+    await questionAction(gameId, roundId, questionId, {
+      action: QUESTION_ACTIONS.BasicHandleAnswer,
+      teamId: gq.teamId,
+      correct: false,
+    });
   });
 
   return (

@@ -4,6 +4,8 @@
  * this in sync when the spec changes (a later PR may replace this with codegen).
  */
 
+import type { QuestionActionName } from './questionActions';
+
 // ---------------------------------------------------------------------------
 // Enums
 // ---------------------------------------------------------------------------
@@ -227,34 +229,10 @@ export interface RoundQuestionActionRequest {
   seconds: number;
 }
 
-export type QuestionActionName =
-  | 'end'
-  | 'reset'
-  | 'countdown_end'
-  | 'select_choice'
-  | 'handle_answer'
-  | 'add_player_to_buzzer'
-  | 'remove_player_from_buzzer'
-  | 'clear_buzzer'
-  | 'validate_answer'
-  | 'invalidate_answer'
-  | 'handle_buzzer_head_changed'
-  | 'reveal_clue'
-  | 'select_option'
-  | 'handle_hide_answer'
-  | 'select_proposal'
-  | 'reveal_label'
-  | 'validate_all_labels'
-  | 'cancel_player'
-  | 'reveal_quote_element'
-  | 'validate_all_quote_elements'
-  | 'submit_bet'
-  | 'submit_ordering'
-  | 'submit_match'
-  | 'add_bet'
-  | 'end_thinking'
-  | 'validate_item'
-  | 'increment_valid_items';
+// `QuestionActionName` + the `QUESTION_ACTIONS` name constants live in
+// `./questionActions` (imported above for local use; re-exported here and from
+// the `@/api` barrel so existing `@/api/types` importers keep working).
+export { QUESTION_ACTIONS, type QuestionActionName } from './questionActions';
 
 /**
  * One flat body for every in-game question action (mirrors the spec — not a

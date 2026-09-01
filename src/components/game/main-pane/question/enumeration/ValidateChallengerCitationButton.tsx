@@ -1,7 +1,7 @@
 import { Plus } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { questionAction } from '@/api';
+import { QUESTION_ACTIONS, questionAction } from '@/api';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -23,7 +23,7 @@ export default function ValidateChallengerCitationButton() {
   const { timer, timerLoading, timerError } = useTimer(gameId);
 
   const [handleClick, isSubmitting] = useAsyncAction(async () => {
-    await questionAction(gameId, roundId, questionId, { action: 'increment_valid_items' });
+    await questionAction(gameId, roundId, questionId, { action: QUESTION_ACTIONS.EnumerationIncrementValidItems });
   });
 
   if (timerError) {

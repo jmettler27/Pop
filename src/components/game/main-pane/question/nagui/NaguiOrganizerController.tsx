@@ -3,7 +3,7 @@
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { questionAction } from '@/api';
+import { QUESTION_ACTIONS, questionAction } from '@/api';
 import { GameChooserHelperText } from '@/components/game/chooser/GameChooserTeamAnnouncement';
 import EndQuestionButton from '@/components/game/main-pane/question/EndQuestionButton';
 import NaguiPlayerOptionHelperText from '@/components/game/main-pane/question/nagui/NaguiPlayerOptionHelperText';
@@ -42,7 +42,7 @@ function NaguiOrganizerHideAnswerController({ gameQuestion }: { gameQuestion: Ga
 
   const [handleClick, isHandling] = useAsyncAction(async (correct: boolean) => {
     await questionAction(gameId, roundId, questionId, {
-      action: 'handle_hide_answer',
+      action: QUESTION_ACTIONS.NaguiHandleHideAnswer,
       playerId: gameQuestion.playerId ?? undefined,
       teamId: gameQuestion.teamId ?? undefined,
       correct,

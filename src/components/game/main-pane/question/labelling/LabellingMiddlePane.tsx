@@ -1,6 +1,6 @@
 'use client';
 
-import { questionAction } from '@/api';
+import { QUESTION_ACTIONS, questionAction } from '@/api';
 import NextImage from '@/components/common/NextImage';
 import ErrorScreen from '@/components/ErrorScreen';
 import CurrentRoundQuestionOrder from '@/components/game/main-pane/question/QuestionHeader';
@@ -104,7 +104,7 @@ const DisplayedLabel = ({ revealed, label, labelIdx }: DisplayedLabelProps) => {
   const [handleLabelClick] = useAsyncAction(async () => {
     if (!game) return;
     await questionAction(game.id as string, game.currentRound as string, game.currentQuestion as string, {
-      action: 'reveal_label',
+      action: QUESTION_ACTIONS.LabellingReveal,
       labelIdx,
     });
   });
