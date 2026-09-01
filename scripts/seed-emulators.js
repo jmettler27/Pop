@@ -582,7 +582,7 @@ function testGameImageQuestion(baseImageQuestion, maxTries, reward, thinkingTime
     maxTries: maxTries,
     reward: reward,
     thinkingTime: thinkingTime,
-    type: 'emoji',
+    type: 'image',
     winner: null,
   };
 }
@@ -702,7 +702,7 @@ function testBaseMatchingQuestions() {
   return [testBaseMatchingQuestion1(), testBaseMatchingQuestion2()];
 }
 
-function testGameMatchingQuestion(baseMatchingQuestion, maxTries, reward, thinkingTime) {
+function testGameMatchingQuestion(baseMatchingQuestion, thinkingTime) {
   return {
     canceled: [],
     dateEnd: null,
@@ -1480,7 +1480,7 @@ async function seedEstimationRound(gameId, roundId) {
     await setDocument(
       `games/${gameId}/rounds/${roundId}/questions`,
       question.id,
-      testGameEstimationQuestion(question, thinkingTime)
+      testGameEstimationQuestion(question, rewardsPerQuestion, thinkingTime)
     );
   }
 
