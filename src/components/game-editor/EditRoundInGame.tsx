@@ -23,7 +23,7 @@ import clsx from 'clsx';
 import { ArrowUpDown, Check, ChevronDown, ChevronUp, GripVertical, Timer as TimerIcon, Trash2, X } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { removeRound, updateRound } from '@/api';
+import { removeRound, ROUND_ACTIONS, updateRound } from '@/api';
 import { QuestionCardTitle } from '@/components/common/QuestionCard';
 import { AddQuestionToRoundButton } from '@/components/game-editor/AddQuestionToRound';
 import { EditQuestionCard } from '@/components/game-editor/EditQuestionInRound';
@@ -116,7 +116,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({
   const [thinkingTimePopoverOpen, setThinkingTimePopoverOpen] = useState(false);
   const [thinkingTimeEditValue, setThinkingTimeEditValue] = useState('');
   const [handleSaveThinkingTime, isSavingThinkingTime] = useAsyncAction(async (value: number) => {
-    await updateRound(gameId, roundId, { action: 'thinking_time', thinkingTime: value });
+    await updateRound(gameId, roundId, { action: ROUND_ACTIONS.SetThinkingTime, thinkingTime: value });
     setThinkingTimePopoverOpen(false);
   });
 
@@ -129,7 +129,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({
   const [challengeTimePopoverOpen, setChallengeTimePopoverOpen] = useState(false);
   const [challengeTimeEditValue, setChallengeTimeEditValue] = useState('');
   const [handleSaveChallengeTime, isSavingChallengeTime] = useAsyncAction(async (value: number) => {
-    await updateRound(gameId, roundId, { action: 'challenge_time', challengeTime: value });
+    await updateRound(gameId, roundId, { action: ROUND_ACTIONS.SetChallengeTime, challengeTime: value });
     setChallengeTimePopoverOpen(false);
   });
 
@@ -156,7 +156,7 @@ export const EditGameRoundCard = memo(function EditGameRoundCard({
 
   const handleConfirmReorder = async () => {
     try {
-      await updateRound(gameId, round.id!, { action: 'update', questions: reorderedQuestions });
+      await updateRound(gameId, round.id!, { action: ROUND_ACTIONS.ReorderQuestions, questions: reorderedQuestions });
       setIsReorderMode(false);
     } catch (error) {
       console.error('Failed to reorder questions:', error);

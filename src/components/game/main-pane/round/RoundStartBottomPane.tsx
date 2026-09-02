@@ -3,7 +3,7 @@
 import { ArrowRight } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { updateRound } from '@/api';
+import { ROUND_ACTIONS, updateRound } from '@/api';
 import ReadyPlayerController from '@/components/game/main-pane/ReadyPlayerController';
 import TimerPane from '@/components/game/timer/TimerPane';
 import { Button } from '@/components/ui/button';
@@ -48,7 +48,7 @@ function RoundStartOrganizerButton() {
 
   const [handleContinueClick, isHandling] = useAsyncAction(async () => {
     if (!game) return;
-    await updateRound(game.id as string, game.currentRound as string, { action: 'start' });
+    await updateRound(game.id as string, game.currentRound as string, { action: ROUND_ACTIONS.Start });
   });
 
   if (!game) return null;

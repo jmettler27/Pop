@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Edit, Home, ListMusic, Plus, RotateCcw, Share, X } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { updateGame } from '@/api';
+import { GAME_ACTIONS, updateGame } from '@/api';
 import SoundboardController from '@/components/game/soundboard/SoundboardController';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -46,13 +46,13 @@ export default function OrganizerSpeedDial() {
         setSoundboardOpen(true);
         break;
       case 'home':
-        updateGame(gameId, { action: 'return_to_home' });
+        updateGame(gameId, { action: GAME_ACTIONS.ReturnHome });
         break;
       case 'resetGame':
-        updateGame(gameId, { action: 'reset' });
+        updateGame(gameId, { action: GAME_ACTIONS.Reset });
         break;
       case 'resumeEditing':
-        updateGame(gameId, { action: 'resume_editing' });
+        updateGame(gameId, { action: GAME_ACTIONS.ResumeEditing });
         router.push('/edit/' + gameId);
         break;
     }

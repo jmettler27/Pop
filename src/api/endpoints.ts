@@ -44,7 +44,7 @@ export const getGame = (gameId: string, init?: ApiRequestInit): Promise<GameResp
 export const createGame = (body: CreateGameRequest, init?: ApiRequestInit): Promise<GameResponse> =>
   apiPost<GameResponse>('/games', body, init);
 
-/** `PUT /games/{id}` — status transition (start / reset / end / …). */
+/** `PUT /games/{id}` — status transition (game_start / game_reset / game_end / …). */
 export const updateGame = (gameId: string, body: GameActionRequest, init?: ApiRequestInit): Promise<void> =>
   apiPut<void>(`/games/${seg(gameId)}`, body, init);
 
@@ -80,7 +80,7 @@ export const addRound = (gameId: string, body: AddRoundRequest, init?: ApiReques
 export const removeRound = (gameId: string, roundId: string, init?: ApiRequestInit): Promise<void> =>
   apiDelete<void>(`/games/${seg(gameId)}/rounds/${seg(roundId)}`, undefined, init);
 
-/** `PUT /games/{id}/rounds/{roundId}` — edit (update / thinking_time / …) + lifecycle (start / select / question_end). */
+/** `PUT /games/{id}/rounds/{roundId}` — edit (round_reorder_questions / round_set_thinking_time / …) + lifecycle (round_start / round_select / round_end_question). */
 export const updateRound = (
   gameId: string,
   roundId: string,

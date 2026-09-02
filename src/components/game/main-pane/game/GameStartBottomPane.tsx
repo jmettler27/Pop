@@ -1,4 +1,4 @@
-import { updateGame } from '@/api';
+import { GAME_ACTIONS, updateGame } from '@/api';
 import GoGameHomeButton from '@/components/game/main-pane/GoGameHomeButton';
 import ReadyPlayerController from '@/components/game/main-pane/ReadyPlayerController';
 import TimerPane from '@/components/game/timer/TimerPane';
@@ -36,7 +36,7 @@ function GameStartOrganizerController() {
   const gameId = useGameId();
 
   const [handleStartGame, isStarting] = useAsyncAction(async () => {
-    await updateGame(gameId, { action: 'start' });
+    await updateGame(gameId, { action: GAME_ACTIONS.Start });
   });
 
   return <GoGameHomeButton onClick={handleStartGame} disabled={isStarting} />;

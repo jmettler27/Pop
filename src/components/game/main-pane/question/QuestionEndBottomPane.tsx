@@ -1,7 +1,7 @@
 import { FastForward, Trophy } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { updateRound } from '@/api';
+import { ROUND_ACTIONS, updateRound } from '@/api';
 import ReadyPlayerController from '@/components/game/main-pane/ReadyPlayerController';
 import { Button } from '@/components/ui/button';
 import { useRoundOnce } from '@/hooks/firestore/round/useRoundHooks';
@@ -59,7 +59,7 @@ function QuestionEndOrganizerButton({ isLastQuestion }: QuestionEndOrganizerButt
   const { gameId, roundId, questionId } = useActiveQuestion()!;
 
   const [handleContinueClick, isEnding] = useAsyncAction(async () => {
-    await updateRound(gameId, roundId, { action: 'question_end', questionId });
+    await updateRound(gameId, roundId, { action: ROUND_ACTIONS.EndQuestion, questionId });
   });
 
   return (

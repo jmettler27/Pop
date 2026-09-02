@@ -1,6 +1,6 @@
 import { useIntl } from 'react-intl';
 
-import { updateGame } from '@/api';
+import { GAME_ACTIONS, updateGame } from '@/api';
 import { Button } from '@/components/ui/button';
 import useAsyncAction from '@/hooks/useAsyncAction';
 import useGameId from '@/hooks/useGameId';
@@ -15,7 +15,7 @@ export default function EndGameButton() {
   const gameId = useGameId();
 
   const [handleEndGame, isEnding] = useAsyncAction(async () => {
-    await updateGame(gameId as string, { action: 'end' });
+    await updateGame(gameId as string, { action: GAME_ACTIONS.End });
   });
 
   return (

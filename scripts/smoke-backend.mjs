@@ -129,20 +129,24 @@ async function main() {
     await call('POST', `/games/${g}/rounds/${r1}/questions`, { body: { questionId: 'mcq_2' } })
   );
   expect(
-    'PUT .../questions/mcq_1 {thinking_time,seconds}',
-    await call('PUT', `/games/${g}/rounds/${r1}/questions/mcq_1`, { body: { action: 'thinking_time', seconds: 20 } })
+    'PUT .../questions/mcq_1 {round_question_set_thinking_time}',
+    await call('PUT', `/games/${g}/rounds/${r1}/questions/mcq_1`, {
+      body: { action: 'round_question_set_thinking_time', seconds: 20 },
+    })
   );
   expect(
-    'PUT .../rounds/{r1} {update, reordered}',
-    await call('PUT', `/games/${g}/rounds/${r1}`, { body: { action: 'update', questions: ['mcq_2', 'mcq_1'] } })
+    'PUT .../rounds/{r1} {round_reorder_questions}',
+    await call('PUT', `/games/${g}/rounds/${r1}`, {
+      body: { action: 'round_reorder_questions', questions: ['mcq_2', 'mcq_1'] },
+    })
   );
   expect(
-    'PUT .../rounds/{r1} {thinking_time}',
-    await call('PUT', `/games/${g}/rounds/${r1}`, { body: { action: 'thinking_time', thinkingTime: 25 } })
+    'PUT .../rounds/{r1} {round_set_thinking_time}',
+    await call('PUT', `/games/${g}/rounds/${r1}`, { body: { action: 'round_set_thinking_time', thinkingTime: 25 } })
   );
   expect(
-    'PUT .../rounds/{r1} {challenge_time}',
-    await call('PUT', `/games/${g}/rounds/${r1}`, { body: { action: 'challenge_time', challengeTime: 30 } })
+    'PUT .../rounds/{r1} {round_set_challenge_time}',
+    await call('PUT', `/games/${g}/rounds/${r1}`, { body: { action: 'round_set_challenge_time', challengeTime: 30 } })
   );
   expect(
     'POST .../rounds/{r2}/questions basic_1',
@@ -166,10 +170,10 @@ async function main() {
   // A full mcq + a full buzzer question, each on its own fresh game with two
   // teams, driven through a VALID game lifecycle — back-pop's precondition guard
   // layer now enforces the state machine, so the order matters:
-  //   launch (game_edit→game_start) → players join + ready in the lobby →
-  //   game start (game_start→game_home) → round select (→round_start) →
-  //   round start (→question_active) → play → round question_end.
-  // `question_reset` / `question_countdown_end` / round `question_end` (and the
+  //   game_launch (game_edit→game_start) → players join + ready in the lobby →
+  //   game_start (game_start→game_home) → round_select (→round_start) →
+  //   round_start (→question_active) → play → round_end_question.
+  // `question_reset` / `question_countdown_end` / `round_end_question` (and the
   // guard-covered `question_close`, not re-exercised here) all share the bare
   // `{action}` shape.
   for (const type of ['mcq', 'basic']) {
@@ -184,7 +188,7 @@ async function main() {
     await call('POST', `/games/${gid}/rounds/${rid}/questions`, { body: { questionId: `${type}_2` } });
 
     // --- lobby: launch, then players join + ready while game_start ---
-    expect('launch', await call('PUT', `/games/${gid}`, { body: { action: 'launch' } }));
+    expect('game_launch', await call('PUT', `/games/${gid}`, { body: { action: 'game_launch' } }));
     expect(
       'bob joins (team Reds)',
       await call('POST', `/games/${gid}/players`, {
@@ -199,16 +203,19 @@ async function main() {
         body: { playerName: 'Charlie', playInTeams: true, joinTeam: false, teamName: 'Blues', teamColor: '#0000ff' },
       })
     );
-    expect('bob ready', await call('PUT', `/games/${gid}/players/bob`, { token: T.bob, body: { action: 'ready' } }));
+    expect(
+      'bob ready',
+      await call('PUT', `/games/${gid}/players/bob`, { token: T.bob, body: { action: 'player_ready' } })
+    );
     expect(
       'charlie ready',
-      await call('PUT', `/games/${gid}/players/charlie`, { token: T.charlie, body: { action: 'ready' } })
+      await call('PUT', `/games/${gid}/players/charlie`, { token: T.charlie, body: { action: 'player_ready' } })
     );
 
     // --- game_start → game_home → round_start → question_active ---
-    expect('game start', await call('PUT', `/games/${gid}`, { body: { action: 'start' } }));
-    expect('round select', await call('PUT', `/games/${gid}/rounds/${rid}`, { body: { action: 'select' } }));
-    expect('round start', await call('PUT', `/games/${gid}/rounds/${rid}`, { body: { action: 'start' } }));
+    expect('game start', await call('PUT', `/games/${gid}`, { body: { action: 'game_start' } }));
+    expect('round select', await call('PUT', `/games/${gid}/rounds/${rid}`, { body: { action: 'round_select' } }));
+    expect('round start', await call('PUT', `/games/${gid}/rounds/${rid}`, { body: { action: 'round_start' } }));
 
     const q1 = (await call('GET', `/games/${gid}`)).data.currentQuestion || `${type}_1`;
     const base1 = `/games/${gid}/rounds/${rid}/questions/${q1}`;
@@ -219,7 +226,7 @@ async function main() {
       [200]
     );
     expect('addSound', await call('POST', `/games/${gid}/sounds`, { body: { filename: 'pop' } }));
-    expect('timer start', await call('PUT', `/games/${gid}/timer`, { body: { action: 'start' } }));
+    expect('timer start', await call('PUT', `/games/${gid}/timer`, { body: { action: 'timer_start' } }));
     expect('question_reset (stays question_active)', await call('POST', base1, { body: { action: 'question_reset' } }));
 
     if (type === 'mcq') {
@@ -256,21 +263,21 @@ async function main() {
       );
     }
 
-    // round question_end → advance to the second question → question_countdown_end it → round_end
+    // round_end_question → advance to the second question → question_countdown_end it → round_end
     expect(
-      'round question_end (advance)',
-      await call('PUT', `/games/${gid}/rounds/${rid}`, { body: { action: 'question_end' } })
+      'round_end_question (advance)',
+      await call('PUT', `/games/${gid}/rounds/${rid}`, { body: { action: 'round_end_question' } })
     );
     const q2 = (await call('GET', `/games/${gid}`)).data.currentQuestion;
     if (q2 && q2 !== q1) {
       const base2 = `/games/${gid}/rounds/${rid}/questions/${q2}`;
       expect('question_countdown_end', await call('POST', base2, { body: { action: 'question_countdown_end' } }));
       expect(
-        'round question_end (end round)',
-        await call('PUT', `/games/${gid}/rounds/${rid}`, { body: { action: 'question_end' } })
+        'round_end_question (end round)',
+        await call('PUT', `/games/${gid}/rounds/${rid}`, { body: { action: 'round_end_question' } })
       );
     }
-    expect('game end', await call('PUT', `/games/${gid}`, { body: { action: 'end' } }));
+    expect('game end', await call('PUT', `/games/${gid}`, { body: { action: 'game_end' } }));
   }
 
   console.log(`\n===== ${pass} passed, ${fail} failed =====`);

@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ChevronDown, ChevronUp, Pencil, Timer as TimerIcon, Trash2 } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { removeRoundQuestion, updateRoundQuestion } from '@/api';
+import { removeRoundQuestion, ROUND_QUESTION_ACTIONS, updateRoundQuestion } from '@/api';
 import { QuestionCardContent, QuestionCardTitle } from '@/components/common/QuestionCard';
 import SubmitBasicQuestionForm from '@/components/question-forms/SubmitBasicQuestionForm';
 import SubmitBlindtestQuestionForm from '@/components/question-forms/SubmitBlindtestQuestionForm';
@@ -158,7 +158,10 @@ function EditQuestionCardInner({
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [editValue, setEditValue] = useState('');
   const [handleSaveThinkingTime, isSaving] = useAsyncAction(async (value: number) => {
-    await updateRoundQuestion(gameId, roundId, questionId, { action: 'thinking_time', seconds: value });
+    await updateRoundQuestion(gameId, roundId, questionId, {
+      action: ROUND_QUESTION_ACTIONS.SetThinkingTime,
+      seconds: value,
+    });
     setPopoverOpen(false);
   });
 
@@ -182,7 +185,10 @@ function EditQuestionCardInner({
   const [challengePopoverOpen, setChallengePopoverOpen] = useState(false);
   const [editValueChallenge, setEditValueChallenge] = useState('');
   const [handleSaveChallengeTime, isSavingChallenge] = useAsyncAction(async (value: number) => {
-    await updateRoundQuestion(gameId, roundId, questionId, { action: 'challenge_time', seconds: value });
+    await updateRoundQuestion(gameId, roundId, questionId, {
+      action: ROUND_QUESTION_ACTIONS.SetChallengeTime,
+      seconds: value,
+    });
     setChallengePopoverOpen(false);
   });
 

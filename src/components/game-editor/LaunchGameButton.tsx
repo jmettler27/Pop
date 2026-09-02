@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Rocket } from 'lucide-react';
 import { useIntl } from 'react-intl';
 
-import { updateGame } from '@/api';
+import { GAME_ACTIONS, updateGame } from '@/api';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -38,7 +38,7 @@ export function LaunchGameButton() {
   const [tvMode, setTvMode] = useState(false);
 
   const [handleLaunchGame, isLaunching] = useAsyncAction(async () => {
-    await updateGame(gameId, { action: 'launch' });
+    await updateGame(gameId, { action: GAME_ACTIONS.Launch });
     router.push(tvMode ? `/${gameId}?spectator=1` : `/${gameId}`);
   });
 

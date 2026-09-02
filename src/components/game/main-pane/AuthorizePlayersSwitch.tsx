@@ -1,6 +1,6 @@
 import { useIntl } from 'react-intl';
 
-import { updatePlayer } from '@/api';
+import { PLAYER_ACTIONS, updatePlayer } from '@/api';
 import { Switch } from '@/components/ui/switch';
 import useAsyncAction from '@/hooks/useAsyncAction';
 import useGameId from '@/hooks/useGameId';
@@ -22,7 +22,7 @@ export default function AuthorizePlayersSwitch({ authorized }: AuthorizePlayersS
 
   const [handleAuthorizePlayers, isAuthorizing] = useAsyncAction(async () => {
     // `toggle_authorization` is game-scoped; the Go handler ignores the {playerId} path segment.
-    await updatePlayer(gameId as string, userId as string, { action: 'toggle_authorization' });
+    await updatePlayer(gameId as string, userId as string, { action: PLAYER_ACTIONS.ToggleAuthorization });
   });
 
   return (

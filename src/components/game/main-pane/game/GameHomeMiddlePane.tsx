@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
-import { updateRound } from '@/api';
+import { ROUND_ACTIONS, updateRound } from '@/api';
 import ErrorScreen from '@/components/ErrorScreen';
 import LoadingScreen from '@/components/LoadingScreen';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -52,7 +52,7 @@ function GameHomeRounds() {
   const intl = useIntl();
 
   const [handleSelect, isHandling] = useAsyncAction(async (roundId: string) => {
-    await updateRound(gameId as string, roundId, { action: 'select' });
+    await updateRound(gameId as string, roundId, { action: ROUND_ACTIONS.Select });
   });
 
   const {

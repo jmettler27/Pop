@@ -2,7 +2,7 @@ import { useCallback, useRef } from 'react';
 
 import { useIntl } from 'react-intl';
 
-import { QUESTION_ACTIONS, questionAction, updateGame, updateRound } from '@/api';
+import { GAME_ACTIONS, QUESTION_ACTIONS, questionAction, ROUND_ACTIONS, updateGame, updateRound } from '@/api';
 import AuthorizePlayersSwitch from '@/components/game/main-pane/AuthorizePlayersSwitch';
 import OrganizerTimerController from '@/components/game/timer/OrganizerTimerController';
 import Timer, { type TimerData } from '@/components/game/timer/Timer';
@@ -50,10 +50,10 @@ function OrganizerTimerPane() {
 
       switch (currentStatus) {
         case GameStatus.GAME_START:
-          await updateGame(currentGameId, { action: 'start' });
+          await updateGame(currentGameId, { action: GAME_ACTIONS.Start });
           break;
         case GameStatus.ROUND_START:
-          await updateRound(currentGameId, currentRound, { action: 'start' });
+          await updateRound(currentGameId, currentRound, { action: ROUND_ACTIONS.Start });
           break;
         case GameStatus.QUESTION_ACTIVE:
           await questionAction(currentGameId, currentRound, currentQuestion, {
@@ -61,7 +61,10 @@ function OrganizerTimerPane() {
           });
           break;
         case GameStatus.QUESTION_END:
-          await updateRound(currentGameId, currentRound, { action: 'question_end', questionId: currentQuestion });
+          await updateRound(currentGameId, currentRound, {
+            action: ROUND_ACTIONS.EndQuestion,
+            questionId: currentQuestion,
+          });
           break;
       }
     } finally {

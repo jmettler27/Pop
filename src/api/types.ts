@@ -4,7 +4,14 @@
  * this in sync when the spec changes (a later PR may replace this with codegen).
  */
 
-import type { QuestionActionName } from './questionActions';
+import type {
+  GameActionName,
+  PlayerActionName,
+  QuestionActionName,
+  RoundActionName,
+  RoundQuestionActionName,
+  TimerActionName,
+} from './actions';
 
 // ---------------------------------------------------------------------------
 // Enums
@@ -171,11 +178,11 @@ export interface CreateGameRequest {
 }
 
 export interface GameActionRequest {
-  action: 'start' | 'reset' | 'end' | 'return_to_home' | 'resume_editing' | 'launch';
+  action: GameActionName;
 }
 
 export interface TimerActionRequest {
-  action: 'start' | 'stop' | 'reset' | 'end';
+  action: TimerActionName;
   duration?: number;
 }
 
@@ -193,7 +200,7 @@ export interface JoinGameRequest {
 }
 
 export interface PlayerActionRequest {
-  action: 'ready' | 'toggle_authorization' | 'reset_all_status';
+  action: PlayerActionName;
   authorized?: boolean | null;
 }
 
@@ -208,14 +215,14 @@ export interface AddRoundQuestionRequest {
 }
 
 export interface RoundActionRequest {
-  action: 'update' | 'thinking_time' | 'challenge_time' | 'start' | 'select' | 'question_end';
-  /** New question order (action = update). */
+  action: RoundActionName;
+  /** New question order (action = round_reorder_questions). */
   questions?: string[];
-  /** Seconds (action = thinking_time). */
+  /** Seconds (action = round_set_thinking_time). */
   thinkingTime?: number;
-  /** Seconds (action = challenge_time). */
+  /** Seconds (action = round_set_challenge_time). */
   challengeTime?: number;
-  /** Ended question id (action = question_end; informational). */
+  /** Ended question id (action = round_end_question; informational). */
   questionId?: string;
 }
 
@@ -225,14 +232,27 @@ export interface RoundActionRequest {
  * overrides a single one.
  */
 export interface RoundQuestionActionRequest {
-  action: 'thinking_time' | 'challenge_time';
+  action: RoundQuestionActionName;
   seconds: number;
 }
 
-// `QuestionActionName` + the `QUESTION_ACTIONS` name constants live in
-// `./questionActions` (imported above for local use; re-exported here and from
-// the `@/api` barrel so existing `@/api/types` importers keep working).
-export { QUESTION_ACTIONS, type QuestionActionName } from './questionActions';
+// The `*_ACTIONS` name constants and their `*ActionName` unions live in
+// `./actions` (imported above for local use; re-exported here and from the
+// `@/api` barrel so existing `@/api/types` importers keep working).
+export {
+  GAME_ACTIONS,
+  PLAYER_ACTIONS,
+  QUESTION_ACTIONS,
+  ROUND_ACTIONS,
+  ROUND_QUESTION_ACTIONS,
+  TIMER_ACTIONS,
+  type GameActionName,
+  type PlayerActionName,
+  type QuestionActionName,
+  type RoundActionName,
+  type RoundQuestionActionName,
+  type TimerActionName,
+} from './actions';
 
 /**
  * One flat body for every in-game question action (mirrors the spec — not a
