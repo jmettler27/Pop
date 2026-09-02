@@ -7,9 +7,9 @@ import { Gamepad2, HelpCircle, History, Trophy } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import { Badge } from '@/frontend/components/ui/badge';
-import type { Locale } from '@/frontend/helpers/locales';
-import defineMessages from '@/frontend/i18n/defineMessages';
+import { Badge } from '@/components/ui/badge';
+import type { Locale } from '@/helpers/locales';
+import defineMessages from '@/i18n/defineMessages';
 import { questionTypeToDescription } from '@/models/questions/question-type';
 import { RoundType, roundTypeToEmoji, roundTypeToTitle } from '@/models/rounds/round-type';
 

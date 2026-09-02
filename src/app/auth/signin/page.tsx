@@ -6,11 +6,11 @@ import { useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import { Button } from '@/frontend/components/ui/button';
-import { Input } from '@/frontend/components/ui/input';
-import { Separator } from '@/frontend/components/ui/separator';
-import { DEFAULT_BACKGROUND } from '@/frontend/helpers/background';
-import defineMessages from '@/frontend/i18n/defineMessages';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import { DEFAULT_BACKGROUND } from '@/helpers/background';
+import defineMessages from '@/i18n/defineMessages';
 
 const messages = defineMessages('app.auth.signin', {
   subtitle: 'Sign in to continue',

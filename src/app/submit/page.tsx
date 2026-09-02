@@ -7,10 +7,10 @@ import { CirclePlus } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useIntl } from 'react-intl';
 
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/frontend/components/ui/card';
-import { Locale } from '@/frontend/helpers/locales';
-import defineMessages from '@/frontend/i18n/defineMessages';
-import globalMessages from '@/frontend/i18n/globalMessages';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Locale } from '@/helpers/locales';
+import defineMessages from '@/i18n/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
 import {
   prependQuestionTypeWithEmoji,
   QuestionType,

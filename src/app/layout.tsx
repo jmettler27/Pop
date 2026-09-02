@@ -6,11 +6,12 @@ import '@/app/globals.css';
 import { getServerSession } from 'next-auth';
 
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import FirebaseAuthProvider from '@/app/FirebaseAuthProvider';
 import LocaleProvider from '@/app/LocaleProvider';
 import QueryProvider from '@/app/QueryProvider';
 import SessionProvider from '@/app/SessionProvider';
-import { TooltipProvider } from '@/frontend/components/ui/tooltip';
-import { cn } from '@/frontend/lib/utils';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -31,9 +32,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <body className={`${inter.className} bg-slate-800 text-slate-100`}>
         <QueryProvider>
           <SessionProvider session={session}>
-            <LocaleProvider>
-              <TooltipProvider>{children}</TooltipProvider>
-            </LocaleProvider>
+            <FirebaseAuthProvider>
+              <LocaleProvider>
+                <TooltipProvider>{children}</TooltipProvider>
+              </LocaleProvider>
+            </FirebaseAuthProvider>
           </SessionProvider>
         </QueryProvider>
       </body>

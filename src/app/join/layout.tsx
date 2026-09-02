@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 
-import AppFooter from '@/frontend/components/AppFooter';
-import NavigationBar from '@/frontend/components/home/NavigationBar';
-import { DEFAULT_BACKGROUND } from '@/frontend/helpers/background';
+import AppFooter from '@/components/AppFooter';
+import NavigationBar from '@/components/home/NavigationBar';
+import { DEFAULT_BACKGROUND } from '@/helpers/background';
 
 export default function JoinLayout({ children }: { children: ReactNode }) {
   return (

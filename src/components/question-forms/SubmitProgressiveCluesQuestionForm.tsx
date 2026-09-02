@@ -1,0 +1,334 @@
+import React, { useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+import { Field, FieldArray, useField, useFormikContext } from 'formik';
+import { Plus, Trash2 } from 'lucide-react';
+import { useIntl } from 'react-intl';
+import * as Yup from 'yup';
+import type { ObjectSchema } from 'yup';
+
+import { Wizard, WizardStep } from '@/components/common/MultiStepComponents';
+import SelectLanguage from '@/components/common/SelectLanguage';
+import SelectQuestionTopic from '@/components/common/SelectQuestionTopic';
+import { MyTextInput, StyledErrorMessage } from '@/components/common/StyledFormComponents';
+import { UploadImage } from '@/components/common/UploadFile';
+import { Button } from '@/components/ui/button';
+import { imageFileSchema } from '@/helpers/forms/files';
+import { numCharsIndicator, requiredStringInArrayFieldIndicator, stringSchema } from '@/helpers/forms/forms';
+import { messages as questionMessages } from '@/helpers/forms/questions';
+import { submitQuestionForm, type QuestionFormPayload } from '@/helpers/forms/submitQuestionForm';
+import { topicSchema } from '@/helpers/forms/topics';
+import { DEFAULT_LOCALE, Locale, localeSchema } from '@/helpers/locales';
+import useAsyncAction from '@/hooks/useAsyncAction';
+import defineMessages from '@/i18n/defineMessages';
+import globalMessages from '@/i18n/globalMessages';
+import { ProgressiveCluesQuestion } from '@/models/questions/progressive-clues';
+import { QuestionType } from '@/models/questions/question-type';
+import { Topic } from '@/models/topic';
+
+const messages = defineMessages('frontend.forms.submitQuestion.progressiveClues', {
+  numCluesAllowed: 'Number of clues allowed',
+  addClue: 'Add clue',
+});
+
+const QUESTION_TYPE = QuestionType.PROGRESSIVE_CLUES;
+
+const PROGRESSIVE_CLUES_CLUES_EXAMPLE: { en: string[]; fr: string[] } = {
+  en: [
+    'My actor was born in the 1960s.',
+    'As a huge comic book fan, my stage name refers to the surname of a Marvel superhero.',
+    'I also lent my voice to Superman and Spider-Man.',
+    "Among the directors I've worked with are the Coen brothers, Martin Scorsese, John Woo and David Lynch.",
+    'My career reached its critical and commercial peak in the 1990s.',
+    '...but it would later be littered with a huge number of B-movies.',
+    "I'm part of the Coppola family.",
+    'I played an arms dealer, a biker superhero and a treasure hunter...',
+    '...named Benjamin Gates.',
+    'Nicolas in a cage.',
+  ],
+  fr: [
+    'Mon acteur est né dans les années 1960',
+    "En tant que grand fan de comics, mon nom de scène fait référence au nom de famille d'un super-héros Marvel.",
+    "De plus, j'ai prêté ma voix à Superman et à Spider-Man.",
+    "Parmi les réalisateurs avec qui j'ai collaboré, on compte les frères Coen, Martin Scorsese, John Woo ou encore David Lynch.",
+    'Ma carrière atteint son apogée critique et commercial dans les années 1990...',
+    "…mais elle sera plus tard jonchée d'énormément de films de série B.",
+    'Je fais partie de la famille Coppola.',
+    "J'ai interprété tour à tour un marchand d'armes, un super-héros motard et un chasseur de trésors...",
+    '...nommé Benjamin Gates.',
+    'Nicolas dans sa cage.',
+  ],
+};
+
+const progressiveCluesSchema = () =>
+  Yup.array()
+    .of(
+      Yup.string()
+        .trim()
+        .max(
+          ProgressiveCluesQuestion.CLUE_MAX_LENGTH,
+          `Must be ${ProgressiveCluesQuestion.CLUE_MAX_LENGTH} characters or less.`
+        )
+        .required('Required.')
+    )
+    .min(
+      ProgressiveCluesQuestion.MIN_NUM_CLUES,
+      `There must be at least ${ProgressiveCluesQuestion.MIN_NUM_CLUES} clues.`
+    )
+    .max(
+      ProgressiveCluesQuestion.MAX_NUM_CLUES,
+      `There can be at most ${ProgressiveCluesQuestion.MAX_NUM_CLUES} clues.`
+    );
+
+interface PCFormValues {
+  lang: string;
+  topic: string;
+  title: string;
+  answer_title: string;
+  clues: string[];
+  files: string;
+}
+
+interface QuestionFormProps {
+  questionToEdit?: Record<string, unknown>;
+  inGameEditor?: boolean;
+  inSubmitPage?: boolean;
+  gameId?: string;
+  roundId?: string;
+  onDialogClose?: () => void;
+}
+
+export default function SubmitProgressiveCluesQuestionForm(props: QuestionFormProps) {
+  const router = useRouter();
+  const q = props.questionToEdit as Record<string, unknown> | undefined;
+
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [image, setImage] = useState<File | null>(null);
+
+  const [submitProgressiveCluesQuestion, isSubmitting] = useAsyncAction(
+    async (values: PCFormValues, image: File | null) => {
+      try {
+        const { files: _files, topic, lang, ...others } = values as typeof values & { topic: Topic; lang: Locale };
+        const { title, clues, answer_title } = others;
+
+        const data: QuestionFormPayload = {
+          type: QUESTION_TYPE,
+          topic,
+          lang,
+          details: { title, clues, answer: { title: answer_title } },
+        };
+        await submitQuestionForm(data, {
+          editId: q?.id as string | undefined,
+          files: { image: image || undefined },
+          round: props.inGameEditor ? { gameId: props.gameId as string, roundId: props.roundId as string } : undefined,
+        });
+      } catch (error) {
+        console.error('Failed to submit your question:', error);
+      }
+    }
+  );
+
+  const qAnswer = q?.answer as Record<string, string> | undefined;
+
+  return (
+    <Wizard
+      key={(q?.id as string) ?? 'new'}
+      initialValues={
+        q
+          ? {
+              lang: (q.lang as string) || DEFAULT_LOCALE,
+              topic: (q.topic as string) || '',
+              title: (q.title as string) || '',
+              answer_title: qAnswer?.title || '',
+              clues: (q.clues as string[]) || [''],
+              files: '',
+            }
+          : {
+              lang: DEFAULT_LOCALE,
+              topic: '',
+              title: '',
+              answer_title: '',
+              clues: [''],
+              files: '',
+            }
+      }
+      onSubmit={async (values) => {
+        await submitProgressiveCluesQuestion(values as PCFormValues, image);
+        if (props.inSubmitPage) {
+          router.push('/submit');
+        } else if (props.inGameEditor) {
+          props.onDialogClose?.();
+        }
+      }}
+      isSubmitting={isSubmitting}
+    >
+      {/* Step 1: General info */}
+      <GeneralInfoStep
+        onSubmit={() => {}}
+        validationSchema={Yup.object({
+          lang: localeSchema(),
+          topic: topicSchema(),
+          title: stringSchema(ProgressiveCluesQuestion.TITLE_MAX_LENGTH),
+          answer_title: stringSchema(ProgressiveCluesQuestion.ANSWER_TITLE_MAX_LENGTH),
+        })}
+      />
+
+      {/* Step 2: clues */}
+      <EnterCluesStep
+        onSubmit={() => {}}
+        validationSchema={Yup.object({
+          clues: progressiveCluesSchema(),
+        })}
+      />
+
+      {/* Step 3: image */}
+      <SelectImageStep
+        onSubmit={() => {}}
+        validationSchema={Yup.object({
+          files: imageFileSchema(image, false),
+        })}
+        fileRef={fileRef}
+        existingUrl={qAnswer?.image}
+        image={image}
+        onFileChange={setImage}
+      />
+    </Wizard>
+  );
+}
+
+interface StepProps {
+  onSubmit: () => void;
+  validationSchema: ObjectSchema<Record<string, unknown>>;
+  children?: React.ReactNode;
+}
+
+function GeneralInfoStep({ onSubmit, validationSchema }: StepProps) {
+  const intl = useIntl();
+  return (
+    <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
+      <SelectLanguage name="lang" validationSchema={validationSchema} />
+
+      <SelectQuestionTopic name="topic" validationSchema={validationSchema} />
+
+      <MyTextInput
+        label={intl.formatMessage(questionMessages.questionTitle)}
+        name="title"
+        type="text"
+        placeholder="Actor"
+        validationSchema={validationSchema}
+        maxLength={ProgressiveCluesQuestion.TITLE_MAX_LENGTH}
+      />
+
+      <MyTextInput
+        label={intl.formatMessage(questionMessages.answer)}
+        name="answer_title"
+        type="text"
+        placeholder="Nicolas Cage"
+        validationSchema={validationSchema}
+        maxLength={ProgressiveCluesQuestion.ANSWER_TITLE_MAX_LENGTH}
+      />
+    </WizardStep>
+  );
+}
+
+function EnterCluesStep({ onSubmit, validationSchema }: StepProps) {
+  const intl = useIntl();
+  const formik = useFormikContext<PCFormValues>();
+
+  const values = formik.values;
+  const errors = formik.errors;
+
+  const ClueError = ({ index }: { index: number }) => {
+    const [, meta] = useField('clues.' + index);
+    return (
+      typeof errors.clues === 'object' &&
+      meta.touched &&
+      meta.error && <StyledErrorMessage>{meta.error}</StyledErrorMessage>
+    );
+  };
+
+  return (
+    <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
+      <p className="mb-4">
+        {intl.formatMessage(messages.numCluesAllowed)}: {ProgressiveCluesQuestion.MIN_NUM_CLUES}-
+        {ProgressiveCluesQuestion.MAX_NUM_CLUES}
+      </p>
+
+      <FieldArray name="clues">
+        {({ remove, push }) => (
+          <div>
+            {values.clues.length > 0 &&
+              values.clues.map((clue, index) => (
+                <div className="row" key={index}>
+                  <label htmlFor={'clues.' + index}>
+                    {requiredStringInArrayFieldIndicator(validationSchema, 'clues', intl)}
+                    {intl.formatMessage(globalMessages.clue)} #{index + 1}{' '}
+                    {numCharsIndicator(clue, ProgressiveCluesQuestion.CLUE_MAX_LENGTH)}
+                  </label>
+                  <Field
+                    name={'clues.' + index}
+                    placeholder={(() => {
+                      const clues =
+                        intl.locale === 'fr'
+                          ? PROGRESSIVE_CLUES_CLUES_EXAMPLE['fr']
+                          : PROGRESSIVE_CLUES_CLUES_EXAMPLE['en'];
+                      return index < clues.length ? clues[index] : 'Some clue';
+                    })()}
+                    type="text"
+                  />
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-destructive hover:bg-destructive/10"
+                    onClick={() => remove(index)}
+                  >
+                    <Trash2 />
+                  </Button>
+
+                  <ClueError index={index} />
+                </div>
+              ))}
+            <Button variant="outline" onClick={() => push('')}>
+              <Plus className="mr-2 size-4" />
+              {intl.formatMessage(messages.addClue)}
+            </Button>
+          </div>
+        )}
+      </FieldArray>
+
+      {typeof errors.clues === 'string' && <StyledErrorMessage>{errors.clues}</StyledErrorMessage>}
+    </WizardStep>
+  );
+}
+
+interface SelectImageStepProps {
+  onSubmit: () => void;
+  validationSchema: ObjectSchema<Record<string, unknown>>;
+  fileRef: React.RefObject<HTMLInputElement | null>;
+  existingUrl?: string;
+  image: File | null;
+  onFileChange: (file: File | null) => void;
+}
+
+function SelectImageStep({
+  onSubmit,
+  validationSchema,
+  fileRef,
+  existingUrl,
+  image,
+  onFileChange,
+}: SelectImageStepProps) {
+  return (
+    <WizardStep onSubmit={onSubmit} validationSchema={validationSchema}>
+      <UploadImage
+        fileRef={fileRef}
+        name="files"
+        validationSchema={validationSchema}
+        existingUrl={existingUrl}
+        image={image}
+        onFileChange={onFileChange}
+      />
+    </WizardStep>
+  );
+}

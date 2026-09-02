@@ -1,0 +1,305 @@
+import { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+
+import { Form, Formik, useField, useFormikContext } from 'formik';
+import { useIntl } from 'react-intl';
+import * as Yup from 'yup';
+import type { ObjectSchema } from 'yup';
+
+import SelectLanguage from '@/components/common/SelectLanguage';
+import SelectQuestionTopic from '@/components/common/SelectQuestionTopic';
+import { MySelect, MyTextInput, StyledLabel } from '@/components/common/StyledFormComponents';
+import SubmitFormButton from '@/components/common/SubmitFormButton';
+import { SelectItem } from '@/components/ui/select';
+import { stringSchema } from '@/helpers/forms/forms';
+import { messages as questionMessages } from '@/helpers/forms/questions';
+import { submitQuestionForm, type QuestionFormPayload } from '@/helpers/forms/submitQuestionForm';
+import { topicSchema } from '@/helpers/forms/topics';
+import { DEFAULT_LOCALE, Locale, localeSchema } from '@/helpers/locales';
+import useAsyncAction from '@/hooks/useAsyncAction';
+import defineMessages from '@/i18n/defineMessages';
+import { EstimationQuestion } from '@/models/questions/estimation';
+import { QuestionType } from '@/models/questions/question-type';
+import { Topic } from '@/models/topic';
+
+const { AnswerType } = EstimationQuestion;
+
+const messages = defineMessages('frontend.forms.submitQuestion.estimation', {
+  answerTypeLabel: 'Type of answer',
+  answerTypeInteger: 'Integer (e.g. 5)',
+  answerTypeDecimal: 'Decimal (e.g. 0.5)',
+  answerTypeYear: 'Year (e.g. 2009)',
+  answerTypeDate: 'Precise date (e.g. 06.25.2009)',
+  answerIntegerLabel: 'Answer (integer)',
+  answerDecimalLabel: 'Answer (decimal)',
+  answerYearLabel: 'Answer (year)',
+  answerDateLabel: 'Answer (date)',
+});
+
+const answerSchema = () =>
+  Yup.string()
+    .required('Required.')
+    .when('answerType', ([answerType], schema) => {
+      switch (answerType) {
+        case AnswerType.INTEGER:
+          return schema
+            .matches(/^-?\d+$/, 'Must be a whole number')
+            .test(
+              'integer-range',
+              `Must be between ${EstimationQuestion.INTEGER_MIN} and ${EstimationQuestion.INTEGER_MAX}`,
+              (v) => {
+                const n = parseInt(v, 10);
+                return !isNaN(n) && n >= EstimationQuestion.INTEGER_MIN && n <= EstimationQuestion.INTEGER_MAX;
+              }
+            );
+        case AnswerType.DECIMAL:
+          return schema
+            .matches(/^-?\d+(\.\d+)?$/, 'Must be a valid number (e.g. 3.14)')
+            .test(
+              'decimal-range',
+              `Must be between ${EstimationQuestion.DECIMAL_MIN} and ${EstimationQuestion.DECIMAL_MAX}`,
+              (v) => {
+                const n = parseFloat(v);
+                return !isNaN(n) && n >= EstimationQuestion.DECIMAL_MIN && n <= EstimationQuestion.DECIMAL_MAX;
+              }
+            );
+        case AnswerType.YEAR:
+          return schema
+            .matches(/^\d{1,4}$/, 'Must be a valid year')
+            .test('year-range', 'Must be between 1 and 9999', (v) => {
+              const n = parseInt(v, 10);
+              return !isNaN(n) && n >= EstimationQuestion.YEAR_MIN && n <= EstimationQuestion.YEAR_MAX;
+            });
+        case AnswerType.DATE:
+          return schema.matches(/^\d{4}-\d{2}-\d{2}$/, 'Must be a valid date');
+        default:
+          return schema;
+      }
+    });
+
+interface EstimationFormValues {
+  lang: string;
+  topic: string;
+  source: string;
+  title: string;
+  note: string;
+  answerType: string;
+  answer: string;
+  explanation: string;
+}
+
+// Resets `answer` to '' whenever `answerType` changes, so stale values don't leak across types.
+// Skips initial mount so existing questions keep their saved answer on edit.
+function AnswerTypeWatcher() {
+  const { values, setFieldValue } = useFormikContext<EstimationFormValues>();
+  const answerType = values.answerType;
+  const mounted = useRef(false);
+
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    setFieldValue('answer', '');
+  }, [answerType]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return null;
+}
+
+interface AnswerInputProps {
+  answerType: string;
+  validationSchema: ObjectSchema<Record<string, unknown>>;
+}
+
+function AnswerInput({ answerType, validationSchema }: AnswerInputProps) {
+  const intl = useIntl();
+  const { values, setFieldValue } = useFormikContext<EstimationFormValues>();
+  const [, meta] = useField('answer');
+
+  if (answerType === AnswerType.YEAR) {
+    return (
+      <MyTextInput
+        label={intl.formatMessage(messages.answerYearLabel)}
+        name="answer"
+        type="number"
+        step="1"
+        min={EstimationQuestion.YEAR_MIN}
+        max={EstimationQuestion.YEAR_MAX}
+        placeholder="2009"
+        validationSchema={validationSchema}
+      />
+    );
+  }
+
+  if (answerType === AnswerType.DATE) {
+    return (
+      <>
+        <StyledLabel htmlFor="answer">{intl.formatMessage(messages.answerDateLabel)} *</StyledLabel>
+        <input
+          id="answer"
+          name="answer"
+          type="date"
+          className="text-input text-xs sm:text-sm md:text-base"
+          min={EstimationQuestion.DATE_MIN}
+          max={EstimationQuestion.DATE_MAX}
+          lang={intl.locale}
+          value={values.answer || ''}
+          onChange={(e) => setFieldValue('answer', e.target.value)}
+          onBlur={() => {}}
+        />
+        {meta.touched && meta.error && <div className="error text-xs sm:text-sm">{meta.error}</div>}
+      </>
+    );
+  }
+
+  // INTEGER or DECIMAL
+  const isDecimal = answerType === AnswerType.DECIMAL;
+  return (
+    <MyTextInput
+      label={intl.formatMessage(isDecimal ? messages.answerDecimalLabel : messages.answerIntegerLabel)}
+      name="answer"
+      type="number"
+      step={isDecimal ? 'any' : '1'}
+      placeholder={isDecimal ? '0.5' : '5'}
+      validationSchema={validationSchema}
+    />
+  );
+}
+
+interface QuestionFormProps {
+  questionToEdit?: Record<string, unknown>;
+  inGameEditor?: boolean;
+  inSubmitPage?: boolean;
+  gameId?: string;
+  roundId?: string;
+  onDialogClose?: () => void;
+}
+
+export default function SubmitEstimationQuestionForm(props: QuestionFormProps) {
+  const intl = useIntl();
+  const router = useRouter();
+  const q = props.questionToEdit as Record<string, unknown> | undefined;
+
+  const [submitEstimationQuestion, isSubmitting] = useAsyncAction(async (values: EstimationFormValues) => {
+    try {
+      const { topic, lang, ...others } = values as typeof values & { topic: Topic; lang: Locale };
+      const data: QuestionFormPayload = { type: QuestionType.ESTIMATION, topic, lang, details: { ...others } };
+      await submitQuestionForm(data, {
+        editId: q?.id as string | undefined,
+        round: props.inGameEditor ? { gameId: props.gameId as string, roundId: props.roundId as string } : undefined,
+      });
+    } catch (error) {
+      console.error('Failed to submit your question:', error);
+    }
+  });
+
+  const validationSchema = Yup.object({
+    lang: localeSchema(),
+    topic: topicSchema(),
+    source: stringSchema(EstimationQuestion.SOURCE_MAX_LENGTH, false),
+    title: stringSchema(EstimationQuestion.TITLE_MAX_LENGTH),
+    note: stringSchema(EstimationQuestion.NOTE_MAX_LENGTH, false),
+    answerType: Yup.string().oneOf(Object.values(AnswerType)).required('Required.'),
+    answer: answerSchema(),
+    explanation: stringSchema(EstimationQuestion.EXPLANATION_MAX_LENGTH, false),
+  });
+
+  const initialAnswerType = (q?.answerType as string) || AnswerType.INTEGER;
+
+  return (
+    <Formik
+      initialValues={
+        q
+          ? {
+              lang: (q.lang as string) || DEFAULT_LOCALE,
+              topic: (q.topic as string) || '',
+              source: (q.source as string) || '',
+              title: (q.title as string) || '',
+              note: (q.note as string) || '',
+              answerType: initialAnswerType,
+              answer: (q.answer as string) || '',
+              explanation: (q.explanation as string) || '',
+            }
+          : {
+              lang: DEFAULT_LOCALE,
+              topic: '',
+              source: '',
+              title: '',
+              note: '',
+              answerType: AnswerType.INTEGER,
+              answer: '',
+              explanation: '',
+            }
+      }
+      validationSchema={validationSchema}
+      enableReinitialize
+      onSubmit={async (values) => {
+        await submitEstimationQuestion(values);
+        if (props.inSubmitPage) {
+          router.push('/submit');
+        } else if (props.inGameEditor) {
+          props.onDialogClose?.();
+        }
+      }}
+    >
+      {({ values }) => (
+        <Form>
+          <AnswerTypeWatcher />
+
+          <SelectLanguage name="lang" validationSchema={validationSchema} />
+
+          <SelectQuestionTopic name="topic" validationSchema={validationSchema} />
+
+          <MyTextInput
+            label={intl.formatMessage(questionMessages.questionSource)}
+            name="source"
+            type="text"
+            placeholder="Minecraft"
+            validationSchema={validationSchema}
+            maxLength={EstimationQuestion.SOURCE_MAX_LENGTH}
+          />
+
+          <MyTextInput
+            label={intl.formatMessage(questionMessages.questionTitle)}
+            name="title"
+            type="text"
+            placeholder="How much sand is needed to craft sandstone?"
+            validationSchema={validationSchema}
+            maxLength={EstimationQuestion.TITLE_MAX_LENGTH}
+          />
+
+          <MyTextInput
+            label={intl.formatMessage(questionMessages.hintsRemarks)}
+            name="note"
+            type="text"
+            validationSchema={validationSchema}
+            maxLength={EstimationQuestion.NOTE_MAX_LENGTH}
+          />
+
+          <MySelect
+            label={intl.formatMessage(messages.answerTypeLabel)}
+            name="answerType"
+            validationSchema={validationSchema}
+          >
+            <SelectItem value={AnswerType.INTEGER}>{intl.formatMessage(messages.answerTypeInteger)}</SelectItem>
+            <SelectItem value={AnswerType.DECIMAL}>{intl.formatMessage(messages.answerTypeDecimal)}</SelectItem>
+            <SelectItem value={AnswerType.YEAR}>{intl.formatMessage(messages.answerTypeYear)}</SelectItem>
+            <SelectItem value={AnswerType.DATE}>{intl.formatMessage(messages.answerTypeDate)}</SelectItem>
+          </MySelect>
+
+          <AnswerInput answerType={values.answerType} validationSchema={validationSchema} />
+
+          <MyTextInput
+            label={intl.formatMessage(questionMessages.explanation)}
+            name="explanation"
+            type="text"
+            validationSchema={validationSchema}
+            maxLength={EstimationQuestion.EXPLANATION_MAX_LENGTH}
+          />
+
+          <SubmitFormButton isSubmitting={isSubmitting} label={intl.formatMessage(questionMessages.submit)} />
+        </Form>
+      )}
+    </Formik>
+  );
+}

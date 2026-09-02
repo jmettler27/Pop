@@ -4,8 +4,8 @@ import { redirect } from 'next/navigation';
 
 import { useSession } from 'next-auth/react';
 
-import QuestionFormHeader from '@/frontend/components/common/QuestionFormHeader';
-import SubmitMatchingQuestionForm from '@/frontend/components/question-forms/SubmitMatchingQuestionForm';
+import QuestionFormHeader from '@/components/common/QuestionFormHeader';
+import SubmitMatchingQuestionForm from '@/components/question-forms/SubmitMatchingQuestionForm';
 import { QuestionType } from '@/models/questions/question-type';
 
 const QUESTION_TYPE = QuestionType.MATCHING;
@@ -24,7 +24,7 @@ export default function Page() {
   return (
     <>
       <QuestionFormHeader questionType={QUESTION_TYPE} />
-      <SubmitMatchingQuestionForm userId={session.user.id} inSubmitPage={true} />
+      <SubmitMatchingQuestionForm inSubmitPage={true} />
     </>
   );
 }

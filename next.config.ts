@@ -7,6 +7,14 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '4mb',
     },
   },
+  // Proxy the Go backend (`back-pop`) under a same-origin path so the browser
+  // needs no CORS. Active only when `BACKEND_ORIGIN` is set (dev); in prod the
+  // client can instead point `NEXT_PUBLIC_BACKEND_URL` straight at the service.
+  async rewrites() {
+    const backendOrigin = process.env.BACKEND_ORIGIN;
+    if (!backendOrigin) return [];
+    return [{ source: '/api/backend/:path*', destination: `${backendOrigin}/:path*` }];
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [

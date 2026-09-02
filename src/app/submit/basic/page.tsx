@@ -4,8 +4,8 @@ import { redirect } from 'next/navigation';
 
 import { useSession } from 'next-auth/react';
 
-import QuestionFormHeader from '@/frontend/components/common/QuestionFormHeader';
-import SubmitBasicQuestionForm from '@/frontend/components/question-forms/SubmitBasicQuestionForm';
+import QuestionFormHeader from '@/components/common/QuestionFormHeader';
+import SubmitBasicQuestionForm from '@/components/question-forms/SubmitBasicQuestionForm';
 import { QuestionType } from '@/models/questions/question-type';
 
 const QUESTION_TYPE = QuestionType.BASIC;
@@ -24,7 +24,7 @@ export default function Page() {
   return (
     <>
       <QuestionFormHeader questionType={QUESTION_TYPE} />
-      <SubmitBasicQuestionForm userId={session.user.id} inSubmitPage={true} />
+      <SubmitBasicQuestionForm inSubmitPage={true} />
     </>
   );
 }
