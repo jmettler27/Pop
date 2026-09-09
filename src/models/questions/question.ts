@@ -1,4 +1,4 @@
-import { Locale } from '@/frontend/helpers/locales';
+import { Locale } from '@/helpers/locales';
 import { isValidQuestionType, type QuestionType } from '@/models/questions/question-type';
 import { isValidTopic, type Topic } from '@/models/topic';
 

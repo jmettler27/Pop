@@ -47,3 +47,6 @@ firebase-export-*
 
 *.cursor*
 .env*
+
+# Claude
+.claude/plans/**

@@ -1,5 +1,5 @@
-import { DEFAULT_LOCALE, type Locale } from '@/frontend/helpers/locales';
-import { prependWithEmojiAndSpace } from '@/frontend/helpers/strings';
+import { DEFAULT_LOCALE, type Locale } from '@/helpers/locales';
+import { prependWithEmojiAndSpace } from '@/helpers/strings';
 import { QuestionType } from '@/models/questions/question-type';
 
 export const RoundType = {

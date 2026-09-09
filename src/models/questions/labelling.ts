@@ -1,6 +1,6 @@
+import { isObjectEmpty, omit } from '@/helpers/objects';
 import { BaseQuestion, GameQuestion, type BaseQuestionData, type GameQuestionData } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
-import { isObjectEmpty, omit } from '@/utils/objects';
 
 export interface LabellingQuestionData extends BaseQuestionData {
   title?: string;

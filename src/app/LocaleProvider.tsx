@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 
 import { IntlProvider } from 'react-intl';
 
-import { DEFAULT_LOCALE, type Locale } from '@/frontend/helpers/locales';
+import { DEFAULT_LOCALE, type Locale } from '@/helpers/locales';
 
 interface LocaleContextValue {
   locale: Locale;
@@ -24,10 +24,10 @@ const LOCALE_STORAGE_KEY = 'pop-locale';
 
 async function loadMessages(locale: Locale): Promise<Record<string, string>> {
   if (locale === 'fr') {
-    const mod = await import('@/frontend/i18n/locale/fr.json');
+    const mod = await import('@/i18n/locale/fr.json');
     return (mod.default ?? mod) as Record<string, string>;
   }
-  const mod = await import('@/frontend/i18n/locale/en.json');
+  const mod = await import('@/i18n/locale/en.json');
   return (mod.default ?? mod) as Record<string, string>;
 }
 

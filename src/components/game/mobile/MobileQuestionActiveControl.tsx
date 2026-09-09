@@ -1,0 +1,101 @@
+'use client';
+
+import GameChooserTeamAnnouncement from '@/components/game/chooser/GameChooserTeamAnnouncement';
+import QuestionMiddlePane from '@/components/game/main-pane/question/QuestionMiddlePane';
+import MobileBuzzerControl from '@/components/game/mobile/MobileBuzzerControl';
+import MobileEnumerationControl from '@/components/game/mobile/MobileEnumerationControl';
+import MobileMatchingControl from '@/components/game/mobile/MobileMatchingControl';
+import MobileMCQControl from '@/components/game/mobile/MobileMCQControl';
+import MobileNaguiControl from '@/components/game/mobile/MobileNaguiControl';
+import MobileOddOneOutControl from '@/components/game/mobile/MobileOddOneOutControl';
+import RotateDevicePrompt from '@/components/game/mobile/RotateDevicePrompt';
+import { ActiveQuestionProvider } from '@/contexts/ActiveQuestionContext';
+import useGame from '@/hooks/useGame';
+import useOrientation, { Orientation } from '@/hooks/useOrientation';
+import { QuestionType } from '@/models/questions/question-type';
+
+const LANDSCAPE_REQUIRED_TYPES = new Set<QuestionType>([QuestionType.MATCHING]);
+
+const MIDDLE_PANE_TYPES = new Set<QuestionType>([QuestionType.ESTIMATION, QuestionType.REORDERING]);
+
+const BUZZER_TYPES = new Set<QuestionType>([
+  QuestionType.BASIC,
+  QuestionType.BLINDTEST,
+  QuestionType.EMOJI,
+  QuestionType.IMAGE,
+  QuestionType.PROGRESSIVE_CLUES,
+  QuestionType.QUOTE,
+  QuestionType.LABELLING,
+]);
+
+export default function MobileQuestionActiveControl() {
+  const game = useGame();
+  const orientation = useOrientation();
+  if (!game) return null;
+
+  const questionType = game.currentQuestionType as QuestionType;
+
+  return (
+    <ActiveQuestionProvider
+      gameId={game.id as string}
+      roundId={game.currentRound as string}
+      questionId={game.currentQuestion as string}
+      questionType={questionType}
+    >
+      <SelectedMobileQuestionActiveControl questionType={questionType} orientation={orientation} />
+    </ActiveQuestionProvider>
+  );
+}
+
+function SelectedMobileQuestionActiveControl({
+  questionType,
+  orientation,
+}: {
+  questionType: QuestionType;
+  orientation: Orientation | null;
+}) {
+  if (LANDSCAPE_REQUIRED_TYPES.has(questionType) && orientation === Orientation.PORTRAIT) {
+    return <RotateDevicePrompt />;
+  }
+
+  if (MIDDLE_PANE_TYPES.has(questionType)) {
+    return (
+      <div className="h-full overflow-auto py-4">
+        <QuestionMiddlePane />
+      </div>
+    );
+  }
+
+  if (BUZZER_TYPES.has(questionType)) {
+    return <MobileBuzzerControl />;
+  }
+
+  if (questionType === QuestionType.ENUMERATION) {
+    return <MobileEnumerationControl />;
+  }
+
+  if (questionType === QuestionType.MATCHING) {
+    return <MobileMatchingControl />;
+  }
+
+  if (questionType === QuestionType.MCQ) {
+    return <MobileMCQControl />;
+  }
+
+  if (questionType === QuestionType.NAGUI) {
+    return <MobileNaguiControl />;
+  }
+
+  if (questionType === QuestionType.ODD_ONE_OUT) {
+    return <MobileOddOneOutControl />;
+  }
+
+  // BASIC: no digital buzzer — show who is playing this question
+  return (
+    <div className="flex items-center justify-center h-full p-6 text-center">
+      <span className="text-2xl font-bold text-white">
+        <GameChooserTeamAnnouncement />
+      </span>
+    </div>
+  );
+}

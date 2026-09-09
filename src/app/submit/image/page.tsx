@@ -4,8 +4,8 @@ import { redirect } from 'next/navigation';
 
 import { useSession } from 'next-auth/react';
 
-import QuestionFormHeader from '@/frontend/components/common/QuestionFormHeader';
-import SubmitImageQuestionForm from '@/frontend/components/question-forms/SubmitImageQuestionForm';
+import QuestionFormHeader from '@/components/common/QuestionFormHeader';
+import SubmitImageQuestionForm from '@/components/question-forms/SubmitImageQuestionForm';
 import { QuestionType } from '@/models/questions/question-type';
 
 const QUESTION_TYPE = QuestionType.IMAGE;
@@ -24,7 +24,7 @@ export default function Page({}) {
   return (
     <>
       <QuestionFormHeader questionType={QUESTION_TYPE} />
-      <SubmitImageQuestionForm userId={session.user.id} inSubmitPage={true} />
+      <SubmitImageQuestionForm inSubmitPage={true} />
     </>
   );
 }

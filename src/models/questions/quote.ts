@@ -1,9 +1,9 @@
-import { DEFAULT_LOCALE, type Locale } from '@/frontend/helpers/locales';
-import { prependWithEmojiAndSpace } from '@/frontend/helpers/strings';
+import { DEFAULT_LOCALE, type Locale } from '@/helpers/locales';
+import { isObjectEmpty } from '@/helpers/objects';
+import { prependWithEmojiAndSpace } from '@/helpers/strings';
 import { GameBuzzerQuestion, type GameBuzzerQuestionData } from '@/models/questions/buzzer';
 import { BaseQuestion, type BaseQuestionData } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
-import { isObjectEmpty } from '@/utils/objects';
 
 export interface QuotePart {
   startIdx: number;

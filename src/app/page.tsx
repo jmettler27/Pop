@@ -4,11 +4,11 @@ import { redirect } from 'next/navigation';
 
 import { useSession } from 'next-auth/react';
 
-// import EndedGames from '@/frontend/components/home/EndedGames';
-import GamesUnderConstruction from '@/frontend/components/home/GamesUnderConstruction';
-import NavigationBar from '@/frontend/components/home/NavigationBar';
-import OngoingGames from '@/frontend/components/home/OngoingGames';
-import { DEFAULT_BACKGROUND } from '@/frontend/helpers/background';
+// import EndedGames from '@/components/home/EndedGames';
+import GamesUnderConstruction from '@/components/home/GamesUnderConstruction';
+import NavigationBar from '@/components/home/NavigationBar';
+import OngoingGames from '@/components/home/OngoingGames';
+import { DEFAULT_BACKGROUND } from '@/helpers/background';
 
 export default function Home() {
   const { data: session } = useSession();

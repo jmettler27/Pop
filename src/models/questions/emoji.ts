@@ -1,3 +1,4 @@
+import { omit } from '@/helpers/objects';
 import {
   BuzzerQuestion,
   GameBuzzerQuestion,
@@ -5,7 +6,6 @@ import {
   type GameBuzzerQuestionData,
 } from '@/models/questions/buzzer';
 import { QuestionType } from '@/models/questions/question-type';
-import { omit } from '@/utils/objects';
 
 export interface EmojiAnswer {
   title: string;

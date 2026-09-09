@@ -14,6 +14,9 @@ const EMULATOR_STORAGE_BUCKET = 'demo-pop.appspot.com';
 if (useEmulators) {
   process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
   process.env.FIREBASE_STORAGE_EMULATOR_HOST = '127.0.0.1:9199';
+  // Lets `adminAuth().createCustomToken()` mint an unsigned emulator token (no
+  // service-account key is configured for the demo project).
+  process.env.FIREBASE_AUTH_EMULATOR_HOST = '127.0.0.1:9099';
   delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
 }
 

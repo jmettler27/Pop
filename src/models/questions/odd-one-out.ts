@@ -1,6 +1,6 @@
+import { omit } from '@/helpers/objects';
 import { BaseQuestion, GameQuestion, type BaseQuestionData, type GameQuestionData } from '@/models/questions/question';
 import { QuestionType } from '@/models/questions/question-type';
-import { omit } from '@/utils/objects';
 
 export interface OddOneOutItem {
   title: string;
