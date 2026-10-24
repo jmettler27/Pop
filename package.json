@@ -34,7 +34,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "emoji-picker-react": "^4.19.1",
-    "emoji-regex": "^10.6.0",
+    "emoji-regex": "^11.0.0",
     "firebase": "^13.0.0",
     "firebase-admin": "^13.9.0",
     "formik": "^2.4.9",
