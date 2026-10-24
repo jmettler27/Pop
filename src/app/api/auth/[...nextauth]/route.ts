@@ -48,6 +48,8 @@ if (useEmulators) {
     DiscordProvider({
       clientId: process.env.AUTH_DISCORD_ID ?? '',
       clientSecret: process.env.AUTH_DISCORD_SECRET ?? '',
+      // Discord sends an RFC 9207 `iss` callback param; openid-client needs a configured issuer to validate it.
+      issuer: 'https://discord.com',
     })
   );
 }
